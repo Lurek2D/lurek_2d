@@ -1,7 +1,7 @@
 use lurek2d::ai::{
-    BTNode, BehaviorTree, GOAPPlanner, MCTSConfig, MCTSEngine, PlanFailureReason, SteeringManager,
-    UtilityAI,
+    BTNode, BehaviorTree, GOAPPlanner, MCTSConfig, MCTSEngine, PlanFailureReason, UtilityAI,
 };
+use lurek2d::pathfind::SteeringManager;
 use mlua::Lua;
 
 fn near(a: f32, b: f32) {

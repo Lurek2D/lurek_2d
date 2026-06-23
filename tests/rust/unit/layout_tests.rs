@@ -5,8 +5,8 @@ use lurek2d::charts::{
     TreemapItem,
 };
 use lurek2d::layout::{
-    layout_circular, layout_dag, layout_force, layout_grid, layout_radial, layout_spiral, layout_stress,
-    layout_tree, LayoutConfig, LayoutEdge, LayoutNode, StressConfig,
+    layout_circular, layout_dag, layout_force, layout_grid, layout_radial, layout_spiral,
+    layout_stress, layout_tree, LayoutConfig, LayoutEdge, LayoutNode, StressConfig,
 };
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
@@ -246,7 +246,10 @@ mod dense_layout_quality_tests {
         );
 
         assert_eq!(result.count(), 10);
-        assert!(result.nodes.iter().all(|node| node.x >= 0.0 && node.y >= 0.0));
+        assert!(result
+            .nodes
+            .iter()
+            .all(|node| node.x >= 0.0 && node.y >= 0.0));
         assert!(result
             .nodes
             .iter()

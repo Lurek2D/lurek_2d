@@ -16,6 +16,17 @@ Example block: `lurek.mapblock.newConfig`
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:addSlot("detail", false, 0)
     local slots = cfg:getSlotCount()
@@ -84,6 +95,17 @@ lurek.mapblock.newBlock(width, height, layers, config)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
     block:setName("entrance_room")
@@ -115,6 +137,17 @@ lurek.mapblock.newConfig()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:addSlot("detail", false, 0)
     local slots = cfg:getSlotCount()
@@ -144,6 +177,17 @@ lurek.mapblock.newEmptyConfig()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newEmptyConfig()
     cfg:addSlot("floor", true, 0)
     cfg:addSlot("wall", false, 0)
@@ -174,6 +218,17 @@ lurek.mapblock.newEmptyGrid()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(2, 2)
     grid:addPosition(2, 3)
@@ -209,6 +264,17 @@ lurek.mapblock.newGenerator(config)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     gen:setRectShape(6, 4)
@@ -247,6 +313,17 @@ lurek.mapblock.newGrid(width, height)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.mapblock.newGrid(10, 10)
     grid:addPosition(3, 4)
     grid:addPosition(4, 4)
@@ -282,6 +359,17 @@ lurek.mapblock.newGroup(name)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local group = lurek.mapblock.newGroup("rooms")
     local script = lurek.mapblock.newScript("rooms_pass")
     group:addScript(script)
@@ -311,6 +399,17 @@ lurek.mapblock.newRules()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rules = lurek.mapblock.newRules()
     rules:addCompatible(1, 2)
     rules:addCompatibleOneWay(3, 4)
@@ -346,6 +445,17 @@ lurek.mapblock.newScript(name)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.mapblock.newScript("layout_pass")
     script:addStep("fill_rect", { x = 0, y = 0, width = 4, height = 3, tile_id = 1, slot = 0, layer = 0 })
     script:addStep("fill_edges", { tile_id = 2, slot = 0, layer = 0 })
@@ -386,6 +496,17 @@ lurek.mapblock.newTilesetRef(id, name, tile_count, columns, tile_width, tile_hei
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ref = lurek.mapblock.newTilesetRef(1, "ground_tiles", 64, 8, 32, 32)
     ref:setImagePath("content/examples/assets/mapblock_ground.png")
     mapblock_log("newTilesetRef id=" .. ref:getId())
@@ -444,6 +565,17 @@ LMapBlock:getDimensions()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block = lurek.tilemap.newMapBlock(6, 4, 1, 1)
     local width, height = block:getDimensions()
     mapblock_log("getDimensions=" .. tostring(width) .. "x" .. tostring(height))
@@ -472,6 +604,17 @@ LMapBlock:getFootprintCellCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -500,6 +643,17 @@ LMapBlock:getHeight()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 3, 1, cfg)
     block:setName("hallway")
@@ -529,6 +683,17 @@ LMapBlock:getHeightInSegments()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
     mapblock_log("getHeightInSegments=" .. tostring(block:getHeightInSegments()))
     mapblock_log("getHeightInSegments dims=" .. tostring(block:getWidth()) .. "x" .. tostring(block:getHeight()))
@@ -557,6 +722,17 @@ LMapBlock:getLayerCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 3, 2, cfg)
     block:setName("multi_layer_room")
@@ -586,6 +762,17 @@ LMapBlock:getName()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
     block:setName("room_a")
@@ -616,6 +803,17 @@ LMapBlock:getSegmentSize()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
     mapblock_log("getSegmentSize=" .. tostring(block:getSegmentSize()))
     mapblock_log("getSegmentSize widthSegments=" .. tostring(block:getWidthInSegments()))
@@ -651,6 +849,17 @@ LMapBlock:getSide(edge, segment)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
     block:setSide("east", 1, 11)
     block:setSide("west", 1, 5)
@@ -688,6 +897,17 @@ LMapBlock:getSocket(x, y, edge)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -726,6 +946,17 @@ LMapBlock:getTile(layer, x, y, slot)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newEmptyConfig()
     cfg:addSlot("floor", true, 0)
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -755,6 +986,17 @@ LMapBlock:getWeight()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
     block:setWeight(3.0)
@@ -785,6 +1027,17 @@ LMapBlock:getWidth()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 3, 1, cfg)
     block:setName("entry")
@@ -814,6 +1067,17 @@ LMapBlock:getWidthInSegments()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
     mapblock_log("getWidthInSegments=" .. tostring(block:getWidthInSegments()))
     mapblock_log("getWidthInSegments dims=" .. tostring(block:getWidth()) .. "x" .. tostring(block:getHeight()))
@@ -849,6 +1113,17 @@ LMapBlock:isFootprintCell(x, y)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -879,6 +1154,17 @@ LMapBlock:setEdge(edge, segment, edge_type)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
     block:setEdge("north", 0, 2)
@@ -907,6 +1193,17 @@ LMapBlock:setEdgeOnly(edge_only)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
     block:setEdgeOnly(true)
@@ -937,6 +1234,17 @@ LMapBlock:setFootprint(cells)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -965,6 +1273,17 @@ LMapBlock:setInteriorOnly(interior_only)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
     block:setInteriorOnly(true)
@@ -995,6 +1314,17 @@ LMapBlock:setLevelSpan(levels)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 2, cfg)
     block:setLevelSpan(2)
@@ -1025,6 +1355,17 @@ LMapBlock:setName(name)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
     block:setName("corridor")
@@ -1057,6 +1398,17 @@ LMapBlock:setSide(edge, segment, sideId)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
     block:setSide("north", 1, 7)
     block:setSide("south", 1, 9)
@@ -1089,6 +1441,17 @@ LMapBlock:setSocket(x, y, edge, edge_type)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -1123,6 +1486,17 @@ LMapBlock:setTile(layer, x, y, slot, tileset_id, gid)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newEmptyConfig()
     cfg:addSlot("wall", true, 0)
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -1151,6 +1525,17 @@ LMapBlock:setWeight(weight)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
     block:setWeight(3.0)
@@ -1181,6 +1566,17 @@ LMapBlock:type()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block = lurek.tilemap.newMapBlock(2, 2, 1, 1)
     block:setSide("north", 1, 3)
     mapblock_log("LMapBlock:type=" .. tostring(block:type()))
@@ -1215,6 +1611,17 @@ LMapBlock:typeOf(name)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block = lurek.tilemap.newMapBlock(2, 2, 1, 1)
     block:setSide("east", 1, 4)
     mapblock_log("LMapBlock:typeOf self=" .. tostring(block:typeOf("LMapBlock")))
@@ -1253,6 +1660,17 @@ LMapBlockConfig:addSlot(name, required, default_gid)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:addSlot("wall", true, 0)
     cfg:addSlot("floor", false, 1)
@@ -1283,6 +1701,17 @@ LMapBlockConfig:getSlotCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:addSlot("layer1", true, 0)
     cfg:addSlot("layer2", false, 1)
@@ -1317,6 +1746,17 @@ LMapBlockConfig:removeSlot(name)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:addSlot("door", false, 0)
     cfg:removeSlot("door")
@@ -1348,6 +1788,17 @@ LMapBlockConfig:setDefaultSegmentSize(size)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(32)
     cfg:addSlot("floor", true, 0)
@@ -1377,6 +1828,17 @@ LMapBlockConfig:setMaxLayers(max)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:setMaxLayers(3)
     cfg:addSlot("detail", false, 0)
@@ -1414,6 +1876,17 @@ LMapBlockGenerator:addGroup(group)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     local group = lurek.mapblock.newGroup("rooms")
@@ -1448,6 +1921,17 @@ LMapBlockGenerator:generate(script)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -1487,6 +1971,17 @@ LMapBlockGenerator:generateWithReport(script)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("missing_group")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -1520,6 +2015,17 @@ LMapBlockGenerator:getLastPlacedCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -1551,6 +2057,17 @@ LMapBlockGenerator:getLastReport()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("missing_group")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -1583,6 +2100,17 @@ LMapBlockGenerator:setGrid(grid)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     local grid = lurek.mapblock.newEmptyGrid()
@@ -1614,6 +2142,17 @@ LMapBlockGenerator:setMaxLevels(levels)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     gen:setMaxLevels(3)
@@ -1644,6 +2183,17 @@ LMapBlockGenerator:setOrientation(orientation)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     gen:setOrientation("isometric")
@@ -1675,6 +2225,17 @@ LMapBlockGenerator:setRectShape(width, height)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     gen:setRectShape(10, 8)
@@ -1705,6 +2266,17 @@ LMapBlockGenerator:setRules(rules)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     local rules = lurek.mapblock.newRules()
@@ -1734,6 +2306,17 @@ LMapBlockGenerator:setSeed(seed)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     gen:setSeed(12345)
@@ -1764,6 +2347,17 @@ LMapBlockGenerator:setShape(positions)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     gen:setShape({ { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 1 } })
@@ -1794,6 +2388,17 @@ LMapBlockGenerator:setSolverBudget(opts)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     gen:setSolverBudget({
@@ -1829,6 +2434,17 @@ LMapBlockGenerator:setTileSize(w, h)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
     gen:setTileSize(32, 32)
@@ -1867,6 +2483,17 @@ LMapBlockReport:toTable()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("missing_group")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -1908,6 +2535,17 @@ LMapBlockResult:getBlocksPlaced()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("place_once")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -1949,6 +2587,17 @@ LMapBlockResult:getGid(level, layer, x, y, slot)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -1980,6 +2629,17 @@ LMapBlockResult:getHeight()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -2010,6 +2670,17 @@ LMapBlockResult:getLayerCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -2040,6 +2711,17 @@ LMapBlockResult:getLevelCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -2071,6 +2753,17 @@ LMapBlockResult:getPlacements()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
     local block = lurek.mapblock.newBlock(1, 1, 1, cfg)
@@ -2108,6 +2801,17 @@ LMapBlockResult:getWidth()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -2138,6 +2842,17 @@ LMapBlockResult:isEmpty()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("empty")
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -2175,6 +2890,17 @@ LMapGroup:addBlock(block)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
     local group = lurek.mapblock.newGroup("rooms")
@@ -2203,6 +2929,17 @@ LMapGroup:addScript(script)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.mapblock.newScript("rooms_pass")
     script:addStep("fill_rect", { x = 0, y = 0, width = 1, height = 1, tile_id = 1, slot = 0, layer = 0 })
     local group = lurek.mapblock.newGroup("rooms")
@@ -2231,6 +2968,17 @@ LMapGroup:getBlockCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
     local group = lurek.mapblock.newGroup("rooms")
@@ -2259,6 +3007,17 @@ LMapGroup:getName()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local group = lurek.mapblock.newGroup("dungeon_rooms")
     local script = lurek.mapblock.newScript("rooms_pass")
     group:addScript(script)
@@ -2288,6 +3047,17 @@ LMapGroup:getScriptCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.tilemap.newMapScript()
     script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 1, h = 1 })
     local group = lurek.tilemap.newMapGroup("rooms")
@@ -2316,6 +3086,17 @@ LMapGroup:removeBlock(idx)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block_a = lurek.tilemap.newMapBlock(2, 2, 1, 1)
     local block_b = lurek.tilemap.newMapBlock(3, 3, 1, 1)
     local group = lurek.tilemap.newMapGroup("rooms")
@@ -2346,6 +3127,17 @@ LMapGroup:type()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local group = lurek.tilemap.newMapGroup("rooms")
     local script = lurek.tilemap.newMapScript()
     group:addScript(script)
@@ -2381,6 +3173,17 @@ LMapGroup:typeOf(name)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local group = lurek.tilemap.newMapGroup("rooms")
     local script = lurek.tilemap.newMapScript()
     group:addScript(script)
@@ -2419,6 +3222,17 @@ LMapScript:addStep(step_type, opts)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.mapblock.newScript("block_fill")
     script:addStep("fill_rect", { x = 1, y = 1, width = 2, height = 2, tile_id = 5, slot = 0, layer = 0 })
     script:addStep("fill_edges", { tile_id = 9, slot = 0, layer = 0 })
@@ -2442,6 +3256,17 @@ LMapScript:clear()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.mapblock.newScript("cleanup")
     script:addStep("fill_rect", { x = 0, y = 0, width = 2, height = 2, tile_id = 1, slot = 0, layer = 0 })
     script:addStep("fill_edges", { tile_id = 2, slot = 0, layer = 0 })
@@ -2470,6 +3295,17 @@ LMapScript:getName()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.mapblock.newScript("dungeon_gen")
     script:addStep("fill_rect", { x = 0, y = 0, width = 1, height = 1, tile_id = 1, slot = 0, layer = 0 })
     mapblock_log("LMapScript:getName=" .. tostring(script:getName()))
@@ -2498,6 +3334,17 @@ LMapScript:getStepCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.mapblock.newScript("multi_step")
     script:addStep("fill_rect", { x = 0, y = 0, width = 2, height = 2, tile_id = 1, slot = 0, layer = 0 })
     script:addStep("fill_edges", { tile_id = 2, slot = 0, layer = 0 })
@@ -2527,6 +3374,17 @@ LMapScript:type()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.tilemap.newMapScript()
     script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 1, h = 1 })
     mapblock_log("LMapScript:type=" .. tostring(script:type()))
@@ -2561,6 +3419,17 @@ LMapScript:typeOf(name)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.tilemap.newMapScript()
     script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 1, h = 1 })
     mapblock_log("LMapScript:typeOf self=" .. tostring(script:typeOf("LMapScript")))
@@ -2598,6 +3467,17 @@ LNeighborRules:addCompatible(type_a, type_b)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rules = lurek.mapblock.newRules()
     rules:addCompatible(10, 20)
     rules:addCompatible(10, 30)
@@ -2628,6 +3508,17 @@ LNeighborRules:addCompatibleOneWay(type_a, type_b)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rules = lurek.mapblock.newRules()
     rules:addCompatibleOneWay(5, 9)
     rules:addCompatibleOneWay(5, 7)
@@ -2651,6 +3542,17 @@ LNeighborRules:clear()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rules = lurek.mapblock.newRules()
     rules:addCompatible(1, 2)
     rules:clear()
@@ -2690,6 +3592,17 @@ LNeighborRules:isCompatible(type_a, type_b)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rules = lurek.mapblock.newRules()
     rules:addCompatible(4, 6)
     local compatible = rules:isCompatible(4, 6)
@@ -2730,6 +3643,17 @@ LPlacementGrid:addPosition(x, y)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.mapblock.newGrid(10, 10)
     grid:addPosition(3, 4)
     grid:addPosition(4, 4)
@@ -2753,6 +3677,17 @@ LPlacementGrid:clear()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(1, 1)
     grid:addPosition(2, 1)
@@ -2784,6 +3719,17 @@ LPlacementGrid:getAvailableCount()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(1, 1)
     grid:addPosition(2, 2)
@@ -2819,6 +3765,17 @@ LPlacementGrid:isAvailable(x, y)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(5, 5)
     grid:addPosition(6, 5)
@@ -2855,6 +3812,17 @@ LPlacementGrid:isEdgePosition(x, y)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(0, 0)
     grid:addPosition(1, 0)
@@ -2884,6 +3852,17 @@ LPlacementGrid:removePosition(x, y)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(1, 1)
     grid:addPosition(2, 1)
@@ -2923,6 +3902,17 @@ LTilesetRef:getId()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ref = lurek.mapblock.newTilesetRef(2, "ground_tiles", 64, 8, 32, 32)
     ref:setImagePath("content/examples/assets/ground_tiles.png")
     mapblock_log("LTilesetRef:getId=" .. tostring(ref:getId()))
@@ -2951,6 +3941,17 @@ LTilesetRef:getName()
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ref = lurek.mapblock.newTilesetRef(3, "world_tileset", 128, 16, 16, 16)
     ref:setImagePath("content/examples/assets/world_tileset.png")
     mapblock_log("LTilesetRef:getName=" .. tostring(ref:getName()))
@@ -2979,6 +3980,17 @@ LTilesetRef:setImagePath(path)
 
 ```lua
 do
+    local function mapblock_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ref = lurek.mapblock.newTilesetRef(4, "cave_tiles", 64, 8, 32, 32)
     ref:setImagePath("assets/textures/cave.png")
     mapblock_log("LTilesetRef:setImagePath name=" .. ref:getName())

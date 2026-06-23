@@ -16,6 +16,17 @@ Example block: `lurek.physics.newWorld`
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local floor = world:newBody(320, 520, "static")
     local crate = world:newCircleBody(320, 120, 14, "dynamic")
@@ -80,6 +91,17 @@ lurek.physics.attachShape(body, shape)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(120, 120, "dynamic")
     local shape = lurek.physics.newCircleShape(10)
@@ -110,6 +132,17 @@ lurek.physics.debugDraw(enable)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(100, 100, 15, "dynamic")
     lurek.physics.debugDraw(true)
@@ -138,6 +171,17 @@ lurek.physics.destroyWorld(world)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(100, 100, 10, "dynamic")
     example_print_log("before", world:getBodyCount())
@@ -167,6 +211,17 @@ lurek.physics.drawDebugGpu(world, config)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     world:newBody(120, 200, "static")
     world:newCircleBody(120, 120, 10, "dynamic")
@@ -207,6 +262,17 @@ lurek.physics.getBody(world, body)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 0, 0, "dynamic")
     body:setVelocity(10, 5)
@@ -243,6 +309,17 @@ lurek.physics.getCollisions(world)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
@@ -284,6 +361,17 @@ lurek.physics.isSleepingAllowed(world, body)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
     lurek.physics.setSleepingAllowed(world, body, true)
@@ -322,6 +410,17 @@ lurek.physics.newBody(world, x, y, bodyType)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = lurek.physics.newBody(world, 50, 50, "static")
     local checkpoint = lurek.physics.newBody(world, 80, 50, "sensor")
@@ -358,6 +457,17 @@ lurek.physics.newChainShape(closed, ...)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local chain = lurek.physics.newChainShape(false, 0, 100, 50, 80, 100, 90, 150, 70, 200, 100)
     local loop = lurek.physics.newChainShape(true, 0, 0, 100, 0, 100, 100, 0, 100)
     local minX, minY, maxX, maxY = chain:getBoundingBox()
@@ -393,6 +503,17 @@ lurek.physics.newCircleShape(r)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local circle = lurek.physics.newCircleShape(16)
     local minX, minY, maxX, maxY = circle:getBoundingBox()
     example_print_log("type", circle:getType())
@@ -430,6 +551,17 @@ lurek.physics.newEdgeShape(x1, y1, x2, y2)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local edge = lurek.physics.newEdgeShape(0, 0, 100, 0)
     local minX, minY, maxX, maxY = edge:getBoundingBox()
     edge:setFriction(0.6)
@@ -465,6 +597,17 @@ lurek.physics.newPolygonShape(...)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local triangle = lurek.physics.newPolygonShape(0, -20, -15, 15, 15, 15)
     local minX, minY, maxX, maxY = triangle:getBoundingBox()
     triangle:setDensity(1.2)
@@ -501,6 +644,17 @@ lurek.physics.newRectangleShape(w, h)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rect = lurek.physics.newRectangleShape(64, 32)
     local minX, minY, maxX, maxY = rect:getBoundingBox()
     rect:setFriction(0.8)
@@ -539,6 +693,17 @@ lurek.physics.newTerrain(width, height, cellSize, world)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(128, 64, 4, world)
     terrain:fillAll(true)
@@ -576,6 +741,17 @@ lurek.physics.newWorld(gx, gy)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local floor = world:newBody(320, 520, "static")
     local crate = world:newCircleBody(320, 120, 14, "dynamic")
@@ -609,6 +785,17 @@ lurek.physics.setBodyVelocity(world, body, vx, vy)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 0, 0, "dynamic")
     lurek.physics.setBodyVelocity(world, body, 10, 5)
@@ -641,6 +828,17 @@ lurek.physics.setSleepingAllowed(world, body, allowed)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 0, 0, "dynamic")
     lurek.physics.setSleepingAllowed(world, body, false)
@@ -673,6 +871,17 @@ lurek.physics.step(world, dt)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
     local floor = world:newBody(100, 240, "static")
@@ -717,6 +926,17 @@ lurek.physics.testAABB(ax, ay, aw, ah, bx, by, bw, bh)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local overlap = lurek.physics.testAABB(0, 0, 50, 50, 25, 25, 50, 50)
     local miss = lurek.physics.testAABB(0, 0, 10, 10, 100, 100, 10, 10)
     local playerInsideHazard = lurek.physics.testAABB(30, 30, 16, 16, 20, 20, 40, 40)
@@ -758,6 +978,17 @@ lurek.physics.testCircleAABB(cx, cy, cr, ax, ay, aw, ah)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hit = lurek.physics.testCircleAABB(50, 50, 20, 30, 30, 40, 40)
     local miss = lurek.physics.testCircleAABB(0, 0, 5, 100, 100, 10, 10)
     local explosionHitsDoor = lurek.physics.testCircleAABB(160, 96, 24, 150, 80, 40, 60)
@@ -798,6 +1029,17 @@ lurek.physics.testCircles(ax, ay, ar, bx, by, br)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local touching = lurek.physics.testCircles(0, 0, 20, 30, 0, 20)
     local apart = lurek.physics.testCircles(0, 0, 5, 100, 0, 5)
     local bombHitsShield = lurek.physics.testCircles(200, 200, 18, 214, 200, 12)
@@ -838,6 +1080,17 @@ lurek.physics.testPoint(px, py, ax, ay, aw, ah)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local inside = lurek.physics.testPoint(5, 5, 0, 0, 10, 10)
     local outside = lurek.physics.testPoint(20, 20, 0, 0, 10, 10)
     local buttonHover = lurek.physics.testPoint(42, 18, 32, 8, 24, 24)
@@ -891,6 +1144,17 @@ LBody:applyAngularImpulse(impulse)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyAngularImpulse(5.0)
@@ -921,6 +1185,17 @@ LBody:applyForce(fx, fy)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyForce(100, 0)
@@ -953,6 +1228,17 @@ LBody:applyForceAtPoint(fx, fy, px, py)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyForceAtPoint(0, -50, 210, 200)
@@ -983,6 +1269,17 @@ LBody:applyImpulse(ix, iy)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyImpulse(0, -200)
@@ -1012,6 +1309,17 @@ LBody:applyTorque(torque)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyTorque(10.0)
@@ -1035,6 +1343,17 @@ LBody:destroy()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local temp = world:newBody(400, 400, "dynamic")
     example_print_log("before", world:getBodyCount())
@@ -1063,6 +1382,17 @@ LBody:getAngle()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngle(math.pi / 6)
@@ -1091,6 +1421,17 @@ LBody:getAngularDamping()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngularDamping(0.9)
@@ -1119,6 +1460,17 @@ LBody:getAngularVelocity()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngularVelocity(1.25)
@@ -1147,6 +1499,17 @@ LBody:getFriction()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setFriction(0.25)
@@ -1175,6 +1538,17 @@ LBody:getGravityScale()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setGravityScale(-1.0)
@@ -1203,6 +1577,17 @@ LBody:getHeight()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     local collider = lurek.physics.newRectangleShape(32, 48)
@@ -1233,6 +1618,17 @@ LBody:getId()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     world:setBodyData(body:getId(), { kind = "spawn_marker" })
@@ -1263,6 +1659,17 @@ LBody:getLayer()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setLayer(4)
@@ -1291,6 +1698,17 @@ LBody:getLinearDamping()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setLinearDamping(0.75)
@@ -1319,6 +1737,17 @@ LBody:getMask()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setMask(7)
@@ -1347,6 +1776,17 @@ LBody:getMass()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setMass(5.0)
@@ -1377,6 +1817,17 @@ LBody:getPosition()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     body:setVelocity(14, -8)
@@ -1407,6 +1858,17 @@ LBody:getRestitution()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setRestitution(0.15)
@@ -1435,6 +1897,17 @@ LBody:getType()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "sensor")
     body:setLayer(8)
@@ -1466,6 +1939,17 @@ LBody:getVelocity()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
     body:setVelocity(25, -50)
@@ -1494,6 +1978,17 @@ LBody:getWidth()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     local collider = lurek.physics.newRectangleShape(48, 20)
@@ -1524,6 +2019,17 @@ LBody:getX()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     body:setVelocity(12, 0)
@@ -1555,6 +2061,17 @@ LBody:getY()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     body:setVelocity(0, -10)
@@ -1586,6 +2103,17 @@ LBody:isBullet()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local bullet = world:newCircleBody(100, 100, 4, "dynamic")
     bullet:setBullet(true)
@@ -1614,6 +2142,17 @@ LBody:isFixedRotation()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newBody(200, 200, "dynamic")
     player:setFixedRotation(true)
@@ -1642,6 +2181,17 @@ LBody:isSleeping()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
@@ -1671,6 +2221,17 @@ LBody:isSleepingAllowed()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
@@ -1699,6 +2260,17 @@ LBody:isValid()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local temp = world:newBody(400, 400, "dynamic")
     example_print_log("valid", temp:isValid())
@@ -1727,6 +2299,17 @@ LBody:setAngle(angle)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngle(math.pi / 4)
@@ -1755,6 +2338,17 @@ LBody:setAngularDamping(damping)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngularDamping(0.3)
@@ -1783,6 +2377,17 @@ LBody:setAngularVelocity(omega)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngularVelocity(2.0)
@@ -1812,6 +2417,17 @@ LBody:setBullet(bullet)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local bullet = world:newCircleBody(100, 100, 4, "dynamic")
     bullet:setBullet(true)
@@ -1840,6 +2456,17 @@ LBody:setFixedRotation(fixed)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newBody(200, 200, "dynamic")
     player:setFixedRotation(true)
@@ -1868,6 +2495,17 @@ LBody:setFriction(friction)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setFriction(0.8)
@@ -1896,6 +2534,17 @@ LBody:setGravityScale(scale)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local normal = world:newBody(100, 100, "dynamic")
     local floaty = world:newBody(200, 100, "dynamic")
@@ -1925,6 +2574,17 @@ LBody:setLayer(layer)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setLayer(2)
@@ -1953,6 +2613,17 @@ LBody:setLinearDamping(damping)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setLinearDamping(0.5)
@@ -1981,6 +2652,17 @@ LBody:setMask(mask)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setMask(3)
@@ -2009,6 +2691,17 @@ LBody:setMass(mass)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setMass(7.5)
@@ -2038,6 +2731,17 @@ LBody:setPosition(x, y)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
     body:setPosition(200, 100)
@@ -2066,6 +2770,17 @@ LBody:setRestitution(restitution)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setRestitution(0.6)
@@ -2094,6 +2809,17 @@ LBody:setSleepingAllowed(allowed)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(false)
@@ -2122,6 +2848,17 @@ LBody:setType(bodyType)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setType("kinematic")
@@ -2151,6 +2888,17 @@ LBody:setVelocity(vx, vy)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
     body:setVelocity(50, -100)
@@ -2174,6 +2922,17 @@ LBody:sleep()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
@@ -2203,6 +2962,17 @@ LBody:type()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
     body:setVelocity(12, -6)
@@ -2239,6 +3009,17 @@ LBody:typeOf(name)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
     body:setGravityScale(0.5)
@@ -2264,6 +3045,17 @@ LBody:wakeUp()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
@@ -2296,6 +3088,17 @@ LPhysicsShape:destroy()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.physics.newCircleShape(10)
     local before = shape:type()
     local radius = shape:getRadius()
@@ -2329,6 +3132,17 @@ LPhysicsShape:getBoundingBox()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local circle = lurek.physics.newCircleShape(10.0)
     circle:setSensor(true)
     local minX, minY, maxX, maxY = circle:getBoundingBox()
@@ -2357,6 +3171,17 @@ LPhysicsShape:getRadius()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local circle = lurek.physics.newCircleShape(10.0)
     circle:setDensity(1.5)
     local radius = circle:getRadius()
@@ -2386,6 +3211,17 @@ LPhysicsShape:getType()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local circle = lurek.physics.newCircleShape(10.0)
     circle:setRestitution(0.2)
     local minX, minY, maxX, maxY = circle:getBoundingBox()
@@ -2414,6 +3250,17 @@ LPhysicsShape:setDensity(density)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.physics.newCircleShape(12)
     shape:setDensity(2.5)
     shape:setFriction(0.4)
@@ -2443,6 +3290,17 @@ LPhysicsShape:setFriction(friction)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.physics.newCircleShape(12)
     shape:setFriction(0.9)
     shape:setDensity(1.0)
@@ -2472,6 +3330,17 @@ LPhysicsShape:setRestitution(restitution)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.physics.newCircleShape(12)
     shape:setRestitution(0.3)
     shape:setDensity(0.8)
@@ -2501,6 +3370,17 @@ LPhysicsShape:setSensor(sensor)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.physics.newCircleShape(12)
     shape:setSensor(true)
     shape:setDensity(0.2)
@@ -2530,6 +3410,17 @@ LPhysicsShape:type()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.physics.newCircleShape(10)
     shape:setSensor(true)
     local minX, minY, maxX, maxY = shape:getBoundingBox()
@@ -2564,6 +3455,17 @@ LPhysicsShape:typeOf(name)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.physics.newCircleShape(10)
     shape:setSensor(true)
     local isShape = shape:typeOf("LPhysicsShape")
@@ -2602,6 +3504,17 @@ LTerrain:collapseColumns()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 8, world)
     terrain:fillAll(true)
@@ -2632,6 +3545,17 @@ LTerrain:fillAll(solid)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
@@ -2663,6 +3587,17 @@ LTerrain:fillCircle(wx, wy, radius, solid)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
@@ -2696,6 +3631,17 @@ LTerrain:fillRect(wx, wy, w, h, solid)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
     terrain:fillRect(80, 80, 40, 40, false)
@@ -2718,6 +3664,17 @@ LTerrain:flush()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
@@ -2754,6 +3711,17 @@ LTerrain:getCell(cx, cy)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
     terrain:setCell(5, 5, true)
@@ -2782,6 +3750,17 @@ LTerrain:isDirty()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
@@ -2816,6 +3795,17 @@ LTerrain:loadFromBytes(data)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 4, world)
     terrain:fillAll(true)
@@ -2848,6 +3838,17 @@ LTerrain:setCell(cx, cy, solid)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
     terrain:setCell(5, 5, true)
@@ -2876,6 +3877,17 @@ LTerrain:solidPositions()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 8, world)
     terrain:fillAll(true)
@@ -2916,6 +3928,17 @@ LTerrain:spawnDebris(positions, mass, restitution)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 8, world)
     terrain:fillAll(true)
@@ -2946,6 +3969,17 @@ LTerrain:toBytes()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 4, world)
     terrain:fillAll(true)
@@ -2987,6 +4021,17 @@ LTerrain:toImageData(sr, sg, sb, er, eg, eb)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 4, world)
     terrain:fillAll(true)
@@ -3017,6 +4062,17 @@ LTerrain:type()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillRect(32, 400, 96, 32, true)
@@ -3052,6 +4108,17 @@ LTerrain:typeOf(name)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(false)
@@ -3103,6 +4170,17 @@ LWorld:addDistanceJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, le
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local bodyA = world:newCircleBody(100, 100, 10, "dynamic")
     local bodyB = world:newCircleBody(200, 100, 10, "dynamic")
@@ -3144,6 +4222,17 @@ LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
     local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
@@ -3183,6 +4272,17 @@ LWorld:addFrictionJoint(bodyA, bodyB, anchorX, anchorY, maxForce, maxTorque)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local ground = world:newBody(200, 400, "static")
     local puck = world:newCircleBody(200, 400, 10, "dynamic")
@@ -3221,6 +4321,17 @@ LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local gearA = world:newCircleBody(100, 200, 20, "dynamic")
     local gearB = world:newCircleBody(200, 200, 20, "dynamic")
@@ -3258,6 +4369,17 @@ LWorld:addMotorJoint(bodyA, bodyB, factor)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local platform = world:newBody(200, 200, "static")
     local mover = world:newBody(200, 200, "dynamic")
@@ -3296,6 +4418,17 @@ LWorld:addMouseJoint(bodyId, targetX, targetY, maxForce)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local box = world:newCircleBody(200, 200, 15, "dynamic")
     local jointId = world:addMouseJoint(box:getId(), 300, 100, 500)
@@ -3336,6 +4469,17 @@ LWorld:addPrismaticJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local rail = world:newBody(300, 300, "static")
     local slider = world:newBody(300, 300, "dynamic")
@@ -3374,6 +4518,17 @@ LWorld:addPulleyJoint(bodyA, bodyB, anchorX, anchorY)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local boxA = world:newCircleBody(100, 200, 10, "dynamic")
     local boxB = world:newCircleBody(300, 200, 10, "dynamic")
@@ -3412,6 +4567,17 @@ LWorld:addRevoluteJoint(bodyA, bodyB, anchorX, anchorY)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local pivot = world:newBody(200, 150, "static")
     local arm = world:newBody(200, 200, "dynamic")
@@ -3453,6 +4619,17 @@ LWorld:addRopeJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, maxLen
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local ceiling = world:newBody(300, 50, "static")
     local weight = world:newCircleBody(300, 150, 8, "dynamic")
@@ -3491,6 +4668,17 @@ LWorld:addWeldJoint(bodyA, bodyB, anchorX, anchorY)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local chassis = world:newBody(200, 200, "dynamic")
     local turret = world:newBody(200, 180, "dynamic")
@@ -3531,6 +4719,17 @@ LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local car = world:newBody(200, 200, "dynamic")
     local wheel = world:newCircleBody(200, 230, 12, "dynamic")
@@ -3569,6 +4768,17 @@ LWorld:addZone(x, y, w, h)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(100, 100, 200, 200)
     zone:setPriority(10)
@@ -3591,6 +4801,17 @@ LWorld:clear()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(100, 100, 10, "dynamic")
     example_print_log("before", world:getBodyCount())
@@ -3613,6 +4834,17 @@ LWorld:clearBeginContact()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
@@ -3648,6 +4880,17 @@ LWorld:clearBodyData(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newCircleBody(100, 100, 10, "dynamic")
     world:setBodyData(player:getId(), { tag = "player" })
@@ -3676,6 +4919,17 @@ LWorld:clearBodyOneWay(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local platform = world:newBody(200, 400, "static")
     world:setBodyOneWay(platform:getId(), 0, -1)
@@ -3698,6 +4952,17 @@ LWorld:clearEndContact()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 100, 10, "dynamic")
@@ -3734,6 +4999,17 @@ LWorld:destroyBody(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
     example_print_log("before", world:getBodyCount())
@@ -3762,6 +5038,17 @@ LWorld:destroyJoint(jointId)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
     local b = world:newBody(100, 200, "dynamic")
@@ -3796,6 +5083,17 @@ LWorld:drawDebug(target, r, g, b, a)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(200, 200, 20, "dynamic")
     local img = lurek.image.newImageData(800, 600)
@@ -3830,6 +5128,17 @@ LWorld:fixtureCount(bodyId)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
     world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
@@ -3860,6 +5169,17 @@ LWorld:getBeginContactEvents()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
@@ -3904,6 +5224,17 @@ LWorld:getBodyAtPoint(x, y, filter)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(200, 200, 30, "static")
     body:setLayer(0x2)
@@ -3940,6 +5271,17 @@ LWorld:getBodyCCD(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local bullet = world:newCircleBody(100, 100, 3, "dynamic")
     world:setBodyCCD(bullet:getId(), true)
@@ -3974,6 +5316,17 @@ LWorld:getBodyContacts(bodyId)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 480, 10, "dynamic")
@@ -4008,6 +5361,17 @@ LWorld:getBodyCount()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newBody(100, 100, "dynamic")
     local floor = world:newBody(200, 200, "static")
@@ -4044,6 +5408,17 @@ LWorld:getBodyData(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local enemy = world:newCircleBody(300, 100, 10, "dynamic")
     world:setBodyData(enemy:getId(), { tag = "enemy", hp = 50 })
@@ -4073,6 +5448,17 @@ LWorld:getBodyIds()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(100, 100, "dynamic")
     world:newBody(200, 200, "static")
@@ -4109,6 +5495,17 @@ LWorld:getBodyOneWay(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local platform = world:newBody(200, 400, "static")
     world:setBodyOneWay(platform:getId(), 0, -1)
@@ -4146,6 +5543,17 @@ LWorld:getBodyType(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     world:newBody(100, 220, "static")
@@ -4176,6 +5584,17 @@ LWorld:getCollisionEvents()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
@@ -4213,6 +5632,17 @@ LWorld:getContacts()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 100, 10, "dynamic")
@@ -4248,6 +5678,17 @@ LWorld:getEndContactEvents()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 100, 10, "dynamic")
@@ -4286,6 +5727,17 @@ LWorld:getGravity()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local gx, gy = world:getGravity()
     example_print_log("gravity", gx, gy)
@@ -4321,6 +5773,17 @@ LWorld:getJointBodies(jointId)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
@@ -4355,6 +5818,17 @@ LWorld:getJointBreakForce(jointId)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local ceiling = world:newBody(200, 50, "static")
     local weight = world:newCircleBody(200, 100, 10, "dynamic")
@@ -4384,6 +5858,17 @@ LWorld:getJointIds()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
@@ -4421,6 +5906,17 @@ LWorld:getJointLimits(jointId)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local anchor = world:newBody(200, 100, "static")
     local arm = world:newBody(200, 200, "dynamic")
@@ -4456,6 +5952,17 @@ LWorld:getJointMotorSpeed(jointId)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local hub = world:newBody(200, 200, "static")
     local blade = world:newBody(200, 200, "dynamic")
@@ -4491,6 +5998,17 @@ LWorld:getJointType(jointId)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
@@ -4519,6 +6037,17 @@ LWorld:getMeter()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
     local bridgeSpanMeters = 2.0
@@ -4549,6 +6078,17 @@ LWorld:getSolverIterations()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:setSolverIterations(10)
     local floor = world:newBody(200, 420, "static")
@@ -4579,6 +6119,17 @@ LWorld:getStats()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     local stats = world:getStats()
@@ -4611,6 +6162,17 @@ LWorld:getZoneEvents()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(150, 300, 200, 100)
     zone:setEnabled(true)
@@ -4651,6 +6213,17 @@ LWorld:hasBody(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     example_print_log("has_body", world:hasBody(body:getId()))
@@ -4685,6 +6258,17 @@ LWorld:hasJoint(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
     local b = world:newBody(100, 200, "dynamic")
@@ -4721,6 +6305,17 @@ LWorld:isBodySleeping(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
     body:setSleepingAllowed(true)
@@ -4749,6 +6344,17 @@ LWorld:jointCount()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
@@ -4783,6 +6389,17 @@ LWorld:newBodies(specs)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local ids = world:newBodies({
         { 15, 50, 12, 12, "dynamic" },
@@ -4822,6 +6439,17 @@ LWorld:newBody(x, y, bodyType)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 50, "dynamic")
     world:step(1 / 60)
@@ -4861,6 +6489,17 @@ LWorld:newChainBody(x, y, vertices, closed, bodyType)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local ground = world:newChainBody(0, 500, { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }, false, "static")
     local bike = world:newCircleBody(120, 420, 8, "dynamic")
@@ -4900,6 +6539,17 @@ LWorld:newCircleBody(x, y, radius, bodyType)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local ball = world:newCircleBody(200, 100, 16, "dynamic")
     local target = world:newBody(200, 260, "static")
@@ -4942,6 +6592,17 @@ LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static")
     local player = world:newCircleBody(100, 420, 10, "dynamic")
@@ -4981,6 +6642,17 @@ LWorld:newPolygonBody(x, y, vertices, bodyType)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local tri = world:newPolygonBody(100, 200, { 0, -20, -15, 15, 15, 15 }, "dynamic")
     tri:setAngularVelocity(1.5)
@@ -5021,6 +6693,17 @@ LWorld:queryAABB(x, y, w, h, filter)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newCircleBody(100, 100, 10, "dynamic")
     local b = world:newCircleBody(150, 120, 10, "dynamic")
@@ -5064,6 +6747,17 @@ LWorld:raycast(x1, y1, x2, y2, filter)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(200, 200, 20, "static")
     body:setLayer(0x2)
@@ -5109,6 +6803,17 @@ LWorld:raycastAll(x, y, dx, dy, maxDist, filter)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     for i = 1, 5 do
         local body = world:newCircleBody(100 + i * 80, 200, 10, "static")
@@ -5153,6 +6858,17 @@ LWorld:raycastClosest(x, y, dx, dy, maxDist, filter)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(200, 300, 15, "static")
     body:setLayer(0x2)
@@ -5181,6 +6897,17 @@ LWorld:resetWorld()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 100)
     world:setGravity(5, 6)
     world:setMeter(96)
@@ -5214,6 +6941,17 @@ LWorld:setBeginContact(callback)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
@@ -5250,6 +6988,17 @@ LWorld:setBodyCCD(id, enabled)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local bullet = world:newCircleBody(100, 100, 3, "dynamic")
     world:setBodyCCD(bullet:getId(), true)
@@ -5279,6 +7028,17 @@ LWorld:setBodyData(id, value)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newCircleBody(100, 100, 10, "dynamic")
     world:setBodyData(player:getId(), { tag = "player", hp = 100 })
@@ -5310,6 +7070,17 @@ LWorld:setBodyOneWay(id, nx, ny)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local platform = world:newBody(200, 400, "static")
     local player = world:newCircleBody(200, 320, 10, "dynamic")
@@ -5342,6 +7113,17 @@ LWorld:setBodyType(id, bodyType)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
     world:setBodyType(body:getId(), "static")
@@ -5372,6 +7154,17 @@ LWorld:setEndContact(callback)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 100, 10, "dynamic")
@@ -5410,6 +7203,17 @@ LWorld:setFixtureFriction(bodyId, fixtureIndex, friction)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 10)
@@ -5441,6 +7245,17 @@ LWorld:setFixtureRestitution(bodyId, fixtureIndex, restitution)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 10)
@@ -5472,6 +7287,17 @@ LWorld:setFixtureSensor(bodyId, fixtureIndex, sensor)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 10)
@@ -5502,6 +7328,17 @@ LWorld:setGravity(gx, gy)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 200)
     world:setGravity(25, 600)
     local gx, gy = world:getGravity()
@@ -5531,6 +7368,17 @@ LWorld:setJointBreakForce(jointId, force)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local ceiling = world:newBody(200, 50, "static")
     local weight = world:newCircleBody(200, 100, 10, "dynamic")
@@ -5562,6 +7410,17 @@ LWorld:setJointLimits(jointId, lower, upper)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local anchor = world:newBody(200, 100, "static")
     local arm = world:newBody(200, 200, "dynamic")
@@ -5592,6 +7451,17 @@ LWorld:setJointLimitsEnabled(jointId, enabled)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local anchor = world:newBody(200, 100, "static")
     local arm = world:newBody(200, 200, "dynamic")
@@ -5622,6 +7492,17 @@ LWorld:setJointMotorSpeed(jointId, speed)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local hub = world:newBody(200, 200, "static")
     local blade = world:newBody(200, 200, "dynamic")
@@ -5651,6 +7532,17 @@ LWorld:setMeter(ppm)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
     local playerWidthPixels = 128
@@ -5683,6 +7575,17 @@ LWorld:setMouseJointTarget(jointId, x, y)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
     local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
@@ -5712,6 +7615,17 @@ LWorld:setSolverIterations(n)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local crate = world:newCircleBody(160, 80, 10, "dynamic")
     world:setSolverIterations(8)
@@ -5742,6 +7656,17 @@ LWorld:sleepBody(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
     body:setSleepingAllowed(true)
@@ -5770,6 +7695,17 @@ LWorld:step(dt)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 12, "dynamic")
     world:step(1 / 60)
@@ -5806,6 +7742,17 @@ LWorld:stepFixed(accumulator, stepDt, maxSteps)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local ball = world:newCircleBody(200, 120, 10, "dynamic")
     local remainder = world:stepFixed(0.025, 1 / 60, 4)
@@ -5842,6 +7789,17 @@ LWorld:toPhysics(px)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
     local doorWidthPx = 96
@@ -5879,6 +7837,17 @@ LWorld:toPixels(m)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
     local ropeLengthMeters = 2.5
@@ -5910,6 +7879,17 @@ LWorld:type()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local floor = world:newBody(160, 300, "static")
     local ball = world:newCircleBody(160, 120, 10, "dynamic")
@@ -5945,6 +7925,17 @@ LWorld:typeOf(name)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(160, 300, "static")
     world:newCircleBody(160, 120, 10, "dynamic")
@@ -5975,6 +7966,17 @@ LWorld:wakeUpBody(id)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
     body:setSleepingAllowed(true)
@@ -6006,6 +8008,17 @@ LZone:destroy()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(0, 0, 100, 100)
     example_print_log("zone_id", zone:getId())
@@ -6034,6 +8047,17 @@ LZone:getId()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setGravityZero()
@@ -6064,6 +8088,17 @@ LZone:setAngularDampingOverride(value)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local water = world:addZone(100, 300, 400, 200)
     water:setAngularDampingOverride(2.0)
@@ -6099,6 +8134,17 @@ LZone:setCircle(cx, cy, radius)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(200, 200, 100, 100)
     zone:setCircle(250, 250, 80)
@@ -6128,6 +8174,17 @@ LZone:setEnabled(enabled)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setEnabled(true)
@@ -6157,6 +8214,17 @@ LZone:setGravityDirectional(gx, gy)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local windZone = world:addZone(0, 0, 300, 600)
     windZone:setGravityDirectional(200, 0)
@@ -6191,6 +8259,17 @@ LZone:setGravityPoint(cx, cy, strength)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local vortex = world:addZone(400, 200, 150, 150)
     vortex:setGravityPoint(475, 275, 500)
@@ -6225,6 +8304,17 @@ LZone:setGravityRepulsor(cx, cy, strength)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local repulsor = world:addZone(200, 200, 100, 100)
     repulsor:setGravityRepulsor(250, 250, 300)
@@ -6251,6 +8341,17 @@ LZone:setGravityZero()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local zeroG = world:addZone(400, 100, 200, 200)
     zeroG:setGravityZero()
@@ -6283,6 +8384,17 @@ LZone:setLayerMask(mask)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setLayerMask(0xFF)
@@ -6311,6 +8423,17 @@ LZone:setLinearDampingOverride(value)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 400)
     local water = world:addZone(100, 300, 400, 200)
     water:setLinearDampingOverride(3.0)
@@ -6344,6 +8467,17 @@ LZone:setPriority(priority)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setPriority(1)
@@ -6372,6 +8506,17 @@ LZone:type()
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setPriority(2)
@@ -6408,6 +8553,17 @@ LZone:typeOf(name)
 
 ```lua
 do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setEnabled(true)

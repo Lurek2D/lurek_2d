@@ -183,6 +183,28 @@ describe("evidence: pathfind", function()
         draw_outline(img, 0, 0, 16 * cell, 16 * cell, 232, 236, 244, 255)
         save_png(img, OUT .. "pathfind_api_surface.png")
     end)
+    -- Does: Runs "pathfind movement and tactical constructor surface" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose the behavior produced by lurek.pathfind.newSteeringManager, newInfluenceMap, newContextSteering, newORCASolver, and related owner calls.
+    -- Artifact: tests/artifacts/current/pathfind/pathfind_movement_surface_snapshot.txt
+    -- Why: This proves movement-side AI helpers live under the pathfind namespace rather than lurek.ai.
+
+    it("writes pathfind_movement_surface_snapshot.txt", function()
+        local steer = lurek.pathfind.newSteeringManager()
+        local influence = lurek.pathfind.newInfluenceMap(4, 4, 1.0)
+        local context = lurek.pathfind.newContextSteering(8)
+        local orca = lurek.pathfind.newORCASolver(1.5)
+        local lines = {
+            "steering_ctor=" .. tostring(type(lurek.pathfind.newSteeringManager) == "function"),
+            "influence_ctor=" .. tostring(type(lurek.pathfind.newInfluenceMap) == "function"),
+            "context_steering_ctor=" .. tostring(type(lurek.pathfind.newContextSteering) == "function"),
+            "orca_ctor=" .. tostring(type(lurek.pathfind.newORCASolver) == "function"),
+            "steering_type=" .. steer:type(),
+            "influence_type=" .. influence:type(),
+            "context_slots=" .. tostring(context:slotCount()),
+            "orca_agents=" .. tostring(orca:agentCount()),
+        }
+        write_text(OUT .. "pathfind_movement_surface_snapshot.txt", table.concat(lines, "\n") .. "\n")
+    end)
     -- Does: Runs "exports astar path through obstacle gap" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.pathfind.newNavGrid, LNavGrid:setBlocked, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/pathfind/pathfind_astar_gap_trace.json

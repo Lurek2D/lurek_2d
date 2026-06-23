@@ -16,6 +16,36 @@ Example block: `lurek.terminal.newTerminal`
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(80, 24)
     local cols, rows = term:getDimensions()
     local cell_w, cell_h = term:getCellSize()
@@ -72,6 +102,36 @@ lurek.terminal.addCompletion(candidate)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     lurek.terminal.clearCompletions()
     lurek.terminal.addCompletion("scan")
     lurek.terminal.addCompletion("status")
@@ -102,6 +162,36 @@ lurek.terminal.applyTheme(terminal, theme)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = lurek.terminal.newTerminal(40, 12)
     local themes = {"solarized_dark", "monokai", "dracula", "nord", "solarized_light"}
     for _, name in ipairs(themes) do
@@ -132,6 +222,36 @@ lurek.terminal.clearCmdHistory(terminal)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(36, 10)
     lurek.terminal.pushCmdHistory(term, "status")
     lurek.terminal.pushCmdHistory(term, "dock")
@@ -155,6 +275,36 @@ lurek.terminal.clearCompletions()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     lurek.terminal.clearCompletions()
     lurek.terminal.addCompletion("dock")
     lurek.terminal.addCompletion("drop")
@@ -190,6 +340,36 @@ lurek.terminal.cmdHistoryLen(terminal)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     lurek.terminal.clearCmdHistory(term)
     lurek.terminal.pushCmdHistory(term, "help")
@@ -225,6 +405,36 @@ lurek.terminal.getCompletions(prefix)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     lurek.terminal.clearCompletions()
     lurek.terminal.addCompletion("scan")
     lurek.terminal.addCompletion("scope")
@@ -254,6 +464,36 @@ lurek.terminal.getMaxCols()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local max_cols = lurek.terminal.getMaxCols()
     local term = lurek.terminal.newTerminal(math.min(80, max_cols), 10)
     local cols, rows = term:getDimensions()
@@ -282,6 +522,36 @@ lurek.terminal.getMaxRows()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local max_rows = lurek.terminal.getMaxRows()
     local term = lurek.terminal.newTerminal(24, math.min(18, max_rows))
     local cols, rows = term:getDimensions()
@@ -318,6 +588,36 @@ lurek.terminal.getScrollback(terminal, offset, count)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(36, 10)
     lurek.terminal.setScrollbackCap(term, 6)
     lurek.terminal.pushScrollback(term, "alpha")
@@ -356,6 +656,36 @@ lurek.terminal.newBorder(col, row, width, height)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local border = lurek.terminal.newBorder(1, 1, 26, 9)
     border:setStyle("double")
     border:setTitle("Cargo Hold")
@@ -395,6 +725,36 @@ lurek.terminal.newButton(col, row, width, height, text)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local button = lurek.terminal.newButton(4, 6, 14, 1, "Launch Drone")
     local width, height = button:getSize()
     local enabled = button:isEnabled()
@@ -431,6 +791,36 @@ lurek.terminal.newLabel(col, row, text)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local label = lurek.terminal.newLabel(3, 2, "Shields 100%")
     local col, row = label:getPosition()
     local text = label:getText()
@@ -468,6 +858,36 @@ lurek.terminal.newList(col, row, width, height)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = make_inventory_list()
     list:setSelected(2)
     local first = list:getItem(1)
@@ -506,6 +926,36 @@ lurek.terminal.newPanel(col, row, width, height)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local panel, title, footer = make_status_panel()
     local children = panel:getChildCount()
     local header = title:getText()
@@ -541,6 +991,36 @@ lurek.terminal.newTerminal(cols, rows)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(80, 24)
     local cols, rows = term:getDimensions()
     local cell_w, cell_h = term:getCellSize()
@@ -577,6 +1057,36 @@ lurek.terminal.newTextBox(col, row, width)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local input = lurek.terminal.newTextBox(2, 8, 20)
     input:setText("scan --sector beta")
     input:setMaxLength(32)
@@ -612,6 +1122,36 @@ lurek.terminal.nextCmd(terminal)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(36, 10)
     lurek.terminal.clearCmdHistory(term)
     lurek.terminal.pushCmdHistory(term, "status")
@@ -647,6 +1187,36 @@ lurek.terminal.nextCompletion(prefix)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     lurek.terminal.clearCompletions()
     lurek.terminal.addCompletion("scan")
     lurek.terminal.addCompletion("scope")
@@ -682,6 +1252,36 @@ lurek.terminal.parseAnsi(text)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local text = "\27[1m\27[31mALERT\27[0m nominal"
     local spans = lurek.terminal.parseAnsi(text)
     local first = spans[1]
@@ -717,6 +1317,36 @@ lurek.terminal.prevCmd(terminal)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(36, 10)
     lurek.terminal.clearCmdHistory(term)
     lurek.terminal.pushCmdHistory(term, "status")
@@ -749,6 +1379,36 @@ lurek.terminal.printAnsi(terminal, col, row, text)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local message = "\27[31mERROR\27[0m coolant low"
     lurek.terminal.printAnsi(term, 1, 5, message)
@@ -782,6 +1442,36 @@ lurek.terminal.printHighlighted(terminal, col, row, text, rules)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local rules = {{pattern = "fuel", fg = {255, 196, 0}}, {pattern = "ok", fg = {0, 255, 0}}}
     lurek.terminal.printHighlighted(term, 1, 6, "fuel ok", rules)
@@ -812,6 +1502,36 @@ lurek.terminal.pushCmdHistory(terminal, cmd)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     lurek.terminal.clearCmdHistory(term)
     lurek.terminal.pushCmdHistory(term, "help")
@@ -842,6 +1562,36 @@ lurek.terminal.pushScrollback(terminal, line)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     lurek.terminal.setScrollbackCap(term, 8)
     lurek.terminal.pushScrollback(term, "[ok] reactor stable")
@@ -871,6 +1621,36 @@ lurek.terminal.removeCompletion(candidate)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     lurek.terminal.clearCompletions()
     lurek.terminal.addCompletion("scan")
     lurek.terminal.addCompletion("scope")
@@ -894,6 +1674,36 @@ lurek.terminal.resetCompletion()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     lurek.terminal.clearCompletions()
     lurek.terminal.addCompletion("scan")
     lurek.terminal.addCompletion("scope")
@@ -930,6 +1740,36 @@ lurek.terminal.scrollbackLen(terminal)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(36, 10)
     lurek.terminal.setScrollbackCap(term, 6)
     lurek.terminal.pushScrollback(term, "alpha")
@@ -960,6 +1800,36 @@ lurek.terminal.setScrollbackCap(terminal, cap)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     lurek.terminal.setScrollbackCap(term, 2)
     lurek.terminal.pushScrollback(term, "line-1")
@@ -995,6 +1865,36 @@ lurek.terminal.stripAnsi(text)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local raw = "\27[1m\27[32mwarp ready\27[0m now"
     local stripped = lurek.terminal.stripAnsi(raw)
     local term = make_console(36, 8)
@@ -1031,6 +1931,36 @@ lurek.terminal.tryPushCmdHistory(terminal, cmd)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     lurek.terminal.clearCmdHistory(term)
     local ok, err = lurek.terminal.tryPushCmdHistory(term, "dock")
@@ -1067,6 +1997,36 @@ lurek.terminal.tryPushScrollback(terminal, line)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local ok, err = lurek.terminal.tryPushScrollback(term, "[warn] low coolant")
     terminal_log("tryPushScrollback ok=" .. tostring(ok) .. " err=" .. tostring(err))
@@ -1538,6 +2498,36 @@ LTerminal:addWidget(widget)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local panel = lurek.terminal.newPanel(1, 4, 24, 8)
     local button = lurek.terminal.newButton(3, 6, 12, 1, "Acknowledge")
@@ -1561,6 +2551,36 @@ LTerminal:autoResize()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(50, 18)
     term:setCellSize(9, 16)
     term:autoResize()
@@ -1584,6 +2604,36 @@ LTerminal:clear()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(40, 10)
     term:print(1, 6, "temporary warning")
     local before = string.char(term:get(1, 6))
@@ -1607,6 +2657,36 @@ LTerminal:clearDiagnostics()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = lurek.terminal.newTerminal(10, 5)
     term:set(0, 1, "A", 1, 1, 1, 1, 0, 0, 0, 0)
     local before = term:getDiagnostics()
@@ -1631,6 +2711,36 @@ LTerminal:clearWidgets()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     term:addWidget(lurek.terminal.newLabel(2, 4, "Engine Temp"))
     term:addWidget(lurek.terminal.newButton(2, 6, 12, 1, "Reset"))
@@ -1675,6 +2785,36 @@ LTerminal:get(col, row)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(32, 8)
     term:print(3, 4, "HP 84")
     local ch = term:get(4, 4)
@@ -1705,6 +2845,36 @@ LTerminal:getCellSize()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(30, 8)
     term:setCellSize(12, 20)
     local w, h = term:getCellSize()
@@ -1733,6 +2903,36 @@ LTerminal:getDiagnostics()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = lurek.terminal.newTerminal(10, 5)
     local input = lurek.terminal.newTextBox(1, 1, 5)
     input:setMaxLength(3)
@@ -1768,6 +2968,36 @@ LTerminal:getDimensions()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(54, 18)
     local cols, rows = term:getDimensions()
     local cell_w, cell_h = term:getCellSize()
@@ -1796,6 +3026,36 @@ LTerminal:getFocused()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local button = lurek.terminal.newButton(2, 4, 10, 1, "Accept")
     term:addWidget(button)
@@ -1826,6 +3086,36 @@ LTerminal:getRenderStats()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(32, 8)
     local list = make_inventory_list()
     term:addWidget(list)
@@ -1857,6 +3147,36 @@ LTerminal:getWidgetCount()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     term:addWidget(lurek.terminal.newLabel(2, 4, "Engine Temp"))
     term:addWidget(lurek.terminal.newButton(2, 6, 12, 1, "Reset"))
@@ -1891,6 +3211,36 @@ LTerminal:keypressed(key)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local input = lurek.terminal.newTextBox(2, 4, 20)
     term:addWidget(input)
@@ -1923,6 +3273,36 @@ LTerminal:mousepressed(px, py, button)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local button = lurek.terminal.newButton(2, 4, 14, 1, "Confirm Jump")
     term:addWidget(button)
@@ -1954,6 +3334,36 @@ LTerminal:print(col, row, text)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(40, 10)
     term:print(1, 4, "scan sector beta")
     term:print(1, 5, "fuel line stable")
@@ -1983,6 +3393,36 @@ LTerminal:removeWidget(widget)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local button = lurek.terminal.newButton(3, 6, 12, 1, "Acknowledge")
     term:addWidget(lurek.terminal.newLabel(2, 4, "Warning"))
@@ -2013,6 +3453,36 @@ LTerminal:render(x, y)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(32, 8)
     term:print(1, 7, "rendering diagnostics")
     term:render()
@@ -2048,6 +3518,36 @@ LTerminal:renderImage(width, height)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(32, 8)
     term:print(1, 7, "image diagnostics")
     local img = term:renderImage(256, 128)
@@ -2071,6 +3571,36 @@ LTerminal:resetCellSize()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(30, 8)
     term:setCellSize(10, 18)
     term:resetCellSize()
@@ -2110,6 +3640,36 @@ LTerminal:set(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(32, 8)
     term:set(5, 3, "!", 1, 0.3, 0.2, 1, 0.1, 0.1, 0.1, 1)
     local ch, fr, fg, fb = term:get(5, 3)
@@ -2139,6 +3699,36 @@ LTerminal:setCellSize(w, h)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(30, 8)
     local before_w, before_h = term:getCellSize()
     term:setCellSize(10, 18)
@@ -2167,6 +3757,36 @@ LTerminal:setFocus(widget)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local name_box = lurek.terminal.newTextBox(2, 4, 18)
     local route_box = lurek.terminal.newTextBox(2, 6, 18)
@@ -2197,6 +3817,36 @@ LTerminal:setFont(height)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(30, 8)
     term:setFont(16)
     local large_w, large_h = term:getCellSize()
@@ -2232,6 +3882,36 @@ LTerminal:textinput(text)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local input = lurek.terminal.newTextBox(2, 4, 20)
     term:addWidget(input)
@@ -2278,6 +3958,36 @@ LTerminal:trySet(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(32, 8)
     local ok, err = term:trySet(5, 3, "A", 1, 1, 1, 1, 0, 0, 0, 0)
     local bad_ok, bad_err = term:trySet(99, 1, string.byte("A"), 1, 1, 1, 1, 0, 0, 0, 0)
@@ -2306,6 +4016,36 @@ LTerminal:type()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(24, 6)
     local kind = term:type()
     local cols, rows = term:getDimensions()
@@ -2340,6 +4080,36 @@ LTerminal:typeOf(name)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(24, 6)
     local is_terminal = term:typeOf("LTerminal")
     local is_object = term:typeOf("LObject")
@@ -2369,6 +4139,36 @@ LTerminal:validateWidgets()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = lurek.terminal.newTerminal(20, 10)
     local panel_a = lurek.terminal.newPanel(1, 1, 10, 4)
     local panel_b = lurek.terminal.newPanel(2, 2, 8, 3)
@@ -2416,6 +4216,36 @@ LWidget:addChild(child)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local panel = lurek.terminal.newPanel(1, 1, 24, 8)
     local title = lurek.terminal.newLabel(2, 2, "Subsystem")
     local value = lurek.terminal.newLabel(2, 3, "Life Support")
@@ -2445,6 +4275,36 @@ LWidget:addItem(item)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = lurek.terminal.newList(1, 1, 18, 5)
     list:addItem("Bandage")
     list:addItem("Ration Pack")
@@ -2468,6 +4328,36 @@ LWidget:clearChildren()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local panel = lurek.terminal.newPanel(1, 1, 24, 8)
     panel:addChild(lurek.terminal.newLabel(2, 2, "Subsystem"))
     panel:addChild(lurek.terminal.newLabel(2, 3, "Life Support"))
@@ -2491,6 +4381,36 @@ LWidget:clearItems()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = make_inventory_list()
     local before = list:getItemCount()
     list:clearItems()
@@ -2525,6 +4445,36 @@ LWidget:getChild(index)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local panel, title = make_status_panel()
     local child = panel:getChild(1)
     local text = child and child:getText() or "nil"
@@ -2553,6 +4503,36 @@ LWidget:getChildCount()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local panel, title, footer = make_status_panel()
     local count = panel:getChildCount()
     local first = title:getText()
@@ -2584,6 +4564,36 @@ LWidget:getColor()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local label = lurek.terminal.newLabel(2, 2, "Beacon")
     label:setColor(0.25, 0.5, 0.75, 0.9)
     local r, g, b, a = label:getColor()
@@ -2618,6 +4628,36 @@ LWidget:getItem(index)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = make_inventory_list()
     list:setSelected(2)
     local first = list:getItem(1)
@@ -2646,6 +4686,36 @@ LWidget:getItemCount()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = make_inventory_list()
     list:addItem("Toolkit")
     local count = list:getItemCount()
@@ -2674,6 +4744,36 @@ LWidget:getMaxLength()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local box = lurek.terminal.newTextBox(2, 2, 18)
     box:setMaxLength(40)
     box:setText("dock")
@@ -2703,6 +4803,36 @@ LWidget:getPosition()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = lurek.terminal.newList(5, 3, 15, 6)
     local col, row = list:getPosition()
     local width, height = list:getSize()
@@ -2731,6 +4861,36 @@ LWidget:getSelected()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = make_inventory_list()
     list:setSelected(2)
     local selected = list:getSelected()
@@ -2760,6 +4920,36 @@ LWidget:getSize()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = lurek.terminal.newList(5, 3, 15, 6)
     local width, height = list:getSize()
     local col, row = list:getPosition()
@@ -2788,6 +4978,36 @@ LWidget:getStyle()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local border = lurek.terminal.newBorder(1, 1, 22, 8)
     border:setStyle("double")
     border:setTitle("Cargo")
@@ -2816,6 +5036,36 @@ LWidget:getTag()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local label = lurek.terminal.newLabel(2, 2, "Objective")
     label:setTag("hud.objective")
     local tag = label:getTag()
@@ -2844,6 +5094,36 @@ LWidget:getText()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local box = lurek.terminal.newTextBox(2, 2, 20)
     box:setText("scan cargo bay")
     local text = box:getText()
@@ -2872,6 +5152,36 @@ LWidget:getTitle()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local border = lurek.terminal.newBorder(1, 1, 22, 8)
     border:setTitle("Mission Log")
     local title = border:getTitle()
@@ -2900,6 +5210,36 @@ LWidget:isEnabled()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local button = lurek.terminal.newButton(2, 2, 12, 1, "Dock")
     local before = button:isEnabled()
     button:setEnabled(false)
@@ -2928,6 +5268,36 @@ LWidget:isVisible()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local button = lurek.terminal.newButton(2, 2, 12, 1, "Dock")
     local before = button:isVisible()
     button:setVisible(false)
@@ -2956,6 +5326,36 @@ LWidget:removeChild(child)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local panel = lurek.terminal.newPanel(1, 1, 24, 8)
     local title = lurek.terminal.newLabel(2, 2, "Subsystem")
     local value = lurek.terminal.newLabel(2, 3, "Life Support")
@@ -2986,6 +5386,36 @@ LWidget:removeItem(index)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = make_inventory_list()
     local before = list:getItemCount()
     list:removeItem(1)
@@ -3018,6 +5448,36 @@ LWidget:setColor(r, g, b, a)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local label = lurek.terminal.newLabel(2, 2, "Beacon")
     label:setColor(0.9, 0.7, 0.2, 1.0)
     local r, g, b, a = label:getColor()
@@ -3046,6 +5506,36 @@ LWidget:setEnabled(enabled)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local label = lurek.terminal.newLabel(2, 2, "Beacon")
     label:setEnabled(false)
     local enabled = label:isEnabled()
@@ -3074,6 +5564,36 @@ LWidget:setMaxLength(maxLength)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local box = lurek.terminal.newTextBox(2, 2, 18)
     box:setMaxLength(12)
     box:setText("dock alpha")
@@ -3102,6 +5622,36 @@ LWidget:setOnChange(callback)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local input = lurek.terminal.newTextBox(2, 4, 20)
     local changes = 0
@@ -3133,6 +5683,36 @@ LWidget:setOnClick(callback)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local term = make_console(48, 16)
     local button = lurek.terminal.newButton(2, 4, 14, 1, "Confirm")
     local clicks = 0
@@ -3163,6 +5743,36 @@ LWidget:setOnSelect(callback)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = make_inventory_list()
     local selections = 0
     list:setOnSelect(function() selections = selections + 1 end)
@@ -3193,6 +5803,36 @@ LWidget:setPosition(col, row)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local box = lurek.terminal.newTextBox(1, 1, 18)
     box:setPosition(4, 6)
     local col, row = box:getPosition()
@@ -3221,6 +5861,36 @@ LWidget:setSelected(index)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local list = make_inventory_list()
     list:setSelected(3)
     local selected = list:getSelected()
@@ -3250,6 +5920,36 @@ LWidget:setSize(width, height)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local box = lurek.terminal.newTextBox(1, 1, 18)
     box:setSize(24, 1)
     local width, height = box:getSize()
@@ -3278,6 +5978,36 @@ LWidget:setStyle(styleName)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local border = lurek.terminal.newBorder(1, 1, 18, 6)
     border:setStyle("double")
     border:setTitle("Map")
@@ -3306,6 +6036,36 @@ LWidget:setTag(tag)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local border = lurek.terminal.newBorder(1, 1, 18, 6)
     border:setTag("hud.map")
     border:setTitle("Map")
@@ -3334,6 +6094,36 @@ LWidget:setText(text)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local button = lurek.terminal.newButton(2, 2, 14, 1, "Undock")
     button:setText("Engage Warp")
     local text = button:getText()
@@ -3362,6 +6152,36 @@ LWidget:setTitle(title)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local border = lurek.terminal.newBorder(1, 1, 22, 8)
     border:setTitle("Subsystems")
     local title = border:getTitle()
@@ -3390,6 +6210,36 @@ LWidget:setVisible(visible)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local label = lurek.terminal.newLabel(2, 2, "Beacon")
     label:setVisible(false)
     local hidden = label:isVisible()
@@ -3425,6 +6275,36 @@ LWidget:trySetText(text)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local input = lurek.terminal.newTextBox(2, 8, 20)
     local ok, err = input:trySetText("reroute convoy")
     terminal_log("trySetText ok=" .. tostring(ok) .. " err=" .. tostring(err))
@@ -3453,6 +6333,36 @@ LWidget:type()
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local button = lurek.terminal.newButton(2, 2, 12, 1, "Dock")
     local kind = button:type()
     local text = button:getText()
@@ -3487,6 +6397,36 @@ LWidget:typeOf(name)
 
 ```lua
 do
+    local function terminal_log(message)
+        lurek.log.info("[terminal] " .. message)
+    end
+    local function click_cell(term, col, row, button)
+        local cell_w, cell_h = term:getCellSize()
+        term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+    end
+    local function make_console(cols, rows)
+        local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+        lurek.terminal.applyTheme(term, "nord")
+        term:print(1, 1, "> status")
+        term:print(1, 2, "bridge online")
+        return term
+    end
+    local function make_inventory_list()
+        local list = lurek.terminal.newList(2, 3, 18, 5)
+        list:addItem("Potion")
+        list:addItem("Keycard")
+        list:addItem("Battery")
+        return list
+    end
+    local function make_status_panel()
+        local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+        local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+        local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+        panel:addChild(title)
+        panel:addChild(footer)
+        return panel, title, footer
+    end
+
     local button = lurek.terminal.newButton(2, 2, 12, 1, "Dock")
     local is_widget = button:typeOf("LWidget")
     local is_object = button:typeOf("LObject")

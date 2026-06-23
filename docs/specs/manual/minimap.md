@@ -18,6 +18,12 @@
 
 This module primarily collaborates with `camera`, `image`, `province`, `raycaster`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+The broader integration map is split by role:
+
+- Direct data producers: `tilefield`, `visibility`, `tilemap`, `province`, `globe`, `procgen`, `pathfind`, and `raycaster` provide terrain ids, fog masks, light/heat layers, route overlays, region ownership, biome colors, camera/FOV hints, or marker/object snapshots.
+- Presentation collaborators: `camera`, `render`, `image`, `light`, `overlay`, `ui`, `layout`, `window`, `input`, `math`, and `effect` provide viewport transforms, HUD placement, offscreen image/export behavior, interaction coordinates, shader/effect policy, and rendering primitives.
+- Pattern references: `animation`, `sprite`, `spine`, `particle`, `parallax`, `charts`/radar, `physics`, `ecs`, and `scene` contain useful precedents for preview images, debug overlays, layer ordering, entity/object snapshots, and visual evidence, but should not become minimap dependencies unless a concrete adapter requires it.
+
 ## Notes
 
 - `minimap` is a passive compact visualization layer. It should not compute movement, line-of-sight, line-of-action, or tile lighting.
@@ -27,6 +33,9 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - Bulk terrain and fog loads use exact-length validation on the Lua-facing API so stale cells are not silently mixed with fresh data.
 - Grid/display transforms require finite coordinates, a finite positive zoom, and positive display dimensions; invalid transform state returns nils for `screenToGrid` and `gridToScreen` instead of leaking NaN or Inf into callers.
 - Layer payloads are grid-shaped contracts: `width` and `height` must match the minimap grid, cell payload length must match `width * height`, and active-layer switches are only valid for populated layers.
+- Layer presentation belongs to `minimap`: raw layer values can be recolored, alpha-blended, hidden, shown, and composed through explicit blend modes without forcing producer modules to duplicate minimap rendering policy.
+- `library.tilefield_minimap` is the reference adapter for tilefield exports: it copies blocker, cost, and computed-light layers into minimap raw data layers while keeping tilefield independent from minimap and leaving visual policy on `LMinimap`.
+- `library.visibility_minimap` is the reference adapter for `LTileVisibility`: it copies visible/explored masks into minimap fog data and actionable or visible masks into styled raw layers without making minimap compute line-of-sight.
 - `drawToImage(pixel_size)` now honors `pixel_size` when provided, falls back to the configured display size when `pixel_size == 0`, and covers the full output image even when display pixels do not divide evenly by grid size.
 - Render-command generation batches adjacent same-color cells into horizontal runs and exposes debug stats through `Minimap::render_stats(screen_x, screen_y)` for tooling and regression tests.
 - Raycaster minimap extraction uses checked arithmetic for radius, cell size, pixel count, and byte count, and player-arrow drawing validates both width and height against the supplied RGBA buffer length.

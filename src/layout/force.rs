@@ -84,9 +84,9 @@ pub fn layout_force(
                 let dx = positions[i].0 - positions[j].0;
                 let dy = positions[i].1 - positions[j].1;
                 let dist = (dx * dx + dy * dy).sqrt().max(0.01);
-                let min_dist = ((node_width(&nodes[i]) + node_width(&nodes[j])).max(
-                    node_height(&nodes[i]) + node_height(&nodes[j]),
-                ) * 0.5)
+                let min_dist = ((node_width(&nodes[i]) + node_width(&nodes[j]))
+                    .max(node_height(&nodes[i]) + node_height(&nodes[j]))
+                    * 0.5)
                     .max(ideal_dist * 0.35);
                 let overlap_boost = if dist < min_dist {
                     (min_dist - dist) * 0.25

@@ -1,12 +1,9 @@
-//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-//! Centers the implementation around AiValidationLimits, default, finite_f32, with helpers kept close to their invariants.
-//! Defines how validation data is validated, transformed, or stored before neighboring systems use it.
-//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-//! Keeps public crate helpers focused on validation behavior while Lua registration stays elsewhere.
+//! Owns validation limits and numeric guards for AI decision, planning, and callback-heavy evaluators.
+//! Keeps reasoning-side safety ceilings near the AI systems that enforce them.
 
 use super::error::AiError;
 
-/// Shared safety limits for AI registries, planners, steering, trees, and callback-heavy evaluators.
+/// Shared safety limits for AI registries, planners, trees, and callback-heavy evaluators.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct AiValidationLimits {
     /// Maximum number of agents allowed in one AI world.
@@ -29,10 +26,6 @@ pub struct AiValidationLimits {
     pub max_utility_actions: usize,
     /// Maximum number of considerations allowed on one utility action.
     pub max_utility_considerations: usize,
-    /// Maximum number of steering behaviors on one manager.
-    pub max_steering_behaviors: usize,
-    /// Maximum number of named steering entities on one manager.
-    pub max_steering_entities: usize,
     /// Maximum number of MCTS iterations allowed in one search.
     pub max_mcts_iterations: u32,
     /// Maximum number of MCTS nodes allowed in one search tree.
@@ -58,8 +51,6 @@ impl Default for AiValidationLimits {
             max_goap_nodes: 20_000,
             max_utility_actions: 128,
             max_utility_considerations: 64,
-            max_steering_behaviors: 64,
-            max_steering_entities: 4_096,
             max_mcts_iterations: 10_000,
             max_mcts_nodes: 50_000,
             max_mcts_rollout_depth: 256,

@@ -16,6 +16,22 @@ Example block: `lurek.event.push`
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.push("player_hit", 25, "critical")
     local events = collect_polled_events()
@@ -61,6 +77,22 @@ lurek.event.clear()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.push("discard_me", 1)
     lurek.event.push("discard_me_too", 2)
@@ -84,6 +116,22 @@ lurek.event.clearHistory()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.enableHistory(4)
     lurek.event.push("histA", 1)
@@ -115,6 +163,22 @@ lurek.event.enableHistory(capacity)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.enableHistory(2)
     lurek.event.push("score", 100)
@@ -144,6 +208,22 @@ lurek.event.exit(code)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.enableHistory(2)
     lurek.event.push("menu_action", "exit_requested")
@@ -173,6 +253,22 @@ lurek.event.flushDeferred()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.pushDeferred("scene_ready", "hangar")
     lurek.event.pushDeferred("music_cue", "boss_intro")
@@ -203,6 +299,22 @@ lurek.event.getHistory()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.enableHistory(4)
     lurek.event.push("score", 999, "gold")
@@ -233,6 +345,22 @@ lurek.event.newSignal()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     local type_name = sig:type()
     local total = sig:getTotalCount()
@@ -261,6 +389,22 @@ lurek.event.poll()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.push("ev1", 10)
     lurek.event.push("ev2", 20)
@@ -285,6 +429,22 @@ lurek.event.pump()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.push("hud_refresh", "health_bar")
     lurek.event.pump()
@@ -315,6 +475,22 @@ lurek.event.push(name, ...)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.push("player_hit", 25, "critical")
     local events = collect_polled_events()
@@ -345,6 +521,22 @@ lurek.event.pushDeferred(name, ...)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.pushDeferred("scene_ready", "main_menu")
     local before = collect_polled_events()
@@ -376,6 +568,22 @@ lurek.event.pushDeferredPriority(name, priority, ...)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.pushDeferred("normal_deferred", "slow")
     lurek.event.pushDeferredPriority("high_deferred", "high", "fast")
@@ -407,6 +615,22 @@ lurek.event.pushPriority(name, priority, ...)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.push("normal_evt", 1)
     lurek.event.pushPriority("high_evt", "high", 2)
@@ -431,6 +655,22 @@ lurek.event.quit()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.enableHistory(2)
     lurek.event.push("menu_action", "quit_requested")
@@ -454,6 +694,22 @@ lurek.event.restart()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     lurek.event.enableHistory(2)
     lurek.event.push("menu_action", "restart_requested")
@@ -491,6 +747,22 @@ lurek.event.wait(timeout)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     reset_event_state()
     local timed_out, empty_name, empty_args = lurek.event.wait(0.01)
     lurek.event.push("wake_up", "now")
@@ -545,6 +817,22 @@ LSignal:clear(name)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     sig:connect("click", function() end)
     sig:connect("click", function() end)
@@ -576,6 +864,22 @@ LSignal:clearAll()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     sig:connect("a", function() end)
     sig:connect("b", function() end)
@@ -614,6 +918,22 @@ LSignal:connect(name, func)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     local seen = "none"
     local handle = sig:connect("player.*", function(kind) seen = kind end)
@@ -650,6 +970,22 @@ LSignal:emit(name, ...)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     local received_a = nil
     local received_b = nil
@@ -685,6 +1021,22 @@ LSignal:getCount(name)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     sig:register("click", function() end)
     sig:register("click", function() end)
@@ -716,6 +1068,22 @@ LSignal:getTotalCount()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     sig:register("a", function() end)
     sig:register("b", function() end)
@@ -753,6 +1121,22 @@ LSignal:once(name, callback)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     local count = 0
     local handle = sig:once("init", function() count = count + 1 end)
@@ -790,6 +1174,22 @@ LSignal:register(name, callback)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     local total = 0
     local handle = sig:register("heal", function(amount) total = total + amount end)
@@ -827,6 +1227,22 @@ LSignal:registerWithFilter(name, callback, filter)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     local hits = 0
     local handle = sig:registerWithFilter("hit", function(dmg) hits = hits + dmg end, function(dmg) return dmg > 50 end)
@@ -862,6 +1278,22 @@ LSignal:remove(handle)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     local count_a = 0
     local count_b = 0
@@ -893,6 +1325,22 @@ LSignal:type()
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     local type_name = sig:type()
     local total = sig:getTotalCount()
@@ -927,6 +1375,22 @@ LSignal:typeOf(name)
 
 ```lua
 do
+    local function event_log(message)
+        lurek.log.info("[event] " .. message)
+    end
+    local function reset_event_state()
+        lurek.event.clear()
+        lurek.event.clearHistory()
+        lurek.event.enableHistory(0)
+    end
+    local function collect_polled_events()
+        local events = {}
+        for name, a1, a2, a3 in lurek.event.poll() do
+            events[#events + 1] = { name = name, args = { a1, a2, a3 } }
+        end
+        return events
+    end
+
     local sig = lurek.event.newSignal()
     local is_signal = sig:typeOf("LSignal")
     local is_object = sig:typeOf("LObject")

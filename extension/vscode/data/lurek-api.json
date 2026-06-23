@@ -525,17 +525,6 @@
           "objectType": null
         },
         {
-          "name": "newSteeringManager",
-          "fullPath": "lurek.ai.newSteeringManager",
-          "signature": "()",
-          "description": "Creates an empty steering manager with support for built-in and custom behaviors.",
-          "parameters": [],
-          "returns": "LSteeringManager",
-          "returnType": "LSteeringManager",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
           "name": "newUtilityAI",
           "fullPath": "lurek.ai.newUtilityAI",
           "signature": "()",
@@ -565,36 +554,6 @@
           "parameters": [],
           "returns": "LGOAPPlanner",
           "returnType": "LGOAPPlanner",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newInfluenceMap",
-          "fullPath": "lurek.ai.newInfluenceMap",
-          "signature": "(w, h, cs)",
-          "description": "Creates a grid influence map with the supplied cell dimensions and world cell size.",
-          "parameters": [
-            {
-              "name": "w",
-              "type": "integer",
-              "description": "Map width in cells.",
-              "optional": false
-            },
-            {
-              "name": "h",
-              "type": "integer",
-              "description": "Map height in cells.",
-              "optional": false
-            },
-            {
-              "name": "cs",
-              "type": "number",
-              "description": "World size of one cell.",
-              "optional": false
-            }
-          ],
-          "returns": "LInfluenceMap",
-          "returnType": "LInfluenceMap",
           "isMethod": false,
           "objectType": null
         },
@@ -646,24 +605,6 @@
           "parameters": [],
           "returns": "LStimulusWorld",
           "returnType": "LStimulusWorld",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newContextSteering",
-          "fullPath": "lurek.ai.newContextSteering",
-          "signature": "(slots)",
-          "description": "Creates a context steering model with the requested directional slot count.",
-          "parameters": [
-            {
-              "name": "slots",
-              "type": "integer",
-              "description": "Directional slot count; zero selects the engine default of 16.",
-              "optional": false
-            }
-          ],
-          "returns": "LContextSteering",
-          "returnType": "LContextSteering",
           "isMethod": false,
           "objectType": null
         },
@@ -744,24 +685,6 @@
           "parameters": [],
           "returns": "LEmotionModel",
           "returnType": "LEmotionModel",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newORCASolver",
-          "fullPath": "lurek.ai.newORCASolver",
-          "signature": "(time_horizon)",
-          "description": "Creates an ORCA avoidance solver with the supplied prediction horizon.",
-          "parameters": [
-            {
-              "name": "time_horizon",
-              "type": "number",
-              "description": "Time horizon used when computing collision avoidance velocities.",
-              "optional": false
-            }
-          ],
-          "returns": "LORCASolver",
-          "returnType": "LORCASolver",
           "isMethod": false,
           "objectType": null
         },
@@ -18796,6 +18719,83 @@
           ],
           "returns": "LAIFlowField",
           "returnType": "LAIFlowField",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newSteeringManager",
+          "fullPath": "lurek.pathfind.newSteeringManager",
+          "signature": "()",
+          "description": "Creates an empty steering manager with support for built-in and custom movement behaviors.",
+          "parameters": [],
+          "returns": "LSteeringManager",
+          "returnType": "LSteeringManager",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newInfluenceMap",
+          "fullPath": "lurek.pathfind.newInfluenceMap",
+          "signature": "(w, h, cs)",
+          "description": "Creates a grid influence map with the supplied cell dimensions and world cell size.",
+          "parameters": [
+            {
+              "name": "w",
+              "type": "integer",
+              "description": "Map width in cells.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "integer",
+              "description": "Map height in cells.",
+              "optional": false
+            },
+            {
+              "name": "cs",
+              "type": "number",
+              "description": "World size of one cell.",
+              "optional": false
+            }
+          ],
+          "returns": "LInfluenceMap",
+          "returnType": "LInfluenceMap",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newContextSteering",
+          "fullPath": "lurek.pathfind.newContextSteering",
+          "signature": "(slots)",
+          "description": "Creates a context steering model with the requested directional slot count.",
+          "parameters": [
+            {
+              "name": "slots",
+              "type": "integer",
+              "description": "Directional slot count; zero selects the engine default of 16.",
+              "optional": false
+            }
+          ],
+          "returns": "LContextSteering",
+          "returnType": "LContextSteering",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newORCASolver",
+          "fullPath": "lurek.pathfind.newORCASolver",
+          "signature": "(time_horizon)",
+          "description": "Creates an ORCA avoidance solver with the supplied prediction horizon.",
+          "parameters": [
+            {
+              "name": "time_horizon",
+              "type": "number",
+              "description": "Time horizon used when computing collision avoidance velocities.",
+              "optional": false
+            }
+          ],
+          "returns": "LORCASolver",
+          "returnType": "LORCASolver",
           "isMethod": false,
           "objectType": null
         },
@@ -95465,6 +95465,30 @@
           "objectType": "LMinimap"
         },
         {
+          "name": "syncProvinceRegistry",
+          "fullPath": "LMinimap:syncProvinceRegistry",
+          "signature": "(registry_ud, [opts])",
+          "description": "Copies province registry terrain, visibility, and palette data into this minimap.",
+          "parameters": [
+            {
+              "name": "registry",
+              "type": "LProvinceRegistry",
+              "description": "Province registry handle.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional `{terrain?, visibility?, palette?}` booleans, all default true.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
           "name": "addObjectType",
           "fullPath": "LMinimap:addObjectType",
           "signature": "(name, r, g, b, [a])",
@@ -96576,6 +96600,204 @@
           ],
           "returns": "integer[]",
           "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "setLayerVisible",
+          "fullPath": "LMinimap:setLayerVisible",
+          "signature": "(layer, visible)",
+          "description": "Sets whether a minimap data layer is drawn even when it is not the active layer.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index.",
+              "optional": false
+            },
+            {
+              "name": "visible",
+              "type": "boolean",
+              "description": "Visibility flag.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "isLayerVisible",
+          "fullPath": "LMinimap:isLayerVisible",
+          "signature": "(layer)",
+          "description": "Returns whether a minimap data layer is drawn when it is not active.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "setLayerAlpha",
+          "fullPath": "LMinimap:setLayerAlpha",
+          "signature": "(layer, alpha)",
+          "description": "Sets the opacity multiplier for a minimap data layer.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index.",
+              "optional": false
+            },
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "Opacity clamped to 0..1.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "getLayerAlpha",
+          "fullPath": "LMinimap:getLayerAlpha",
+          "signature": "(layer)",
+          "description": "Returns the opacity multiplier for a minimap data layer.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "setLayerColor",
+          "fullPath": "LMinimap:setLayerColor",
+          "signature": "(layer, value, r, g, b, [a])",
+          "description": "Sets a palette color for one raw value in a minimap data layer.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "integer",
+              "description": "Raw byte value in the layer data.",
+              "optional": false
+            },
+            {
+              "name": "r",
+              "type": "number",
+              "description": "Red channel.",
+              "optional": false
+            },
+            {
+              "name": "g",
+              "type": "number",
+              "description": "Green channel.",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "number",
+              "description": "Blue channel.",
+              "optional": false
+            },
+            {
+              "name": "a",
+              "type": "number",
+              "description": "Alpha channel, defaults to 1.0.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "getLayerColor",
+          "fullPath": "LMinimap:getLayerColor",
+          "signature": "(layer, value)",
+          "description": "Returns the palette color for one raw value in a minimap data layer.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "integer",
+              "description": "Raw byte value in the layer data.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "setLayerBlendMode",
+          "fullPath": "LMinimap:setLayerBlendMode",
+          "signature": "(layer, mode)",
+          "description": "Sets how a minimap data layer is blended over the base terrain.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index.",
+              "optional": false
+            },
+            {
+              "name": "mode",
+              "type": "string",
+              "description": "Blend mode: `normal`, `multiply`, `add`, or `replace`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMinimap"
+        },
+        {
+          "name": "getLayerBlendMode",
+          "fullPath": "LMinimap:getLayerBlendMode",
+          "signature": "(layer)",
+          "description": "Returns how a minimap data layer is blended over the base terrain.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LMinimap"
         },

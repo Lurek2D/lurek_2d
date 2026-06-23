@@ -15,6 +15,14 @@ Example block: `lurek.repl.new`
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LReplSession
     local repl = lurek.repl.new(8)
     local initial_len = repl:len()
@@ -67,6 +75,14 @@ lurek.repl.new(max_history)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LReplSession
     local repl = lurek.repl.new(8)
     local initial_len = repl:len()
@@ -111,6 +127,14 @@ LReplSession:clear()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local repl = lurek.repl.new()
     repl:eval("return 1")
     repl:eval("return 2")
@@ -145,6 +169,14 @@ LReplSession:complete(prefix)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LReplSession
     local repl = lurek.repl.new()
     local completions = repl:complete("lurek.re")
@@ -181,6 +213,14 @@ LReplSession:eval(code)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LReplSession
     local repl = lurek.repl.new()
     repl:eval("local total = 2 + 2")
@@ -210,6 +250,14 @@ LReplSession:history()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local repl = lurek.repl.new()
     repl:eval("return 'first'")
     repl:eval("return 'second'")
@@ -239,6 +287,14 @@ LReplSession:len()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local repl = lurek.repl.new()
     repl:eval("return 'a'")
     repl:eval("return 'b'")
@@ -268,6 +324,14 @@ LReplSession:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LReplSession
     local sess = lurek.repl.new()
     local type_name = sess:type()
@@ -304,6 +368,14 @@ LReplSession:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LReplSession
     local sess = lurek.repl.new()
     local is_session = sess:typeOf("LReplSession")

@@ -12,7 +12,7 @@
 - Source path: `src/minimap`
 - Binding: `src/lua_api/minimap_api.rs`
 - Namespace: `lurek.minimap`
-- Lua API surface: `1` functions, `1` types, `86` methods
+- Lua API surface: `1` functions, `1` types, `95` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -29,6 +29,12 @@
 - Read it as the owner of compact map presentation.
 
 This module primarily collaborates with `camera`, `image`, `province`, `raycaster`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
+The broader integration map is split by role:
+
+- Direct data producers: `tilefield`, `visibility`, `tilemap`, `province`, `globe`, `procgen`, `pathfind`, and `raycaster` provide terrain ids, fog masks, light/heat layers, route overlays, region ownership, biome colors, camera/FOV hints, or marker/object snapshots.
+- Presentation collaborators: `camera`, `render`, `image`, `light`, `overlay`, `ui`, `layout`, `window`, `input`, `math`, and `effect` provide viewport transforms, HUD placement, offscreen image/export behavior, interaction coordinates, shader/effect policy, and rendering primitives.
+- Pattern references: `animation`, `sprite`, `spine`, `particle`, `parallax`, `charts`/radar, `physics`, `ecs`, and `scene` contain useful precedents for preview images, debug overlays, layer ordering, entity/object snapshots, and visual evidence, but should not become minimap dependencies unless a concrete adapter requires it.
 
 ## Ownership
 
@@ -155,6 +161,9 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - `LMinimap:getGridWidth() -> integer`: Returns the width of the minimap grid in cells.
 - `LMinimap:getHoverInfo(sx, sy, mx, my) -> string`: Returns hover text for a screen position when available.
 - `LMinimap:getLayer() -> integer`: Returns the active minimap display layer index.
+- `LMinimap:getLayerAlpha(layer) -> number`: Returns the opacity multiplier for a minimap data layer.
+- `LMinimap:getLayerBlendMode(layer) -> string`: Returns how a minimap data layer is blended over the base terrain.
+- `LMinimap:getLayerColor(layer, value) -> number`: Returns the palette color for one raw value in a minimap data layer.
 - `LMinimap:getLayerCount() -> integer`: Returns the number of minimap layers.
 - `LMinimap:getLayerData(layer) -> integer[]`: Returns raw cell data for a minimap layer.
 - `LMinimap:getMarkerCount() -> integer`: Returns the total number of minimap markers.
@@ -176,6 +185,7 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - `LMinimap:isAntiAlias() -> boolean`: Returns whether anti-aliasing is enabled.
 - `LMinimap:isClickable() -> boolean`: Returns whether minimap click handling is enabled.
 - `LMinimap:isFogEnabled() -> boolean`: Returns whether fog display is enabled.
+- `LMinimap:isLayerVisible(layer) -> boolean`: Returns whether a minimap data layer is drawn when it is not active.
 - `LMinimap:isObjectTypeVisible(type_idx) -> boolean`: Returns visibility for an object type by one-based index.
 - `LMinimap:isViewportVisible() -> boolean`: Returns whether the viewport rectangle is visible.
 - `LMinimap:removeMarker(id) -> boolean`: Removes a minimap marker by its unique id.
@@ -193,7 +203,11 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - `LMinimap:setFogEnabled(enabled) -> nil`: Enables or disables the minimap fog display.
 - `LMinimap:setFogLevel(x, y, level) -> nil`: Sets fog level for a one-based grid cell.
 - `LMinimap:setLayer(layer) -> nil`: Sets the active minimap display layer index.
+- `LMinimap:setLayerAlpha(layer, alpha) -> nil`: Sets the opacity multiplier for a minimap data layer.
+- `LMinimap:setLayerBlendMode(layer, mode) -> nil`: Sets how a minimap data layer is blended over the base terrain.
+- `LMinimap:setLayerColor(layer, value, r, g, b, a?) -> nil`: Sets a palette color for one raw value in a minimap data layer.
 - `LMinimap:setLayerData(layer, data_tbl) -> nil`: Sets raw cell data for a minimap layer.
+- `LMinimap:setLayerVisible(layer, visible) -> nil`: Sets whether a minimap data layer is drawn even when it is not the active layer.
 - `LMinimap:setMarkerAnimation(id, anim_type, speed) -> nil`: Sets marker animation by type name.
 - `LMinimap:setMarkerTexture(id, image_ud, width?, height?) -> nil`: Assigns an image texture to a marker.
 - `LMinimap:setObject(id, x, y, type_idx, owner?) -> nil`: Adds or updates an object on the minimap.
@@ -209,6 +223,7 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - `LMinimap:setViewportVisible(visible) -> nil`: Sets whether the viewport rectangle is visible.
 - `LMinimap:setZoom(zoom) -> nil`: Sets the minimap zoom magnification level.
 - `LMinimap:showPath(points_tbl, color_tbl) -> integer`: Adds a colored path overlay and returns its id.
+- `LMinimap:syncProvinceRegistry(registry, opts?) -> nil`: Copies province registry terrain, visibility, and palette data into this minimap.
 - `LMinimap:trackCamera(camera_ud) -> nil`: Centers the minimap and viewport rectangle from a camera handle.
 - `LMinimap:type() -> string`: Returns the Lua-visible type name for this minimap handle.
 - `LMinimap:typeOf(name) -> boolean`: Returns whether this minimap handle matches a supported type name.
@@ -229,31 +244,26 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 |---|---|
 | Evidence test | `tests/lua/evidence/test_minimap_evidence.lua` |
 | Golden test | `tests/lua/golden/test_minimap_golden.lua` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_blips.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_circular_border.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_command_overlay_route.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_floor_level0.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_floor_level1_active.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_floor_level2.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_fog.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_radar_sweep.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_terrain.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_unexplored_mask.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_viewport_bounds.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_waypoints.png` |
-| Current artifact | `tests/artifacts/current/minimap/minimap_zoomed_sector.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_blips.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_circular_border.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_floor_level0.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_floor_level1_active.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_floor_level2.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_fog.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_radar_sweep.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_terrain.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_unexplored_mask.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_viewport_bounds.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_waypoints.png` |
-| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_zoomed_sector.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_fog_states.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_layer_blend_modes.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_layer_visibility_toggle.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_markers_objects_pings.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_paths_and_overlay_shapes.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_province_registry_compact.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_terrain_palette_grid.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_tilefield_layers.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_viewport_rect.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_visibility_fog_action.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_fog_states.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_layer_blend_modes.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_layer_visibility_toggle.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_markers_objects_pings.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_paths_and_overlay_shapes.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_province_registry_compact.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_terrain_palette_grid.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_tilefield_layers.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_viewport_rect.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_visibility_fog_action.png` |
 
 ## Architecture Links
 
@@ -268,6 +278,9 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - Bulk terrain and fog loads use exact-length validation on the Lua-facing API so stale cells are not silently mixed with fresh data.
 - Grid/display transforms require finite coordinates, a finite positive zoom, and positive display dimensions; invalid transform state returns nils for `screenToGrid` and `gridToScreen` instead of leaking NaN or Inf into callers.
 - Layer payloads are grid-shaped contracts: `width` and `height` must match the minimap grid, cell payload length must match `width * height`, and active-layer switches are only valid for populated layers.
+- Layer presentation belongs to `minimap`: raw layer values can be recolored, alpha-blended, hidden, shown, and composed through explicit blend modes without forcing producer modules to duplicate minimap rendering policy.
+- `library.tilefield_minimap` is the reference adapter for tilefield exports: it copies blocker, cost, and computed-light layers into minimap raw data layers while keeping tilefield independent from minimap and leaving visual policy on `LMinimap`.
+- `library.visibility_minimap` is the reference adapter for `LTileVisibility`: it copies visible/explored masks into minimap fog data and actionable or visible masks into styled raw layers without making minimap compute line-of-sight.
 - `drawToImage(pixel_size)` now honors `pixel_size` when provided, falls back to the configured display size when `pixel_size == 0`, and covers the full output image even when display pixels do not divide evenly by grid size.
 - Render-command generation batches adjacent same-color cells into horizontal runs and exposes debug stats through `Minimap::render_stats(screen_x, screen_y)` for tooling and regression tests.
 - Raycaster minimap extraction uses checked arithmetic for radius, cell size, pixel count, and byte count, and player-arrow drawing validates both width and height against the supplied RGBA buffer length.

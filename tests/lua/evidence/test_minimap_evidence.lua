@@ -2,7 +2,6 @@
 -- Evidence tests: lurek.minimap API + PNG visualization
 -- Canonical evidence file for lurek.minimap visual outputs.
 
-
 local OUT = evidence_output_dir("minimap")
 
 local function save_png(img, path)
@@ -10,467 +9,367 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
--- Helper: draw filled rect natively using Lurek image API
-local function draw_rect_native(img, x0, y0, w, h, r, g, b)
-    img:drawRect(x0, y0, w, h, r, g, b, 255)
-end
-
-local function draw_outline(img, x, y, w, h, r, g, b, a)
-    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
-    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
-    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
-    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
-end
-
-local function render_floor_card(active, accent)
-    local img = lurek.image.newImageData(84, 96)
-    local base = active and { 34, 48, 34 } or { 28, 28, 36 }
-    local edge = active and { 126, 220, 154 } or { 118, 124, 150 }
-    img:fill(10, 10, 15, 255)
-    draw_rect_native(img, 0, 0, 84, 96, base[1], base[2], base[3])
-    draw_outline(img, 0, 0, 84, 96, edge[1], edge[2], edge[3], 255)
-    for gy = 0, 4 do
-        for gx = 0, 3 do
-            local rx = 8 + gx * 18
-            local ry = 10 + gy * 16
-            img:drawRect(rx, ry, 12, 10, 62 + gy * 8, 70 + gx * 10, 82, 255)
+local function fill_terrain(mm, width, height, fn)
+    local data = {}
+    for y = 1, height do
+        for x = 1, width do
+            data[(y - 1) * width + x] = fn(x, y)
         end
     end
-    img:drawLine(18, 22, 64, 22, 210, 214, 224, 255)
-    img:drawLine(64, 22, 64, 68, 210, 214, 224, 255)
-    img:drawLine(18, 52, 64, 52, 210, 214, 224, 255)
-    img:drawRect(58, 58, 10, 12, accent[1], accent[2], accent[3], 255)
-    img:drawRect(16, 76, 16, 8, active and 120 or 82, 220, 154, 255)
-    return img
+    mm:setTerrainData(data)
+    return data
 end
 
--- @describe Evidence: lurek.minimap API + PNG visualization
-describe("Evidence: lurek.minimap API + PNG visualization", function()
-    -- Does: Runs "terrain grid rendered as colored cells" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.minimap.newMinimap without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/minimap/minimap_terrain.png
-    -- Why: This is meaningful only if the visible/text output comes from lurek.minimap.newMinimap; export helpers are just the container.
+local function base_minimap(width, height, cell)
+    local mm = lurek.minimap.newMinimap(width, height, width * cell, height * cell)
+    mm:setTerrainColor(0, 0.07, 0.11, 0.10, 1.0)
+    mm:setTerrainColor(1, 0.13, 0.22, 0.15, 1.0)
+    mm:setTerrainColor(2, 0.12, 0.22, 0.42, 1.0)
+    mm:setTerrainColor(3, 0.34, 0.29, 0.20, 1.0)
+    mm:setTerrainColor(4, 0.34, 0.36, 0.38, 1.0)
+    return mm
+end
 
-    it("PNG: terrain grid rendered as colored cells", function()
+-- @describe Evidence: lurek.minimap render output
+describe("Evidence: lurek.minimap render output", function()
+    -- Does: Renders a multi-terrain map using only terrain ids and terrain palette colors.
+    -- Shows: The PNG should make terrain palette resolution and full-grid cell rasterization legible.
+    -- Artifact: tests/artifacts/current/minimap/minimap_terrain_palette_grid.png
+    -- Why: This proves the base minimap image export path before fog, overlays, or adapters are involved.
+
+    it("PNG: terrain palette grid", function()
         ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_terrain.png"
+        local path = OUT .. "minimap_terrain_palette_grid.png"
 
-        local GRID = 16
-        local CELL = 8
-        local W, H = GRID * CELL, GRID * CELL
+        local W, H, CELL = 18, 12, 8
+        local mm = base_minimap(W, H, CELL)
+        fill_terrain(mm, W, H, function(x, y)
+            if x == 8 or x == 9 then return 2 end
+            if y <= 3 then return 4 end
+            if y >= 9 and x <= 6 then return 1 end
+            if y == 7 or x == 14 then return 3 end
+            return 0
+        end)
 
-        local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
-
-        -- Define terrain types
-        local terrain_colors = {
-            [0] = {20/255, 80/255, 20/255},      -- grass (green)
-            [1] = {90/255, 60/255, 30/255},      -- dirt (brown)
-            [2] = {30/255, 60/255, 180/255},     -- water (blue)
-            [3] = {110/255, 110/255, 120/255},   -- stone (grey)
-            [4] = {0/255, 120/255, 0/255},       -- forest (dark green)
-        }
-        for id, c in pairs(terrain_colors) do
-            mm:setTerrainColor(id, c[1], c[2], c[3], 1.0)
-        end
-
-        -- Paint a landscape pattern
-        for y = 1, GRID do
-            for x = 1, GRID do
-                local t = 0 -- grass
-                if x >= 7 and x <= 9 then t = 2 end -- Water river
-                if y <= 3 and (x < 7 or x > 9) then t = 3 end -- Stone mountains
-                if y >= 12 and x <= 5 then t = 4 end -- Forest
-                if y == 8 then t = 1 end -- Dirt paths
-                mm:setTerrain(x, y, t)
-            end
-        end
-
-        local img = mm:drawToImage(CELL)
-        save_png(img, path)
+        save_png(mm:drawToImage(CELL), path)
     end)
-    -- Does: Runs "PNG: fog-of-war overlay on terrain" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.minimap.newMinimap and related owner calls.
-    -- Artifact: tests/artifacts/current/minimap/minimap_fog.png
-    -- Why: This is meaningful only if the output is driven by lurek.minimap.newMinimap and related owner calls rather than by helper-only drawing.
 
-    it("PNG: fog-of-war overlay on terrain", function()
+    -- Does: Renders hidden, explored, and visible fog states over the same terrain.
+    -- Shows: The PNG should show dark hidden cells, dim explored cells, and fully visible center cells.
+    -- Artifact: tests/artifacts/current/minimap/minimap_fog_states.png
+    -- Why: This proves minimap-owned fog composition over existing terrain colors.
+
+    it("PNG: fog states", function()
         ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_fog.png"
+        local path = OUT .. "minimap_fog_states.png"
 
-        local GRID = 16
-        local CELL = 8
-        local W, H = GRID * CELL, GRID * CELL
-
-        local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
+        local W, H, CELL = 18, 12, 8
+        local mm = base_minimap(W, H, CELL)
         mm:setFogEnabled(true)
-        mm:setTerrainColor(0, 60/255, 160/255, 60/255, 1.0) -- grass (green)
-
-        -- Set terrain + fog levels
-        for y = 1, GRID do
-            for x = 1, GRID do
-                mm:setTerrain(x, y, 0)
-                local cx, cy = GRID / 2, GRID / 2
-                local dist = math.sqrt((x - cx)^2 + (y - cy)^2)
-                -- 2 = Visible (center), 1 = Explored (mid), 0 = Hidden (outer edge)
-                local fog = 0
-                if dist < 4 then
-                    fog = 2
-                elseif dist < 7 then
-                    fog = 1
-                end
-                mm:setFogLevel(x, y, fog)
-            end
-        end
-
-        local img = mm:drawToImage(CELL)
-        save_png(img, path)
-    end)
-    -- Does: Runs "PNG: blips and markers on minimap" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.minimap.newMinimap and related owner calls.
-    -- Artifact: tests/artifacts/current/minimap/minimap_blips.png
-    -- Why: This is meaningful only if the output is driven by lurek.minimap.newMinimap and related owner calls rather than by helper-only drawing.
-
-    it("PNG: blips and markers on minimap", function()
-        ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_blips.png"
-
-        local GRID = 12
-        local CELL = 16
-        local W, H = GRID * CELL, GRID * CELL
-
-        local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
-        mm:setTerrainColor(0, 28 / 255, 54 / 255, 30 / 255, 1.0)
-        mm:setTerrainColor(1, 46 / 255, 76 / 255, 110 / 255, 1.0)
-        mm:setTerrainColor(2, 96 / 255, 82 / 255, 48 / 255, 1.0)
-        for y = 1, GRID do
-            for x = 1, GRID do
-                local tid = 0
-                if x >= 6 and x <= 7 then
-                    tid = 1
-                elseif y == 3 or y == 9 then
-                    tid = 2
-                end
-                mm:setTerrain(x, y, tid)
-            end
-        end
-
-        -- Add object types (Green, Red)
-        local t_player = mm:addObjectType("Player", 0.0, 1.0, 0.0, 1.0)
-        local t_enemy  = mm:addObjectType("Enemy", 1.0, 0.0, 0.0, 1.0)
-        local t_ally   = mm:addObjectType("Ally", 0.2, 0.8, 1.0, 1.0)
-
-        -- Add objects at grid coordinates
-        mm:setObject(1, 3.0, 4.0, t_player, 1)
-        mm:setObject(2, 9.5, 5.5, t_enemy, 2)
-        mm:setObject(3, 4.5, 9.0, t_ally, 1)
-        mm:setObject(4, 8.0, 9.5, t_enemy, 2)
-
-        -- Add persistent marker
-        mm:addMarker(2.5, 10.5, "Quest", 1.0, 0.9, 0.0, 1.0)
-        mm:addMarker(10.5, 2.5, "Exit", 0.9, 0.8, 1.0, 1.0)
-
-        local img = mm:drawToImage(CELL)
-        draw_outline(img, 0, 0, W, H, 220, 224, 232, 255)
-        save_png(img, path)
-    end)
-    -- Does: Runs "PNG: camera viewport rectangle overlay" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.minimap.newMinimap and related owner calls.
-    -- Artifact: tests/artifacts/current/minimap/minimap_viewport_bounds.png
-    -- Why: This is meaningful only if the output is driven by lurek.minimap.newMinimap and related owner calls rather than by helper-only drawing.
-
-    it("PNG: camera viewport rectangle overlay", function()
-        ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_viewport_bounds.png"
-
-        local GRID = 16
-        local CELL = 8
-        local W, H = GRID * CELL, GRID * CELL
-
-        local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
-        -- Viewport boundaries: x=30, y=30, w=60, h=40
-        mm:setViewportRect(30.0, 30.0, 60.0, 40.0)
-        mm:setViewportVisible(true)
-
-        -- Set terrain natively
-        mm:setTerrainColor(0, 20/255, 40/255, 60/255, 1.0)
-        for y = 1, GRID do
-            for x = 1, GRID do
-                mm:setTerrain(x, y, 0)
-            end
-        end
-
-        local img = mm:drawToImage(CELL)
-
-        -- Draw yellow viewport rectangle bounds outline natively
-        local vx, vy, vw, vh = 30, 30, 60, 40
-        img:drawLine(vx, vy, vx + vw, vy, 255, 220, 80, 255)
-        img:drawLine(vx + vw, vy, vx + vw, vy + vh, 255, 220, 80, 255)
-        img:drawLine(vx + vw, vy + vh, vx, vy + vh, 255, 220, 80, 255)
-        img:drawLine(vx, vy + vh, vx, vy, 255, 220, 80, 255)
-
-        save_png(img, path)
-    end)
-    -- Does: Runs "PNG: waypoints and path overlays" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.minimap.newMinimap and related owner calls.
-    -- Artifact: tests/artifacts/current/minimap/minimap_waypoints.png
-    -- Why: This is meaningful only if the output is driven by lurek.minimap.newMinimap and related owner calls rather than by helper-only drawing.
-
-    it("PNG: waypoints and path overlays", function()
-        ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_waypoints.png"
-
-        local GRID = 16
-        local CELL = 8
-        local W, H = GRID * CELL, GRID * CELL
-
-        local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
-
-        -- Set terrain natively
-        mm:setTerrainColor(0, 25/255, 25/255, 30/255, 1.0)
-        for y = 1, GRID do
-            for x = 1, GRID do
-                mm:setTerrain(x, y, 0)
-            end
-        end
-
-        local img = mm:drawToImage(CELL)
-
-        -- Define path points
-        local path_pts = { {20.0, 20.0}, {60.0, 30.0}, {80.0, 80.0}, {110.0, 100.0} }
-        mm:showPath(path_pts, {255, 100, 100, 255})
-
-        -- Draw path lines and waypoint nodes natively
-        for i = 1, #path_pts - 1 do
-            local p1 = path_pts[i]
-            local p2 = path_pts[i+1]
-            img:drawLine(p1[1], p1[2], p2[1], p2[2], 255, 120, 120, 255)
-        end
-
-        for _, pt in ipairs(path_pts) do
-            img:drawCircle(pt[1], pt[2], 3, 255, 255, 255, 255)
-            img:drawCircle(pt[1], pt[2], 1.5, 255, 80, 80, 255)
-        end
-
-        save_png(img, path)
-    end)
-    -- Does: Renders a circular radar panel with a procedural sweep trail and scan line.
-    -- Shows: The PNG should make the radar sweep direction and falloff easy to inspect at a glance.
-    -- Artifact: tests/artifacts/current/minimap/minimap_radar_sweep.png
-    -- Why: This is meaningful because the artifact demonstrates minimap-style radar presentation as a durable visual output.
-
-    it("PNG: radar sweeping effect", function()
-        ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_radar_sweep.png"
-
-        local W, H = 200, 200
-        local img = lurek.image.newImageData(W, H)
-        img:fill(10, 20, 10, 255)
-
-        local cx, cy = 100, 100
-        local radius = 80
-        local sweep_angle = math.pi / 4
-
-        for i = 0, 10 do
-            img:drawLine(20, 20 + i * 16, 180, 20 + i * 16, 20, 60, 20, 255)
-            img:drawLine(20 + i * 16, 20, 20 + i * 16, 180, 20, 60, 20, 255)
-        end
-        img:drawCircle(cx, cy, radius, 30, 90, 30, 255)
-
-        img:mapPixel(function(x, y, r, g, b, a)
-            local dx = x - cx
-            local dy = y - cy
-            local dist = math.sqrt(dx * dx + dy * dy)
-            if dist <= radius then
-                local angle = math.atan2(dy, dx)
-                if angle < 0 then
-                    angle = angle + 2 * math.pi
-                end
-
-                local diff = sweep_angle - angle
-                if diff < 0 then
-                    diff = diff + 2 * math.pi
-                end
-
-                if diff < math.pi / 2 then
-                    local intensity = 1.0 - (diff / (math.pi / 2))
-                    return math.min(255, r + math.floor(40 * intensity)),
-                        math.min(255, g + math.floor(150 * intensity)),
-                        math.min(255, b + math.floor(40 * intensity)),
-                        255
-                end
-            end
-            return r, g, b, a
+        mm:setFogColor(0.0, 0.0, 0.0, 0.8)
+        fill_terrain(mm, W, H, function(x, y)
+            return ((x + y) % 5 == 0) and 2 or 1
         end)
 
-        img:drawLine(
-            cx,
-            cy,
-            math.floor(cx + radius * math.cos(sweep_angle)),
-            math.floor(cy + radius * math.sin(sweep_angle)),
-            100,
-            255,
-            100,
-            255
-        )
-
-        save_png(img, path)
-    end)
-    -- Does: Draws a zoomed sector of a coarse minimap grid to show enlarged cell readability.
-    -- Shows: The PNG should make the zoomed cells and selected target tile visually obvious.
-    -- Artifact: tests/artifacts/current/minimap/minimap_zoomed_sector.png
-    -- Why: This is meaningful because the artifact preserves a concrete zoom presentation instead of a transient runtime view.
-
-    it("PNG: zooming and scaling interpolation", function()
-        ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_zoomed_sector.png"
-
-        local img = lurek.image.newImageData(200, 200)
-        img:fill(0, 0, 0, 255)
-
-        local GRID = 8
-        local zoomed_cell = 20
-        local grid_data = {}
-        for y = 1, GRID do
-            grid_data[y] = {}
-            for x = 1, GRID do
-                grid_data[y][x] = (x + y) % 2 == 0 and { 80, 140, 80 } or { 100, 180, 100 }
-            end
-        end
-        grid_data[4][4] = { 255, 50, 50 }
-
-        for y = 1, 4 do
-            for x = 1, 4 do
-                local c = grid_data[y + 2][x + 2]
-                draw_rect_native(img, 20 + (x - 1) * zoomed_cell, 20 + (y - 1) * zoomed_cell, zoomed_cell, zoomed_cell, c[1], c[2], c[3])
-            end
-        end
-
-        local vx, vy, vw, vh = 20, 20, 4 * zoomed_cell, 4 * zoomed_cell
-        img:drawLine(vx, vy, vx + vw, vy, 200, 200, 200, 255)
-        img:drawLine(vx + vw, vy, vx + vw, vy + vh, 200, 200, 200, 255)
-        img:drawLine(vx + vw, vy + vh, vx, vy + vh, 200, 200, 200, 255)
-        img:drawLine(vx, vy + vh, vx, vy, 200, 200, 200, 255)
-
-        save_png(img, path)
-    end)
-    -- Does: Draws three separate minimap floor cards with one active floor highlighted.
-    -- Shows: The PNG set should make floor-selection state inspectable without merging several evidences into one sheet.
-    -- Artifact: tests/artifacts/current/minimap/minimap_floor_level0.png, tests/artifacts/current/minimap/minimap_floor_level1_active.png, tests/artifacts/current/minimap/minimap_floor_level2.png
-    -- Why: This is meaningful because each floor state is preserved as its own durable evidence file.
-
-    it("PNG: multi-level floors", function()
-        ensure_evidence_dir("minimap")
-        save_png(render_floor_card(false, { 214, 124, 96 }), OUT .. "minimap_floor_level0.png")
-        save_png(render_floor_card(true, { 255, 198, 82 }), OUT .. "minimap_floor_level1_active.png")
-        save_png(render_floor_card(false, { 108, 166, 232 }), OUT .. "minimap_floor_level2.png")
-    end)
-    -- Does: Masks unexplored territory with a hard fog edge around an explored center.
-    -- Shows: The PNG should show explored terrain, hidden terrain, and the irregular boundary between them.
-    -- Artifact: tests/artifacts/current/minimap/minimap_unexplored_mask.png
-    -- Why: This is meaningful because the artifact makes fog-of-war state inspectable without replaying runtime updates.
-
-    it("PNG: unexplored masks (fog of war hard edge)", function()
-        ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_unexplored_mask.png"
-
-        local img = lurek.image.newImageData(200, 200)
-        img:fill(40, 80, 40, 255)
-
-        local cx, cy = 100, 100
-        local explore_radius = 60
-        img:mapPixel(function(x, y, r, g, b, a)
-            local dist = math.sqrt((x - cx) ^ 2 + (y - cy) ^ 2)
-            if dist > explore_radius then
-                local noise_edge = explore_radius + math.sin(x * 0.2) * 5 + math.cos(y * 0.3) * 5
-                if dist > noise_edge then
-                    return 0, 0, 0, 255
+        local fog = {}
+        for y = 1, H do
+            for x = 1, W do
+                local dx = x - 9.5
+                local dy = y - 6.5
+                local dist = math.sqrt(dx * dx + dy * dy)
+                local level = 0
+                if dist <= 3.4 then
+                    level = 2
+                elseif dist <= 5.5 then
+                    level = 1
                 end
+                fog[(y - 1) * W + x] = level
             end
-            return r, g, b, a
+        end
+        mm:setFogData(fog)
+
+        save_png(mm:drawToImage(CELL), path)
+    end)
+
+    -- Does: Renders four raw data layers with different minimap blend modes over matching terrain bands.
+    -- Shows: The PNG should show normal, multiply, add, and replace composition as distinct vertical regions.
+    -- Artifact: tests/artifacts/current/minimap/minimap_layer_blend_modes.png
+    -- Why: This proves minimap owns raw layer presentation policy instead of pushing color math into producers.
+
+    it("PNG: layer blend modes", function()
+        ensure_evidence_dir("minimap")
+        local path = OUT .. "minimap_layer_blend_modes.png"
+
+        local W, H, CELL = 16, 8, 10
+        local mm = base_minimap(W, H, CELL)
+        fill_terrain(mm, W, H, function(x, y)
+            return ((x + y) % 2 == 0) and 1 or 3
         end)
 
-        img:drawCircle(cx, cy, explore_radius - 2, 255, 255, 255, 100)
-        save_png(img, path)
-    end)
-    -- Does: Applies a circular HUD mask and metallic border to a square minimap terrain field.
-    -- Shows: The PNG should show how a circular minimap crop reads compared with the square source terrain.
-    -- Artifact: tests/artifacts/current/minimap/minimap_circular_border.png
-    -- Why: This is meaningful because the artifact captures a concrete minimap framing style as a reusable evidence output.
+        local modes = {
+            { layer = 1, first = 1, last = 4, mode = "normal", color = { 1.0, 0.2, 0.1, 0.75 } },
+            { layer = 2, first = 5, last = 8, mode = "multiply", color = { 0.4, 0.9, 0.4, 0.8 } },
+            { layer = 3, first = 9, last = 12, mode = "add", color = { 0.1, 0.45, 1.0, 0.72 } },
+            { layer = 4, first = 13, last = 16, mode = "replace", color = { 0.95, 0.8, 0.12, 1.0 } },
+        }
 
-    it("PNG: circular minimap border shape", function()
-        ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_circular_border.png"
-
-        local W, H = 200, 200
-        local img = lurek.image.newImageData(W, H)
-        for y = 0, H - 1 do
-            for x = 0, W - 1 do
-                local c = ((math.floor(x / 16) + math.floor(y / 16)) % 2 == 0) and { 100, 150, 100 } or { 80, 120, 80 }
-                img:setPixel(x, y, c[1], c[2], c[3], 255)
+        for _, spec in ipairs(modes) do
+            local layer = {}
+            for y = 1, H do
+                for x = 1, W do
+                    layer[(y - 1) * W + x] = (x >= spec.first and x <= spec.last) and 7 or 0
+                end
             end
+            mm:setLayerData(spec.layer, layer)
+            mm:setLayerColor(spec.layer, 7, spec.color[1], spec.color[2], spec.color[3], spec.color[4])
+            mm:setLayerBlendMode(spec.layer, spec.mode)
+            mm:setLayerAlpha(spec.layer, 1.0)
+            mm:setLayerVisible(spec.layer, true)
         end
 
-        local cx, cy, R = 100, 100, 80
-        img:mapPixel(function(x, y, r, g, b, a)
-            local dist = math.sqrt((x - cx) ^ 2 + (y - cy) ^ 2)
-            if dist > R then
-                return 20, 20, 25, 255
-            end
-            return r, g, b, a
+        save_png(mm:drawToImage(CELL), path)
+    end)
+
+    -- Does: Renders one visible layer while a stronger hidden layer is present but disabled.
+    -- Shows: The PNG should show only the visible cyan diagonal layer, not the hidden red full-map layer.
+    -- Artifact: tests/artifacts/current/minimap/minimap_layer_visibility_toggle.png
+    -- Why: This proves runtime layer visibility can modify minimap presentation without changing producer data.
+
+    it("PNG: layer visibility toggle", function()
+        ensure_evidence_dir("minimap")
+        local path = OUT .. "minimap_layer_visibility_toggle.png"
+
+        local W, H, CELL = 14, 10, 9
+        local mm = base_minimap(W, H, CELL)
+        fill_terrain(mm, W, H, function(x, y)
+            return ((x + y) % 4 == 0) and 4 or 0
         end)
 
-        img:drawCircle(cx, cy, R + 2, 200, 200, 180, 255)
-        img:drawCircle(cx, cy, R, 100, 100, 90, 255)
-        save_png(img, path)
-    end)
-    -- Does: Runs "command overlay with pings and route" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LMinimap:setViewportColor, LMinimap:addPing, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/minimap/minimap_command_overlay_route.png
-    -- Why: This is meaningful only if the visible/text output comes from LMinimap:setViewportColor, LMinimap:addPing, and related owner calls; export helpers are just the container.
-
-    it("PNG: command overlay with pings and route", function()
-        ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_command_overlay_route.png"
-
-        local GRID = 14
-        local CELL = 12
-        local W, H = GRID * CELL, GRID * CELL
-        local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
-
-        mm:setTerrainColor(0, 26 / 255, 48 / 255, 34 / 255, 1.0)
-        mm:setTerrainColor(1, 52 / 255, 82 / 255, 118 / 255, 1.0)
-        for y = 1, GRID do
-            for x = 1, GRID do
-                local t = 0
-                if x == 7 or y == 8 then
-                    t = 1
-                end
-                mm:setTerrain(x, y, t)
+        local hidden = {}
+        local visible = {}
+        for y = 1, H do
+            for x = 1, W do
+                hidden[(y - 1) * W + x] = 9
+                visible[(y - 1) * W + x] = (math.abs(x - y) <= 1 or math.abs((W - x + 1) - y) <= 1) and 5 or 0
             end
         end
+        mm:setLayerData(1, hidden)
+        mm:setLayerColor(1, 9, 1.0, 0.0, 0.0, 1.0)
+        mm:setLayerBlendMode(1, "replace")
+        mm:setLayerVisible(1, false)
 
-        mm:setViewportRect(42, 36, 62, 48)
-        mm:setViewportVisible(true)
-        mm:setViewportColor(1.0, 0.85, 0.25, 0.55)
+        mm:setLayerData(2, visible)
+        mm:setLayerColor(2, 5, 0.1, 0.75, 1.0, 0.85)
+        mm:setLayerBlendMode(2, "add")
+        mm:setLayerVisible(2, true)
 
-        local marker = mm:addMarker(10.5, 4.5, "Rally Point")
-        mm:setMarkerAnimation(marker, "pulse", 1.4)
-        mm:addPing(7, 7, 1.5, 1.0, 0.85, 0.25, 1.0)
+        save_png(mm:drawToImage(CELL), path)
+    end)
+
+    -- Does: Renders object types, persistent markers, and active pings over terrain.
+    -- Shows: The PNG should show colored unit blips, crosshair-style markers, and ping circles from minimap state.
+    -- Artifact: tests/artifacts/current/minimap/minimap_markers_objects_pings.png
+    -- Why: This proves compact tactical symbols are exported by minimap rather than added by a separate image script.
+
+    it("PNG: markers objects pings", function()
+        ensure_evidence_dir("minimap")
+        local path = OUT .. "minimap_markers_objects_pings.png"
+
+        local W, H, CELL = 16, 12, 9
+        local mm = base_minimap(W, H, CELL)
+        fill_terrain(mm, W, H, function(x, y)
+            if x == 6 or y == 8 then return 2 end
+            return 1
+        end)
+
+        local player = mm:addObjectType("Player", 0.1, 1.0, 0.25, 1.0)
+        local enemy = mm:addObjectType("Enemy", 1.0, 0.1, 0.08, 1.0)
+        local support = mm:addObjectType("Support", 0.1, 0.6, 1.0, 1.0)
+        mm:setObject(1, 3.0, 4.0, player, 1)
+        mm:setObject(2, 12.0, 5.0, enemy, 2)
+        mm:setObject(3, 8.5, 9.0, support, 1)
+        mm:addMarker(4.5, 10.0, "Quest", 1.0, 0.9, 0.1, 1.0)
+        mm:addMarker(13.0, 2.5, "Exit", 0.9, 0.8, 1.0, 1.0)
+        mm:addPing(7.0, 7.0, 2.0, 1.0, 0.85, 0.1, 1.0)
+        mm:addPing(12.0, 5.0, 1.6, 1.0, 0.2, 0.1, 1.0)
         mm:update(0.35)
 
-        mm:showPath({
-            { 22, 140 },
-            { 48, 118 },
-            { 90, 92 },
-            { 132, 60 },
-        }, { 255, 132, 78, 255 })
-        mm:drawLine(18, 24, 148, 138, { 86, 214, 255, 255 })
-        mm:drawRect(30, 30, 38, 26, { 255, 236, 120, 255 })
-
-        local img = mm:drawToImage(CELL)
-        draw_outline(img, 0, 0, W, H, 232, 236, 244, 255)
-        save_png(img, path)
+        save_png(mm:drawToImage(CELL), path)
     end)
 
+    -- Does: Renders a polyline path together with line and rectangle overlay shapes.
+    -- Shows: The PNG should show route lines and overlay geometry produced by minimap-owned overlay state.
+    -- Artifact: tests/artifacts/current/minimap/minimap_paths_and_overlay_shapes.png
+    -- Why: This proves `drawToImage` exports the same route/overlay concepts used by the runtime minimap renderer.
+
+    it("PNG: paths and overlay shapes", function()
+        ensure_evidence_dir("minimap")
+        local path = OUT .. "minimap_paths_and_overlay_shapes.png"
+
+        local W, H, CELL = 18, 12, 8
+        local mm = base_minimap(W, H, CELL)
+        fill_terrain(mm, W, H, function(x, y)
+            return (x == 9 or y == 6) and 3 or 0
+        end)
+
+        mm:showPath({
+            { 1.5, 10.5 },
+            { 4.5, 8.0 },
+            { 8.0, 7.0 },
+            { 13.0, 4.0 },
+            { 16.5, 2.0 },
+        }, { 255, 128, 64, 255 })
+        mm:drawLine(2.0, 2.0, 16.0, 10.0, { 70, 220, 255, 255 })
+        mm:drawRect(5.0, 3.0, 6.0, 4.0, { 255, 235, 80, 255 })
+
+        save_png(mm:drawToImage(CELL), path)
+    end)
+
+    -- Does: Renders a visible camera viewport rectangle over the minimap grid.
+    -- Shows: The PNG should show the viewport outline using `setViewportRect` and `setViewportColor`.
+    -- Artifact: tests/artifacts/current/minimap/minimap_viewport_rect.png
+    -- Why: This proves viewport export is part of minimap rendering instead of a manual evidence overlay.
+
+    it("PNG: viewport rect", function()
+        ensure_evidence_dir("minimap")
+        local path = OUT .. "minimap_viewport_rect.png"
+
+        local W, H, CELL = 20, 12, 8
+        local mm = base_minimap(W, H, CELL)
+        fill_terrain(mm, W, H, function(x, y)
+            return (x % 5 == 0 or y % 4 == 0) and 4 or 1
+        end)
+        mm:setViewportRect(4.0, 2.0, 10.0, 6.0)
+        mm:setViewportVisible(true)
+        mm:setViewportColor(1.0, 0.88, 0.12, 1.0)
+
+        save_png(mm:drawToImage(CELL), path)
+    end)
+
+    -- Does: Uses `library.tilefield_minimap` to copy blocker, movement-cost, and computed-light exports into raw minimap layers.
+    -- Shows: The PNG should show tilefield gameplay data rendered by minimap layer styling.
+    -- Artifact: tests/artifacts/current/minimap/minimap_tilefield_layers.png
+    -- Why: This proves tilefield remains the data owner while minimap owns compact layer rendering.
+
+    it("PNG: tilefield layers", function()
+        ensure_evidence_dir("minimap")
+        local path = OUT .. "minimap_tilefield_layers.png"
+        local TilefieldMinimap = require("library.tilefield_minimap")
+
+        local W, H, CELL = 12, 9, 9
+        local field = lurek.tilefield.new({ width = W, height = H, levels = 1 })
+        for x = 4, 8 do
+            field:setBlock(x, 4, 1, "move", true)
+        end
+        field:setBlock(6, 4, 1, "move", false)
+        field:setCost(8, 6, 1, "move", 4)
+        field:setCost(9, 6, 1, "move", 5)
+        field:addPointLight({ x = 3, y = 7, z = 1, radius = 4, intensity = 1.0, color = { r = 1, g = 0.8, b = 0.2 } })
+        field:computeLight({ includePointLights = true, includeGlobalLight = false })
+
+        local mm = base_minimap(W, H, CELL)
+        fill_terrain(mm, W, H, function() return 1 end)
+        local helper = TilefieldMinimap.new({ field = field, width = W, height = H, minimap = mm })
+        helper:syncBlockLayer("move", 1, {
+            blocked_value = 9,
+            style = {
+                visible = true,
+                alpha = 1.0,
+                blend = "replace",
+                colors = { [9] = { 0.92, 0.12, 0.08, 1.0 } },
+            },
+        })
+        helper:syncCostLayer("move", 2, {
+            scale = 2,
+            style = {
+                visible = true,
+                alpha = 0.5,
+                blend = "add",
+                colors = {
+                    [8] = { 0.1, 0.35, 1.0, 0.8 },
+                    [10] = { 0.15, 0.65, 1.0, 0.9 },
+                },
+            },
+        })
+        helper:syncLightLayer(3, {
+            scale = 9,
+            style = { visible = true, alpha = 0.75, blend = "add" },
+        })
+
+        save_png(mm:drawToImage(CELL), path)
+    end)
+
+    -- Does: Uses `library.visibility_minimap` to copy LTileVisibility visible/action masks into fog and raw minimap layers.
+    -- Shows: The PNG should show fog-of-war plus an actionable overlay produced from visibility data.
+    -- Artifact: tests/artifacts/current/minimap/minimap_visibility_fog_action.png
+    -- Why: This proves visibility remains the mask authority while minimap owns fog and layer presentation.
+
+    it("PNG: visibility fog action", function()
+        ensure_evidence_dir("minimap")
+        local path = OUT .. "minimap_visibility_fog_action.png"
+        local VisibilityMinimap = require("library.visibility_minimap")
+
+        local W, H, CELL = 14, 10, 9
+        local field = lurek.tilefield.new({ width = W, height = H, levels = 1 })
+        for y = 2, 9 do
+            field:setBlock(8, y, 1, "vision", true)
+        end
+        field:setBlock(8, 5, 1, "vision", false)
+        field:setBlock(9, 6, 1, "action", true)
+
+        local visibility = lurek.visibility.newTileVisibility(field, { players = { "scout" }, rememberExplored = true })
+        visibility:computeVisible("scout", {
+            origin = { x = 4, y = 5, z = 1 },
+            range = 6,
+            channel = "vision",
+        })
+        visibility:computeAction("scout", {
+            origin = { x = 4, y = 5, z = 1 },
+            range = 4,
+            channel = "action",
+        })
+
+        local mm = base_minimap(W, H, CELL)
+        fill_terrain(mm, W, H, function(x, y)
+            return (x == 8 or y == 5) and 3 or 1
+        end)
+        mm:setFogColor(0.0, 0.0, 0.0, 0.78)
+        local helper = VisibilityMinimap.new({ visibility = visibility, width = W, height = H, minimap = mm })
+        helper:syncFog("scout")
+        helper:syncActionLayer("scout", 1, {
+            action_value = 8,
+            style = {
+                visible = true,
+                alpha = 0.65,
+                blend = "add",
+                colors = { [8] = { 0.12, 0.65, 1.0, 0.85 } },
+            },
+        })
+
+        save_png(mm:drawToImage(CELL), path)
+    end)
+
+    -- Does: Copies province terrain, political palette, and visibility state into LMinimap through `syncProvinceRegistry`.
+    -- Shows: The PNG should show a province registry rendered as a compact minimap.
+    -- Artifact: tests/artifacts/current/minimap/minimap_province_registry_compact.png
+    -- Why: This proves province remains the region data owner while minimap owns compact full-map rendering.
+
+    it("PNG: province registry compact", function()
+        ensure_evidence_dir("minimap")
+        local path = OUT .. "minimap_province_registry_compact.png"
+
+        local reg = lurek.province.newFromPng("minimap_province_compact_evidence", "content/examples/assets/textures/province_map.png")
+        local ids = reg:provinceIds()
+        for i = 1, math.min(#ids, 6) do
+            local id = ids[i]
+            reg:setTerrainType(id, i)
+            reg:setVisibilityState(id, i <= 2 and 96 or 255)
+            reg:setPoliticalColor(id, 0.10 + 0.12 * i, 0.25 + 0.08 * i, 0.82 - 0.06 * i, 1.0)
+        end
+
+        local mm = lurek.minimap.newMinimap(reg:getWidth(), reg:getHeight(), 320, 144)
+        mm:syncProvinceRegistry(reg)
+        save_png(mm:drawToImage(0), path)
+    end)
 end)
 test_summary()

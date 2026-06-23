@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-23T08:47:00.180854+00:00",
+  "generated_at": "2026-06-23T13:52:23.382717+00:00",
   "summary": {
     "rust": {
-      "total": 8717,
-      "covered": 8716,
-      "missing": 1,
+      "total": 8734,
+      "covered": 8734,
+      "missing": 0,
       "pct": 100.0
     },
     "lua_api": {
@@ -14,23 +14,13 @@
       "pct": 100.0
     },
     "total": {
-      "total": 8902,
-      "covered": 8901,
-      "missing": 1,
+      "total": 8919,
+      "covered": 8919,
+      "missing": 0,
       "pct": 100.0
     }
   },
-  "missing": [
-    {
-      "source": "rust",
-      "module": "tilefield",
-      "file": "src/tilefield/cell.rs",
-      "line": 48,
-      "kind": "fn",
-      "name": "index",
-      "has_doc": false
-    }
-  ],
+  "missing": [],
   "items": [
     {
       "source": "rust",
@@ -1682,159 +1672,6 @@
     {
       "source": "rust",
       "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 12,
-      "kind": "enum",
-      "name": "ContextBehaviorKind",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 57,
-      "kind": "struct",
-      "name": "ContextBehavior",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 68,
-      "kind": "struct",
-      "name": "ContextSteering",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 88,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 102,
-      "kind": "fn",
-      "name": "slot_count",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 106,
-      "kind": "fn",
-      "name": "add_interest",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 115,
-      "kind": "fn",
-      "name": "add_danger",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 124,
-      "kind": "fn",
-      "name": "add_seek_target",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 128,
-      "kind": "fn",
-      "name": "add_wander",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 138,
-      "kind": "fn",
-      "name": "add_avoid_point",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 142,
-      "kind": "fn",
-      "name": "add_avoid_bounds",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 163,
-      "kind": "fn",
-      "name": "clear_behaviors",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 167,
-      "kind": "fn",
-      "name": "evaluate",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 280,
-      "kind": "fn",
-      "name": "chosen_direction",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 284,
-      "kind": "fn",
-      "name": "chosen_magnitude",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 288,
-      "kind": "fn",
-      "name": "interest_map",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/context_steering.rs",
-      "line": 292,
-      "kind": "fn",
-      "name": "danger_map",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
       "file": "src/ai/diagnostics.rs",
       "line": 8,
       "kind": "struct",
@@ -2987,78 +2824,6 @@
     {
       "source": "rust",
       "module": "ai",
-      "file": "src/ai/orca.rs",
-      "line": 9,
-      "kind": "struct",
-      "name": "ORCAAgent",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/orca.rs",
-      "line": 25,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/orca.rs",
-      "line": 45,
-      "kind": "struct",
-      "name": "ORCASolver",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/orca.rs",
-      "line": 53,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/orca.rs",
-      "line": 60,
-      "kind": "fn",
-      "name": "add_agent",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/orca.rs",
-      "line": 66,
-      "kind": "fn",
-      "name": "remove_agent",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/orca.rs",
-      "line": 74,
-      "kind": "fn",
-      "name": "agent_count",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/orca.rs",
-      "line": 79,
-      "kind": "fn",
-      "name": "compute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
       "file": "src/ai/perception.rs",
       "line": 12,
       "kind": "enum",
@@ -3360,303 +3125,6 @@
       "line": 72,
       "kind": "fn",
       "name": "get_formation_position",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 17,
-      "kind": "type",
-      "name": "Force",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 21,
-      "kind": "struct",
-      "name": "SteeringEntity",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 40,
-      "kind": "enum",
-      "name": "CombineMode",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 48,
-      "kind": "fn",
-      "name": "parse_str",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 55,
-      "kind": "fn",
-      "name": "as_str",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 64,
-      "kind": "struct",
-      "name": "SteeringBase",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 82,
-      "kind": "enum",
-      "name": "SteeringBehaviorType",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 160,
-      "kind": "fn",
-      "name": "base",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 173,
-      "kind": "fn",
-      "name": "base_mut",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 186,
-      "kind": "fn",
-      "name": "kind",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 199,
-      "kind": "fn",
-      "name": "calculate",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 292,
-      "kind": "struct",
-      "name": "SteeringManager",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 320,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 337,
-      "kind": "fn",
-      "name": "calculate",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 387,
-      "kind": "fn",
-      "name": "set_entity",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 411,
-      "kind": "fn",
-      "name": "remove_entity",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 415,
-      "kind": "fn",
-      "name": "clear_entities",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 419,
-      "kind": "fn",
-      "name": "entity_count",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 423,
-      "kind": "fn",
-      "name": "add_seek",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 436,
-      "kind": "fn",
-      "name": "add_flee",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 450,
-      "kind": "fn",
-      "name": "add_arrive",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 475,
-      "kind": "fn",
-      "name": "add_wander",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 491,
-      "kind": "fn",
-      "name": "add_pursue",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 504,
-      "kind": "fn",
-      "name": "add_evade",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 517,
-      "kind": "fn",
-      "name": "add_flock",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 534,
-      "kind": "fn",
-      "name": "set_combine_mode_str",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 538,
-      "kind": "fn",
-      "name": "last_force",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 542,
-      "kind": "fn",
-      "name": "set_cell_size",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 546,
-      "kind": "fn",
-      "name": "set_use_spatial_hash",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 550,
-      "kind": "fn",
-      "name": "set_path",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 557,
-      "kind": "fn",
-      "name": "clear_path",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 562,
-      "kind": "fn",
-      "name": "has_active_path",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "ai",
-      "file": "src/ai/steering.rs",
-      "line": 566,
-      "kind": "fn",
-      "name": "path_progress",
       "has_doc": true
     },
     {
@@ -4122,7 +3590,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/validation.rs",
-      "line": 11,
+      "line": 8,
       "kind": "struct",
       "name": "AiValidationLimits",
       "has_doc": true
@@ -4131,7 +3599,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/validation.rs",
-      "line": 73,
+      "line": 64,
       "kind": "fn",
       "name": "finite_f32",
       "has_doc": true
@@ -4140,7 +3608,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/validation.rs",
-      "line": 84,
+      "line": 75,
       "kind": "fn",
       "name": "finite_f64",
       "has_doc": true
@@ -4149,7 +3617,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/validation.rs",
-      "line": 92,
+      "line": 83,
       "kind": "fn",
       "name": "non_negative",
       "has_doc": true
@@ -4158,7 +3626,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/validation.rs",
-      "line": 101,
+      "line": 92,
       "kind": "fn",
       "name": "positive_nonzero",
       "has_doc": true
@@ -4167,7 +3635,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/validation.rs",
-      "line": 114,
+      "line": 105,
       "kind": "fn",
       "name": "validate_count",
       "has_doc": true
@@ -4176,7 +3644,7 @@
       "source": "rust",
       "module": "ai",
       "file": "src/ai/validation.rs",
-      "line": 126,
+      "line": 117,
       "kind": "fn",
       "name": "validate_depth",
       "has_doc": true
@@ -33615,7 +33083,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ai_api.rs",
-      "line": 2946,
+      "line": 2175,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -34866,7 +34334,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/minimap_api.rs",
-      "line": 88,
+      "line": 91,
       "kind": "struct",
       "name": "LuaMinimap",
       "has_doc": true
@@ -34875,7 +34343,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/minimap_api.rs",
-      "line": 1094,
+      "line": 1238,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35064,7 +34532,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 179,
+      "line": 212,
       "kind": "struct",
       "name": "LuaNavGrid",
       "has_doc": true
@@ -35073,7 +34541,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 424,
+      "line": 457,
       "kind": "struct",
       "name": "LuaUnitPathfinder",
       "has_doc": true
@@ -35082,7 +34550,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 699,
+      "line": 732,
       "kind": "struct",
       "name": "LuaFlowField",
       "has_doc": true
@@ -35091,7 +34559,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 822,
+      "line": 855,
       "kind": "struct",
       "name": "LuaPathGrid",
       "has_doc": true
@@ -35100,7 +34568,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 961,
+      "line": 994,
       "kind": "struct",
       "name": "LuaAiFlowField",
       "has_doc": true
@@ -35109,7 +34577,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1044,
+      "line": 1077,
       "kind": "struct",
       "name": "LuaHexGrid",
       "has_doc": true
@@ -35118,7 +34586,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1193,
+      "line": 1226,
       "kind": "struct",
       "name": "LuaJpsGrid",
       "has_doc": true
@@ -35127,7 +34595,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1267,
+      "line": 1300,
       "kind": "struct",
       "name": "LuaNavMesh",
       "has_doc": true
@@ -35136,7 +34604,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1359,
+      "line": 2170,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35145,7 +34613,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1859,
+      "line": 2721,
       "kind": "struct",
       "name": "LuaGoalMap",
       "has_doc": true
@@ -35418,6 +34886,15 @@
       "line": 197,
       "kind": "struct",
       "name": "LuaProvinceRegistry",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/province_api.rs",
+      "line": 203,
+      "kind": "fn",
+      "name": "with_registry",
       "has_doc": true
     },
     {
@@ -40509,7 +39986,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 212,
+      "line": 214,
       "kind": "fn",
       "name": "transform_metrics",
       "has_doc": true
@@ -40518,7 +39995,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 305,
+      "line": 307,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -40527,7 +40004,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 317,
+      "line": 319,
       "kind": "fn",
       "name": "try_new",
       "has_doc": true
@@ -40536,7 +40013,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 377,
+      "line": 380,
       "kind": "fn",
       "name": "grid_width",
       "has_doc": true
@@ -40545,7 +40022,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 382,
+      "line": 385,
       "kind": "fn",
       "name": "grid_height",
       "has_doc": true
@@ -40554,7 +40031,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 387,
+      "line": 390,
       "kind": "fn",
       "name": "grid_size",
       "has_doc": true
@@ -40563,7 +40040,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 392,
+      "line": 395,
       "kind": "fn",
       "name": "grid_size_checked",
       "has_doc": true
@@ -40572,7 +40049,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 399,
+      "line": 402,
       "kind": "fn",
       "name": "display_width",
       "has_doc": true
@@ -40581,7 +40058,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 404,
+      "line": 407,
       "kind": "fn",
       "name": "display_height",
       "has_doc": true
@@ -40590,7 +40067,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 409,
+      "line": 412,
       "kind": "fn",
       "name": "limits",
       "has_doc": true
@@ -40599,7 +40076,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 414,
+      "line": 417,
       "kind": "fn",
       "name": "validation_limits",
       "has_doc": true
@@ -40608,7 +40085,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 419,
+      "line": 422,
       "kind": "fn",
       "name": "set_display_size",
       "has_doc": true
@@ -40617,7 +40094,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 425,
+      "line": 428,
       "kind": "fn",
       "name": "try_set_display_size",
       "has_doc": true
@@ -40626,7 +40103,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 449,
+      "line": 452,
       "kind": "fn",
       "name": "set_terrain",
       "has_doc": true
@@ -40635,7 +40112,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 457,
+      "line": 460,
       "kind": "fn",
       "name": "get_terrain",
       "has_doc": true
@@ -40644,7 +40121,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 466,
+      "line": 469,
       "kind": "fn",
       "name": "set_terrain_data",
       "has_doc": true
@@ -40653,7 +40130,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 476,
+      "line": 479,
       "kind": "fn",
       "name": "try_set_terrain_data",
       "has_doc": true
@@ -40662,7 +40139,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 490,
+      "line": 493,
       "kind": "fn",
       "name": "set_terrain_color",
       "has_doc": true
@@ -40671,7 +40148,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 495,
+      "line": 498,
       "kind": "fn",
       "name": "get_terrain_color",
       "has_doc": true
@@ -40680,7 +40157,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 503,
+      "line": 506,
       "kind": "fn",
       "name": "set_tile_description",
       "has_doc": true
@@ -40689,7 +40166,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 508,
+      "line": 511,
       "kind": "fn",
       "name": "get_tile_description",
       "has_doc": true
@@ -40698,7 +40175,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 513,
+      "line": 516,
       "kind": "fn",
       "name": "set_fog_enabled",
       "has_doc": true
@@ -40707,7 +40184,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 518,
+      "line": 521,
       "kind": "fn",
       "name": "fog_enabled",
       "has_doc": true
@@ -40716,7 +40193,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 523,
+      "line": 526,
       "kind": "fn",
       "name": "set_fog_level",
       "has_doc": true
@@ -40725,7 +40202,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 531,
+      "line": 534,
       "kind": "fn",
       "name": "get_fog_level",
       "has_doc": true
@@ -40734,7 +40211,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 540,
+      "line": 543,
       "kind": "fn",
       "name": "set_fog_color",
       "has_doc": true
@@ -40743,7 +40220,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 545,
+      "line": 548,
       "kind": "fn",
       "name": "fog_color",
       "has_doc": true
@@ -40752,7 +40229,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 550,
+      "line": 553,
       "kind": "fn",
       "name": "set_fog_data",
       "has_doc": true
@@ -40761,7 +40238,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 560,
+      "line": 563,
       "kind": "fn",
       "name": "try_set_fog_data",
       "has_doc": true
@@ -40770,7 +40247,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 576,
+      "line": 579,
       "kind": "fn",
       "name": "fog_multiplier",
       "has_doc": true
@@ -40779,7 +40256,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 588,
+      "line": 591,
       "kind": "fn",
       "name": "add_object_type",
       "has_doc": true
@@ -40788,7 +40265,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 599,
+      "line": 602,
       "kind": "fn",
       "name": "set_object_type_texture",
       "has_doc": true
@@ -40797,7 +40274,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 625,
+      "line": 628,
       "kind": "fn",
       "name": "clear_object_type_texture",
       "has_doc": true
@@ -40806,7 +40283,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 630,
+      "line": 633,
       "kind": "fn",
       "name": "set_object_type_visible",
       "has_doc": true
@@ -40815,7 +40292,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 640,
+      "line": 643,
       "kind": "fn",
       "name": "is_object_type_visible",
       "has_doc": true
@@ -40824,7 +40301,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 647,
+      "line": 650,
       "kind": "fn",
       "name": "object_type_count",
       "has_doc": true
@@ -40833,7 +40310,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 652,
+      "line": 655,
       "kind": "fn",
       "name": "set_object",
       "has_doc": true
@@ -40842,7 +40319,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 678,
+      "line": 681,
       "kind": "fn",
       "name": "remove_object",
       "has_doc": true
@@ -40851,7 +40328,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 683,
+      "line": 686,
       "kind": "fn",
       "name": "clear_objects",
       "has_doc": true
@@ -40860,7 +40337,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 688,
+      "line": 691,
       "kind": "fn",
       "name": "object_count",
       "has_doc": true
@@ -40869,7 +40346,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 693,
+      "line": 696,
       "kind": "fn",
       "name": "objects_iter",
       "has_doc": true
@@ -40878,7 +40355,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 698,
+      "line": 701,
       "kind": "fn",
       "name": "object_type",
       "has_doc": true
@@ -40887,7 +40364,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 703,
+      "line": 706,
       "kind": "fn",
       "name": "set_owner_color",
       "has_doc": true
@@ -40896,7 +40373,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 708,
+      "line": 711,
       "kind": "fn",
       "name": "get_owner_color",
       "has_doc": true
@@ -40905,7 +40382,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 716,
+      "line": 719,
       "kind": "fn",
       "name": "set_color_mode",
       "has_doc": true
@@ -40914,7 +40391,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 721,
+      "line": 724,
       "kind": "fn",
       "name": "color_mode",
       "has_doc": true
@@ -40923,7 +40400,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 726,
+      "line": 729,
       "kind": "fn",
       "name": "set_zoom",
       "has_doc": true
@@ -40932,7 +40409,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 731,
+      "line": 734,
       "kind": "fn",
       "name": "try_set_zoom",
       "has_doc": true
@@ -40941,7 +40418,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 747,
+      "line": 750,
       "kind": "fn",
       "name": "zoom",
       "has_doc": true
@@ -40950,7 +40427,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 752,
+      "line": 755,
       "kind": "fn",
       "name": "set_center",
       "has_doc": true
@@ -40959,7 +40436,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 758,
+      "line": 761,
       "kind": "fn",
       "name": "try_set_center",
       "has_doc": true
@@ -40968,7 +40445,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 765,
+      "line": 768,
       "kind": "fn",
       "name": "track_camera",
       "has_doc": true
@@ -40977,7 +40454,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 773,
+      "line": 776,
       "kind": "fn",
       "name": "reveal_radius",
       "has_doc": true
@@ -40986,7 +40463,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 778,
+      "line": 781,
       "kind": "fn",
       "name": "try_reveal_radius",
       "has_doc": true
@@ -40995,7 +40472,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 815,
+      "line": 818,
       "kind": "fn",
       "name": "center_x",
       "has_doc": true
@@ -41004,7 +40481,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 820,
+      "line": 823,
       "kind": "fn",
       "name": "center_y",
       "has_doc": true
@@ -41013,7 +40490,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 825,
+      "line": 828,
       "kind": "fn",
       "name": "set_viewport_rect",
       "has_doc": true
@@ -41022,7 +40499,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 830,
+      "line": 833,
       "kind": "fn",
       "name": "try_set_viewport_rect",
       "has_doc": true
@@ -41031,7 +40508,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 846,
+      "line": 849,
       "kind": "fn",
       "name": "clear_viewport_rect",
       "has_doc": true
@@ -41040,7 +40517,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 851,
+      "line": 854,
       "kind": "fn",
       "name": "viewport_rect",
       "has_doc": true
@@ -41049,7 +40526,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 856,
+      "line": 859,
       "kind": "fn",
       "name": "set_viewport_visible",
       "has_doc": true
@@ -41058,7 +40535,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 861,
+      "line": 864,
       "kind": "fn",
       "name": "viewport_visible",
       "has_doc": true
@@ -41067,7 +40544,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 866,
+      "line": 869,
       "kind": "fn",
       "name": "set_viewport_color",
       "has_doc": true
@@ -41076,7 +40553,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 871,
+      "line": 874,
       "kind": "fn",
       "name": "viewport_color",
       "has_doc": true
@@ -41085,7 +40562,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 876,
+      "line": 879,
       "kind": "fn",
       "name": "add_ping",
       "has_doc": true
@@ -41094,7 +40571,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 903,
+      "line": 906,
       "kind": "fn",
       "name": "ping_count",
       "has_doc": true
@@ -41103,7 +40580,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 908,
+      "line": 911,
       "kind": "fn",
       "name": "pings",
       "has_doc": true
@@ -41112,7 +40589,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 913,
+      "line": 916,
       "kind": "fn",
       "name": "markers_iter",
       "has_doc": true
@@ -41121,7 +40598,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 918,
+      "line": 921,
       "kind": "fn",
       "name": "markers_with_ids",
       "has_doc": true
@@ -41130,7 +40607,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 923,
+      "line": 926,
       "kind": "fn",
       "name": "add_marker",
       "has_doc": true
@@ -41139,7 +40616,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 929,
+      "line": 932,
       "kind": "fn",
       "name": "try_add_marker",
       "has_doc": true
@@ -41148,7 +40625,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 964,
+      "line": 967,
       "kind": "fn",
       "name": "remove_marker",
       "has_doc": true
@@ -41157,7 +40634,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 970,
+      "line": 973,
       "kind": "fn",
       "name": "set_marker_texture",
       "has_doc": true
@@ -41166,7 +40643,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 996,
+      "line": 999,
       "kind": "fn",
       "name": "clear_marker_texture",
       "has_doc": true
@@ -41175,7 +40652,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1001,
+      "line": 1004,
       "kind": "fn",
       "name": "has_marker",
       "has_doc": true
@@ -41184,7 +40661,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1006,
+      "line": 1009,
       "kind": "fn",
       "name": "get_marker_description",
       "has_doc": true
@@ -41193,7 +40670,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1011,
+      "line": 1014,
       "kind": "fn",
       "name": "marker_count",
       "has_doc": true
@@ -41202,7 +40679,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1016,
+      "line": 1019,
       "kind": "fn",
       "name": "set_marker_animation",
       "has_doc": true
@@ -41211,7 +40688,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1023,
+      "line": 1026,
       "kind": "fn",
       "name": "clear_marker_animation",
       "has_doc": true
@@ -41220,7 +40697,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1030,
+      "line": 1033,
       "kind": "fn",
       "name": "draw_line",
       "has_doc": true
@@ -41229,7 +40706,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1052,
+      "line": 1055,
       "kind": "fn",
       "name": "draw_rect",
       "has_doc": true
@@ -41238,7 +40715,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1069,
+      "line": 1072,
       "kind": "fn",
       "name": "clear_overlay",
       "has_doc": true
@@ -41247,7 +40724,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1074,
+      "line": 1077,
       "kind": "fn",
       "name": "overlay_shapes",
       "has_doc": true
@@ -41256,7 +40733,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1079,
+      "line": 1082,
       "kind": "fn",
       "name": "show_path",
       "has_doc": true
@@ -41265,7 +40742,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1085,
+      "line": 1088,
       "kind": "fn",
       "name": "try_show_path",
       "has_doc": true
@@ -41274,7 +40751,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1115,
+      "line": 1118,
       "kind": "fn",
       "name": "clear_path",
       "has_doc": true
@@ -41283,7 +40760,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1123,
+      "line": 1126,
       "kind": "fn",
       "name": "paths",
       "has_doc": true
@@ -41292,7 +40769,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1128,
+      "line": 1131,
       "kind": "fn",
       "name": "set_layer",
       "has_doc": true
@@ -41301,7 +40778,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1143,
+      "line": 1146,
       "kind": "fn",
       "name": "get_layer",
       "has_doc": true
@@ -41310,7 +40787,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1148,
+      "line": 1151,
       "kind": "fn",
       "name": "set_layer_data",
       "has_doc": true
@@ -41319,7 +40796,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1154,
+      "line": 1157,
       "kind": "fn",
       "name": "try_set_layer_data",
       "has_doc": true
@@ -41328,7 +40805,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1192,
+      "line": 1199,
       "kind": "fn",
       "name": "layer_data",
       "has_doc": true
@@ -41337,7 +40814,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1197,
+      "line": 1204,
       "kind": "fn",
       "name": "layer_count",
       "has_doc": true
@@ -41346,63 +40823,27 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1202,
+      "line": 1230,
       "kind": "fn",
-      "name": "set_anti_alias",
+      "name": "set_layer_visible",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1207,
+      "line": 1236,
       "kind": "fn",
-      "name": "anti_alias",
+      "name": "layer_visible",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1212,
+      "line": 1249,
       "kind": "fn",
-      "name": "set_clickable",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "minimap",
-      "file": "src/minimap/minimap.rs",
-      "line": 1217,
-      "kind": "fn",
-      "name": "is_clickable",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "minimap",
-      "file": "src/minimap/minimap.rs",
-      "line": 1222,
-      "kind": "fn",
-      "name": "screen_to_grid",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "minimap",
-      "file": "src/minimap/minimap.rs",
-      "line": 1228,
-      "kind": "fn",
-      "name": "try_screen_to_grid",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "minimap",
-      "file": "src/minimap/minimap.rs",
-      "line": 1254,
-      "kind": "fn",
-      "name": "grid_to_screen",
+      "name": "set_layer_alpha",
       "has_doc": true
     },
     {
@@ -41411,6 +40852,114 @@
       "file": "src/minimap/minimap.rs",
       "line": 1260,
       "kind": "fn",
+      "name": "layer_alpha",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1273,
+      "kind": "fn",
+      "name": "set_layer_color",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1285,
+      "kind": "fn",
+      "name": "get_layer_color",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1295,
+      "kind": "fn",
+      "name": "set_layer_blend_mode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1305,
+      "kind": "fn",
+      "name": "layer_blend_mode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1318,
+      "kind": "fn",
+      "name": "set_anti_alias",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1323,
+      "kind": "fn",
+      "name": "anti_alias",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1328,
+      "kind": "fn",
+      "name": "set_clickable",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1333,
+      "kind": "fn",
+      "name": "is_clickable",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1338,
+      "kind": "fn",
+      "name": "screen_to_grid",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1344,
+      "kind": "fn",
+      "name": "try_screen_to_grid",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1370,
+      "kind": "fn",
+      "name": "grid_to_screen",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1376,
+      "kind": "fn",
       "name": "try_grid_to_screen",
       "has_doc": true
     },
@@ -41418,7 +40967,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1284,
+      "line": 1400,
       "kind": "fn",
       "name": "get_hover_info",
       "has_doc": true
@@ -41427,7 +40976,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1307,
+      "line": 1423,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -41436,7 +40985,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1335,
+      "line": 1451,
       "kind": "fn",
       "name": "draw_to_image",
       "has_doc": true
@@ -41445,7 +40994,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1341,
+      "line": 1457,
       "kind": "fn",
       "name": "try_draw_to_image",
       "has_doc": true
@@ -41454,7 +41003,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1408,
+      "line": 1525,
       "kind": "fn",
       "name": "build_render_commands",
       "has_doc": true
@@ -41463,7 +41012,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1417,
+      "line": 1534,
       "kind": "fn",
       "name": "object_type_icon",
       "has_doc": true
@@ -41472,7 +41021,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1422,
+      "line": 1539,
       "kind": "fn",
       "name": "marker_icon",
       "has_doc": true
@@ -41481,7 +41030,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1427,
+      "line": 1544,
       "kind": "fn",
       "name": "owner_colors_by_cell",
       "has_doc": true
@@ -41490,7 +41039,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1441,
+      "line": 1558,
       "kind": "fn",
       "name": "resolve_cell_color",
       "has_doc": true
@@ -41499,7 +41048,16 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1459,
+      "line": 1610,
+      "kind": "fn",
+      "name": "resolve_layered_cell_color",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/minimap.rs",
+      "line": 1641,
       "kind": "fn",
       "name": "set_next_marker_id_for_testing",
       "has_doc": true
@@ -41508,7 +41066,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1465,
+      "line": 1647,
       "kind": "fn",
       "name": "set_next_path_id_for_testing",
       "has_doc": true
@@ -41544,7 +41102,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/render.rs",
-      "line": 315,
+      "line": 316,
       "kind": "fn",
       "name": "render_stats",
       "has_doc": true
@@ -41553,7 +41111,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/render.rs",
-      "line": 321,
+      "line": 322,
       "kind": "fn",
       "name": "generate_render_commands",
       "has_doc": true
@@ -41562,7 +41120,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 13,
+      "line": 14,
       "kind": "enum",
       "name": "ColorMode",
       "has_doc": true
@@ -41571,7 +41129,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 22,
+      "line": 23,
       "kind": "fn",
       "name": "parse_mode",
       "has_doc": true
@@ -41580,7 +41138,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 31,
+      "line": 32,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -41589,7 +41147,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 42,
+      "line": 43,
       "kind": "enum",
       "name": "FogLevel",
       "has_doc": true
@@ -41598,7 +41156,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 53,
+      "line": 54,
       "kind": "fn",
       "name": "from_u8",
       "has_doc": true
@@ -41607,7 +41165,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 64,
+      "line": 65,
       "kind": "struct",
       "name": "MinimapObjectType",
       "has_doc": true
@@ -41616,7 +41174,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 75,
+      "line": 76,
       "kind": "struct",
       "name": "MinimapObject",
       "has_doc": true
@@ -41625,7 +41183,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 88,
+      "line": 89,
       "kind": "struct",
       "name": "MinimapPing",
       "has_doc": true
@@ -41634,7 +41192,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 103,
+      "line": 104,
       "kind": "struct",
       "name": "MinimapMarker",
       "has_doc": true
@@ -41643,7 +41201,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 118,
+      "line": 119,
       "kind": "enum",
       "name": "MarkerAnimation",
       "has_doc": true
@@ -41652,7 +41210,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 129,
+      "line": 130,
       "kind": "enum",
       "name": "OverlayShape",
       "has_doc": true
@@ -41661,7 +41219,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 160,
+      "line": 161,
       "kind": "struct",
       "name": "OverlayPath",
       "has_doc": true
@@ -41670,7 +41228,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 171,
+      "line": 172,
       "kind": "struct",
       "name": "LayerData",
       "has_doc": true
@@ -41679,7 +41237,43 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 182,
+      "line": 183,
+      "kind": "enum",
+      "name": "LayerBlendMode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/types.rs",
+      "line": 196,
+      "kind": "fn",
+      "name": "parse_mode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/types.rs",
+      "line": 207,
+      "kind": "fn",
+      "name": "as_str",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/types.rs",
+      "line": 219,
+      "kind": "struct",
+      "name": "LayerStyle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "minimap",
+      "file": "src/minimap/types.rs",
+      "line": 243,
       "kind": "struct",
       "name": "MinimapLimits",
       "has_doc": true
@@ -41688,7 +41282,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 227,
+      "line": 288,
       "kind": "struct",
       "name": "MinimapValidationLimits",
       "has_doc": true
@@ -41697,7 +41291,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 254,
+      "line": 315,
       "kind": "struct",
       "name": "MinimapRenderStats",
       "has_doc": true
@@ -41706,7 +41300,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/types.rs",
-      "line": 265,
+      "line": 326,
       "kind": "enum",
       "name": "MinimapError",
       "has_doc": true
@@ -46313,6 +45907,159 @@
     {
       "source": "rust",
       "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 12,
+      "kind": "enum",
+      "name": "ContextBehaviorKind",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 57,
+      "kind": "struct",
+      "name": "ContextBehavior",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 68,
+      "kind": "struct",
+      "name": "ContextSteering",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 88,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 102,
+      "kind": "fn",
+      "name": "slot_count",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 106,
+      "kind": "fn",
+      "name": "add_interest",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 115,
+      "kind": "fn",
+      "name": "add_danger",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 124,
+      "kind": "fn",
+      "name": "add_seek_target",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 128,
+      "kind": "fn",
+      "name": "add_wander",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 138,
+      "kind": "fn",
+      "name": "add_avoid_point",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 142,
+      "kind": "fn",
+      "name": "add_avoid_bounds",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 163,
+      "kind": "fn",
+      "name": "clear_behaviors",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 167,
+      "kind": "fn",
+      "name": "evaluate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 280,
+      "kind": "fn",
+      "name": "chosen_direction",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 284,
+      "kind": "fn",
+      "name": "chosen_magnitude",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 288,
+      "kind": "fn",
+      "name": "interest_map",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/context_steering.rs",
+      "line": 292,
+      "kind": "fn",
+      "name": "danger_map",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
       "file": "src/pathfind/flow_field.rs",
       "line": 16,
       "kind": "struct",
@@ -47501,6 +47248,78 @@
     {
       "source": "rust",
       "module": "pathfind",
+      "file": "src/pathfind/orca.rs",
+      "line": 9,
+      "kind": "struct",
+      "name": "ORCAAgent",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/orca.rs",
+      "line": 25,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/orca.rs",
+      "line": 45,
+      "kind": "struct",
+      "name": "ORCASolver",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/orca.rs",
+      "line": 53,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/orca.rs",
+      "line": 60,
+      "kind": "fn",
+      "name": "add_agent",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/orca.rs",
+      "line": 66,
+      "kind": "fn",
+      "name": "remove_agent",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/orca.rs",
+      "line": 74,
+      "kind": "fn",
+      "name": "agent_count",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/orca.rs",
+      "line": 79,
+      "kind": "fn",
+      "name": "compute",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
       "file": "src/pathfind/pathgrid.rs",
       "line": 12,
       "kind": "struct",
@@ -47681,6 +47500,303 @@
     {
       "source": "rust",
       "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 17,
+      "kind": "type",
+      "name": "Force",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 21,
+      "kind": "struct",
+      "name": "SteeringEntity",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 40,
+      "kind": "enum",
+      "name": "CombineMode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 48,
+      "kind": "fn",
+      "name": "parse_str",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 55,
+      "kind": "fn",
+      "name": "as_str",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 64,
+      "kind": "struct",
+      "name": "SteeringBase",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 82,
+      "kind": "enum",
+      "name": "SteeringBehaviorType",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 160,
+      "kind": "fn",
+      "name": "base",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 173,
+      "kind": "fn",
+      "name": "base_mut",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 186,
+      "kind": "fn",
+      "name": "kind",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 199,
+      "kind": "fn",
+      "name": "calculate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 292,
+      "kind": "struct",
+      "name": "SteeringManager",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 320,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 337,
+      "kind": "fn",
+      "name": "calculate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 387,
+      "kind": "fn",
+      "name": "set_entity",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 411,
+      "kind": "fn",
+      "name": "remove_entity",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 415,
+      "kind": "fn",
+      "name": "clear_entities",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 419,
+      "kind": "fn",
+      "name": "entity_count",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 423,
+      "kind": "fn",
+      "name": "add_seek",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 436,
+      "kind": "fn",
+      "name": "add_flee",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 450,
+      "kind": "fn",
+      "name": "add_arrive",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 475,
+      "kind": "fn",
+      "name": "add_wander",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 491,
+      "kind": "fn",
+      "name": "add_pursue",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 504,
+      "kind": "fn",
+      "name": "add_evade",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 517,
+      "kind": "fn",
+      "name": "add_flock",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 534,
+      "kind": "fn",
+      "name": "set_combine_mode_str",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 538,
+      "kind": "fn",
+      "name": "last_force",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 542,
+      "kind": "fn",
+      "name": "set_cell_size",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 546,
+      "kind": "fn",
+      "name": "set_use_spatial_hash",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 550,
+      "kind": "fn",
+      "name": "set_path",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 557,
+      "kind": "fn",
+      "name": "clear_path",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 562,
+      "kind": "fn",
+      "name": "has_active_path",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/steering.rs",
+      "line": 566,
+      "kind": "fn",
+      "name": "path_progress",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
       "file": "src/pathfind/unit_pathfinder.rs",
       "line": 17,
       "kind": "struct",
@@ -47829,6 +47945,33 @@
       "line": 263,
       "kind": "fn",
       "name": "nav_grid",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/validation.rs",
+      "line": 6,
+      "kind": "struct",
+      "name": "PathfindValidationLimits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/validation.rs",
+      "line": 26,
+      "kind": "fn",
+      "name": "finite_f32",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/validation.rs",
+      "line": 36,
+      "kind": "fn",
+      "name": "validate_count",
       "has_doc": true
     },
     {
@@ -68922,16 +69065,16 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 48,
+      "line": 49,
       "kind": "fn",
       "name": "index",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 61,
+      "line": 62,
       "kind": "struct",
       "name": "TileCell",
       "has_doc": true
@@ -68940,7 +69083,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 81,
+      "line": 82,
       "kind": "fn",
       "name": "blocks",
       "has_doc": true
@@ -68949,7 +69092,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 86,
+      "line": 87,
       "kind": "fn",
       "name": "set_block",
       "has_doc": true
@@ -68958,7 +69101,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 91,
+      "line": 92,
       "kind": "fn",
       "name": "cost",
       "has_doc": true
@@ -68967,7 +69110,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 96,
+      "line": 97,
       "kind": "fn",
       "name": "set_cost",
       "has_doc": true
@@ -68976,7 +69119,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 105,
+      "line": 106,
       "kind": "fn",
       "name": "sun_occlusion",
       "has_doc": true
@@ -68985,7 +69128,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 110,
+      "line": 111,
       "kind": "fn",
       "name": "set_sun_occlusion",
       "has_doc": true
@@ -68994,7 +69137,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 119,
+      "line": 120,
       "kind": "fn",
       "name": "profile",
       "has_doc": true
@@ -69003,7 +69146,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 124,
+      "line": 125,
       "kind": "fn",
       "name": "set_profile",
       "has_doc": true
@@ -79191,7 +79334,7 @@
       "source": "lua_api",
       "module": "minimap_api",
       "file": "src/lua_api/minimap_api.rs",
-      "line": 1104,
+      "line": 1248,
       "kind": "fn",
       "name": "newMinimap",
       "has_doc": true

@@ -1902,10 +1902,6 @@ LBot = {}
 ---@class LCommandQueue
 LCommandQueue = {}
 
---- Lua handle for slot-based context steering direction selection.
----@class LContextSteering
-LContextSteering = {}
-
 --- Lua handle for decaying named emotion intensities.
 ---@class LEmotionModel
 LEmotionModel = {}
@@ -1918,10 +1914,6 @@ LGOAPPlanner = {}
 ---@class LHTNDomain
 LHTNDomain = {}
 
---- Lua handle for a grid-based influence map with named layers.
----@class LInfluenceMap
-LInfluenceMap = {}
-
 --- Lua handle for Monte Carlo tree search over Lua-defined game states and actions.
 ---@class LMCTSEngine
 LMCTSEngine = {}
@@ -1930,10 +1922,6 @@ LMCTSEngine = {}
 ---@class LNeedSystem
 LNeedSystem = {}
 
---- Lua handle for reciprocal velocity obstacle avoidance agents.
----@class LORCASolver
-LORCASolver = {}
-
 --- Lua handle for a named squad with members, leader, formation, and shared blackboard.
 ---@class LSquad
 LSquad = {}
@@ -1941,10 +1929,6 @@ LSquad = {}
 --- Lua handle for a finite state machine with Lua-backed state callbacks and transition guards.
 ---@class LStateMachine
 LStateMachine = {}
-
---- Lua handle for a steering behavior stack that combines movement forces for an agent.
----@class LSteeringManager
-LSteeringManager = {}
 
 --- Lua handle for sensory stimuli tracked in world space.
 ---@class LStimulusWorld
@@ -2567,6 +2551,10 @@ LTrail = {}
 ---@class LAIFlowField
 LAIFlowField = {}
 
+--- Lua handle for slot-based context steering direction selection.
+---@class LContextSteering
+LContextSteering = {}
+
 --- Lua-side wrapper for a flow field over a navigation grid.
 ---@class LFlowField
 LFlowField = {}
@@ -2578,6 +2566,10 @@ LGoalMap = {}
 --- Lua-side wrapper for a hexagonal grid.
 ---@class LHexGrid
 LHexGrid = {}
+
+--- Lua handle for a grid-based influence map with named layers.
+---@class LInfluenceMap
+LInfluenceMap = {}
 
 --- Lua-side wrapper for a Jump Point Search grid.
 ---@class LJpsGrid
@@ -2591,9 +2583,17 @@ LNavGrid = {}
 ---@class LNavMesh
 LNavMesh = {}
 
+--- Lua handle for reciprocal velocity obstacle avoidance agents.
+---@class LORCASolver
+LORCASolver = {}
+
 --- Lua-side wrapper for a cell-size path grid.
 ---@class LPathGrid
 LPathGrid = {}
+
+--- Lua handle for a steering behavior stack that combines movement forces for an agent.
+---@class LSteeringManager
+LSteeringManager = {}
 
 --- Lua-side wrapper for a unit pathfinder over a navigation grid.
 ---@class LUnitPathfinder
@@ -4025,62 +4025,6 @@ function LCommandQueue:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LCommandQueue:typeOf(name) end
 
---- Adds rectangular bounds avoidance to context steering.
----@param min_x number Minimum X bound.
----@param min_y number Minimum Y bound.
----@param max_x number Maximum X bound.
----@param max_y number Maximum Y bound.
----@param margin number Distance from bounds where avoidance begins.
----@param weight number Avoidance behavior weight.
-function LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight) end
-
---- Adds a point avoidance influence to context steering.
----@param x number Avoidance point X position.
----@param y number Avoidance point Y position.
----@param radius number Avoidance radius in world units.
----@param weight number Avoidance behavior weight.
-function LContextSteering:addAvoidPoint(x, y, radius, weight) end
-
---- Adds a context steering target attraction.
----@param tx number Target X position in world units.
----@param ty number Target Y position in world units.
----@param weight number Attraction weight.
-function LContextSteering:addSeekTarget(tx, ty, weight) end
-
---- Adds wander noise to context steering.
----@param jitter number Random steering jitter strength.
----@param weight number Wander behavior weight.
-function LContextSteering:addWander(jitter, weight) end
-
---- Returns the magnitude of the last selected context steering slot.
----@return number Last chosen magnitude.
-function LContextSteering:chosenMagnitude() end
-
---- Removes all context steering behaviors.
-function LContextSteering:clearBehaviors() end
-
---- Evaluates context steering and returns the selected movement direction.
----@param ax number Agent X position.
----@param ay number Agent Y position.
----@param vx number Agent X velocity.
----@param vy number Agent Y velocity.
----@return number Selected X and Y direction. (value 1).
----@return number Selected X and Y direction. (value 2).
-function LContextSteering:evaluate(ax, ay, vx, vy) end
-
---- Returns the number of directional slots used by this context steering model.
----@return number Direction slot count.
-function LContextSteering:slotCount() end
-
---- Returns the Lua-visible type name for this context steering handle.
----@return string The string `LContextSteering`.
-function LContextSteering:type() end
-
---- Returns whether this context steering handle matches a supported type name.
----@param name string Type name to compare against `LContextSteering` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LContextSteering:typeOf(name) end
-
 --- Adds an emotion definition with resting value, decay, and visibility threshold.
 ---@param name string Emotion name.
 ---@param rest number Resting emotion value.
@@ -4222,105 +4166,6 @@ function LHTNDomain:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LHTNDomain:typeOf(name) end
 
---- Adds an influence layer with the given name if it does not already exist.
----@param name string Layer name used by later influence operations.
-function LInfluenceMap:addLayer(name) end
-
---- Blends two source layers into a destination layer using independent weights.
----@param layer_a string First source layer name.
----@param weight_a number Weight applied to the first source layer.
----@param layer_b string Second source layer name.
----@param weight_b number Weight applied to the second source layer.
----@param dest string Destination layer name that receives the blended values.
-function LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest) end
-
---- Clears every influence value in every layer.
-function LInfluenceMap:clearAll() end
-
---- Clears every value in a named influence layer.
----@param layer string Layer name to clear.
-function LInfluenceMap:clearLayer(layer) end
-
---- Multiplies a named layer by a decay factor.
----@param layer string Layer name to decay.
----@param factor number Decay factor applied to every cell.
-function LInfluenceMap:decay(layer, factor) end
-
---- Returns the world size represented by each influence map cell.
----@return number Cell size in world units.
-function LInfluenceMap:getCellSize() end
-
---- Returns the influence map height in cells.
----@return number Cell height of the map.
-function LInfluenceMap:getHeight() end
-
---- Returns one cell value from a named influence layer using one-based cell coordinates.
----@param layer string Layer name to read.
----@param x number One-based cell X coordinate.
----@param y number One-based cell Y coordinate.
----@return number Influence value at the requested cell.
-function LInfluenceMap:getInfluence(layer, x, y) end
-
---- Returns the cell position with the highest value on a named layer.
----@param layer string Layer name to scan.
----@return number One-based X and Y cell coordinates of the maximum value. (value 1).
----@return number One-based X and Y cell coordinates of the maximum value. (value 2).
-function LInfluenceMap:getMaxPosition(layer) end
-
---- Returns the cell position with the lowest value on a named layer.
----@param layer string Layer name to scan.
----@return number One-based X and Y cell coordinates of the minimum value. (value 1).
----@return number One-based X and Y cell coordinates of the minimum value. (value 2).
-function LInfluenceMap:getMinPosition(layer) end
-
---- Returns the influence map width in cells.
----@return number Cell width of the map.
-function LInfluenceMap:getWidth() end
-
---- Returns whether an influence layer exists.
----@param name string Layer name to check.
----@return boolean True when the layer exists.
-function LInfluenceMap:hasLayer(name) end
-
---- Propagates influence values across neighboring cells on a named layer.
----@param layer string Layer name to propagate.
----@param momentum? number Propagation momentum factor; defaults to 0.5.
-function LInfluenceMap:propagate(layer, momentum) end
-
---- Returns influence values inside a world-space rectangle on a named layer.
----@param layer string Layer name to query.
----@param wx number Rectangle X coordinate in world units.
----@param wy number Rectangle Y coordinate in world units.
----@param ww number Rectangle width in world units.
----@param wh number Rectangle height in world units.
----@return number[] Array of influence samples from cells inside the rectangle.
-function LInfluenceMap:queryRect(layer, wx, wy, ww, wh) end
-
---- Sets one cell value in a named influence layer using one-based cell coordinates.
----@param layer string Layer name to modify.
----@param x number One-based cell X coordinate.
----@param y number One-based cell Y coordinate.
----@param value number Influence value to store in the cell.
-function LInfluenceMap:setInfluence(layer, x, y, value) end
-
---- Applies a radial influence stamp to a named layer in world coordinates.
----@param layer string Layer name to modify.
----@param wx number World X coordinate of the stamp center.
----@param wy number World Y coordinate of the stamp center.
----@param radius number Stamp radius in world units.
----@param value number Influence value applied at the center.
----@param falloff? number Falloff exponent or multiplier; defaults to 1.0.
-function LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff) end
-
---- Returns the Lua-visible type name for this influence map handle.
----@return string The string `LInfluenceMap`.
-function LInfluenceMap:type() end
-
---- Returns whether this influence map handle matches a supported type name.
----@param name string Type name to compare against `InfluenceMap` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LInfluenceMap:typeOf(name) end
-
 --- Returns the last structured MCTS search trace.
 ---@return table Table containing `chosen_action`, `iterations_run`, `nodes_expanded`, `invalid_score_count`, `callback_errors`, and `failure_reason`.
 function LMCTSEngine:getLastTrace() end
@@ -4375,49 +4220,6 @@ function LNeedSystem:update(dt) end
 ---@param name string Need name to read.
 ---@return number Current need value.
 function LNeedSystem:valueOf(name) end
-
---- Adds an ORCA avoidance agent and returns its zero-based solver index.
----@param x number Initial X position.
----@param y number Initial Y position.
----@param radius number Collision radius.
----@param max_speed number Maximum preferred speed.
----@return number Zero-based ORCA agent index.
-function LORCASolver:addAgent(x, y, radius, max_speed) end
-
---- Returns the number of ORCA agents in this solver.
----@return number Current ORCA agent count.
-function LORCASolver:agentCount() end
-
---- Computes safe velocities for all ORCA agents.
----@param dt number Elapsed time in seconds for the avoidance step.
-function LORCASolver:compute(dt) end
-
---- Returns the computed safe velocity for an ORCA agent.
----@param idx number Zero-based ORCA agent index.
----@return number Safe X and Y velocity; or zero velocity for an invalid index. (value 1).
----@return number Safe X and Y velocity; or zero velocity for an invalid index. (value 2).
-function LORCASolver:getSafeVelocity(idx) end
-
---- Sets the position for an ORCA agent by zero-based index.
----@param idx number Zero-based ORCA agent index.
----@param x number New X position.
----@param y number New Y position.
-function LORCASolver:setPosition(idx, x, y) end
-
---- Sets the preferred velocity for an ORCA agent by zero-based index.
----@param idx number Zero-based ORCA agent index.
----@param pvx number Preferred X velocity.
----@param pvy number Preferred Y velocity.
-function LORCASolver:setPreferredVelocity(idx, pvx, pvy) end
-
---- Returns the Lua-visible type name for this ORCA solver handle.
----@return string The string `LORCASolver`.
-function LORCASolver:type() end
-
---- Returns whether this ORCA solver handle matches a supported type name.
----@param name string Type name to compare against `LORCASolver` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LORCASolver:typeOf(name) end
 
 --- Adds a member name to the squad member list.
 ---@param name string Agent or game object name to append as a squad member.
@@ -4517,151 +4319,6 @@ function LStateMachine:type() end
 ---@param name string Type name to compare against `StateMachine` and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
 function LStateMachine:typeOf(name) end
-
---- Adds an arrive behavior that slows the agent as it approaches a target point.
----@param tx number Target X position in world units.
----@param ty number Target Y position in world units.
----@param slowing? number Radius used to reduce speed near the target; defaults to 50.0.
----@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
-function LSteeringManager:addArrive(tx, ty, slowing, weight) end
-
---- Adds a custom steering behavior backed by a Lua callback.
----@param func function Function called as `(agent, dt)` that returns an X and Y steering force.
----@param weight? number Custom behavior weight applied to returned forces; defaults to 1.0.
-function LSteeringManager:addCustomBehavior(func, weight) end
-
---- Adds an evade behavior that moves away from another named agent when a threat name is supplied.
----@param threat_name? string Optional name of the agent to evade.
----@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
-function LSteeringManager:addEvade(threat_name, weight) end
-
---- Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
----@param tx number Threat X position in world units.
----@param ty number Threat Y position in world units.
----@param panic_dist? number Distance inside which fleeing is active; defaults to 200.0.
----@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
-function LSteeringManager:addFlee(tx, ty, panic_dist, weight) end
-
---- Adds a flocking behavior with separation, alignment, and cohesion weights.
----@param neighbor_radius? number Radius used to find flock neighbors; defaults to 100.0.
----@param sep_w? number Separation force weight; defaults to 1.5.
----@param align_w? number Alignment force weight; defaults to 1.0.
----@param coh_w? number Cohesion force weight; defaults to 1.0.
----@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
-function LSteeringManager:addFlock(neighbor_radius, sep_w, align_w, coh_w, weight) end
-
---- Adds a pursue behavior that chases another named agent when a target name is supplied.
----@param target_name? string Optional name of the agent to pursue.
----@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
-function LSteeringManager:addPursue(target_name, weight) end
-
---- Adds a seek behavior that pulls the agent toward a target point.
----@param tx number Target X position in world units.
----@param ty number Target Y position in world units.
----@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
-function LSteeringManager:addSeek(tx, ty, weight) end
-
---- Adds a wander behavior that produces jittered exploratory movement.
----@param radius? number Wander circle radius; defaults to 20.0.
----@param dist? number Wander circle distance in front of the agent; defaults to 40.0.
----@param jitter? number Random displacement applied per update; defaults to 5.0.
----@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
-function LSteeringManager:addWander(radius, dist, jitter, weight) end
-
---- Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
----@param agent LBot Bot handle passed through to every custom steering callback.
----@param dt number Elapsed time in seconds passed to every custom steering callback.
----@return number Combined custom X and Y steering force. (value 1).
----@return number Combined custom X and Y steering force. (value 2).
-function LSteeringManager:applyCustomSteering(agent, dt) end
-
---- Calculates a steering force for the supplied agent movement state.
----@param px number Current agent X position.
----@param py number Current agent Y position.
----@param vx number Current agent X velocity.
----@param vy number Current agent Y velocity.
----@param max_speed number Maximum allowed speed used by steering constraints.
----@param max_force number Maximum allowed steering force.
----@param dt number Elapsed time in seconds for this steering step.
----@return number X and Y steering force. (value 1).
----@return number X and Y steering force. (value 2).
-function LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt) end
-
---- Clears all steering-context entities.
-function LSteeringManager:clearEntities() end
-
---- Clears the active waypoint path behavior.
-function LSteeringManager:clearPath() end
-
---- Enables or disables spatial hash acceleration for neighbor queries.
----@param enabled boolean True to use spatial hashing, false to use direct scans.
-function LSteeringManager:enableSpatialHash(enabled) end
-
---- Returns the number of steering-context entities.
----@return number Entity count.
-function LSteeringManager:entityCount() end
-
---- Returns the number of steering behaviors configured on this manager.
----@return number Current steering behavior count.
-function LSteeringManager:getBehaviorCount() end
-
---- Returns the current steering force combination mode.
----@return string Combine mode name.
-function LSteeringManager:getCombineMode() end
-
---- Returns the most recent steering validation or runtime diagnostic.
----@return LuaValue Diagnostic string, or nil when no diagnostic has been recorded.
-function LSteeringManager:getLastDiagnostic() end
-
---- Returns the last steering force calculated by this manager.
----@return number X and Y force values from the previous calculation. (value 1).
----@return number X and Y force values from the previous calculation. (value 2).
-function LSteeringManager:getLastSteering() end
-
---- Returns the current one-based waypoint index and total waypoint count.
----@return number Current waypoint index and total waypoint count. (value 1).
----@return number Current waypoint index and total waypoint count. (value 2).
-function LSteeringManager:getPathProgress() end
-
---- Returns whether this manager currently has an active waypoint path.
----@return boolean True when a path is configured and not complete.
-function LSteeringManager:hasPath() end
-
---- Removes one named steering-context entity.
----@param name string Entity name to remove.
----@return boolean True when an entity was removed.
-function LSteeringManager:removeEntity(name) end
-
---- Sets how steering behavior forces are combined.
----@param mode string Combine mode string parsed by the steering manager.
-function LSteeringManager:setCombineMode(mode) end
-
---- Sets or replaces one named steering-context entity.
----@param name string Entity name used by pursue, evade, and flock behaviors.
----@param x number Current entity X position.
----@param y number Current entity Y position.
----@param vx? number Current entity X velocity; defaults to 0.
----@param vy? number Current entity Y velocity; defaults to 0.
-function LSteeringManager:setEntity(name, x, y, vx, vy) end
-
---- Sets a waypoint path behavior from an array of `{x, y}` tables.
----@param waypoints table Array of waypoint tables, each containing numeric `x` and `y` fields.
----@param reach_radius? number Distance at which a waypoint is considered reached; defaults to 12.0.
----@param weight? number Path following behavior weight; defaults to 1.0.
-function LSteeringManager:setPath(waypoints, reach_radius, weight) end
-
---- Sets the cell size used by the steering manager spatial hash.
----@param size number Spatial hash cell size in world units.
-function LSteeringManager:setSpatialHashCellSize(size) end
-
---- Returns the Lua-visible type name for this steering manager handle.
----@return string The string `LSteeringManager`.
-function LSteeringManager:type() end
-
---- Returns whether this steering manager handle matches a supported type name.
----@param name string Type name to compare against `SteeringManager` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LSteeringManager:typeOf(name) end
 
 --- Adds an auditory stimulus with decay and returns its identifier.
 ---@param x number Stimulus X position in world units.
@@ -4869,11 +4526,6 @@ lurek.ai.newCommandQueue = function() end
 ---@return LBTNode New condition node handle.
 lurek.ai.newCondition = function(callback) end
 
---- Creates a context steering model with the requested directional slot count.
----@param slots number Directional slot count; zero selects the engine default of 16.
----@return LContextSteering New context steering handle.
-lurek.ai.newContextSteering = function(slots) end
-
 --- Creates an empty dialogue selector for weighted topics and branches.
 ---@return LDialogueAI New dialogue AI handle.
 lurek.ai.newDialogueAI = function() end
@@ -4896,13 +4548,6 @@ lurek.ai.newGuard = function(predicate, child) end
 ---@return LHTNDomain New HTN domain handle.
 lurek.ai.newHTNDomain = function() end
 
---- Creates a grid influence map with the supplied cell dimensions and world cell size.
----@param w number Map width in cells.
----@param h number Map height in cells.
----@param cs number World size of one cell.
----@return LInfluenceMap New influence map handle.
-lurek.ai.newInfluenceMap = function(w, h, cs) end
-
 --- Creates a behavior tree inverter decorator with an empty sequence child.
 ---@return LBTNode New inverter node handle.
 lurek.ai.newInverter = function() end
@@ -4918,11 +4563,6 @@ lurek.ai.newMCTSEngine = function(iters, uct_c, depth, seed) end
 --- Creates an empty need system for decaying named needs.
 ---@return LNeedSystem New need system handle.
 lurek.ai.newNeedSystem = function() end
-
---- Creates an ORCA avoidance solver with the supplied prediction horizon.
----@param time_horizon number Time horizon used when computing collision avoidance velocities.
----@return LORCASolver New ORCA solver handle.
-lurek.ai.newORCASolver = function(time_horizon) end
 
 --- Creates a behavior tree parallel node with optional success and failure policies.
 ---@param sp? string Success policy name; defaults to the engine's require-one policy.
@@ -4951,10 +4591,6 @@ lurek.ai.newSquad = function(name) end
 --- Creates an empty finite state machine with Lua-backed states and transitions.
 ---@return LStateMachine New state machine handle.
 lurek.ai.newStateMachine = function() end
-
---- Creates an empty steering manager with support for built-in and custom behaviors.
----@return LSteeringManager New steering manager handle.
-lurek.ai.newSteeringManager = function() end
 
 --- Creates an empty stimulus world for visual and auditory stimulus records.
 ---@return LStimulusWorld New stimulus world handle.
@@ -19081,6 +18717,25 @@ function LMinimap:getHoverInfo(sx, sy, mx, my) end
 ---@return number Layer index.
 function LMinimap:getLayer() end
 
+--- Returns the opacity multiplier for a minimap data layer.
+---@param layer number Layer index.
+---@return number Opacity multiplier, or nil when missing.
+function LMinimap:getLayerAlpha(layer) end
+
+--- Returns how a minimap data layer is blended over the base terrain.
+---@param layer number Layer index.
+---@return string Blend mode, or nil when missing.
+function LMinimap:getLayerBlendMode(layer) end
+
+--- Returns the palette color for one raw value in a minimap data layer.
+---@param layer number Layer index.
+---@param value number Raw byte value in the layer data.
+---@return number Red channel; or nil when missing.
+---@return number Green channel; or nil when missing.
+---@return number Blue channel; or nil when missing.
+---@return number Alpha channel; or nil when missing.
+function LMinimap:getLayerColor(layer, value) end
+
 --- Returns the number of minimap layers.
 ---@return number Layer count.
 function LMinimap:getLayerCount() end
@@ -19190,6 +18845,11 @@ function LMinimap:isClickable() end
 ---@return boolean True when fog is enabled.
 function LMinimap:isFogEnabled() end
 
+--- Returns whether a minimap data layer is drawn when it is not active.
+---@param layer number Layer index.
+---@return boolean True when the layer is visible, or nil when missing.
+function LMinimap:isLayerVisible(layer) end
+
 --- Returns visibility for an object type by one-based index.
 ---@param type_idx number One-based object type index.
 ---@return boolean True when the object type is visible.
@@ -19276,10 +18936,34 @@ function LMinimap:setFogLevel(x, y, level) end
 ---@param layer number Layer index.
 function LMinimap:setLayer(layer) end
 
+--- Sets the opacity multiplier for a minimap data layer.
+---@param layer number Layer index.
+---@param alpha number Opacity clamped to 0..1.
+function LMinimap:setLayerAlpha(layer, alpha) end
+
+--- Sets how a minimap data layer is blended over the base terrain.
+---@param layer number Layer index.
+---@param mode string Blend mode: `normal`, `multiply`, `add`, or `replace`.
+function LMinimap:setLayerBlendMode(layer, mode) end
+
+--- Sets a palette color for one raw value in a minimap data layer.
+---@param layer number Layer index.
+---@param value number Raw byte value in the layer data.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaults to 1.0.
+function LMinimap:setLayerColor(layer, value, r, g, b, a) end
+
 --- Sets raw cell data for a minimap layer.
 ---@param layer number Layer index.
 ---@param data_tbl table Array table of cell bytes.
 function LMinimap:setLayerData(layer, data_tbl) end
+
+--- Sets whether a minimap data layer is drawn even when it is not the active layer.
+---@param layer number Layer index.
+---@param visible boolean Visibility flag.
+function LMinimap:setLayerVisible(layer, visible) end
 
 --- Sets marker animation by type name.
 ---@param id number Marker id.
@@ -19372,6 +19056,11 @@ function LMinimap:setZoom(zoom) end
 ---@param color_tbl table RGBA byte color table.
 ---@return number Path id.
 function LMinimap:showPath(points_tbl, color_tbl) end
+
+--- Copies province registry terrain, visibility, and palette data into this minimap.
+---@param registry LProvinceRegistry Province registry handle.
+---@param opts? table Optional `{terrain?, visibility?, palette?}` booleans, all default true.
+function LMinimap:syncProvinceRegistry(registry, opts) end
 
 --- Centers the minimap and viewport rectangle from a camera handle.
 ---@param camera_ud LCamera Camera handle from `lurek.camera.newCamera`.
@@ -21341,6 +21030,62 @@ function LAIFlowField:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LAIFlowField:typeOf(name) end
 
+--- Adds rectangular bounds avoidance to context steering.
+---@param min_x number Minimum X bound.
+---@param min_y number Minimum Y bound.
+---@param max_x number Maximum X bound.
+---@param max_y number Maximum Y bound.
+---@param margin number Distance from bounds where avoidance begins.
+---@param weight number Avoidance behavior weight.
+function LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight) end
+
+--- Adds a point avoidance influence to context steering.
+---@param x number Avoidance point X position.
+---@param y number Avoidance point Y position.
+---@param radius number Avoidance radius in world units.
+---@param weight number Avoidance behavior weight.
+function LContextSteering:addAvoidPoint(x, y, radius, weight) end
+
+--- Adds a context steering target attraction.
+---@param tx number Target X position in world units.
+---@param ty number Target Y position in world units.
+---@param weight number Attraction weight.
+function LContextSteering:addSeekTarget(tx, ty, weight) end
+
+--- Adds wander noise to context steering.
+---@param jitter number Random steering jitter strength.
+---@param weight number Wander behavior weight.
+function LContextSteering:addWander(jitter, weight) end
+
+--- Returns the magnitude of the last selected context steering slot.
+---@return number Last chosen magnitude.
+function LContextSteering:chosenMagnitude() end
+
+--- Removes all context steering behaviors.
+function LContextSteering:clearBehaviors() end
+
+--- Evaluates context steering and returns the selected movement direction.
+---@param ax number Agent X position.
+---@param ay number Agent Y position.
+---@param vx number Agent X velocity.
+---@param vy number Agent Y velocity.
+---@return number Selected X and Y direction. (value 1).
+---@return number Selected X and Y direction. (value 2).
+function LContextSteering:evaluate(ax, ay, vx, vy) end
+
+--- Returns the number of directional slots used by this context steering model.
+---@return number Direction slot count.
+function LContextSteering:slotCount() end
+
+--- Returns the Lua-visible type name for this context steering handle.
+---@return string The string `LContextSteering`.
+function LContextSteering:type() end
+
+--- Returns whether this context steering handle matches a supported type name.
+---@param name string Type name to compare against `LContextSteering` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LContextSteering:typeOf(name) end
+
 --- Calculates a flow field toward one target cell.
 ---@param tx number One-based target column.
 ---@param ty number One-based target row.
@@ -21524,6 +21269,105 @@ function LHexGrid:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LHexGrid:typeOf(name) end
 
+--- Adds an influence layer with the given name if it does not already exist.
+---@param name string Layer name used by later influence operations.
+function LInfluenceMap:addLayer(name) end
+
+--- Blends two source layers into a destination layer using independent weights.
+---@param layer_a string First source layer name.
+---@param weight_a number Weight applied to the first source layer.
+---@param layer_b string Second source layer name.
+---@param weight_b number Weight applied to the second source layer.
+---@param dest string Destination layer name that receives the blended values.
+function LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest) end
+
+--- Clears every influence value in every layer.
+function LInfluenceMap:clearAll() end
+
+--- Clears every value in a named influence layer.
+---@param layer string Layer name to clear.
+function LInfluenceMap:clearLayer(layer) end
+
+--- Multiplies a named layer by a decay factor.
+---@param layer string Layer name to decay.
+---@param factor number Decay factor applied to every cell.
+function LInfluenceMap:decay(layer, factor) end
+
+--- Returns the world size represented by each influence map cell.
+---@return number Cell size in world units.
+function LInfluenceMap:getCellSize() end
+
+--- Returns the influence map height in cells.
+---@return number Cell height of the map.
+function LInfluenceMap:getHeight() end
+
+--- Returns one cell value from a named influence layer using one-based cell coordinates.
+---@param layer string Layer name to read.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@return number Influence value at the requested cell.
+function LInfluenceMap:getInfluence(layer, x, y) end
+
+--- Returns the cell position with the highest value on a named layer.
+---@param layer string Layer name to scan.
+---@return number One-based X and Y cell coordinates of the maximum value. (value 1).
+---@return number One-based X and Y cell coordinates of the maximum value. (value 2).
+function LInfluenceMap:getMaxPosition(layer) end
+
+--- Returns the cell position with the lowest value on a named layer.
+---@param layer string Layer name to scan.
+---@return number One-based X and Y cell coordinates of the minimum value. (value 1).
+---@return number One-based X and Y cell coordinates of the minimum value. (value 2).
+function LInfluenceMap:getMinPosition(layer) end
+
+--- Returns the influence map width in cells.
+---@return number Cell width of the map.
+function LInfluenceMap:getWidth() end
+
+--- Returns whether an influence layer exists.
+---@param name string Layer name to check.
+---@return boolean True when the layer exists.
+function LInfluenceMap:hasLayer(name) end
+
+--- Propagates influence values across neighboring cells on a named layer.
+---@param layer string Layer name to propagate.
+---@param momentum? number Propagation momentum factor; defaults to 0.5.
+function LInfluenceMap:propagate(layer, momentum) end
+
+--- Returns influence values inside a world-space rectangle on a named layer.
+---@param layer string Layer name to query.
+---@param wx number Rectangle X coordinate in world units.
+---@param wy number Rectangle Y coordinate in world units.
+---@param ww number Rectangle width in world units.
+---@param wh number Rectangle height in world units.
+---@return number[] Array of influence samples from cells inside the rectangle.
+function LInfluenceMap:queryRect(layer, wx, wy, ww, wh) end
+
+--- Sets one cell value in a named influence layer using one-based cell coordinates.
+---@param layer string Layer name to modify.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@param value number Influence value to store in the cell.
+function LInfluenceMap:setInfluence(layer, x, y, value) end
+
+--- Applies a radial influence stamp to a named layer in world coordinates.
+---@param layer string Layer name to modify.
+---@param wx number World X coordinate of the stamp center.
+---@param wy number World Y coordinate of the stamp center.
+---@param radius number Stamp radius in world units.
+---@param value number Influence value applied at the center.
+---@param falloff? number Falloff exponent or multiplier; defaults to 1.0.
+function LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff) end
+
+--- Returns the Lua-visible type name for this influence map handle.
+---@return string The string `LInfluenceMap`.
+function LInfluenceMap:type() end
+
+--- Returns whether this influence map handle matches a supported type name.
+---@param name string Type name to compare against `InfluenceMap` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LInfluenceMap:typeOf(name) end
+
 --- Finds a JPS path between one-based grid cells.
 ---@param fx number One-based start column.
 ---@param fy number One-based start row.
@@ -21697,6 +21541,49 @@ function LNavMesh:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LNavMesh:typeOf(name) end
 
+--- Adds an ORCA avoidance agent and returns its zero-based solver index.
+---@param x number Initial X position.
+---@param y number Initial Y position.
+---@param radius number Collision radius.
+---@param max_speed number Maximum preferred speed.
+---@return number Zero-based ORCA agent index.
+function LORCASolver:addAgent(x, y, radius, max_speed) end
+
+--- Returns the number of ORCA agents in this solver.
+---@return number Current ORCA agent count.
+function LORCASolver:agentCount() end
+
+--- Computes safe velocities for all ORCA agents.
+---@param dt number Elapsed time in seconds for the avoidance step.
+function LORCASolver:compute(dt) end
+
+--- Returns the computed safe velocity for an ORCA agent.
+---@param idx number Zero-based ORCA agent index.
+---@return number Safe X and Y velocity; or zero velocity for an invalid index. (value 1).
+---@return number Safe X and Y velocity; or zero velocity for an invalid index. (value 2).
+function LORCASolver:getSafeVelocity(idx) end
+
+--- Sets the position for an ORCA agent by zero-based index.
+---@param idx number Zero-based ORCA agent index.
+---@param x number New X position.
+---@param y number New Y position.
+function LORCASolver:setPosition(idx, x, y) end
+
+--- Sets the preferred velocity for an ORCA agent by zero-based index.
+---@param idx number Zero-based ORCA agent index.
+---@param pvx number Preferred X velocity.
+---@param pvy number Preferred Y velocity.
+function LORCASolver:setPreferredVelocity(idx, pvx, pvy) end
+
+--- Returns the Lua-visible type name for this ORCA solver handle.
+---@return string The string `LORCASolver`.
+function LORCASolver:type() end
+
+--- Returns whether this ORCA solver handle matches a supported type name.
+---@param name string Type name to compare against `LORCASolver` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LORCASolver:typeOf(name) end
+
 --- Finds a path between one-based path grid cells.
 ---@param sx number One-based start column.
 ---@param sy number One-based start row.
@@ -21757,6 +21644,151 @@ function LPathGrid:type() end
 ---@param name string String value for `name`.
 ---@return boolean True when the supplied type name matches this handle.
 function LPathGrid:typeOf(name) end
+
+--- Adds an arrive behavior that slows the agent as it approaches a target point.
+---@param tx number Target X position in world units.
+---@param ty number Target Y position in world units.
+---@param slowing? number Radius used to reduce speed near the target; defaults to 50.0.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addArrive(tx, ty, slowing, weight) end
+
+--- Adds a custom steering behavior backed by a Lua callback.
+---@param func function Function called as `(agent, dt)` that returns an X and Y steering force.
+---@param weight? number Custom behavior weight applied to returned forces; defaults to 1.0.
+function LSteeringManager:addCustomBehavior(func, weight) end
+
+--- Adds an evade behavior that moves away from another named agent when a threat name is supplied.
+---@param threat_name? string Optional name of the agent to evade.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addEvade(threat_name, weight) end
+
+--- Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
+---@param tx number Threat X position in world units.
+---@param ty number Threat Y position in world units.
+---@param panic_dist? number Distance inside which fleeing is active; defaults to 200.0.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addFlee(tx, ty, panic_dist, weight) end
+
+--- Adds a flocking behavior with separation, alignment, and cohesion weights.
+---@param neighbor_radius? number Radius used to find flock neighbors; defaults to 100.0.
+---@param sep_w? number Separation force weight; defaults to 1.5.
+---@param align_w? number Alignment force weight; defaults to 1.0.
+---@param coh_w? number Cohesion force weight; defaults to 1.0.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addFlock(neighbor_radius, sep_w, align_w, coh_w, weight) end
+
+--- Adds a pursue behavior that chases another named agent when a target name is supplied.
+---@param target_name? string Optional name of the agent to pursue.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addPursue(target_name, weight) end
+
+--- Adds a seek behavior that pulls the agent toward a target point.
+---@param tx number Target X position in world units.
+---@param ty number Target Y position in world units.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addSeek(tx, ty, weight) end
+
+--- Adds a wander behavior that produces jittered exploratory movement.
+---@param radius? number Wander circle radius; defaults to 20.0.
+---@param dist? number Wander circle distance in front of the agent; defaults to 40.0.
+---@param jitter? number Random displacement applied per update; defaults to 5.0.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addWander(radius, dist, jitter, weight) end
+
+--- Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
+---@param agent LBot Bot handle passed through to every custom steering callback.
+---@param dt number Elapsed time in seconds passed to every custom steering callback.
+---@return number Combined custom X and Y steering force. (value 1).
+---@return number Combined custom X and Y steering force. (value 2).
+function LSteeringManager:applyCustomSteering(agent, dt) end
+
+--- Calculates a steering force for the supplied agent movement state.
+---@param px number Current agent X position.
+---@param py number Current agent Y position.
+---@param vx number Current agent X velocity.
+---@param vy number Current agent Y velocity.
+---@param max_speed number Maximum allowed speed used by steering constraints.
+---@param max_force number Maximum allowed steering force.
+---@param dt number Elapsed time in seconds for this steering step.
+---@return number X and Y steering force. (value 1).
+---@return number X and Y steering force. (value 2).
+function LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt) end
+
+--- Clears all steering-context entities.
+function LSteeringManager:clearEntities() end
+
+--- Clears the active waypoint path behavior.
+function LSteeringManager:clearPath() end
+
+--- Enables or disables spatial hash acceleration for neighbor queries.
+---@param enabled boolean True to use spatial hashing, false to use direct scans.
+function LSteeringManager:enableSpatialHash(enabled) end
+
+--- Returns the number of steering-context entities.
+---@return number Entity count.
+function LSteeringManager:entityCount() end
+
+--- Returns the number of steering behaviors configured on this manager.
+---@return number Current steering behavior count.
+function LSteeringManager:getBehaviorCount() end
+
+--- Returns the current steering force combination mode.
+---@return string Combine mode name.
+function LSteeringManager:getCombineMode() end
+
+--- Returns the most recent steering validation or runtime diagnostic.
+---@return LuaValue Diagnostic string, or nil when no diagnostic has been recorded.
+function LSteeringManager:getLastDiagnostic() end
+
+--- Returns the last steering force calculated by this manager.
+---@return number X and Y force values from the previous calculation. (value 1).
+---@return number X and Y force values from the previous calculation. (value 2).
+function LSteeringManager:getLastSteering() end
+
+--- Returns the current one-based waypoint index and total waypoint count.
+---@return number Current waypoint index and total waypoint count. (value 1).
+---@return number Current waypoint index and total waypoint count. (value 2).
+function LSteeringManager:getPathProgress() end
+
+--- Returns whether this manager currently has an active waypoint path.
+---@return boolean True when a path is configured and not complete.
+function LSteeringManager:hasPath() end
+
+--- Removes one named steering-context entity.
+---@param name string Entity name to remove.
+---@return boolean True when an entity was removed.
+function LSteeringManager:removeEntity(name) end
+
+--- Sets how steering behavior forces are combined.
+---@param mode string Combine mode string parsed by the steering manager.
+function LSteeringManager:setCombineMode(mode) end
+
+--- Sets or replaces one named steering-context entity.
+---@param name string Entity name used by pursue, evade, and flock behaviors.
+---@param x number Current entity X position.
+---@param y number Current entity Y position.
+---@param vx? number Current entity X velocity; defaults to 0.
+---@param vy? number Current entity Y velocity; defaults to 0.
+function LSteeringManager:setEntity(name, x, y, vx, vy) end
+
+--- Sets a waypoint path behavior from an array of `{x, y}` tables.
+---@param waypoints table Array of waypoint tables, each containing numeric `x` and `y` fields.
+---@param reach_radius? number Distance at which a waypoint is considered reached; defaults to 12.0.
+---@param weight? number Path following behavior weight; defaults to 1.0.
+function LSteeringManager:setPath(waypoints, reach_radius, weight) end
+
+--- Sets the cell size used by the steering manager spatial hash.
+---@param size number Spatial hash cell size in world units.
+function LSteeringManager:setSpatialHashCellSize(size) end
+
+--- Returns the Lua-visible type name for this steering manager handle.
+---@return string The string `LSteeringManager`.
+function LSteeringManager:type() end
+
+--- Returns whether this steering manager handle matches a supported type name.
+---@param name string Type name to compare against `SteeringManager` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LSteeringManager:typeOf(name) end
 
 --- Clears all cached paths on this object.
 function LUnitPathfinder:clearCache() end
@@ -21878,6 +21910,11 @@ lurek.pathfind.getAsyncPendingCount = function() end
 ---@return number Thread count (minimum 1).
 lurek.pathfind.getThreadCount = function() end
 
+--- Creates a context steering model with the requested directional slot count.
+---@param slots number Directional slot count; zero selects the engine default of 16.
+---@return LContextSteering New context steering handle.
+lurek.pathfind.newContextSteering = function(slots) end
+
 --- Creates a flow field for a navigation grid.
 ---@param grid_ud LNavGrid Navigation grid to compute flow field from.
 ---@return LFlowField New flow field handle.
@@ -21895,6 +21932,13 @@ lurek.pathfind.newGoalMap = function(width, height) end
 ---@param layout_str? string Hex layout: `flat` (default) or `pointy`.
 ---@return LHexGrid New hex grid handle.
 lurek.pathfind.newHexGrid = function(width, height, layout_str) end
+
+--- Creates a grid influence map with the supplied cell dimensions and world cell size.
+---@param w number Map width in cells.
+---@param h number Map height in cells.
+---@param cs number World size of one cell.
+---@return LInfluenceMap New influence map handle.
+lurek.pathfind.newInfluenceMap = function(w, h, cs) end
 
 --- Creates a Jump Point Search grid with given dimensions.
 ---@param width number Grid width in cells.
@@ -21925,6 +21969,11 @@ lurek.pathfind.newNavGridFromTileMap = function(tm_ud, layer_index, blocked_tabl
 ---@return LNavMesh New navmesh handle.
 lurek.pathfind.newNavMesh = function() end
 
+--- Creates an ORCA avoidance solver with the supplied prediction horizon.
+---@param time_horizon number Time horizon used when computing collision avoidance velocities.
+---@return LORCASolver New ORCA solver handle.
+lurek.pathfind.newORCASolver = function(time_horizon) end
+
 --- Creates an AI flow field from a path grid.
 ---@param grid_ud LPathGrid Path grid to compute AI flow field from.
 ---@return LAIFlowField New AI flow field handle.
@@ -21941,6 +21990,10 @@ lurek.pathfind.newPathGrid = function(w, h, cell_size) end
 ---@param grid_ud LNavGrid Navigation grid to pathfind on.
 ---@return LUnitPathfinder New pathfinder handle.
 lurek.pathfind.newPathfinder = function(grid_ud) end
+
+--- Creates an empty steering manager with support for built-in and custom movement behaviors.
+---@return LSteeringManager New steering manager handle.
+lurek.pathfind.newSteeringManager = function() end
 
 --- Returns all currently available async path events without blocking.
 ---@return table Array of event tables with ids, status, optional path, and completion flags.

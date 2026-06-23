@@ -13,7 +13,6 @@ partial_count=0
 nearest_walkable=8,5
 reachable=true
 heuristic=14.727921485901
-line_of_sight=true
 cache_enabled=true
 cache_size=0
 flow_calculated=true

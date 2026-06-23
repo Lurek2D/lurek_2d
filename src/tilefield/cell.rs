@@ -45,6 +45,7 @@ impl TileChannel {
         }
     }
 
+    /// Return the fixed array slot used to store this channel in each tile cell.
     pub(crate) fn index(self) -> usize {
         match self {
             Self::Move => 0,

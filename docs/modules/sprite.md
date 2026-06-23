@@ -16,6 +16,43 @@ Example block: `lurek.sprite.newSheet`
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local frames = sheet:getFrameCount()
     local cols, rows = sheet:getGridSize()
@@ -75,6 +112,43 @@ lurek.sprite.newAnimator(clips)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     local kind = animator:type()
     local clip = animator:currentClip()
@@ -111,6 +185,43 @@ lurek.sprite.newAtlasPacker(width, height, padding)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     local width, height = packer:getDimensions()
     local count = packer:regionCount()
@@ -147,6 +258,43 @@ lurek.sprite.newAtlasSheet(atlas, sw, sh)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
     local sheet = lurek.sprite.newAtlasSheet(atlas, 64, 64)
     local count = sheet:getFrameCount()
@@ -183,6 +331,43 @@ lurek.sprite.newRPGMakerSheet(tw, th)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newRPGMakerSheet(144, 192)
     local count = sheet:getFrameCount()
     local fw, fh = sheet:getFrameSize()
@@ -220,6 +405,43 @@ lurek.sprite.newSheet(tw, th, fw, fh)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local frames = sheet:getFrameCount()
     local cols, rows = sheet:getGridSize()
@@ -256,6 +478,43 @@ lurek.sprite.newSprite(texture_id, x, y)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     local x, y = sprite:getPosition()
     local has_normal = sprite:hasNormalMap()
@@ -290,6 +549,43 @@ lurek.sprite.parseAsepriteAtlas(json_str)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
     local entry = atlas:getEntry("hero_walk_0001.png")
     local names = atlas:entryNames()
@@ -324,6 +620,43 @@ lurek.sprite.parseAtlas(json_str)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
     local entry = atlas:getEntry("hero_idle_0")
     local count = atlas:entryCount()
@@ -370,6 +703,43 @@ LAtlasPacker:clear()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
     packer:pack("coin", 16, 16)
@@ -400,6 +770,43 @@ LAtlasPacker:getDimensions()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     local width, height = packer:getDimensions()
     local kind = packer:type()
@@ -434,6 +841,43 @@ LAtlasPacker:getRegion(name)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
     local region = packer:getRegion("hero")
@@ -470,6 +914,43 @@ LAtlasPacker:pack(name, w, h)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     local ok = packer:pack("hero", 24, 24)
     local region = packer:getRegion("hero")
@@ -498,6 +979,43 @@ LAtlasPacker:regionCount()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
     packer:pack("coin", 16, 16)
@@ -536,6 +1054,43 @@ LAtlasPacker:setNineSlice(name, left, right, top, bottom)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("panel", 24, 24)
     local ok = packer:setNineSlice("panel", 4, 4, 4, 4)
@@ -564,6 +1119,43 @@ LAtlasPacker:type()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     local width, height = packer:getDimensions()
     local kind = packer:type()
@@ -598,6 +1190,43 @@ LAtlasPacker:typeOf(name)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     local is_packer = packer:typeOf("LAtlasPacker")
     local is_object = packer:typeOf("LObject")
@@ -628,6 +1257,43 @@ LSprite:clearNormalMap()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(3)
     local before = sprite:hasNormalMap()
@@ -656,6 +1322,43 @@ LSprite:getNormalIntensity()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalIntensity(2.5)
     local intensity = sprite:getNormalIntensity()
@@ -684,6 +1387,43 @@ LSprite:getNormalMap()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(11)
     local texture = sprite:getNormalMap()
@@ -713,6 +1453,43 @@ LSprite:getPosition()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     local x, y = sprite:getPosition()
     local has_normal = sprite:hasNormalMap()
@@ -741,6 +1518,43 @@ LSprite:hasNormalMap()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     local before = sprite:hasNormalMap()
     sprite:setNormalMap(3)
@@ -769,6 +1583,43 @@ LSprite:setNormalIntensity(intensity)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(11)
     sprite:setNormalIntensity(2.5)
@@ -797,6 +1648,43 @@ LSprite:setNormalMap(texture_id)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(11)
     local texture = sprite:getNormalMap()
@@ -826,6 +1714,43 @@ LSprite:setPosition(x, y)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setPosition(32, 48)
     local x, y = sprite:getPosition()
@@ -854,6 +1779,43 @@ LSprite:type()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     local kind = sprite:type()
     local x, y = sprite:getPosition()
@@ -888,6 +1850,43 @@ LSprite:typeOf(name)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     local is_sprite = sprite:typeOf("LSprite")
     local is_object = sprite:typeOf("LObject")
@@ -925,6 +1924,43 @@ LSpriteAnimator:addClip(name, def)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     animator:addClip("run", { row = 3, from = 1, to = 4, fps = 12, loop = true })
     animator:play("run")
@@ -953,6 +1989,43 @@ LSpriteAnimator:clipDuration()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     animator:play("jump")
     local clip_duration = animator:clipDuration()
@@ -981,6 +2054,43 @@ LSpriteAnimator:currentClip()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     local before = animator:currentClip()
     animator:play("idle")
@@ -1010,6 +2120,43 @@ LSpriteAnimator:currentFrame()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     animator:play("idle")
     local row1, col1 = animator:currentFrame()
@@ -1039,6 +2186,43 @@ LSpriteAnimator:frameDuration()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     animator:play("idle")
     local frame_duration = animator:frameDuration()
@@ -1067,6 +2251,43 @@ LSpriteAnimator:isPlaying()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     local before = animator:isPlaying()
     animator:play("idle")
@@ -1095,6 +2316,43 @@ LSpriteAnimator:onEnd(fn)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     local ended = 0
     animator:onEnd(function() ended = ended + 1 end)
@@ -1124,6 +2382,43 @@ LSpriteAnimator:onFrame(fn)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     local received = 0
     animator:onFrame(function() received = received + 1 end)
@@ -1153,6 +2448,43 @@ LSpriteAnimator:onLoop(fn)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     local loops = 0
     animator:onLoop(function() loops = loops + 1 end)
@@ -1176,6 +2508,43 @@ LSpriteAnimator:pause()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     animator:play("idle")
     animator:pause()
@@ -1206,6 +2575,43 @@ LSpriteAnimator:play(name, restart)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     animator:play("idle")
     local clip = animator:currentClip()
@@ -1228,6 +2634,43 @@ LSpriteAnimator:resume()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     animator:play("idle")
     animator:pause()
@@ -1250,6 +2693,43 @@ LSpriteAnimator:stop()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     animator:play("idle")
     animator:update(0.2)
@@ -1279,6 +2759,43 @@ LSpriteAnimator:type()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     local kind = animator:type()
     local clip = animator:currentClip()
@@ -1313,6 +2830,43 @@ LSpriteAnimator:typeOf(name)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     local is_animator = animator:typeOf("LSpriteAnimator")
     local is_object = animator:typeOf("LObject")
@@ -1341,6 +2895,43 @@ LSpriteAnimator:update(dt)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local animator = lurek.sprite.newAnimator(make_clips())
     animator:play("idle")
     animator:update(0.11)
@@ -1378,6 +2969,43 @@ LSpriteAtlas:entryCount()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
     local count = atlas:entryCount()
     local names = atlas:entryNames()
@@ -1406,6 +3034,43 @@ LSpriteAtlas:entryNames()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
     local names = atlas:entryNames()
     local count = atlas:entryCount()
@@ -1440,6 +3105,43 @@ LSpriteAtlas:getByIndex(index)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
     local first = atlas:getByIndex(1)
     local second = atlas:getByIndex(2)
@@ -1474,6 +3176,43 @@ LSpriteAtlas:getEntry(name)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
     local entry = atlas:getEntry("hero_idle_1")
     local count = atlas:entryCount()
@@ -1510,6 +3249,43 @@ LSpriteAtlas:getFlipped(name, flip_x, flip_y)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
     local flipped = atlas:getFlipped("arrow_right", true, false)
     local base = atlas:getEntry("arrow_right")
@@ -1538,6 +3314,43 @@ LSpriteAtlas:type()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
     local kind = atlas:type()
     local count = atlas:entryCount()
@@ -1572,6 +3385,43 @@ LSpriteAtlas:typeOf(name)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
     local is_atlas = atlas:typeOf("LSpriteAtlas")
     local is_object = atlas:typeOf("LObject")
@@ -1615,6 +3465,43 @@ LSpriteSheet:drawToImage(w, h)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
     sheet:nameGroup("idle", 0, 2)
     local image = sheet:drawToImage(64, 64)
@@ -1650,6 +3537,43 @@ LSpriteSheet:getColumn(col)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
     local column = sheet:getColumn(1)
     local first = column[1]
@@ -1684,6 +3608,43 @@ LSpriteSheet:getFrame(index)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
     local first = sheet:getFrame(0)
     local second = sheet:getFrame(1)
@@ -1712,6 +3673,43 @@ LSpriteSheet:getFrameCount()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local count = sheet:getFrameCount()
     local cols, rows = sheet:getGridSize()
@@ -1741,6 +3739,43 @@ LSpriteSheet:getFrameSize()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local fw, fh = sheet:getFrameSize()
     local cols, rows = sheet:getGridSize()
@@ -1770,6 +3805,43 @@ LSpriteSheet:getGridSize()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local cols, rows = sheet:getGridSize()
     local count = sheet:getFrameCount()
@@ -1804,6 +3876,43 @@ LSpriteSheet:getGroupFrames(name)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
     sheet:nameGroup("idle", 0, 2)
     sheet:nameGroup("walk", 2, 4)
@@ -1832,6 +3941,43 @@ LSpriteSheet:getGroupNames()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newRPGMakerSheet(144, 192)
     local names = sheet:getGroupNames()
     local count = sheet:getFrameCount()
@@ -1866,6 +4012,43 @@ LSpriteSheet:getRow(row)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
     local row = sheet:getRow(0)
     local first = row[1]
@@ -1896,6 +4079,43 @@ LSpriteSheet:nameGroup(name, start, count)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
     sheet:nameGroup("run", 0, 4)
     local names = sheet:getGroupNames()
@@ -1924,6 +4144,43 @@ LSpriteSheet:type()
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local kind = sheet:type()
     local count = sheet:getFrameCount()
@@ -1958,6 +4215,43 @@ LSpriteSheet:typeOf(name)
 
 ```lua
 do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+    local function make_texturepacker_json()
+        return lurek.serial.toJson({
+            frames = {
+                { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+                { filename = "arrow_right", frame = { x = 0, y = 32, w = 32, h = 16 }, rotated = false },
+            },
+            meta = { size = { w = 64, h = 64 } },
+        })
+    end
+    local function make_aseprite_json()
+        return lurek.serial.toJson({
+            frames = {
+                ["hero_walk_0001.png"] = {
+                    frame = { x = 0, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+                ["hero_walk_0002.png"] = {
+                    frame = { x = 16, y = 0, w = 16, h = 16 },
+                    rotated = false,
+                    sourceSize = { w = 16, h = 16 },
+                },
+            },
+            meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+        })
+    end
+    local function make_clips()
+        return {
+            idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+            jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+        }
+    end
+
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local is_sheet = sheet:typeOf("LSpriteSheet")
     local is_object = sheet:typeOf("LObject")

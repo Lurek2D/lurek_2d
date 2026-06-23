@@ -71,6 +71,9 @@ describe("tilemap_minimap library", function()
 
         expect_true(ok_set, "setViewportFromWorld should not fail")
         expect_true(ok_clear, "clearViewport should not fail")
+        if helper:getMinimap().getViewportRect then
+            expect_nil(helper:getMinimap():getViewportRect(), "viewport rect should clear on real LMinimap")
+        end
     end)
 end)
 test_summary()

@@ -16,6 +16,21 @@ Example block: `lurek.asset.load`
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Minimal load: text type reads file content immediately.
     local h = lurek.asset.load(PATH_TEXT, "text")
     example_print_log("loaded: " .. h:type())
@@ -117,6 +132,21 @@ lurek.asset.addTag(handle, tag)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "config")
     lurek.asset.addTag(h, "ui")
@@ -145,6 +175,21 @@ lurek.asset.clear()
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.asset.load(PATH_TEXT, "text", { group = "temp" })
     lurek.asset.load(PATH_JSON, "json", { group = "temp" })
     local before = lurek.asset.stats()
@@ -180,6 +225,21 @@ lurek.asset.findByGroup(group)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   "json",   {group = "ui"})
     local h2 = lurek.asset.load(PATH_TOML,   "toml",   {group = "ui"})
@@ -219,6 +279,21 @@ lurek.asset.findByName(substr)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_TOML,   "toml", {name = "ProjectConfig"})
     local h2 = lurek.asset.load(PATH_JSON,   "json", {name = "FontAtlas"})
@@ -259,6 +334,21 @@ lurek.asset.findByTag(tag)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   "json")
     local h2 = lurek.asset.load(PATH_TOML,   "toml")
@@ -301,6 +391,21 @@ lurek.asset.findByType(type_str)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   "json")
     local h2 = lurek.asset.load(PATH_TOML,   "toml")
@@ -343,6 +448,21 @@ lurek.asset.get(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- get() for text-like types returns cached file content as a string.
     local h = lurek.asset.load(PATH_TEXT, "text")
     local content = lurek.asset.get(h)
@@ -383,6 +503,21 @@ lurek.asset.getGroup(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_JSON, "json")
     example_print_log("getGroup (unset)=" .. lurek.asset.getGroup(h))   -- ""
     lurek.asset.setGroup(h, "hud")
@@ -417,6 +552,21 @@ lurek.asset.getInfo(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_JSON, "json", {
         name  = "ui_config",
         group = "ui",
@@ -459,6 +609,21 @@ lurek.asset.getName(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_TOML, "toml")
     -- No explicit name: getName returns the path file-stem ("Cargo").
     example_print_log("getName (stem)=" .. lurek.asset.getName(h))
@@ -494,6 +659,21 @@ lurek.asset.getPath(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_TOML, "toml")
     local path = lurek.asset.getPath(h)
     local type_name = lurek.asset.getType(h)
@@ -529,6 +709,21 @@ lurek.asset.getTags(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "sfx")
     lurek.asset.addTag(h, "level_1")
@@ -564,6 +759,21 @@ lurek.asset.getType(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_TOML, "toml")
     example_print_log("type=" .. lurek.asset.getType(h))   -- "toml"
     lurek.asset.unload(h)
@@ -601,6 +811,21 @@ lurek.asset.hasTag(handle, tag)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "enemy")
     example_print_log("hasTag enemy=" .. tostring(lurek.asset.hasTag(h, "enemy")))
@@ -635,6 +860,21 @@ lurek.asset.isLoaded(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_TEXT, "text")
     local loaded_before = lurek.asset.isLoaded(h)
     lurek.asset.unload(h)
@@ -672,6 +912,21 @@ lurek.asset.load(path, asset_type, opts)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Minimal load: text type reads file content immediately.
     local h = lurek.asset.load(PATH_TEXT, "text")
     example_print_log("loaded: " .. h:type())
@@ -752,6 +1007,21 @@ lurek.asset.preload(paths, callback)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local results = {}
     lurek.asset.preload(
         {
@@ -798,6 +1068,21 @@ lurek.asset.refcount(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_TEXT, "text")
     local before = lurek.asset.refcount(h)
     local same = lurek.asset.load(PATH_TEXT, "text")
@@ -835,6 +1120,21 @@ lurek.asset.removeTag(handle, tag)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "temp")
     local removed = lurek.asset.removeTag(h, "temp")
@@ -871,6 +1171,21 @@ lurek.asset.setGroup(handle, group)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_JSON, "json")
     example_print_log("group before=" .. lurek.asset.getGroup(h))
     lurek.asset.setGroup(h, "level_1")
@@ -908,6 +1223,21 @@ lurek.asset.setName(handle, name)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_JSON, "json")
     example_print_log("name before=" .. lurek.asset.getName(h))
     lurek.asset.setName(h, "font_atlas")
@@ -938,6 +1268,21 @@ lurek.asset.stats()
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   "json",   {group = "data"})
     local h2 = lurek.asset.load(PATH_TOML,   "toml",   {group = "data"})
@@ -977,6 +1322,21 @@ lurek.asset.unload(handle)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_TEXT, "text")
     local before = lurek.asset.isLoaded(h)
     lurek.asset.unload(h)
@@ -1026,6 +1386,21 @@ LAssetHandle:type()
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_TEXT, "text")
     local type_name = h:type()
     local same_type = h:typeOf(type_name)
@@ -1061,6 +1436,21 @@ LAssetHandle:typeOf(name)
 
 ```lua
 do
+    local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
+    local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
+    local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+    local PATH_LUA    = "content/examples/asset.lua"
+    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+    local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.asset.load(PATH_TEXT, "text")
     example_print_log("typeOf LAssetHandle=" .. tostring(h:typeOf("LAssetHandle")))
     example_print_log("handle type name=" .. tostring(h:type()))

@@ -3060,3 +3060,1242 @@ do
     pathfind_log("matches LObject = " .. tostring(is_object))
     pathfind_log("matches LNavMesh = " .. tostring(is_nav_mesh))
 end
+
+--@api: lurek.pathfind.newSteeringManager
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addSeek(320, 180, 1.0)
+  example_print_log("lurek.pathfind.newSteeringManager: ok=" .. tostring(steer ~= nil))
+  example_print_log("lurek.pathfind.newSteeringManager: behaviors=" .. tostring(steer:getBehaviorCount()))
+end
+
+--@api: lurek.pathfind.newInfluenceMap
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local imap = lurek.pathfind.newInfluenceMap(32, 32, 16)
+  imap:addLayer("debug")
+  local map_width = imap:getWidth()
+  imap:addLayer("danger")
+  imap:setInfluence("danger", 4, 5, 0.9)
+  example_print_log("lurek.pathfind.newInfluenceMap: ok=" .. tostring(imap ~= nil))
+  example_print_log("lurek.pathfind.newInfluenceMap: width=" .. tostring(imap:getWidth()))
+end
+
+--@api: lurek.pathfind.newContextSteering
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+  cs:addSeekTarget(256, 128, 1.0)
+  local dx, dy = cs:evaluate(0, 0, 1, 0)
+  example_print_log("lurek.pathfind.newContextSteering: ok=" .. tostring(cs ~= nil))
+  example_print_log("lurek.pathfind.newContextSteering: dir=" .. tostring(dx) .. "," .. tostring(dy))
+end
+
+--@api: lurek.pathfind.newORCASolver
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local orca = lurek.pathfind.newORCASolver(1.5)
+  orca:addAgent(0, 0, 0.5, 3.0)
+  local preview_count = orca:agentCount()
+  example_print_log("lurek.pathfind.newORCASolver: ok=" .. tostring(orca ~= nil))
+  example_print_log("lurek.pathfind.newORCASolver: agents=" .. tostring(orca:agentCount()))
+end
+
+--@api: LSteeringManager:addSeek
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addSeek(400, 300, 1.0)
+  local fx, fy = steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
+  example_print_log("LSteeringManager:addSeek: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api: LSteeringManager:addFlee
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addFlee(200, 200, 1.0)
+  local fx, fy = steer:calculate(210, 195, 0, 0, 100, 200, 1 / 60)
+  example_print_log("LSteeringManager:addFlee: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api: LSteeringManager:addArrive
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addArrive(300, 300, 50, 1.0)
+  local fx, fy = steer:calculate(280, 290, 30, 10, 100, 200, 1 / 60)
+  example_print_log("LSteeringManager:addArrive: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api: LSteeringManager:addWander
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addWander(25, 50, 8, 0.5)
+  local fx, fy = steer:calculate(100, 100, 10, 0, 80, 150, 1 / 60)
+  example_print_log("LSteeringManager:addWander: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api: LSteeringManager:addPursue
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setEntity("target_agent", 220, 120, 20, 0)
+  steer:addPursue("target_agent", 1.0)
+  local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
+  example_print_log("LSteeringManager:addPursue: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api: LSteeringManager:addEvade
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setEntity("enemy_agent", 140, 120, -10, 0)
+  steer:addEvade("enemy_agent", 1.0)
+  local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
+  example_print_log("LSteeringManager:addEvade: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api: LSteeringManager:addFlock
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setEntity("ally_1", 110, 100, 20, 0)
+  steer:setEntity("ally_2", 95, 140, 10, 5)
+  steer:addFlock(80, 1.5, 1.0, 1.0, 1.0)
+  local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
+  example_print_log("LSteeringManager:addFlock: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api: LSteeringManager:setEntity
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setEntity("scout", 100, 80, 12, 0)
+  example_print_log("LSteeringManager:setEntity: count=" .. tostring(steer:entityCount()))
+end
+
+--@api: LSteeringManager:removeEntity
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setEntity("scout", 100, 80, 12, 0)
+  local removed = steer:removeEntity("scout")
+  example_print_log("LSteeringManager:removeEntity: removed=" .. tostring(removed))
+end
+
+--@api: LSteeringManager:clearEntities
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setEntity("a", 0, 0)
+  steer:setEntity("b", 16, 0)
+  steer:clearEntities()
+  example_print_log("LSteeringManager:clearEntities: count=" .. tostring(steer:entityCount()))
+end
+
+--@api: LSteeringManager:entityCount
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setEntity("a", 0, 0)
+  example_print_log("LSteeringManager:entityCount: " .. tostring(steer:entityCount()))
+end
+
+--@api: LSteeringManager:getBehaviorCount
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addSeek(100, 100, 1.0)
+  steer:addWander(10, 20, 3, 0.5)
+  local count = steer:getBehaviorCount()
+  example_print_log("LSteeringManager:getBehaviorCount: " .. tostring(count))
+end
+
+--@api: LSteeringManager:setCombineMode
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setCombineMode("priority")
+  local mode = steer:getCombineMode()
+  example_print_log("LSteeringManager:setCombineMode: " .. mode)
+end
+
+--@api: LSteeringManager:getCombineMode
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setCombineMode("truncated")
+  local mode = steer:getCombineMode()
+  example_print_log("LSteeringManager:getCombineMode: " .. mode)
+  example_print_log("LSteeringManager:getCombineMode: type=" .. steer:type())
+end
+
+--@api: LSteeringManager:getLastSteering
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addSeek(200, 200, 1.0)
+  steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
+  local lx, ly = steer:getLastSteering()
+  example_print_log("LSteeringManager:getLastSteering: " .. tostring(lx) .. "," .. tostring(ly))
+end
+
+--@api: LSteeringManager:calculate
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addSeek(500, 300, 1.0)
+  steer:addWander(15, 30, 4, 0.3)
+  local fx, fy = steer:calculate(100, 100, 20, 5, 150, 250, 1 / 60)
+  example_print_log("LSteeringManager:calculate: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api: LSteeringManager:setPath
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  local waypoints = {
+    { x = 50, y = 50 },
+    { x = 200, y = 80 },
+    { x = 350, y = 200 },
+    { x = 400, y = 400 },
+  }
+  steer:setPath(waypoints, 16.0, 1.0)
+  local has = steer:hasPath()
+  example_print_log("LSteeringManager:setPath: hasPath=" .. tostring(has))
+end
+
+--@api: LSteeringManager:clearPath
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setPath({ { x = 10, y = 10 }, { x = 100, y = 100 } }, 8.0, 1.0)
+  steer:clearPath()
+  local has = steer:hasPath()
+  example_print_log("LSteeringManager:clearPath: hasPath=" .. tostring(has))
+end
+
+--@api: LSteeringManager:hasPath
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  local before = steer:hasPath()
+  steer:setPath({ { x = 0, y = 0 }, { x = 50, y = 50 } }, 5.0, 1.0)
+  local after = steer:hasPath()
+  example_print_log("LSteeringManager:hasPath: before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+
+--@api: LSteeringManager:getPathProgress
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setPath({ { x = 0, y = 0 }, { x = 100, y = 50 }, { x = 200, y = 100 } }, 10.0, 1.0)
+  local idx, total = steer:getPathProgress()
+  example_print_log("LSteeringManager:getPathProgress: " .. tostring(idx) .. "/" .. tostring(total))
+end
+
+--@api: LSteeringManager:type
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  local t = steer:type()
+  example_print_log("LSteeringManager:type: " .. t)
+  example_print_log("LSteeringManager:type: matches=" .. tostring(steer:typeOf("LSteeringManager")))
+end
+
+--@api: LSteeringManager:typeOf
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  local is_steer = steer:typeOf("LSteeringManager")
+  local is_other = steer:typeOf("LBot")
+  example_print_log("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LBot=" .. tostring(is_other))
+end
+
+--@api: LSteeringManager:setSpatialHashCellSize
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:setSpatialHashCellSize(32)
+  example_print_log("LSteeringManager:setSpatialHashCellSize: done")
+end
+
+--@api: LSteeringManager:enableSpatialHash
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:enableSpatialHash(true)
+  steer:setSpatialHashCellSize(48)
+  example_print_log("LSteeringManager:enableSpatialHash: done")
+end
+
+--@api: LSteeringManager:addCustomBehavior
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addCustomBehavior(function(agent, dt) return 50, 0 end, 0.8)
+  local count = steer:getBehaviorCount()
+  example_print_log("LSteeringManager:addCustomBehavior: behaviors=" .. tostring(count))
+end
+
+--@api: LSteeringManager:applyCustomSteering
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local world_type = world:type()
+  local npc = world:addAgent("pusher")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
+  npc:setPosition(100, 100)
+  local steer = lurek.pathfind.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
+  steer:addCustomBehavior(function(agent, dt) return 25, -10 end, 1.0)
+  local fx, fy = steer:applyCustomSteering(npc, 1 / 60)
+  example_print_log("LSteeringManager:applyCustomSteering: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api: LInfluenceMap:addLayer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(16, 16, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    im:addLayer("threat")
+    im:addLayer("resources")
+    example_print_log("layers added: threat, resources")
+end
+
+--@api: LInfluenceMap:hasLayer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(8, 8, 2.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    im:addLayer("heat")
+    example_print_log("has heat = " .. tostring(im:hasLayer("heat")))
+    example_print_log("has cold = " .. tostring(im:hasLayer("cold")))
+end
+
+--@api: LInfluenceMap:setInfluence
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    im:addLayer("danger")
+    im:setInfluence("danger", 5, 5, 1.0)
+    im:setInfluence("danger", 3, 7, 0.5)
+    example_print_log("set influence at (5,5) and (3,7)")
+end
+
+--@api: LInfluenceMap:getInfluence
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    im:addLayer("food")
+    im:setInfluence("food", 4, 4, 0.75)
+    local val = im:getInfluence("food", 4, 4)
+    example_print_log("food at (4,4) = " .. val)
+end
+
+--@api: LInfluenceMap:stampInfluence
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(20, 20, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    im:addLayer("noise")
+    im:stampInfluence("noise", 10.0, 10.0, 3.0, 1.0, 0.5)
+    local center = im:getInfluence("noise", 10, 10)
+    example_print_log("noise center = " .. center)
+end
+
+--@api: LInfluenceMap:propagate
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+  im:addLayer("scent")
+    im:setInfluence("scent", 5, 5, 1.0)
+    im:propagate("scent", 0.8)
+    local neighbor = im:getInfluence("scent", 4, 5)
+    example_print_log("scent propagated to (4,5) = " .. neighbor)
+end
+
+--@api: LInfluenceMap:decay
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local im = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+  im:addLayer("heat")
+    im:setInfluence("heat", 4, 4, 1.0)
+    im:decay("heat", 0.5)
+    local val = im:getInfluence("heat", 4, 4)
+    example_print_log("heat after decay = " .. val)
+end
+
+--@api: LInfluenceMap:clearLayer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local im = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+  im:addLayer("marks")
+    im:setInfluence("marks", 2, 2, 1.0)
+    im:clearLayer("marks")
+    local val = im:getInfluence("marks", 2, 2)
+    example_print_log("after clear = " .. val)
+end
+
+--@api: LInfluenceMap:clearAll
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local im = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+  im:addLayer("a")
+  im:addLayer("b")
+  im:setInfluence("a", 1, 1, 1.0)
+    im:setInfluence("b", 2, 2, 0.5)
+    im:clearAll()
+    example_print_log("all cleared, a(1,1) = " .. im:getInfluence("a", 1, 1))
+end
+
+--@api: LInfluenceMap:getMaxPosition
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+  im:addLayer("gold")
+    im:setInfluence("gold", 7, 3, 0.9)
+    im:setInfluence("gold", 2, 8, 0.4)
+    local mx, my = im:getMaxPosition("gold")
+    example_print_log("max gold at (" .. mx .. ", " .. my .. ")")
+end
+
+--@api: LInfluenceMap:getMinPosition
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+  im:addLayer("cold")
+    im:setInfluence("cold", 1, 1, -0.5)
+    im:setInfluence("cold", 5, 5, 0.3)
+    local mx, my = im:getMinPosition("cold")
+    example_print_log("min cold at (" .. mx .. ", " .. my .. ")")
+end
+
+--@api: LInfluenceMap:queryRect
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local im = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+  im:addLayer("energy")
+    im:setInfluence("energy", 2, 2, 0.5)
+    im:setInfluence("energy", 3, 3, 0.5)
+    local total = im:queryRect("energy", 1, 1, 4, 4)
+    example_print_log("energy in rect = " .. total)
+end
+
+--@api: LInfluenceMap:blend
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local im = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+  im:addLayer("threat")
+  im:addLayer("reward")
+  im:addLayer("combined")
+  im:setInfluence("threat", 4, 4, 1.0)
+  im:setInfluence("reward", 4, 4, 0.8)
+  im:blend("threat", 0.5, "reward", 0.5, "combined")
+  local val = im:getInfluence("combined", 4, 4)
+    example_print_log("blended (4,4) = " .. val)
+end
+
+--@api: LInfluenceMap:getWidth
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(16, 12, 2.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    local map_height = im:getHeight()
+    example_print_log("width = " .. im:getWidth())
+end
+
+--@api: LInfluenceMap:getHeight
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(16, 12, 2.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    local cell_size = im:getCellSize()
+    example_print_log("height = " .. im:getHeight())
+end
+
+--@api: LInfluenceMap:getCellSize
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(8, 8, 2.5)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    local map_height = im:getHeight()
+    example_print_log("cell size = " .. im:getCellSize())
+end
+
+--@api: LInfluenceMap:type
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(4, 4, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    example_print_log("type = " .. im:type())
+  example_print_log("matches = " .. tostring(im:typeOf("LInfluenceMap")))
+end
+
+--@api: LInfluenceMap:typeOf
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local im = lurek.pathfind.newInfluenceMap(4, 4, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    local type_name = im:type()
+    example_print_log("is LInfluenceMap = " .. tostring(im:typeOf("LInfluenceMap")))
+end
+
+--@api: LContextSteering:addSeekTarget
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    cs:addSeekTarget(200, 150, 1.0)
+    example_print_log("seek target added at (200, 150)")
+end
+
+--@api: LContextSteering:addWander
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    cs:addWander(0.3, 0.5)
+    example_print_log("wander behavior added")
+end
+
+--@api: LContextSteering:addAvoidPoint
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    cs:addAvoidPoint(50, 50, 20.0, 1.5)
+    example_print_log("avoid point at (50, 50) radius 20")
+end
+
+--@api: LContextSteering:addAvoidBounds
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    cs:addAvoidBounds(0, 0, 800, 600, 30.0, 1.0)
+    example_print_log("avoid bounds set for 800x600 area")
+end
+
+--@api: LContextSteering:clearBehaviors
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    cs:addSeekTarget(100, 100, 1.0)
+    cs:addAvoidPoint(50, 50, 10.0, 1.0)
+    cs:clearBehaviors()
+    example_print_log("behaviors cleared")
+end
+
+--@api: LContextSteering:evaluate
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    cs:addSeekTarget(300, 200, 1.0)
+    cs:addAvoidPoint(150, 150, 30.0, 2.0)
+    local dx, dy = cs:evaluate(100, 100, 1.0, 0.0)
+    example_print_log("direction = " .. dx .. ", " .. dy)
+end
+
+--@api: LContextSteering:chosenMagnitude
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    cs:addSeekTarget(200, 200, 1.0)
+    cs:evaluate(0, 0, 0, 0)
+    local mag = cs:chosenMagnitude()
+    example_print_log("magnitude = " .. mag)
+end
+
+--@api: LContextSteering:slotCount
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(16)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    local type_name = cs:type()
+    example_print_log("slots = " .. cs:slotCount())
+end
+
+--@api: LContextSteering:type
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    example_print_log("type = " .. cs:type())
+  example_print_log("matches = " .. tostring(cs:typeOf("LContextSteering")))
+end
+
+--@api: LContextSteering:typeOf
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local cs = lurek.pathfind.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    local type_name = cs:type()
+    example_print_log("is LContextSteering = " .. tostring(cs:typeOf("LContextSteering")))
+end
+
+--@api: LORCASolver:addAgent
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local orca = lurek.pathfind.newORCASolver(2.0)
+    local idx = orca:addAgent(10.0, 20.0, 0.5, 3.0)
+    local count = orca:agentCount()
+    local type_name = orca:type()
+    example_print_log("agent index = " .. idx)
+end
+
+--@api: LORCASolver:setPreferredVelocity
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local orca = lurek.pathfind.newORCASolver(2.0)
+    orca:addAgent(0, 0, 0.5, 5.0)
+    orca:setPreferredVelocity(0, 2.0, 1.0)
+    local count = orca:agentCount()
+    local type_name = orca:type()
+    example_print_log("preferred velocity set for agent 0")
+end
+
+--@api: LORCASolver:setPosition
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local orca = lurek.pathfind.newORCASolver(2.0)
+    orca:addAgent(0, 0, 0.5, 5.0)
+    orca:setPosition(0, 5.0, 3.0)
+    local count = orca:agentCount()
+    local type_name = orca:type()
+    example_print_log("position updated for agent 0")
+end
+
+--@api: LORCASolver:compute
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local orca = lurek.pathfind.newORCASolver(1.5)
+  orca:addAgent(0, 0, 0.5, 3.0)
+  orca:addAgent(5, 0, 0.5, 3.0)
+  orca:setPreferredVelocity(0, 1.0, 0.0)
+    orca:setPreferredVelocity(1, -1.0, 0.0)
+    orca:compute(0.016)
+    example_print_log("collision avoidance computed")
+end
+
+--@api: LORCASolver:getSafeVelocity
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local orca = lurek.pathfind.newORCASolver(1.5)
+  orca:addAgent(0, 0, 0.5, 3.0)
+    orca:setPreferredVelocity(0, 2.0, 0.0)
+    orca:compute(0.016)
+    local vx, vy = orca:getSafeVelocity(0)
+    example_print_log("safe velocity = " .. vx .. ", " .. vy)
+end
+
+--@api: LORCASolver:agentCount
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local orca = lurek.pathfind.newORCASolver(2.0)
+    orca:addAgent(0, 0, 1.0, 2.0)
+    orca:addAgent(5, 5, 1.0, 2.0)
+    local type_name = orca:type()
+    local is_solver = orca:typeOf("LORCASolver")
+    example_print_log("agent count = " .. orca:agentCount())
+end
+
+--@api: LORCASolver:type
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local orca = lurek.pathfind.newORCASolver(1.0)
+    orca:addAgent(0, 0, 0.5, 2.0)
+    local count = orca:agentCount()
+    example_print_log("type = " .. orca:type())
+  example_print_log("matches = " .. tostring(orca:typeOf("LORCASolver")))
+end
+
+--@api: LORCASolver:typeOf
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local orca = lurek.pathfind.newORCASolver(1.0)
+    orca:addAgent(0, 0, 0.5, 2.0)
+    local count = orca:agentCount()
+    local type_name = orca:type()
+    example_print_log("is LORCASolver = " .. tostring(orca:typeOf("LORCASolver")))
+end
+
+--@api: LSteeringManager:getLastDiagnostic
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local steer = lurek.pathfind.newSteeringManager()
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("steer_probe")
+  steer:addCustomBehavior(function() error("custom steering failure") end, 1.0)
+  steer:applyCustomSteering(agent, 1 / 60)
+  example_print_log("LSteeringManager:getLastDiagnostic: " .. tostring(steer:getLastDiagnostic()))
+end

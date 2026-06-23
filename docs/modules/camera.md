@@ -16,6 +16,14 @@ Example block: `lurek.camera.new`
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(320, 180)
     cam:setZoom(1.25)
@@ -80,6 +88,14 @@ lurek.camera.new(vw, vh)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(320, 180)
     cam:setZoom(1.25)
@@ -116,6 +132,14 @@ lurek.camera.newCamera(vw, vh)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.newCamera(1280, 720)
     cam:setViewport(0, 0, 1280, 720)
     cam:setPosition(640, 360)
@@ -145,6 +169,14 @@ lurek.camera.newRig()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 320, 180)
     rig:setZoom("main", 1.5)
@@ -181,6 +213,14 @@ lurek.camera.newWalker(map, opts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, {
         layer = 1,
@@ -234,6 +274,14 @@ LCamera:apply()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(400, 300)
     cam:apply()
@@ -257,6 +305,14 @@ LCamera:attach()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(480, 270)
     cam:setZoom(1.5)
@@ -280,6 +336,14 @@ LCamera:clearParallaxFactors()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("fg", 1.2)
     cam:clearParallaxFactors()
@@ -302,6 +366,14 @@ LCamera:clearTarget()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(100, 100)
     cam:clearTarget()
@@ -325,6 +397,14 @@ LCamera:detach()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(480, 270)
     cam:attach()
@@ -355,6 +435,14 @@ LCamera:followPath(points, duration)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 400, 200 }, { 800, 0 } }
     cam:followPath(points, 3.0)
@@ -387,6 +475,14 @@ LCamera:getBounds()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 2000, 1500)
     local ok, bx, by, bw, bh = cam:getBounds()
@@ -419,6 +515,14 @@ LCamera:getDeadZone()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(40, 20)
     local ok, w, h = cam:getDeadZone()
@@ -450,6 +554,14 @@ LCamera:getEffectOffset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     local ox, oy = cam:getEffectOffset()
     cam:startSway(1.0, 0.5, 1.0, 0.5)
@@ -480,6 +592,14 @@ LCamera:getEffectiveZoom()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
     local ez = cam:getEffectiveZoom()
@@ -508,6 +628,14 @@ LCamera:getFollowEasing()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("linear")
     local e = cam:getFollowEasing()
@@ -538,6 +666,14 @@ LCamera:getFollowSmooth()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(3.0)
     local s = cam:getFollowSmooth()
@@ -568,6 +704,14 @@ LCamera:getLookAhead()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(2.0)
     local la = cam:getLookAhead()
@@ -604,6 +748,14 @@ LCamera:getParallaxFactor(layer)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("clouds", 0.3)
     local f = cam:getParallaxFactor("clouds")
@@ -634,6 +786,14 @@ LCamera:getPosition()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 50)
     cam:move(24, -8)
@@ -665,6 +825,14 @@ LCamera:getRenderOffset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     local rx, ry = cam:getRenderOffset()
     cam:shake(3.0, 0.2)
@@ -695,6 +863,14 @@ LCamera:getRotation()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(1.5)
     local r = cam:getRotation()
@@ -727,6 +903,14 @@ LCamera:getRotationConstraints()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-1.0, 1.0)
     local has_min, mn, has_max, mx = cam:getRotationConstraints()
@@ -755,6 +939,14 @@ LCamera:getRotationDamping()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.7)
     local d = cam:getRotationDamping()
@@ -786,6 +978,14 @@ LCamera:getShakeOffset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:shake(5.0, 0.5)
     cam:update(0.01)
@@ -816,6 +1016,14 @@ LCamera:getTarget()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(250, 125)
     local ok, tx, ty = cam:getTarget()
@@ -849,6 +1057,14 @@ LCamera:getViewport()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(10, 10, 780, 580)
     local x, y, w, h = cam:getViewport()
@@ -881,6 +1097,14 @@ LCamera:getVisibleArea()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(400, 300)
     local x, y, w, h = cam:getVisibleArea()
@@ -911,6 +1135,14 @@ LCamera:getZoom()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(0.5)
     local z = cam:getZoom()
@@ -944,6 +1176,14 @@ LCamera:getZoomConstraints()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.25, 3.0)
     local _, mn, _, mx = cam:getZoomConstraints()
@@ -973,6 +1213,14 @@ LCamera:getZoomDamping()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.8)
     local d = cam:getZoomDamping()
@@ -1003,6 +1251,14 @@ LCamera:hasBounds()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
     cam:setPosition(900, 900)
@@ -1032,6 +1288,14 @@ LCamera:isBreathing()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
     cam:update(0.1)
@@ -1060,6 +1324,14 @@ LCamera:isSway()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:startSway(1.0, 1.0, 1.0, 0.5)
     cam:update(0.1)
@@ -1090,6 +1362,14 @@ LCamera:lookAt(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:lookAt(500, 250)
     local x, y = cam:getPosition()
@@ -1121,6 +1401,14 @@ LCamera:move(dx, dy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
     cam:move(50, -25)
@@ -1150,6 +1438,14 @@ LCamera:onWindowResize(window_w, window_h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResize(1920, 1080)
     local _, _, w, h = cam:getViewport()
@@ -1182,6 +1478,14 @@ LCamera:onWindowResizeScaled(game_w, game_h, window_w, window_h, mode)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResizeScaled(800, 600, 1920, 1080, "letterbox")
     local x, y, w, h = cam:getViewport()
@@ -1210,6 +1514,14 @@ LCamera:pathProgress()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 100, 100 } }
     cam:followPath(points, 1.0)
@@ -1234,6 +1546,14 @@ LCamera:presetAggressiveFollow()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:presetAggressiveFollow()
     cam:setTarget(720, 260)
@@ -1257,6 +1577,14 @@ LCamera:presetBalancedFollow()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:presetBalancedFollow()
     cam:setTarget(420, 220)
@@ -1280,6 +1608,14 @@ LCamera:presetCinematicFollow()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:presetCinematicFollow()
     cam:setTarget(640, 240)
@@ -1303,6 +1639,14 @@ LCamera:presetTightFollow()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:presetTightFollow()
     cam:setTarget(180, 120)
@@ -1326,6 +1670,14 @@ LCamera:removeBounds()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
     lurek.log.info("bounds before remove=" .. tostring(cam:hasBounds()))
@@ -1351,6 +1703,14 @@ LCamera:reset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(500, 500)
     cam:setZoom(3.0)
@@ -1383,6 +1743,14 @@ LCamera:setBounds(x, y, w, h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 3200, 2400)
     cam:setPosition(3100, 2300)
@@ -1413,6 +1781,14 @@ LCamera:setDeadZone(w, h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(50, 30)
     local ok, w, h = cam:getDeadZone()
@@ -1441,6 +1817,14 @@ LCamera:setFollowEasing(easing)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("quadOut")
     cam:setTarget(220, 140)
@@ -1470,6 +1854,14 @@ LCamera:setFollowSmooth(speed)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(5.0)
     cam:setTarget(600, 300)
@@ -1499,6 +1891,14 @@ LCamera:setLookAhead(mul)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(1.5)
     cam:setTarget(420, 240)
@@ -1529,6 +1929,14 @@ LCamera:setParallaxFactor(layer, factor)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("background", 0.5)
     cam:setParallaxFactor("foreground", 1.2)
@@ -1560,6 +1968,14 @@ LCamera:setPosition(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(200, 150)
     cam:setTarget(260, 180)
@@ -1590,6 +2006,14 @@ LCamera:setRotation(r)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(math.pi / 4)
     cam:setPosition(600, 240)
@@ -1620,6 +2044,14 @@ LCamera:setRotationConstraints(min_rot, max_rot)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-0.5, 0.5)
     local has_min, min_r, has_max, max_r = cam:getRotationConstraints()
@@ -1648,6 +2080,14 @@ LCamera:setRotationDamping(damping)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.85)
     cam:setRotation(math.pi / 6)
@@ -1678,6 +2118,14 @@ LCamera:setTarget(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(500, 300)
     cam:setFollowSmooth(6.0)
@@ -1711,6 +2159,14 @@ LCamera:setViewport(x, y, w, h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(0, 0, 400, 300)
     local x, y, w, h = cam:getViewport()
@@ -1739,6 +2195,14 @@ LCamera:setZoom(zoom)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
     cam:setPosition(480, 320)
@@ -1770,6 +2234,14 @@ LCamera:setZoomConstraints(min_zoom, max_zoom)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.5, 4.0)
     local has_min, min_z, has_max, max_z = cam:getZoomConstraints()
@@ -1798,6 +2270,14 @@ LCamera:setZoomDamping(damping)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.9)
     cam:zoomTo(2.0, 0.5, "linear")
@@ -1828,6 +2308,14 @@ LCamera:shake(intensity, duration)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:shake(10.0, 0.5)
     cam:update(0.1)
@@ -1859,6 +2347,14 @@ LCamera:startBreathing(amplitude, rate)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
     cam:update(0.1)
@@ -1891,6 +2387,14 @@ LCamera:startSway(amplitude_x, amplitude_y, frequency, decay)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:startSway(3.0, 2.0, 1.5, 0.5)
     cam:update(0.1)
@@ -1914,6 +2418,14 @@ LCamera:stopBreathing()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.01, 0.3)
     cam:update(0.1)
@@ -1938,6 +2450,14 @@ LCamera:stopPath()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 100, 100 } }
     cam:followPath(points, 2.0)
@@ -1961,6 +2481,14 @@ LCamera:stopSway()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:startSway(2.0, 1.0, 1.0, 0.3)
     cam:update(0.1)
@@ -1985,6 +2513,14 @@ LCamera:stopZoom()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(3.0, 2.0, "linear")
     cam:updateZoom(0.5)
@@ -2024,6 +2560,14 @@ LCamera:toScreen(wx, wy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
     local sx, sy = cam:toScreen(500, 400)
@@ -2061,6 +2605,14 @@ LCamera:toWorld(sx, sy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
     local wx, wy = cam:toWorld(400, 300)
@@ -2090,6 +2642,14 @@ LCamera:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(200, 120)
     cam:setZoom(1.1)
@@ -2124,6 +2684,14 @@ LCamera:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(200, 120)
     cam:setZoom(1.1)
@@ -2152,6 +2720,14 @@ LCamera:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(200, 100)
     cam:setFollowSmooth(4.0)
@@ -2188,6 +2764,14 @@ LCamera:updatePath(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 200, 200 } }
     cam:followPath(points, 2.0)
@@ -2224,6 +2808,14 @@ LCamera:updateZoom(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "linear")
     local runningMid = cam:updateZoom(0.5)
@@ -2255,6 +2847,14 @@ LCamera:zoomPulse(amplitude, duration)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:zoomPulse(0.2, 0.3)
     local before = cam:getEffectiveZoom()
@@ -2288,6 +2888,14 @@ LCamera:zoomTo(target_zoom, duration, easing)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "quadOut")
     cam:updateZoom(0.5)
@@ -2331,6 +2939,14 @@ LCameraRig:apply(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
     local ok = rig:apply("main")
@@ -2370,6 +2986,14 @@ LCameraRig:getViewport(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 0, 0)
     rig:splitScreen(800, 600)
@@ -2404,6 +3028,14 @@ LCameraRig:has(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("x", 0, 0)
     rig:setPosition("y", 64, 64)
@@ -2434,6 +3066,14 @@ LCameraRig:minimap(window_w, window_h, ratio)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
     rig:minimap(1280, 720, 0.25)
@@ -2463,6 +3103,14 @@ LCameraRig:names()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("p1", 0, 0)
     local list = rig:names()
@@ -2494,6 +3142,14 @@ LCameraRig:pictureInPicture(window_w, window_h, pip_w, pip_h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 200, 200)
     rig:pictureInPicture(1280, 720, 320, 180)
@@ -2529,6 +3185,14 @@ LCameraRig:remove(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("temp", 0, 0)
     local ok = rig:remove("temp")
@@ -2560,6 +3224,14 @@ LCameraRig:setPosition(name, x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 100, 200)
     rig:setZoom("left", 1.2)
@@ -2591,6 +3263,14 @@ LCameraRig:setTarget(name, x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("cam1", 0, 0)
     rig:setTarget("cam1", 400, 300)
@@ -2620,6 +3300,14 @@ LCameraRig:setZoom(name, zoom)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("a", 0, 0)
     rig:setZoom("a", 1.5)
@@ -2650,6 +3338,14 @@ LCameraRig:splitScreen(window_w, window_h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("player1", 100, 100)
     rig:setPosition("player2", 500, 300)
@@ -2678,6 +3374,14 @@ LCameraRig:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("debug", 0, 0)
     rig:setZoom("debug", 1.25)
@@ -2713,6 +3417,14 @@ LCameraRig:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("debug", 0, 0)
     rig:setTarget("debug", 64, 96)
@@ -2742,6 +3454,14 @@ LCameraRig:updateAll(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rig = lurek.camera.newRig()
     rig:setPosition("a", 0, 0)
     rig:setTarget("a", 200, 200)
@@ -2779,6 +3499,14 @@ LCameraWalker:getCamera()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     local cam = walker:getCamera()
@@ -2810,6 +3538,14 @@ LCameraWalker:getPosition()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(96, 128)
@@ -2839,6 +3575,14 @@ LCameraWalker:getTilePosition()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
     walker:setTilePosition(3, 2)
@@ -2867,6 +3611,14 @@ LCameraWalker:moveDown(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveDown(1.0)
@@ -2895,6 +3647,14 @@ LCameraWalker:moveLeft(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveLeft(1.0)
@@ -2923,6 +3683,14 @@ LCameraWalker:moveRight(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveRight(1.0)
@@ -2951,6 +3719,14 @@ LCameraWalker:moveUp(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveUp(1.0)
@@ -2980,6 +3756,14 @@ LCameraWalker:setPosition(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(128, 96)
@@ -3009,6 +3793,14 @@ LCameraWalker:setTilePosition(tx, ty)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
     walker:setTilePosition(5, 4)
@@ -3037,6 +3829,14 @@ LCameraWalker:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(32, 48)
@@ -3072,6 +3872,14 @@ LCameraWalker:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(32, 48)
@@ -3100,6 +3908,14 @@ LCameraWalker:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(50, 50)

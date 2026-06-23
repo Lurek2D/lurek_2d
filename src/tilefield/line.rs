@@ -65,7 +65,11 @@ pub fn visit_line_cells(
     Ok(())
 }
 
-fn visit_vertical_line(from: CellCoord, to: CellCoord, visitor: &mut impl FnMut(CellCoord) -> bool) {
+fn visit_vertical_line(
+    from: CellCoord,
+    to: CellCoord,
+    visitor: &mut impl FnMut(CellCoord) -> bool,
+) {
     let start = from.z.min(to.z);
     let end = from.z.max(to.z);
     let mut cells: Vec<_> = (start..=end)

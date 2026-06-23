@@ -167,8 +167,14 @@ pub(crate) fn normalize_to_margin(nodes: &mut [LayoutNode], margin: f64) {
     if nodes.is_empty() {
         return;
     }
-    let min_x = nodes.iter().map(|node| node.x).fold(f64::INFINITY, f64::min);
-    let min_y = nodes.iter().map(|node| node.y).fold(f64::INFINITY, f64::min);
+    let min_x = nodes
+        .iter()
+        .map(|node| node.x)
+        .fold(f64::INFINITY, f64::min);
+    let min_y = nodes
+        .iter()
+        .map(|node| node.y)
+        .fold(f64::INFINITY, f64::min);
     let dx = margin - min_x;
     let dy = margin - min_y;
     for node in nodes {

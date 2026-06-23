@@ -1,0 +1,8 @@
+steering_ctor=true
+influence_ctor=true
+context_steering_ctor=true
+orca_ctor=true
+steering_type=LSteeringManager
+influence_type=LInfluenceMap
+context_slots=8
+orca_agents=0

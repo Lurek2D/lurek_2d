@@ -42,8 +42,16 @@ local function new_fallback_minimap(grid_w, grid_h, display_w, display_h)
         self._viewport = { x = x, y = y, w = w, h = h }
     end
 
+    function mm:setViewportRect(x, y, w, h)
+        self:setViewport(x, y, w, h)
+    end
+
     function mm:clearViewport()
         self._viewport = nil
+    end
+
+    function mm:clearViewportRect()
+        self:clearViewport()
     end
 
     return mm
@@ -119,7 +127,8 @@ end
 --- @param vw number
 --- @param vh number
 function TilemapMinimap:setViewportFromWorld(vx, vy, vw, vh)
-    if not self.minimap.setViewport then
+    local set_viewport = self.minimap.setViewportRect or self.minimap.setViewport
+    if not set_viewport then
         return
     end
 
@@ -129,12 +138,14 @@ function TilemapMinimap:setViewportFromWorld(vx, vy, vw, vh)
     local tw = math.max(1, (tx2 - tx1) + 1)
     local th = math.max(1, (ty2 - ty1) + 1)
 
-    self.minimap:setViewport(tx1, ty1, tw, th)
+    set_viewport(self.minimap, tx1, ty1, tw, th)
 end
 
 --- Clear minimap viewport overlay if supported.
 function TilemapMinimap:clearViewport()
-    if self.minimap.clearViewport then
+    if self.minimap.clearViewportRect then
+        self.minimap:clearViewportRect()
+    elseif self.minimap.clearViewport then
         self.minimap:clearViewport()
     end
 end

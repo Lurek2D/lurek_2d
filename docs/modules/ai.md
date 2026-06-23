@@ -16,6 +16,14 @@ Example block: `lurek.ai.newWorld`
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local scout = world:addAgent("scout_preview")
@@ -48,16 +56,16 @@ end
 - This makes the AI contract more realistic and more debuggable. Instead of a hidden boolean like “sees player,” the module encourages explicit sensory interpretation that can be inspected, tuned, and reused across several behavior styles.
 - Needs, drives, and emotional-style state broaden the feature beyond combat logic. They make the module useful for simulation actors, companions, social agents, or director systems where behavior depends on internal pressure as much as on external threats.
 - Blackboard-style context storage and shared decision data matter because larger AI systems usually need stable intermediate state. Several subsystems may contribute facts, priorities, or targets, and the module provides a shared surface for that internal coordination.
-- Steering and movement-side intelligence are part of the same story. Context steering, ORCA-like local avoidance, formation logic, command queues, locomotion helpers, and related movement support keep decision-making grounded in how agents actually traverse the world.
-- Squad support extends the module from isolated actors to coordinated groups. Leader-relative placement, formation maintenance, shared group state, and coordinated command handling make it possible to express teams, patrols, or formations rather than only individual units.
+- Movement-side helpers are deliberately owned by `pathfind`. Steering stacks, context steering, ORCA-style local avoidance, flow fields, and influence maps live there so navigation and tactical space analysis have one public owner.
+- Squad support extends the module from isolated actors to coordinated groups. Shared group state and coordinated command handling make it possible to express teams or patrols, while pure movement and local-avoidance execution stays in `pathfind`.
 - Command queues are important because AI output is often not the final physical action. A stable queue boundary separates “what the AI wants next” from “what the actor is currently doing,” which helps with interruption, inspection, and synchronization with animation or movement systems.
 - Director-style pacing support shows that the module also thinks beyond single actors. Encounter rhythm, phase pressure, tension, spawn pacing, and other orchestration behavior can be represented here when the “agent” is really the game experience itself.
 - Level-of-detail and update-policy support matter for scale. Large groups of intelligent actors can become expensive quickly, so the module includes ways to throttle, schedule, or simplify updates without abandoning the common behavior vocabulary.
 - Debug rendering and inspection support are essential for real use. Visualizing state machines, behavior trees, perception ranges, chosen targets, or queue contents shortens the path from “the agent behaved strangely” to “here is the exact internal reason.”
 - The module is useful for enemies, companions, neutral populations, strategic directors, simulation agents, crowd coordinators, and any feature where behavior should be data-driven, inspectable, and scalable rather than buried in one-off control code.
 - Machine-learning, reinforcement-learning, bandit, neural-network, genetic, and neuroevolution constructors are not owned here. Those belong to `learning`; `ai` may consume their outputs through explicit integration but must not duplicate their public API.
-- Neighboring modules still matter, but the boundary is clear. `pathfind` searches space, `physics` defines motion and collision semantics, and `render` visualizes results, while `ai` owns the reasoning structures, internal drives, sensory interpretation, and coordination layers that decide what to do.
-- The breadth of the spec is intentional because modern game AI is an ecosystem. Perception, memory, scoring, planning, execution, local movement, and group coordination all reinforce one another, and users need them to live under a shared conceptual surface.
+- Neighboring modules still matter, but the boundary is clear. `pathfind` owns route search, influence maps, steering, and local avoidance; `physics` defines motion and collision semantics; and `render` visualizes results, while `ai` owns the reasoning structures, internal drives, sensory interpretation, and coordination layers that decide what to do.
+- The breadth of the spec is intentional because modern game AI is an ecosystem. Perception, memory, scoring, planning, execution intent, and group coordination all reinforce one another, while movement execution uses the neighboring `pathfind` surface.
 - That ecosystem view also improves authoring. Teams can mix authored logic, tactical heuristics, and simulation-like drives within one runtime surface instead of treating each behavior family as an isolated special case.
 - It also helps debugging stay on one common reasoning vocabulary.
 - That common vocabulary matters once several actor types share a world.
@@ -86,6 +94,14 @@ lurek.ai.newAIDirector()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -116,6 +132,14 @@ lurek.ai.newAILod()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -150,6 +174,14 @@ lurek.ai.newAction(callback)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local act = lurek.ai.newAction(function() return "success" end)
   local node_type = act:getNodeType()
   local child_count = act:getChildCount()
@@ -179,6 +211,14 @@ lurek.ai.newBehaviorTree()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -209,6 +249,14 @@ lurek.ai.newBlackboard()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -237,6 +285,14 @@ lurek.ai.newCommandQueue()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -272,48 +328,20 @@ lurek.ai.newCondition(callback)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local cond = lurek.ai.newCondition(function() return true end)
   local node_type = cond:getNodeType()
   local child_count = cond:getChildCount()
   cond:reset()
   example_print_log("lurek.ai.newCondition: type=" .. cond:getNodeType())
   example_print_log("lurek.ai.newCondition: child_count=" .. tostring(cond:getChildCount()))
-end
-```
-
----
-
-### `lurek.ai.newContextSteering`
-
-Creates a context steering model with the requested directional slot count.
-
-```lua
-lurek.ai.newContextSteering(slots)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `slots` | number | Directional slot count; zero selects the engine default of 16. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LContextSteering](#lcontextsteering) | New context steering handle. |
-
-**Example**
-
-```lua
-do
-  local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-  cs:addSeekTarget(256, 128, 1.0)
-  local dx, dy = cs:evaluate(0, 0, 1, 0)
-  example_print_log("lurek.ai.newContextSteering: ok=" .. tostring(cs ~= nil))
-  example_print_log("lurek.ai.newContextSteering: dir=" .. tostring(dx) .. "," .. tostring(dy))
 end
 ```
 
@@ -337,6 +365,14 @@ lurek.ai.newDialogueAI()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local dlg = lurek.ai.newDialogueAI()
   dlg:addTopic("greeting", 0.5, nil, nil, "greet_score")
   dlg:setUtilityScore("greet_score", 0.8)
@@ -365,6 +401,14 @@ lurek.ai.newEmotionModel()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local emo = lurek.ai.newEmotionModel()
   emo:add("fear", 0.1, 0.2, 0.3)
   emo:trigger("fear", 0.5)
@@ -393,6 +437,14 @@ lurek.ai.newGOAPPlanner()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -430,6 +482,14 @@ lurek.ai.newGuard(predicate, child)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local child_action = lurek.ai.newAction(function() return "success" end)
   local guard = lurek.ai.newGuard(function() return true end, child_action)
   local node_type = guard:getNodeType()
@@ -458,49 +518,19 @@ lurek.ai.newHTNDomain()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
   example_print_log("lurek.ai.newHTNDomain: ok=" .. tostring(htn ~= nil))
   example_print_log("lurek.ai.newHTNDomain: tasks=" .. tostring(htn:taskCount()))
-end
-```
-
----
-
-### `lurek.ai.newInfluenceMap`
-
-Creates a grid influence map with the supplied cell dimensions and world cell size.
-
-```lua
-lurek.ai.newInfluenceMap(w, h, cs)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `w` | number | Map width in cells. |
-| `h` | number | Map height in cells. |
-| `cs` | number | World size of one cell. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LInfluenceMap](#linfluencemap) | New influence map handle. |
-
-**Example**
-
-```lua
-do
-  local imap = lurek.ai.newInfluenceMap(32, 32, 16)
-  imap:addLayer("debug")
-  local map_width = imap:getWidth()
-  imap:addLayer("danger")
-  imap:setInfluence("danger", 4, 5, 0.9)
-  example_print_log("lurek.ai.newInfluenceMap: ok=" .. tostring(imap ~= nil))
-  example_print_log("lurek.ai.newInfluenceMap: width=" .. tostring(imap:getWidth()))
 end
 ```
 
@@ -524,6 +554,14 @@ lurek.ai.newInverter()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local inv = lurek.ai.newInverter()
   local node_type = inv:getNodeType()
   local child_count = inv:getChildCount()
@@ -562,6 +600,14 @@ lurek.ai.newMCTSEngine(iters, uct_c, depth, seed)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local mcts = lurek.ai.newMCTSEngine(100, 1.41, 20, 42)
   local get_actions = function(state) return { 1, 2, 3 } end
   local apply = function(state, action) return state + action end
@@ -595,45 +641,19 @@ lurek.ai.newNeedSystem()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local needs = lurek.ai.newNeedSystem()
   needs:addNeed("hunger", 0.1, 0.7, 2.0)
   needs:update(2.0)
   example_print_log("lurek.ai.newNeedSystem: ok=" .. tostring(needs ~= nil))
   example_print_log("lurek.ai.newNeedSystem: urgent=" .. tostring(needs:mostUrgent()))
-end
-```
-
----
-
-### `lurek.ai.newORCASolver`
-
-Creates an ORCA avoidance solver with the supplied prediction horizon.
-
-```lua
-lurek.ai.newORCASolver(time_horizon)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `time_horizon` | number | Time horizon used when computing collision avoidance velocities. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LORCASolver](#lorcasolver) | New ORCA solver handle. |
-
-**Example**
-
-```lua
-do
-  local orca = lurek.ai.newORCASolver(1.5)
-  orca:addAgent(0, 0, 0.5, 3.0)
-  local preview_count = orca:agentCount()
-  example_print_log("lurek.ai.newORCASolver: ok=" .. tostring(orca ~= nil))
-  example_print_log("lurek.ai.newORCASolver: agents=" .. tostring(orca:agentCount()))
 end
 ```
 
@@ -664,6 +684,14 @@ lurek.ai.newParallel(sp, fp)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local par = lurek.ai.newParallel("requireAll", "requireOne")
   local node_type = par:getNodeType()
   local child_count = par:getChildCount()
@@ -700,6 +728,14 @@ lurek.ai.newRepeater(count)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local rep = lurek.ai.newRepeater(5)
   local node_type = rep:getNodeType()
   local child_count = rep:getChildCount()
@@ -729,6 +765,14 @@ lurek.ai.newSelector()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sel = lurek.ai.newSelector()
   local node_type = sel:getNodeType()
   local child_count = sel:getChildCount()
@@ -759,6 +803,14 @@ lurek.ai.newSequence()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local seq = lurek.ai.newSequence()
   local node_type = seq:getNodeType()
   local child_count = seq:getChildCount()
@@ -795,6 +847,14 @@ lurek.ai.newSquad(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local squad = lurek.ai.newSquad("bravo")
   squad:addMember("leader")
   squad:setLeader("leader")
@@ -823,6 +883,14 @@ lurek.ai.newStateMachine()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -830,35 +898,6 @@ do
   fsm:setInitialState("idle")
   example_print_log("lurek.ai.newStateMachine: ok=" .. tostring(fsm ~= nil))
   example_print_log("lurek.ai.newStateMachine: current=" .. tostring(fsm:getCurrentState()))
-end
-```
-
----
-
-### `lurek.ai.newSteeringManager`
-
-Creates an empty steering manager with support for built-in and custom behaviors.
-
-```lua
-lurek.ai.newSteeringManager()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LSteeringManager](#lsteeringmanager) | New steering manager handle. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addSeek(320, 180, 1.0)
-  example_print_log("lurek.ai.newSteeringManager: ok=" .. tostring(steer ~= nil))
-  example_print_log("lurek.ai.newSteeringManager: behaviors=" .. tostring(steer:getBehaviorCount()))
 end
 ```
 
@@ -882,6 +921,14 @@ lurek.ai.newStimulusWorld()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -917,6 +964,14 @@ lurek.ai.newStrategyAI(update_interval)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local strat = lurek.ai.newStrategyAI(3.0)
   strat:addGoal("expand")
   strat:addTag("economy")
@@ -945,6 +1000,14 @@ lurek.ai.newSucceeder()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local suc = lurek.ai.newSucceeder()
   local node_type = suc:getNodeType()
   local child_count = suc:getChildCount()
@@ -974,6 +1037,14 @@ lurek.ai.newTraitProfile()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local traits = lurek.ai.newTraitProfile()
   traits:set("discipline", 0.4)
   traits:set("courage", 0.7)
@@ -1002,6 +1073,14 @@ lurek.ai.newUtilityAI()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local util = lurek.ai.newUtilityAI()
   util:addAction("wait", function() return 0.2 end)
   util:addAction("attack", function() return 0.9 end)
@@ -1030,6 +1109,14 @@ lurek.ai.newWorld()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local scout = world:addAgent("scout_preview")
@@ -1065,18 +1152,14 @@ end
 - [LBehaviorTree](#lbehaviortree)
 - [LBot](#lbot)
 - [LCommandQueue](#lcommandqueue)
-- [LContextSteering](#lcontextsteering)
 - [LDialogueAI](#ldialogueai)
 - [LEmotionModel](#lemotionmodel)
 - [LGOAPPlanner](#lgoapplanner)
 - [LHTNDomain](#lhtndomain)
-- [LInfluenceMap](#linfluencemap)
 - [LMCTSEngine](#lmctsengine)
 - [LNeedSystem](#lneedsystem)
-- [LORCASolver](#lorcasolver)
 - [LSquad](#lsquad)
 - [LStateMachine](#lstatemachine)
-- [LSteeringManager](#lsteeringmanager)
 - [LStimulusWorld](#lstimulusworld)
 - [LStrategyAI](#lstrategyai)
 - [LTraitProfile](#ltraitprofile)
@@ -1102,6 +1185,14 @@ LAIBlackboard:clear()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1141,6 +1232,14 @@ LAIBlackboard:getBool(key, default)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1171,6 +1270,14 @@ LAIBlackboard:getKeys()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1208,6 +1315,14 @@ LAIBlackboard:getNumber(key, default)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1238,6 +1353,14 @@ LAIBlackboard:getSize()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1275,6 +1398,14 @@ LAIBlackboard:getString(key, default)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1311,6 +1442,14 @@ LAIBlackboard:has(key)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1341,6 +1480,14 @@ LAIBlackboard:remove(key)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1372,6 +1519,14 @@ LAIBlackboard:setBool(key, value)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1403,6 +1558,14 @@ LAIBlackboard:setNumber(key, value)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1434,6 +1597,14 @@ LAIBlackboard:setString(key, value)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1464,6 +1635,14 @@ LAIBlackboard:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1499,6 +1678,14 @@ LAIBlackboard:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -1536,6 +1723,14 @@ LAIDirector:ambientIntensity()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1565,6 +1760,14 @@ LAIDirector:lootFactor()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1594,6 +1797,14 @@ LAIDirector:phase()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1622,6 +1833,14 @@ LAIDirector:pushEvent(intensity)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1645,6 +1864,14 @@ LAIDirector:reset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1674,6 +1901,14 @@ LAIDirector:setTension(value)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1702,6 +1937,14 @@ LAIDirector:spawnRateFactor()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1731,6 +1974,14 @@ LAIDirector:tension()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1759,6 +2010,14 @@ LAIDirector:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1793,6 +2052,14 @@ LAIDirector:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1821,6 +2088,14 @@ LAIDirector:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -1865,6 +2140,14 @@ LAILod:shouldUpdate(tier, frame)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -1893,6 +2176,14 @@ LAILod:tierCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -1931,6 +2222,14 @@ LAILod:tierFor(ax, ay, rx, ry)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -1965,6 +2264,14 @@ LAILod:tierName(tier)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -1993,6 +2300,14 @@ LAILod:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -2027,6 +2342,14 @@ LAILod:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -2070,6 +2393,14 @@ LAIWorld:addAgent(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local archer = world:addAgent("archer_01")
@@ -2104,6 +2435,14 @@ LAIWorld:getAgent(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   world:addAgent("scout_01")
@@ -2132,6 +2471,14 @@ LAIWorld:getAgentCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   world:addAgent("unit_a")
@@ -2162,6 +2509,14 @@ LAIWorld:getGlobalBlackboard()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local gb = world:getGlobalBlackboard()
@@ -2191,6 +2546,14 @@ LAIWorld:getLastCallbackErrors()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("callback_probe")
   agent:setCustomModel(function() error("probe failure") end)
@@ -2220,6 +2583,14 @@ LAIWorld:removeAgent(agent)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local temp = world:addAgent("temp_npc")
@@ -2248,6 +2619,14 @@ LAIWorld:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local t = world:type()
@@ -2283,6 +2662,14 @@ LAIWorld:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local is_world = world:typeOf("LAIWorld")
@@ -2311,6 +2698,14 @@ LAIWorld:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("worker")
@@ -2352,6 +2747,14 @@ LBTNode:addChild(child)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local seq = lurek.ai.newSequence()
   local node_type = seq:getNodeType()
   local child_count = seq:getChildCount()
@@ -2381,6 +2784,14 @@ LBTNode:getChildCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sel = lurek.ai.newSelector()
   local node_type = sel:getNodeType()
   local child_count = sel:getChildCount()
@@ -2410,6 +2821,14 @@ LBTNode:getCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local rep = lurek.ai.newRepeater(7)
   local node_type = rep:getNodeType()
   local child_count = rep:getChildCount()
@@ -2438,6 +2857,14 @@ LBTNode:getNodeType()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local act = lurek.ai.newAction(function() return "success" end)
   local node_type = act:getNodeType()
   local child_count = act:getChildCount()
@@ -2460,6 +2887,14 @@ LBTNode:reset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local seq = lurek.ai.newSequence()
   local node_type = seq:getNodeType()
   local child_count = seq:getChildCount()
@@ -2489,6 +2924,14 @@ LBTNode:setChild(child)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local inv = lurek.ai.newInverter()
   local node_type = inv:getNodeType()
   local child_count = inv:getChildCount()
@@ -2518,6 +2961,14 @@ LBTNode:setCount(n)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local rep = lurek.ai.newRepeater(3)
   local node_type = rep:getNodeType()
   local child_count = rep:getChildCount()
@@ -2547,6 +2998,14 @@ LBTNode:setFailurePolicy(policy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local par = lurek.ai.newParallel("requireOne", "requireAll")
   local node_type = par:getNodeType()
   local child_count = par:getChildCount()
@@ -2576,6 +3035,14 @@ LBTNode:setSuccessPolicy(policy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local par = lurek.ai.newParallel("requireAll", "requireOne")
   local node_type = par:getNodeType()
   local child_count = par:getChildCount()
@@ -2605,6 +3072,14 @@ LBTNode:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local node = lurek.ai.newAction(function() return "success" end)
   local node_type = node:getNodeType()
   local child_count = node:getChildCount()
@@ -2640,6 +3115,14 @@ LBTNode:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local node = lurek.ai.newSelector()
   local node_type = node:getNodeType()
   local child_count = node:getChildCount()
@@ -2845,6 +3328,14 @@ LBehaviorTree:getDebugState()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -2875,6 +3366,14 @@ LBehaviorTree:getLastStatus()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -2979,6 +3478,14 @@ LBehaviorTree:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -3014,6 +3521,14 @@ LBehaviorTree:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -3051,6 +3566,14 @@ LBot:addTag(tag)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("guard")
@@ -3082,6 +3605,14 @@ LBot:getBlackboard()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("ranger")
@@ -3114,6 +3645,14 @@ LBot:getDecisionModel()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("farmer")
@@ -3145,6 +3684,14 @@ LBot:getMaxForce()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("scout")
@@ -3177,6 +3724,14 @@ LBot:getMaxSpeed()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("courier")
@@ -3209,6 +3764,14 @@ LBot:getName()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("knight_03")
@@ -3240,6 +3803,14 @@ LBot:getPosition()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("static_guard")
@@ -3271,6 +3842,14 @@ LBot:getPriority()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("grunt")
@@ -3303,6 +3882,14 @@ LBot:getVelocity()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("idle_npc")
@@ -3340,6 +3927,14 @@ LBot:hasTag(tag)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("merchant")
@@ -3372,6 +3967,14 @@ LBot:removeTag(tag)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("spy")
@@ -3404,6 +4007,14 @@ LBot:setCustomModel(callback)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("thinker")
@@ -3437,6 +4048,14 @@ LBot:setDecisionModel(model)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("worker")
@@ -3468,6 +4087,14 @@ LBot:setMaxForce(v)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("tank")
@@ -3499,6 +4126,14 @@ LBot:setMaxSpeed(v)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("sprinter")
@@ -3531,6 +4166,14 @@ LBot:setPosition(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("mover")
@@ -3563,6 +4206,14 @@ LBot:setPriority(p)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("captain")
@@ -3594,6 +4245,14 @@ LBot:setVelocity(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("runner")
@@ -3626,6 +4285,14 @@ LBot:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("villager")
@@ -3663,6 +4330,14 @@ LBot:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("knight")
@@ -3702,6 +4377,14 @@ LCommandQueue:cancelCurrent()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -3726,6 +4409,14 @@ LCommandQueue:clear()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -3758,6 +4449,14 @@ LCommandQueue:enqueue(kind, callback, opts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -3787,6 +4486,14 @@ LCommandQueue:getCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -3818,6 +4525,14 @@ LCommandQueue:getCurrentTarget()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -3847,6 +4562,14 @@ LCommandQueue:getCurrentType()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -3875,6 +4598,14 @@ LCommandQueue:isEmpty()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -3906,6 +4637,14 @@ LCommandQueue:pushFront(kind, callback, opts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -3937,6 +4676,14 @@ LCommandQueue:replace(kind, callback, opts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -3967,6 +4714,14 @@ LCommandQueue:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -4001,326 +4756,19 @@ LCommandQueue:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
     local type_name = cq:type()
     example_print_log("is LCommandQueue = " .. tostring(cq:typeOf("LCommandQueue")))
-end
-```
-
----
-
-## LContextSteering
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LContextSteering:addAvoidBounds`
-
-Adds rectangular bounds avoidance to context steering.
-
-```lua
-LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `min_x` | number | Minimum X bound. |
-| `min_y` | number | Minimum Y bound. |
-| `max_x` | number | Maximum X bound. |
-| `max_y` | number | Maximum Y bound. |
-| `margin` | number | Distance from bounds where avoidance begins. |
-| `weight` | number | Avoidance behavior weight. |
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    cs:addAvoidBounds(0, 0, 800, 600, 30.0, 1.0)
-    example_print_log("avoid bounds set for 800x600 area")
-end
-```
-
----
-
-#### `LContextSteering:addAvoidPoint`
-
-Adds a point avoidance influence to context steering.
-
-```lua
-LContextSteering:addAvoidPoint(x, y, radius, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Avoidance point X position. |
-| `y` | number | Avoidance point Y position. |
-| `radius` | number | Avoidance radius in world units. |
-| `weight` | number | Avoidance behavior weight. |
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    cs:addAvoidPoint(50, 50, 20.0, 1.5)
-    example_print_log("avoid point at (50, 50) radius 20")
-end
-```
-
----
-
-#### `LContextSteering:addSeekTarget`
-
-Adds a context steering target attraction.
-
-```lua
-LContextSteering:addSeekTarget(tx, ty, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tx` | number | Target X position in world units. |
-| `ty` | number | Target Y position in world units. |
-| `weight` | number | Attraction weight. |
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    cs:addSeekTarget(200, 150, 1.0)
-    example_print_log("seek target added at (200, 150)")
-end
-```
-
----
-
-#### `LContextSteering:addWander`
-
-Adds wander noise to context steering.
-
-```lua
-LContextSteering:addWander(jitter, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `jitter` | number | Random steering jitter strength. |
-| `weight` | number | Wander behavior weight. |
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    cs:addWander(0.3, 0.5)
-    example_print_log("wander behavior added")
-end
-```
-
----
-
-#### `LContextSteering:chosenMagnitude`
-
-Returns the magnitude of the last selected context steering slot.
-
-```lua
-LContextSteering:chosenMagnitude()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Last chosen magnitude. |
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    cs:addSeekTarget(200, 200, 1.0)
-    cs:evaluate(0, 0, 0, 0)
-    local mag = cs:chosenMagnitude()
-    example_print_log("magnitude = " .. mag)
-end
-```
-
----
-
-#### `LContextSteering:clearBehaviors`
-
-Removes all context steering behaviors.
-
-```lua
-LContextSteering:clearBehaviors()
-```
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    cs:addSeekTarget(100, 100, 1.0)
-    cs:addAvoidPoint(50, 50, 10.0, 1.0)
-    cs:clearBehaviors()
-    example_print_log("behaviors cleared")
-end
-```
-
----
-
-#### `LContextSteering:evaluate`
-
-Evaluates context steering and returns the selected movement direction.
-
-```lua
-LContextSteering:evaluate(ax, ay, vx, vy)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `ax` | number | Agent X position. |
-| `ay` | number | Agent Y position. |
-| `vx` | number | Agent X velocity. |
-| `vy` | number | Agent Y velocity. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Selected X and Y direction. (value 1). |
-| number | Selected X and Y direction. (value 2). |
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    cs:addSeekTarget(300, 200, 1.0)
-    cs:addAvoidPoint(150, 150, 30.0, 2.0)
-    local dx, dy = cs:evaluate(100, 100, 1.0, 0.0)
-    example_print_log("direction = " .. dx .. ", " .. dy)
-end
-```
-
----
-
-#### `LContextSteering:slotCount`
-
-Returns the number of directional slots used by this context steering model.
-
-```lua
-LContextSteering:slotCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Direction slot count. |
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    local type_name = cs:type()
-    example_print_log("slots = " .. cs:slotCount())
-end
-```
-
----
-
-#### `LContextSteering:type`
-
-Returns the Lua-visible type name for this context steering handle.
-
-```lua
-LContextSteering:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | The string `[LContextSteering](#lcontextsteering)`. |
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    example_print_log("type = " .. cs:type())
-  example_print_log("matches = " .. tostring(cs:typeOf("LContextSteering")))
-end
-```
-
----
-
-#### `LContextSteering:typeOf`
-
-Returns whether this context steering handle matches a supported type name.
-
-```lua
-LContextSteering:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to compare against `[LContextSteering](#lcontextsteering)` and `Object`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when the supplied type name matches this handle. |
-
-**Example**
-
-```lua
-do
-    local cs = lurek.ai.newContextSteering(8)
-  cs:addSeekTarget(0, 0, 1.0)
-  local slot_count = cs:slotCount()
-    local type_name = cs:type()
-    example_print_log("is LContextSteering = " .. tostring(cs:typeOf("LContextSteering")))
 end
 ```
 
@@ -4561,6 +5009,14 @@ LEmotionModel:add(name, rest, decay, min_vis)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("joy", 0.3, 0.1, 0.2)
     em:add("anger", 0.0, 0.05, 0.3)
@@ -4590,6 +5046,14 @@ LEmotionModel:dominant()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local em = lurek.ai.newEmotionModel()
   em:add("joy", 0.0, 0.1, 0.1)
     em:add("anger", 0.0, 0.1, 0.1)
@@ -4625,6 +5089,14 @@ LEmotionModel:get(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("sadness", 0.2, 0.05, 0.1)
     em:trigger("sadness", 0.5)
@@ -4659,6 +5131,14 @@ LEmotionModel:isActive(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local em = lurek.ai.newEmotionModel()
   em:add("surprise", 0.0, 0.1, 0.5)
     em:trigger("surprise", 0.2)
@@ -4682,6 +5162,14 @@ LEmotionModel:reset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("rage", 0.0, 0.1, 0.2)
     em:trigger("rage", 1.0)
@@ -4711,6 +5199,14 @@ LEmotionModel:trigger(name, amount)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("fear", 0.0, 0.1, 0.2)
     em:trigger("fear", 0.7)
@@ -4740,6 +5236,14 @@ LEmotionModel:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("joy", 0.1, 0.1, 0.1)
     local dominant = em:dominant()
@@ -4774,6 +5278,14 @@ LEmotionModel:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("joy", 0.1, 0.1, 0.1)
     local type_name = em:type()
@@ -4802,6 +5314,14 @@ LEmotionModel:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("excitement", 0.0, 0.2, 0.1)
     em:trigger("excitement", 1.0)
@@ -4840,6 +5360,14 @@ LGOAPPlanner:addAction(name, cost, callback)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -4870,6 +5398,14 @@ LGOAPPlanner:addGoal(name, priority)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -4899,6 +5435,14 @@ LGOAPPlanner:getActionCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -4928,6 +5472,14 @@ LGOAPPlanner:getGoalCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -4958,6 +5510,14 @@ LGOAPPlanner:getLastFailureReason()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local goap = lurek.ai.newGOAPPlanner()
   goap:setMaxIterations(1)
   goap:addAction("get_axe", 1.0)
@@ -4993,6 +5553,14 @@ LGOAPPlanner:getLastTrace()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local goap = lurek.ai.newGOAPPlanner()
   goap:plan({}, 4)
   local trace = goap:getLastTrace()
@@ -5022,6 +5590,14 @@ LGOAPPlanner:getMaxIterations()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -5057,6 +5633,14 @@ LGOAPPlanner:plan(world_state_tbl, max_depth)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -5094,6 +5678,14 @@ LGOAPPlanner:setEffect(action_name, key, value)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -5125,6 +5717,14 @@ LGOAPPlanner:setGoalState(goal_name, key, value)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -5154,6 +5754,14 @@ LGOAPPlanner:setMaxIterations(n)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -5184,6 +5792,14 @@ LGOAPPlanner:setPrecondition(action_name, key, value)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -5213,6 +5829,14 @@ LGOAPPlanner:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -5247,6 +5871,14 @@ LGOAPPlanner:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -5284,6 +5916,14 @@ LHTNDomain:addCompound(comp_name, methods_table)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -5317,6 +5957,14 @@ LHTNDomain:addPrimitive(name, preconds, effects, clears)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -5353,6 +6001,14 @@ LHTNDomain:plan(root_task, state_table)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -5387,6 +6043,14 @@ LHTNDomain:taskCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -5416,6 +6080,14 @@ LHTNDomain:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -5450,611 +6122,19 @@ LHTNDomain:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
     local type_name = htn:type()
     example_print_log("is LHTNDomain = " .. tostring(htn:typeOf("LHTNDomain")))
-end
-```
-
----
-
-## LInfluenceMap
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LInfluenceMap:addLayer`
-
-Adds an influence layer with the given name if it does not already exist.
-
-```lua
-LInfluenceMap:addLayer(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Layer name used by later influence operations. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(16, 16, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    im:addLayer("threat")
-    im:addLayer("resources")
-    example_print_log("layers added: threat, resources")
-end
-```
-
----
-
-#### `LInfluenceMap:blend`
-
-Blends two source layers into a destination layer using independent weights.
-
-```lua
-LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer_a` | string | First source layer name. |
-| `weight_a` | number | Weight applied to the first source layer. |
-| `layer_b` | string | Second source layer name. |
-| `weight_b` | number | Weight applied to the second source layer. |
-| `dest` | string | Destination layer name that receives the blended values. |
-
-**Example**
-
-```lua
-do
-  local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-  im:addLayer("threat")
-  im:addLayer("reward")
-  im:addLayer("combined")
-  im:setInfluence("threat", 4, 4, 1.0)
-  im:setInfluence("reward", 4, 4, 0.8)
-  im:blend("threat", 0.5, "reward", 0.5, "combined")
-  local val = im:getInfluence("combined", 4, 4)
-    example_print_log("blended (4,4) = " .. val)
-end
-```
-
----
-
-#### `LInfluenceMap:clearAll`
-
-Clears every influence value in every layer.
-
-```lua
-LInfluenceMap:clearAll()
-```
-
-**Example**
-
-```lua
-do
-  local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-  im:addLayer("a")
-  im:addLayer("b")
-  im:setInfluence("a", 1, 1, 1.0)
-    im:setInfluence("b", 2, 2, 0.5)
-    im:clearAll()
-    example_print_log("all cleared, a(1,1) = " .. im:getInfluence("a", 1, 1))
-end
-```
-
----
-
-#### `LInfluenceMap:clearLayer`
-
-Clears every value in a named influence layer.
-
-```lua
-LInfluenceMap:clearLayer(layer)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | string | Layer name to clear. |
-
-**Example**
-
-```lua
-do
-  local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-  im:addLayer("marks")
-    im:setInfluence("marks", 2, 2, 1.0)
-    im:clearLayer("marks")
-    local val = im:getInfluence("marks", 2, 2)
-    example_print_log("after clear = " .. val)
-end
-```
-
----
-
-#### `LInfluenceMap:decay`
-
-Multiplies a named layer by a decay factor.
-
-```lua
-LInfluenceMap:decay(layer, factor)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | string | Layer name to decay. |
-| `factor` | number | Decay factor applied to every cell. |
-
-**Example**
-
-```lua
-do
-  local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-  im:addLayer("heat")
-    im:setInfluence("heat", 4, 4, 1.0)
-    im:decay("heat", 0.5)
-    local val = im:getInfluence("heat", 4, 4)
-    example_print_log("heat after decay = " .. val)
-end
-```
-
----
-
-#### `LInfluenceMap:getCellSize`
-
-Returns the world size represented by each influence map cell.
-
-```lua
-LInfluenceMap:getCellSize()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Cell size in world units. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(8, 8, 2.5)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    local map_height = im:getHeight()
-    example_print_log("cell size = " .. im:getCellSize())
-end
-```
-
----
-
-#### `LInfluenceMap:getHeight`
-
-Returns the influence map height in cells.
-
-```lua
-LInfluenceMap:getHeight()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Cell height of the map. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(16, 12, 2.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    local cell_size = im:getCellSize()
-    example_print_log("height = " .. im:getHeight())
-end
-```
-
----
-
-#### `LInfluenceMap:getInfluence`
-
-Returns one cell value from a named influence layer using one-based cell coordinates.
-
-```lua
-LInfluenceMap:getInfluence(layer, x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | string | Layer name to read. |
-| `x` | number | One-based cell X coordinate. |
-| `y` | number | One-based cell Y coordinate. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Influence value at the requested cell. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    im:addLayer("food")
-    im:setInfluence("food", 4, 4, 0.75)
-    local val = im:getInfluence("food", 4, 4)
-    example_print_log("food at (4,4) = " .. val)
-end
-```
-
----
-
-#### `LInfluenceMap:getMaxPosition`
-
-Returns the cell position with the highest value on a named layer.
-
-```lua
-LInfluenceMap:getMaxPosition(layer)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | string | Layer name to scan. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | One-based X and Y cell coordinates of the maximum value. (value 1). |
-| number | One-based X and Y cell coordinates of the maximum value. (value 2). |
-
-**Example**
-
-```lua
-do
-  local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-  im:addLayer("gold")
-    im:setInfluence("gold", 7, 3, 0.9)
-    im:setInfluence("gold", 2, 8, 0.4)
-    local mx, my = im:getMaxPosition("gold")
-    example_print_log("max gold at (" .. mx .. ", " .. my .. ")")
-end
-```
-
----
-
-#### `LInfluenceMap:getMinPosition`
-
-Returns the cell position with the lowest value on a named layer.
-
-```lua
-LInfluenceMap:getMinPosition(layer)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | string | Layer name to scan. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | One-based X and Y cell coordinates of the minimum value. (value 1). |
-| number | One-based X and Y cell coordinates of the minimum value. (value 2). |
-
-**Example**
-
-```lua
-do
-  local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-  im:addLayer("cold")
-    im:setInfluence("cold", 1, 1, -0.5)
-    im:setInfluence("cold", 5, 5, 0.3)
-    local mx, my = im:getMinPosition("cold")
-    example_print_log("min cold at (" .. mx .. ", " .. my .. ")")
-end
-```
-
----
-
-#### `LInfluenceMap:getWidth`
-
-Returns the influence map width in cells.
-
-```lua
-LInfluenceMap:getWidth()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Cell width of the map. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(16, 12, 2.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    local map_height = im:getHeight()
-    example_print_log("width = " .. im:getWidth())
-end
-```
-
----
-
-#### `LInfluenceMap:hasLayer`
-
-Returns whether an influence layer exists.
-
-```lua
-LInfluenceMap:hasLayer(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Layer name to check. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when the layer exists. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(8, 8, 2.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    im:addLayer("heat")
-    example_print_log("has heat = " .. tostring(im:hasLayer("heat")))
-    example_print_log("has cold = " .. tostring(im:hasLayer("cold")))
-end
-```
-
----
-
-#### `LInfluenceMap:propagate`
-
-Propagates influence values across neighboring cells on a named layer.
-
-```lua
-LInfluenceMap:propagate(layer, momentum)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | string | Layer name to propagate. |
-| `momentum?` | number | Propagation momentum factor; defaults to 0.5. |
-
-**Example**
-
-```lua
-do
-  local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-  im:addLayer("scent")
-    im:setInfluence("scent", 5, 5, 1.0)
-    im:propagate("scent", 0.8)
-    local neighbor = im:getInfluence("scent", 4, 5)
-    example_print_log("scent propagated to (4,5) = " .. neighbor)
-end
-```
-
----
-
-#### `LInfluenceMap:queryRect`
-
-Returns influence values inside a world-space rectangle on a named layer.
-
-```lua
-LInfluenceMap:queryRect(layer, wx, wy, ww, wh)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | string | Layer name to query. |
-| `wx` | number | Rectangle X coordinate in world units. |
-| `wy` | number | Rectangle Y coordinate in world units. |
-| `ww` | number | Rectangle width in world units. |
-| `wh` | number | Rectangle height in world units. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number[] | Array of influence samples from cells inside the rectangle. |
-
-**Example**
-
-```lua
-do
-  local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-  im:addLayer("energy")
-    im:setInfluence("energy", 2, 2, 0.5)
-    im:setInfluence("energy", 3, 3, 0.5)
-    local total = im:queryRect("energy", 1, 1, 4, 4)
-    example_print_log("energy in rect = " .. total)
-end
-```
-
----
-
-#### `LInfluenceMap:setInfluence`
-
-Sets one cell value in a named influence layer using one-based cell coordinates.
-
-```lua
-LInfluenceMap:setInfluence(layer, x, y, value)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | string | Layer name to modify. |
-| `x` | number | One-based cell X coordinate. |
-| `y` | number | One-based cell Y coordinate. |
-| `value` | number | Influence value to store in the cell. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    im:addLayer("danger")
-    im:setInfluence("danger", 5, 5, 1.0)
-    im:setInfluence("danger", 3, 7, 0.5)
-    example_print_log("set influence at (5,5) and (3,7)")
-end
-```
-
----
-
-#### `LInfluenceMap:stampInfluence`
-
-Applies a radial influence stamp to a named layer in world coordinates.
-
-```lua
-LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | string | Layer name to modify. |
-| `wx` | number | World X coordinate of the stamp center. |
-| `wy` | number | World Y coordinate of the stamp center. |
-| `radius` | number | Stamp radius in world units. |
-| `value` | number | Influence value applied at the center. |
-| `falloff?` | number | Falloff exponent or multiplier; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(20, 20, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    im:addLayer("noise")
-    im:stampInfluence("noise", 10.0, 10.0, 3.0, 1.0, 0.5)
-    local center = im:getInfluence("noise", 10, 10)
-    example_print_log("noise center = " .. center)
-end
-```
-
----
-
-#### `LInfluenceMap:type`
-
-Returns the Lua-visible type name for this influence map handle.
-
-```lua
-LInfluenceMap:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | The string `[LInfluenceMap](#linfluencemap)`. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(4, 4, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    example_print_log("type = " .. im:type())
-  example_print_log("matches = " .. tostring(im:typeOf("LInfluenceMap")))
-end
-```
-
----
-
-#### `LInfluenceMap:typeOf`
-
-Returns whether this influence map handle matches a supported type name.
-
-```lua
-LInfluenceMap:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to compare against `InfluenceMap` and `Object`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when the supplied type name matches this handle. |
-
-**Example**
-
-```lua
-do
-    local im = lurek.ai.newInfluenceMap(4, 4, 1.0)
-  im:addLayer("debug")
-  local map_width = im:getWidth()
-    local type_name = im:type()
-    example_print_log("is LInfluenceMap = " .. tostring(im:typeOf("LInfluenceMap")))
 end
 ```
 
@@ -6086,6 +6166,14 @@ LMCTSEngine:getLastTrace()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local mcts = lurek.ai.newMCTSEngine(8, 1.4, 4, 42)
   mcts:search(
     1,
@@ -6127,6 +6215,14 @@ LMCTSEngine:search(root_state, get_actions_fn, apply_fn, eval_fn)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mcts = lurek.ai.newMCTSEngine(100, 1.4, 10, 42)
   local action = mcts:search(
     1,
@@ -6158,6 +6254,14 @@ LMCTSEngine:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
     local simulations = 50
     local exploration = 1.0
@@ -6192,6 +6296,14 @@ LMCTSEngine:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
     local simulations = 50
     local exploration = 1.0
@@ -6231,6 +6343,14 @@ LNeedSystem:addNeed(name, decay_rate, urgency_threshold, urgency_factor)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -6260,6 +6380,14 @@ LNeedSystem:mostUrgent()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -6291,6 +6419,14 @@ LNeedSystem:satisfy(name, amount)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -6321,6 +6457,14 @@ LNeedSystem:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -6355,6 +6499,14 @@ LNeedSystem:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -6383,6 +6535,14 @@ LNeedSystem:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -6419,6 +6579,14 @@ LNeedSystem:valueOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -6426,270 +6594,6 @@ do
     ns:update(2.0)
     local val = ns:valueOf("hunger")
     example_print_log("hunger value = " .. val)
-end
-```
-
----
-
-## LORCASolver
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LORCASolver:addAgent`
-
-Adds an ORCA avoidance agent and returns its zero-based solver index.
-
-```lua
-LORCASolver:addAgent(x, y, radius, max_speed)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Initial X position. |
-| `y` | number | Initial Y position. |
-| `radius` | number | Collision radius. |
-| `max_speed` | number | Maximum preferred speed. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Zero-based ORCA agent index. |
-
-**Example**
-
-```lua
-do
-    local orca = lurek.ai.newORCASolver(2.0)
-    local idx = orca:addAgent(10.0, 20.0, 0.5, 3.0)
-    local count = orca:agentCount()
-    local type_name = orca:type()
-    example_print_log("agent index = " .. idx)
-end
-```
-
----
-
-#### `LORCASolver:agentCount`
-
-Returns the number of ORCA agents in this solver.
-
-```lua
-LORCASolver:agentCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Current ORCA agent count. |
-
-**Example**
-
-```lua
-do
-    local orca = lurek.ai.newORCASolver(2.0)
-    orca:addAgent(0, 0, 1.0, 2.0)
-    orca:addAgent(5, 5, 1.0, 2.0)
-    local type_name = orca:type()
-    local is_solver = orca:typeOf("LORCASolver")
-    example_print_log("agent count = " .. orca:agentCount())
-end
-```
-
----
-
-#### `LORCASolver:compute`
-
-Computes safe velocities for all ORCA agents.
-
-```lua
-LORCASolver:compute(dt)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `dt` | number | Elapsed time in seconds for the avoidance step. |
-
-**Example**
-
-```lua
-do
-  local orca = lurek.ai.newORCASolver(1.5)
-  orca:addAgent(0, 0, 0.5, 3.0)
-  orca:addAgent(5, 0, 0.5, 3.0)
-  orca:setPreferredVelocity(0, 1.0, 0.0)
-    orca:setPreferredVelocity(1, -1.0, 0.0)
-    orca:compute(0.016)
-    example_print_log("collision avoidance computed")
-end
-```
-
----
-
-#### `LORCASolver:getSafeVelocity`
-
-Returns the computed safe velocity for an ORCA agent.
-
-```lua
-LORCASolver:getSafeVelocity(idx)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `idx` | number | Zero-based ORCA agent index. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Safe X and Y velocity; or zero velocity for an invalid index. (value 1). |
-| number | Safe X and Y velocity; or zero velocity for an invalid index. (value 2). |
-
-**Example**
-
-```lua
-do
-  local orca = lurek.ai.newORCASolver(1.5)
-  orca:addAgent(0, 0, 0.5, 3.0)
-    orca:setPreferredVelocity(0, 2.0, 0.0)
-    orca:compute(0.016)
-    local vx, vy = orca:getSafeVelocity(0)
-    example_print_log("safe velocity = " .. vx .. ", " .. vy)
-end
-```
-
----
-
-#### `LORCASolver:setPosition`
-
-Sets the position for an ORCA agent by zero-based index.
-
-```lua
-LORCASolver:setPosition(idx, x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `idx` | number | Zero-based ORCA agent index. |
-| `x` | number | New X position. |
-| `y` | number | New Y position. |
-
-**Example**
-
-```lua
-do
-    local orca = lurek.ai.newORCASolver(2.0)
-    orca:addAgent(0, 0, 0.5, 5.0)
-    orca:setPosition(0, 5.0, 3.0)
-    local count = orca:agentCount()
-    local type_name = orca:type()
-    example_print_log("position updated for agent 0")
-end
-```
-
----
-
-#### `LORCASolver:setPreferredVelocity`
-
-Sets the preferred velocity for an ORCA agent by zero-based index.
-
-```lua
-LORCASolver:setPreferredVelocity(idx, pvx, pvy)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `idx` | number | Zero-based ORCA agent index. |
-| `pvx` | number | Preferred X velocity. |
-| `pvy` | number | Preferred Y velocity. |
-
-**Example**
-
-```lua
-do
-    local orca = lurek.ai.newORCASolver(2.0)
-    orca:addAgent(0, 0, 0.5, 5.0)
-    orca:setPreferredVelocity(0, 2.0, 1.0)
-    local count = orca:agentCount()
-    local type_name = orca:type()
-    example_print_log("preferred velocity set for agent 0")
-end
-```
-
----
-
-#### `LORCASolver:type`
-
-Returns the Lua-visible type name for this ORCA solver handle.
-
-```lua
-LORCASolver:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | The string `[LORCASolver](#lorcasolver)`. |
-
-**Example**
-
-```lua
-do
-    local orca = lurek.ai.newORCASolver(1.0)
-    orca:addAgent(0, 0, 0.5, 2.0)
-    local count = orca:agentCount()
-    example_print_log("type = " .. orca:type())
-  example_print_log("matches = " .. tostring(orca:typeOf("LORCASolver")))
-end
-```
-
----
-
-#### `LORCASolver:typeOf`
-
-Returns whether this ORCA solver handle matches a supported type name.
-
-```lua
-LORCASolver:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to compare against `[LORCASolver](#lorcasolver)` and `Object`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when the supplied type name matches this handle. |
-
-**Example**
-
-```lua
-do
-    local orca = lurek.ai.newORCASolver(1.0)
-    orca:addAgent(0, 0, 0.5, 2.0)
-    local count = orca:agentCount()
-    local type_name = orca:type()
-    example_print_log("is LORCASolver = " .. tostring(orca:typeOf("LORCASolver")))
 end
 ```
 
@@ -6721,6 +6625,14 @@ LSquad:addMember(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("bravo")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -6750,6 +6662,14 @@ LSquad:getBlackboard()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("intel")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -6779,6 +6699,14 @@ LSquad:getFormation()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("recon")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -6817,6 +6745,14 @@ LSquad:getFormationPosition(member_idx, leader_x, leader_y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sq = lurek.ai.newSquad("patrol")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -6849,6 +6785,14 @@ LSquad:getFormationSpacing()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("assault")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -6878,6 +6822,14 @@ LSquad:getLeader()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("golf")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -6908,6 +6860,14 @@ LSquad:getMemberCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("delta")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -6938,6 +6898,14 @@ LSquad:getMembers()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("echo")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -6968,6 +6936,14 @@ LSquad:getName()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("alpha")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -6996,6 +6972,14 @@ LSquad:removeMember(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("charlie")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -7027,6 +7011,14 @@ LSquad:setFormation(ftype, spacing)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sq = lurek.ai.newSquad("hotel")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -7058,6 +7050,14 @@ LSquad:setLeader(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("foxtrot")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -7088,6 +7088,14 @@ LSquad:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("test")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -7122,6 +7130,14 @@ LSquad:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("test2")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -7159,6 +7175,14 @@ LStateMachine:addState(name, opts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -7192,6 +7216,14 @@ LStateMachine:addTransition(from, to, guard, priority)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -7222,6 +7254,14 @@ LStateMachine:forceState(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -7254,6 +7294,14 @@ LStateMachine:getCurrentState()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -7285,6 +7333,14 @@ LStateMachine:getTimeInState()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -7315,6 +7371,14 @@ LStateMachine:setInitialState(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -7346,6 +7410,14 @@ LStateMachine:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -7381,870 +7453,20 @@ LStateMachine:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
   local is_fsm = fsm:typeOf("LStateMachine")
   local is_other = fsm:typeOf("LBehaviorTree")
   example_print_log("LStateMachine:typeOf: LStateMachine=" .. tostring(is_fsm) .. " LBehaviorTree=" .. tostring(is_other))
-end
-```
-
----
-
-## LSteeringManager
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LSteeringManager:addArrive`
-
-Adds an arrive behavior that slows the agent as it approaches a target point.
-
-```lua
-LSteeringManager:addArrive(tx, ty, slowing, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tx` | number | Target X position in world units. |
-| `ty` | number | Target Y position in world units. |
-| `slowing?` | number | Radius used to reduce speed near the target; defaults to 50.0. |
-| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addArrive(300, 300, 50, 1.0)
-  local fx, fy = steer:calculate(280, 290, 30, 10, 100, 200, 1 / 60)
-  example_print_log("LSteeringManager:addArrive: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
-end
-```
-
----
-
-#### `LSteeringManager:addCustomBehavior`
-
-Adds a custom steering behavior backed by a Lua callback.
-
-```lua
-LSteeringManager:addCustomBehavior(func, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `func` | function | Function called as `(agent, dt)` that returns an X and Y steering force. |
-| `weight?` | number | Custom behavior weight applied to returned forces; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addCustomBehavior(function(agent, dt) return 50, 0 end, 0.8)
-  local count = steer:getBehaviorCount()
-  example_print_log("LSteeringManager:addCustomBehavior: behaviors=" .. tostring(count))
-end
-```
-
----
-
-#### `LSteeringManager:addEvade`
-
-Adds an evade behavior that moves away from another named agent when a threat name is supplied.
-
-```lua
-LSteeringManager:addEvade(threat_name, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `threat_name?` | string | Optional name of the agent to evade. |
-| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setEntity("enemy_agent", 140, 120, -10, 0)
-  steer:addEvade("enemy_agent", 1.0)
-  local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
-  example_print_log("LSteeringManager:addEvade: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
-end
-```
-
----
-
-#### `LSteeringManager:addFlee`
-
-Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
-
-```lua
-LSteeringManager:addFlee(tx, ty, panic_dist, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tx` | number | Threat X position in world units. |
-| `ty` | number | Threat Y position in world units. |
-| `panic_dist?` | number | Distance inside which fleeing is active; defaults to 200.0. |
-| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addFlee(200, 200, 1.0)
-  local fx, fy = steer:calculate(210, 195, 0, 0, 100, 200, 1 / 60)
-  example_print_log("LSteeringManager:addFlee: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
-end
-```
-
----
-
-#### `LSteeringManager:addFlock`
-
-Adds a flocking behavior with separation, alignment, and cohesion weights.
-
-```lua
-LSteeringManager:addFlock(neighbor_radius, sep_w, align_w, coh_w, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `neighbor_radius?` | number | Radius used to find flock neighbors; defaults to 100.0. |
-| `sep_w?` | number | Separation force weight; defaults to 1.5. |
-| `align_w?` | number | Alignment force weight; defaults to 1.0. |
-| `coh_w?` | number | Cohesion force weight; defaults to 1.0. |
-| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setEntity("ally_1", 110, 100, 20, 0)
-  steer:setEntity("ally_2", 95, 140, 10, 5)
-  steer:addFlock(80, 1.5, 1.0, 1.0, 1.0)
-  local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
-  example_print_log("LSteeringManager:addFlock: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
-end
-```
-
----
-
-#### `LSteeringManager:addPursue`
-
-Adds a pursue behavior that chases another named agent when a target name is supplied.
-
-```lua
-LSteeringManager:addPursue(target_name, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `target_name?` | string | Optional name of the agent to pursue. |
-| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setEntity("target_agent", 220, 120, 20, 0)
-  steer:addPursue("target_agent", 1.0)
-  local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
-  example_print_log("LSteeringManager:addPursue: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
-end
-```
-
----
-
-#### `LSteeringManager:addSeek`
-
-Adds a seek behavior that pulls the agent toward a target point.
-
-```lua
-LSteeringManager:addSeek(tx, ty, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tx` | number | Target X position in world units. |
-| `ty` | number | Target Y position in world units. |
-| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addSeek(400, 300, 1.0)
-  local fx, fy = steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
-  example_print_log("LSteeringManager:addSeek: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
-end
-```
-
----
-
-#### `LSteeringManager:addWander`
-
-Adds a wander behavior that produces jittered exploratory movement.
-
-```lua
-LSteeringManager:addWander(radius, dist, jitter, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `radius?` | number | Wander circle radius; defaults to 20.0. |
-| `dist?` | number | Wander circle distance in front of the agent; defaults to 40.0. |
-| `jitter?` | number | Random displacement applied per update; defaults to 5.0. |
-| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addWander(25, 50, 8, 0.5)
-  local fx, fy = steer:calculate(100, 100, 10, 0, 80, 150, 1 / 60)
-  example_print_log("LSteeringManager:addWander: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
-end
-```
-
----
-
-#### `LSteeringManager:applyCustomSteering`
-
-Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
-
-```lua
-LSteeringManager:applyCustomSteering(agent, dt)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `agent` | [LBot](#lbot) | Bot handle passed through to every custom steering callback. |
-| `dt` | number | Elapsed time in seconds passed to every custom steering callback. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Combined custom X and Y steering force. (value 1). |
-| number | Combined custom X and Y steering force. (value 2). |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local world_type = world:type()
-  local npc = world:addAgent("pusher")
-  local agent_name = npc:getName()
-  npc:setPriority(0.5)
-  npc:setPosition(100, 100)
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addCustomBehavior(function(agent, dt) return 25, -10 end, 1.0)
-  local fx, fy = steer:applyCustomSteering(npc, 1 / 60)
-  example_print_log("LSteeringManager:applyCustomSteering: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
-end
-```
-
----
-
-#### `LSteeringManager:calculate`
-
-Calculates a steering force for the supplied agent movement state.
-
-```lua
-LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `px` | number | Current agent X position. |
-| `py` | number | Current agent Y position. |
-| `vx` | number | Current agent X velocity. |
-| `vy` | number | Current agent Y velocity. |
-| `max_speed` | number | Maximum allowed speed used by steering constraints. |
-| `max_force` | number | Maximum allowed steering force. |
-| `dt` | number | Elapsed time in seconds for this steering step. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | X and Y steering force. (value 1). |
-| number | X and Y steering force. (value 2). |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addSeek(500, 300, 1.0)
-  steer:addWander(15, 30, 4, 0.3)
-  local fx, fy = steer:calculate(100, 100, 20, 5, 150, 250, 1 / 60)
-  example_print_log("LSteeringManager:calculate: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
-end
-```
-
----
-
-#### `LSteeringManager:clearEntities`
-
-Clears all steering-context entities.
-
-```lua
-LSteeringManager:clearEntities()
-```
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setEntity("a", 0, 0)
-  steer:setEntity("b", 16, 0)
-  steer:clearEntities()
-  example_print_log("LSteeringManager:clearEntities: count=" .. tostring(steer:entityCount()))
-end
-```
-
----
-
-#### `LSteeringManager:clearPath`
-
-Clears the active waypoint path behavior.
-
-```lua
-LSteeringManager:clearPath()
-```
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setPath({ { x = 10, y = 10 }, { x = 100, y = 100 } }, 8.0, 1.0)
-  steer:clearPath()
-  local has = steer:hasPath()
-  example_print_log("LSteeringManager:clearPath: hasPath=" .. tostring(has))
-end
-```
-
----
-
-#### `LSteeringManager:enableSpatialHash`
-
-Enables or disables spatial hash acceleration for neighbor queries.
-
-```lua
-LSteeringManager:enableSpatialHash(enabled)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `enabled` | boolean | True to use spatial hashing, false to use direct scans. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:enableSpatialHash(true)
-  steer:setSpatialHashCellSize(48)
-  example_print_log("LSteeringManager:enableSpatialHash: done")
-end
-```
-
----
-
-#### `LSteeringManager:entityCount`
-
-Returns the number of steering-context entities.
-
-```lua
-LSteeringManager:entityCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Entity count. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setEntity("a", 0, 0)
-  example_print_log("LSteeringManager:entityCount: " .. tostring(steer:entityCount()))
-end
-```
-
----
-
-#### `LSteeringManager:getBehaviorCount`
-
-Returns the number of steering behaviors configured on this manager.
-
-```lua
-LSteeringManager:getBehaviorCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Current steering behavior count. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addSeek(100, 100, 1.0)
-  steer:addWander(10, 20, 3, 0.5)
-  local count = steer:getBehaviorCount()
-  example_print_log("LSteeringManager:getBehaviorCount: " .. tostring(count))
-end
-```
-
----
-
-#### `LSteeringManager:getCombineMode`
-
-Returns the current steering force combination mode.
-
-```lua
-LSteeringManager:getCombineMode()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Combine mode name. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setCombineMode("truncated")
-  local mode = steer:getCombineMode()
-  example_print_log("LSteeringManager:getCombineMode: " .. mode)
-  example_print_log("LSteeringManager:getCombineMode: type=" .. steer:type())
-end
-```
-
----
-
-#### `LSteeringManager:getLastDiagnostic`
-
-Returns the most recent steering validation or runtime diagnostic.
-
-```lua
-LSteeringManager:getLastDiagnostic()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| LuaValue | Diagnostic string, or nil when no diagnostic has been recorded. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("steer_probe")
-  steer:addCustomBehavior(function() error("custom steering failure") end, 1.0)
-  steer:applyCustomSteering(agent, 1 / 60)
-  example_print_log("LSteeringManager:getLastDiagnostic: " .. tostring(steer:getLastDiagnostic()))
-end
-```
-
----
-
-#### `LSteeringManager:getLastSteering`
-
-Returns the last steering force calculated by this manager.
-
-```lua
-LSteeringManager:getLastSteering()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | X and Y force values from the previous calculation. (value 1). |
-| number | X and Y force values from the previous calculation. (value 2). |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:addSeek(200, 200, 1.0)
-  steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
-  local lx, ly = steer:getLastSteering()
-  example_print_log("LSteeringManager:getLastSteering: " .. tostring(lx) .. "," .. tostring(ly))
-end
-```
-
----
-
-#### `LSteeringManager:getPathProgress`
-
-Returns the current one-based waypoint index and total waypoint count.
-
-```lua
-LSteeringManager:getPathProgress()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Current waypoint index and total waypoint count. (value 1). |
-| number | Current waypoint index and total waypoint count. (value 2). |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setPath({ { x = 0, y = 0 }, { x = 100, y = 50 }, { x = 200, y = 100 } }, 10.0, 1.0)
-  local idx, total = steer:getPathProgress()
-  example_print_log("LSteeringManager:getPathProgress: " .. tostring(idx) .. "/" .. tostring(total))
-end
-```
-
----
-
-#### `LSteeringManager:hasPath`
-
-Returns whether this manager currently has an active waypoint path.
-
-```lua
-LSteeringManager:hasPath()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when a path is configured and not complete. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  local before = steer:hasPath()
-  steer:setPath({ { x = 0, y = 0 }, { x = 50, y = 50 } }, 5.0, 1.0)
-  local after = steer:hasPath()
-  example_print_log("LSteeringManager:hasPath: before=" .. tostring(before) .. " after=" .. tostring(after))
-end
-```
-
----
-
-#### `LSteeringManager:removeEntity`
-
-Removes one named steering-context entity.
-
-```lua
-LSteeringManager:removeEntity(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Entity name to remove. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when an entity was removed. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setEntity("scout", 100, 80, 12, 0)
-  local removed = steer:removeEntity("scout")
-  example_print_log("LSteeringManager:removeEntity: removed=" .. tostring(removed))
-end
-```
-
----
-
-#### `LSteeringManager:setCombineMode`
-
-Sets how steering behavior forces are combined.
-
-```lua
-LSteeringManager:setCombineMode(mode)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `mode` | string | Combine mode string parsed by the steering manager. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setCombineMode("priority")
-  local mode = steer:getCombineMode()
-  example_print_log("LSteeringManager:setCombineMode: " .. mode)
-end
-```
-
----
-
-#### `LSteeringManager:setEntity`
-
-Sets or replaces one named steering-context entity.
-
-```lua
-LSteeringManager:setEntity(name, x, y, vx, vy)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Entity name used by pursue, evade, and flock behaviors. |
-| `x` | number | Current entity X position. |
-| `y` | number | Current entity Y position. |
-| `vx?` | number | Current entity X velocity; defaults to 0. |
-| `vy?` | number | Current entity Y velocity; defaults to 0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setEntity("scout", 100, 80, 12, 0)
-  example_print_log("LSteeringManager:setEntity: count=" .. tostring(steer:entityCount()))
-end
-```
-
----
-
-#### `LSteeringManager:setPath`
-
-Sets a waypoint path behavior from an array of `{x, y}` tables.
-
-```lua
-LSteeringManager:setPath(waypoints, reach_radius, weight)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `waypoints` | table | Array of waypoint tables, each containing numeric `x` and `y` fields. |
-| `reach_radius?` | number | Distance at which a waypoint is considered reached; defaults to 12.0. |
-| `weight?` | number | Path following behavior weight; defaults to 1.0. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  local waypoints = {
-    { x = 50, y = 50 },
-    { x = 200, y = 80 },
-    { x = 350, y = 200 },
-    { x = 400, y = 400 },
-  }
-  steer:setPath(waypoints, 16.0, 1.0)
-  local has = steer:hasPath()
-  example_print_log("LSteeringManager:setPath: hasPath=" .. tostring(has))
-end
-```
-
----
-
-#### `LSteeringManager:setSpatialHashCellSize`
-
-Sets the cell size used by the steering manager spatial hash.
-
-```lua
-LSteeringManager:setSpatialHashCellSize(size)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `size` | number | Spatial hash cell size in world units. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  steer:setSpatialHashCellSize(32)
-  example_print_log("LSteeringManager:setSpatialHashCellSize: done")
-end
-```
-
----
-
-#### `LSteeringManager:type`
-
-Returns the Lua-visible type name for this steering manager handle.
-
-```lua
-LSteeringManager:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | The string `[LSteeringManager](#lsteeringmanager)`. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  local t = steer:type()
-  example_print_log("LSteeringManager:type: " .. t)
-  example_print_log("LSteeringManager:type: matches=" .. tostring(steer:typeOf("LSteeringManager")))
-end
-```
-
----
-
-#### `LSteeringManager:typeOf`
-
-Returns whether this steering manager handle matches a supported type name.
-
-```lua
-LSteeringManager:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to compare against `SteeringManager` and `Object`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when the supplied type name matches this handle. |
-
-**Example**
-
-```lua
-do
-  local steer = lurek.ai.newSteeringManager()
-  steer:addSeek(64, 64, 1.0)
-  local behavior_count = steer:getBehaviorCount()
-  local is_steer = steer:typeOf("LSteeringManager")
-  local is_other = steer:typeOf("LBot")
-  example_print_log("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LBot=" .. tostring(is_other))
 end
 ```
 
@@ -8287,6 +7509,14 @@ LStimulusWorld:addAuditory(x, y, intensity, radius, decay_rate, tag)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -8325,6 +7555,14 @@ LStimulusWorld:addVisual(x, y, intensity, radius, tag)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -8347,6 +7585,14 @@ LStimulusWorld:clear()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -8377,6 +7623,14 @@ LStimulusWorld:count()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -8412,6 +7666,14 @@ LStimulusWorld:remove(id)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -8441,6 +7703,14 @@ LStimulusWorld:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -8475,6 +7745,14 @@ LStimulusWorld:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -8503,6 +7781,14 @@ LStimulusWorld:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -8540,6 +7826,14 @@ LStrategyAI:activeGoal()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("idle")
     strat:addTag("waiting")
@@ -8569,6 +7863,14 @@ LStrategyAI:addGoal(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(5.0)
     strat:addGoal("expand")
     strat:addGoal("defend")
@@ -8597,6 +7899,14 @@ LStrategyAI:addTag(tag)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(3.0)
     strat:addTag("war_declared")
     strat:addTag("low_resources")
@@ -8626,6 +7936,14 @@ LStrategyAI:forceEvaluate(scorer_fn)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(10.0)
     strat:addGoal("build")
     strat:addGoal("scout")
@@ -8654,6 +7972,14 @@ LStrategyAI:removeTag(tag)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(3.0)
     strat:addTag("peace")
     strat:removeTag("peace")
@@ -8683,6 +8009,14 @@ LStrategyAI:timeUntilNext()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(5.0)
     strat:addGoal("wait")
     strat:update(2.0, function() return 1.0 end)
@@ -8712,6 +8046,14 @@ LStrategyAI:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("idle")
     local active = strat:activeGoal()
@@ -8746,6 +8088,14 @@ LStrategyAI:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("idle")
     local until_next = strat:timeUntilNext()
@@ -8775,6 +8125,14 @@ LStrategyAI:update(dt, scorer_fn)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("attack")
     strat:addGoal("retreat")
@@ -8814,6 +8172,14 @@ LTraitProfile:addModifier(trait_name, delta, duration, source)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -8843,6 +8209,14 @@ LTraitProfile:archetype()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -8880,6 +8254,14 @@ LTraitProfile:get(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -8916,6 +8298,14 @@ LTraitProfile:getBase(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -8951,6 +8341,14 @@ LTraitProfile:has(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -8980,6 +8378,14 @@ LTraitProfile:removeModifiers(source)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -9012,6 +8418,14 @@ LTraitProfile:set(name, value)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -9041,6 +8455,14 @@ LTraitProfile:traitCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -9071,6 +8493,14 @@ LTraitProfile:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -9105,6 +8535,14 @@ LTraitProfile:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -9133,6 +8571,14 @@ LTraitProfile:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -9173,6 +8619,14 @@ LUtilityAI:addAction(name, scorer_fn, weight)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -9209,6 +8663,14 @@ LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1, p2, p3,
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -9239,6 +8701,14 @@ LUtilityAI:evaluate()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -9269,6 +8739,14 @@ LUtilityAI:getActionCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -9299,6 +8777,14 @@ LUtilityAI:getLastAction()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -9330,6 +8816,14 @@ LUtilityAI:getLastTrace()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local uai = lurek.ai.newUtilityAI()
   uai:addAction("heal", function() return 0.8 end)
   uai:addConsideration("heal", "low_health", function() return 1.0 end, "linear", 1.0, 0.0, 0.0, 1.0)
@@ -9359,6 +8853,14 @@ LUtilityAI:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -9393,6 +8895,14 @@ LUtilityAI:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()

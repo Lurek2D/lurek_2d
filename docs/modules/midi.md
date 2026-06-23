@@ -16,6 +16,14 @@ Example block: `lurek.midi.newPlayer`
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.midi.newPlayer(path)
     example_print_log("type = " .. player:type())
@@ -58,6 +66,14 @@ lurek.midi.clearSoundFont()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     local ok, err = pcall(function()
         lurek.midi.loadSoundFont(path)
@@ -89,6 +105,14 @@ lurek.midi.hasSoundFont()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     lurek.midi.clearSoundFont()
     example_print_log("before load = " .. tostring(lurek.midi.hasSoundFont()))
@@ -128,6 +152,14 @@ lurek.midi.loadSoundFont(path)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     local ok, err = pcall(function()
         local loaded = lurek.midi.loadSoundFont(path)
@@ -164,6 +196,14 @@ lurek.midi.newPlayer(path)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.midi.newPlayer(path)
     example_print_log("type = " .. player:type())

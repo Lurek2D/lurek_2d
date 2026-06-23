@@ -16,6 +16,17 @@ Example block: `lurek.graph.newGraph`
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local mine = g:addNode("mine", 24)
     local depot = g:addNode("depot", 48)
@@ -69,6 +80,17 @@ lurek.graph.newGraph()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local mine = g:addNode("mine", 24)
     local depot = g:addNode("depot", 48)
@@ -128,6 +150,17 @@ LGraph:addEdge(from_ud, to_ud, edge_type)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode("src")
     local b = g:addNode("dst")
@@ -164,6 +197,17 @@ LGraph:addEdgeUnchecked(from_ud, to_ud, edge_type)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode("hub")
     local b = g:addNode("sink")
@@ -194,6 +238,17 @@ LGraph:addItem(item_ud, node_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("storage")
     local item = g:createItem("wood")
@@ -229,6 +284,17 @@ LGraph:addNode(node_type, capacity)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local source = g:addNode("warehouse", 100)
     local sink = g:addNode("factory", 40)
@@ -265,6 +331,17 @@ LGraph:astar(from_node, to_node)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -299,6 +376,17 @@ LGraph:batchAddEdges(edges)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local ids = g:batchAddNodes(3, { node_type = "router" })
     local edge_ids = g:batchAddEdges({
@@ -337,6 +425,17 @@ LGraph:batchAddNodes(count, config)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local ids = g:batchAddNodes(3, { node_type = "router", capacity = 4 })
     local nodes = g:getNodes()
@@ -367,6 +466,17 @@ LGraph:batchStep(dt, iterations)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local ids = g:batchAddNodes(2, { node_type = "router" })
     g:batchAddEdges({
@@ -398,6 +508,17 @@ LGraph:colorGraph()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -433,6 +554,17 @@ LGraph:createItem(item_type, decay_time)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local store = g:addNode("storage", 8)
     local item = g:createItem("ore", 10.0)
@@ -469,6 +601,17 @@ LGraph:findPath(from_ud, to_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b, c = g:addNode(), g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -506,6 +649,17 @@ LGraph:findPathForItem(item_ud, from_ud, to_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -535,6 +689,17 @@ LGraph:getComponents()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     g:addNode()
     g:addNode()
@@ -570,6 +735,17 @@ LGraph:getDistance(from_ud, to_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -605,6 +781,17 @@ LGraph:getEdgeBetween(from_ud, to_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b, "pipe")
@@ -633,6 +820,17 @@ LGraph:getEdgeCount()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -661,6 +859,17 @@ LGraph:getEdges()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -689,6 +898,17 @@ LGraph:getItemCount()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local storage = g:addNode("storage", 12)
     g:addItem(g:createItem("iron"), storage)
@@ -718,6 +938,17 @@ LGraph:getItems()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local storage = g:addNode("storage", 12)
     g:addItem(g:createItem("iron"), storage)
@@ -754,6 +985,17 @@ LGraph:getNeighbors(node_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b, c = g:addNode(), g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -783,6 +1025,17 @@ LGraph:getNodeCount()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     g:addNode("mine", 8)
     g:addNode("smelter", 8)
@@ -812,6 +1065,17 @@ LGraph:getNodes()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     g:addNode("x")
     g:addNode("y")
@@ -847,6 +1111,17 @@ LGraph:getReachable(from_ud, max_dist)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -875,6 +1150,17 @@ LGraph:getStats()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     g:addNode()
     g:addNode()
@@ -903,6 +1189,17 @@ LGraph:hasCycle()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -937,6 +1234,17 @@ LGraph:hasEdge(edge_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -971,6 +1279,17 @@ LGraph:hasItem(item_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local store = g:addNode("store", 4)
     local item = g:createItem("parcel")
@@ -1006,6 +1325,17 @@ LGraph:hasNode(node_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("source", 8)
     g:addNode("sink", 8)
@@ -1035,6 +1365,17 @@ LGraph:isBipartite()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1063,6 +1404,17 @@ LGraph:mst()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b, c = g:addNode(), g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -1094,6 +1446,17 @@ LGraph:on(event_name, func)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     g:on("itemEnter", function(item, node)
         example_print_log("item arrived at node")
@@ -1116,6 +1479,17 @@ LGraph:processDemand()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local mine = g:addNode("mine", 8)
     local factory = g:addNode("factory", 8)
@@ -1151,6 +1525,17 @@ LGraph:removeEdge(edge_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -1185,6 +1570,17 @@ LGraph:removeItem(item_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local junkyard = g:addNode("junkyard", 8)
     local item = g:createItem("scrap")
@@ -1221,6 +1617,17 @@ LGraph:removeNode(node_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("buffer", 4)
     g:addNode("sink", 4)
@@ -1251,6 +1658,17 @@ LGraph:sendItem(item_ud, edge_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e, item = g:addEdge(a, b), g:createItem("package")
@@ -1274,6 +1692,17 @@ LGraph:step()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local mine = g:addNode("mine", 8)
     local factory = g:addNode("factory", 8)
@@ -1309,6 +1738,17 @@ LGraph:subgraph(nodes)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addNode()
@@ -1337,6 +1777,17 @@ LGraph:tickParallel(dt)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local mine = g:addNode("mine", 8)
     local factory = g:addNode("factory", 8)
@@ -1366,6 +1817,17 @@ LGraph:topologicalSort()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b, c = g:addNode(), g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -1395,6 +1857,17 @@ LGraph:type()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local mine = g:addNode("mine", 8)
     g:addNode("depot", 8)
@@ -1430,6 +1903,17 @@ LGraph:typeOf(name)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local mine = g:addNode("mine", 8)
     local is_graph = g:typeOf("LGraph")
@@ -1459,6 +1943,17 @@ LGraph:update(dt)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local mine = g:addNode("mine", 8)
     local factory = g:addNode("factory", 8)
@@ -1496,6 +1991,17 @@ LGraphEdge:addAllowedType(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -1518,6 +2024,17 @@ LGraphEdge:clearAllowedTypes()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -1541,6 +2058,17 @@ LGraphEdge:clearCapacityReservations()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1572,6 +2100,17 @@ LGraphEdge:getAvailableCapacity()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1602,6 +2141,17 @@ LGraphEdge:getCapacity()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1630,6 +2180,17 @@ LGraphEdge:getCooldown()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1658,6 +2219,17 @@ LGraphEdge:getFrom()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode("src"), g:addNode("dst")
     local e = g:addEdge(a, b)
@@ -1686,6 +2258,17 @@ LGraphEdge:getItemsInTransit()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -1714,6 +2297,17 @@ LGraphEdge:getReservedCapacity()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1744,6 +2338,17 @@ LGraphEdge:getSpeedModifier()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1772,6 +2377,17 @@ LGraphEdge:getThroughput()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1800,6 +2416,17 @@ LGraphEdge:getTo()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode("target")
     local e = g:addEdge(a, b)
@@ -1828,6 +2455,17 @@ LGraphEdge:getTravelTime()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1856,6 +2494,17 @@ LGraphEdge:getType()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1884,6 +2533,17 @@ LGraphEdge:getWeight()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1912,6 +2572,17 @@ LGraphEdge:isActive()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1940,6 +2611,17 @@ LGraphEdge:isBidirectional()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -1974,6 +2656,17 @@ LGraphEdge:isItemTypeAllowed(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2002,6 +2695,17 @@ LGraphEdge:isOnCooldown()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -2037,6 +2741,17 @@ LGraphEdge:releaseCapacityReservation(key, slots)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -2074,6 +2789,17 @@ LGraphEdge:removeAllowedType(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2110,6 +2836,17 @@ LGraphEdge:reserveCapacity(key, slots)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -2140,6 +2877,17 @@ LGraphEdge:setActive(a)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2168,6 +2916,17 @@ LGraphEdge:setBidirectional(b)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2196,6 +2955,17 @@ LGraphEdge:setCapacity(c)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2224,6 +2994,17 @@ LGraphEdge:setCooldown(c)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2252,6 +3033,17 @@ LGraphEdge:setSpeedModifier(m)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2280,6 +3072,17 @@ LGraphEdge:setThroughput(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2308,6 +3111,17 @@ LGraphEdge:setTravelTime(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2336,6 +3150,17 @@ LGraphEdge:setType(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2364,6 +3189,17 @@ LGraphEdge:setWeight(w)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
@@ -2392,6 +3228,17 @@ LGraphEdge:type()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -2426,6 +3273,17 @@ LGraphEdge:typeOf(name)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a = g:addNode()
     local b = g:addNode()
@@ -2462,6 +3320,17 @@ LGraphItem:getDecayTime()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("food", 30.0)
     local pantry = g:addNode("pantry", 6)
@@ -2493,6 +3362,17 @@ LGraphItem:getPosition()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     local item = g:createItem("box")
@@ -2521,6 +3401,17 @@ LGraphItem:getPriority()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("parcel")
     local storage = g:addNode("storage", 4)
@@ -2550,6 +3441,17 @@ LGraphItem:getRemainingLife()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("milk", 10.0)
     local cooler = g:addNode("cooler", 6)
@@ -2579,6 +3481,17 @@ LGraphItem:getType()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("ore")
     local storage = g:addNode("storage", 4)
@@ -2608,6 +3521,17 @@ LGraphItem:isAlive()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("drone_part")
     local store = g:addNode("store", 4)
@@ -2631,6 +3555,17 @@ LGraphItem:kill()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("waste")
     local dump = g:addNode("dump", 4)
@@ -2661,6 +3596,17 @@ LGraphItem:setDecayTime(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("fruit")
     item:setDecayTime(60.0)
@@ -2691,6 +3637,17 @@ LGraphItem:setPriority(p)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("parcel")
     item:setPriority(5)
@@ -2721,6 +3678,17 @@ LGraphItem:setType(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("raw")
     item:setType("processed")
@@ -2751,6 +3719,17 @@ LGraphItem:type()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("box")
     local store = g:addNode("store", 4)
@@ -2786,6 +3765,17 @@ LGraphItem:typeOf(name)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local item = g:createItem("box")
     local store = g:addNode("store", 4)
@@ -2825,6 +3815,17 @@ LGraphNode:addDemand(item_type, quantity, priority)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("factory")
     n:addDemand("iron", 5, 1)
@@ -2855,6 +3856,17 @@ LGraphNode:addSupply(item_type, quantity)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("mine")
     n:addSupply("iron", 10)
@@ -2884,6 +3896,17 @@ LGraphNode:addTag(tag)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addTag("important")
@@ -2907,6 +3930,17 @@ LGraphNode:clearAllConversions()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setConversion("a", "b")
@@ -2930,6 +3964,17 @@ LGraphNode:clearCapacityReservations()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("warehouse", 5)
     n:reserveCapacity("planner-a", 2)
@@ -2964,6 +4009,17 @@ LGraphNode:clearConversion(in_type)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setConversion("a", "b")
@@ -2986,6 +4042,17 @@ LGraphNode:clearDemands()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addDemand("x", 1)
@@ -3008,6 +4075,17 @@ LGraphNode:clearSupplies()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addSupply("a", 1)
@@ -3031,6 +4109,17 @@ LGraphNode:clearTags()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addTag("x")
@@ -3060,6 +4149,17 @@ LGraphNode:dequeue()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("buffer")
     n:setQueueEnabled(true)
@@ -3099,6 +4199,17 @@ LGraphNode:enqueue(item_ud)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("buffer")
     n:setQueueEnabled(true)
@@ -3131,6 +4242,17 @@ LGraphNode:getAvailableCapacity()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("warehouse", 5)
     n:reserveCapacity("planner-a", 2)
@@ -3160,6 +4282,17 @@ LGraphNode:getCapacity()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("store", 50)
     n:addTag("buffer")
@@ -3195,6 +4328,17 @@ LGraphNode:getEdges(dir)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
@@ -3223,6 +4367,17 @@ LGraphNode:getFlowMode()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("router")
     n:setPushRate(2)
@@ -3251,6 +4406,17 @@ LGraphNode:getItemCount()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("stockpile", 4)
     g:addItem(g:createItem("ore"), n)
@@ -3280,6 +4446,17 @@ LGraphNode:getItems()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     g:addItem(g:createItem("ore"), n)
@@ -3308,6 +4485,17 @@ LGraphNode:getOverflowPolicy()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("buffer", 2)
     n:setQueueEnabled(true)
@@ -3336,6 +4524,17 @@ LGraphNode:getProcessTime()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("assembler")
     n:setConversion("plate", "gear", 2, 1)
@@ -3364,6 +4563,17 @@ LGraphNode:getPullFilter()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     local f = n:getPullFilter()
@@ -3393,6 +4603,17 @@ LGraphNode:getPullRate()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("factory")
     n:setFlowMode("pull")
@@ -3421,6 +4642,17 @@ LGraphNode:getPushFilter()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     local f = n:getPushFilter()
@@ -3450,6 +4682,17 @@ LGraphNode:getPushRate()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("mine")
     n:setFlowMode("push")
@@ -3478,6 +4721,17 @@ LGraphNode:getQueueCapacity()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("buffer")
     n:setQueueEnabled(true)
@@ -3506,6 +4760,17 @@ LGraphNode:getQueueSize()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("buffer")
     n:setQueueEnabled(true)
@@ -3534,6 +4799,17 @@ LGraphNode:getReservedCapacity()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("warehouse", 5)
     n:reserveCapacity("planner-a", 2)
@@ -3563,6 +4839,17 @@ LGraphNode:getTags()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addTag("a")
@@ -3592,6 +4879,17 @@ LGraphNode:getType()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("factory")
     n:addTag("smelting")
@@ -3627,6 +4925,17 @@ LGraphNode:hasTag(tag)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addTag("vip")
@@ -3656,6 +4965,17 @@ LGraphNode:isActive()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setType("router")
@@ -3685,6 +5005,17 @@ LGraphNode:isFull()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("bin", 1)
     local item = g:createItem("crate")
@@ -3714,6 +5045,17 @@ LGraphNode:isQueueEnabled()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("buffer")
     n:setQueueCapacity(4)
@@ -3749,6 +5091,17 @@ LGraphNode:releaseCapacityReservation(key, slots)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("warehouse", 5)
     n:reserveCapacity("planner-a", 2)
@@ -3783,6 +5136,17 @@ LGraphNode:removeDemand(item_type)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addDemand("coal", 3)
@@ -3817,6 +5181,17 @@ LGraphNode:removeSupply(item_type)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addSupply("wood", 5)
@@ -3851,6 +5226,17 @@ LGraphNode:removeTag(tag)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addTag("temp")
@@ -3886,6 +5272,17 @@ LGraphNode:reserveCapacity(key, slots)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("warehouse", 5)
     local ok = n:reserveCapacity("planner-a", 2)
@@ -3915,6 +5312,17 @@ LGraphNode:setActive(a)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setActive(false)
@@ -3944,6 +5352,17 @@ LGraphNode:setCapacity(c)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setCapacity(200)
@@ -3976,6 +5395,17 @@ LGraphNode:setConversion(in_type, out_type, in_count, out_count)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode("smelter")
     n:setConversion("iron_ore", "iron_bar", 2, 1)
@@ -4005,6 +5435,17 @@ LGraphNode:setFlowMode(m)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setFlowMode("push")
@@ -4034,6 +5475,17 @@ LGraphNode:setOverflowPolicy(p)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setOverflowPolicy("destroy")
@@ -4063,6 +5515,17 @@ LGraphNode:setProcessTime(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setProcessTime(2.5)
@@ -4092,6 +5555,17 @@ LGraphNode:setPullFilter(f)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setPullFilter("wood")
@@ -4121,6 +5595,17 @@ LGraphNode:setPullRate(r)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setPullRate(3)
@@ -4150,6 +5635,17 @@ LGraphNode:setPushFilter(f)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setPushFilter("iron")
@@ -4179,6 +5675,17 @@ LGraphNode:setPushRate(r)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setPushRate(5)
@@ -4208,6 +5715,17 @@ LGraphNode:setQueueCapacity(c)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setQueueCapacity(10)
@@ -4237,6 +5755,17 @@ LGraphNode:setQueueEnabled(e)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setQueueEnabled(true)
@@ -4266,6 +5795,17 @@ LGraphNode:setType(t)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setType("warehouse")
@@ -4295,6 +5835,17 @@ LGraphNode:type()
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setType("terminal")
@@ -4330,6 +5881,17 @@ LGraphNode:typeOf(name)
 
 ```lua
 do
+    local function flownet_log(message)
+        lurek.log.info("[flownet.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setType("terminal")

@@ -5,8 +5,8 @@
 ## TL;DR
 
 - Orchestrates agent choices via behavior trees, FSMs, GOAP, HTN, and utility AI.
-- Synthesizes steering locomotion, spatial collision avoidance, and sensory perception.
-- Tracks tactical influence grids, squad formations, and trait-driven emotional motives.
+- Interprets sensory perception, internal state, goals, plans, and action-selection models.
+- Tracks squad coordination, trait-driven emotional motives, needs, and dramatic pacing.
 - Consumes learned policies only through explicit `learning` integration points; ML/RL constructors live under the `learning` module.
 - Controls dramatic pacing waves and optimizes runtime budgets with distance-based LOD tiers.
 
@@ -16,7 +16,7 @@
 - Source path: `src/ai`
 - Binding: `src/lua_api/ai_api.rs`
 - Namespace: `lurek.ai`
-- Lua API surface: `31` functions, `24` types, `247` methods
+- Lua API surface: `27` functions, `20` types, `184` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -31,16 +31,16 @@
 - This makes the AI contract more realistic and more debuggable. Instead of a hidden boolean like “sees player,” the module encourages explicit sensory interpretation that can be inspected, tuned, and reused across several behavior styles.
 - Needs, drives, and emotional-style state broaden the feature beyond combat logic. They make the module useful for simulation actors, companions, social agents, or director systems where behavior depends on internal pressure as much as on external threats.
 - Blackboard-style context storage and shared decision data matter because larger AI systems usually need stable intermediate state. Several subsystems may contribute facts, priorities, or targets, and the module provides a shared surface for that internal coordination.
-- Steering and movement-side intelligence are part of the same story. Context steering, ORCA-like local avoidance, formation logic, command queues, locomotion helpers, and related movement support keep decision-making grounded in how agents actually traverse the world.
-- Squad support extends the module from isolated actors to coordinated groups. Leader-relative placement, formation maintenance, shared group state, and coordinated command handling make it possible to express teams, patrols, or formations rather than only individual units.
+- Movement-side helpers are deliberately owned by `pathfind`. Steering stacks, context steering, ORCA-style local avoidance, flow fields, and influence maps live there so navigation and tactical space analysis have one public owner.
+- Squad support extends the module from isolated actors to coordinated groups. Shared group state and coordinated command handling make it possible to express teams or patrols, while pure movement and local-avoidance execution stays in `pathfind`.
 - Command queues are important because AI output is often not the final physical action. A stable queue boundary separates “what the AI wants next” from “what the actor is currently doing,” which helps with interruption, inspection, and synchronization with animation or movement systems.
 - Director-style pacing support shows that the module also thinks beyond single actors. Encounter rhythm, phase pressure, tension, spawn pacing, and other orchestration behavior can be represented here when the “agent” is really the game experience itself.
 - Level-of-detail and update-policy support matter for scale. Large groups of intelligent actors can become expensive quickly, so the module includes ways to throttle, schedule, or simplify updates without abandoning the common behavior vocabulary.
 - Debug rendering and inspection support are essential for real use. Visualizing state machines, behavior trees, perception ranges, chosen targets, or queue contents shortens the path from “the agent behaved strangely” to “here is the exact internal reason.”
 - The module is useful for enemies, companions, neutral populations, strategic directors, simulation agents, crowd coordinators, and any feature where behavior should be data-driven, inspectable, and scalable rather than buried in one-off control code.
 - Machine-learning, reinforcement-learning, bandit, neural-network, genetic, and neuroevolution constructors are not owned here. Those belong to `learning`; `ai` may consume their outputs through explicit integration but must not duplicate their public API.
-- Neighboring modules still matter, but the boundary is clear. `pathfind` searches space, `physics` defines motion and collision semantics, and `render` visualizes results, while `ai` owns the reasoning structures, internal drives, sensory interpretation, and coordination layers that decide what to do.
-- The breadth of the spec is intentional because modern game AI is an ecosystem. Perception, memory, scoring, planning, execution, local movement, and group coordination all reinforce one another, and users need them to live under a shared conceptual surface.
+- Neighboring modules still matter, but the boundary is clear. `pathfind` owns route search, influence maps, steering, and local avoidance; `physics` defines motion and collision semantics; and `render` visualizes results, while `ai` owns the reasoning structures, internal drives, sensory interpretation, and coordination layers that decide what to do.
+- The breadth of the spec is intentional because modern game AI is an ecosystem. Perception, memory, scoring, planning, execution intent, and group coordination all reinforce one another, while movement execution uses the neighboring `pathfind` surface.
 - That ecosystem view also improves authoring. Teams can mix authored logic, tactical heuristics, and simulation-like drives within one runtime surface instead of treating each behavior family as an isolated special case.
 - It also helps debugging stay on one common reasoning vocabulary.
 - That common vocabulary matters once several actor types share a world.
@@ -69,9 +69,9 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### agent.rs
 
-- Defines the runtime state shape for one AI actor, combining identity, movement, decision mode, and support models.
+- Defines the runtime state shape for one AI actor, combining identity, movement state, decision mode, and support models.
 - Owns the DecisionModel enum plus agent-side blackboard, tags, optional sensor, emotions, needs, and traits.
-- Stores links into FSM, behavior-tree, and steering arenas so one agent can bind to multiple decision runtimes.
+- Stores links into decision-runtime handles so one agent can bind to FSM, behavior-tree, and movement-guidance models.
 - Provides the per-actor boundary between shared AI systems and the concrete state they read and update.
 - Open this owner when agent schema, decision-mode tagging, or cross-system state handoff needs to change.
 
@@ -91,16 +91,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - Provides enqueue, push-front, replace, cancel, and advance helpers so reactive overrides stay explicit and safe.
 - Acts as the execution boundary between decision layers that choose commands and runtime code that consumes them.
 - Open this owner when command ordering, cancellation, or raw-command construction semantics must change.
-
-### context_steering.rs
-
-- Implements slot-based context steering that scores angular interest and danger before picking a movement lane.
-- Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot.
-- Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler.
-- Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly.
-- Provides the local movement boundary between authored context behaviors and the final chosen travel heading.
-- This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion.
-- Open this owner before generic steering when the bug is in lane choice rather than force combination policy.
 
 ### diagnostics.rs
 
@@ -178,14 +168,14 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### mod.rs
 
-- Exports the AI subsystem surface that groups decision models, sensing, planning, steering, pacing, and debug tools.
+- Exports the AI subsystem surface that groups decision models, sensing, planning, pacing, and debug tools.
 - Acts as the navigation index for agent state, behavior trees, GOAP, HTN, MCTS, squads, and utility scoring.
 - Keeps module boundaries explicit so callers can find whether an AI concern belongs to storage, reasoning, or draw.
 - Open this file when adding or retiring AI owners or when public re-export policy for shared AI APIs changes.
-- The exported set here connects tactical motion, world awareness, strategic choice, and supporting data models.
+- The exported set here connects world awareness, strategic choice, internal drives, and supporting data models.
 - Agents should start here when tracing AI behavior because it reveals the authoritative file split by concern.
 - This index owns visibility and compatibility re-exports rather than world state, planners, or runtime solvers.
-- Neighboring work usually spans Agent, AIWorld, steering, planning modules, and debug visualization helpers.
+- Neighboring work usually spans Agent, AIWorld, planning modules, and debug visualization helpers.
 - It is the right owner for composition-level AI API changes that should not alter any one behavior algorithm.
 - Read this file first when generated specs or Lua bindings need to map a feature to its concrete Rust owner.
 
@@ -196,14 +186,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - Scores urgency and candidate advertisements so fulfillment choice can depend on both pressure and travel context.
 - Provides the motivation boundary between internal drives and higher decision layers that choose what to satisfy.
 - Open this owner when urgency math, advertisement cooldowns, or need decay behavior needs coordinated changes.
-
-### orca.rs
-
-- Implements ORCA-style local collision avoidance that projects preferred motion into safe velocity choices.
-- Owns solver agents, pairwise half-plane constraints, time horizon tuning, and the linear projection step.
-- Computes a safe velocity for every registered agent while respecting radius and max-speed bounds.
-- Provides the crowd-avoidance boundary between desired steering intent and collision-safe local movement output.
-- Open this owner when avoidance stability, neighbor constraints, or safe-velocity projection needs adjustment.
 
 ### perception.rs
 
@@ -231,19 +213,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - Provides the group-coordination boundary between individual agents and higher-level formation-aware movement logic.
 - Also carries squad-local context so cooperative decisions can read shared tactical state instead of isolated tags.
 - Open this owner when formation geometry or leader-centric placement rules need to change across the whole squad.
-
-### steering.rs
-
-- Owns the steering owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
-- Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants.
-- Defines how steering data is validated, transformed, or stored before neighboring systems use it.
-- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-- Keeps public crate helpers focused on steering behavior while Lua registration stays elsewhere.
-- Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
-- Use this file when changing steering defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary.
-- Provides the local adaptation layer that lets callers avoid duplicating ai rules while keeping call sites explicit.
 
 ### strategy.rs
 
@@ -274,11 +243,8 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### validation.rs
 
-- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-- Centers the implementation around AiValidationLimits, default, finite_f32, with helpers kept close to their invariants.
-- Defines how validation data is validated, transformed, or stored before neighboring systems use it.
-- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-- Keeps public crate helpers focused on validation behavior while Lua registration stays elsewhere.
+- Owns validation limits and numeric guards for AI decision, planning, and callback-heavy evaluators.
+- Keeps reasoning-side safety ceilings near the AI systems that enforce them.
 
 ### world.rs
 
@@ -300,24 +266,20 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `lurek.ai.newBlackboard() -> LAIBlackboard`: Creates an empty AI blackboard for typed local facts.
 - `lurek.ai.newCommandQueue() -> LCommandQueue`: Creates an empty command queue for callback-backed AI commands.
 - `lurek.ai.newCondition(callback) -> LBTNode`: Creates a behavior tree condition leaf backed by a Lua callback.
-- `lurek.ai.newContextSteering(slots) -> LContextSteering`: Creates a context steering model with the requested directional slot count.
 - `lurek.ai.newDialogueAI() -> LDialogueAI`: Creates an empty dialogue selector for weighted topics and branches.
 - `lurek.ai.newEmotionModel() -> LEmotionModel`: Creates an empty emotion model for named decaying emotion values.
 - `lurek.ai.newGOAPPlanner() -> LGOAPPlanner`: Creates an empty GOAP planner for boolean world-state planning.
 - `lurek.ai.newGuard(predicate, child) -> LBTNode`: Creates a guard decorator that runs a predicate before ticking its child.
 - `lurek.ai.newHTNDomain() -> LHTNDomain`: Creates an empty hierarchical task network domain.
-- `lurek.ai.newInfluenceMap(w, h, cs) -> LInfluenceMap`: Creates a grid influence map with the supplied cell dimensions and world cell size.
 - `lurek.ai.newInverter() -> LBTNode`: Creates a behavior tree inverter decorator with an empty sequence child.
 - `lurek.ai.newMCTSEngine(iters, uct_c, depth, seed) -> LMCTSEngine`: Creates a Monte Carlo tree search engine with deterministic configuration.
 - `lurek.ai.newNeedSystem() -> LNeedSystem`: Creates an empty need system for decaying named needs.
-- `lurek.ai.newORCASolver(time_horizon) -> LORCASolver`: Creates an ORCA avoidance solver with the supplied prediction horizon.
 - `lurek.ai.newParallel(sp?, fp?) -> LBTNode`: Creates a behavior tree parallel node with optional success and failure policies.
 - `lurek.ai.newRepeater(count?) -> LBTNode`: Creates a behavior tree repeater decorator with an optional repeat count.
 - `lurek.ai.newSelector() -> LBTNode`: Creates a behavior tree selector node with no children.
 - `lurek.ai.newSequence() -> LBTNode`: Creates a behavior tree sequence node with no children.
 - `lurek.ai.newSquad(name) -> LSquad`: Creates an empty named squad. This function is exposed to Lua scripts.
 - `lurek.ai.newStateMachine() -> LStateMachine`: Creates an empty finite state machine with Lua-backed states and transitions.
-- `lurek.ai.newSteeringManager() -> LSteeringManager`: Creates an empty steering manager with support for built-in and custom behaviors.
 - `lurek.ai.newStimulusWorld() -> LStimulusWorld`: Creates an empty stimulus world for visual and auditory stimulus records.
 - `lurek.ai.newStrategyAI(update_interval) -> LStrategyAI`: Creates a strategy AI that reevaluates goals on a fixed interval.
 - `lurek.ai.newSucceeder() -> LBTNode`: Creates a behavior tree succeeder decorator with an empty sequence child.
@@ -336,7 +298,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LMCTSEngine:search` param `eval_fn` (`function`): Function called with a state and returning a numeric score.
 - `LMCTSEngine:search` param `get_actions_fn` (`function`): Function called with a state and returning an array of integer actions.
 - `LStateMachine:addTransition` param `guard` (`function?`): Optional function that must return true for the transition to run.
-- `LSteeringManager:addCustomBehavior` param `func` (`function`): Function called as `(agent, dt)` that returns an X and Y steering force.
 - `LStrategyAI:forceEvaluate` param `scorer_fn` (`function`): Function called with a goal name and returning a numeric score.
 - `LStrategyAI:update` param `scorer_fn` (`function`): Function called with a goal name and returning a numeric score.
 - `LUtilityAI:addAction` param `scorer_fn` (`function`): Function called by evaluation to score this action.
@@ -538,27 +499,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LCommandQueue:type() -> string`: Returns the Lua-visible type name for this command queue handle.
 - `LCommandQueue:typeOf(name) -> boolean`: Returns whether this command queue handle matches a supported type name.
 
-#### LContextSteering Type
-
-- Lua handle for slot-based context steering direction selection.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight) -> nil`: Adds rectangular bounds avoidance to context steering.
-- `LContextSteering:addAvoidPoint(x, y, radius, weight) -> nil`: Adds a point avoidance influence to context steering.
-- `LContextSteering:addSeekTarget(tx, ty, weight) -> nil`: Adds a context steering target attraction.
-- `LContextSteering:addWander(jitter, weight) -> nil`: Adds wander noise to context steering.
-- `LContextSteering:chosenMagnitude() -> number`: Returns the magnitude of the last selected context steering slot.
-- `LContextSteering:clearBehaviors() -> nil`: Removes all context steering behaviors.
-- `LContextSteering:evaluate(ax, ay, vx, vy) -> number, number`: Evaluates context steering and returns the selected movement direction.
-- `LContextSteering:slotCount() -> integer`: Returns the number of directional slots used by this context steering model.
-- `LContextSteering:type() -> string`: Returns the Lua-visible type name for this context steering handle.
-- `LContextSteering:typeOf(name) -> boolean`: Returns whether this context steering handle matches a supported type name.
-
 #### LEmotionModel Type
 
 - Lua handle for decaying named emotion intensities.
@@ -621,35 +561,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LHTNDomain:type() -> string`: Returns the Lua-visible type name for this HTN domain handle.
 - `LHTNDomain:typeOf(name) -> boolean`: Returns whether this HTN domain handle matches a supported type name.
 
-#### LInfluenceMap Type
-
-- Lua handle for a grid-based influence map with named layers.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LInfluenceMap:addLayer(name) -> nil`: Adds an influence layer with the given name if it does not already exist.
-- `LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest) -> nil`: Blends two source layers into a destination layer using independent weights.
-- `LInfluenceMap:clearAll() -> nil`: Clears every influence value in every layer.
-- `LInfluenceMap:clearLayer(layer) -> nil`: Clears every value in a named influence layer.
-- `LInfluenceMap:decay(layer, factor) -> nil`: Multiplies a named layer by a decay factor.
-- `LInfluenceMap:getCellSize() -> number`: Returns the world size represented by each influence map cell.
-- `LInfluenceMap:getHeight() -> integer`: Returns the influence map height in cells.
-- `LInfluenceMap:getInfluence(layer, x, y) -> number`: Returns one cell value from a named influence layer using one-based cell coordinates.
-- `LInfluenceMap:getMaxPosition(layer) -> integer, integer`: Returns the cell position with the highest value on a named layer.
-- `LInfluenceMap:getMinPosition(layer) -> integer, integer`: Returns the cell position with the lowest value on a named layer.
-- `LInfluenceMap:getWidth() -> integer`: Returns the influence map width in cells.
-- `LInfluenceMap:hasLayer(name) -> boolean`: Returns whether an influence layer exists.
-- `LInfluenceMap:propagate(layer, momentum?) -> nil`: Propagates influence values across neighboring cells on a named layer.
-- `LInfluenceMap:queryRect(layer, wx, wy, ww, wh) -> number[]`: Returns influence values inside a world-space rectangle on a named layer.
-- `LInfluenceMap:setInfluence(layer, x, y, value) -> nil`: Sets one cell value in a named influence layer using one-based cell coordinates.
-- `LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff?) -> nil`: Applies a radial influence stamp to a named layer in world coordinates.
-- `LInfluenceMap:type() -> string`: Returns the Lua-visible type name for this influence map handle.
-- `LInfluenceMap:typeOf(name) -> boolean`: Returns whether this influence map handle matches a supported type name.
-
 #### LMCTSEngine Type
 
 - Lua handle for Monte Carlo tree search over Lua-defined game states and actions.
@@ -682,25 +593,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LNeedSystem:typeOf(name) -> boolean`: Returns whether this need system handle matches a supported type name.
 - `LNeedSystem:update(dt) -> nil`: Advances need decay over elapsed time.
 - `LNeedSystem:valueOf(name) -> number`: Returns the current value of a named need.
-
-#### LORCASolver Type
-
-- Lua handle for reciprocal velocity obstacle avoidance agents.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LORCASolver:addAgent(x, y, radius, max_speed) -> integer`: Adds an ORCA avoidance agent and returns its zero-based solver index.
-- `LORCASolver:agentCount() -> integer`: Returns the number of ORCA agents in this solver.
-- `LORCASolver:compute(dt) -> nil`: Computes safe velocities for all ORCA agents.
-- `LORCASolver:getSafeVelocity(idx) -> number, number`: Returns the computed safe velocity for an ORCA agent.
-- `LORCASolver:setPosition(idx, x, y) -> nil`: Sets the position for an ORCA agent by zero-based index.
-- `LORCASolver:setPreferredVelocity(idx, pvx, pvy) -> nil`: Sets the preferred velocity for an ORCA agent by zero-based index.
-- `LORCASolver:type() -> string`: Returns the Lua-visible type name for this ORCA solver handle.
-- `LORCASolver:typeOf(name) -> boolean`: Returns whether this ORCA solver handle matches a supported type name.
 
 #### LSquad Type
 
@@ -745,44 +637,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LStateMachine:setInitialState(name) -> nil`: Sets the initial state and also enters it when the machine has no current state yet.
 - `LStateMachine:type() -> string`: Returns the Lua-visible type name for this state machine handle.
 - `LStateMachine:typeOf(name) -> boolean`: Returns whether this state machine handle matches a supported type name.
-
-#### LSteeringManager Type
-
-- Lua handle for a steering behavior stack that combines movement forces for an agent.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LSteeringManager:addArrive(tx, ty, slowing?, weight?) -> nil`: Adds an arrive behavior that slows the agent as it approaches a target point.
-- `LSteeringManager:addCustomBehavior(func, weight?) -> nil`: Adds a custom steering behavior backed by a Lua callback.
-- `LSteeringManager:addEvade(threat_name?, weight?) -> nil`: Adds an evade behavior that moves away from another named agent when a threat name is supplied.
-- `LSteeringManager:addFlee(tx, ty, panic_dist?, weight?) -> nil`: Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
-- `LSteeringManager:addFlock(neighbor_radius?, sep_w?, align_w?, coh_w?, weight?) -> nil`: Adds a flocking behavior with separation, alignment, and cohesion weights.
-- `LSteeringManager:addPursue(target_name?, weight?) -> nil`: Adds a pursue behavior that chases another named agent when a target name is supplied.
-- `LSteeringManager:addSeek(tx, ty, weight?) -> nil`: Adds a seek behavior that pulls the agent toward a target point.
-- `LSteeringManager:addWander(radius?, dist?, jitter?, weight?) -> nil`: Adds a wander behavior that produces jittered exploratory movement.
-- `LSteeringManager:applyCustomSteering(agent, dt) -> number, number`: Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
-- `LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt) -> number, number`: Calculates a steering force for the supplied agent movement state.
-- `LSteeringManager:clearEntities() -> nil`: Clears all steering-context entities.
-- `LSteeringManager:clearPath() -> nil`: Clears the active waypoint path behavior.
-- `LSteeringManager:enableSpatialHash(enabled) -> nil`: Enables or disables spatial hash acceleration for neighbor queries.
-- `LSteeringManager:entityCount() -> integer`: Returns the number of steering-context entities.
-- `LSteeringManager:getBehaviorCount() -> integer`: Returns the number of steering behaviors configured on this manager.
-- `LSteeringManager:getCombineMode() -> string`: Returns the current steering force combination mode.
-- `LSteeringManager:getLastDiagnostic() -> LuaValue`: Returns the most recent steering validation or runtime diagnostic.
-- `LSteeringManager:getLastSteering() -> number, number`: Returns the last steering force calculated by this manager.
-- `LSteeringManager:getPathProgress() -> integer, integer`: Returns the current one-based waypoint index and total waypoint count.
-- `LSteeringManager:hasPath() -> boolean`: Returns whether this manager currently has an active waypoint path.
-- `LSteeringManager:removeEntity(name) -> boolean`: Removes one named steering-context entity.
-- `LSteeringManager:setCombineMode(mode) -> nil`: Sets how steering behavior forces are combined.
-- `LSteeringManager:setEntity(name, x, y, vx?, vy?) -> nil`: Sets or replaces one named steering-context entity.
-- `LSteeringManager:setPath(waypoints, reach_radius?, weight?) -> nil`: Sets a waypoint path behavior from an array of `{x, y}` tables.
-- `LSteeringManager:setSpatialHashCellSize(size) -> nil`: Sets the cell size used by the steering manager spatial hash.
-- `LSteeringManager:type() -> string`: Returns the Lua-visible type name for this steering manager handle.
-- `LSteeringManager:typeOf(name) -> boolean`: Returns whether this steering manager handle matches a supported type name.
 
 #### LStimulusWorld Type
 

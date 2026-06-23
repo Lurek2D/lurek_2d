@@ -9,6 +9,12 @@ local function new_nav_grid(width, height)
     return lurek.pathfind.newNavGrid(width or 12, height or 12)
 end
 
+local function new_world_agent(name)
+    local world = lurek.ai.newWorld()
+    local agent = world:addAgent(name or "agent")
+    return world, agent
+end
+
 local function new_pathfinder()
     local grid = new_nav_grid()
     return grid, lurek.pathfind.newPathfinder(grid)
@@ -42,6 +48,10 @@ end
 
 local function new_goal_map()
     return lurek.pathfind.newGoalMap(20, 20)
+end
+
+local function new_influence_map()
+    return lurek.pathfind.newInfluenceMap(4, 3, 2)
 end
 
 local function poll_async_until(predicate, max_steps)
@@ -224,14 +234,25 @@ describe("pathfind module functions", function()
 
     -- @covers lurek.pathfind.cancelAsyncPath
     it("cancelAsyncPath produces a terminal cancelled event", function()
+        local previous_threads = lurek.pathfind.getThreadCount()
+        lurek.pathfind.setThreadCount(1)
         lurek.pathfind.clearAsyncPaths()
-        local grid = new_nav_grid(32, 32)
+        local grid = new_nav_grid(48, 48)
+        lurek.pathfind.submitAsyncPath(grid, {
+            start_x = 1,
+            start_y = 1,
+            goal_x = 48,
+            goal_y = 48,
+            stream_budget = 1,
+            priority = 10,
+        })
         local request_id = lurek.pathfind.submitAsyncPath(grid, {
             start_x = 1,
             start_y = 1,
-            goal_x = 32,
-            goal_y = 32,
+            goal_x = 48,
+            goal_y = 48,
             stream_budget = 4,
+            priority = 0,
         })
         expect_true(lurek.pathfind.cancelAsyncPath(request_id))
         local events = poll_async_until(function(seen)
@@ -249,6 +270,8 @@ describe("pathfind module functions", function()
                 cancelled = true
             end
         end
+        lurek.pathfind.clearAsyncPaths()
+        lurek.pathfind.setThreadCount(previous_threads)
         expect_true(cancelled)
     end)
 
@@ -1073,6 +1096,461 @@ describe("pathfind tilefield adapters", function()
         expect_true(#range.cells > 1)
     end)
 end)
+-- @describe pathfind movement and tactical APIs
+describe("pathfind movement and tactical APIs", function()
+    -- @covers lurek.pathfind.newSteeringManager
+    it("newSteeringManager creates userdata", function()
+        expect_type("userdata", lurek.pathfind.newSteeringManager())
+    end)
+    -- @covers lurek.pathfind.newInfluenceMap
+    it("newInfluenceMap creates userdata", function()
+        expect_type("userdata", new_influence_map())
+    end)
+    -- @covers lurek.pathfind.newContextSteering
+    it("newContextSteering creates userdata", function()
+        expect_type("userdata", lurek.pathfind.newContextSteering(8))
+    end)
+    -- @covers lurek.pathfind.newORCASolver
+    it("newORCASolver creates userdata", function()
+        expect_type("userdata", lurek.pathfind.newORCASolver(1.5))
+    end)
+    -- @covers LSteeringManager:addSeek
+    it("addSeek increases behavior count", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:addSeek(100, 200)
+        expect_equal(1, sm:getBehaviorCount())
+    end)
+    -- @covers LSteeringManager:addFlee
+    it("addFlee increases behavior count", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:addFlee(0, 0)
+        expect_equal(1, sm:getBehaviorCount())
+    end)
+    -- @covers LSteeringManager:addArrive
+    it("addArrive increases behavior count", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:addArrive(50, 50)
+        expect_equal(1, sm:getBehaviorCount())
+    end)
+    -- @covers LSteeringManager:addWander
+    it("addWander increases behavior count", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:addWander()
+        expect_equal(1, sm:getBehaviorCount())
+    end)
+    -- @covers LSteeringManager:addPursue
+    it("addPursue steers toward a stored target entity", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setEntity("target", 10, 0, 2, 0)
+        sm:addPursue("target")
+        local fx, fy = sm:calculate(0, 0, 0, 0, 100, 200, 1 / 60)
+        expect_equal(1, sm:getBehaviorCount())
+        expect_true(fx > 0, "pursue should steer toward target")
+        expect_near(0, fy, 0.01)
+    end)
+    -- @covers LSteeringManager:addEvade
+    it("addEvade steers away from a stored threat entity", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setEntity("threat", 10, 0, 0, 0)
+        sm:addEvade("threat")
+        local fx, fy = sm:calculate(0, 0, 0, 0, 100, 200, 1 / 60)
+        expect_equal(1, sm:getBehaviorCount())
+        expect_true(fx < 0, "evade should steer away from threat")
+        expect_near(0, fy, 0.01)
+    end)
+    -- @covers LSteeringManager:addFlock
+    it("addFlock uses stored neighbors", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setEntity("a", 3, 0, 1, 0)
+        sm:setEntity("b", 0, 4, 0, 1)
+        sm:addFlock()
+        local fx, fy = sm:calculate(0, 0, 0, 0, 100, 200, 1 / 60)
+        expect_equal(1, sm:getBehaviorCount())
+        expect_true(math.abs(fx) > 0.001 or math.abs(fy) > 0.001, "flock should produce steering")
+    end)
+    -- @covers LSteeringManager:setEntity
+    it("setEntity stores named steering context", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setEntity("target", 8, 0)
+        expect_equal(1, sm:entityCount())
+    end)
+    -- @covers LSteeringManager:removeEntity
+    it("removeEntity returns whether an entity existed", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setEntity("target", 8, 0, 0, 0)
+        expect_true(sm:removeEntity("target"))
+        expect_false(sm:removeEntity("target"))
+    end)
+    -- @covers LSteeringManager:clearEntities
+    it("clearEntities removes all steering context", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setEntity("a", 1, 0)
+        sm:setEntity("b", 2, 0)
+        sm:clearEntities()
+        expect_equal(0, sm:entityCount())
+    end)
+    -- @covers LSteeringManager:entityCount
+    it("entityCount reports stored steering entities", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        expect_equal(0, sm:entityCount())
+        sm:setEntity("a", 1, 0)
+        expect_equal(1, sm:entityCount())
+    end)
+    -- @covers LSteeringManager:getLastDiagnostic
+    it("getLastDiagnostic records custom steering callback failures", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        local _, agent = new_world_agent("steer_diagnostic")
+        sm:addCustomBehavior(function()
+            error("bad steer")
+        end, 1.0)
+        sm:applyCustomSteering(agent, 1 / 60)
+        expect_true(type(sm:getLastDiagnostic()) == "string")
+    end)
+    -- @covers LSteeringManager:getBehaviorCount
+    it("getBehaviorCount returns zero for a new manager", function()
+        expect_equal(0, lurek.pathfind.newSteeringManager():getBehaviorCount())
+    end)
+    -- @covers LSteeringManager:setCombineMode
+    it("setCombineMode updates the combine mode", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setCombineMode("priority")
+        expect_equal("priority", sm:getCombineMode())
+    end)
+    -- @covers LSteeringManager:getCombineMode
+    it("getCombineMode returns a string", function()
+        expect_type("string", lurek.pathfind.newSteeringManager():getCombineMode())
+    end)
+    -- @covers LSteeringManager:calculate
+    it("calculate returns steering values", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:addSeek(100, 100)
+        local fx, fy = sm:calculate(0, 0, 0, 0, 100, 200, 1 / 60)
+        expect_type("number", fx)
+        expect_type("number", fy)
+    end)
+    -- @covers LSteeringManager:getLastSteering
+    it("getLastSteering returns the last steering pair", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:addSeek(100, 100)
+        sm:calculate(0, 0, 0, 0, 100, 200, 1 / 60)
+        local fx, fy = sm:getLastSteering()
+        expect_type("number", fx)
+        expect_type("number", fy)
+    end)
+    -- @covers LSteeringManager:setPath
+    it("setPath accepts waypoint tables", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setPath({ { x = 8, y = 8 }, { x = 16, y = 8 } })
+        expect_true(sm:hasPath())
+    end)
+    -- @covers LSteeringManager:clearPath
+    it("clearPath removes an active path", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setPath({ { x = 8, y = 8 }, { x = 16, y = 8 } })
+        sm:clearPath()
+        expect_false(sm:hasPath())
+    end)
+    -- @covers LSteeringManager:hasPath
+    it("hasPath is false by default", function()
+        expect_false(lurek.pathfind.newSteeringManager():hasPath())
+    end)
+    -- @covers LSteeringManager:getPathProgress
+    it("getPathProgress reports index and total", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:setPath({ { x = 8, y = 8 }, { x = 16, y = 8 } })
+        local idx, total = sm:getPathProgress()
+        expect_equal(1, idx)
+        expect_equal(2, total)
+    end)
+    -- @covers LSteeringManager:type
+    it("type returns LSteeringManager", function()
+        expect_equal("LSteeringManager", lurek.pathfind.newSteeringManager():type())
+    end)
+    -- @covers LSteeringManager:typeOf
+    it("typeOf reports steering manager inheritance", function()
+        expect_true(lurek.pathfind.newSteeringManager():typeOf("LSteeringManager"))
+    end)
+    -- @covers LSteeringManager:setSpatialHashCellSize
+    it("setSpatialHashCellSize accepts a custom cell size", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        expect_no_error(function()
+            sm:setSpatialHashCellSize(24.0)
+        end)
+    end)
+    -- @covers LSteeringManager:enableSpatialHash
+    it("enableSpatialHash toggles spatial hash acceleration", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        expect_no_error(function()
+            sm:enableSpatialHash(true)
+            sm:enableSpatialHash(false)
+        end)
+    end)
+    -- @covers LSteeringManager:addCustomBehavior
+    it("addCustomBehavior accepts a Lua steering callback", function()
+        local sm = lurek.pathfind.newSteeringManager()
+        expect_no_error(function()
+            sm:addCustomBehavior(function(_, _)
+                return 1.0, -0.5
+            end, 0.75)
+        end)
+    end)
+    -- @covers LSteeringManager:applyCustomSteering
+    it("applyCustomSteering combines custom behavior forces", function()
+        local _, agent = new_world_agent("pusher")
+        local sm = lurek.pathfind.newSteeringManager()
+        sm:addCustomBehavior(function(_, _)
+            return 25, -10
+        end, 1.0)
+        local fx, fy = sm:applyCustomSteering(agent, 1 / 60)
+        expect_near(25, fx, 0.01)
+        expect_near(-10, fy, 0.01)
+    end)
+    -- @covers LInfluenceMap:addLayer
+    it("addLayer registers a named layer", function()
+        local map = new_influence_map()
+        map:addLayer("danger")
+        expect_true(map:hasLayer("danger"))
+    end)
+    -- @covers LInfluenceMap:hasLayer
+    it("hasLayer returns false before a layer is added", function()
+        expect_false(new_influence_map():hasLayer("danger"))
+    end)
+    -- @covers LInfluenceMap:setInfluence
+    it("setInfluence writes one cell value", function()
+        local map = new_influence_map()
+        map:addLayer("danger")
+        map:setInfluence("danger", 2, 2, 0.75)
+        expect_near(0.75, map:getInfluence("danger", 2, 2), 0.01)
+    end)
+    -- @covers LInfluenceMap:getInfluence
+    it("getInfluence returns a number", function()
+        local map = new_influence_map()
+        map:addLayer("danger")
+        expect_type("number", map:getInfluence("danger", 1, 1))
+    end)
+    -- @covers LInfluenceMap:clearLayer
+    it("clearLayer resets values on one layer", function()
+        local map = new_influence_map()
+        map:addLayer("danger")
+        map:setInfluence("danger", 2, 2, 0.75)
+        map:clearLayer("danger")
+        expect_near(0.0, map:getInfluence("danger", 2, 2), 0.01)
+    end)
+    -- @covers LInfluenceMap:clearAll
+    it("clearAll removes every layer", function()
+        local map = new_influence_map()
+        map:addLayer("danger")
+        map:setInfluence("danger", 2, 2, 0.75)
+        map:clearAll()
+        expect_near(0.0, map:getInfluence("danger", 2, 2), 0.01)
+    end)
+    -- @covers LInfluenceMap:getWidth
+    it("getWidth returns configured width", function()
+        expect_equal(4, new_influence_map():getWidth())
+    end)
+    -- @covers LInfluenceMap:getHeight
+    it("getHeight returns configured height", function()
+        expect_equal(3, new_influence_map():getHeight())
+    end)
+    -- @covers LInfluenceMap:getCellSize
+    it("getCellSize returns configured cell size", function()
+        expect_near(2, new_influence_map():getCellSize(), 0.01)
+    end)
+    -- @covers LInfluenceMap:type
+    it("type returns LInfluenceMap", function()
+        expect_equal("LInfluenceMap", new_influence_map():type())
+    end)
+    -- @covers LInfluenceMap:typeOf
+    it("typeOf reports influence map inheritance", function()
+        expect_true(new_influence_map():typeOf("LInfluenceMap"))
+    end)
+    -- @covers LInfluenceMap:stampInfluence
+    it("stampInfluence writes radial influence into nearby cells", function()
+        local map = lurek.pathfind.newInfluenceMap(20, 20, 1.0)
+        map:addLayer("noise")
+        map:stampInfluence("noise", 10.0, 10.0, 3.0, 1.0, 0.5)
+        expect_true(map:getInfluence("noise", 10, 10) > 0.0)
+    end)
+    -- @covers LInfluenceMap:propagate
+    it("propagate spreads influence to neighboring cells", function()
+        local map = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+        map:addLayer("scent")
+        map:setInfluence("scent", 5, 5, 1.0)
+        map:propagate("scent", 0.8)
+        expect_true(map:getInfluence("scent", 4, 5) > 0.0)
+    end)
+    -- @covers LInfluenceMap:decay
+    it("decay reduces stored influence values", function()
+        local map = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
+        map:addLayer("heat")
+        map:setInfluence("heat", 4, 4, 1.0)
+        map:decay("heat", 0.5)
+        expect_true(map:getInfluence("heat", 4, 4) < 1.0)
+    end)
+    -- @covers LInfluenceMap:getMaxPosition
+    it("getMaxPosition returns the strongest cell coordinates", function()
+        local map = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+        map:addLayer("gold")
+        map:setInfluence("gold", 7, 3, 0.9)
+        map:setInfluence("gold", 2, 8, 0.4)
+        local x, y = map:getMaxPosition("gold")
+        expect_near(6.5, x, 0.01)
+        expect_near(2.5, y, 0.01)
+    end)
+    -- @covers LInfluenceMap:getMinPosition
+    it("getMinPosition returns the weakest cell coordinates", function()
+        local map = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+        map:addLayer("cold")
+        map:setInfluence("cold", 1, 1, -0.5)
+        map:setInfluence("cold", 5, 5, 0.3)
+        local x, y = map:getMinPosition("cold")
+        expect_near(0.5, x, 0.01)
+        expect_near(0.5, y, 0.01)
+    end)
+    -- @covers LInfluenceMap:queryRect
+    it("queryRect sums influence inside a rectangle", function()
+        local map = lurek.pathfind.newInfluenceMap(10, 10, 1.0)
+        map:addLayer("energy")
+        map:setInfluence("energy", 2, 2, 0.5)
+        map:setInfluence("energy", 3, 3, 0.5)
+        expect_near(1.0, map:queryRect("energy", 1, 1, 4, 4), 0.01)
+    end)
+    -- @covers LInfluenceMap:blend
+    it("blend writes a weighted combined layer", function()
+        local map = lurek.pathfind.newInfluenceMap(8, 8, 1.0)
+        map:addLayer("threat")
+        map:addLayer("reward")
+        map:addLayer("combined")
+        map:setInfluence("threat", 4, 4, 1.0)
+        map:setInfluence("reward", 4, 4, 0.8)
+        map:blend("threat", 0.5, "reward", 0.5, "combined")
+        expect_near(0.9, map:getInfluence("combined", 4, 4), 0.01)
+    end)
+    -- @covers LContextSteering:addSeekTarget
+    it("addSeekTarget accepts a target attraction behavior", function()
+        local cs = lurek.pathfind.newContextSteering(8)
+        expect_no_error(function()
+            cs:addSeekTarget(200, 150, 1.0)
+        end)
+    end)
+    -- @covers LContextSteering:addWander
+    it("addWander accepts a wander behavior", function()
+        local cs = lurek.pathfind.newContextSteering(8)
+        expect_no_error(function()
+            cs:addWander(0.3, 0.5)
+        end)
+    end)
+    -- @covers LContextSteering:addAvoidPoint
+    it("addAvoidPoint accepts a point avoidance behavior", function()
+        local cs = lurek.pathfind.newContextSteering(8)
+        expect_no_error(function()
+            cs:addAvoidPoint(50, 50, 20.0, 1.5)
+        end)
+    end)
+    -- @covers LContextSteering:addAvoidBounds
+    it("addAvoidBounds accepts rectangular avoidance bounds", function()
+        local cs = lurek.pathfind.newContextSteering(8)
+        expect_no_error(function()
+            cs:addAvoidBounds(0, 0, 800, 600, 30.0, 1.0)
+        end)
+    end)
+    -- @covers LContextSteering:clearBehaviors
+    it("clearBehaviors removes configured steering behaviors", function()
+        local cs = lurek.pathfind.newContextSteering(8)
+        cs:addSeekTarget(100, 100, 1.0)
+        cs:addAvoidPoint(50, 50, 10.0, 1.0)
+        expect_no_error(function()
+            cs:clearBehaviors()
+        end)
+    end)
+    -- @covers LContextSteering:evaluate
+    it("evaluate returns a chosen steering direction", function()
+        local cs = lurek.pathfind.newContextSteering(8)
+        cs:addSeekTarget(300, 200, 1.0)
+        cs:addAvoidPoint(150, 150, 30.0, 2.0)
+        local dx, dy = cs:evaluate(100, 100, 1.0, 0.0)
+        expect_true(math.abs(dx) > 0 or math.abs(dy) > 0)
+    end)
+    -- @covers LContextSteering:chosenMagnitude
+    it("chosenMagnitude reports the last selected slot strength", function()
+        local cs = lurek.pathfind.newContextSteering(8)
+        cs:addSeekTarget(200, 200, 1.0)
+        cs:evaluate(0, 0, 0, 0)
+        expect_true(cs:chosenMagnitude() > 0.0)
+    end)
+    -- @covers LContextSteering:slotCount
+    it("slotCount returns the configured number of slots", function()
+        expect_equal(16, lurek.pathfind.newContextSteering(16):slotCount())
+    end)
+    -- @covers LContextSteering:type
+    it("type returns LContextSteering", function()
+        expect_equal("LContextSteering", lurek.pathfind.newContextSteering(8):type())
+    end)
+    -- @covers LContextSteering:typeOf
+    it("typeOf reports context steering inheritance", function()
+        expect_true(lurek.pathfind.newContextSteering(8):typeOf("LContextSteering"))
+    end)
+    -- @covers LORCASolver:addAgent
+    it("addAgent returns a zero-based solver index", function()
+        local orca = lurek.pathfind.newORCASolver(2.0)
+        expect_equal(0, orca:addAgent(10.0, 20.0, 0.5, 3.0))
+    end)
+    -- @covers LORCASolver:setPreferredVelocity
+    it("setPreferredVelocity influences the computed safe velocity", function()
+        local orca = lurek.pathfind.newORCASolver(2.0)
+        orca:addAgent(0, 0, 0.5, 5.0)
+        orca:setPreferredVelocity(0, 2.0, 1.0)
+        orca:compute(0.016)
+        local vx, vy = orca:getSafeVelocity(0)
+        expect_near(2.0, vx, 0.01)
+        expect_near(1.0, vy, 0.01)
+    end)
+    -- @covers LORCASolver:setPosition
+    it("setPosition accepts a new agent position", function()
+        local orca = lurek.pathfind.newORCASolver(2.0)
+        orca:addAgent(0, 0, 0.5, 5.0)
+        expect_no_error(function()
+            orca:setPosition(0, 5.0, 3.0)
+        end)
+    end)
+    -- @covers LORCASolver:compute
+    it("compute updates safe velocities for the current agent set", function()
+        local orca = lurek.pathfind.newORCASolver(1.5)
+        orca:addAgent(0, 0, 0.5, 3.0)
+        orca:addAgent(5, 0, 0.5, 3.0)
+        orca:setPreferredVelocity(0, 1.0, 0.0)
+        orca:setPreferredVelocity(1, -1.0, 0.0)
+        expect_no_error(function()
+            orca:compute(0.016)
+        end)
+    end)
+    -- @covers LORCASolver:getSafeVelocity
+    it("getSafeVelocity returns two numbers", function()
+        local orca = lurek.pathfind.newORCASolver(1.5)
+        orca:addAgent(0, 0, 0.5, 3.0)
+        orca:setPreferredVelocity(0, 2.0, 0.0)
+        orca:compute(0.016)
+        local vx, vy = orca:getSafeVelocity(0)
+        expect_type("number", vx)
+        expect_type("number", vy)
+    end)
+    -- @covers LORCASolver:agentCount
+    it("agentCount returns the number of registered agents", function()
+        local orca = lurek.pathfind.newORCASolver(2.0)
+        orca:addAgent(0, 0, 1.0, 2.0)
+        orca:addAgent(5, 5, 1.0, 2.0)
+        expect_equal(2, orca:agentCount())
+    end)
+    -- @covers LORCASolver:type
+    it("type returns LORCASolver", function()
+        expect_equal("LORCASolver", lurek.pathfind.newORCASolver(1.0):type())
+    end)
+    -- @covers LORCASolver:typeOf
+    it("typeOf reports orca solver inheritance", function()
+        expect_true(lurek.pathfind.newORCASolver(1.0):typeOf("LORCASolver"))
+    end)
+end)
+
 end
 -- END test_pathfind_core_unit.lua
 

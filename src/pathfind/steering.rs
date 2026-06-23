@@ -1,17 +1,17 @@
-//! Owns the steering owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Owns steering behavior stacks for pathfinding-adjacent local movement.
 //! Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants.
 //! Defines how steering data is validated, transformed, or stored before neighboring systems use it.
-//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-//! Keeps public crate helpers focused on steering behavior while Lua registration stays elsewhere.
+//! Keeps path following, flocking, pursuit, evasion, and custom movement forces under the navigation owner.
+//! Keeps public crate helpers focused on movement behavior while Lua registration stays elsewhere.
 //! Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
 //! Use this file when changing steering defaults, lifecycle handling, validation, or data ownership.
 //! Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit.
 //! Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary.
-//! Provides the local adaptation layer that lets callers avoid duplicating ai rules while keeping call sites explicit.
+//! Provides the local movement layer that lets callers avoid duplicating path and avoidance rules.
 
 use std::collections::HashMap;
 
-use crate::ai::validation::{finite_f32, validate_count, AiValidationLimits};
+use crate::pathfind::validation::{finite_f32, validate_count, PathfindValidationLimits};
 
 /// Force vector used by steering systems.
 pub type Force = (f32, f32);
@@ -311,7 +311,7 @@ pub struct SteeringManager {
     /// Named entities available to context-aware steering behaviors.
     pub entities: HashMap<String, SteeringEntity>,
     /// Shared safety limits for behaviors and entity context.
-    pub limits: AiValidationLimits,
+    pub limits: PathfindValidationLimits,
     /// Last validation or runtime diagnostic emitted by the manager.
     pub last_diagnostic: Option<String>,
 }
@@ -329,7 +329,7 @@ impl SteeringManager {
             path_reach_radius: 12.0,
             path_weight: 1.0,
             entities: HashMap::new(),
-            limits: AiValidationLimits::default(),
+            limits: PathfindValidationLimits::default(),
             last_diagnostic: None,
         }
     }

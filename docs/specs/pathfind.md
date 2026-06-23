@@ -6,7 +6,7 @@
 
 - Navigates grids, hex layouts, isometric maps, navmeshes, and province graphs.
 - Employs A*, JPS, bidirectional search, HPA*, and async thread pools.
-- Uses Dijkstra flow fields, tactical influence maps, and debug visual overlays.
+- Uses Dijkstra flow fields, tactical influence maps, steering stacks, context steering, ORCA-style local avoidance, and debug visual overlays.
 
 ## General Info
 
@@ -14,7 +14,7 @@
 - Source path: `src/pathfind`
 - Binding: `src/lua_api/pathfind_api.rs`
 - Namespace: `lurek.pathfind`
-- Lua API surface: `20` functions, `22` types, `102` methods
+- Lua API surface: `24` functions, `26` types, `165` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -22,13 +22,13 @@
 
 - The `pathfind` module is the engine's navigation and movement-analysis surface for users who need more than one hard-coded shortest-path helper.
 - It supports several spatial models at once, including weighted grids, hex and isometric spaces, province-style graphs, influence fields, and other routing abstractions, so different worlds can still share one navigation family.
-- A* is only part of the surface. The module also covers bidirectional search, Jump Point Search, hierarchical routing, graph travel, flow fields, influence maps, and reachability-style analysis under one subsystem.
+- A* is only part of the surface. The module also covers bidirectional search, Jump Point Search, hierarchical routing, graph travel, flow fields, influence maps, steering, local avoidance, and reachability-style analysis under one subsystem.
 - This breadth matters because movement questions differ dramatically across features. Some systems need one precise route, others need shared guidance, tactical pressure, move ranges, or background jobs for expensive searches.
 - That makes the module useful not only for point-to-point travel but also for squad guidance, threat-aware movement, logistics overlays, and strategic map reasoning where spatial scoring matters.
 - Async search support is especially important because pathfinding is often one of the first systems that must leave the main loop without losing an engine-owned, script-facing API.
 - Shared abstractions for grids and graph-like inputs reduce adapter overhead and make it easier for a project to compare algorithms without rewriting all navigation data plumbing.
 - Range and reachability helpers are as important as final path extraction. Many systems need to know where a unit could move, what lies inside a budget, or which cells are effectively controlled before they need an explicit route.
-- Influence and shared-field helpers broaden the module into tactical analysis. Movement is not only about reaching a goal; it is also about preferring safe zones, avoiding danger, or flowing several actors in roughly the same direction.
+- Influence, steering, ORCA, and shared-field helpers broaden the module into tactical movement analysis. Movement is not only about reaching a goal; it is also about preferring safe zones, avoiding danger, and turning desired motion into local movement advice for several actors.
 - Because several world models can feed the same pathfinding family, projects can evolve from simple grid routing to richer graph or field-based navigation without abandoning the same conceptual subsystem.
 - That flexibility is one of the main reasons the module exists as a family rather than as one algorithm wrapper: different gameplay scales can still share one navigation vocabulary.
 - Cost rules are part of that vocabulary too. Terrain penalties, danger zones, ownership boundaries, and temporary blockers can all be expressed as navigation data instead of being bolted on after a path is returned.
@@ -37,7 +37,7 @@
 - That makes `pathfind` a planning layer, not only a shortest-path helper.
 - Debug and visualization helpers matter because navigation bugs usually come from topology, weights, or blocked-space assumptions rather than from the solver implementation alone.
 - `tilemap`, `province`, and related modules define traversable space, but `pathfind` owns how that space is searched, scored, and turned into movement advice.
-- Read `pathfind` as the reusable navigation layer of the engine, not as a locomotion or animation system.
+- Read `pathfind` as the reusable navigation and local-movement analysis layer of the engine, not as an animation or physics integration system.
 
 This module primarily collaborates with `flownet`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
@@ -95,6 +95,16 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - Provides the algorithm boundary between single-frontier A* and reduced-expansion searches for longer routes.
 - This file is the right owner when meet detection, backward expansion, or budget exhaustion behavior is wrong.
 - Neighboring edits usually involve NavGrid movement policy and baseline A* helpers reused by both frontiers.
+
+### context_steering.rs
+
+- Implements slot-based context steering that scores angular interest and danger before picking a movement lane.
+- Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot.
+- Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler.
+- Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly.
+- Provides the pathfind-owned local movement boundary between authored context behaviors and the final chosen travel heading.
+- This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion.
+- Open this owner before generic steering when the bug is in lane choice rather than force combination policy.
 
 ### flow_field.rs
 
@@ -191,14 +201,14 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### mod.rs
 
-- Exports the pathfinding subsystem surface that groups grid search, async execution, graph routing, and debug views.
-- Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, and province graph helpers.
-- Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, or draw.
+- Exports the pathfinding subsystem surface for routing, spatial fields, steering, local avoidance, and debug views.
+- Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, steering, ORCA, and province graph helpers.
+- Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, movement, or draw.
 - Open this file when adding or retiring pathfinding owners or when re-export policy for runtime helpers needs changes.
 - The exports here connect generic tile grids, hex and iso variants, navmeshes, and province graph traversal utilities.
 - Agents should start here when tracing navigation behavior because it reveals the authoritative file split by feature.
 - This index owns visibility and re-export contracts rather than live state, queues, caches, or search data itself.
-- Neighboring work usually spans NavGrid, async request handling, path solvers, and debug rendering adapters below.
+- Neighboring work usually spans NavGrid, async request handling, path solvers, movement helpers, and debug rendering adapters below.
 
 ### nav_grid.rs
 
@@ -217,6 +227,14 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - Finds a corridor of polygons with A*, then returns world-space start, centroid waypoints, and goal points.
 - Provides the boundary between arbitrary 2D walk regions and gameplay code that cannot rely on tile grids.
 - Open this owner when polygon connectivity, centroid routing, or containment checks need correction.
+
+### orca.rs
+
+- Implements ORCA-style local collision avoidance that projects preferred motion into safe velocity choices.
+- Owns solver agents, pairwise half-plane constraints, time horizon tuning, and the linear projection step.
+- Computes a safe velocity for every registered agent while respecting radius and max-speed bounds.
+- Provides the crowd-avoidance boundary between desired steering intent and collision-safe local movement output.
+- Open this owner when avoidance stability, neighbor constraints, or safe-velocity projection needs adjustment.
 
 ### pathgrid.rs
 
@@ -243,6 +261,19 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - This file is the right owner when debug overlay colors, glyph shapes, or sampling rules need adjustment.
 - Neighboring changes usually involve render command capabilities and the path structures being visualized.
 
+### steering.rs
+
+- Owns steering behavior stacks for pathfinding-adjacent local movement.
+- Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants.
+- Defines how steering data is validated, transformed, or stored before neighboring systems use it.
+- Keeps path following, flocking, pursuit, evasion, and custom movement forces under the navigation owner.
+- Keeps public crate helpers focused on movement behavior while Lua registration stays elsewhere.
+- Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+- Use this file when changing steering defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary.
+- Provides the local movement layer that lets callers avoid duplicating path and avoidance rules.
+
 ### unit_pathfinder.rs
 
 - Wraps a shared NavGrid in a stateful per-unit pathfinding service with cache-aware route and utility queries.
@@ -251,6 +282,11 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - Also searches for the nearest walkable fallback cell, keeping per-unit recovery logic close to shared grid access.
 - Provides the boundary between raw navigation algorithms and gameplay units that need repeated path requests.
 - Open this owner when route caching, per-unit helper semantics, or fallback walkability behavior needs changes.
+
+### validation.rs
+
+- Validation helpers for pathfinding, tactical fields, steering, and local avoidance.
+- Keeps movement-facing limits near the pathfind owners that enforce them.
 
 
 
@@ -262,17 +298,21 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `lurek.pathfind.clearAsyncPaths() -> nil`: Drops all queued async path requests and recreates the worker pool with the configured thread count.
 - `lurek.pathfind.getAsyncPendingCount() -> integer`: Returns the number of async path requests that have not emitted a terminal event.
 - `lurek.pathfind.getThreadCount() -> integer`: Returns the configured pathfinding thread count.
+- `lurek.pathfind.newContextSteering(slots) -> LContextSteering`: Creates a context steering model with the requested directional slot count.
 - `lurek.pathfind.newFlowField(grid_ud) -> LFlowField`: Creates a flow field for a navigation grid.
 - `lurek.pathfind.newGoalMap(width, height) -> LGoalMap`: Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.
 - `lurek.pathfind.newHexGrid(width, height, layout_str?) -> LHexGrid`: Creates a hex grid with the given dimensions.
+- `lurek.pathfind.newInfluenceMap(w, h, cs) -> LInfluenceMap`: Creates a grid influence map with the supplied cell dimensions and world cell size.
 - `lurek.pathfind.newJpsGrid(width, height) -> LJpsGrid`: Creates a Jump Point Search grid with given dimensions.
 - `lurek.pathfind.newNavGrid(width, height) -> LNavGrid`: Creates a navigation grid with the given dimensions.
 - `lurek.pathfind.newNavGridFromField(field_ud, opts?) -> LNavGrid`: Creates a navigation grid from a tilefield level and channel.
 - `lurek.pathfind.newNavGridFromTileMap(tm_ud, layer_index, blocked_table) -> LNavGrid`: Creates a navigation grid from a tilemap layer and blocked gid table.
 - `lurek.pathfind.newNavMesh() -> LNavMesh`: Creates an empty navigation mesh for polygon-based pathfinding.
+- `lurek.pathfind.newORCASolver(time_horizon) -> LORCASolver`: Creates an ORCA avoidance solver with the supplied prediction horizon.
 - `lurek.pathfind.newPathFlowField(grid_ud) -> LAIFlowField`: Creates an AI flow field from a path grid.
 - `lurek.pathfind.newPathGrid(w, h, cell_size) -> LPathGrid`: Creates a cell-size path grid with given dimensions.
 - `lurek.pathfind.newPathfinder(grid_ud) -> LUnitPathfinder`: Creates a unit pathfinder for a navigation grid.
+- `lurek.pathfind.newSteeringManager() -> LSteeringManager`: Creates an empty steering manager with support for built-in and custom movement behaviors.
 - `lurek.pathfind.pollAsyncPaths() -> table`: Returns all currently available async path events without blocking.
 - `lurek.pathfind.rangeMap(opts) -> table`: Computes reachable cells from range map options.
 - `lurek.pathfind.rangeMapFromField(field_ud, opts) -> table`: Computes reachable cells from a tilefield level and movement channel.
@@ -282,6 +322,7 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ### Callbacks
 
 - `LGoalMap:setBlocker` param `fn` (`function`): `fn(x: integer, y: integer) -> boolean` (one-based).
+- `LSteeringManager:addCustomBehavior` param `func` (`function`): Function called as `(agent, dt)` that returns an X and Y steering force.
 
 ### Enums
 
@@ -308,6 +349,27 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `LAIFlowField:setGoal(x, y) -> nil`: Sets the one-based flow field goal and recalculates the field.
 - `LAIFlowField:type() -> string`: Returns the Lua-visible type name for this AI flow field handle.
 - `LAIFlowField:typeOf(name) -> boolean`: Returns whether this AI flow field handle matches a supported type name.
+
+#### LContextSteering Type
+
+- Lua handle for slot-based context steering direction selection.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight) -> nil`: Adds rectangular bounds avoidance to context steering.
+- `LContextSteering:addAvoidPoint(x, y, radius, weight) -> nil`: Adds a point avoidance influence to context steering.
+- `LContextSteering:addSeekTarget(tx, ty, weight) -> nil`: Adds a context steering target attraction.
+- `LContextSteering:addWander(jitter, weight) -> nil`: Adds wander noise to context steering.
+- `LContextSteering:chosenMagnitude() -> number`: Returns the magnitude of the last selected context steering slot.
+- `LContextSteering:clearBehaviors() -> nil`: Removes all context steering behaviors.
+- `LContextSteering:evaluate(ax, ay, vx, vy) -> number, number`: Evaluates context steering and returns the selected movement direction.
+- `LContextSteering:slotCount() -> integer`: Returns the number of directional slots used by this context steering model.
+- `LContextSteering:type() -> string`: Returns the Lua-visible type name for this context steering handle.
+- `LContextSteering:typeOf(name) -> boolean`: Returns whether this context steering handle matches a supported type name.
 
 #### LFlowField Type
 
@@ -427,6 +489,35 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 - No documented methods.
 
+#### LInfluenceMap Type
+
+- Lua handle for a grid-based influence map with named layers.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LInfluenceMap:addLayer(name) -> nil`: Adds an influence layer with the given name if it does not already exist.
+- `LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest) -> nil`: Blends two source layers into a destination layer using independent weights.
+- `LInfluenceMap:clearAll() -> nil`: Clears every influence value in every layer.
+- `LInfluenceMap:clearLayer(layer) -> nil`: Clears every value in a named influence layer.
+- `LInfluenceMap:decay(layer, factor) -> nil`: Multiplies a named layer by a decay factor.
+- `LInfluenceMap:getCellSize() -> number`: Returns the world size represented by each influence map cell.
+- `LInfluenceMap:getHeight() -> integer`: Returns the influence map height in cells.
+- `LInfluenceMap:getInfluence(layer, x, y) -> number`: Returns one cell value from a named influence layer using one-based cell coordinates.
+- `LInfluenceMap:getMaxPosition(layer) -> integer, integer`: Returns the cell position with the highest value on a named layer.
+- `LInfluenceMap:getMinPosition(layer) -> integer, integer`: Returns the cell position with the lowest value on a named layer.
+- `LInfluenceMap:getWidth() -> integer`: Returns the influence map width in cells.
+- `LInfluenceMap:hasLayer(name) -> boolean`: Returns whether an influence layer exists.
+- `LInfluenceMap:propagate(layer, momentum?) -> nil`: Propagates influence values across neighboring cells on a named layer.
+- `LInfluenceMap:queryRect(layer, wx, wy, ww, wh) -> number[]`: Returns influence values inside a world-space rectangle on a named layer.
+- `LInfluenceMap:setInfluence(layer, x, y, value) -> nil`: Sets one cell value in a named influence layer using one-based cell coordinates.
+- `LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff?) -> nil`: Applies a radial influence stamp to a named layer in world coordinates.
+- `LInfluenceMap:type() -> string`: Returns the Lua-visible type name for this influence map handle.
+- `LInfluenceMap:typeOf(name) -> boolean`: Returns whether this influence map handle matches a supported type name.
+
 #### LJpsGrid Type
 
 - Lua-side wrapper for a Jump Point Search grid.
@@ -519,6 +610,25 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 - No documented methods.
 
+#### LORCASolver Type
+
+- Lua handle for reciprocal velocity obstacle avoidance agents.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LORCASolver:addAgent(x, y, radius, max_speed) -> integer`: Adds an ORCA avoidance agent and returns its zero-based solver index.
+- `LORCASolver:agentCount() -> integer`: Returns the number of ORCA agents in this solver.
+- `LORCASolver:compute(dt) -> nil`: Computes safe velocities for all ORCA agents.
+- `LORCASolver:getSafeVelocity(idx) -> number, number`: Returns the computed safe velocity for an ORCA agent.
+- `LORCASolver:setPosition(idx, x, y) -> nil`: Sets the position for an ORCA agent by zero-based index.
+- `LORCASolver:setPreferredVelocity(idx, pvx, pvy) -> nil`: Sets the preferred velocity for an ORCA agent by zero-based index.
+- `LORCASolver:type() -> string`: Returns the Lua-visible type name for this ORCA solver handle.
+- `LORCASolver:typeOf(name) -> boolean`: Returns whether this ORCA solver handle matches a supported type name.
+
 #### LPathGrid Type
 
 - Lua-side wrapper for a cell-size path grid.
@@ -580,6 +690,44 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ##### Methods
 
 - No documented methods.
+
+#### LSteeringManager Type
+
+- Lua handle for a steering behavior stack that combines movement forces for an agent.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSteeringManager:addArrive(tx, ty, slowing?, weight?) -> nil`: Adds an arrive behavior that slows the agent as it approaches a target point.
+- `LSteeringManager:addCustomBehavior(func, weight?) -> nil`: Adds a custom steering behavior backed by a Lua callback.
+- `LSteeringManager:addEvade(threat_name?, weight?) -> nil`: Adds an evade behavior that moves away from another named agent when a threat name is supplied.
+- `LSteeringManager:addFlee(tx, ty, panic_dist?, weight?) -> nil`: Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
+- `LSteeringManager:addFlock(neighbor_radius?, sep_w?, align_w?, coh_w?, weight?) -> nil`: Adds a flocking behavior with separation, alignment, and cohesion weights.
+- `LSteeringManager:addPursue(target_name?, weight?) -> nil`: Adds a pursue behavior that chases another named agent when a target name is supplied.
+- `LSteeringManager:addSeek(tx, ty, weight?) -> nil`: Adds a seek behavior that pulls the agent toward a target point.
+- `LSteeringManager:addWander(radius?, dist?, jitter?, weight?) -> nil`: Adds a wander behavior that produces jittered exploratory movement.
+- `LSteeringManager:applyCustomSteering(agent, dt) -> number, number`: Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
+- `LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt) -> number, number`: Calculates a steering force for the supplied agent movement state.
+- `LSteeringManager:clearEntities() -> nil`: Clears all steering-context entities.
+- `LSteeringManager:clearPath() -> nil`: Clears the active waypoint path behavior.
+- `LSteeringManager:enableSpatialHash(enabled) -> nil`: Enables or disables spatial hash acceleration for neighbor queries.
+- `LSteeringManager:entityCount() -> integer`: Returns the number of steering-context entities.
+- `LSteeringManager:getBehaviorCount() -> integer`: Returns the number of steering behaviors configured on this manager.
+- `LSteeringManager:getCombineMode() -> string`: Returns the current steering force combination mode.
+- `LSteeringManager:getLastDiagnostic() -> LuaValue`: Returns the most recent steering validation or runtime diagnostic.
+- `LSteeringManager:getLastSteering() -> number, number`: Returns the last steering force calculated by this manager.
+- `LSteeringManager:getPathProgress() -> integer, integer`: Returns the current one-based waypoint index and total waypoint count.
+- `LSteeringManager:hasPath() -> boolean`: Returns whether this manager currently has an active waypoint path.
+- `LSteeringManager:removeEntity(name) -> boolean`: Removes one named steering-context entity.
+- `LSteeringManager:setCombineMode(mode) -> nil`: Sets how steering behavior forces are combined.
+- `LSteeringManager:setEntity(name, x, y, vx?, vy?) -> nil`: Sets or replaces one named steering-context entity.
+- `LSteeringManager:setPath(waypoints, reach_radius?, weight?) -> nil`: Sets a waypoint path behavior from an array of `{x, y}` tables.
+- `LSteeringManager:setSpatialHashCellSize(size) -> nil`: Sets the cell size used by the steering manager spatial hash.
+- `LSteeringManager:type() -> string`: Returns the Lua-visible type name for this steering manager handle.
+- `LSteeringManager:typeOf(name) -> boolean`: Returns whether this steering manager handle matches a supported type name.
 
 #### LUnitPathfinder Type
 
@@ -680,6 +828,7 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 | Current artifact | `tests/artifacts/current/pathfind/pathfind_api_surface.png` |
 | Current artifact | `tests/artifacts/current/pathfind/pathfind_astar_gap_trace.json` |
 | Current artifact | `tests/artifacts/current/pathfind/pathfind_flow_field_samples.json` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_movement_surface_snapshot.txt` |
 | Current artifact | `tests/artifacts/current/pathfind/pathfind_weighted_route_trace.json` |
 | Current artifact | `tests/artifacts/current/pathfind/weighted_route.png` |
 | Baseline artifact | `tests/artifacts/baselines/pathfind/astar_basic.png` |
@@ -695,6 +844,6 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ## Notes
 
-- `pathfind` owns movement algorithms, movement range, route search, costs, and reachability. It does not own line-of-sight, line-of-action, lighting, or object-profile semantics.
+- `pathfind` owns movement algorithms, movement range, route search, costs, reachability, influence maps, steering, context steering, and ORCA local avoidance. It does not own line-of-sight, line-of-action, lighting, object-profile semantics, or high-level decision models.
 - `lurek.pathfind.newNavGridFromField(field, opts)` and `lurek.pathfind.rangeMapFromField(field, opts)` are adapters from `lurek.tilefield`; by default they read the `"move"` channel and movement costs from the field.
 - `newNavGridFromTileMap` remains a compatibility path for projects that want direct tilemap-to-navigation conversion without adopting `tilefield`.

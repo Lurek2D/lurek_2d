@@ -200,7 +200,7 @@ pub struct LuaProvinceRegistry {
 }
 impl LuaProvinceRegistry {
     /// Runs a closure with the current province registry or returns a Lua runtime error when missing.
-    fn with_registry<R>(&self, f: impl FnOnce(&ProvinceRegistry) -> R) -> LuaResult<R> {
+    pub(crate) fn with_registry<R>(&self, f: impl FnOnce(&ProvinceRegistry) -> R) -> LuaResult<R> {
         let st = self.state.borrow();
         let reg = st.province_registries.get(&self.name).ok_or_else(|| {
             LuaError::RuntimeError(format!("province registry '{}' not found", self.name))

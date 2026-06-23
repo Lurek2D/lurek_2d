@@ -16,6 +16,22 @@ Example block: `lurek.grep.newEngine`
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local engine = lurek.grep.newEngine()
     local result = engine:search(paths.search, "needle")
@@ -74,6 +90,22 @@ lurek.grep.jsonSearch(file, key)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local result = lurek.grep.jsonSearch(paths.json, "kind")
     local first = result[1]
@@ -112,6 +144,22 @@ lurek.grep.logSearch(file, level, pattern)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local result = lurek.grep.logSearch(paths.log, "ERROR", "panic")
     local first = result[1]
@@ -141,6 +189,22 @@ lurek.grep.luaFilter()
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local filter = lurek.grep.luaFilter()
     filter:excludePattern("notes")
     filter:setIncludeHidden(false)
@@ -171,6 +235,22 @@ lurek.grep.newEngine()
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local engine = lurek.grep.newEngine()
     local result = engine:search(paths.search, "needle")
@@ -206,6 +286,22 @@ lurek.grep.newEngineOpts(opts)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local opts = { threads = 2, case_sensitive = true, whole_word = false, max_file_size = 4096 }
     local engine = lurek.grep.newEngineOpts(opts)
@@ -236,6 +332,22 @@ lurek.grep.newFilter()
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:excludeExtension("txt")
@@ -272,6 +384,22 @@ lurek.grep.search(path, pattern)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local result = lurek.grep.search(paths.search, "needle")
     local first = result.matches[1]
@@ -322,6 +450,22 @@ LFileFilter:addExtension(ext)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:addExtension("toml")
@@ -351,6 +495,22 @@ LFileFilter:excludeExtension(ext)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:excludeExtension("txt")
@@ -380,6 +540,22 @@ LFileFilter:excludePattern(pattern)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:excludePattern("notes")
@@ -409,6 +585,22 @@ LFileFilter:setIncludeHidden(include)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local filter = lurek.grep.newFilter()
     filter:addExtension("lua")
     filter:setIncludeHidden(true)
@@ -453,6 +645,22 @@ LGrepEngine:count(path, pattern)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local engine = lurek.grep.newEngine()
     local count = engine:count(paths.search, "needle")
@@ -489,6 +697,22 @@ LGrepEngine:multiSearch(path, patterns)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local engine = lurek.grep.newEngine()
     local result = engine:multiSearch(paths.search, { "needle", "other" })
@@ -525,6 +749,22 @@ LGrepEngine:search(path, pattern)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local engine = lurek.grep.newEngine()
     local result = engine:search(paths.search, "needle")
@@ -562,6 +802,22 @@ LGrepEngine:searchExt(path, pattern, extensions)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local engine = lurek.grep.newEngine()
     local result = engine:searchExt(paths.search, "needle", { "lua" })
@@ -599,6 +855,22 @@ LGrepEngine:searchFiles(files, pattern)
 
 ```lua
 do
+    local function grep_log(message)
+        lurek.log.info("[grep] " .. message)
+    end
+    local function fixture_paths()
+        local root = "work/grep_unit"
+        return {
+            root = root,
+            search = root .. "/search",
+            alpha = root .. "/search/alpha.lua",
+            beta = root .. "/search/beta.lua",
+            notes = root .. "/search/notes.txt",
+            json = root .. "/sample.json",
+            log = root .. "/sample.log",
+        }
+    end
+
     local paths = fixture_paths()
     local engine = lurek.grep.newEngine()
     local result = engine:searchFiles({ paths.alpha, paths.beta }, "needle")

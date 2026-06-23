@@ -17,7 +17,7 @@ pub mod types;
 
 pub use minimap::Minimap;
 pub use types::{
-    ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapError, MinimapLimits, MinimapMarker,
-    MinimapObject, MinimapObjectType, MinimapPing, MinimapRenderStats, MinimapValidationLimits,
-    OverlayPath, OverlayShape,
+    ColorMode, FogLevel, LayerBlendMode, LayerData, LayerStyle, MarkerAnimation, MinimapError,
+    MinimapLimits, MinimapMarker, MinimapObject, MinimapObjectType, MinimapPing,
+    MinimapRenderStats, MinimapValidationLimits, OverlayPath, OverlayShape,
 };

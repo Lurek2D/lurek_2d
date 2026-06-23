@@ -1,6 +1,6 @@
-//! Defines the runtime state shape for one AI actor, combining identity, movement, decision mode, and support models.
+//! Defines the runtime state shape for one AI actor, combining identity, movement state, decision mode, and support models.
 //! Owns the DecisionModel enum plus agent-side blackboard, tags, optional sensor, emotions, needs, and traits.
-//! Stores links into FSM, behavior-tree, and steering arenas so one agent can bind to multiple decision runtimes.
+//! Stores links into decision-runtime handles so one agent can bind to FSM, behavior-tree, and movement-guidance models.
 //! Provides the per-actor boundary between shared AI systems and the concrete state they read and update.
 //! Open this owner when agent schema, decision-mode tagging, or cross-system state handoff needs to change.
 

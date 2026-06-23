@@ -16,6 +16,17 @@ Example block: `lurek.render.print`
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(16)
     lurek.render.setFont(font)
     lurek.render.print("Hello from lurek.render.print", 10, 10)
@@ -97,6 +108,17 @@ lurek.render.applyTransform(mat)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local matrix = { 1, 0, 0, 0, 1, 0, 60, 120, 1 }
     lurek.render.push()
     lurek.render.applyTransform(matrix)
@@ -133,6 +155,17 @@ lurek.render.arc(mode, x, y, radius, angle1, angle2, segments)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(1, 0.8, 0.1, 1)
     lurek.render.arc("fill", 360, 250, 36, 0, math.pi)
     lurek.render.setColor(0.2, 0.9, 0.4, 1)
@@ -163,6 +196,17 @@ lurek.render.beginSortGroup(id)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.beginSortGroup(1)
     lurek.render.pushSortKey(10)
     lurek.render.rectangle("fill", 400, 140, 30, 30)
@@ -194,6 +238,17 @@ lurek.render.captureScreenshot(callback)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.captureScreenshot(function(data)
         example_print_log("captureScreenshot size = " .. data:getWidth() .. "x" .. data:getHeight())
     end)
@@ -226,6 +281,17 @@ lurek.render.circle(mode, x, y, radius)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(1, 0.6, 0.1, 1)
     lurek.render.circle("fill", 340, 180, 30)
     lurek.render.setColor(0.2, 0.9, 1, 1)
@@ -258,6 +324,17 @@ lurek.render.clear(r, g, b)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.rectangle("fill", 0, 0, 10, 10)
     lurek.render.clear()
     lurek.render.circle("line", 24, 24, 8)
@@ -280,6 +357,17 @@ lurek.render.clearStencil()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setStencilMode("replace", "always", 2)
     lurek.render.clearStencil()
     local action, compare, value = lurek.render.getStencilMode()
@@ -308,6 +396,17 @@ lurek.render.currentLayer()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.newLayer("current_layer_stub", 12)
     lurek.render.setLayer("current_layer_stub")
     local current = lurek.render.currentLayer()
@@ -350,6 +449,17 @@ lurek.render.draw(drawable, x, y, r, sx, sy, ox, oy)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(96, 96)
     lurek.render.setCanvas(canvas)
     lurek.render.rectangle("fill", 0, 0, 96, 96)
@@ -386,6 +496,17 @@ lurek.render.drawBatch(batch)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local batch = lurek.render.newSpriteBatch(image, 8)
     batch:add(120, 220, 0, 0.5, 0.5, 0, 0)
@@ -421,6 +542,17 @@ lurek.render.drawBevelRect(x, y, w, h, bevelW, style, opts)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.drawBevelRect(10, 560, 90, 32, 3, "raised")
     lurek.render.drawBevelRect(120, 560, 90, 32, 3, "sunken")
     lurek.render.drawBevelRect(230, 560, 90, 32, 2, "flat", {
@@ -455,6 +587,17 @@ lurek.render.drawColoredPolygon(vertices, colors, mode)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local vertices = { 320, 500, 380, 500, 400, 540, 300, 540 }
     local colors = {
         { 1, 0, 0, 1 },
@@ -496,6 +639,17 @@ lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segments)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(1, 0.5, 0.1, 1)
     lurek.render.drawCubicBezier(20, 440, 60, 390, 120, 490, 160, 440, 24)
     lurek.render.setColor(1, 1, 1, 1)
@@ -530,6 +684,17 @@ lurek.render.drawGradientRect(x, y, w, h, c1, c2, dir)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.drawGradientRect(10, 500, 120, 36, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, "horizontal")
     lurek.render.drawGradientRect(150, 500, 120, 36, { 0, 1, 0, 1 }, { 1, 1, 0, 1 }, "vertical")
     lurek.render.rectangle("line", 10, 500, 120, 36)
@@ -562,6 +727,17 @@ lurek.render.drawHexTile(cx, cy, size, orientation, mode)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(0.1, 0.7, 0.5, 1)
     lurek.render.drawHexTile(480, 520, 24, "pointyTop", "fill")
     lurek.render.setColor(1, 1, 1, 1)
@@ -595,6 +771,17 @@ lurek.render.drawIsoCubeTile(sx, sy, halfW, halfH, opts)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.drawIsoCubeTile(300, 330, 28, 14, {
         depth = 18,
         topColor = { 0.8, 0.8, 0.9, 1 },
@@ -626,6 +813,17 @@ lurek.render.drawMany(list)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local list = {
         { image, 10, 270, 0, 0.3, 0.3, 0, 0 },
@@ -662,6 +860,17 @@ lurek.render.drawNineSlice(slice, x, y, w, h)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
     lurek.render.drawNineSlice(slice, 100, 100, 80, 60)
@@ -692,6 +901,17 @@ lurek.render.drawPath(path, mode, close)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = {
         { type = "moveTo", x = 380, y = 430 },
         { type = "lineTo", x = 430, y = 410 },
@@ -732,6 +952,17 @@ lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segments)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(0.1, 1, 0.5, 1)
     lurek.render.drawQuadBezier(210, 440, 270, 390, 330, 440, 18)
     lurek.render.setColor(1, 1, 1, 1)
@@ -768,6 +999,17 @@ lurek.render.drawq(image, quad, x, y, r, sx, sy, ox, oy)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local quad = lurek.render.newQuad(0, 0, 16, 16, 64, 64)
     lurek.render.draw(image, 10, 10, 0, 1, 1)
@@ -801,6 +1043,17 @@ lurek.render.ellipse(mode, x, y, rx, ry)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(0.2, 0.6, 0.9, 1)
     lurek.render.ellipse("fill", 110, 250, 60, 30)
     lurek.render.setColor(1, 1, 1, 1)
@@ -830,6 +1083,17 @@ lurek.render.flushSortGroup(id)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.beginSortGroup(7)
     lurek.render.pushSortKey(5)
     lurek.render.circle("fill", 100, 100, 10)
@@ -861,6 +1125,17 @@ lurek.render.getBackgroundColor()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setBackgroundColor(0.2, 0.2, 0.3)
     local r, g, b, a = lurek.render.getBackgroundColor()
     lurek.render.rectangle("line", 0, 0, 10, 10)
@@ -889,6 +1164,17 @@ lurek.render.getBlendMode()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setBlendMode("alpha")
     local mode = lurek.render.getBlendMode()
     lurek.render.rectangle("fill", 0, 0, 4, 4)
@@ -918,6 +1204,17 @@ lurek.render.getBuiltInFontNames()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local names = lurek.render.getBuiltInFontNames()
     local first = names[1] or "none"
     local last = names[#names] or "none"
@@ -946,6 +1243,17 @@ lurek.render.getCanvas()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(120, 80)
     lurek.render.setCanvas(canvas)
     local active = lurek.render.getCanvas()
@@ -984,6 +1292,17 @@ lurek.render.getCanvasSize(canvas)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(200, 100)
     local w, h = lurek.render.getCanvasSize(canvas)
     example_print_log("canvas size = " .. w .. "x" .. h)
@@ -1015,6 +1334,17 @@ lurek.render.getColor()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(1, 0, 0, 1)
     local r, g, b, a = lurek.render.getColor()
     lurek.render.rectangle("fill", 6, 6, 8, 8)
@@ -1046,6 +1376,17 @@ lurek.render.getColorMask()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColorMask(true, false, true, true)
     local r, g, b, a = lurek.render.getColorMask()
     lurek.render.rectangle("fill", 0, 0, 6, 6)
@@ -1076,6 +1417,17 @@ lurek.render.getDefaultFilter()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local min_filter, mag_filter, aniso = lurek.render.getDefaultFilter()
     lurek.render.setDefaultFilter(min_filter, mag_filter, aniso)
     local min_again, mag_again, aniso_again = lurek.render.getDefaultFilter()
@@ -1111,6 +1463,17 @@ lurek.render.getDefaultFont(pointSize, bold)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(24)
     lurek.render.setFont(font)
     lurek.render.print("Default font size 24", 10, 455)
@@ -1140,6 +1503,17 @@ lurek.render.getDepthMode()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mode, write = lurek.render.getDepthMode()
     lurek.render.setDepthMode(mode, write)
     local confirm_mode, confirm_write = lurek.render.getDepthMode()
@@ -1169,6 +1543,17 @@ lurek.render.getDimensions()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w, h = lurek.render.getDimensions()
     local width = lurek.render.getWidth()
     local height = lurek.render.getHeight()
@@ -1197,6 +1582,17 @@ lurek.render.getFont()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14)
     lurek.render.setFont(font)
     example_print_log("active font exists = " .. tostring(lurek.render.getFont() ~= nil))
@@ -1231,6 +1627,17 @@ lurek.render.getFontAscent(font)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16)
     local ascent = lurek.render.getFontAscent(font)
     local descent = lurek.render.getFontDescent(font)
@@ -1265,6 +1672,17 @@ lurek.render.getFontCellWidth(font)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(14)
     local cell_width = lurek.render.getFontCellWidth(font)
     local descent = lurek.render.getFontDescent(font)
@@ -1299,6 +1717,17 @@ lurek.render.getFontDescent(font)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(14)
     local descent = lurek.render.getFontDescent(font)
     local ascent = lurek.render.getFontAscent(font)
@@ -1333,6 +1762,17 @@ lurek.render.getFontHeight(font)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(14)
     local height = lurek.render.getFontHeight(font)
     local line_height = lurek.render.getFontLineHeight(font)
@@ -1367,6 +1807,17 @@ lurek.render.getFontLineHeight(font)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(14)
     local line_height = lurek.render.getFontLineHeight(font)
     local line_width = lurek.render.getLineWidth()
@@ -1395,6 +1846,17 @@ lurek.render.getFontSizes()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sizes = lurek.render.getFontSizes()
     local first = sizes[1] or -1
     local last = sizes[#sizes] or -1
@@ -1430,6 +1892,17 @@ lurek.render.getFontWidth(font, text)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14)
     local width = lurek.render.getFontWidth(font, "Measure")
     local height = lurek.render.getFontHeight(font)
@@ -1466,6 +1939,17 @@ lurek.render.getFontWrap(text, limit)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(12)
     lurek.render.setFont(font)
     local lines, width = lurek.render.getFontWrap("A long sentence for wrap testing at 200 px limit.", 200)
@@ -1494,6 +1978,17 @@ lurek.render.getHeight()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w, h = lurek.render.getDimensions()
     local height = lurek.render.getHeight()
     local width = lurek.render.getWidth()
@@ -1528,6 +2023,17 @@ lurek.render.getLayerZOrder(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.newLayer("midground", 5)
     lurek.render.setLayer("midground")
     local before = lurek.render.getLayerZOrder("midground")
@@ -1557,6 +2063,17 @@ lurek.render.getLineWidth()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setLineWidth(3)
     local width = lurek.render.getLineWidth()
     example_print_log("line width = " .. tostring(width))
@@ -1585,6 +2102,17 @@ lurek.render.getPointSize()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setPointSize(7)
     local size = lurek.render.getPointSize()
     example_print_log("point size = " .. tostring(size))
@@ -1616,6 +2144,17 @@ lurek.render.getScissor()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setScissor(10, 10, 200, 100)
     local x, y, w, h = lurek.render.getScissor()
     lurek.render.rectangle("line", x, y, w, h)
@@ -1644,6 +2183,17 @@ lurek.render.getShader()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
     local shader = lurek.render.newShader(code)
     lurek.render.setShader(shader)
@@ -1673,6 +2223,17 @@ lurek.render.getStats()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stats = lurek.render.getStats()
     lurek.render.rectangle("fill", 0, 0, 8, 8)
     local draws = tostring(stats.drawcalls)
@@ -1704,6 +2265,17 @@ lurek.render.getStencilMode()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setStencilMode("replace", "always", 4)
     local action, compare, value = lurek.render.getStencilMode()
     lurek.render.circle("line", 8, 8, 4)
@@ -1732,6 +2304,17 @@ lurek.render.getWidth()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w, h = lurek.render.getDimensions()
     local width = lurek.render.getWidth()
     local height = lurek.render.getHeight()
@@ -1763,6 +2346,17 @@ lurek.render.intersectScissor(x, y, w, h)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setScissor(0, 0, 800, 600)
     lurek.render.intersectScissor(100, 100, 400, 300)
     local x, y, w, h = lurek.render.getScissor()
@@ -1791,6 +2385,17 @@ lurek.render.isBold()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.render.isBold()
     local font_names = lurek.render.getBuiltInFontNames()
     local first = font_names[1] or "none"
@@ -1825,6 +2430,17 @@ lurek.render.isLayerVisible(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.newLayer("visibility_stub", 2)
     lurek.render.setLayerVisible("visibility_stub", true)
     example_print_log("layer visible = " .. tostring(lurek.render.isLayerVisible("visibility_stub")))
@@ -1853,6 +2469,17 @@ lurek.render.isWireframe()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setWireframe(true)
     local enabled = lurek.render.isWireframe()
     lurek.render.rectangle("line", 0, 0, 10, 10)
@@ -1882,6 +2509,17 @@ lurek.render.line(...)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(1, 1, 0.2, 1)
     lurek.render.line(10, 320, 160, 320)
     lurek.render.setColor(0.1, 0.9, 1, 1)
@@ -1918,6 +2556,17 @@ lurek.render.loadModel(path)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local faces = model:getFaceCount()
     local normals = model:getNormalCount()
@@ -1952,6 +2601,17 @@ lurek.render.loadObj(path)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local model = lurek.render.loadObj("content/examples/assets/models/sample_tank.obj")
     local faces = model:getFaceCount()
     local verts = model:getVertexCount()
@@ -1987,6 +2647,17 @@ lurek.render.newCanvas(width, height)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(96, 96)
     local w, h = canvas:getDimensions()
     lurek.render.setCanvas(canvas)
@@ -2019,6 +2690,17 @@ lurek.render.newDepthSorter()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sorter = lurek.render.newDepthSorter()
     sorter:add(function() example_print_log("draw layer A") end, 10)
     sorter:add(function() example_print_log("draw layer B") end, 5)
@@ -2047,6 +2729,17 @@ lurek.render.newDrawLayer()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layer = lurek.render.newDrawLayer()
     layer:queue(10, function()
         lurek.render.rectangle("fill", 180, 310, 20, 20)
@@ -2087,6 +2780,17 @@ lurek.render.newFont(pathOrSize, size)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont(16)
     lurek.render.setFont(font)
     lurek.render.print("newFont built-in size 16", 10, 430)
@@ -2122,6 +2826,17 @@ lurek.render.newImage(pathOrData, colorSpace)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local w, h = image:getDimensions()
     lurek.render.draw(image, 10, 10)
@@ -2152,6 +2867,17 @@ lurek.render.newLayer(name, zOrder)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.newLayer("background", 0)
     lurek.render.newLayer("foreground", 10)
     lurek.render.setLayer("foreground")
@@ -2187,6 +2913,17 @@ lurek.render.newMesh(verts, mode)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local verts = {
         { 0, 0, 0, 0, 1, 0, 0, 1 },
         { 60, 0, 1, 0, 0, 1, 0, 1 },
@@ -2229,6 +2966,17 @@ lurek.render.newNineSlice(image, top, right, bottom, left)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
     local top, right, bottom, left = slice:getInsets()
@@ -2269,6 +3017,17 @@ lurek.render.newQuad(x, y, w, h, sw, sh)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local sw, sh = image:getDimensions()
     local quad = lurek.render.newQuad(0, 0, 16, 16, sw, sh)
@@ -2305,6 +3064,17 @@ lurek.render.newShader(code)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
     local shader = lurek.render.newShader(code)
     shader:send("u_time", 0.25)
@@ -2333,6 +3103,17 @@ lurek.render.newShape()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setColor(1, 0, 0, 1)
     shape:rectangle("fill", 0, 0, 40, 24)
@@ -2371,6 +3152,17 @@ lurek.render.newSpriteBatch(image, max)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local batch = lurek.render.newSpriteBatch(image, 16)
     local last = batch:add(60, 220, 0, 0.5, 0.5, 0, 0)
@@ -2395,6 +3187,17 @@ lurek.render.origin()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.push()
     lurek.render.translate(999, 999)
     lurek.render.origin()
@@ -2425,6 +3228,17 @@ lurek.render.points(...)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setPointSize(5)
     lurek.render.setColor(1, 0.1, 0.1, 1)
     lurek.render.points(20, 390, 40, 390, 60, 390, 80, 390)
@@ -2458,6 +3272,17 @@ lurek.render.polygon(mode, ...)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(0.8, 0.1, 0.5, 1)
     lurek.render.polygon("fill", 210, 300, 260, 280, 310, 300, 290, 350, 230, 350)
     lurek.render.setColor(1, 1, 1, 1)
@@ -2481,6 +3306,17 @@ lurek.render.pop()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     lurek.render.push()
     lurek.render.translate(50, 50)
@@ -2513,6 +3349,17 @@ lurek.render.popLayer(id)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.pushLayer(99, 1.0, "alpha")
     lurek.render.circle("fill", 140, 100, 10)
     lurek.render.popLayer(99)
@@ -2544,6 +3391,17 @@ lurek.render.print(text, x, y, scale)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(16)
     lurek.render.setFont(font)
     lurek.render.print("Hello from lurek.render.print", 10, 10)
@@ -2574,6 +3432,17 @@ lurek.render.printRich(spans, x, y)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(16)
     local spans = {
         { text = "Red ", r = 255, g = 80, b = 80, a = 255, scale = 1.0 },
@@ -2610,6 +3479,17 @@ lurek.render.printRichWithFont(font, spans, x, y)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(16)
     local spans = {
         { text = "Red", r = 255, g = 0, b = 0, a = 255, scale = 1 },
@@ -2646,6 +3526,17 @@ lurek.render.printRotated(text, x, y, angle, scale)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(16)
     lurek.render.setFont(font)
     lurek.render.printRotated("Rotated text", 180, 90, math.pi / 6, 1.0)
@@ -2679,6 +3570,17 @@ lurek.render.printRotatedWithFont(font, text, x, y, angle, scale)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(16)
     lurek.render.printRotatedWithFont(font, "Rotated text", 100, 100, math.pi / 4, 1.0)
     local ascent = lurek.render.getFontAscent(font)
@@ -2711,6 +3613,17 @@ lurek.render.printWithFont(font, text, x, y, scale)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(16)
     lurek.render.printWithFont(font, "Standard text override", 10, 150)
     local width = lurek.render.getFontWidth(font, "Standard text override")
@@ -2743,6 +3656,17 @@ lurek.render.printf(text, x, y, limit, align)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(16)
     lurek.render.setFont(font)
     lurek.render.printf("Centered text inside a 220 px box.", 10, 40, 220, "center")
@@ -2776,6 +3700,17 @@ lurek.render.printfWithFont(font, text, x, y, limit, align)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(16)
     lurek.render.printfWithFont(font, "Formatted text inside a 160 px box.", 10, 200, 160, "left")
     local wrap_lines, wrap_width = font:getWrap("Formatted text inside a 160 px box.", 160)
@@ -2798,6 +3733,17 @@ lurek.render.push()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.push()
     lurek.render.translate(80, 80)
     lurek.render.rotate(math.pi / 8)
@@ -2831,6 +3777,17 @@ lurek.render.pushLayer(id, alpha, blendMode)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.pushLayer(1, 0.65, "alpha")
     lurek.render.rectangle("fill", 320, 140, 60, 40)
     lurek.render.popLayer(1)
@@ -2859,6 +3816,17 @@ lurek.render.pushSortKey(depth)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.beginSortGroup(8)
     lurek.render.pushSortKey(3)
     lurek.render.circle("fill", 120, 100, 10)
@@ -2893,6 +3861,17 @@ lurek.render.rectangle(mode, x, y, w, h, rx, ry)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(1, 0.2, 0.2, 1)
     lurek.render.rectangle("fill", 40, 150, 100, 60)
     lurek.render.rectangle("line", 160, 150, 100, 60, 8)
@@ -2928,6 +3907,17 @@ lurek.render.resetCanvas(canvas)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(64, 64)
     lurek.render.resetCanvas(canvas)
     local w, h = canvas:getDimensions()
@@ -2956,6 +3946,17 @@ lurek.render.rotate(angle)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     lurek.render.push()
     lurek.render.translate(50, 50)
@@ -2986,6 +3987,17 @@ lurek.render.saveScreenshot(path)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.saveScreenshot("save/test_screenshot.png")
     local width = lurek.render.getWidth()
     local height = lurek.render.getHeight()
@@ -3015,6 +4027,17 @@ lurek.render.scale(sx, sy)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     lurek.render.push()
     lurek.render.translate(50, 50)
@@ -3047,6 +4070,17 @@ lurek.render.setBackgroundColor(r, g, b)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setBackgroundColor(0.1, 0.1, 0.2)
     local r, g, b, a = lurek.render.getBackgroundColor()
     example_print_log("background = " .. r .. "," .. g .. "," .. b .. "," .. a)
@@ -3075,6 +4109,17 @@ lurek.render.setBlendMode(mode)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local before = lurek.render.getBlendMode()
     lurek.render.setBlendMode("add")
     lurek.render.rectangle("fill", 180, 140, 40, 40)
@@ -3106,6 +4151,17 @@ lurek.render.setBold(bold)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local previous = lurek.render.isBold()
     lurek.render.setBold(true)
     lurek.render.print("Bold text", 10, 10)
@@ -3135,6 +4191,17 @@ lurek.render.setCanvas(canvas)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(96, 96)
     lurek.render.setCanvas(canvas)
     lurek.render.rectangle("fill", 0, 0, 96, 96)
@@ -3168,6 +4235,17 @@ lurek.render.setColor(r, g, b, a)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(1, 0, 0, 1)
     local r, g, b, a = lurek.render.getColor()
     example_print_log("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
@@ -3200,6 +4278,17 @@ lurek.render.setColorMask(r, g, b, a)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColorMask(true, true, false, true)
     local r, g, b, a = lurek.render.getColorMask()
     example_print_log("mask = " .. tostring(r) .. "," .. tostring(g) .. "," .. tostring(b) .. "," .. tostring(a))
@@ -3230,6 +4319,17 @@ lurek.render.setDefaultFilter(min, mag, anisotropy)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local min_before, mag_before, aniso_before = lurek.render.getDefaultFilter()
     lurek.render.setDefaultFilter("nearest", "nearest", 1)
     local min_after, mag_after, aniso_after = lurek.render.getDefaultFilter()
@@ -3266,6 +4366,17 @@ lurek.render.setDefaultFont(pointSize, bold)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local regular = lurek.render.setDefaultFont(10, false)
     local bold = lurek.render.setDefaultFont(10, true)
     lurek.render.setFont(regular)
@@ -3295,6 +4406,17 @@ lurek.render.setDepthMode(mode, write)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mode_before, write_before = lurek.render.getDepthMode()
     lurek.render.setDepthMode("lequal", true)
     local mode_after, write_after = lurek.render.getDepthMode()
@@ -3324,6 +4446,17 @@ lurek.render.setFont(font)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont(16)
     lurek.render.setFont(font)
     lurek.render.print("setFont switched active font", 10, 500)
@@ -3353,6 +4486,17 @@ lurek.render.setFontLineHeight(font, lh)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.getDefaultFont(14)
     lurek.render.setFontLineHeight(font, 1.2)
     local line_height = lurek.render.getFontLineHeight(font)
@@ -3381,6 +4525,17 @@ lurek.render.setLayer(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.newLayer("set_layer_stub", 1)
     lurek.render.setLayer("set_layer_stub")
     local current = lurek.render.currentLayer()
@@ -3411,6 +4566,17 @@ lurek.render.setLayerVisible(name, visible)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.newLayer("visible_layer_stub", 1)
     lurek.render.setLayerVisible("visible_layer_stub", false)
     local hidden = lurek.render.isLayerVisible("visible_layer_stub")
@@ -3440,6 +4606,17 @@ lurek.render.setLayerZOrder(name, z)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.newLayer("zorder_layer_stub", 1)
     lurek.render.setLayerZOrder("zorder_layer_stub", 9)
     local z = lurek.render.getLayerZOrder("zorder_layer_stub")
@@ -3468,6 +4645,17 @@ lurek.render.setLineWidth(w)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setLineWidth(4)
     lurek.render.line(200, 390, 280, 390)
     example_print_log("line width set to 4")
@@ -3496,6 +4684,17 @@ lurek.render.setPointSize(size)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setPointSize(6)
     lurek.render.points(320, 390, 340, 390, 360, 390)
     example_print_log("point size set to 6")
@@ -3527,6 +4726,17 @@ lurek.render.setScissor(x, y, w, h)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setScissor(20, 140, 120, 60)
     local x, y, w, h = lurek.render.getScissor()
     lurek.render.rectangle("fill", 0, 120, 180, 90)
@@ -3558,6 +4768,17 @@ lurek.render.setShader(shader)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
     local shader = lurek.render.newShader(code)
     lurek.render.setShader(shader)
@@ -3591,6 +4812,17 @@ lurek.render.setStencilMode(action, compare, value)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setStencilMode("replace", "always", 2)
     local action, compare, value = lurek.render.getStencilMode()
     example_print_log("stencil mode = " .. action .. "," .. compare .. "," .. value)
@@ -3620,6 +4852,17 @@ lurek.render.setStencilTest(compare, value)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setStencilTest("always", 0)
     lurek.render.circle("fill", 100, 100, 30)
     lurek.render.setStencilTest()
@@ -3648,6 +4891,17 @@ lurek.render.setWireframe(enabled)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("wireframe before = " .. tostring(lurek.render.isWireframe()))
     lurek.render.setWireframe(true)
     lurek.render.rectangle("fill", 260, 140, 50, 50)
@@ -3677,6 +4931,17 @@ lurek.render.shear(kx, ky)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.push()
     lurek.render.translate(180, 80)
     lurek.render.shear(0.3, 0.0)
@@ -3708,6 +4973,17 @@ lurek.render.stencil(action, value)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.stencil("replace", 1)
     lurek.render.circle("fill", 220, 470, 24)
     lurek.render.setStencilTest("equal", 1)
@@ -3739,6 +5015,17 @@ lurek.render.translate(x, y)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     lurek.render.push()
     lurek.render.translate(50, 50)
@@ -3774,6 +5061,17 @@ lurek.render.triangle(mode, x1, y1, x2, y2, x3, y3)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.render.setColor(0.1, 0.7, 0.3, 1)
     lurek.render.triangle("fill", 360, 350, 410, 280, 460, 350)
     lurek.render.setColor(1, 1, 1, 1)
@@ -3840,6 +5138,17 @@ LCanvas:getDimensions()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(128, 64)
     local w, h = canvas:getDimensions()
     example_print_log("canvas dimensions = " .. w .. "x" .. h)
@@ -3868,6 +5177,17 @@ LCanvas:getHeight()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(128, 64)
     local height = canvas:getHeight()
     local width = canvas:getWidth()
@@ -3897,6 +5217,17 @@ LCanvas:getWidth()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(128, 64)
     local width = canvas:getWidth()
     local is_canvas = canvas:typeOf("LCanvas")
@@ -3926,6 +5257,17 @@ LCanvas:release()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(64, 64)
     local w, h = canvas:getDimensions()
     local released = canvas:release()
@@ -3954,6 +5296,17 @@ LCanvas:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(64, 64)
     local type_name = canvas:type()
     local is_canvas = canvas:typeOf("LCanvas")
@@ -3989,6 +5342,17 @@ LCanvas:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local canvas = lurek.render.newCanvas(64, 64)
     local is_canvas = canvas:typeOf("LCanvas")
     local is_object = canvas:typeOf("LObject")
@@ -4177,6 +5541,17 @@ LDrawLayer:clear()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layer = lurek.render.newDrawLayer()
     layer:queue(1, function() end)
     layer:queue(2, function() end)
@@ -4200,6 +5575,17 @@ LDrawLayer:flush()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layer = lurek.render.newDrawLayer()
     layer:queue(1.0, function()
         lurek.render.circle("fill", 100, 100, 20)
@@ -4233,6 +5619,17 @@ LDrawLayer:getCount()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layer = lurek.render.newDrawLayer()
     layer:queue(1.0, function() end)
     layer:queue(2.0, function() end)
@@ -4262,6 +5659,17 @@ LDrawLayer:queue(z, f)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layer = lurek.render.newDrawLayer()
     layer:queue(1.0, function() end)
     layer:queue(2.0, function() end)
@@ -4290,6 +5698,17 @@ LDrawLayer:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layer = lurek.render.newDrawLayer()
     layer:queue(1, function() lurek.render.rectangle("fill", 0, 0, 4, 4) end)
     local type_name = layer:type()
@@ -4324,6 +5743,17 @@ LDrawLayer:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layer = lurek.render.newDrawLayer()
     layer:queue(2, function() lurek.render.circle("fill", 4, 4, 2) end)
     local is_layer = layer:typeOf("LDrawLayer")
@@ -4382,6 +5812,17 @@ LFont:getAscent()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14)
     local ascent = font:getAscent()
     local descent = font:getDescent()
@@ -4410,6 +5851,17 @@ LFont:getDescent()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14)
     local descent = font:getDescent()
     local width = font:getWidth("Test")
@@ -4438,6 +5890,17 @@ LFont:getHeight()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14)
     local height = font:getHeight()
     local line_height = font:getLineHeight()
@@ -4466,6 +5929,17 @@ LFont:getLineHeight()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14)
     local line_height = font:getLineHeight()
     local ascent = font:getAscent()
@@ -4548,6 +6022,17 @@ LFont:getWidth(text)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14)
     local width = font:getWidth("Inventory")
     local height = font:getHeight()
@@ -4584,6 +6069,17 @@ LFont:getWrap(text, limit)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 12)
     local lines, width = font:getWrap("This is a wrapped sentence for the font object.", 120)
     local first = lines[1] or ""
@@ -4668,6 +6164,17 @@ LFont:release()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 18)
     local width = font:getWidth("HUD")
     local released = font:release()
@@ -4696,6 +6203,17 @@ LFont:setLineHeight(height)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 12)
     font:setLineHeight(1.5)
     local line_height = font:getLineHeight()
@@ -4724,6 +6242,17 @@ LFont:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16)
     local type_name = font:type()
     local height = font:getHeight()
@@ -4759,6 +6288,17 @@ LFont:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16)
     local is_font = font:typeOf("LFont")
     local is_object = font:typeOf("LObject")
@@ -4821,6 +6361,17 @@ LImage:getDimensions()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local w, h = image:getDimensions()
     example_print_log("image dimensions = " .. w .. "x" .. h)
@@ -4849,6 +6400,17 @@ LImage:getHeight()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local height = image:getHeight()
     local width = image:getWidth()
@@ -4878,6 +6440,17 @@ LImage:getId()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local id = image:getId()
     local w, h = image:getDimensions()
@@ -4906,6 +6479,17 @@ LImage:getWidth()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local width = image:getWidth()
     local height = image:getHeight()
@@ -4935,6 +6519,17 @@ LImage:release()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local before_id = image:getId()
     local before_w = image:getWidth()
@@ -4963,6 +6558,17 @@ LImage:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local type_name = image:type()
     local is_image = image:typeOf("LImage")
@@ -4998,6 +6604,17 @@ LImage:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local is_image = image:typeOf("LImage")
     local is_object = image:typeOf("LObject")
@@ -5852,6 +7469,17 @@ LMesh:getVertex(index)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mesh = lurek.render.newMesh({
         { 0, 0, 0, 0, 1, 1, 1, 1 },
         { 50, 0, 1, 0, 1, 1, 1, 1 },
@@ -5883,6 +7511,17 @@ LMesh:getVertexCount()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mesh = lurek.render.newMesh({
         { 0, 0, 0, 0, 1, 1, 1, 1 },
         { 100, 0, 1, 0, 1, 1, 1, 1 },
@@ -5917,6 +7556,17 @@ LMesh:release()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mesh = lurek.render.newMesh({
         { 0, 0, 0, 0, 1, 1, 1, 1 },
         { 64, 0, 1, 0, 1, 1, 1, 1 },
@@ -5948,6 +7598,17 @@ LMesh:setTexture(image)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mesh = lurek.render.newMesh({
         { 0, 0, 0, 0, 1, 1, 1, 1 },
         { 64, 0, 1, 0, 1, 1, 1, 1 },
@@ -5982,6 +7643,17 @@ LMesh:setVertex(index, data)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mesh = lurek.render.newMesh({
         { 0, 0, 0, 0, 1, 1, 1, 1 },
         { 50, 0, 1, 0, 1, 1, 1, 1 },
@@ -6014,6 +7686,17 @@ LMesh:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mesh = lurek.render.newMesh({
         { 0, 0, 0, 0, 1, 1, 1, 1 },
         { 64, 0, 1, 0, 1, 1, 1, 1 },
@@ -6051,6 +7734,17 @@ LMesh:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mesh = lurek.render.newMesh({
         { 0, 0, 0, 0, 1, 1, 1, 1 },
         { 64, 0, 1, 0, 1, 1, 1, 1 },
@@ -6093,6 +7787,17 @@ LNineSlice:getInsets()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
     local top, right, bottom, left = slice:getInsets()
@@ -6123,6 +7828,17 @@ LNineSlice:getTextureSize()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
     local w, h = slice:getTextureSize()
@@ -6152,6 +7868,17 @@ LNineSlice:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
     example_print_log("nine-slice type = " .. slice:type())
@@ -6186,6 +7913,17 @@ LNineSlice:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local slice = lurek.render.newNineSlice(image, 2, 2, 2, 2)
     example_print_log("nine-slice typeOf LNineSlice = " .. tostring(slice:typeOf("LNineSlice")))
@@ -6222,6 +7960,17 @@ LObjModel:getFaceCount()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local faces = model:getFaceCount()
     local verts = model:getVertexCount()
@@ -6250,6 +7999,17 @@ LObjModel:getNormalCount()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local normals = model:getNormalCount()
     local faces = model:getFaceCount()
@@ -6278,6 +8038,17 @@ LObjModel:getUvCount()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local uvs = model:getUvCount()
     local verts = model:getVertexCount()
@@ -6306,6 +8077,17 @@ LObjModel:getVertexCount()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local verts = model:getVertexCount()
     local uvs = model:getUvCount()
@@ -6342,6 +8124,17 @@ LObjModel:projectToMesh(camera, screenW, screenH)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local camera = { x = 0, y = 0, z = -5, tx = 0, ty = 0, tz = 0, fov = 60 }
     local vertices = model:projectToMesh(camera, 320, 240)
@@ -6378,6 +8171,17 @@ LObjModel:renderToImage(width, height, rotation)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local image = model:renderToImage(64, 64, 0)
     lurek.render.draw(image, 500, 370)
@@ -6415,6 +8219,17 @@ LQuad:getTextureDimensions()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local quad = lurek.render.newQuad(0, 0, 16, 16, 64, 64)
     local w, h = quad:getTextureDimensions()
     local vx, vy, vw, vh = quad:getViewport()
@@ -6446,6 +8261,17 @@ LQuad:getViewport()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local quad = lurek.render.newQuad(0, 0, 32, 32, 128, 128)
     local x, y, w, h = quad:getViewport()
     local tex_w, tex_h = quad:getTextureDimensions()
@@ -6477,6 +8303,17 @@ LQuad:setViewport(x, y, w, h)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local quad = lurek.render.newQuad(0, 0, 16, 16, 128, 128)
     quad:setViewport(0, 0, 32, 32)
     local x, y, w, h = quad:getViewport()
@@ -6505,6 +8342,17 @@ LQuad:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local quad = lurek.render.newQuad(0, 0, 8, 8, 64, 64)
     local type_name = quad:type()
     local is_quad = quad:typeOf("LQuad")
@@ -6539,6 +8387,17 @@ LQuad:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local quad = lurek.render.newQuad(0, 0, 8, 8, 64, 64)
     local is_quad = quad:typeOf("LQuad")
     local is_object = quad:typeOf("LObject")
@@ -6575,6 +8434,17 @@ LShader:getId()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
     local shader = lurek.render.newShader(code)
     local id = shader:getId()
@@ -6609,6 +8479,17 @@ LShader:hasUniform(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
     local shader = lurek.render.newShader(code)
     example_print_log("has u_time before send = " .. tostring(shader:hasUniform("u_time")))
@@ -6638,6 +8519,17 @@ LShader:release()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
     local shader = lurek.render.newShader(code)
     local released = shader:release()
@@ -6667,6 +8559,17 @@ LShader:send(name, value)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
     local shader = lurek.render.newShader(code)
     example_print_log("has u_time before send = " .. tostring(shader:hasUniform("u_time")))
@@ -6695,6 +8598,17 @@ LShader:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
     local shader = lurek.render.newShader(code)
     shader:send("u_time", 0.5)
@@ -6730,6 +8644,17 @@ LShader:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
     local shader = lurek.render.newShader(code)
     shader:send("u_time", 0.5)
@@ -6773,6 +8698,17 @@ LShape:arc(mode, x, y, r, astart, aend, segments)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setColor(1, 0.5, 0, 1)
     shape:arc("fill", 100, 100, 40, 0, math.pi)
@@ -6804,6 +8740,17 @@ LShape:circle(mode, x, y, r)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setColor(0.2, 0.8, 0.4, 1)
     shape:circle("line", 80, 80, 24)
@@ -6826,6 +8773,17 @@ LShape:clear()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:rectangle("fill", 0, 0, 10, 10)
     shape:circle("fill", 20, 20, 5)
@@ -6861,6 +8819,17 @@ LShape:draw(x, y, rotation, sx, sy, ox, oy)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setLineWidth(2)
     shape:triangle("line", 0, 0, 50, 0, 25, 50)
@@ -6894,6 +8863,17 @@ LShape:ellipse(mode, x, y, rx, ry)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:ellipse("fill", 100, 100, 50, 30)
     shape:setColor(0.4, 0.8, 1.0, 1.0)
@@ -6922,6 +8902,17 @@ LShape:getCommandCount()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:circle("fill", 0, 0, 10)
     shape:circle("fill", 50, 50, 10)
@@ -6956,6 +8947,17 @@ LShape:line(x1, y1, x2, y2)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:line(10, 10, 90, 90)
     shape:setLineWidth(3)
@@ -6985,6 +8987,17 @@ LShape:polygon(mode, ...)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setColor(0.8, 0.3, 0, 1)
     shape:polygon("fill", 0, 0, 40, -10, 50, 30, 20, 50, -10, 30)
@@ -7014,6 +9027,17 @@ LShape:polyline(...)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setLineWidth(3)
     shape:polyline(0, 0, 20, 20, 40, 0, 60, 20)
@@ -7047,6 +9071,17 @@ LShape:rectangle(mode, x, y, w, h)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:rectangle("fill", 20, 20, 60, 40)
     shape:setColor(0.9, 0.4, 0.2, 1.0)
@@ -7081,6 +9116,17 @@ LShape:roundedRectangle(mode, x, y, w, h, rx, ry)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setColor(0.5, 0.5, 1, 1)
     shape:roundedRectangle("line", 0, 0, 70, 36, 8)
@@ -7113,6 +9159,17 @@ LShape:setColor(r, g, b, a)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setColor(0.8, 0.2, 0.8, 1)
     shape:rectangle("fill", 0, 0, 20, 20)
@@ -7141,6 +9198,17 @@ LShape:setLineWidth(w)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setLineWidth(2)
     shape:triangle("line", 0, 0, 50, 0, 25, 50)
@@ -7175,6 +9243,17 @@ LShape:triangle(mode, x1, y1, x2, y2, x3, y3)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:setLineWidth(2)
     shape:triangle("line", 0, 0, 50, 0, 25, 50)
@@ -7203,6 +9282,17 @@ LShape:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:rectangle("fill", 0, 0, 16, 12)
     local type_name = shape:type()
@@ -7237,6 +9327,17 @@ LShape:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shape = lurek.render.newShape()
     shape:line(0, 0, 12, 12)
     local is_shape = shape:typeOf("LShape")
@@ -7285,6 +9386,17 @@ LSpriteBatch:add(x, y, r, sx, sy, ox, oy)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local batch = lurek.render.newSpriteBatch(image, 100)
     local id = batch:add(0, 0, 0, 1, 1, 0, 0)
@@ -7309,6 +9421,17 @@ LSpriteBatch:clear()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local batch = lurek.render.newSpriteBatch(image, 100)
     batch:add(0, 0, 0, 1, 1, 0, 0)
@@ -7340,6 +9463,17 @@ LSpriteBatch:getBufferSize()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local batch = lurek.render.newSpriteBatch(image, 100)
     batch:add(0, 0, 0, 1, 1, 0, 0)
@@ -7369,6 +9503,17 @@ LSpriteBatch:getCount()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local batch = lurek.render.newSpriteBatch(image, 100)
     batch:add(0, 0, 0, 1, 1, 0, 0)
@@ -7399,6 +9544,17 @@ LSpriteBatch:release()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local batch = lurek.render.newSpriteBatch(image, 8)
     local released = batch:release()
@@ -7427,6 +9583,17 @@ LSpriteBatch:type()
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local batch = lurek.render.newSpriteBatch(image, 8)
     example_print_log("batch type = " .. batch:type())
@@ -7461,6 +9628,17 @@ LSpriteBatch:typeOf(name)
 
 ```lua
 do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local batch = lurek.render.newSpriteBatch(image, 8)
     example_print_log("batch typeOf LSpriteBatch = " .. tostring(batch:typeOf("LSpriteBatch")))

@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-23T08:46:00.667294+00:00",
+    "generated": "2026-06-23T13:51:28.466932+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3038,
-      "rust_modules": 721,
-      "rust_tests": 491,
-      "lua_tests": 274
+      "rust_items": 3043,
+      "rust_modules": 722,
+      "rust_tests": 493,
+      "lua_tests": 276
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3038,
-      "documented": 3038,
-      "modules": 721
+      "total_items": 3043,
+      "documented": 3043,
+      "modules": 722
     },
     "modules": {
       "agent::chat": {
@@ -451,7 +451,7 @@
         ]
       },
       "ai::agent": {
-        "module_doc": "Defines the runtime state shape for one AI actor, combining identity, movement, decision mode, and support models. Owns the DecisionModel enum plus agent-side blackboard, tags, optional sensor, emotions, needs, and traits. Stores links into FSM, behavior-tree, and steering arenas so one agent can bind to multiple decision runtimes. Provides the per-actor boundary between shared AI systems and the concrete state they read and update. Open this owner when agent schema, decision-mode tagging, or cross-system state handoff needs to change.",
+        "module_doc": "Defines the runtime state shape for one AI actor, combining identity, movement state, decision mode, and support models. Owns the DecisionModel enum plus agent-side blackboard, tags, optional sensor, emotions, needs, and traits. Stores links into decision-runtime handles so one agent can bind to FSM, behavior-tree, and movement-guidance models. Provides the per-actor boundary between shared AI systems and the concrete state they read and update. Open this owner when agent schema, decision-mode tagging, or cross-system state handoff needs to change.",
         "source_file": "src/ai/agent.rs",
         "items": [
           {
@@ -528,33 +528,6 @@
             "description": "FIFO queue of pending AI commands for one actor.",
             "file": "src/ai/command_queue.rs",
             "line": 27
-          }
-        ]
-      },
-      "ai::context_steering": {
-        "module_doc": "Implements slot-based context steering that scores angular interest and danger before picking a movement lane. Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot. Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler. Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly. Provides the local movement boundary between authored context behaviors and the final chosen travel heading. This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion. Open this owner before generic steering when the bug is in lane choice rather than force combination policy.",
-        "source_file": "src/ai/context_steering.rs",
-        "items": [
-          {
-            "name": "ContextBehaviorKind",
-            "kind": "enum",
-            "description": "Behavior kind used by context steering slots.",
-            "file": "src/ai/context_steering.rs",
-            "line": 12
-          },
-          {
-            "name": "ContextBehavior",
-            "kind": "struct",
-            "description": "Single behavior contribution to a context-steering ring.",
-            "file": "src/ai/context_steering.rs",
-            "line": 57
-          },
-          {
-            "name": "ContextSteering",
-            "kind": "struct",
-            "description": "Slot-based steering accumulator with interest, danger, and result rings.",
-            "file": "src/ai/context_steering.rs",
-            "line": 68
           }
         ]
       },
@@ -809,7 +782,7 @@
         ]
       },
       "ai": {
-        "module_doc": "Exports the AI subsystem surface that groups decision models, sensing, planning, steering, pacing, and debug tools. Acts as the navigation index for agent state, behavior trees, GOAP, HTN, MCTS, squads, and utility scoring. Keeps module boundaries explicit so callers can find whether an AI concern belongs to storage, reasoning, or draw. Open this file when adding or retiring AI owners or when public re-export policy for shared AI APIs changes. The exported set here connects tactical motion, world awareness, strategic choice, and supporting data models. Agents should start here when tracing AI behavior because it reveals the authoritative file split by concern. This index owns visibility and compatibility re-exports rather than world state, planners, or runtime solvers. Neighboring work usually spans Agent, AIWorld, steering, planning modules, and debug visualization helpers. It is the right owner for composition-level AI API changes that should not alter any one behavior algorithm. Read this file first when generated specs or Lua bindings need to map a feature to its concrete Rust owner.",
+        "module_doc": "Exports the AI subsystem surface that groups decision models, sensing, planning, pacing, and debug tools. Acts as the navigation index for agent state, behavior trees, GOAP, HTN, MCTS, squads, and utility scoring. Keeps module boundaries explicit so callers can find whether an AI concern belongs to storage, reasoning, or draw. Open this file when adding or retiring AI owners or when public re-export policy for shared AI APIs changes. The exported set here connects world awareness, strategic choice, internal drives, and supporting data models. Agents should start here when tracing AI behavior because it reveals the authoritative file split by concern. This index owns visibility and compatibility re-exports rather than world state, planners, or runtime solvers. Neighboring work usually spans Agent, AIWorld, planning modules, and debug visualization helpers. It is the right owner for composition-level AI API changes that should not alter any one behavior algorithm. Read this file first when generated specs or Lua bindings need to map a feature to its concrete Rust owner.",
         "source_file": "src/ai/mod.rs",
         "items": [
           {
@@ -876,151 +849,123 @@
             "line": 30
           },
           {
-            "name": "steering",
-            "kind": "mod",
-            "description": "Steering behaviors and movement guidance.",
-            "file": "src/ai/mod.rs",
-            "line": 32
-          },
-          {
             "name": "utility_ai",
             "kind": "mod",
             "description": "Utility-AI scoring and action selection.",
             "file": "src/ai/mod.rs",
-            "line": 34
+            "line": 32
           },
           {
             "name": "world",
             "kind": "mod",
             "description": "Abstract world view consumed by AI logic.",
             "file": "src/ai/mod.rs",
-            "line": 36
-          },
-          {
-            "name": "context_steering",
-            "kind": "mod",
-            "description": "Context-steering behavior composition.",
-            "file": "src/ai/mod.rs",
-            "line": 39
+            "line": 34
           },
           {
             "name": "dialogue",
             "kind": "mod",
             "description": "Dialogue state, branches, and topic selection (re-exported from dialog module).",
             "file": "src/ai/mod.rs",
-            "line": 41
+            "line": 37
           },
           {
             "name": "director",
             "kind": "mod",
             "description": "Encounter pacing and high-level director logic.",
             "file": "src/ai/mod.rs",
-            "line": 45
+            "line": 41
           },
           {
             "name": "emotion",
             "kind": "mod",
             "description": "Emotion state tracking and decay.",
             "file": "src/ai/mod.rs",
-            "line": 47
+            "line": 43
           },
           {
             "name": "htn",
             "kind": "mod",
             "description": "Hierarchical task network planning.",
             "file": "src/ai/mod.rs",
-            "line": 50
+            "line": 46
           },
           {
             "name": "lod",
             "kind": "mod",
             "description": "AI level-of-detail switching.",
             "file": "src/ai/mod.rs",
-            "line": 52
+            "line": 48
           },
           {
             "name": "mcts",
             "kind": "mod",
             "description": "Monte Carlo tree search support.",
             "file": "src/ai/mod.rs",
-            "line": 54
+            "line": 50
           },
           {
             "name": "needs",
             "kind": "mod",
             "description": "Need evaluation and advertisement system.",
             "file": "src/ai/mod.rs",
-            "line": 56
-          },
-          {
-            "name": "orca",
-            "kind": "mod",
-            "description": "ORCA-based local avoidance.",
-            "file": "src/ai/mod.rs",
-            "line": 59
+            "line": 52
           },
           {
             "name": "perception",
             "kind": "mod",
             "description": "Perception stimuli, sensors, and world state.",
             "file": "src/ai/mod.rs",
-            "line": 61
+            "line": 55
           },
           {
             "name": "strategy",
             "kind": "mod",
             "description": "Higher-level strategy selection.",
             "file": "src/ai/mod.rs",
-            "line": 63
+            "line": 57
           },
           {
             "name": "traits",
             "kind": "mod",
             "description": "Personality traits and archetype presets.",
             "file": "src/ai/mod.rs",
-            "line": 65
+            "line": 59
           },
           {
             "name": "validation",
             "kind": "mod",
             "description": "Shared AI validation limits and numeric helpers.",
             "file": "src/ai/mod.rs",
-            "line": 67
+            "line": 61
           },
           {
             "name": "planning",
             "kind": "mod",
             "description": "Grouped planning APIs for callers that want a narrower public surface.",
             "file": "src/ai/mod.rs",
-            "line": 70
-          },
-          {
-            "name": "movement",
-            "kind": "mod",
-            "description": "Grouped movement and avoidance APIs for callers that only need locomotion-side AI.",
-            "file": "src/ai/mod.rs",
-            "line": 77
+            "line": 64
           },
           {
             "name": "decision",
             "kind": "mod",
             "description": "Grouped decision APIs for callers that only need reasoning primitives.",
             "file": "src/ai/mod.rs",
-            "line": 84
+            "line": 71
           },
           {
             "name": "simulation",
             "kind": "mod",
             "description": "Grouped simulation-side AI state APIs for callers that manage world or actor state.",
             "file": "src/ai/mod.rs",
-            "line": 92
+            "line": 79
           },
           {
             "name": "debug",
             "kind": "mod",
             "description": "Grouped debug and diagnostics APIs for AI inspection.",
             "file": "src/ai/mod.rs",
-            "line": 105
+            "line": 92
           }
         ]
       },
@@ -1048,26 +993,6 @@
             "description": "Collection of named needs for one agent.",
             "file": "src/ai/needs.rs",
             "line": 116
-          }
-        ]
-      },
-      "ai::orca": {
-        "module_doc": "Implements ORCA-style local collision avoidance that projects preferred motion into safe velocity choices. Owns solver agents, pairwise half-plane constraints, time horizon tuning, and the linear projection step. Computes a safe velocity for every registered agent while respecting radius and max-speed bounds. Provides the crowd-avoidance boundary between desired steering intent and collision-safe local movement output. Open this owner when avoidance stability, neighbor constraints, or safe-velocity projection needs adjustment.",
-        "source_file": "src/ai/orca.rs",
-        "items": [
-          {
-            "name": "ORCAAgent",
-            "kind": "struct",
-            "description": "One agent used by the ORCA solver.",
-            "file": "src/ai/orca.rs",
-            "line": 9
-          },
-          {
-            "name": "ORCASolver",
-            "kind": "struct",
-            "description": "Solver that computes collision-free velocities for all registered agents.",
-            "file": "src/ai/orca.rs",
-            "line": 45
           }
         ]
       },
@@ -1134,54 +1059,6 @@
             "description": "Squad membership, formation state, and local blackboard.",
             "file": "src/ai/squad.rs",
             "line": 45
-          }
-        ]
-      },
-      "ai::steering": {
-        "module_doc": "Owns the steering owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants. Defines how steering data is validated, transformed, or stored before neighboring systems use it. Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on steering behavior while Lua registration stays elsewhere. Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing steering defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating ai rules while keeping call sites explicit.",
-        "source_file": "src/ai/steering.rs",
-        "items": [
-          {
-            "name": "Force",
-            "kind": "type",
-            "description": "Force vector used by steering systems.",
-            "file": "src/ai/steering.rs",
-            "line": 17
-          },
-          {
-            "name": "SteeringEntity",
-            "kind": "struct",
-            "description": "Named entity state used by pursue, evade, and flock steering.",
-            "file": "src/ai/steering.rs",
-            "line": 21
-          },
-          {
-            "name": "CombineMode",
-            "kind": "enum",
-            "description": "How multiple steering behaviors are blended.",
-            "file": "src/ai/steering.rs",
-            "line": 40
-          },
-          {
-            "name": "SteeringBase",
-            "kind": "struct",
-            "description": "Shared enable/weight state for a steering behavior.",
-            "file": "src/ai/steering.rs",
-            "line": 64
-          },
-          {
-            "name": "SteeringBehaviorType",
-            "kind": "enum",
-            "description": "Individual steering behavior variants.",
-            "file": "src/ai/steering.rs",
-            "line": 82
-          },
-          {
-            "name": "SteeringManager",
-            "kind": "struct",
-            "description": "Aggregates steering behaviors and optional waypoint path following.",
-            "file": "src/ai/steering.rs",
-            "line": 292
           }
         ]
       },
@@ -1267,57 +1144,57 @@
         ]
       },
       "ai::validation": {
-        "module_doc": "Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Centers the implementation around AiValidationLimits, default, finite_f32, with helpers kept close to their invariants. Defines how validation data is validated, transformed, or stored before neighboring systems use it. Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on validation behavior while Lua registration stays elsewhere.",
+        "module_doc": "Owns validation limits and numeric guards for AI decision, planning, and callback-heavy evaluators. Keeps reasoning-side safety ceilings near the AI systems that enforce them.",
         "source_file": "src/ai/validation.rs",
         "items": [
           {
             "name": "AiValidationLimits",
             "kind": "struct",
-            "description": "Shared safety limits for AI registries, planners, steering, trees, and callback-heavy evaluators.",
+            "description": "Shared safety limits for AI registries, planners, trees, and callback-heavy evaluators.",
             "file": "src/ai/validation.rs",
-            "line": 11
+            "line": 8
           },
           {
             "name": "finite_f32",
             "kind": "fn",
             "description": "Reject NaN and infinite `f32` inputs.",
             "file": "src/ai/validation.rs",
-            "line": 73
+            "line": 64
           },
           {
             "name": "finite_f64",
             "kind": "fn",
             "description": "Reject NaN and infinite `f64` inputs.",
             "file": "src/ai/validation.rs",
-            "line": 84
+            "line": 75
           },
           {
             "name": "non_negative",
             "kind": "fn",
             "description": "Reject negative inputs after confirming finiteness.",
             "file": "src/ai/validation.rs",
-            "line": 92
+            "line": 83
           },
           {
             "name": "positive_nonzero",
             "kind": "fn",
             "description": "Reject non-positive inputs after confirming finiteness.",
             "file": "src/ai/validation.rs",
-            "line": 101
+            "line": 92
           },
           {
             "name": "validate_count",
             "kind": "fn",
             "description": "Reject counts above a configured ceiling.",
             "file": "src/ai/validation.rs",
-            "line": 114
+            "line": 105
           },
           {
             "name": "validate_depth",
             "kind": "fn",
             "description": "Reject depths above a configured ceiling.",
             "file": "src/ai/validation.rs",
-            "line": 126
+            "line": 117
           }
         ]
       },
@@ -11921,98 +11798,112 @@
             "kind": "enum",
             "description": "Whether minimap cells are coloured by terrain type or by political owner.",
             "file": "src/minimap/types.rs",
-            "line": 13
+            "line": 14
           },
           {
             "name": "FogLevel",
             "kind": "enum",
             "description": "Fog-of-war visibility level for a single minimap cell.",
             "file": "src/minimap/types.rs",
-            "line": 42
+            "line": 43
           },
           {
             "name": "MinimapObjectType",
             "kind": "struct",
             "description": "Descriptor for a category of minimap objects (units, buildings, etc.).",
             "file": "src/minimap/types.rs",
-            "line": 64
+            "line": 65
           },
           {
             "name": "MinimapObject",
             "kind": "struct",
             "description": "A single live minimap object placed at a world-space grid position.",
             "file": "src/minimap/types.rs",
-            "line": 75
+            "line": 76
           },
           {
             "name": "MinimapPing",
             "kind": "struct",
             "description": "A timed visual indicator that fades over its `duration`.",
             "file": "src/minimap/types.rs",
-            "line": 88
+            "line": 89
           },
           {
             "name": "MinimapMarker",
             "kind": "struct",
             "description": "A persistent named marker placed at a world-space grid position.",
             "file": "src/minimap/types.rs",
-            "line": 103
+            "line": 104
           },
           {
             "name": "MarkerAnimation",
             "kind": "enum",
             "description": "Per-frame animation state for a minimap marker.",
             "file": "src/minimap/types.rs",
-            "line": 118
+            "line": 119
           },
           {
             "name": "OverlayShape",
             "kind": "enum",
             "description": "A vector overlay shape drawn on top of the terrain grid.",
             "file": "src/minimap/types.rs",
-            "line": 129
+            "line": 130
           },
           {
             "name": "OverlayPath",
             "kind": "struct",
             "description": "A named polyline path drawn over the terrain.",
             "file": "src/minimap/types.rs",
-            "line": 160
+            "line": 161
           },
           {
             "name": "LayerData",
             "kind": "struct",
             "description": "Raw cell data for one named minimap layer.",
             "file": "src/minimap/types.rs",
-            "line": 171
+            "line": 172
+          },
+          {
+            "name": "LayerBlendMode",
+            "kind": "enum",
+            "description": "Blend operation used when a minimap data layer is composed over the base terrain.",
+            "file": "src/minimap/types.rs",
+            "line": 183
+          },
+          {
+            "name": "LayerStyle",
+            "kind": "struct",
+            "description": "Presentation state for one raw minimap data layer.",
+            "file": "src/minimap/types.rs",
+            "line": 219
           },
           {
             "name": "MinimapLimits",
             "kind": "struct",
             "description": "Hard limits that prevent oversized minimap allocations and unbounded overlay growth.",
             "file": "src/minimap/types.rs",
-            "line": 182
+            "line": 243
           },
           {
             "name": "MinimapValidationLimits",
             "kind": "struct",
             "description": "Validation policy for Lua-facing floats, colors, and free-form text.",
             "file": "src/minimap/types.rs",
-            "line": 227
+            "line": 288
           },
           {
             "name": "MinimapRenderStats",
             "kind": "struct",
             "description": "Debug counters for one minimap render-command generation pass.",
             "file": "src/minimap/types.rs",
-            "line": 254
+            "line": 315
           },
           {
             "name": "MinimapError",
             "kind": "enum",
             "description": "Structured minimap failure reasons surfaced through Rust and Lua strict paths.",
             "file": "src/minimap/types.rs",
-            "line": 265
+            "line": 326
           }
         ]
       },
@@ -13773,6 +13664,33 @@
           }
         ]
       },
+      "pathfind::context_steering": {
+        "module_doc": "Implements slot-based context steering that scores angular interest and danger before picking a movement lane. Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot. Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler. Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly. Provides the pathfind-owned local movement boundary between authored context behaviors and the final chosen travel heading. This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion. Open this owner before generic steering when the bug is in lane choice rather than force combination policy.",
+        "source_file": "src/pathfind/context_steering.rs",
+        "items": [
+          {
+            "name": "ContextBehaviorKind",
+            "kind": "enum",
+            "description": "Behavior kind used by context steering slots.",
+            "file": "src/pathfind/context_steering.rs",
+            "line": 12
+          },
+          {
+            "name": "ContextBehavior",
+            "kind": "struct",
+            "description": "Single behavior contribution to a context-steering ring.",
+            "file": "src/pathfind/context_steering.rs",
+            "line": 57
+          },
+          {
+            "name": "ContextSteering",
+            "kind": "struct",
+            "description": "Slot-based steering accumulator with interest, danger, and result rings.",
+            "file": "src/pathfind/context_steering.rs",
+            "line": 68
+          }
+        ]
+      },
       "pathfind::flow_field": {
         "module_doc": "Builds a NavGrid-backed flow field that points each reachable cell toward one or more target cells. Owns direction vectors, accumulated costs, target storage, and the shared-grid reference used for recomputation. Calculates steering data with unit-size aware walkability, then exposes direction, angle, cost, and velocity helpers. Also renders a debug image so field quality and blocked-cell effects can be inspected outside the live renderer. Provides the boundary between raw navigation costs and agent steering systems that need cheap per-frame guidance. Open this owner when target propagation, steering output, or debug visualization stops matching pathing intent.",
         "source_file": "src/pathfind/flow_field.rs",
@@ -13988,7 +13906,7 @@
         ]
       },
       "pathfind": {
-        "module_doc": "Exports the pathfinding subsystem surface that groups grid search, async execution, graph routing, and debug views. Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, and province graph helpers. Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, or draw. Open this file when adding or retiring pathfinding owners or when re-export policy for runtime helpers needs changes. The exports here connect generic tile grids, hex and iso variants, navmeshes, and province graph traversal utilities. Agents should start here when tracing navigation behavior because it reveals the authoritative file split by feature. This index owns visibility and re-export contracts rather than live state, queues, caches, or search data itself. Neighboring work usually spans NavGrid, async request handling, path solvers, and debug rendering adapters below.",
+        "module_doc": "Exports the pathfinding subsystem surface for routing, spatial fields, steering, local avoidance, and debug views. Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, steering, ORCA, and province graph helpers. Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, movement, or draw. Open this file when adding or retiring pathfinding owners or when re-export policy for runtime helpers needs changes. The exports here connect generic tile grids, hex and iso variants, navmeshes, and province graph traversal utilities. Agents should start here when tracing navigation behavior because it reveals the authoritative file split by feature. This index owns visibility and re-export contracts rather than live state, queues, caches, or search data itself. Neighboring work usually spans NavGrid, async request handling, path solvers, movement helpers, and debug rendering adapters below.",
         "source_file": "src/pathfind/mod.rs",
         "items": [
           {
@@ -14020,116 +13938,144 @@
             "line": 17
           },
           {
+            "name": "context_steering",
+            "kind": "mod",
+            "description": "Slot-based context steering for local movement direction selection.",
+            "file": "src/pathfind/mod.rs",
+            "line": 19
+          },
+          {
             "name": "flow_field",
             "kind": "mod",
             "description": "Dijkstra-based flow field for multi-target distance maps.",
             "file": "src/pathfind/mod.rs",
-            "line": 19
+            "line": 21
           },
           {
             "name": "goal_map",
             "kind": "mod",
             "description": "Multi-source Dijkstra distance field for goal-oriented AI movement.",
             "file": "src/pathfind/mod.rs",
-            "line": 21
+            "line": 23
           },
           {
             "name": "graph_path",
             "kind": "mod",
             "description": "Province-level graph pathfinding and reachability.",
             "file": "src/pathfind/mod.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "grid",
             "kind": "mod",
             "description": "Generic 2D grid abstraction for pathfinding algorithms.",
             "file": "src/pathfind/mod.rs",
-            "line": 25
+            "line": 27
           },
           {
             "name": "hpa",
             "kind": "mod",
             "description": "Hierarchical Pathfinding A* (HPA*) with abstract graph construction.",
             "file": "src/pathfind/mod.rs",
-            "line": 27
+            "line": 29
           },
           {
             "name": "influence_map",
             "kind": "mod",
             "description": "Influence map for spatial scoring and tactical queries.",
             "file": "src/pathfind/mod.rs",
-            "line": 29
+            "line": 31
           },
           {
             "name": "nav_grid",
             "kind": "mod",
             "description": "Navigation grid with configurable diagonal movement modes.",
             "file": "src/pathfind/mod.rs",
-            "line": 31
+            "line": 33
           },
           {
             "name": "navmesh",
             "kind": "mod",
             "description": "Triangle-based navigation mesh for free-form 2D areas.",
             "file": "src/pathfind/mod.rs",
-            "line": 33
+            "line": 35
+          },
+          {
+            "name": "orca",
+            "kind": "mod",
+            "description": "ORCA-style reciprocal local collision avoidance.",
+            "file": "src/pathfind/mod.rs",
+            "line": 37
           },
           {
             "name": "pathgrid",
             "kind": "mod",
             "description": "Cell-based path grid with obstacle and cost marking.",
             "file": "src/pathfind/mod.rs",
-            "line": 35
+            "line": 39
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Debug and visualization rendering for pathfinding structures.",
             "file": "src/pathfind/mod.rs",
-            "line": 37
+            "line": 41
+          },
+          {
+            "name": "steering",
+            "kind": "mod",
+            "description": "Steering behaviors, path following, flocking, and named-entity pursuit/evade helpers.",
+            "file": "src/pathfind/mod.rs",
+            "line": 43
           },
           {
             "name": "unit_pathfinder",
             "kind": "mod",
             "description": "Per-unit pathfinder with waypoint queue and replanning.",
             "file": "src/pathfind/mod.rs",
-            "line": 39
+            "line": 45
+          },
+          {
+            "name": "validation",
+            "kind": "mod",
+            "description": "Shared validation limits for pathfinding movement helpers.",
+            "file": "src/pathfind/mod.rs",
+            "line": 47
           },
           {
             "name": "graph_nav",
             "kind": "mod",
             "description": "Graph-based A* and range queries on abstract node networks.",
             "file": "src/pathfind/mod.rs",
-            "line": 56
+            "line": 67
           },
           {
             "name": "hex_grid",
             "kind": "mod",
             "description": "Hexagonal grid with axial coordinates and layout conversion.",
             "file": "src/pathfind/mod.rs",
-            "line": 58
+            "line": 69
           },
           {
             "name": "iso_grid",
             "kind": "mod",
             "description": "Isometric grid for 2D-projected tile maps.",
             "file": "src/pathfind/mod.rs",
-            "line": 60
+            "line": 71
           },
           {
             "name": "jps",
             "kind": "mod",
             "description": "Jump Point Search on uniform-cost grids.",
             "file": "src/pathfind/mod.rs",
-            "line": 62
+            "line": 73
           },
           {
             "name": "range_map",
             "kind": "mod",
             "description": "Range map for distance-bounded area queries.",
             "file": "src/pathfind/mod.rs",
-            "line": 64
+            "line": 75
           }
         ]
       },
@@ -14163,6 +14109,26 @@
             "description": "Polygon-based 2D navigation mesh supporting A\\* pathfinding.",
             "file": "src/pathfind/navmesh.rs",
             "line": 11
+          }
+        ]
+      },
+      "pathfind::orca": {
+        "module_doc": "Implements ORCA-style local collision avoidance that projects preferred motion into safe velocity choices. Owns solver agents, pairwise half-plane constraints, time horizon tuning, and the linear projection step. Computes a safe velocity for every registered agent while respecting radius and max-speed bounds. Provides the crowd-avoidance boundary between desired steering intent and collision-safe local movement output. Open this owner when avoidance stability, neighbor constraints, or safe-velocity projection needs adjustment.",
+        "source_file": "src/pathfind/orca.rs",
+        "items": [
+          {
+            "name": "ORCAAgent",
+            "kind": "struct",
+            "description": "One agent used by the ORCA solver.",
+            "file": "src/pathfind/orca.rs",
+            "line": 9
+          },
+          {
+            "name": "ORCASolver",
+            "kind": "struct",
+            "description": "Solver that computes collision-free velocities for all registered agents.",
+            "file": "src/pathfind/orca.rs",
+            "line": 45
           }
         ]
       },
@@ -14204,6 +14170,54 @@
         "source_file": "src/pathfind/render.rs",
         "items": []
       },
+      "pathfind::steering": {
+        "module_doc": "Owns steering behavior stacks for pathfinding-adjacent local movement. Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants. Defines how steering data is validated, transformed, or stored before neighboring systems use it. Keeps path following, flocking, pursuit, evasion, and custom movement forces under the navigation owner. Keeps public crate helpers focused on movement behavior while Lua registration stays elsewhere. Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing steering defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary. Provides the local movement layer that lets callers avoid duplicating path and avoidance rules.",
+        "source_file": "src/pathfind/steering.rs",
+        "items": [
+          {
+            "name": "Force",
+            "kind": "type",
+            "description": "Force vector used by steering systems.",
+            "file": "src/pathfind/steering.rs",
+            "line": 17
+          },
+          {
+            "name": "SteeringEntity",
+            "kind": "struct",
+            "description": "Named entity state used by pursue, evade, and flock steering.",
+            "file": "src/pathfind/steering.rs",
+            "line": 21
+          },
+          {
+            "name": "CombineMode",
+            "kind": "enum",
+            "description": "How multiple steering behaviors are blended.",
+            "file": "src/pathfind/steering.rs",
+            "line": 40
+          },
+          {
+            "name": "SteeringBase",
+            "kind": "struct",
+            "description": "Shared enable/weight state for a steering behavior.",
+            "file": "src/pathfind/steering.rs",
+            "line": 64
+          },
+          {
+            "name": "SteeringBehaviorType",
+            "kind": "enum",
+            "description": "Individual steering behavior variants.",
+            "file": "src/pathfind/steering.rs",
+            "line": 82
+          },
+          {
+            "name": "SteeringManager",
+            "kind": "struct",
+            "description": "Aggregates steering behaviors and optional waypoint path following.",
+            "file": "src/pathfind/steering.rs",
+            "line": 292
+          }
+        ]
+      },
       "pathfind::unit_pathfinder": {
         "module_doc": "Wraps a shared NavGrid in a stateful per-unit pathfinding service with cache-aware route and utility queries. Owns Waypoint output records, cache keys, cached path storage, and optional LRU-style eviction behavior. Calls baseline A* for full, smoothed, or partial routes, then exposes length, cost, LOS, and reachability helpers. Also searches for the nearest walkable fallback cell, keeping per-unit recovery logic close to shared grid access. Provides the boundary between raw navigation algorithms and gameplay units that need repeated path requests. Open this owner when route caching, per-unit helper semantics, or fallback walkability behavior needs changes.",
         "source_file": "src/pathfind/unit_pathfinder.rs",
@@ -14221,6 +14235,33 @@
             "description": "Stateful pathfinder for one unit type sharing a grid reference.",
             "file": "src/pathfind/unit_pathfinder.rs",
             "line": 38
+          }
+        ]
+      },
+      "pathfind::validation": {
+        "module_doc": "Validation helpers for pathfinding, tactical fields, steering, and local avoidance. Keeps movement-facing limits near the pathfind owners that enforce them.",
+        "source_file": "src/pathfind/validation.rs",
+        "items": [
+          {
+            "name": "PathfindValidationLimits",
+            "kind": "struct",
+            "description": "Shared safety limits for pathfinding-adjacent movement helpers.",
+            "file": "src/pathfind/validation.rs",
+            "line": 6
+          },
+          {
+            "name": "finite_f32",
+            "kind": "fn",
+            "description": "Reject NaN and infinite `f32` inputs.",
+            "file": "src/pathfind/validation.rs",
+            "line": 26
+          },
+          {
+            "name": "validate_count",
+            "kind": "fn",
+            "description": "Reject counts above a configured ceiling.",
+            "file": "src/pathfind/validation.rs",
+            "line": 36
           }
         ]
       },
@@ -22880,7 +22921,7 @@
             "kind": "struct",
             "description": "Per-cell gameplay state with independent channel blockers, costs, and sun occlusion.",
             "file": "src/tilefield/cell.rs",
-            "line": 61
+            "line": 62
           }
         ]
       },
@@ -28244,765 +28285,779 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_filesystem_security",
+        "name": "lua_library_tilefield_minimap_library",
         "description": "",
         "line": 1135
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_network_security",
+        "name": "lua_library_visibility_minimap_library",
         "description": "",
         "line": 1140
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_render_security",
+        "name": "lua_security_filesystem_security",
         "description": "",
         "line": 1145
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_runtime_security",
+        "name": "lua_security_network_security",
         "description": "",
         "line": 1150
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_save_security",
+        "name": "lua_security_render_security",
         "description": "",
         "line": 1155
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ai_stress",
+        "name": "lua_security_runtime_security",
         "description": "",
         "line": 1160
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_animation_stress",
+        "name": "lua_security_save_security",
         "description": "",
         "line": 1165
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_binary_stress",
+        "name": "lua_stress_ai_stress",
         "description": "",
         "line": 1170
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_camera_stress",
+        "name": "lua_stress_animation_stress",
         "description": "",
         "line": 1175
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_compute_stress",
+        "name": "lua_stress_binary_stress",
         "description": "",
         "line": 1180
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_dataframe_stress",
+        "name": "lua_stress_camera_stress",
         "description": "",
         "line": 1185
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ecs_stress",
+        "name": "lua_stress_compute_stress",
         "description": "",
         "line": 1190
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_event_stress",
+        "name": "lua_stress_dataframe_stress",
         "description": "",
         "line": 1195
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_filesystem_stress",
+        "name": "lua_stress_ecs_stress",
         "description": "",
         "line": 1200
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_image_stress",
+        "name": "lua_stress_event_stress",
         "description": "",
         "line": 1205
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_learning_stress",
+        "name": "lua_stress_filesystem_stress",
         "description": "",
         "line": 1210
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_light_stress",
+        "name": "lua_stress_image_stress",
         "description": "",
         "line": 1215
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_math_stress",
+        "name": "lua_stress_learning_stress",
         "description": "",
         "line": 1220
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_particle_stress",
+        "name": "lua_stress_light_stress",
         "description": "",
         "line": 1225
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_pathfind_stress",
+        "name": "lua_stress_math_stress",
         "description": "",
         "line": 1230
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_patterns_stress",
+        "name": "lua_stress_particle_stress",
         "description": "",
         "line": 1235
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_physics_stress",
+        "name": "lua_stress_pathfind_stress",
         "description": "",
         "line": 1240
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_procgen_stress",
+        "name": "lua_stress_patterns_stress",
         "description": "",
         "line": 1245
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_render_stress",
+        "name": "lua_stress_physics_stress",
         "description": "",
         "line": 1250
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_save_stress",
+        "name": "lua_stress_procgen_stress",
         "description": "",
         "line": 1255
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_scene_stress",
+        "name": "lua_stress_render_stress",
         "description": "",
         "line": 1260
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_serialize_stress",
+        "name": "lua_stress_save_stress",
         "description": "",
         "line": 1265
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_thread_stress",
+        "name": "lua_stress_scene_stress",
         "description": "",
         "line": 1270
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilemap_stress",
+        "name": "lua_stress_serialize_stress",
         "description": "",
         "line": 1275
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilefield_stress",
+        "name": "lua_stress_thread_stress",
         "description": "",
         "line": 1280
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_timer_stress",
+        "name": "lua_stress_tilemap_stress",
         "description": "",
         "line": 1285
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tween_stress",
+        "name": "lua_stress_tilefield_stress",
         "description": "",
         "line": 1290
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_agent_unit",
+        "name": "lua_stress_timer_stress",
         "description": "",
         "line": 1295
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ai_unit",
+        "name": "lua_stress_tween_stress",
         "description": "",
         "line": 1300
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_animation_unit",
+        "name": "lua_unit_agent_unit",
         "description": "",
         "line": 1305
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_asset_unit",
+        "name": "lua_unit_ai_unit",
         "description": "",
         "line": 1310
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_audio_unit",
+        "name": "lua_unit_animation_unit",
         "description": "",
         "line": 1315
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_automation_unit",
+        "name": "lua_unit_asset_unit",
         "description": "",
         "line": 1320
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_beat_clock_unit",
+        "name": "lua_unit_audio_unit",
         "description": "",
         "line": 1325
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_binary_unit",
+        "name": "lua_unit_automation_unit",
         "description": "",
         "line": 1330
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_camera_unit",
+        "name": "lua_unit_beat_clock_unit",
         "description": "",
         "line": 1335
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_charts_unit",
+        "name": "lua_unit_binary_unit",
         "description": "",
         "line": 1340
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_cinematic_unit",
+        "name": "lua_unit_camera_unit",
         "description": "",
         "line": 1345
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_collision_unit",
+        "name": "lua_unit_charts_unit",
         "description": "",
         "line": 1350
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_color_unit",
+        "name": "lua_unit_cinematic_unit",
         "description": "",
         "line": 1355
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_compute_unit",
+        "name": "lua_unit_collision_unit",
         "description": "",
         "line": 1360
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_cursor_unit",
+        "name": "lua_unit_color_unit",
         "description": "",
         "line": 1365
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dataframe_unit",
+        "name": "lua_unit_compute_unit",
         "description": "",
         "line": 1370
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_debugbridge_unit",
+        "name": "lua_unit_cursor_unit",
         "description": "",
         "line": 1375
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_devtools_unit",
+        "name": "lua_unit_dataframe_unit",
         "description": "",
         "line": 1380
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dialog_unit",
+        "name": "lua_unit_debugbridge_unit",
         "description": "",
         "line": 1385
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_docs_unit",
+        "name": "lua_unit_devtools_unit",
         "description": "",
         "line": 1390
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dsp_unit",
+        "name": "lua_unit_dialog_unit",
         "description": "",
         "line": 1395
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ecs_unit",
+        "name": "lua_unit_docs_unit",
         "description": "",
         "line": 1400
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_effect_unit",
+        "name": "lua_unit_dsp_unit",
         "description": "",
         "line": 1405
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_engine_unit",
+        "name": "lua_unit_ecs_unit",
         "description": "",
         "line": 1410
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_event_unit",
+        "name": "lua_unit_effect_unit",
         "description": "",
         "line": 1415
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_filesystem_unit",
+        "name": "lua_unit_engine_unit",
         "description": "",
         "line": 1420
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_flownet_unit",
+        "name": "lua_unit_event_unit",
         "description": "",
         "line": 1425
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_font_unit",
+        "name": "lua_unit_filesystem_unit",
         "description": "",
         "line": 1430
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_globe_unit",
+        "name": "lua_unit_flownet_unit",
         "description": "",
         "line": 1435
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_grep_unit",
+        "name": "lua_unit_font_unit",
         "description": "",
         "line": 1440
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_html_unit",
+        "name": "lua_unit_globe_unit",
         "description": "",
         "line": 1445
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_i18n_unit",
+        "name": "lua_unit_grep_unit",
         "description": "",
         "line": 1450
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_image_unit",
+        "name": "lua_unit_html_unit",
         "description": "",
         "line": 1455
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_input_unit",
+        "name": "lua_unit_i18n_unit",
         "description": "",
         "line": 1460
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_learning_unit",
+        "name": "lua_unit_image_unit",
         "description": "",
         "line": 1465
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_layout_unit",
+        "name": "lua_unit_input_unit",
         "description": "",
         "line": 1470
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_light_unit",
+        "name": "lua_unit_learning_unit",
         "description": "",
         "line": 1475
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_log_unit",
+        "name": "lua_unit_layout_unit",
         "description": "",
         "line": 1480
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_loot_unit",
+        "name": "lua_unit_light_unit",
         "description": "",
         "line": 1485
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_math_unit",
+        "name": "lua_unit_log_unit",
         "description": "",
         "line": 1490
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_mapblock_unit",
+        "name": "lua_unit_loot_unit",
         "description": "",
         "line": 1495
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_midi_unit",
+        "name": "lua_unit_math_unit",
         "description": "",
         "line": 1500
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_minimap_unit",
+        "name": "lua_unit_mapblock_unit",
         "description": "",
         "line": 1505
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_mods_unit",
+        "name": "lua_unit_midi_unit",
         "description": "",
         "line": 1510
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_net_unit",
+        "name": "lua_unit_minimap_unit",
         "description": "",
         "line": 1515
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_network_unit",
+        "name": "lua_unit_mods_unit",
         "description": "",
         "line": 1520
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_overlay_unit",
+        "name": "lua_unit_net_unit",
         "description": "",
         "line": 1525
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_parallax_unit",
+        "name": "lua_unit_network_unit",
         "description": "",
         "line": 1530
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_particle_unit",
+        "name": "lua_unit_overlay_unit",
         "description": "",
         "line": 1535
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_pathfind_unit",
+        "name": "lua_unit_parallax_unit",
         "description": "",
         "line": 1540
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_patterns_unit",
+        "name": "lua_unit_particle_unit",
         "description": "",
         "line": 1545
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_physics_unit",
+        "name": "lua_unit_pathfind_unit",
         "description": "",
         "line": 1550
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_pipeline_unit",
+        "name": "lua_unit_patterns_unit",
         "description": "",
         "line": 1555
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_procgen_unit",
+        "name": "lua_unit_physics_unit",
         "description": "",
         "line": 1560
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_province_unit",
+        "name": "lua_unit_pipeline_unit",
         "description": "",
         "line": 1565
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_raycaster_unit",
+        "name": "lua_unit_procgen_unit",
         "description": "",
         "line": 1570
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_render_unit",
+        "name": "lua_unit_province_unit",
         "description": "",
         "line": 1575
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_repl_unit",
+        "name": "lua_unit_raycaster_unit",
         "description": "",
         "line": 1580
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_runtime_unit",
+        "name": "lua_unit_render_unit",
         "description": "",
         "line": 1585
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_save_unit",
+        "name": "lua_unit_repl_unit",
         "description": "",
         "line": 1590
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_scene_unit",
+        "name": "lua_unit_runtime_unit",
         "description": "",
         "line": 1595
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_serialize_unit",
+        "name": "lua_unit_save_unit",
         "description": "",
         "line": 1600
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_shape_unit",
+        "name": "lua_unit_scene_unit",
         "description": "",
         "line": 1605
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_spine_unit",
+        "name": "lua_unit_serialize_unit",
         "description": "",
         "line": 1610
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_sprite_unit",
+        "name": "lua_unit_shape_unit",
         "description": "",
         "line": 1615
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_svg_unit",
+        "name": "lua_unit_spine_unit",
         "description": "",
         "line": 1620
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_terminal_unit",
+        "name": "lua_unit_sprite_unit",
         "description": "",
         "line": 1625
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_thread_unit",
+        "name": "lua_unit_svg_unit",
         "description": "",
         "line": 1630
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilemap_unit",
+        "name": "lua_unit_terminal_unit",
         "description": "",
         "line": 1635
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_unit",
+        "name": "lua_unit_thread_unit",
         "description": "",
         "line": 1640
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_timer_unit",
+        "name": "lua_unit_tilemap_unit",
         "description": "",
         "line": 1645
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tween_unit",
+        "name": "lua_unit_tilefield_unit",
         "description": "",
         "line": 1650
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ui_unit",
+        "name": "lua_unit_timer_unit",
         "description": "",
         "line": 1655
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_validator_unit",
+        "name": "lua_unit_tween_unit",
         "description": "",
         "line": 1660
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_visibility_unit",
+        "name": "lua_unit_ui_unit",
         "description": "",
         "line": 1665
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_window_unit",
+        "name": "lua_unit_validator_unit",
         "description": "",
         "line": 1670
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_demo_colocated_games",
+        "name": "lua_unit_visibility_unit",
         "description": "",
         "line": 1675
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_unit_window_unit",
+        "description": "",
+        "line": 1680
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_demo_colocated_games",
+        "description": "",
+        "line": 1685
       }
     ],
     "lua": [
@@ -30162,10 +30217,24 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/library/test_tilefield_minimap_library.lua",
+        "module": "test_tilefield_minimap_library",
+        "name": "test_tilefield_minimap_library",
+        "description": "Lurek2D Library Tilefield Minimap Tests",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/library/test_tilemap_minimap_library.lua",
         "module": "test_tilemap_minimap_library",
         "name": "test_tilemap_minimap_library",
         "description": "Lurek2D Library Tilemap Minimap Tests",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/library/test_visibility_minimap_library.lua",
+        "module": "test_visibility_minimap_library",
+        "name": "test_visibility_minimap_library",
+        "description": "Lurek2D Library Visibility Minimap Tests",
         "kind": "lua"
       },
       {

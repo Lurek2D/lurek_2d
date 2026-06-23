@@ -1132,6 +1132,16 @@ fn lua_library_tilemap_minimap_library() {
 }
 
 #[test]
+fn lua_library_tilefield_minimap_library() {
+    run_lua_test("library/test_tilefield_minimap_library.lua");
+}
+
+#[test]
+fn lua_library_visibility_minimap_library() {
+    run_lua_test("library/test_visibility_minimap_library.lua");
+}
+
+#[test]
 fn lua_security_filesystem_security() {
     run_lua_test("security/test_filesystem_security.lua");
 }

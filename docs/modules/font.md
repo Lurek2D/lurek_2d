@@ -16,6 +16,19 @@ Example block: `lurek.font.getDefault`
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.getDefault()
     local name = font:getName()
     local size = font:getSize()
@@ -66,6 +79,19 @@ lurek.font.availableSizes()
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local sizes = lurek.font.availableSizes()
     local smallest = sizes[1]
     local largest = sizes[#sizes]
@@ -103,6 +129,19 @@ lurek.font.charAdvance(font, char, scale)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.getDefault()
     local advance_w = lurek.font.charAdvance(font, "W", 1.0)
     local advance_space = lurek.font.charAdvance(font, " ", 1.0)
@@ -132,6 +171,19 @@ lurek.font.getDefault()
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.getDefault()
     local name = font:getName()
     local size = font:getSize()
@@ -167,6 +219,19 @@ lurek.font.lineHeight(font)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.getDefault()
     local line_height = lurek.font.lineHeight(font)
     local visible_rows = math.floor(160 / math.max(line_height, 1))
@@ -196,6 +261,19 @@ lurek.font.list()
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local before = lurek.font.list()
     local runtime_font = lurek.font.load(sample_font_path(), 16)
     local after = lurek.font.list()
@@ -232,6 +310,19 @@ lurek.font.load(path, size)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.load(sample_font_path(), 14)
     local name = font:getName()
     local style = font:getStyle()
@@ -269,6 +360,19 @@ lurek.font.loadBitmap(path, cellWidth, cellHeight)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local atlas_path = "content/examples/assets/fonts/missing_bitmap_font.png"
     local cell_width = 8
     local cell_height = 8
@@ -306,6 +410,19 @@ lurek.font.measure(font, text, scale)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.getDefault()
     local title = ui_title()
     local width, height = lurek.font.measure(font, title, 1.0)
@@ -343,6 +460,19 @@ lurek.font.measureLine(font, text, scale)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.getDefault()
     local status_line = "Supply 120  Morale 78%"
     local width, height = lurek.font.measureLine(font, status_line, 1.0)
@@ -383,6 +513,19 @@ lurek.font.shapeText(font, text, maxWidth, scale, align, wrap)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.getDefault()
     local banner = "Victory Forecast"
     local shaped = lurek.font.shapeText(font, banner, 180, 1.0, "center", "word")
@@ -423,6 +566,19 @@ lurek.font.wrapText(font, text, maxWidth, scale, mode)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.getDefault()
     local briefing = ui_briefing()
     local max_width = 120
@@ -478,6 +634,19 @@ LFont:containsGlyph(char)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.load(sample_font_path(), 18)
     local has_r = font:containsGlyph("R")
     local has_dash = font:containsGlyph("-")
@@ -571,6 +740,19 @@ LFont:getName()
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.load(sample_font_path(), 18)
     local name = font:getName()
     local size = font:getSize()
@@ -600,6 +782,19 @@ LFont:getSize()
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.load(sample_font_path(), 18)
     local size = font:getSize()
     local line_height = font:lineHeight()
@@ -629,6 +824,19 @@ LFont:getStyle()
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.load(sample_font_path(), 18)
     local style = font:getStyle()
     local bold = font:isBold()
@@ -704,6 +912,19 @@ LFont:isBold()
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.load(sample_font_path(), 18)
     local bold = font:isBold()
     local style = font:getStyle()
@@ -733,6 +954,19 @@ LFont:lineHeight()
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.load(sample_font_path(), 18)
     local line_height = font:lineHeight()
     local paragraph = font:wrapText(ui_briefing(), 160, 1.0)
@@ -770,6 +1004,19 @@ LFont:measure(text, scale)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.load(sample_font_path(), 18)
     local label = "Treasury Update"
     local width, height = font:measure(label, 1.0)
@@ -877,6 +1124,19 @@ LFont:wrapText(text, maxWidth, scale)
 
 ```lua
 do
+    local function font_log(message)
+        lurek.log.info("[font.example] " .. tostring(message))
+    end
+    local function ui_title()
+        return "Province Ledger"
+    end
+    local function ui_briefing()
+        return "Northern provinces need supply wagons before winter roads close."
+    end
+    local function sample_font_path()
+        return "content/examples/assets/fonts/sample_font.ttf"
+    end
+
     local font = lurek.font.load(sample_font_path(), 18)
     local width = 150
     local lines = font:wrapText("Reinforcements arrive tomorrow if the northern road stays open.", width, 1.0)

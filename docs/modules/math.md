@@ -16,6 +16,14 @@ Example block: `lurek.math.pi`
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("pi = " .. lurek.math.pi)
     example_print_log("pi * 2 = " .. lurek.math.pi * 2)
     example_print_log("half turn = " .. lurek.math.pi)
@@ -85,6 +93,14 @@ lurek.math.Vec2(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec2(3, 4)
     example_print_log("vec2 = " .. v.x .. "," .. v.y)
     example_print_log("heading = " .. v:angle())
@@ -121,6 +137,14 @@ lurek.math.Vec3(x, y, z)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec3(1, 2, 3)
     example_print_log("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
     example_print_log("lengthSquared = " .. v:lengthSquared())
@@ -149,6 +173,14 @@ lurek.math.aabbTree()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 10, 10)
     tree:insert(2, 5, 5, 15, 15)
@@ -183,6 +215,14 @@ lurek.math.abs(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("abs(-5) = " .. lurek.math.abs(-5))
     example_print_log("abs(3) = " .. lurek.math.abs(3))
     example_print_log("abs(-12) keeps motion positive = " .. lurek.math.abs(-12))
@@ -217,6 +257,14 @@ lurek.math.acos(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("acos(1) = " .. lurek.math.acos(1))
     example_print_log("acos(0) = " .. lurek.math.acos(0))
     example_print_log("acos(0.5) = " .. lurek.math.acos(0.5))
@@ -254,6 +302,14 @@ lurek.math.angleBetween(x1, y1, x2, y2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.angleBetween(0, 0, 1, 0)
     example_print_log("angle to right = " .. a)
     local b = lurek.math.angleBetween(0, 0, 0, 1)
@@ -289,6 +345,14 @@ lurek.math.applyEasing(name, t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local linear = lurek.math.applyEasing("linear", 0.5)
     local eased = lurek.math.applyEasing("inOutCubic", 0.5)
     example_print_log("linear = " .. linear)
@@ -323,6 +387,14 @@ lurek.math.asin(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("asin(1) = " .. lurek.math.asin(1))
     example_print_log("asin(0) = " .. lurek.math.asin(0))
     example_print_log("asin(0.5) = " .. lurek.math.asin(0.5))
@@ -358,6 +430,14 @@ lurek.math.atan(y, x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("atan(1) = " .. lurek.math.atan(1))
     example_print_log("atan(1, 1) = " .. lurek.math.atan(1, 1))
     example_print_log("atan(0.25) = " .. lurek.math.atan(0.25))
@@ -393,6 +473,14 @@ lurek.math.atan2(y, x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("atan2(1, 0) = " .. lurek.math.atan2(1, 0))
     example_print_log("atan2(0, 1) = " .. lurek.math.atan2(0, 1))
     example_print_log("heading to top-right = " .. lurek.math.atan2(-1, 1))
@@ -430,6 +518,14 @@ lurek.math.bresenham(x1, y1, x2, y2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pts = lurek.math.bresenham(0, 0, 5, 3)
     example_print_log("bresenham points = " .. #pts)
     for _, p in ipairs(pts) do
@@ -464,6 +560,14 @@ lurek.math.catmullRom(points)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}, {x = 150, y = 60}})
     example_print_log("points = " .. spline:len())
     local x, y = spline:sample(0.5)
@@ -498,6 +602,14 @@ lurek.math.ceil(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("ceil(2.3) = " .. lurek.math.ceil(2.3))
     example_print_log("ceil(-1.7) = " .. lurek.math.ceil(-1.7))
     example_print_log("ceil keeps partial row = " .. lurek.math.ceil(2.01))
@@ -536,6 +648,14 @@ lurek.math.circleContainsPoint(cx, cy, r, px, py)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local inside = lurek.math.circleContainsPoint(5, 5, 10, 6, 6)
     example_print_log("inside = " .. tostring(inside))
     example_print_log("outside = " .. tostring(lurek.math.circleContainsPoint(5, 5, 10, 20, 20)))
@@ -575,6 +695,14 @@ lurek.math.circleIntersectsCircle(x1, y1, r1, x2, y2, r2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hit = lurek.math.circleIntersectsCircle(0, 0, 5, 8, 0, 5)
     example_print_log("circles overlap = " .. tostring(hit))
     example_print_log("touching circles overlap = " .. tostring(lurek.math.circleIntersectsCircle(0, 0, 5, 10, 0, 5)))
@@ -619,6 +747,14 @@ lurek.math.circleIntersectsLine(cx, cy, r, lx1, ly1, lx2, ly2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hit, hx1, hy1, hx2, hy2 = lurek.math.circleIntersectsLine(5, 5, 3, 0, 5, 10, 5)
     example_print_log("circle/line hit = " .. tostring(hit))
     if hx1 then example_print_log("  hit1 = " .. hx1 .. "," .. hy1) end
@@ -663,6 +799,14 @@ lurek.math.circleIntersectsSegment(cx, cy, r, sx1, sy1, sx2, sy2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hit, hx1, hy1, hx2, hy2 = lurek.math.circleIntersectsSegment(5, 5, 3, 0, 5, 10, 5)
     example_print_log("circle/seg hit = " .. tostring(hit))
     if hx1 then example_print_log("  seg hit1 = " .. hx1 .. "," .. hy1) end
@@ -699,6 +843,14 @@ lurek.math.clamp(v, min, max)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("clamp(15, 0, 10) = " .. lurek.math.clamp(15, 0, 10))
     example_print_log("clamp(-3, 0, 10) = " .. lurek.math.clamp(-3, 0, 10))
     example_print_log("clamp(5, 0, 10) = " .. lurek.math.clamp(5, 0, 10))
@@ -739,6 +891,14 @@ lurek.math.closestPointOnSegment(px, py, x1, y1, x2, y2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cx, cy = lurek.math.closestPointOnSegment(5, 5, 0, 0, 10, 0)
     example_print_log("closest on segment = " .. cx .. "," .. cy)
     example_print_log("value types = " .. type(cx) .. "," .. type(cy))
@@ -773,6 +933,14 @@ lurek.math.convexHull(pts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pts = {0, 0, 5, 5, 10, 0, 3, 2, 7, 2, 5, 10}
     local hull = lurek.math.convexHull(pts)
     example_print_log("hull vertices = " .. #hull / 2)
@@ -807,6 +975,14 @@ lurek.math.cos(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("cos(0) = " .. lurek.math.cos(0))
     example_print_log("cos(pi) = " .. lurek.math.cos(lurek.math.pi))
     example_print_log("cos facing up = " .. lurek.math.cos(lurek.math.rad(90)))
@@ -845,6 +1021,14 @@ lurek.math.cubicBezier(p1x, p1y, p2x, p2y, t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local y = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 0.5)
     example_print_log("cubicBezier(0.5) = " .. y)
     example_print_log("ease sample at 0.2 = " .. lurek.math.cubicBezier(0.42, 0.0, 0.58, 1.0, 0.2))
@@ -879,6 +1063,14 @@ lurek.math.deg(rad)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("deg(pi) = " .. lurek.math.deg(lurek.math.pi))
     example_print_log("deg(pi/2) = " .. lurek.math.deg(lurek.math.pi / 2))
     example_print_log("45deg from rad = " .. lurek.math.deg(lurek.math.rad(45)))
@@ -913,6 +1105,14 @@ lurek.math.delaunayTriangulate(pts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pts = {0, 0, 10, 0, 5, 10, 3, 5, 7, 5}
     local tris = lurek.math.delaunayTriangulate(pts)
     example_print_log("delaunay triangles = " .. #tris)
@@ -950,6 +1150,14 @@ lurek.math.distance(x1, y1, x2, y2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local d = lurek.math.distance(0, 0, 3, 4)
     example_print_log("distance = " .. d)
     example_print_log("distance to 6,8 = " .. lurek.math.distance(0, 0, 6, 8))
@@ -987,6 +1195,14 @@ lurek.math.distanceSq(x1, y1, x2, y2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local d2 = lurek.math.distanceSq(0, 0, 3, 4)
     example_print_log("distanceSq = " .. d2)
     example_print_log("distanceSq to 6,8 = " .. lurek.math.distanceSq(0, 0, 6, 8))
@@ -1015,6 +1231,14 @@ lurek.math.easingNames()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local names = lurek.math.easingNames()
     example_print_log("easing count = " .. #names)
     example_print_log("contains linear = " .. tostring(names[1] ~= nil))
@@ -1049,6 +1273,14 @@ lurek.math.exp(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("exp(1) = " .. lurek.math.exp(1))
     example_print_log("exp(0) = " .. lurek.math.exp(0))
     example_print_log("growth step for 2 = " .. lurek.math.exp(2))
@@ -1083,6 +1315,14 @@ lurek.math.floor(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("floor(2.9) = " .. lurek.math.floor(2.9))
     example_print_log("floor(-1.1) = " .. lurek.math.floor(-1.1))
     example_print_log("floor drops partial tile = " .. lurek.math.floor(2.99))
@@ -1118,6 +1358,14 @@ lurek.math.fmod(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("fmod(7, 3) = " .. lurek.math.fmod(7, 3))
     example_print_log("fmod(10.5, 3) = " .. lurek.math.fmod(10.5, 3))
     example_print_log("looped timer = " .. lurek.math.fmod(9.75, 2.0))
@@ -1159,6 +1407,14 @@ lurek.math.hermite(p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spline = lurek.math.hermite(0, 0, 100, 0, 50, 100, 50, -100)
     local x0, y0 = spline:sample(0)
     local xm, ym = spline:sample(0.5)
@@ -1195,6 +1451,14 @@ lurek.math.inBack(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inBack(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inBack(0.75))
     example_print_log("finish = " .. lurek.math.inBack(1.0))
@@ -1229,6 +1493,14 @@ lurek.math.inBounce(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inBounce(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inBounce(0.75))
     example_print_log("finish = " .. lurek.math.inBounce(1.0))
@@ -1263,6 +1535,14 @@ lurek.math.inCubic(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inCubic(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inCubic(0.75))
     example_print_log("finish = " .. lurek.math.inCubic(1.0))
@@ -1297,6 +1577,14 @@ lurek.math.inElastic(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inElastic(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inElastic(0.75))
     example_print_log("finish = " .. lurek.math.inElastic(1.0))
@@ -1331,6 +1619,14 @@ lurek.math.inExpo(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inExpo(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inExpo(0.75))
     example_print_log("finish = " .. lurek.math.inExpo(1.0))
@@ -1365,6 +1661,14 @@ lurek.math.inOutBack(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inOutBack(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inOutBack(0.75))
     example_print_log("finish = " .. lurek.math.inOutBack(1.0))
@@ -1399,6 +1703,14 @@ lurek.math.inOutBounce(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inOutBounce(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inOutBounce(0.75))
     example_print_log("finish = " .. lurek.math.inOutBounce(1.0))
@@ -1433,6 +1745,14 @@ lurek.math.inOutCubic(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inOutCubic(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inOutCubic(0.75))
     example_print_log("finish = " .. lurek.math.inOutCubic(1.0))
@@ -1467,6 +1787,14 @@ lurek.math.inOutElastic(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inOutElastic(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inOutElastic(0.75))
     example_print_log("finish = " .. lurek.math.inOutElastic(1.0))
@@ -1501,6 +1829,14 @@ lurek.math.inOutExpo(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inOutExpo(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inOutExpo(0.75))
     example_print_log("finish = " .. lurek.math.inOutExpo(1.0))
@@ -1535,6 +1871,14 @@ lurek.math.inOutQuad(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inOutQuad(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inOutQuad(0.75))
     example_print_log("finish = " .. lurek.math.inOutQuad(1.0))
@@ -1569,6 +1913,14 @@ lurek.math.inOutQuart(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inOutQuart(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inOutQuart(0.75))
     example_print_log("finish = " .. lurek.math.inOutQuart(1.0))
@@ -1603,6 +1955,14 @@ lurek.math.inOutSine(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inOutSine(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inOutSine(0.75))
     example_print_log("finish = " .. lurek.math.inOutSine(1.0))
@@ -1637,6 +1997,14 @@ lurek.math.inQuad(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inQuad(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inQuad(0.75))
     example_print_log("finish = " .. lurek.math.inQuad(1.0))
@@ -1671,6 +2039,14 @@ lurek.math.inQuart(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inQuart(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inQuart(0.75))
     example_print_log("finish = " .. lurek.math.inQuart(1.0))
@@ -1705,6 +2081,14 @@ lurek.math.inSine(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.inSine(0.25))
     example_print_log("t=0.75 = " .. lurek.math.inSine(0.75))
     example_print_log("finish = " .. lurek.math.inSine(1.0))
@@ -1741,6 +2125,14 @@ lurek.math.inverseLerp(a, b, v)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("inverseLerp(0, 100, 50) = " .. lurek.math.inverseLerp(0, 100, 50))
     example_print_log("inverseLerp(10, 20, 15) = " .. lurek.math.inverseLerp(10, 20, 15))
     example_print_log("progress at 75/100 = " .. lurek.math.inverseLerp(0, 100, 75))
@@ -1775,6 +2167,14 @@ lurek.math.isConvex(pts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local square = {0, 0, 10, 0, 10, 10, 0, 10}
     example_print_log("square convex = " .. tostring(lurek.math.isConvex(square)))
     local concave = {0, 0, 5, 3, 10, 0, 10, 10, 0, 10}
@@ -1811,6 +2211,14 @@ lurek.math.lerp(a, b, t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("lerp(0, 100, 0.5) = " .. lurek.math.lerp(0, 100, 0.5))
     example_print_log("lerp(10, 20, 0.25) = " .. lurek.math.lerp(10, 20, 0.25))
     example_print_log("enemy moves 75% across = " .. lurek.math.lerp(0, 100, 0.75))
@@ -1853,6 +2261,14 @@ lurek.math.lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ix, iy = lurek.math.lineIntersect(0, 0, 10, 10, 0, 10, 10, 0)
     if ix then example_print_log("lines cross at " .. ix .. "," .. iy) else example_print_log("lines are parallel") end
     example_print_log("value types = " .. type(ix) .. "," .. type(iy))
@@ -1887,6 +2303,14 @@ lurek.math.linear(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.linear(0.25))
     example_print_log("t=0.75 = " .. lurek.math.linear(0.75))
     example_print_log("finish = " .. lurek.math.linear(1.0))
@@ -1922,6 +2346,14 @@ lurek.math.log(x, b)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("log(e) = " .. lurek.math.log(lurek.math.exp(1)))
     example_print_log("log(100, 10) = " .. lurek.math.log(100, 10))
     example_print_log("log2(8) = " .. lurek.math.log(8, 2))
@@ -1956,6 +2388,14 @@ lurek.math.lootFromList(entries)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local loot = lurek.math.lootFromList({
         { id = "gold", weight = 20.0, meta = { kind = "currency" } },
         { id = "gem", weight = 2.0, meta = { kind = "currency" } },
@@ -1990,6 +2430,14 @@ lurek.math.lootFromToml(path)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.lootFromToml("save/loot_table_unit_test.toml")
     example_print_log("lootFromToml entries = " .. tostring(tbl:entryCount()))
     example_print_log("sample preview = " .. tostring(tbl:sample()))
@@ -2024,6 +2472,14 @@ lurek.math.max(...)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("max(3, 7, 1, 9) = " .. lurek.math.max(3, 7, 1, 9))
     example_print_log("max(0, -5) = " .. lurek.math.max(0, -5))
     example_print_log("highest cooldown = " .. lurek.math.max(0.8, 1.1, 0.6))
@@ -2058,6 +2514,14 @@ lurek.math.min(...)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("min(3, 7, 1, 9) = " .. lurek.math.min(3, 7, 1, 9))
     example_print_log("min(0, -5) = " .. lurek.math.min(0, -5))
     example_print_log("lowest cooldown = " .. lurek.math.min(0.8, 1.1, 0.6))
@@ -2092,6 +2556,14 @@ lurek.math.newBezierCurve(points)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 30, 60, 70, 60, 100, 0})
     example_print_log("control points = " .. curve:getControlPointCount())
     local x, y = curve:evaluate(0.5)
@@ -2128,6 +2600,14 @@ lurek.math.newCircle(x, y, radius)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local c = lurek.math.newCircle(50, 50, 25)
     example_print_log("circle at " .. c:x() .. "," .. c:y() .. " r=" .. c:radius())
     example_print_log("area = " .. c:area())
@@ -2162,6 +2642,14 @@ lurek.math.newLootTable(opts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local loot = lurek.math.newLootTable({ seed = 42 })
     loot:add("common", 10.0, { tier = "c" })
     loot:add("rare", 1.0, { tier = "r" })
@@ -2198,6 +2686,14 @@ lurek.math.newPityTracker(target_id, threshold)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local loot = lurek.math.newLootTable(7)
     loot:add("common", 100.0)
     loot:add("rare", 0.0, { tier = "r" })
@@ -2237,6 +2733,14 @@ lurek.math.newRandomGenerator(seed)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(42)
     example_print_log("seed = " .. rng:getSeed())
     example_print_log("seed = " .. rng:getSeed())
@@ -2273,6 +2777,14 @@ lurek.math.newRectPacker(width, height, padding)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rp = lurek.math.newRectPacker(256, 256, 1)
     local x, y = rp:pack(32, 32, "icon1")
     example_print_log("icon1 = " .. tostring(x) .. "," .. tostring(y))
@@ -2307,6 +2819,14 @@ lurek.math.newSpatialHash(cell_size)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(32)
     sh:insert("a", 10, 10, 20, 20)
     sh:insert("b", 50, 50, 30, 30)
@@ -2349,6 +2869,14 @@ lurek.math.newTransform(x, y, angle, sx, sy, ox, oy, kx, ky)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform(100, 200, lurek.math.pi / 4, 2, 2)
     local x, y = t:transformPoint(0, 0)
     example_print_log("origin transformed = " .. x .. "," .. y)
@@ -2384,6 +2912,14 @@ lurek.math.newTween(duration, easing_name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(2.0, "inOutCubic")
     example_print_log("duration = " .. tw:getDuration())
     example_print_log("easing = " .. tw:getEasingName())
@@ -2418,6 +2954,14 @@ lurek.math.outBack(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.outBack(0.25))
     example_print_log("t=0.75 = " .. lurek.math.outBack(0.75))
     example_print_log("finish = " .. lurek.math.outBack(1.0))
@@ -2452,6 +2996,14 @@ lurek.math.outBounce(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.outBounce(0.25))
     example_print_log("t=0.75 = " .. lurek.math.outBounce(0.75))
     example_print_log("finish = " .. lurek.math.outBounce(1.0))
@@ -2486,6 +3038,14 @@ lurek.math.outCubic(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.outCubic(0.25))
     example_print_log("t=0.75 = " .. lurek.math.outCubic(0.75))
     example_print_log("finish = " .. lurek.math.outCubic(1.0))
@@ -2520,6 +3080,14 @@ lurek.math.outElastic(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.outElastic(0.25))
     example_print_log("t=0.75 = " .. lurek.math.outElastic(0.75))
     example_print_log("finish = " .. lurek.math.outElastic(1.0))
@@ -2554,6 +3122,14 @@ lurek.math.outExpo(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.outExpo(0.25))
     example_print_log("t=0.75 = " .. lurek.math.outExpo(0.75))
     example_print_log("finish = " .. lurek.math.outExpo(1.0))
@@ -2588,6 +3164,14 @@ lurek.math.outQuad(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.outQuad(0.25))
     example_print_log("t=0.75 = " .. lurek.math.outQuad(0.75))
     example_print_log("finish = " .. lurek.math.outQuad(1.0))
@@ -2622,6 +3206,14 @@ lurek.math.outQuart(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.outQuart(0.25))
     example_print_log("t=0.75 = " .. lurek.math.outQuart(0.75))
     example_print_log("finish = " .. lurek.math.outQuart(1.0))
@@ -2656,6 +3248,14 @@ lurek.math.outSine(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("t=0.25 = " .. lurek.math.outSine(0.25))
     example_print_log("t=0.75 = " .. lurek.math.outSine(0.75))
     example_print_log("finish = " .. lurek.math.outSine(1.0))
@@ -2692,6 +3292,14 @@ lurek.math.pointInPolygon(pts, px, py)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local inside = lurek.math.pointInPolygon(pts, 5, 5)
     local outside = lurek.math.pointInPolygon(pts, 15, 5)
@@ -2726,6 +3334,14 @@ lurek.math.polygonArea(pts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local area = lurek.math.polygonArea(pts)
     example_print_log("area = " .. area)
@@ -2761,6 +3377,14 @@ lurek.math.polygonCentroid(pts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local cx, cy = lurek.math.polygonCentroid(pts)
     example_print_log("centroid = " .. cx .. "," .. cy)
@@ -2798,6 +3422,14 @@ lurek.math.polygonClip(pts, nx, ny, d)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local clipped = lurek.math.polygonClip(pts, 1, 0, -5)
     example_print_log("clipped vertices = " .. #clipped / 2)
@@ -2833,6 +3465,14 @@ lurek.math.polygonDifference(a, b)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
     local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonDifference(a, b)
@@ -2868,6 +3508,14 @@ lurek.math.polygonIntersection(a, b)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
     local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonIntersection(a, b)
@@ -2903,6 +3551,14 @@ lurek.math.polygonUnion(a, b)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
     local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonUnion(a, b)
@@ -2938,6 +3594,14 @@ lurek.math.pow(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("pow(2, 10) = " .. lurek.math.pow(2, 10))
     example_print_log("pow(3, 3) = " .. lurek.math.pow(3, 3))
     example_print_log("crit multiplier tier 4 = " .. lurek.math.pow(1.25, 4))
@@ -2972,6 +3636,14 @@ lurek.math.rad(deg)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("rad(180) = " .. lurek.math.rad(180))
     example_print_log("rad(90) = " .. lurek.math.rad(90))
     example_print_log("30deg in radians = " .. lurek.math.rad(30))
@@ -3007,6 +3679,14 @@ lurek.math.random(a, b)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local r1 = lurek.math.random()
     local r2 = lurek.math.random(10)
     local r3 = lurek.math.random(5, 15)
@@ -3042,6 +3722,14 @@ lurek.math.randomInt(lo, hi)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local r = lurek.math.randomInt(1, 6)
     example_print_log("randomInt(1,6) = " .. r)
     example_print_log("second die = " .. lurek.math.randomInt(1, 6))
@@ -3082,6 +3770,14 @@ lurek.math.rectFromCenter(cx, cy, w, h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local x, y, w, h = lurek.math.rectFromCenter(50, 50, 20, 10)
     example_print_log("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
     example_print_log("value types = " .. type(x) .. "," .. type(y) .. "," .. type(w) .. "," .. type(h))
@@ -3126,6 +3822,14 @@ lurek.math.rectUnion(x1, y1, w1, h1, x2, y2, w2, h2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local x, y, w, h = lurek.math.rectUnion(0, 0, 10, 10, 5, 5, 10, 10)
     example_print_log("union rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
     example_print_log("value types = " .. type(x) .. "," .. type(y) .. "," .. type(w) .. "," .. type(h))
@@ -3164,6 +3868,14 @@ lurek.math.remap(v, in_min, in_max, out_min, out_max)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.remap(5, 0, 10, 0, 100)
     example_print_log("remap(5, 0-10 -> 0-100) = " .. v)
     example_print_log("thumbstick 0.25 -> percent = " .. lurek.math.remap(0.25, 0, 1, 0, 100))
@@ -3198,6 +3910,14 @@ lurek.math.round(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("round(2.4) = " .. lurek.math.round(2.4))
     example_print_log("round(2.5) = " .. lurek.math.round(2.5))
     example_print_log("round snaps grid coord = " .. lurek.math.round(6.51))
@@ -3234,6 +3954,14 @@ lurek.math.sampleWithPity(loot_table, pity)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local loot = lurek.math.newLootTable(9)
     loot:add("a", 1.0)
     loot:build()
@@ -3278,6 +4006,14 @@ lurek.math.segmentIntersectsSegment(x1, y1, x2, y2, x3, y3, x4, y4)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hit, ix, iy = lurek.math.segmentIntersectsSegment( 0, 0, 10, 10, 0, 10, 10, 0 )
     if hit and ix then example_print_log("segments cross at " .. ix .. "," .. iy) else example_print_log("segments do not cross") end
     example_print_log("value types = " .. type(hit) .. "," .. type(ix) .. "," .. type(iy))
@@ -3312,6 +4048,14 @@ lurek.math.sign(v)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("sign(-7) = " .. lurek.math.sign(-7))
     example_print_log("sign(0) = " .. lurek.math.sign(0))
     example_print_log("sign(3) = " .. lurek.math.sign(3))
@@ -3346,6 +4090,14 @@ lurek.math.sin(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("sin(0) = " .. lurek.math.sin(0))
     example_print_log("sin(pi/2) = " .. lurek.math.sin(lurek.math.pi / 2))
     example_print_log("sine wave at pi = " .. lurek.math.sin(lurek.math.pi))
@@ -3382,6 +4134,14 @@ lurek.math.smoothstep(edge0, edge1, x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("smoothstep(0, 1, 0.5) = " .. lurek.math.smoothstep(0, 1, 0.5))
     example_print_log("smoothstep(0, 1, 0.0) = " .. lurek.math.smoothstep(0, 1, 0.0))
     example_print_log("smoothstep(0, 1, 1.0) = " .. lurek.math.smoothstep(0, 1, 1.0))
@@ -3416,6 +4176,14 @@ lurek.math.sqrt(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("sqrt(144) = " .. lurek.math.sqrt(144))
     example_print_log("sqrt(2) = " .. lurek.math.sqrt(2))
     example_print_log("speed from sq length 25 = " .. lurek.math.sqrt(25))
@@ -3450,6 +4218,14 @@ lurek.math.tan(x)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     example_print_log("tan(0) = " .. lurek.math.tan(0))
     example_print_log("tan(pi/4) = " .. lurek.math.tan(lurek.math.pi / 4))
     example_print_log("tan aiming slope = " .. lurek.math.tan(lurek.math.rad(15)))
@@ -3484,6 +4260,14 @@ lurek.math.triangulate(pts)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local tris = lurek.math.triangulate(pts)
     example_print_log("triangles = " .. #tris)
@@ -3519,6 +4303,14 @@ lurek.math.vec2(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec2(3, 4)
     example_print_log("vec2 = " .. v.x .. "," .. v.y)
     example_print_log("heading = " .. v:angle())
@@ -3555,6 +4347,14 @@ lurek.math.vec3(x, y, z)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec3(1, 2, 3)
     example_print_log("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
     example_print_log("lengthSquared = " .. v:lengthSquared())
@@ -3610,6 +4410,14 @@ LAabbTree:clear()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 50, 50)
     tree:clear()
@@ -3644,6 +4452,14 @@ LAabbTree:contains(id)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 10, 10)
     example_print_log("contains 1 = " .. tostring(tree:contains(1)))
@@ -3676,6 +4492,14 @@ LAabbTree:insert(id, min_x, min_y, max_x, max_y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 50, 50)
     example_print_log("len = " .. tree:len())
@@ -3704,6 +4528,14 @@ LAabbTree:isEmpty()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     example_print_log("empty = " .. tostring(tree:isEmpty()))
     example_print_log("tree len = " .. tree:len())
@@ -3732,6 +4564,14 @@ LAabbTree:len()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 50, 50)
     tree:insert(2, 30, 30, 80, 80)
@@ -3769,6 +4609,14 @@ LAabbTree:query(min_x, min_y, max_x, max_y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 10, 10)
     tree:insert(2, 5, 5, 15, 15)
@@ -3804,6 +4652,14 @@ LAabbTree:queryPoint(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 10, 10)
     tree:insert(2, 5, 5, 15, 15)
@@ -3838,6 +4694,14 @@ LAabbTree:remove(id)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 10, 10)
     tree:insert(2, 5, 5, 15, 15)
@@ -3866,6 +4730,14 @@ LAabbTree:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     example_print_log(tree:type())
     example_print_log("tree len = " .. tree:len())
@@ -3900,6 +4772,14 @@ LAabbTree:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     example_print_log(tostring(tree:typeOf("LAabbTree")))
     example_print_log("type = " .. tostring(tree:type()))
@@ -3938,6 +4818,14 @@ LAabbTree:update(id, min_x, min_y, max_x, max_y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 10, 10)
     tree:update(1, 20, 20, 30, 30)
@@ -3981,6 +4869,14 @@ LBezierCurve:evaluate(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 50, 100, 100, 0})
     local x, y = curve:evaluate(0.25)
     example_print_log("t=0.25 = " .. x .. "," .. y)
@@ -4017,6 +4913,14 @@ LBezierCurve:evaluateAtDistance(distance, samples)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 50, 100, 100, 0})
     local length = curve:length()
     local x, y = curve:evaluateAtDistance(length * 0.5, 32)
@@ -4052,6 +4956,14 @@ LBezierCurve:getControlPoint(index)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 50, 50, 100, 0})
     local x, y = curve:getControlPoint(2)
     example_print_log("cp2 = " .. x .. "," .. y)
@@ -4080,6 +4992,14 @@ LBezierCurve:getControlPointCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 100, 50, 200, 0})
     example_print_log("count = " .. curve:getControlPointCount())
     example_print_log("curve points = " .. curve:getControlPointCount())
@@ -4108,6 +5028,14 @@ LBezierCurve:getDerivative()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 50, 100, 100, 0})
     local derivative = curve:getDerivative()
     local x, y = derivative:evaluate(0.5)
@@ -4138,6 +5066,14 @@ LBezierCurve:insertControlPoint(x, y, index)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 100, 0})
     example_print_log("count before = " .. curve:getControlPointCount())
     curve:insertControlPoint(50, 50, 2)
@@ -4167,6 +5103,14 @@ LBezierCurve:length()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 100, 0})
     example_print_log("length = " .. curve:length())
     example_print_log("curve points = " .. curve:getControlPointCount())
@@ -4201,6 +5145,14 @@ LBezierCurve:removeControlPoint(index)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 50, 50, 100, 0})
     example_print_log("count before = " .. curve:getControlPointCount())
     curve:removeControlPoint(2)
@@ -4235,6 +5187,14 @@ LBezierCurve:render(segments)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 50, 80, 100, 0})
     local points = curve:render(4)
     local sample = points[3]
@@ -4265,6 +5225,14 @@ LBezierCurve:rotate(angle, ox, oy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 100, 0})
     curve:rotate(lurek.math.pi / 2, 0, 0)
     local x, y = curve:getControlPoint(2)
@@ -4295,6 +5263,14 @@ LBezierCurve:scale(s, ox, oy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 100, 0})
     curve:scale(2, 0, 0)
     local x, y = curve:getControlPoint(2)
@@ -4331,6 +5307,14 @@ LBezierCurve:setControlPoint(index, x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 50, 50, 100, 0})
     local beforeX, beforeY = curve:getControlPoint(2)
     curve:setControlPoint(2, 50, 80)
@@ -4361,6 +5345,14 @@ LBezierCurve:translate(dx, dy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 50, 50, 100, 0})
     local beforeX, beforeY = curve:evaluate(0)
     curve:translate(10, 20)
@@ -4390,6 +5382,14 @@ LBezierCurve:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 100, 50, 200, 0})
     example_print_log(curve:type())
     example_print_log("curve points = " .. curve:getControlPointCount())
@@ -4424,6 +5424,14 @@ LBezierCurve:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.math.newBezierCurve({0, 0, 100, 50, 200, 0})
     example_print_log(tostring(curve:typeOf("LBezierCurve")))
     example_print_log("type = " .. tostring(curve:type()))
@@ -4461,6 +5469,14 @@ LCatmullRom:addPoint(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}})
     example_print_log("before = " .. spline:len())
     spline:addPoint(150, 60)
@@ -4489,6 +5505,14 @@ LCatmullRom:len()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 100}, {x = 150, y = 100}, {x = 200, y = 0}})
     example_print_log("len = " .. spline:len())
     example_print_log("spline points = " .. spline:len())
@@ -4524,6 +5548,14 @@ LCatmullRom:removePoint(idx)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}, {x = 150, y = 60}})
     local x, y = spline:removePoint(1)
     example_print_log("removed = " .. x .. "," .. y)
@@ -4559,6 +5591,14 @@ LCatmullRom:sample(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}, {x = 150, y = 60}})
     local x, y = spline:sample(0.25)
     example_print_log("t=0.25 = " .. x .. "," .. y)
@@ -4595,6 +5635,14 @@ LCatmullRom:sampleSegment(seg, t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}, {x = 150, y = 60}})
     local x, y = spline:sampleSegment(1, 0.5)
     example_print_log("segment 1 = " .. x .. "," .. y)
@@ -4623,6 +5671,14 @@ LCatmullRom:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 100}, {x = 150, y = 100}, {x = 200, y = 0}})
     example_print_log(spline:type())
     example_print_log("spline points = " .. spline:len())
@@ -4657,6 +5713,14 @@ LCatmullRom:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 100}, {x = 150, y = 100}, {x = 200, y = 0}})
     example_print_log(tostring(spline:typeOf("LCatmullRom")))
     example_print_log("type = " .. tostring(spline:type()))
@@ -4696,6 +5760,14 @@ LCircle:aabb()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local c1 = lurek.math.newCircle(0, 0, 10)
     local minx, miny, maxx, maxy = c1:aabb()
     example_print_log("aabb = " .. minx .. "," .. miny .. " " .. maxx .. "," .. maxy)
@@ -4724,6 +5796,14 @@ LCircle:area()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local c = lurek.math.newCircle(100, 100, 50)
     example_print_log("area = " .. c:area())
     example_print_log("radius = " .. c:radius())
@@ -4759,6 +5839,14 @@ LCircle:contains(px, py)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local circle = lurek.math.newCircle(0, 0, 10)
     example_print_log("contains = " .. tostring(circle:contains(5, 5)))
     example_print_log("radius = " .. circle:radius())
@@ -4793,6 +5881,14 @@ LCircle:intersects(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.newCircle(0, 0, 10)
     local b = lurek.math.newCircle(15, 0, 10)
     example_print_log("intersects = " .. tostring(a:intersects(b)))
@@ -4821,6 +5917,14 @@ LCircle:perimeter()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local c = lurek.math.newCircle(100, 100, 50)
     example_print_log("perimeter = " .. c:perimeter())
     example_print_log("radius = " .. c:radius())
@@ -4849,6 +5953,14 @@ LCircle:radius()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local c = lurek.math.newCircle(100, 100, 50)
     example_print_log("radius = " .. c:radius())
     example_print_log("radius = " .. c:radius())
@@ -4877,6 +5989,14 @@ LCircle:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local c = lurek.math.newCircle(100, 100, 50)
     example_print_log(c:type())
     example_print_log("radius = " .. c:radius())
@@ -4911,6 +6031,14 @@ LCircle:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local c = lurek.math.newCircle(100, 100, 50)
     example_print_log(tostring(c:typeOf("LCircle")))
     example_print_log("type = " .. tostring(c:type()))
@@ -4939,6 +6067,14 @@ LCircle:x()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local c = lurek.math.newCircle(100, 100, 50)
     example_print_log("x = " .. c:x())
     example_print_log("radius = " .. c:radius())
@@ -4967,6 +6103,14 @@ LCircle:y()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local c = lurek.math.newCircle(100, 100, 50)
     example_print_log("y = " .. c:y())
     example_print_log("radius = " .. c:radius())
@@ -5010,6 +6154,14 @@ LHermite:sample(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.math.hermite(0, 0, 200, 0, 1, 2, -1, 2)
     local x, y = h:sample(0.5)
     example_print_log("sample = " .. x .. "," .. y)
@@ -5038,6 +6190,14 @@ LHermite:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.math.hermite(0, 0, 200, 0, 1, 2, -1, 2)
     example_print_log(h:type())
     example_print_log("sample x at 0.25 = " .. select(1, h:sample(0.25)))
@@ -5072,6 +6232,14 @@ LHermite:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local h = lurek.math.hermite(0, 0, 200, 0, 1, 2, -1, 2)
     example_print_log(tostring(h:typeOf("LHermite")))
     example_print_log("type = " .. tostring(h:type()))
@@ -5110,6 +6278,14 @@ LLootTable:add(id, weight, meta)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     example_print_log("add ok")
@@ -5132,6 +6308,14 @@ LLootTable:build()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:build()
@@ -5160,6 +6344,14 @@ LLootTable:entryCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     example_print_log("entryCount = " .. tostring(tbl:entryCount()))
@@ -5188,6 +6380,14 @@ LLootTable:merge(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.newLootTable(9)
     local b = lurek.math.newLootTable(10)
     a:add("a", 1.0)
@@ -5224,6 +6424,14 @@ LLootTable:remove(id)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:remove("wood")
@@ -5252,6 +6460,14 @@ LLootTable:restore(blob)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.newLootTable(9)
     a:add("a", 1.0)
     a:build()
@@ -5282,6 +6498,14 @@ LLootTable:sample()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:build()
@@ -5316,6 +6540,14 @@ LLootTable:sampleN(n)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:add("stone", 1.0)
@@ -5351,6 +6583,14 @@ LLootTable:sampleUnique(n)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:add("stone", 1.0)
@@ -5380,6 +6620,14 @@ LLootTable:save()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.newLootTable(9)
     a:add("a", 1.0)
     a:build()
@@ -5408,6 +6656,14 @@ LLootTable:setSeed(seed)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     tbl:setSeed(7)
     example_print_log("setSeed ok")
@@ -5443,6 +6699,14 @@ LLootTable:setWeight(id, weight)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:setWeight("wood", 2.0)
@@ -5471,6 +6735,14 @@ LLootTable:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     example_print_log("type = " .. tostring(tbl:type()))
     example_print_log("entries = " .. tostring(tbl:entryCount()))
@@ -5505,6 +6777,14 @@ LLootTable:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.math.newLootTable(1)
     example_print_log("typeOf = " .. tostring(tbl:typeOf("LLootTable")))
     example_print_log("type = " .. tostring(tbl:type()))
@@ -5541,6 +6821,14 @@ LPityTracker:counter()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("rare", 2)
     example_print_log("counter = " .. tostring(pity:counter()))
     example_print_log("counter = " .. tostring(pity:counter()))
@@ -5569,6 +6857,14 @@ LPityTracker:export()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("rare", 2)
     local snapshot = pity:export()
     example_print_log("export ok = " .. tostring(snapshot ~= nil))
@@ -5597,6 +6893,14 @@ LPityTracker:import(blob)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("rare", 2)
     local snapshot = pity:export()
     pity:import(snapshot)
@@ -5625,6 +6929,14 @@ LPityTracker:isPrimed()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("rare", 1)
     pity:notice("common")
     example_print_log("isPrimed = " .. tostring(pity:isPrimed()))
@@ -5659,6 +6971,14 @@ LPityTracker:notice(result_id)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("rare", 2)
     pity:notice("common")
     example_print_log("notice ok")
@@ -5681,6 +7001,14 @@ LPityTracker:reset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("rare", 2)
     pity:notice("common")
     pity:reset()
@@ -5709,6 +7037,14 @@ LPityTracker:restore(blob)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("b", 1)
     local pity_blob = pity:save()
     pity:restore(pity_blob)
@@ -5737,6 +7073,14 @@ LPityTracker:save()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("b", 1)
     local pity_blob = pity:save()
     example_print_log("pity save blob = " .. tostring(pity_blob))
@@ -5765,6 +7109,14 @@ LPityTracker:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("rare", 2)
     example_print_log("type = " .. tostring(pity:type()))
     example_print_log("counter = " .. tostring(pity:counter()))
@@ -5799,6 +7151,14 @@ LPityTracker:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pity = lurek.math.newPityTracker("rare", 2)
     example_print_log("typeOf = " .. tostring(pity:typeOf("LPityTracker")))
     example_print_log("type = " .. tostring(pity:type()))
@@ -5841,6 +7201,14 @@ LRandomGenerator:chance(probability)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(10)
     local crit = rng:chance(0.05)
     example_print_log("critical hit (5%) = " .. tostring(crit))
@@ -5877,6 +7245,14 @@ LRandomGenerator:countSuccesses(count, sides, target)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(9)
     local hits = rng:countSuccesses(5, 10, 7)
     example_print_log("5d10 successes (7+) = " .. hits)
@@ -5905,6 +7281,14 @@ LRandomGenerator:getSeed()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(77)
     example_print_log("seed = " .. rng:getSeed())
     example_print_log("d6 preview = " .. rng:randomInt(1, 6))
@@ -5933,6 +7317,14 @@ LRandomGenerator:getState()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(999)
     example_print_log("state = " .. rng:getState())
     example_print_log("d6 preview = " .. rng:randomInt(1, 6))
@@ -5961,6 +7353,14 @@ LRandomGenerator:random()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(100)
     example_print_log("random = " .. rng:random())
     example_print_log("d6 preview = " .. rng:randomInt(1, 6))
@@ -5996,6 +7396,14 @@ LRandomGenerator:randomFloat(min, max)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(100)
     example_print_log("float = " .. rng:randomFloat(1.0, 5.0))
     example_print_log("d6 preview = " .. rng:randomInt(1, 6))
@@ -6031,6 +7439,14 @@ LRandomGenerator:randomInt(min, max)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(100)
     example_print_log("int = " .. rng:randomInt(1, 100))
     example_print_log("d6 preview = " .. rng:randomInt(1, 6))
@@ -6066,6 +7482,14 @@ LRandomGenerator:randomNormal(stddev, mean)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(100)
     example_print_log("normal = " .. rng:randomNormal(1.0, 0.0))
     example_print_log("d6 preview = " .. rng:randomInt(1, 6))
@@ -6100,6 +7524,14 @@ LRandomGenerator:roll(sides)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(1)
     local d20 = rng:roll(20)
     example_print_log("d20 = " .. d20)
@@ -6134,6 +7566,14 @@ LRandomGenerator:rollAdvantage(sides)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(6)
     local adv = rng:rollAdvantage(20)
     example_print_log("d20 advantage = " .. adv)
@@ -6168,6 +7608,14 @@ LRandomGenerator:rollDisadvantage(sides)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(7)
     local dis = rng:rollDisadvantage(20)
     example_print_log("d20 disadvantage = " .. dis)
@@ -6203,6 +7651,14 @@ LRandomGenerator:rollExploding(count, sides)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(8)
     local ex = rng:rollExploding(3, 6)
     example_print_log("3d6 exploding = " .. ex)
@@ -6239,6 +7695,14 @@ LRandomGenerator:rollKeepHighest(count, sides, keep)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(4)
     local stat = rng:rollKeepHighest(4, 6, 3)
     example_print_log("4d6 keep 3 highest = " .. stat)
@@ -6275,6 +7739,14 @@ LRandomGenerator:rollKeepLowest(count, sides, keep)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(5)
     local penalty = rng:rollKeepLowest(4, 6, 3)
     example_print_log("4d6 keep 3 lowest = " .. penalty)
@@ -6310,6 +7782,14 @@ LRandomGenerator:rollN(count, sides)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(2)
     local dice = rng:rollN(3, 6)
     example_print_log("3d6 = " .. dice[1] .. ", " .. dice[2] .. ", " .. dice[3])
@@ -6345,6 +7825,14 @@ LRandomGenerator:rollSum(count, sides)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(3)
     local total = rng:rollSum(4, 6)
     example_print_log("4d6 sum = " .. total)
@@ -6373,6 +7861,14 @@ LRandomGenerator:setSeed(seed)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(1)
     rng:setSeed(999)
     example_print_log("seed = " .. rng:getSeed())
@@ -6401,6 +7897,14 @@ LRandomGenerator:setState(state)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(1)
     local first = rng:random()
     local state = rng:getState()
@@ -6432,6 +7936,14 @@ LRandomGenerator:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(77)
     example_print_log("type = " .. rng:type())
     example_print_log("d6 preview = " .. rng:randomInt(1, 6))
@@ -6466,6 +7978,14 @@ LRandomGenerator:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rng = lurek.math.newRandomGenerator(77)
     example_print_log("typeOf = " .. tostring(rng:typeOf("LRandomGenerator")))
     example_print_log("type = " .. tostring(rng:type()))
@@ -6496,6 +8016,14 @@ LRectPacker:clear()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rp = lurek.math.newRectPacker(512, 512, 2)
     rp:pack(64, 64, "box")
     rp:clear()
@@ -6524,6 +8052,14 @@ LRectPacker:getPacked()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rp = lurek.math.newRectPacker(512, 512, 2)
     rp:pack(64, 64, "box")
     local packed = rp:getPacked()
@@ -6552,6 +8088,14 @@ LRectPacker:occupancy()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rp = lurek.math.newRectPacker(512, 512, 2)
     rp:pack(64, 64, "box")
     example_print_log("occupancy = " .. rp:occupancy())
@@ -6589,6 +8133,14 @@ LRectPacker:pack(w, h, id)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rp = lurek.math.newRectPacker(512, 512, 2)
     local x, y = rp:pack(64, 64, "box")
     example_print_log("pack = " .. tostring(x) .. "," .. tostring(y))
@@ -6619,6 +8171,14 @@ LSpatialHash:clear()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(32)
     sh:insert("a", 50, 50, 10, 10)
     sh:clear()
@@ -6647,6 +8207,14 @@ LSpatialHash:getCellSize()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(32)
     example_print_log("cell size = " .. sh:getCellSize())
     example_print_log("cell size = " .. sh:getCellSize())
@@ -6675,6 +8243,14 @@ LSpatialHash:getItemCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(32)
     sh:insert("a", 50, 50, 10, 10)
     example_print_log("items = " .. sh:getItemCount())
@@ -6707,6 +8283,14 @@ LSpatialHash:insert(id, x, y, w, h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(32)
     sh:insert("a", 50, 50, 10, 10)
     example_print_log("items = " .. sh:getItemCount())
@@ -6743,6 +8327,14 @@ LSpatialHash:queryCircle(cx, cy, radius)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(16)
     sh:insert("a", 0, 0, 10, 10)
     sh:insert("b", 5, 5, 10, 10)
@@ -6780,6 +8372,14 @@ LSpatialHash:queryRect(x, y, w, h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(16)
     sh:insert("a", 0, 0, 10, 10)
     sh:insert("b", 5, 5, 10, 10)
@@ -6817,6 +8417,14 @@ LSpatialHash:querySegment(x1, y1, x2, y2)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(16)
     sh:insert("a", 0, 0, 10, 10)
     sh:insert("b", 5, 5, 10, 10)
@@ -6845,6 +8453,14 @@ LSpatialHash:remove(id)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(16)
     sh:insert("a", 0, 0, 10, 10)
     sh:insert("b", 5, 5, 10, 10)
@@ -6873,6 +8489,14 @@ LSpatialHash:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(32)
     example_print_log(sh:type())
     example_print_log("cell size = " .. sh:getCellSize())
@@ -6907,6 +8531,14 @@ LSpatialHash:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(32)
     example_print_log(tostring(sh:typeOf("LSpatialHash")))
     example_print_log("type = " .. tostring(sh:type()))
@@ -6939,6 +8571,14 @@ LSpatialHash:update(id, x, y, w, h)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sh = lurek.math.newSpatialHash(16)
     sh:insert("a", 0, 0, 10, 10)
     sh:update("a", 200, 200, 10, 10)
@@ -6975,6 +8615,14 @@ LTransform:clone()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform(10, 20, 0.5)
     local clone = t:clone()
     local x, y = clone:transformPoint(0, 0)
@@ -7007,6 +8655,14 @@ LTransform:decompose()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform(10, 20, 1.5, 3, 4)
     local x, y, angle, sx, sy = t:decompose()
     example_print_log("pos=" .. x .. "," .. y .. " angle=" .. angle .. " scale=" .. sx .. "," .. sy)
@@ -7035,6 +8691,14 @@ LTransform:getMatrix()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform(5, 10)
     local m = t:getMatrix()
     example_print_log("matrix elements = " .. #m)
@@ -7063,6 +8727,14 @@ LTransform:inverse()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform(10, 20, 0.5)
     local inv = t:inverse()
     local x, y = t:transformPoint(5, 0)
@@ -7099,6 +8771,14 @@ LTransform:inverseTransformPoint(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform(100, 0, 0, 2, 2)
     local fx, fy = t:transformPoint(5, 0)
     local ix, iy = t:inverseTransformPoint(fx, fy)
@@ -7121,6 +8801,14 @@ LTransform:reset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform(50, 50, 1.0, 2, 2)
     t:reset()
     local x, y = t:transformPoint(10, 10)
@@ -7149,6 +8837,14 @@ LTransform:rotate(angle)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform()
     t:rotate(lurek.math.pi / 2)
     local x, y = t:transformPoint(10, 0)
@@ -7178,6 +8874,14 @@ LTransform:scale(sx, sy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform()
     t:scale(2, 3)
     local x, y = t:transformPoint(10, 5)
@@ -7214,6 +8918,14 @@ LTransform:setTransformation(x, y, angle, sx, sy, ox, oy, kx, ky)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform()
     t:setTransformation(0, 0, lurek.math.pi, 1, 1)
     local x, y = t:transformPoint(10, 0)
@@ -7243,6 +8955,14 @@ LTransform:shear(kx, ky)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform()
     t:shear(0.25, 0)
     local x, y = t:transformPoint(10, 10)
@@ -7279,6 +8999,14 @@ LTransform:transformPoint(x, y)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform(100, 0, 0, 2, 2)
     local fx, fy = t:transformPoint(5, 0)
     local ix, iy = t:inverseTransformPoint(fx, fy)
@@ -7308,6 +9036,14 @@ LTransform:translate(dx, dy)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local t = lurek.math.newTransform()
     t:translate(50, 50)
     local x, y = t:transformPoint(0, 0)
@@ -7336,6 +9072,14 @@ LTransform:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tf = lurek.math.newTransform()
     example_print_log(tf:type())
     example_print_log("origin x = " .. select(1, tf:transformPoint(0, 0)))
@@ -7370,6 +9114,14 @@ LTransform:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tf = lurek.math.newTransform()
     example_print_log(tostring(tf:typeOf("LTransform")))
     example_print_log("type = " .. tostring(tf:type()))
@@ -7413,6 +9165,14 @@ LTween:addValue(start, target)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(1.0, "linear")
     local index = tw:addValue(0, 100)
     example_print_log("index = " .. index)
@@ -7461,6 +9221,14 @@ LTween:getAllValues()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(1.0, "linear")
     tw:addValue(0, 100)
     tw:addValue(50, 200)
@@ -7491,6 +9259,14 @@ LTween:getClock()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(2.0)
     tw:addValue(0, 100)
     tw:setTime(1.0)
@@ -7615,6 +9391,14 @@ LTween:getTime()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(2.0)
     tw:addValue(0, 100)
     tw:setTime(1.0)
@@ -7649,6 +9433,14 @@ LTween:getValue(index)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(1.0, "linear")
     local index = tw:addValue(0, 100)
     tw:setTime(0.5)
@@ -7677,6 +9469,14 @@ LTween:getValueCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(1.0, "linear")
     tw:addValue(0, 100)
     tw:addValue(50, 200)
@@ -7721,6 +9521,14 @@ LTween:isComplete()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(1.0, "outBounce")
     tw:addValue(0, 10)
     tw:update(1.1)
@@ -7841,6 +9649,14 @@ LTween:reset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(1.0, "outBounce")
     tw:addValue(0, 10)
     tw:update(0.5)
@@ -7879,6 +9695,14 @@ LTween:set(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(2.0)
     tw:addValue(0, 100)
     tw:set(0.75)
@@ -7939,6 +9763,14 @@ LTween:setTime(t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(2.0)
     tw:addValue(0, 100)
     tw:setTime(1.0)
@@ -8027,6 +9859,14 @@ LTween:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tw = lurek.math.newTween(1.0, "outBounce")
     tw:addValue(0, 10)
     local done = tw:update(0.5)
@@ -8066,6 +9906,14 @@ LVec2:angle()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec2(1, 1)
     example_print_log("angle = " .. v:angle())
     example_print_log("vector length = " .. v:length())
@@ -8100,6 +9948,14 @@ LVec2:cross(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec2(1, 0)
     local b = lurek.math.vec2(0, 1)
     example_print_log("cross = " .. a:cross(b))
@@ -8134,6 +9990,14 @@ LVec2:distance(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec2(0, 0)
     local b = lurek.math.vec2(3, 4)
     example_print_log("distance = " .. a:distance(b))
@@ -8168,6 +10032,14 @@ LVec2:dot(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec2(1, 0)
     local b = lurek.math.vec2(0, 1)
     example_print_log("dot = " .. a:dot(b))
@@ -8202,6 +10074,14 @@ LVec2:fromAngle(radians)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec2(0, 0)
     local unit = v:fromAngle(lurek.math.pi / 4)
     example_print_log("fromAngle(pi/4) = " .. unit.x .. "," .. unit.y)
@@ -8230,6 +10110,14 @@ LVec2:length()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec2(3, 4)
     example_print_log("length = " .. v:length())
     example_print_log("vector length = " .. v:length())
@@ -8258,6 +10146,14 @@ LVec2:lengthSquared()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec2(3, 4)
     example_print_log("lengthSq = " .. v:lengthSquared())
     example_print_log("vector length = " .. v:length())
@@ -8293,6 +10189,14 @@ LVec2:lerp(other, t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec2(0, 0)
     local b = lurek.math.vec2(10, 20)
     local mid = a:lerp(b, 0.5)
@@ -8321,6 +10225,14 @@ LVec2:normalize()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec2(3, 4)
     local n = v:normalize()
     example_print_log("normalized = " .. n.x .. "," .. n.y)
@@ -8349,6 +10261,14 @@ LVec2:normalized()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec2(3, 4)
     local n = v:normalized()
     example_print_log("normalized = " .. n.x .. "," .. n.y)
@@ -8377,6 +10297,14 @@ LVec2:perpendicular()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec2(3, 4)
     local p = v:perpendicular()
     example_print_log("perp = " .. p.x .. "," .. p.y)
@@ -8411,6 +10339,14 @@ LVec2:reflect(normal)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec2(1, -1)
     local n = lurek.math.vec2(0, 1)
     local ref = v:reflect(n)
@@ -8445,6 +10381,14 @@ LVec2:rotate(angle)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec2(1, 0)
     local r = v:rotate(lurek.math.pi / 2)
     example_print_log("rotated = " .. r.x .. "," .. r.y)
@@ -8473,6 +10417,14 @@ LVec2:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec2(3, 4)
     example_print_log(v:type())
     example_print_log("vector length = " .. v:length())
@@ -8507,6 +10459,14 @@ LVec2:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec2(3, 4)
     example_print_log(v:typeOf("LVec2"))
     example_print_log("type = " .. tostring(v:type()))
@@ -8535,6 +10495,14 @@ LVec2:x()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec2(3, 4)
     example_print_log("x=" .. v.x)
     example_print_log("vector length = " .. v:length())
@@ -8563,6 +10531,14 @@ LVec2:y()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec2(3, 4)
     example_print_log("y=" .. v.y)
     example_print_log("vector length = " .. v:length())
@@ -8609,6 +10585,14 @@ LVec3:add(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec3(1, 2, 3)
     local b = lurek.math.vec3(4, 5, 6)
     local sum = a:add(b)
@@ -8643,6 +10627,14 @@ LVec3:cross(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec3(1, 0, 0)
     local b = lurek.math.vec3(0, 1, 0)
     local c = a:cross(b)
@@ -8677,6 +10669,14 @@ LVec3:distance(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec3(0, 0, 0)
     local b = lurek.math.vec3(3, 4, 0)
     example_print_log("distance = " .. a:distance(b))
@@ -8711,6 +10711,14 @@ LVec3:dot(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec3(1, 0, 0)
     local b = lurek.math.vec3(0, 1, 0)
     example_print_log("dot = " .. a:dot(b))
@@ -8739,6 +10747,14 @@ LVec3:length()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec3(1, 2, 2)
     example_print_log("length = " .. v:length())
     example_print_log("vector length = " .. v:length())
@@ -8767,6 +10783,14 @@ LVec3:lengthSquared()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec3(1, 2, 2)
     example_print_log("lengthSq = " .. v:lengthSquared())
     example_print_log("vector length = " .. v:length())
@@ -8802,6 +10826,14 @@ LVec3:lerp(other, t)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec3(0, 0, 0)
     local b = lurek.math.vec3(3, 4, 0)
     local mid = a:lerp(b, 0.5)
@@ -8830,6 +10862,14 @@ LVec3:normalize()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec3(3, 0, 4)
     local n = v:normalize()
     example_print_log("normalized = " .. n.x .. "," .. n.y .. "," .. n.z)
@@ -8864,6 +10904,14 @@ LVec3:scale(s)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec3(1, 2, 3)
     local scaled = v:scale(2)
     example_print_log("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
@@ -8898,6 +10946,14 @@ LVec3:splat(v)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.vec3(0, 0, 0)
     local s = v:splat(5)
     example_print_log("splat = " .. s.x .. "," .. s.y .. "," .. s.z)
@@ -8932,6 +10988,14 @@ LVec3:sub(other)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.math.vec3(1, 2, 3)
     local b = lurek.math.vec3(4, 5, 6)
     local diff = a:sub(b)
@@ -8960,6 +11024,14 @@ LVec3:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec3(1, 2, 3)
     example_print_log(v:type())
     example_print_log("vector length = " .. v:length())
@@ -8994,6 +11066,14 @@ LVec3:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local v = lurek.math.Vec3(1, 2, 3)
     example_print_log(tostring(v:typeOf("LVec3")))
     example_print_log("type = " .. tostring(v:type()))

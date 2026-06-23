@@ -12,9 +12,9 @@
 //! Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
 
 use super::types::{
-    ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapError, MinimapLimits, MinimapMarker,
-    MinimapObject, MinimapObjectType, MinimapPing, MinimapValidationLimits, OverlayPath,
-    OverlayShape,
+    ColorMode, FogLevel, LayerBlendMode, LayerData, LayerStyle, MarkerAnimation, MinimapError,
+    MinimapLimits, MinimapMarker, MinimapObject, MinimapObjectType, MinimapPing,
+    MinimapValidationLimits, OverlayPath, OverlayShape,
 };
 use crate::camera::Camera2D;
 use crate::log_msg;
@@ -106,6 +106,8 @@ pub struct Minimap {
     next_path_id: u32,
     /// Multi-layer cell data; index is the layer number.
     layers: Vec<LayerData>,
+    /// Presentation style for each layer index.
+    layer_styles: Vec<LayerStyle>,
     /// Currently active render layer index.
     active_layer: usize,
 }
@@ -369,6 +371,7 @@ impl Minimap {
             paths: Vec::new(),
             next_path_id: 1,
             layers: Vec::new(),
+            layer_styles: Vec::new(),
             active_layer: 0,
         })
     }
@@ -1184,6 +1187,10 @@ impl Minimap {
                 height: self.grid_height,
             });
         }
+        if layer >= self.layer_styles.len() {
+            self.layer_styles
+                .resize_with(layer + 1, LayerStyle::default);
+        }
         self.layers[layer] = data;
         Ok(())
     }
@@ -1196,6 +1203,115 @@ impl Minimap {
     /// Return the number of allocated layers.
     pub fn layer_count(&self) -> usize {
         self.layers.len()
+    }
+
+    fn valid_populated_layer(&self, layer: usize) -> bool {
+        self.layers
+            .get(layer)
+            .is_some_and(|data| !data.cells.is_empty())
+    }
+
+    fn ensure_layer_style(&mut self, layer: usize) -> Result<&mut LayerStyle, MinimapError> {
+        if !self.valid_populated_layer(layer) {
+            return if self.layers.get(layer).is_none() {
+                Err(MinimapError::InvalidLayer { layer })
+            } else {
+                Err(MinimapError::EmptyLayer { layer })
+            };
+        }
+        if layer >= self.layer_styles.len() {
+            self.layer_styles
+                .resize_with(layer + 1, LayerStyle::default);
+        }
+        Ok(&mut self.layer_styles[layer])
+    }
+
+    /// Set whether a layer is drawn even when it is not active.
+    pub fn set_layer_visible(&mut self, layer: usize, visible: bool) -> Result<(), MinimapError> {
+        self.ensure_layer_style(layer)?.visible = visible;
+        Ok(())
+    }
+
+    /// Return whether a layer is drawn when it is not active.
+    pub fn layer_visible(&self, layer: usize) -> Option<bool> {
+        if !self.valid_populated_layer(layer) {
+            return None;
+        }
+        Some(
+            self.layer_styles
+                .get(layer)
+                .map(|style| style.visible)
+                .unwrap_or(false),
+        )
+    }
+
+    /// Set the opacity multiplier for a minimap data layer.
+    pub fn set_layer_alpha(&mut self, layer: usize, alpha: f32) -> Result<(), MinimapError> {
+        if !alpha.is_finite() {
+            return Err(MinimapError::InvalidFloat {
+                field: "layer alpha",
+            });
+        }
+        self.ensure_layer_style(layer)?.alpha = alpha.clamp(0.0, 1.0);
+        Ok(())
+    }
+
+    /// Return the opacity multiplier for a minimap data layer.
+    pub fn layer_alpha(&self, layer: usize) -> Option<f32> {
+        if !self.valid_populated_layer(layer) {
+            return None;
+        }
+        Some(
+            self.layer_styles
+                .get(layer)
+                .map(|style| style.alpha)
+                .unwrap_or_else(|| LayerStyle::default().alpha),
+        )
+    }
+
+    /// Set a palette color for one raw value in a minimap data layer.
+    pub fn set_layer_color(
+        &mut self,
+        layer: usize,
+        value: u8,
+        color: [f32; 4],
+    ) -> Result<(), MinimapError> {
+        let color = Self::clamp_color("layer color", color)?;
+        self.ensure_layer_style(layer)?.palette.insert(value, color);
+        Ok(())
+    }
+
+    /// Return a palette color for one raw value in a minimap data layer.
+    pub fn get_layer_color(&self, layer: usize, value: u8) -> Option<[f32; 4]> {
+        if !self.valid_populated_layer(layer) {
+            return None;
+        }
+        self.layer_styles
+            .get(layer)
+            .and_then(|style| style.palette.get(&value).copied())
+    }
+
+    /// Set the blend mode used when a minimap data layer is composed.
+    pub fn set_layer_blend_mode(
+        &mut self,
+        layer: usize,
+        mode: LayerBlendMode,
+    ) -> Result<(), MinimapError> {
+        self.ensure_layer_style(layer)?.blend_mode = mode;
+        Ok(())
+    }
+
+    /// Return the blend mode used when a minimap data layer is composed.
+    pub fn layer_blend_mode(&self, layer: usize) -> Option<LayerBlendMode> {
+        if !self.valid_populated_layer(layer) {
+            return None;
+        }
+        Some(
+            self.layer_styles
+                .get(layer)
+                .map(|style| style.blend_mode)
+                .unwrap_or(LayerBlendMode::Normal),
+        )
     }
 
     /// Enable or disable anti-aliased rendering for the minimap texture.
@@ -1360,7 +1476,8 @@ impl Minimap {
                 let gx = ((u64::from(px) * u64::from(grid_w)) / u64::from(w))
                     .min(u64::from(grid_w - 1)) as u32;
                 let terrain_type = self.get_terrain(gx, gy);
-                let tc = self.resolve_cell_color(gx, gy, terrain_type, &owner_colors);
+                let base = self.resolve_cell_color(gx, gy, terrain_type, &owner_colors);
+                let tc = self.resolve_layered_cell_color(gx, gy, base);
                 let mult = self.fog_multiplier(gx, gy);
                 let r = (tc[0] * 255.0 * mult).clamp(0.0, 255.0) as u8;
                 let g = (tc[1] * 255.0 * mult).clamp(0.0, 255.0) as u8;
@@ -1371,6 +1488,113 @@ impl Minimap {
 
         let cell_px_w = w as f32 / self.grid_width as f32;
         let cell_px_h = h as f32 / self.grid_height as f32;
+
+        let to_img_x = |x: f32| (x * cell_px_w).round() as i32;
+        let to_img_y = |y: f32| (y * cell_px_h).round() as i32;
+
+        for shape in self.overlay_shapes() {
+            match shape {
+                OverlayShape::Line {
+                    x1,
+                    y1,
+                    x2,
+                    y2,
+                    color,
+                } if x1.is_finite() && y1.is_finite() && x2.is_finite() && y2.is_finite() => {
+                    img.draw_line(
+                        to_img_x(*x1),
+                        to_img_y(*y1),
+                        to_img_x(*x2),
+                        to_img_y(*y2),
+                        color[0],
+                        color[1],
+                        color[2],
+                        color[3],
+                    );
+                }
+                OverlayShape::Rect { x, y, w, h, color }
+                    if x.is_finite() && y.is_finite() && w.is_finite() && h.is_finite() =>
+                {
+                    let x0 = to_img_x(*x);
+                    let y0 = to_img_y(*y);
+                    let x1 = to_img_x(*x + *w);
+                    let y1 = to_img_y(*y + *h);
+                    img.draw_line(x0, y0, x1, y0, color[0], color[1], color[2], color[3]);
+                    img.draw_line(x1, y0, x1, y1, color[0], color[1], color[2], color[3]);
+                    img.draw_line(x1, y1, x0, y1, color[0], color[1], color[2], color[3]);
+                    img.draw_line(x0, y1, x0, y0, color[0], color[1], color[2], color[3]);
+                }
+                _ => {}
+            }
+        }
+
+        for path in self.paths() {
+            if path.points.len() < 2 {
+                continue;
+            }
+            for window in path.points.windows(2) {
+                let (x1, y1) = window[0];
+                let (x2, y2) = window[1];
+                if !x1.is_finite() || !y1.is_finite() || !x2.is_finite() || !y2.is_finite() {
+                    continue;
+                }
+                img.draw_line(
+                    to_img_x(x1),
+                    to_img_y(y1),
+                    to_img_x(x2),
+                    to_img_y(y2),
+                    path.color[0],
+                    path.color[1],
+                    path.color[2],
+                    path.color[3],
+                );
+            }
+        }
+
+        if self.viewport_visible() {
+            if let Some((vx, vy, vw, vh)) = self.viewport_rect() {
+                if vx.is_finite() && vy.is_finite() && vw.is_finite() && vh.is_finite() {
+                    let [vr, vg, vb, va] = self.viewport_color();
+                    let color = [
+                        (vr * 255.0).clamp(0.0, 255.0) as u8,
+                        (vg * 255.0).clamp(0.0, 255.0) as u8,
+                        (vb * 255.0).clamp(0.0, 255.0) as u8,
+                        (va * 255.0).clamp(0.0, 255.0) as u8,
+                    ];
+                    let x0 = to_img_x(vx);
+                    let y0 = to_img_y(vy);
+                    let x1 = to_img_x(vx + vw);
+                    let y1 = to_img_y(vy + vh);
+                    img.draw_line(x0, y0, x1, y0, color[0], color[1], color[2], color[3]);
+                    img.draw_line(x1, y0, x1, y1, color[0], color[1], color[2], color[3]);
+                    img.draw_line(x1, y1, x0, y1, color[0], color[1], color[2], color[3]);
+                    img.draw_line(x0, y1, x0, y0, color[0], color[1], color[2], color[3]);
+                }
+            }
+        }
+
+        let ping_radius = (cell_px_w.min(cell_px_h) * 1.5).max(4.0).round() as u32;
+        for ping in self.pings() {
+            if !ping.x.is_finite() || !ping.y.is_finite() {
+                continue;
+            }
+            let fade = if ping.duration > 0.0 {
+                ping.remaining / ping.duration
+            } else {
+                1.0
+            };
+            let color = [
+                (ping.color[0] * 255.0).clamp(0.0, 255.0) as u8,
+                (ping.color[1] * 255.0).clamp(0.0, 255.0) as u8,
+                (ping.color[2] * 255.0).clamp(0.0, 255.0) as u8,
+                (ping.color[3] * fade * 255.0).clamp(0.0, 255.0) as u8,
+            ];
+            let cx = to_img_x(ping.x);
+            let cy = to_img_y(ping.y);
+            img.draw_circle(cx, cy, ping_radius, color[0], color[1], color[2], color[3]);
+            img.draw_circle(cx, cy, 2, color[0], color[1], color[2], 255);
+        }
+
         for obj in self.objects.values() {
             let Some(ot) = self.object_types.get(obj.type_index) else {
                 continue;
@@ -1452,6 +1676,71 @@ impl Minimap {
                 .copied()
                 .unwrap_or_else(|| self.get_terrain_color(terrain_type)),
         }
+    }
+
+    fn layer_cell_color(style: &LayerStyle, value: u8) -> Option<[f32; 4]> {
+        if let Some(color) = style.palette.get(&value) {
+            return Some(*color);
+        }
+        if value == 0 {
+            return None;
+        }
+        let intensity = (value as f32 / 9.0).clamp(0.0, 1.0);
+        Some([intensity, intensity, intensity, 1.0])
+    }
+
+    fn blend_layer_color(base: [f32; 4], layer: [f32; 4], style: &LayerStyle) -> [f32; 4] {
+        let alpha = (style.alpha * layer[3]).clamp(0.0, 1.0);
+        match style.blend_mode {
+            LayerBlendMode::Normal | LayerBlendMode::Replace => [
+                base[0] * (1.0 - alpha) + layer[0] * alpha,
+                base[1] * (1.0 - alpha) + layer[1] * alpha,
+                base[2] * (1.0 - alpha) + layer[2] * alpha,
+                base[3].max(alpha),
+            ],
+            LayerBlendMode::Multiply => [
+                base[0] * (1.0 - alpha + layer[0] * alpha),
+                base[1] * (1.0 - alpha + layer[1] * alpha),
+                base[2] * (1.0 - alpha + layer[2] * alpha),
+                base[3],
+            ],
+            LayerBlendMode::Add => [
+                (base[0] + layer[0] * alpha).clamp(0.0, 1.0),
+                (base[1] + layer[1] * alpha).clamp(0.0, 1.0),
+                (base[2] + layer[2] * alpha).clamp(0.0, 1.0),
+                base[3].max(alpha),
+            ],
+        }
+    }
+
+    /// Compose active and visible raw data layers over a resolved terrain/owner color.
+    pub(crate) fn resolve_layered_cell_color(&self, gx: u32, gy: u32, base: [f32; 4]) -> [f32; 4] {
+        let mut color = base;
+        let Some(cell_index) = gy
+            .checked_mul(self.grid_width)
+            .and_then(|row| row.checked_add(gx))
+            .map(|idx| idx as usize)
+        else {
+            return color;
+        };
+        for (layer_index, layer) in self.layers.iter().enumerate() {
+            if layer.cells.is_empty() || cell_index >= layer.cells.len() {
+                continue;
+            }
+            let style = self
+                .layer_styles
+                .get(layer_index)
+                .cloned()
+                .unwrap_or_default();
+            if layer_index != self.active_layer && !style.visible {
+                continue;
+            }
+            let Some(layer_color) = Self::layer_cell_color(&style, layer.cells[cell_index]) else {
+                continue;
+            };
+            color = Self::blend_layer_color(color, layer_color, &style);
+        }
+        color
     }
 
     /// Set the next marker id to a caller-provided value for Rust-side overflow tests.

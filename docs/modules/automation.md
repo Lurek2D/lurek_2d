@@ -16,6 +16,14 @@ Example block: `lurek.automation.load`
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("login_flow", { steps = steps })
     local scripts = lurek.automation.getScripts()
@@ -73,6 +81,14 @@ lurek.automation.getCondition(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.automation.setCondition("ready", true)
     local val = lurek.automation.getCondition("ready")
     local missing = lurek.automation.getCondition("missing_condition")
@@ -102,6 +118,14 @@ lurek.automation.getCurrentScript()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("current_test", { steps = steps })
     lurek.automation.start("current_test")
@@ -131,6 +155,14 @@ lurek.automation.getCurrentStep()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.2 },
@@ -163,6 +195,14 @@ lurek.automation.getElapsedTime()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.2 },
@@ -196,6 +236,14 @@ lurek.automation.getLastError()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.automation.stop()
     local err = lurek.automation.getLastError()
     local failed = lurek.automation.isFailed()
@@ -225,6 +273,14 @@ lurek.automation.getPlaybackSpeed()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.automation.setPlaybackSpeed(1.5)
     local speed = lurek.automation.getPlaybackSpeed()
     example_print_log("playback speed = " .. tostring(speed))
@@ -253,6 +309,14 @@ lurek.automation.getScripts()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("list_one", { steps = steps })
     lurek.automation.load("list_two", { steps = steps })
@@ -282,6 +346,14 @@ lurek.automation.getStepCount()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.2 },
@@ -321,6 +393,14 @@ lurek.automation.getStepLimit(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("limit_query", { steps = steps })
     local limit = lurek.automation.getStepLimit("run_test")
@@ -356,6 +436,14 @@ lurek.automation.hasMacro(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_has_source", { steps = steps })
     lurek.automation.saveMacro("fast_login", "macro_has_source")
@@ -392,6 +480,14 @@ lurek.automation.hasScript(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("status_check", { steps = steps })
     local has = lurek.automation.hasScript("nonexistent")
@@ -421,6 +517,14 @@ lurek.automation.isComplete()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("complete_test", { steps = steps })
     lurek.automation.start("complete_test")
@@ -451,6 +555,14 @@ lurek.automation.isFailed()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.automation.stop()
     local err = lurek.automation.getLastError()
     local failed = lurek.automation.isFailed()
@@ -479,6 +591,14 @@ lurek.automation.isHighlightMode()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.automation.setHighlightMode(true)
     local hl = lurek.automation.isHighlightMode()
     example_print_log("highlight mode = " .. tostring(hl))
@@ -507,6 +627,14 @@ lurek.automation.isPaused()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.5 },
@@ -541,6 +669,14 @@ lurek.automation.isRunning()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("running_test", { steps = steps })
     lurek.automation.start("running_test")
@@ -571,6 +707,14 @@ lurek.automation.listMacros()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_list_source", { steps = steps })
     lurek.automation.saveMacro("fast_login", "macro_list_source")
@@ -601,6 +745,14 @@ lurek.automation.load(name, data)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("login_flow", { steps = steps })
     local scripts = lurek.automation.getScripts()
@@ -631,6 +783,14 @@ lurek.automation.loadFromToml(name, toml_str)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toml = "[[steps]]\naction = \"wait\"\ntime = 0.0\n"
     lurek.automation.loadFromToml("toml_script", toml)
     local scripts = lurek.automation.getScripts()
@@ -654,6 +814,14 @@ lurek.automation.pause()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.5 },
@@ -686,6 +854,14 @@ lurek.automation.playMacro(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_play_source", { steps = steps })
     lurek.automation.saveMacro("fast_login", "macro_play_source")
@@ -709,6 +885,14 @@ lurek.automation.resume()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.5 },
@@ -743,6 +927,14 @@ lurek.automation.saveMacro(macro_name, script_name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_source", { steps = steps })
     lurek.automation.saveMacro("fast_login", "macro_source")
@@ -772,6 +964,14 @@ lurek.automation.setCondition(name, value)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.automation.setCondition("logged_in", true)
     lurek.automation.setCondition("ready", false)
     example_print_log("condition set")
@@ -800,6 +1000,14 @@ lurek.automation.setHighlightMode(enable)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local before = lurek.automation.isHighlightMode()
     lurek.automation.setHighlightMode(true)
     example_print_log("highlight before = " .. tostring(before))
@@ -829,6 +1037,14 @@ lurek.automation.setPlaybackSpeed(factor)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local before = lurek.automation.getPlaybackSpeed()
     lurek.automation.setPlaybackSpeed(2.0)
     example_print_log("configured speed = 2.0")
@@ -864,6 +1080,14 @@ lurek.automation.setStepLimit(name, n)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("limit_set", { steps = steps })
     local ok = lurek.automation.setStepLimit("limit_set", 1000)
@@ -892,6 +1116,14 @@ lurek.automation.start(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("run_test", { steps = steps })
     lurek.automation.start("run_test")
@@ -917,6 +1149,14 @@ lurek.automation.stop()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("stop_test", { steps = steps })
     lurek.automation.start("stop_test")
@@ -952,6 +1192,14 @@ lurek.automation.unload(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("temp_script", { steps = steps })
     local loaded = lurek.automation.hasScript("temp_script")
@@ -983,6 +1231,14 @@ lurek.automation.update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local steps = {
         { action = "wait", time = 0.0 },
         { action = "wait", time = 0.1 },
@@ -1016,6 +1272,14 @@ lurek.automation.waitUntil(predicate, timeout)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.automation.setCondition("ready", false)
     lurek.automation.waitUntil(function()
         return lurek.automation.getCondition("ready")

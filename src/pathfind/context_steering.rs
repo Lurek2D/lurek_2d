@@ -2,7 +2,7 @@
 //! Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot.
 //! Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler.
 //! Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly.
-//! Provides the local movement boundary between authored context behaviors and the final chosen travel heading.
+//! Provides the pathfind-owned local movement boundary between authored context behaviors and the final chosen travel heading.
 //! This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion.
 //! Open this owner before generic steering when the bug is in lane choice rather than force combination policy.
 

@@ -16,6 +16,16 @@ Example block: `lurek.filesystem.getSource`
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local source_root = lurek.filesystem.getSource()
     local examples_path = source_root .. "/content/examples"
     local looks_absolute = source_root:find(":") ~= nil or source_root:sub(1, 1) == "/"
@@ -70,6 +80,16 @@ lurek.filesystem.append(path, data)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "session.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "spawn=village")
@@ -100,6 +120,16 @@ lurek.filesystem.copy(src, dst)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local src = PROFILE_DIR .. "slot_copy_source.json"
     local dst = PROFILE_DIR .. "slot_copy_backup.json"
     lurek.filesystem.createDirectory(PROFILE_DIR)
@@ -129,6 +159,16 @@ lurek.filesystem.createDirectory(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = PROFILE_DIR .. "campaign_two/checkpoint_a/"
     lurek.filesystem.createDirectory(path)
     local parent_ready = lurek.filesystem.isDirectory(PROFILE_DIR)
@@ -163,6 +203,16 @@ lurek.filesystem.createTempFile(prefix)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local temp_path = lurek.filesystem.createTempFile("draft_")
     local draft_payload = "seed=42\nbiome=forest\nweather=rain"
     lurek.filesystem.write(temp_path, draft_payload)
@@ -198,6 +248,16 @@ lurek.filesystem.exists(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local profile_path = PROFILE_DIR .. "exists_slot.json"
     lurek.filesystem.createDirectory(PROFILE_DIR)
     lurek.filesystem.write(profile_path, '{"name":"Ada","level":7}')
@@ -232,6 +292,16 @@ lurek.filesystem.getDirectoryItems(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local dir = PROFILE_DIR .. "slot_browser/"
     lurek.filesystem.createDirectory(dir)
     lurek.filesystem.write(dir .. "slot_a.json", '{"slot":"A"}')
@@ -261,6 +331,16 @@ lurek.filesystem.getIdentity()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local identity = lurek.filesystem.getIdentity()
     local save_root = lurek.filesystem.getSaveDirectory()
     local slot_path = save_root .. "/example_filesystem/profiles/slot_01.json"
@@ -295,6 +375,16 @@ lurek.filesystem.getInfo(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = PROFILE_DIR .. "info_slot.json"
     lurek.filesystem.createDirectory(PROFILE_DIR)
     lurek.filesystem.write(path, '{"chapter":"forest","hp":18}')
@@ -324,6 +414,16 @@ lurek.filesystem.getSaveDirectory()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local save_root = lurek.filesystem.getSaveDirectory()
     local profile_slot = save_root .. "/example_filesystem/profiles/slot_01.json"
     local looks_absolute = save_root:find(":") ~= nil or save_root:sub(1, 1) == "/"
@@ -352,6 +452,16 @@ lurek.filesystem.getSource()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local source_root = lurek.filesystem.getSource()
     local examples_path = source_root .. "/content/examples"
     local looks_absolute = source_root:find(":") ~= nil or source_root:sub(1, 1) == "/"
@@ -380,6 +490,16 @@ lurek.filesystem.getUserDirectory()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local user_root = lurek.filesystem.getUserDirectory()
     local backup_path = user_root .. "/LurekBackups"
     local profile_name = lurek.filesystem.getIdentity()
@@ -408,6 +528,16 @@ lurek.filesystem.getWorkingDirectory()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local cwd = lurek.filesystem.getWorkingDirectory()
     local content_path = cwd .. "/content"
     local tests_path = cwd .. "/tests"
@@ -442,6 +572,16 @@ lurek.filesystem.glob(pattern)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local dir = CACHE_DIR .. "glob/"
     lurek.filesystem.createDirectory(dir)
     lurek.filesystem.write(dir .. "forest.cache", "ok")
@@ -477,6 +617,16 @@ lurek.filesystem.isDirectory(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local slot_dir = PROFILE_DIR .. "campaign_one/"
     lurek.filesystem.createDirectory(slot_dir)
     local is_directory = lurek.filesystem.isDirectory(slot_dir)
@@ -512,6 +662,16 @@ lurek.filesystem.isFile(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local profile_path = PROFILE_DIR .. "slot_file_check.json"
     lurek.filesystem.createDirectory(PROFILE_DIR)
     lurek.filesystem.write(profile_path, '{"name":"Mira","coins":12}')
@@ -546,6 +706,16 @@ lurek.filesystem.lines(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "dialogue.txt"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "hero=ready\nmentor=wait\nquest=go")
@@ -583,6 +753,16 @@ lurek.filesystem.listRecursive(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local dir = CACHE_DIR .. "imports/"
     lurek.filesystem.createDirectory(dir .. "audio/")
     lurek.filesystem.write(dir .. "manifest.txt", "import=ambient")
@@ -618,6 +798,16 @@ lurek.filesystem.load(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "spawn_rules.lua"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "return function() return { biome = 'forest', enemies = 5 } end")
@@ -648,6 +838,16 @@ lurek.filesystem.mkdir(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = CACHE_DIR .. "shader/prewarm/"
     lurek.filesystem.mkdir(path)
     local ready = lurek.filesystem.isDirectory(path)
@@ -683,6 +883,16 @@ lurek.filesystem.mount(src, mp)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local mountpoint = "example_assets"
     lurek.filesystem.unmount(mountpoint)
     local mounted = lurek.filesystem.mount("content/examples/assets", mountpoint)
@@ -718,6 +928,16 @@ lurek.filesystem.mountZip(archive_path, prefix)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_preview")
     local prefix = zip:prefix()
     local files = zip:listFiles()
@@ -747,6 +967,16 @@ lurek.filesystem.move(src, dst)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local src = PROFILE_DIR .. "slot_move_tmp.json"
     local dst = PROFILE_DIR .. "slot_move_final.json"
     lurek.filesystem.createDirectory(PROFILE_DIR)
@@ -782,6 +1012,16 @@ lurek.filesystem.newFileData(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "filedata_blob.txt"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "spawn=river\nambient=wind")
@@ -818,6 +1058,16 @@ lurek.filesystem.openFile(path, mode)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_open.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     local handle = lurek.filesystem.openFile(path, "w")
@@ -853,6 +1103,16 @@ lurek.filesystem.pollAsync(handle_id)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "async_poll.json"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, '{"region":"cave","npcs":6}')
@@ -894,6 +1154,16 @@ lurek.filesystem.pollAsyncWrite(handle_id)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "async_write_poll.json"
     lurek.filesystem.createDirectory(FS_ROOT)
     local ticket = lurek.filesystem.writeAsync(path, '{"region":"harbor","npcs":11}')
@@ -929,6 +1199,16 @@ lurek.filesystem.pollWatchers()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     lurek.filesystem.createDirectory(WATCH_DIR)
     lurek.filesystem.write(WATCH_FILE, '{"volume":74}')
     lurek.filesystem.watchPath(WATCH_FILE)
@@ -966,6 +1246,16 @@ lurek.filesystem.read(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = PROFILE_DIR .. "read_slot.json"
     lurek.filesystem.createDirectory(PROFILE_DIR)
     lurek.filesystem.write(path, '{"name":"Nova","quest":"intro"}')
@@ -1001,6 +1291,16 @@ lurek.filesystem.readAsync(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "async_read.json"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, '{"region":"forest","npcs":14}')
@@ -1036,6 +1336,16 @@ lurek.filesystem.readBytes(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "palette.bin"
     local bytes = string.char(0, 64, 128, 255)
     lurek.filesystem.createDirectory(FS_ROOT)
@@ -1071,6 +1381,16 @@ lurek.filesystem.readJson(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = PROFILE_DIR .. "read_json_slot.json"
     lurek.filesystem.createDirectory(PROFILE_DIR)
     lurek.filesystem.writeJson(path, '{"name":"Kira","score":42}')
@@ -1107,6 +1427,16 @@ lurek.filesystem.readOrWriteJson(path, default_json)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = PROFILE_DIR .. "defaults_slot.json"
     local default_json = '{"volume":80,"fullscreen":false,"language":"pl"}'
     lurek.filesystem.createDirectory(PROFILE_DIR)
@@ -1136,6 +1466,16 @@ lurek.filesystem.remove(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = CACHE_DIR .. "obsolete_manifest.txt"
     lurek.filesystem.createDirectory(CACHE_DIR)
     lurek.filesystem.write(path, "cache=v1")
@@ -1165,6 +1505,16 @@ lurek.filesystem.removeDir(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = CACHE_DIR .. "old_build/"
     lurek.filesystem.createDirectory(path)
     lurek.filesystem.write(path .. "atlas.txt", "old atlas")
@@ -1194,6 +1544,16 @@ lurek.filesystem.setIdentity(name)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local original = lurek.filesystem.getIdentity()
     local preview_identity = "codex_example_identity"
     lurek.filesystem.setIdentity(preview_identity)
@@ -1229,6 +1589,16 @@ lurek.filesystem.stat(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = PROFILE_DIR .. "stat_slot.json"
     lurek.filesystem.createDirectory(PROFILE_DIR)
     lurek.filesystem.write(path, '{"chapter":"cave","hp":24}')
@@ -1264,6 +1634,16 @@ lurek.filesystem.toAbsolutePath(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local relative_path = PROFILE_DIR .. "slot_01.json"
     local absolute_path = lurek.filesystem.toAbsolutePath(relative_path)
     local save_root = lurek.filesystem.getSaveDirectory()
@@ -1298,6 +1678,16 @@ lurek.filesystem.unmount(mp)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local mountpoint = "example_assets_cleanup"
     lurek.filesystem.mount("content/examples/assets", mountpoint)
     local before = lurek.filesystem.getDirectoryItems(mountpoint)
@@ -1327,6 +1717,16 @@ lurek.filesystem.unwatchPath(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     lurek.filesystem.createDirectory(WATCH_DIR)
     lurek.filesystem.write(WATCH_FILE, '{"volume":72}')
     lurek.filesystem.watchPath(WATCH_FILE)
@@ -1356,6 +1756,16 @@ lurek.filesystem.watchPath(path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     lurek.filesystem.createDirectory(WATCH_DIR)
     lurek.filesystem.write(WATCH_FILE, '{"volume":70}')
     lurek.filesystem.watchPath(WATCH_FILE)
@@ -1385,6 +1795,16 @@ lurek.filesystem.write(path, data)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = PROFILE_DIR .. "write_slot.json"
     local payload = '{"name":"Rune","xp":130,"zone":"village"}'
     lurek.filesystem.createDirectory(PROFILE_DIR)
@@ -1420,6 +1840,16 @@ lurek.filesystem.writeAsync(path, data)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "async_write.json"
     lurek.filesystem.createDirectory(FS_ROOT)
     local payload = '{"region":"tower","npcs":3}'
@@ -1450,6 +1880,16 @@ lurek.filesystem.writeBytes(path, data)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "navmesh.bin"
     local bytes = string.char(4, 8, 15, 16, 23, 42)
     lurek.filesystem.createDirectory(FS_ROOT)
@@ -1480,6 +1920,16 @@ lurek.filesystem.writeJson(path, json)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = PROFILE_DIR .. "write_json_slot.json"
     local payload = '{"name":"Nox","difficulty":"hard"}'
     lurek.filesystem.createDirectory(PROFILE_DIR)
@@ -1531,6 +1981,16 @@ LFileData:getFilename()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "filedata_name.txt"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "seed=9301")
@@ -1560,6 +2020,16 @@ LFileData:getSize()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "filedata_size.txt"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "enemy=archer")
@@ -1589,6 +2059,16 @@ LFileData:getString()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "filedata_string.txt"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "weather=storm")
@@ -1618,6 +2098,16 @@ LFileData:type()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "filedata_type.txt"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "hint=secret")
@@ -1653,6 +2143,16 @@ LFileData:typeOf(name)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "filedata_typeof.txt"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "hint=secret")
@@ -1684,6 +2184,16 @@ LFileHandle:close()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_close.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     local handle = lurek.filesystem.openFile(path, "w")
@@ -1708,6 +2218,16 @@ LFileHandle:flush()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_flush.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     local handle = lurek.filesystem.openFile(path, "w")
@@ -1738,6 +2258,16 @@ LFileHandle:getMode()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_mode.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "quests=3")
@@ -1768,6 +2298,16 @@ LFileHandle:getSize()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_size.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "camera=10,20,1.2")
@@ -1798,6 +2338,16 @@ LFileHandle:isEOF()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_eof.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "alpha\nbeta")
@@ -1835,6 +2385,16 @@ LFileHandle:read(count)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_read.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "encounter=boss\nstate=phase2")
@@ -1865,6 +2425,16 @@ LFileHandle:readLine()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_lines.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "room=foyer\nroom=hall\nroom=vault")
@@ -1895,6 +2465,16 @@ LFileHandle:seek(pos)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_seek.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "HP=035|MP=012|ZONE=RUINS")
@@ -1926,6 +2506,16 @@ LFileHandle:tell()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_tell.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "frame0001\nframe0002\n")
@@ -1957,6 +2547,16 @@ LFileHandle:type()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_type.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "data=x")
@@ -1993,6 +2593,16 @@ LFileHandle:typeOf(name)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_typeof.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     lurek.filesystem.write(path, "data=x")
@@ -2023,6 +2633,16 @@ LFileHandle:write(data)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local path = FS_ROOT .. "handle_write.log"
     lurek.filesystem.createDirectory(FS_ROOT)
     local handle = lurek.filesystem.openFile(path, "w")
@@ -2067,6 +2687,16 @@ LZipMount:contains(virtual_path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_contains")
     local has_hello = zip:contains("zip_contains/hello.txt")
     local has_missing = zip:contains("zip_contains/missing.txt")
@@ -2095,6 +2725,16 @@ LZipMount:listFiles()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_list")
     local files = zip:listFiles()
     local first = files[1] or "none"
@@ -2123,6 +2763,16 @@ LZipMount:prefix()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_prefix")
     local prefix = zip:prefix()
     local hello_path = prefix .. "/hello.txt"
@@ -2157,6 +2807,16 @@ LZipMount:readFile(virtual_path)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_read")
     local payload = zip:readFile("zip_read/hello.txt")
     local size = #payload
@@ -2186,6 +2846,16 @@ LZipMount:type()
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_type")
     local type_name = zip:type()
     local prefix = zip:prefix()
@@ -2220,6 +2890,16 @@ LZipMount:typeOf(name)
 
 ```lua
 do
+    local FS_ROOT = "save/example_filesystem/"
+    local PROFILE_DIR = FS_ROOT .. "profiles/"
+    local CACHE_DIR = FS_ROOT .. "cache/"
+    local WATCH_DIR = FS_ROOT .. "watch/"
+    local WATCH_FILE = WATCH_DIR .. "settings.json"
+    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+    local function fs_log(message)
+        lurek.log.info("[filesystem] " .. message)
+    end
+
     local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_typeof")
     local matches = zip:typeOf("LZipMount")
     local prefix = zip:prefix()

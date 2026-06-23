@@ -16,6 +16,17 @@ Example block: `lurek.minimap.newMinimap`
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(64, 64, 200, 200)
     mm:setCenter(32, 24)
     mm:setZoom(1.25)
@@ -46,6 +57,12 @@ end
 
 This module primarily collaborates with `camera`, `image`, `province`, `raycaster`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+The broader integration map is split by role:
+
+- Direct data producers: `tilefield`, `visibility`, `tilemap`, `province`, `globe`, `procgen`, `pathfind`, and `raycaster` provide terrain ids, fog masks, light/heat layers, route overlays, region ownership, biome colors, camera/FOV hints, or marker/object snapshots.
+- Presentation collaborators: `camera`, `render`, `image`, `light`, `overlay`, `ui`, `layout`, `window`, `input`, `math`, and `effect` provide viewport transforms, HUD placement, offscreen image/export behavior, interaction coordinates, shader/effect policy, and rendering primitives.
+- Pattern references: `animation`, `sprite`, `spine`, `particle`, `parallax`, `charts`/radar, `physics`, `ecs`, and `scene` contain useful precedents for preview images, debug overlays, layer ordering, entity/object snapshots, and visual evidence, but should not become minimap dependencies unless a concrete adapter requires it.
+
 ## Functions
 
 ### `lurek.minimap.newMinimap`
@@ -75,6 +92,17 @@ lurek.minimap.newMinimap(grid_w, grid_h, display_w, display_h)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(64, 64, 200, 200)
     mm:setCenter(32, 24)
     mm:setZoom(1.25)
@@ -135,6 +163,17 @@ LMinimap:addMarker(x, y, desc, r, g, b, a)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1)
 
@@ -174,6 +213,17 @@ LMinimap:addObjectType(name, r, g, b, a)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local unit = mm:addObjectType("unit", 0, 0, 1, 1)
     local building = mm:addObjectType("building", 1, 1, 0, 0.8)
@@ -209,6 +259,17 @@ LMinimap:addPing(x, y, duration, r, g, b, a)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:addPing(8, 8, 2.0, 1, 1, 0, 1)
     mm:addPing(4, 4, 1.0)
@@ -238,6 +299,17 @@ LMinimap:clearMarkerAnimation(id)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local id = mm:addMarker(8, 8, "Blink")
 
@@ -268,6 +340,17 @@ LMinimap:clearMarkerTexture(id)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
     local id = mm:addMarker(16, 16, "Hero")
     local img = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
@@ -298,6 +381,17 @@ LMinimap:clearObjectTypeTexture(type_idx)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
     local type_idx = mm:addObjectType("unit", 0, 1, 0, 1)
     local img = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
@@ -322,6 +416,17 @@ LMinimap:clearObjects()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local npc = mm:addObjectType("npc", 0, 1, 0, 1)
 
@@ -347,6 +452,17 @@ LMinimap:clearOverlay()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:drawLine(0, 0, 15, 15, { 255, 255, 255, 255 })
     mm:drawRect(2, 2, 4, 4, { 0, 255, 0, 200 })
@@ -376,6 +492,17 @@ LMinimap:clearPath(id)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local pts = {
         { 2, 2 },
@@ -404,6 +531,17 @@ LMinimap:clearViewportRect()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setViewportRect(4, 4, 12, 12)
     mm:clearViewportRect()
@@ -436,6 +574,17 @@ LMinimap:drawLine(x1, y1, x2, y2, color_tbl)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setCenter(8, 8)
     mm:drawLine(0, 0, 15, 15, { 255, 255, 255, 255 })
@@ -469,6 +618,17 @@ LMinimap:drawRect(x, y, w, h, color_tbl)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setCenter(8, 8)
     mm:drawRect(2, 2, 4, 4, { 0, 255, 0, 200 })
@@ -504,6 +664,17 @@ LMinimap:drawToImage(pixel_size)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setTerrainColor(0, 0.5, 0.5, 0.5, 1.0)
     local img = mm:drawToImage(2)
@@ -533,6 +704,17 @@ LMinimap:getCellCount()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(10, 20)
     mm:setDisplaySize(200, 120)
     mm:setCenter(5, 10)
@@ -563,6 +745,17 @@ LMinimap:getCenter()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setViewportRect(6, 14, 8, 8)
     mm:setCenter(10, 20)
@@ -592,6 +785,17 @@ LMinimap:getCenterX()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(14, 9)
     mm:setZoom(2.0)
@@ -621,6 +825,17 @@ LMinimap:getCenterY()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(14, 9)
     mm:setZoom(2.0)
@@ -650,6 +865,17 @@ LMinimap:getColorMode()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setTerrainColor(1, 0.1, 0.5, 0.1, 1.0)
     mm:setColorMode("terrain")
@@ -679,6 +905,17 @@ LMinimap:getDisplayHeight()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16, 100, 100)
     mm:setDisplaySize(300, 250)
     mm:setViewportRect(2, 2, 6, 6)
@@ -709,6 +946,17 @@ LMinimap:getDisplaySize()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32, 200, 200)
     mm:setDisplaySize(240, 180)
     mm:setViewportRect(4, 4, 10, 10)
@@ -738,6 +986,17 @@ LMinimap:getDisplayWidth()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16, 100, 100)
     mm:setDisplaySize(300, 250)
     mm:setViewportRect(2, 2, 6, 6)
@@ -770,6 +1029,17 @@ LMinimap:getFogColor()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setFogEnabled(true)
     mm:setFogColor(0.1, 0.2, 0.3, 0.6)
@@ -806,6 +1076,17 @@ LMinimap:getFogLevel(x, y)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setFogEnabled(true)
     mm:setTerrain(2, 2, 1)
@@ -836,6 +1117,17 @@ LMinimap:getGridHeight()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(10, 20)
     mm:setDisplaySize(160, 160)
     mm:setCenter(5, 10)
@@ -866,6 +1158,17 @@ LMinimap:getGridSize()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32, 200, 200)
     mm:setCenter(16, 16)
     mm:setZoom(1.1)
@@ -895,6 +1198,17 @@ LMinimap:getGridWidth()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(10, 20)
     mm:setDisplaySize(160, 160)
     mm:setCenter(5, 10)
@@ -933,6 +1247,17 @@ LMinimap:getHoverInfo(sx, sy, mx, my)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8, 80, 80)
     mm:setTileDescription(1, "Plains")
     mm:setTerrain(1, 1, 1)
@@ -962,12 +1287,148 @@ LMinimap:getLayer()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(4, 4)
     mm:setLayerData(2, { 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 3, 3, 3, 3 })
     mm:setLayer(2)
     local layer_data = mm:getLayerData(2)
     local layer = mm:getLayer()
     minimap_log("active terrain layer " .. layer .. " sample " .. tostring(layer_data and layer_data[1]))
+end
+```
+
+---
+
+#### `LMinimap:getLayerAlpha`
+
+Returns the opacity multiplier for a minimap data layer.
+
+```lua
+LMinimap:getLayerAlpha(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Opacity multiplier, or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local data = {}
+    for i = 1, 16 do data[i] = 1 end
+    mm:setLayerData(1, data)
+    mm:setLayerAlpha(1, 0.8)
+    local alpha = mm:getLayerAlpha(1)
+    minimap_log("stored overlay alpha = " .. tostring(alpha))
+end
+```
+
+---
+
+#### `LMinimap:getLayerBlendMode`
+
+Returns how a minimap data layer is blended over the base terrain.
+
+```lua
+LMinimap:getLayerBlendMode(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Blend mode, or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local fog_hint = {}
+    for i = 1, 16 do fog_hint[i] = i % 2 end
+    mm:setLayerData(1, fog_hint)
+    local before = mm:getLayerBlendMode(1)
+    mm:setLayerBlendMode(1, "multiply")
+    local after = mm:getLayerBlendMode(1)
+    minimap_log("fog hint blend " .. tostring(before) .. " -> " .. tostring(after))
+end
+```
+
+---
+
+#### `LMinimap:getLayerColor`
+
+Returns the palette color for one raw value in a minimap data layer.
+
+```lua
+LMinimap:getLayerColor(layer, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+| `value` | number | Raw byte value in the layer data. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel; or nil when missing. |
+| number | Green channel; or nil when missing. |
+| number | Blue channel; or nil when missing. |
+| number | Alpha channel; or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local influence = {}
+    for i = 1, 16 do influence[i] = i % 2 end
+    mm:setLayerData(1, influence)
+    mm:setLayerColor(1, 1, 0.9, 0.8, 0.2, 1.0)
+    local r, g, b, a = mm:getLayerColor(1, 1)
+    minimap_log("influence color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -991,6 +1452,17 @@ LMinimap:getLayerCount()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(4, 4)
     local data = {}
 
@@ -1029,6 +1501,17 @@ LMinimap:getLayerData(layer)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(4, 4)
     local data = {}
 
@@ -1063,6 +1546,17 @@ LMinimap:getMarkerCount()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:addMarker(10, 10, "Base")
     local enemy_id = mm:addMarker(20, 5, "Enemy")
@@ -1098,6 +1592,17 @@ LMinimap:getMarkerDescription(id)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     local id = mm:addMarker(10, 10, "Quest")
     mm:setMarkerAnimation(id, "pulse", 1.5)
@@ -1127,6 +1632,17 @@ LMinimap:getObjectCount()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local npc = mm:addObjectType("npc", 0, 1, 0, 1)
 
@@ -1156,6 +1672,17 @@ LMinimap:getObjectTypeCount()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local scout = mm:addObjectType("unit", 0, 0, 1, 1)
     local base = mm:addObjectType("building", 1, 1, 0, 0.8)
@@ -1185,6 +1712,17 @@ LMinimap:getOverlayShapeCount()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:drawLine(0, 0, 15, 15, { 255, 255, 255, 255 })
     mm:drawRect(2, 2, 4, 4, { 0, 255, 0, 200 })
@@ -1223,6 +1761,17 @@ LMinimap:getOwnerColor(owner)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local base = mm:addObjectType("base", 0.6, 0.6, 0.6, 1.0)
     mm:setOwnerColor(2, 1, 0, 0, 1)
@@ -1252,6 +1801,17 @@ LMinimap:getPathCount()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local pts = {
         { 1, 1 },
@@ -1284,6 +1844,17 @@ LMinimap:getPingCount()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:addPing(8, 8, 2.0)
     mm:update(0.25)
@@ -1320,6 +1891,17 @@ LMinimap:getTerrain(x, y)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTileDescription(7, "Mountain")
     mm:setTerrain(2, 3, 7)
@@ -1358,6 +1940,17 @@ LMinimap:getTerrainColor(terrain_type)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTerrain(8, 2, 3)
     mm:setTerrainColor(3, 0.7, 0.4, 0.2, 1.0)
@@ -1393,6 +1986,17 @@ LMinimap:getTileDescription(type_id)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setTerrain(3, 4, 3)
     mm:setTileDescription(3, "Mountain")
@@ -1425,6 +2029,17 @@ LMinimap:getViewportColor()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setViewportRect(3, 3, 5, 5)
     mm:setViewportColor(0.2, 0.4, 1.0, 0.75)
@@ -1457,6 +2072,17 @@ LMinimap:getViewportRect()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setViewportVisible(true)
     mm:setViewportRect(6, 8, 10, 14)
@@ -1486,6 +2112,17 @@ LMinimap:getZoom()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(8, 8)
     mm:setZoom(1.5)
@@ -1525,6 +2162,17 @@ LMinimap:gridToScreen(gx, gy, mx, my)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
     mm:setCenter(8, 8)
     mm:setZoom(2.0)
@@ -1560,6 +2208,17 @@ LMinimap:hasMarker(id)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     local id = mm:addMarker(10, 10, "Outpost")
     mm:setCenter(10, 10)
@@ -1589,6 +2248,17 @@ LMinimap:isAntiAlias()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setDisplaySize(96, 96)
     mm:setAntiAlias(false)
@@ -1618,6 +2288,17 @@ LMinimap:isClickable()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setDisplaySize(160, 160)
     mm:setClickable(true)
@@ -1647,12 +2328,64 @@ LMinimap:isFogEnabled()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setFogLevel(4, 4, 2)
     mm:setFogEnabled(false)
     local enabled = mm:isFogEnabled()
     local fog = mm:getFogLevel(4, 4)
     minimap_log("fog visible? " .. tostring(enabled) .. " while cell keeps state " .. fog)
+end
+```
+
+---
+
+#### `LMinimap:isLayerVisible`
+
+Returns whether a minimap data layer is drawn when it is not active.
+
+```lua
+LMinimap:isLayerVisible(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the layer is visible, or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local danger = {}
+    for i = 1, 16 do danger[i] = i % 2 end
+    mm:setLayerData(1, danger)
+    local before = mm:isLayerVisible(1)
+    mm:setLayerVisible(1, true)
+    local after = mm:isLayerVisible(1)
+    minimap_log("danger layer visible " .. tostring(before) .. " -> " .. tostring(after))
 end
 ```
 
@@ -1682,6 +2415,17 @@ LMinimap:isObjectTypeVisible(type_idx)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("scout", 0, 1, 1, 1)
     mm:setObject(7, 9, 3, t, 1)
@@ -1712,6 +2456,17 @@ LMinimap:isViewportVisible()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setViewportRect(1, 1, 6, 6)
     mm:setViewportVisible(false)
@@ -1747,6 +2502,17 @@ LMinimap:removeMarker(id)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local id = mm:addMarker(5, 5, "Temp")
 
@@ -1782,6 +2548,17 @@ LMinimap:removeObject(id)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local npc = mm:addObjectType("npc", 0, 1, 0, 1)
 
@@ -1814,6 +2591,17 @@ LMinimap:render(x, y)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8, 96, 96)
     mm:setTerrain(1, 1, 1)
     mm:render(10, 10)
@@ -1844,6 +2632,17 @@ LMinimap:revealRadius(cx, cy, radius)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     local fog = {}
 
@@ -1890,6 +2689,17 @@ LMinimap:screenToGrid(sx, sy, mx, my)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
     mm:setCenter(8, 8)
     local sx, sy = mm:gridToScreen(8, 8, 0, 0)
@@ -1919,6 +2729,17 @@ LMinimap:setAntiAlias(enabled)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setDisplaySize(128, 128)
     mm:setAntiAlias(true)
@@ -1949,6 +2770,17 @@ LMinimap:setCenter(x, y)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setZoom(1.5)
     mm:setCenter(16, 12)
@@ -1978,6 +2810,17 @@ LMinimap:setClickable(enabled)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setDisplaySize(160, 160)
     mm:setClickable(false)
@@ -2007,6 +2850,17 @@ LMinimap:setColorMode(mode)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setOwnerColor(1, 0.9, 0.2, 0.2, 1.0)
     mm:setTerrain(4, 4, 1)
@@ -2037,6 +2891,17 @@ LMinimap:setDisplaySize(w, h)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16, 100, 100)
     mm:setCenter(8, 8)
     mm:setDisplaySize(300, 250)
@@ -2069,6 +2934,17 @@ LMinimap:setFogColor(r, g, b, a)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setFogEnabled(true)
     mm:setFogColor(0.0, 0.0, 0.0, 0.7)
@@ -2098,6 +2974,17 @@ LMinimap:setFogData(data)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(4, 4)
     local fog = {}
 
@@ -2133,6 +3020,17 @@ LMinimap:setFogEnabled(enabled)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setFogColor(0.0, 0.0, 0.0, 0.75)
     mm:setFogEnabled(true)
@@ -2164,6 +3062,17 @@ LMinimap:setFogLevel(x, y, level)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setFogEnabled(true)
     mm:setFogColor(0.0, 0.0, 0.0, 0.6)
@@ -2193,12 +3102,133 @@ LMinimap:setLayer(layer)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(4, 4)
     mm:setLayerData(1, { 1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 2, 2, 3, 3, 3, 3 })
     mm:setLayer(1)
     local layer = mm:getLayer()
     local layer_cells = mm:getLayerData(layer)
     minimap_log("switched to layer " .. layer .. " with " .. #(layer_cells or {}) .. " cells")
+end
+```
+
+---
+
+#### `LMinimap:setLayerAlpha`
+
+Sets the opacity multiplier for a minimap data layer.
+
+```lua
+LMinimap:setLayerAlpha(layer, alpha)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+| `alpha` | number | Opacity clamped to 0..1. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local light = {}
+    for i = 1, 16 do light[i] = math.min(9, i) end
+    mm:setLayerData(1, light)
+    mm:setLayerAlpha(1, 0.35)
+    mm:setLayerVisible(1, true)
+    minimap_log("light layer alpha = " .. tostring(mm:getLayerAlpha(1)))
+end
+```
+
+---
+
+#### `LMinimap:setLayerBlendMode`
+
+Sets how a minimap data layer is blended over the base terrain.
+
+```lua
+LMinimap:setLayerBlendMode(layer, mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+| `mode` | string | Blend mode: `normal`, `multiply`, `add`, or `replace`. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local light = {}
+    for i = 1, 16 do light[i] = i % 10 end
+    mm:setLayerData(1, light)
+    mm:setLayerBlendMode(1, "add")
+    mm:setLayerVisible(1, true)
+    minimap_log("light layer blend = " .. tostring(mm:getLayerBlendMode(1)))
+end
+```
+
+---
+
+#### `LMinimap:setLayerColor`
+
+Sets a palette color for one raw value in a minimap data layer.
+
+```lua
+LMinimap:setLayerColor(layer, value, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+| `value` | number | Raw byte value in the layer data. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaults to 1.0. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local control = {}
+    for i = 1, 16 do control[i] = i % 3 end
+    mm:setLayerData(1, control)
+    mm:setLayerColor(1, 2, 0.1, 0.6, 1.0, 0.9)
+    mm:setLayerVisible(1, true)
+    local r = select(1, mm:getLayerColor(1, 2))
+    minimap_log("control layer color red = " .. tostring(r))
 end
 ```
 
@@ -2223,6 +3253,17 @@ LMinimap:setLayerData(layer, data_tbl)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(4, 4)
     local data = {}
 
@@ -2234,6 +3275,41 @@ do
     local out = mm:getLayerData(0)
     example_print_log("layer 0 size = " .. #(out or {}))
     example_print_log("layer 0 first = " .. (out and out[1] or -1))
+end
+```
+
+---
+
+#### `LMinimap:setLayerVisible`
+
+Sets whether a minimap data layer is drawn even when it is not the active layer.
+
+```lua
+LMinimap:setLayerVisible(layer, visible)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+| `visible` | boolean | Visibility flag. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local heat = {}
+    for i = 1, 16 do heat[i] = i % 4 end
+    mm:setLayerData(1, heat)
+    mm:setLayerColor(1, 3, 1.0, 0.2, 0.1, 0.75)
+    mm:setLayerVisible(1, true)
+    minimap_log("heat layer visible = " .. tostring(mm:isLayerVisible(1)))
 end
 ```
 
@@ -2259,6 +3335,17 @@ LMinimap:setMarkerAnimation(id, anim_type, speed)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local id = mm:addMarker(8, 8, "Pulse")
 
@@ -2292,6 +3379,17 @@ LMinimap:setMarkerTexture(id, image_ud, width, height)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
     local id = mm:addMarker(16, 16, "Hero")
     local img = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
@@ -2325,6 +3423,17 @@ LMinimap:setObject(id, x, y, type_idx, owner)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local npc = mm:addObjectType("npc", 0, 1, 0, 1)
     mm:setOwnerColor(2, 0.9, 0.8, 0.2, 1.0)
@@ -2358,6 +3467,17 @@ LMinimap:setObjectTypeTexture(type_idx, image_ud, width, height)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
     local type_idx = mm:addObjectType("unit", 0, 1, 0, 1)
     local img = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
@@ -2388,6 +3508,17 @@ LMinimap:setObjectTypeVisible(type_idx, visible)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("hidden", 1, 0, 0, 1)
     mm:setObject(1, 6, 6, t, 0)
@@ -2422,6 +3553,17 @@ LMinimap:setOwnerColor(owner, r, g, b, a)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local scout = mm:addObjectType("scout", 0.1, 0.9, 0.2, 1.0)
     mm:setOwnerColor(1, 0, 0, 1, 1)
@@ -2453,6 +3595,17 @@ LMinimap:setTerrain(x, y, terrain_type)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTileDescription(2, "Forest")
     mm:setTerrain(6, 5, 2)
@@ -2486,6 +3639,17 @@ LMinimap:setTerrainColor(terrain_type, r, g, b, a)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTerrain(4, 4, 1)
     mm:setTerrainColor(1, 0.2, 0.6, 0.1, 0.9)
@@ -2515,6 +3679,17 @@ LMinimap:setTerrainData(data)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(4, 4)
     local data = {}
 
@@ -2549,6 +3724,17 @@ LMinimap:setTileDescription(type_id, desc)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setTileDescription(1, "Grass")
     mm:setTileDescription(2, "Water")
@@ -2580,6 +3766,17 @@ LMinimap:setViewportColor(r, g, b, a)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setViewportRect(2, 2, 6, 6)
     mm:setViewportColor(1, 1, 0, 0.5)
@@ -2612,6 +3809,17 @@ LMinimap:setViewportRect(x, y, w, h)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(16, 16)
     mm:setViewportRect(4, 4, 12, 12)
@@ -2640,6 +3848,17 @@ LMinimap:setViewportVisible(visible)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setViewportRect(1, 1, 6, 6)
     mm:setViewportVisible(true)
@@ -2669,6 +3888,17 @@ LMinimap:setZoom(zoom)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(16, 16)
     mm:setZoom(2.0)
@@ -2705,6 +3935,17 @@ LMinimap:showPath(points_tbl, color_tbl)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     local pts = {
         { 2, 2 },
@@ -2716,6 +3957,44 @@ do
 
     example_print_log("path id = " .. pid)
     example_print_log("path count = " .. mm:getPathCount())
+end
+```
+
+---
+
+#### `LMinimap:syncProvinceRegistry`
+
+Copies province registry terrain, visibility, and palette data into this minimap.
+
+```lua
+LMinimap:syncProvinceRegistry(registry, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `registry` | [LProvinceRegistry](province.md#lprovinceregistry) | Province registry handle. |
+| `opts?` | table | Optional `{terrain?, visibility?, palette?}` booleans, all default true. |
+
+**Example**
+
+```lua
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local reg = lurek.province.newFromPng("minimap_sync_example", "content/examples/assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    local province_id = ids[1]
+    reg:setTerrainType(province_id, 6)
+    reg:setVisibilityState(province_id, 255)
+    reg:setPoliticalColor(province_id, 0.2, 0.5, 0.9, 1.0)
+
+    local mm = lurek.minimap.newMinimap(reg:getWidth(), reg:getHeight())
+    mm:syncProvinceRegistry(reg)
+    minimap_log("province minimap terrain color blue = " .. tostring(select(3, mm:getTerrainColor(6))))
 end
 ```
 
@@ -2739,6 +4018,17 @@ LMinimap:trackCamera(camera_ud)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
     local cam = lurek.camera.newCamera(1280, 720)
 
@@ -2772,6 +4062,17 @@ LMinimap:type()
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTerrain(8, 8, 1)
     mm:setCenter(8, 8)
@@ -2807,6 +4108,17 @@ LMinimap:typeOf(name)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTerrain(4, 4, 2)
     local is_minimap = mm:typeOf("LMinimap")
@@ -2836,6 +4148,17 @@ LMinimap:update(dt)
 
 ```lua
 do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:addPing(4, 4, 0.25)
     example_print_log("pings before = " .. mm:getPingCount())

@@ -87,7 +87,7 @@ The glossary collects terms that appear across module and API pages.
 - `LCommandStack` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
 - `LCompressedImageData` ([lurek.image](https://lurek2d.github.io/lurek_2d/modules/image.html)) - Lua-side handle for compressed DDS image metadata and mipmap data.
 - `LContentRegistry` ([lurek.mods](https://lurek2d.github.io/lurek_2d/modules/mods.html)) - Lua-side content registry for storing typed Lua values by id.
-- `LContextSteering` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for slot-based context steering direction selection.
+- `LContextSteering` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua handle for slot-based context steering direction selection.
 - `LConv2D` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua wrapper over `Conv2D` for deterministic spatial inference and weight roundtrips.
 - `LCursor` ([lurek.input](https://lurek2d.github.io/lurek_2d/modules/input.html)) - Lua-side cursor handle for system and custom cursor requests.
 - `LCursorManager` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Lua userdata that controls cursor appearance and system cursor selection.

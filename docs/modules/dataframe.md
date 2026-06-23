@@ -16,6 +16,17 @@ Example block: `lurek.dataframe.newDataFrame`
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Creates an empty dataframe with no columns or rows
   -- newDataFrame builds an empty frame; define columns before inserting rows.
   local df = lurek.dataframe.newDataFrame()
@@ -84,6 +95,17 @@ lurek.dataframe.fromBinary(s)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Deserializes a dataframe from its compact binary format
   -- fromBinary restores a dataframe that was serialised with toBinary().
   local src = lurek.dataframe.fromTable({{x = 1, y = 2}})
@@ -120,6 +142,17 @@ lurek.dataframe.fromCSV(s)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Parses a dataframe from CSV-formatted text
   -- fromCSV parses CSV text; the first line becomes column headers.
   local df = lurek.dataframe.fromCSV("name,hp\nGoblin,30\nOrc,60\n")
@@ -158,6 +191,17 @@ lurek.dataframe.fromCSVFile(path, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local path = "save/dataframe_example.csv"
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toCSVFile(path)
@@ -194,6 +238,17 @@ lurek.dataframe.fromCSVFileAsync(path, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local path = "save/dataframe_example_async.csv"
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toCSVFile(path)
@@ -233,6 +288,17 @@ lurek.dataframe.fromJSON(s)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Parses a dataframe from a JSON array of objects
   -- fromJSON parses a JSON array of objects into a dataframe.
   local df = lurek.dataframe.fromJSON('[{"name":"Goblin","hp":30},{"name":"Orc","hp":60}]')
@@ -271,6 +337,17 @@ lurek.dataframe.fromJSONFile(path, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local path = "save/dataframe_example.json"
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toJSONFile(path)
@@ -308,6 +385,17 @@ lurek.dataframe.fromJSONFileAsync(path, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local path = "save/dataframe_example_async.json"
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toJSONFile(path)
@@ -348,6 +436,17 @@ lurek.dataframe.fromRows(columns_tbl, rows_tbl)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Creates a dataframe from column names and positional row arrays
   -- fromRows maps column names to positional arrays; no key look-up overhead.
   local df = lurek.dataframe.fromRows({"name", "hp"}, {{"Goblin", 30}, {"Orc", 60}})
@@ -384,6 +483,17 @@ lurek.dataframe.fromTable(rows)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Creates a dataframe from an array of row tables (most common constructor)
   -- fromTable converts a Lua array-of-row-tables into a dataframe.
   local df = lurek.dataframe.fromTable({{name = "Goblin", hp = 30}, {name = "Orc", hp = 60}})
@@ -421,6 +531,17 @@ lurek.dataframe.fromVec(vf)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Converts a VecFrame back to a regular DataFrame
   -- fromVec converts a VecFrame back to a regular DataFrame.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp\n100\n200\n"))
@@ -458,6 +579,17 @@ lurek.dataframe.loadDatabase(path, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local path = "save/dataframe_database.json"
   local db = lurek.dataframe.newDatabase()
   local players = lurek.dataframe.fromRows({ "name", "level" }, { { "Alice", 10 }, { "Bob", 20 } })
@@ -492,6 +624,17 @@ lurek.dataframe.newDataFrame()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Creates an empty dataframe with no columns or rows
   -- newDataFrame builds an empty frame; define columns before inserting rows.
   local df = lurek.dataframe.newDataFrame()
@@ -523,6 +666,17 @@ lurek.dataframe.newDatabase()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Creates an empty dataframe database for managing multiple named tables
   -- newDatabase returns an empty container for named dataframes.
   local db = lurek.dataframe.newDatabase()
@@ -561,6 +715,17 @@ lurek.dataframe.random(defs_tbl, n, seed)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Generates a random dataframe from column type definitions
   -- random generates test data using column type hints and an optional seed.
   local df = lurek.dataframe.random({{"id", "id"}, {"hp", "int"}}, 10, 1)
@@ -598,6 +763,17 @@ lurek.dataframe.toVec(df)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Converts a dataframe to a vectorized VecFrame for bulk numeric operations
   -- toVec converts a DataFrame to a VecFrame optimised for bulk numeric ops.
   local df = lurek.dataframe.fromCSV("hp,mp\n100,50\n200,80\n")
@@ -654,6 +830,17 @@ LDataFrame:addColumn(name, default)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   -- Use newDataFrame when you need to build a table incrementally at runtime,
   -- such as tracking player session stats as events come in.
   local stats = lurek.dataframe.newDataFrame()
@@ -699,6 +886,17 @@ LDataFrame:addRow(row_tbl)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Appends a row and returns its one-based index
   -- addRow appends one record and returns its 1-based row index.
   local df = lurek.dataframe.newDataFrame()
@@ -731,6 +929,17 @@ LDataFrame:addRowBatch(rows)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Appends multiple rows at once from positional arrays (faster than repeated addRow)
   -- addRowBatch inserts multiple rows at once; faster than repeated addRow.
   local df = lurek.dataframe.newDataFrame()
@@ -762,6 +971,17 @@ LDataFrame:apply(col_val, func)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Transforms every cell in a column using a Lua function (in-place)
   -- apply transforms every cell in a column using a Lua function (in-place).
   local df = lurek.dataframe.fromTable({{score=60},{score=80},{score=45}})
@@ -792,6 +1012,17 @@ LDataFrame:clone()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a deep copy of this dataframe (modifications don't affect the original)
   -- clone returns a deep copy; mutations to the copy don't affect the original.
   local base = lurek.dataframe.fromTable({{stat="atk",value=10}})
@@ -822,6 +1053,17 @@ LDataFrame:columns()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns all column names in order. This method is available to Lua scripts.
   -- columns() returns all column names in order as a Lua array.
   local df = lurek.dataframe.fromTable({{hp=100,mp=50,stamina=80}})
@@ -859,6 +1101,17 @@ LDataFrame:corr(col_a, col_b)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the Pearson correlation between two numeric columns
   -- corr returns Pearson correlation between two numeric columns.
   local df = lurek.dataframe.fromTable({{x=1,y=2},{x=2,y=4},{x=3,y=6}})
@@ -889,6 +1142,17 @@ LDataFrame:correlationMatrix()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a correlation matrix dataframe for all numeric columns
   -- correlationMatrix shows pairwise linear correlation between numeric columns.
   local df = lurek.dataframe.fromTable({{a=1,b=2},{a=2,b=4},{a=3,b=6}})
@@ -919,6 +1183,17 @@ LDataFrame:count()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the total count of non-nil items in this dataframe
   local df = lurek.dataframe.fromTable({{a = 1, b = 2}, {a = 3, b = 4}})
   local count = df:count()
@@ -954,6 +1229,17 @@ LDataFrame:countBy(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Counts occurrences of each value in a column; returns a new dataframe
   -- countBy builds a frequency table: one row per distinct value in the column.
   local df = lurek.dataframe.fromTable({{item="sword"},{item="bow"},{item="sword"}})
@@ -991,6 +1277,17 @@ LDataFrame:dateParts(date_col, prefix)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromTable({
     {login_date = "2026-05-21"},
   })
@@ -1021,6 +1318,17 @@ LDataFrame:describe()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns summary statistics (count, mean, std, min, max) for numeric columns
   -- describe returns a summary-stats frame (min, max, mean, std per numeric col).
   local df = lurek.dataframe.fromTable({{v=1},{v=2},{v=3},{v=4},{v=5}})
@@ -1057,6 +1365,17 @@ LDataFrame:dropNil(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns rows where the chosen column is not nil.
   -- dropNil returns a new frame with rows where the column is nil removed.
   local df = lurek.dataframe.fromTable({{item="Gem",rarity="rare"},{item="Rock",rarity=nil},{item="Ring",rarity="epic"}})
@@ -1093,6 +1412,17 @@ LDataFrame:duplicateRows(cols)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromTable({
     {id = 1, name = "A"},
     {id = 2, name = "B"},
@@ -1132,6 +1462,17 @@ LDataFrame:entropy(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the Shannon entropy of a column (measures diversity)
   -- entropy quantifies value diversity (bits); 0 = all same, high = many different.
   local df = lurek.dataframe.fromTable({{cls="warrior"},{cls="mage"},{cls="rogue"}})
@@ -1168,6 +1509,17 @@ LDataFrame:explain(sql_str)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Preview dataframe shape or SQL query structure for debugging.
   local df = lurek.dataframe.fromTable({ { item = "Sword", gold = 150 }, { item = "Stick", gold = 5 } })
   local plan = df:explain()
@@ -1199,6 +1551,17 @@ LDataFrame:fillNil(col, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Replaces nil cells in a column with a specified value
   -- fillNil replaces nil cells with a default so aggregations don't fail.
   local df = lurek.dataframe.fromTable({{s=10},{s=nil},{s=5}})
@@ -1237,6 +1600,17 @@ LDataFrame:filter(col, op, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns rows whose column value matches a comparison.
   -- filter returns a new frame with only the rows matching the condition.
   local df = lurek.dataframe.fromTable({{enemy="Goblin",hp=30},{enemy="Orc",hp=80}})
@@ -1273,6 +1647,17 @@ LDataFrame:getColumn(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns all values in a column as an array table
   -- getColumn extracts all values in a named column as a plain Lua array.
   local df = lurek.dataframe.fromTable({{hp = 10}, {hp = 20}, {hp = 30}})
@@ -1309,6 +1694,17 @@ LDataFrame:getColumnAsF64(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a numeric column as an array of Lua numbers (float64)
   -- getColumnAsF64 extracts a numeric column as a flat Lua number array.
   local df = lurek.dataframe.fromTable({{hp=10},{hp=20},{hp=30}})
@@ -1345,6 +1741,17 @@ LDataFrame:getRow(row)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a row as a table keyed by column name
   -- getRow returns one record as a {col = value} Lua table.
   local df = lurek.dataframe.fromTable({{name = "Alice", hp = 80}})
@@ -1382,6 +1789,17 @@ LDataFrame:getValue(row, col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns one cell value by row index and column reference
   -- getValue reads one cell by 1-based row index and column name.
   local df = lurek.dataframe.fromTable({{name = "Alice", score = 950}})
@@ -1420,6 +1838,17 @@ LDataFrame:groupAgg(group_col, agg_col, fn_name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Groups by one column and aggregates another with a built-in function
   -- groupAgg groups by one column and aggregates another with a built-in function.
   local df = lurek.dataframe.fromTable({
@@ -1456,6 +1885,17 @@ LDataFrame:groupBy(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Groups rows by column value; returns a table of {key = sub-dataframe}
   -- groupBy splits the frame into per-key sub-dataframes in a Lua table.
   local df = lurek.dataframe.fromTable({
@@ -1492,6 +1932,17 @@ LDataFrame:groupByObj(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Groups rows by a column and returns a GroupedFrame object
   local df = lurek.dataframe.fromTable({
     {region="EU",score=100},{region="NA",score=200},{region="EU",score=150}
@@ -1527,6 +1978,17 @@ LDataFrame:head(n)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the first rows of this dataframe.
   -- head returns a new frame containing only the first N rows.
   local df = lurek.dataframe.fromTable({{item="Sword"},{item="Shield"},{item="Potion"},{item="Arrow"}})
@@ -1566,6 +2028,17 @@ LDataFrame:join(other, this_col, other_col, jtype)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Joins two dataframes by column (inner, left, right, or outer)
   -- join combines two frames on matching column values.
   local players = lurek.dataframe.fromTable({{id=1,name="Alice"},{id=2,name="Bob"}})
@@ -1596,6 +2069,17 @@ LDataFrame:lazy()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Starts a lazy query pipeline from this dataframe
   -- lazy() returns a deferred query handle; operations are chained, not executed yet.
   local df = lurek.dataframe.fromTable({{hp=12,team="red"},{hp=7,team="blue"}})
@@ -1632,6 +2116,17 @@ LDataFrame:max(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the maximum value of a column
   -- max returns the largest value in a numeric column.
   local df = lurek.dataframe.fromTable({{s=100},{s=450},{s=380}})
@@ -1668,6 +2163,17 @@ LDataFrame:mean(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the arithmetic mean of a numeric column
   -- mean computes the arithmetic average of a numeric column.
   local df = lurek.dataframe.fromTable({{ms=16},{ms=17},{ms=33}})
@@ -1704,6 +2210,17 @@ LDataFrame:median(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the median (middle value) of a numeric column
   -- median returns the middle value and is robust against outliers.
   local df = lurek.dataframe.fromTable({{ms=16},{ms=16},{ms=17},{ms=200}})
@@ -1734,6 +2251,17 @@ LDataFrame:merge(other)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Appends another dataframe into this dataframe in place.
   -- merge appends another frame's rows into this frame in-place.
   local wave1 = lurek.dataframe.fromTable({{enemy="Goblin",hp=30}})
@@ -1770,6 +2298,17 @@ LDataFrame:min(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the minimum value of a column
   -- min returns the smallest value in a numeric column.
   local df = lurek.dataframe.fromTable({{t=140},{t=138},{t=145}})
@@ -1806,6 +2345,17 @@ LDataFrame:missingReport(opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromTable({
     {score = 100},
     {score = nil},
@@ -1843,6 +2393,17 @@ LDataFrame:modeVal(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the most frequently occurring value in a column
   -- modeVal returns the most frequently occurring value in a column.
   local df = lurek.dataframe.fromTable({{w="sword"},{w="bow"},{w="sword"},{w="staff"},{w="sword"}})
@@ -1873,6 +2434,17 @@ LDataFrame:ncols()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the number of columns in this dataframe.
   -- ncols returns how many columns the schema has.
   local df = lurek.dataframe.fromTable({{name="Sword",damage=12,weight=3}})
@@ -1906,6 +2478,17 @@ LDataFrame:normalizeCol(col, out_min, out_max, name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a range-normalized column (maps values to [out_min, out_max])
   -- normalizeCol maps a column's range to [out_min, out_max] and stores it.
   local df = lurek.dataframe.fromTable({{val=10},{val=50},{val=90}})
@@ -1936,6 +2519,17 @@ LDataFrame:nrows()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the number of rows in this dataframe.
   -- nrows returns the row count; check it before iterating or indexing.
   local df = lurek.dataframe.fromTable({{name="Alice"},{name="Bob"},{name="Cara"}})
@@ -1973,6 +2567,17 @@ LDataFrame:outliers(col, threshold)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns rows where a column value is a statistical outlier (z-score based)
   -- outliers returns rows whose column value is a statistical outlier.
   local df = lurek.dataframe.newDataFrame()
@@ -2012,6 +2617,17 @@ LDataFrame:parFilter(col, op, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromRows({ "x" }, { {1}, {2}, {3}, {4}, {5}, {6} })
   local out = df:parFilter("x", ">", 3)
   lurek.log.info("parFilter rows " .. tostring(out:nrows()))
@@ -2048,6 +2664,17 @@ LDataFrame:parGroupAgg(group_col, agg_col, fn_name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromRows({ "g", "v" }, {
     {"a", 1},
     {"b", 2},
@@ -2088,6 +2715,17 @@ LDataFrame:pivot(row_col, col_col, val_col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Pivots rows into columns using row key, column key, and value fields
   -- pivot reshapes from long format (row_key, col_key, value) to wide format.
   local df = lurek.dataframe.fromTable({
@@ -2128,6 +2766,17 @@ LDataFrame:pivotTable(row_key, col_key, value_key, agg)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Builds a pivot table with aggregation (like a spreadsheet pivot)
   -- pivotTable groups by two dimensions and aggregates the value column.
   local df = lurek.dataframe.fromTable({
@@ -2165,6 +2814,17 @@ LDataFrame:query(sql_str)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Runs a SQL-style query against this dataframe.
   -- query runs SQL against this frame (the frame is the table "t").
   local df = lurek.dataframe.fromTable({{item="Sword",gold=150},{item="Stick",gold=5}})
@@ -2201,6 +2861,17 @@ LDataFrame:queryAsync(sql_str)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromTable({
     {age = 25},
     {age = 30},
@@ -2242,6 +2913,17 @@ LDataFrame:rank(col, order, result_col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new dataframe with a rank column added
   -- rank returns a new frame with a rank column based on the source column.
   local df = lurek.dataframe.fromTable({{player="Alice",score=80},{player="Bob",score=95},{player="Cara",score=72}})
@@ -2272,6 +2954,17 @@ LDataFrame:removeColumn(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Removes a column from this dataframe by name or index
   -- removeColumn drops a named column, reducing ncols by one.
   local df = lurek.dataframe.fromTable({{name = "Alice", internal = "x7", score = 100}})
@@ -2302,6 +2995,17 @@ LDataFrame:removeRow(row)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Removes a row by one-based index
   -- removeRow deletes one record by 1-based index; later rows shift down.
   local df = lurek.dataframe.fromTable({{n = 1}, {n = 2}, {n = 3}})
@@ -2334,6 +3038,17 @@ LDataFrame:rename(col, new_name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Renames a column (by name or index) to a new name
   -- rename changes a column header without touching its data.
   local df = lurek.dataframe.fromTable({{pts = 100}})
@@ -2373,6 +3088,17 @@ LDataFrame:rollingMean(col, window, result_col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new dataframe with a rolling average column added
   -- rollingMean adds a smoothed column by averaging over a sliding window.
   local df = lurek.dataframe.newDataFrame()
@@ -2411,6 +3137,17 @@ LDataFrame:rollingSum(col, window, result_col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new dataframe with a rolling sum column added
   -- rollingSum adds a windowed cumulative total column.
   local df = lurek.dataframe.newDataFrame()
@@ -2441,6 +3178,17 @@ LDataFrame:rows()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns an iterator for use in for-loops (index, row_table)
   -- rows() returns a generic-for iterator yielding (index, row_table).
   local df = lurek.dataframe.fromTable({{name="Alice"},{name="Bob"}})
@@ -2480,6 +3228,17 @@ LDataFrame:sample(n, seed)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a random subset of N rows (optional seed for reproducibility)
   -- sample picks N random rows without replacement; seed for reproducibility.
   local src = lurek.dataframe.random({{"id","id"}}, 100, 1)
@@ -2510,6 +3269,17 @@ LDataFrame:schema()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Inspect inferred column types and nullability before running a data pipeline.
   local df = lurek.dataframe.fromTable({ { name = "Alice", score = 10 }, { name = "Bob", score = nil } })
   local schema = df:schema()
@@ -2545,6 +3315,17 @@ LDataFrame:select(...)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a dataframe with selected columns.
   -- select returns a new frame with only the specified columns.
   local df = lurek.dataframe.fromTable({{name="Alice",score=950,guild="Knights"}})
@@ -2576,6 +3357,17 @@ LDataFrame:setColumnFromF64(col, values)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Replaces a numeric column's values from an array of numbers
   -- setColumnFromF64 bulk-writes computed numbers back into a column.
   local df = lurek.dataframe.fromTable({{x=0},{x=0},{x=0}})
@@ -2608,6 +3400,17 @@ LDataFrame:setValue(row, col, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Sets one cell value by row index and column reference
   -- setValue updates one cell by 1-based row index and column name.
   local df = lurek.dataframe.fromTable({{player="Alice",score=50}})
@@ -2645,6 +3448,17 @@ LDataFrame:slice(start, end_)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a one-based inclusive row slice.
   -- slice returns a 1-based inclusive row range as a new frame.
   local df = lurek.dataframe.fromTable({{r="Sword"},{r="Shield"},{r="Bow"},{r="Staff"},{r="Helm"},{r="Boots"}})
@@ -2682,6 +3496,17 @@ LDataFrame:sort(col, ascending)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns rows sorted by a column. This method is available to Lua scripts.
   -- sort returns a new frame with rows ordered by the named column.
   local df = lurek.dataframe.fromTable({{name="Alice",score=950},{name="Bob",score=1200}})
@@ -2718,6 +3543,17 @@ LDataFrame:stddev(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the standard deviation of a numeric column
   -- stddev measures the spread of values in a numeric column.
   local df = lurek.dataframe.fromTable({{v=10},{v=20},{v=30},{v=40}})
@@ -2754,6 +3590,17 @@ LDataFrame:sum(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the numeric sum of a column
   -- sum totals all values in a numeric column.
   local df = lurek.dataframe.fromTable({{dmg=10},{dmg=20},{dmg=5}})
@@ -2790,6 +3637,17 @@ LDataFrame:tail(n)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the last rows of this dataframe.
   -- tail returns a new frame containing only the last N rows.
   local df = lurek.dataframe.fromTable({{turn=1},{turn=2},{turn=3},{turn=4}})
@@ -2820,6 +3678,17 @@ LDataFrame:toBinary()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Serializes this dataframe to a compact binary format
   -- toBinary produces the most compact serialisation format.
   local df = lurek.dataframe.fromTable({{x=1.5,y=2.3}})
@@ -2857,6 +3726,17 @@ LDataFrame:toBinaryFile(path, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromTable({
     {level = 42},
     {level = 43},
@@ -2887,6 +3767,17 @@ LDataFrame:toCSV()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Serializes this dataframe to CSV text
   -- toCSV serialises the frame to CSV text with a header row.
   local df = lurek.dataframe.fromTable({{name="Alice",score=100}})
@@ -2924,6 +3815,17 @@ LDataFrame:toCSVFile(path, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromTable({
     {score = 500},
     {score = 725},
@@ -2954,6 +3856,17 @@ LDataFrame:toJSON()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Serializes this dataframe to JSON text.
   -- toJSON serialises the frame to a JSON array-of-objects string.
   local df = lurek.dataframe.fromTable({{stat="playtime",value=3600}})
@@ -2991,6 +3904,17 @@ LDataFrame:toJSONFile(path, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromTable({
     {name = "Alice"},
     {name = "Bob"},
@@ -3021,6 +3945,17 @@ LDataFrame:toString()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Formats this dataframe as a human-readable aligned text table
   -- toString formats the frame as an aligned text table for debug output.
   local df = lurek.dataframe.fromTable({{name="Alice",hp=80}})
@@ -3051,6 +3986,17 @@ LDataFrame:toTable()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Converts this dataframe to a plain Lua array of row tables
   -- toTable converts the frame back to a plain Lua array-of-row-tables.
   local df = lurek.dataframe.fromTable({{name="Alice",hp=80}})
@@ -3081,6 +4027,17 @@ LDataFrame:type()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.newDataFrame()
   local typeName = df:type()
   local matches = typeName == "LDataFrame"
@@ -3115,6 +4072,17 @@ LDataFrame:typeOf(name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.newDataFrame()
   local isObject = df:typeOf("LObject")
   local isFrame = df:typeOf("LDataFrame")
@@ -3149,6 +4117,17 @@ LDataFrame:unique(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns unique values from a column as an array table
   -- unique returns the distinct values of one column as a Lua array.
   local df = lurek.dataframe.fromTable({{cls="warrior"},{cls="mage"},{cls="warrior"}})
@@ -3186,6 +4165,17 @@ LDataFrame:valueCounts(col, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromTable({
     {class = "Warrior"},
     {class = "Mage"},
@@ -3223,6 +4213,17 @@ LDataFrame:variance(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the variance of a numeric column
   -- variance is stddev squared; used in statistical formulas.
   local df = lurek.dataframe.fromTable({{v=10},{v=20},{v=30}})
@@ -3254,6 +4255,17 @@ LDataFrame:withCumsum(col, name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a cumulative sum column (running total) in-place
   -- withCumsum adds a running-total column derived from an existing column.
   local df = lurek.dataframe.newDataFrame()
@@ -3291,6 +4303,17 @@ LDataFrame:withEval(col_name, expr)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new dataframe with an added column computed from an expression
   -- withEval adds a derived column computed row-by-row from an expression.
   local df = lurek.dataframe.fromTable({{atk=10,bonus=4},{atk=15,bonus=2}})
@@ -3322,6 +4345,17 @@ LDataFrame:withPctChange(col, name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a percent-change column (row-over-row change rate) in-place
   -- withPctChange adds a row-over-row percent-change column.
   local df = lurek.dataframe.newDataFrame()
@@ -3354,6 +4388,17 @@ LDataFrame:withRank(col, asc, name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a rank column in-place based on a source column
   -- withRank adds a rank column in-place without creating a new frame.
   local df = lurek.dataframe.fromTable({{player="Alice",pts=10},{player="Bob",pts=30},{player="Cara",pts=20}})
@@ -3386,6 +4431,17 @@ LDataFrame:withRollingMax(col, window, name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a rolling maximum column in-place
   -- withRollingMax adds a sliding-window maximum column in-place.
   local df = lurek.dataframe.newDataFrame()
@@ -3418,6 +4474,17 @@ LDataFrame:withRollingMean(col, window, name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a rolling mean column in-place
   -- withRollingMean adds a rolling average column in-place.
   local df = lurek.dataframe.newDataFrame()
@@ -3450,6 +4517,17 @@ LDataFrame:withRollingMin(col, window, name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a rolling minimum column in-place
   -- withRollingMin adds a sliding-window minimum column in-place.
   local df = lurek.dataframe.newDataFrame()
@@ -3482,6 +4560,17 @@ LDataFrame:withRollingSum(col, window, name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a rolling sum column in-place
   -- withRollingSum adds a windowed rolling-total column in-place.
   local df = lurek.dataframe.newDataFrame()
@@ -3513,6 +4602,17 @@ LDataFrame:zscoreCol(col, name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a z-score normalized column in-place
   -- zscoreCol standardises values to z-scores: (value - mean) / stddev.
   local df = lurek.dataframe.newDataFrame()
@@ -3552,6 +4652,17 @@ LDataFrameTask:getError()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local path = "save/dataframe_task_error.csv"
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toCSVFile(path)
@@ -3581,6 +4692,17 @@ LDataFrameTask:isDone()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local path = "save/dataframe_task_status.csv"
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toCSVFile(path)
@@ -3611,6 +4733,17 @@ LDataFrameTask:progress()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local path = "save/dataframe_task_progress.csv"
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toCSVFile(path)
@@ -3641,6 +4774,17 @@ LDataFrameTask:result()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromRows({ "id" }, { { 1 }, { 2 } })
   local task = df:queryAsync("SELECT * FROM t WHERE id = 1")
   task:wait()
@@ -3670,6 +4814,17 @@ LDataFrameTask:type()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromRows({ "id" }, { { 1 }, { 2 } })
   local task = df:queryAsync("SELECT * FROM t WHERE id = 1")
   local type_name = task:type()
@@ -3707,6 +4862,17 @@ LDataFrameTask:typeOf(name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local df = lurek.dataframe.fromRows({ "id" }, { { 1 }, { 2 } })
   local task = df:queryAsync("SELECT * FROM t WHERE id = 1")
   local is_task = task:typeOf("LDataFrameTask")
@@ -3738,6 +4904,17 @@ LDataFrameTask:wait()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local path = "save/dataframe_task_wait.json"
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toJSONFile(path)
@@ -3777,6 +4954,17 @@ LDatabase:addTable(name, df_ud)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   -- A Database groups related dataframes under string keys.
   -- Use it to organize game data: one table for players, one for items, one for quests, etc.
   local db = lurek.dataframe.newDatabase()
@@ -3806,6 +4994,17 @@ LDatabase:clear()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Removes all tables from this database
   -- clear removes all tables, resetting the database to empty.
   local db = lurek.dataframe.newDatabase()
@@ -3843,6 +5042,17 @@ LDatabase:getTable(name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a copy of a named table from the database (or nil if not found)
   -- getTable retrieves a named dataframe from the database (nil if absent).
   local db = lurek.dataframe.newDatabase()
@@ -3881,6 +5091,17 @@ LDatabase:hasTable(name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns true if the database contains a table with the given name
   -- hasTable returns true when the named table is registered.
   local db = lurek.dataframe.newDatabase()
@@ -3911,6 +5132,17 @@ LDatabase:listTables()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns an array of all table names in the database
   -- listTables returns all registered table names as a Lua array.
   local db = lurek.dataframe.newDatabase()
@@ -3942,6 +5174,17 @@ LDatabase:merge(other)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Merges all tables from another database into this one
   -- merge imports all tables from another database (overwriting on name collision).
   local base = lurek.dataframe.newDatabase()
@@ -3979,6 +5222,17 @@ LDatabase:query(sql_str)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Runs a SQL SELECT query against this dataframe (table alias is "t")
   -- query on a Database runs SQL that can reference all registered tables.
   local db = lurek.dataframe.newDatabase()
@@ -4015,6 +5269,17 @@ LDatabase:queryAsync(sql_str)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local db = lurek.dataframe.newDatabase()
   local users = lurek.dataframe.fromRows({ "age" }, { { 25 }, { 30 } })
   db:addTable("users", users)
@@ -4053,6 +5318,17 @@ LDatabase:queryParams(sql_str, params)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local db = lurek.dataframe.newDatabase()
   local users = lurek.dataframe.fromRows({ "name" }, { { "Alice" }, { "Bob" } })
   db:addTable("users", users)
@@ -4089,6 +5365,17 @@ LDatabase:queryParamsAsync(sql_str, params)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local db = lurek.dataframe.newDatabase()
   local players = lurek.dataframe.fromRows({ "level" }, { { 10 }, { 20 } })
   db:addTable("players", players)
@@ -4120,6 +5407,17 @@ LDatabase:removeTable(name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Removes a named table from the database
   -- removeTable deletes a named table; useful for session cleanup.
   local db = lurek.dataframe.newDatabase()
@@ -4157,6 +5455,17 @@ LDatabase:save(path, opts)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local db = lurek.dataframe.newDatabase()
   local df = lurek.dataframe.fromTable({
     {score = 100},
@@ -4187,6 +5496,17 @@ LDatabase:tableCount()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the number of tables in this database
   -- tableCount returns the number of tables registered in this database.
   local db = lurek.dataframe.newDatabase()
@@ -4217,6 +5537,17 @@ LDatabase:toJSON()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Serializes this dataframe to a JSON array of objects
   -- toJSON on a Database serialises all its tables to a JSON string.
   local db = lurek.dataframe.newDatabase()
@@ -4248,6 +5579,17 @@ LDatabase:type()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the Lua-visible type name for this database handle.
   local db = lurek.dataframe.newDatabase()
   lurek.log.info("db type " .. tostring(db:type()))
@@ -4283,6 +5625,17 @@ LDatabase:typeOf(name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns whether this database handle matches a supported type name.
   local db = lurek.dataframe.newDatabase()
   lurek.log.info("is database " .. tostring(db:typeOf("LDatabase")))
@@ -4327,6 +5680,17 @@ LGroupedFrame:aggregate(col_name, func)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Aggregates a column in each group using a custom Lua function
   local df = lurek.dataframe.fromTable({
     {class="warrior",dmg=12},{class="mage",dmg=8},{class="warrior",dmg=20}
@@ -4364,6 +5728,17 @@ LGroupedFrame:type()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the Lua-visible type name for this grouped frame handle.
   local df = lurek.dataframe.fromTable({{team="red",score=10},{team="blue",score=20}})
   local grouped = df:groupByObj("team")
@@ -4399,6 +5774,17 @@ LGroupedFrame:typeOf(name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns whether this grouped frame handle matches a supported type name.
   local df = lurek.dataframe.fromTable({{team="red",score=10},{team="blue",score=20}})
   local grouped = df:groupByObj("team")
@@ -4436,6 +5822,17 @@ LLazyQuery:collect()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Executes the lazy query and returns a dataframe.
   local df = lurek.dataframe.fromTable({{item="Sword",gold=150},{item="Stick",gold=5}})
   local result = df:lazy():limit(10):collect()
@@ -4471,6 +5868,17 @@ LLazyQuery:dropNil(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new dataframe with rows where a column is nil removed
   -- dropNil on a lazy query filters out rows where the column is nil.
   local df = lurek.dataframe.fromTable({{v=1},{v=nil},{v=3}})
@@ -4509,6 +5917,17 @@ LLazyQuery:filter(col, op, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new dataframe with rows matching a condition (col op val)
   -- filter on a lazy query keeps only rows where the column matches the condition.
   local df = lurek.dataframe.fromTable({{level=5},{level=20},{level=35}})
@@ -4545,6 +5964,17 @@ LLazyQuery:head(n)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new dataframe with the first N rows (default 5)
   -- head on a lazy query limits to the first N rows at collect time.
   local df = lurek.dataframe.fromTable({{n=1},{n=2},{n=3},{n=4},{n=5}})
@@ -4581,6 +6011,17 @@ LLazyQuery:limit(n)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a row limit step to the lazy query.
   local df = lurek.dataframe.fromTable({{n=1},{n=2},{n=3},{n=4},{n=5},{n=6}})
   local q = df:lazy():limit(5)
@@ -4616,6 +6057,17 @@ LLazyQuery:select(cols)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new dataframe with only the specified columns
   -- select on a lazy query projects only the specified columns.
   local df = lurek.dataframe.fromTable({{a=1, b=2, c=3}})
@@ -4653,6 +6105,17 @@ LLazyQuery:slice(start, end_)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a one-based inclusive row slice as a new dataframe
   -- slice on a lazy query extracts a 1-based inclusive row range.
   local df = lurek.dataframe.fromTable({{n=1},{n=2},{n=3},{n=4},{n=5}})
@@ -4690,6 +6153,17 @@ LLazyQuery:sort(col, ascending)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new sorted dataframe by column (ascending or descending)
   -- sort on a lazy query orders rows by a column before collect.
   local df = lurek.dataframe.fromTable({{name="Cara",score=80},{name="Alice",score=95},{name="Bob",score=60}})
@@ -4726,6 +6200,17 @@ LLazyQuery:tail(n)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new dataframe with the last N rows (default 5)
   -- tail on a lazy query keeps only the last N rows.
   local df = lurek.dataframe.fromTable({{n=1},{n=2},{n=3},{n=4},{n=5}})
@@ -4756,6 +6241,17 @@ LLazyQuery:type()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the Lua-visible type name for this lazy query handle.
   local df = lurek.dataframe.fromTable({{x=1}})
   local lq = df:lazy()
@@ -4791,6 +6287,17 @@ LLazyQuery:typeOf(name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns whether this lazy query handle matches a supported type name.
   local df = lurek.dataframe.fromTable({{x=1}})
   local lq = df:lazy()
@@ -4834,6 +6341,17 @@ LVecFrame:applyMask(mask_tbl)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns a new VecFrame containing only rows where mask is true
   -- applyMask returns a new VecFrame with only the rows where mask is true.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp\n10\n50\n90\n"))
@@ -4864,6 +6382,17 @@ LVecFrame:colAbs(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Applies absolute value to every cell in a numeric column (in-place)
   -- colAbs converts negative cells to their absolute value (in-place).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("vel\n-3\n4\n-1\n"))
@@ -4895,6 +6424,17 @@ LVecFrame:colAdd(col, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Adds a scalar value to every cell in a numeric column (in-place)
   -- colAdd adds a scalar to every cell in a column (in-place).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("score\n10\n20\n30\n"))
@@ -4926,6 +6466,17 @@ LVecFrame:colCast(col, dtype)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Casts a column to a different data type (e.g., "float64", "int64")
   -- colCast changes the internal storage type of a column.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("level\n1\n2\n3\n"))
@@ -4956,6 +6507,17 @@ LVecFrame:colCeil(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Applies ceil (round up) to every cell in a numeric column (in-place)
   -- colCeil rounds every cell up to the nearest integer (in-place).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("y\n1.1\n2.5\n3.0\n"))
@@ -4988,6 +6550,17 @@ LVecFrame:colClamp(col, min_val, max_val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Clamps every cell in a numeric column to [min, max] range (in-place)
   -- colClamp enforces a [min, max] range on every cell (in-place).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp\n-5\n50\n150\n"))
@@ -5019,6 +6592,17 @@ LVecFrame:colDiv(col, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Divides every cell in a numeric column by a scalar (in-place)
   -- colDiv divides every cell by a scalar (in-place).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("score\n100\n200\n"))
@@ -5049,6 +6633,17 @@ LVecFrame:colFloor(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Applies floor (round down) to every cell in a numeric column (in-place)
   -- colFloor rounds every cell down to the nearest integer (in-place).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x\n1.9\n2.1\n3.7\n"))
@@ -5080,6 +6675,17 @@ LVecFrame:colMul(col, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Multiplies every cell in a numeric column by a scalar (in-place)
   -- colMul multiplies every cell in a column by a scalar (in-place).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("dmg\n10\n20\n"))
@@ -5110,6 +6716,17 @@ LVecFrame:colNeg(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Negates every cell in a numeric column (in-place)
   -- colNeg negates every cell (in-place), flipping the sign.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("vy\n3\n-2\n0\n"))
@@ -5143,6 +6760,17 @@ LVecFrame:colOp(out_col, left_col, op, right_col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Applies a binary operation between two columns, storing result in a new column
   -- colOp computes (col_a op col_b) per row into a new output column.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("atk,def\n30,10\n40,15\n"))
@@ -5173,6 +6801,17 @@ LVecFrame:colSqrt(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Applies square root to every cell in a numeric column (in-place)
   -- colSqrt applies square root to every cell (in-place).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("d2\n9\n16\n25\n"))
@@ -5204,6 +6843,17 @@ LVecFrame:colSub(col, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Subtracts a scalar from every cell in a numeric column (in-place)
   -- colSub subtracts a scalar from every cell (in-place).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("stamina\n100\n80\n"))
@@ -5240,6 +6890,17 @@ LVecFrame:colType(col)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the data type name of a vectorized column ("float64", "int64", "text", "bool")
   -- colType returns the internal data type of a column ("float64", "int64", etc.).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp\n10\n20\n"))
@@ -5270,6 +6931,17 @@ LVecFrame:columns()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns an array table of column names in order
   -- columns() on a VecFrame returns the column name array.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp,mp\n10,5\n"))
@@ -5308,6 +6980,17 @@ LVecFrame:filterMask(col, cmp_op, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Builds a boolean mask array from a column comparison
   -- filterMask builds a boolean mask array from a column comparison.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp\n10\n50\n90\n"))
@@ -5338,6 +7021,17 @@ LVecFrame:ncols()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the number of columns in this dataframe
   -- ncols on a VecFrame returns the column count.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x,y\n1,2\n"))
@@ -5368,6 +7062,17 @@ LVecFrame:nrows()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the number of rows in this dataframe
   -- nrows on a VecFrame returns the row count, same as on DataFrame.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n1\n2\n3\n"))
@@ -5405,6 +7110,17 @@ LVecFrame:parReduce(cols_tbl, op)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Reduces multiple columns in parallel using a named operation
   -- parReduce reduces multiple columns in parallel using a named operation.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp,mp\n10,5\n20,10\n30,15\n"))
@@ -5437,6 +7153,17 @@ LVecFrame:parScalarOp(cols_tbl, op, val)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Applies a scalar operation to multiple columns in parallel
   -- parScalarOp applies a scalar operation to multiple columns in parallel.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x,y\n1,2\n3,4\n"))
@@ -5474,6 +7201,17 @@ LVecFrame:reduce(col, op)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Reduces a numeric column to a single value using a named operation
   -- reduce aggregates a column to one value using a named operation.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("score\n10\n20\n30\n"))
@@ -5504,6 +7242,17 @@ LVecFrame:toDataFrame()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Converts this VecFrame back to a regular DataFrame
   -- toDataFrame converts this VecFrame back to a regular DataFrame.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n1\n2\n3\n"))
@@ -5534,6 +7283,17 @@ LVecFrame:type()
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns the type name string "DataFrame" for this handle
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n1\n"))
   local typeName = vf:type()
@@ -5569,6 +7329,17 @@ LVecFrame:typeOf(name)
 
 ```lua
 do
+    local function dataframe_log(message)
+      lurek.log.info("[dataframe.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
 -- Returns true if this handle matches the given type name
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n1\n"))
   local isVec = vf:typeOf("LVecFrame")

@@ -16,6 +16,10 @@ Example block: `lurek.tilefield.new`
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 8, height = 8, levels = 2, topology = "square" })
     local w, h, levels = field:getSize()
     local topology = field:getTopology()
@@ -73,6 +77,10 @@ lurek.tilefield.fromTileMap(tilemap, opts)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     map:addLayer("ground", 4, 4)
     map:setTile(1, 2, 2, 9)
@@ -107,6 +115,10 @@ lurek.tilefield.new(opts)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 8, height = 8, levels = 2, topology = "square" })
     local w, h, levels = field:getSize()
     local topology = field:getTopology()
@@ -156,6 +168,10 @@ LTileField:addPointLight(opts)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     local id = field:addPointLight({ x = 2, y = 2, z = 1, radius = 4, intensity = 1 })
     field:computeLight({ includePointLights = true })
@@ -187,6 +203,10 @@ LTileField:applyProfile(x, y, z, name)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:applyProfile(2, 2, 1, "window")
     local move = field:blocks(2, 2, 1, "move")
@@ -218,6 +238,10 @@ LTileField:blocks(x, y, z, channel)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:applyProfile(2, 2, 1, "window")
     local move = field:blocks(2, 2, 1, "move")
@@ -240,6 +264,10 @@ LTileField:clear()
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setBlock(2, 2, 1, "move", true)
     local before = field:blocks(2, 2, 1, "move")
@@ -270,6 +298,10 @@ LTileField:clearCell(x, y, z)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setBlock(2, 2, 1, "vision", true)
     field:setBlock(3, 2, 1, "vision", true)
@@ -301,6 +333,10 @@ LTileField:clearLine(from_tbl, to_tbl, channel, opts)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 6, height = 3 })
     field:applyProfile(3, 2, 1, "window")
     local sight = field:clearLine({ x = 1, y = 2, z = 1 }, { x = 6, y = 2, z = 1 }, "vision")
@@ -323,6 +359,10 @@ LTileField:clearPointLights()
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     field:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
     field:clearPointLights()
@@ -351,6 +391,10 @@ LTileField:computeLight(opts)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 6, height = 4 })
     field:setProfile("smoked_glass", {
         blocks = { light = false, vision = false, move = true, action = true },
@@ -386,6 +430,10 @@ LTileField:exportBlockLayer(channel, z)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 3, height = 3 })
     field:applyProfile(2, 2, 1, "wall")
     local layer = field:exportBlockLayer("move", 1)
@@ -415,6 +463,10 @@ LTileField:exportCostLayer(channel, z)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 3, height = 3 })
     field:setCost(2, 2, 1, "move", 7)
     local layer = field:exportCostLayer("move", 1)
@@ -449,6 +501,10 @@ LTileField:exportLightLayer(z)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 3, height = 3 })
     field:computeLight({ ambient = { r = 0.1, g = 0.1, b = 0.1 } })
     local layer = field:exportLightLayer(1)
@@ -477,6 +533,10 @@ LTileField:exportLightVolume()
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
     field:computeLight({ ambient = { r = 0.05, g = 0.05, b = 0.05 } })
     local volume = field:exportLightVolume()
@@ -505,6 +565,10 @@ LTileField:exportProfileLayer(z)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 3, height = 3 })
     field:applyProfile(2, 2, 1, "window")
     local layer = field:exportProfileLayer(1)
@@ -536,6 +600,10 @@ LTileField:firstBlocker(from_tbl, to_tbl, channel, opts)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 6, height = 3 })
     field:applyProfile(4, 2, 1, "wall")
     local blocker = field:firstBlocker({ x = 1, y = 2, z = 1 }, { x = 6, y = 2, z = 1 }, "vision")
@@ -572,6 +640,10 @@ LTileField:getCell(x, y, z)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:applyProfile(2, 2, 1, "window")
     local cell = field:getCell(2, 2, 1)
@@ -604,6 +676,10 @@ LTileField:getCost(x, y, z, channel)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     local base = field:getCost(1, 1, 1, "move")
     field:setCost(1, 2, 1, "move", 5)
@@ -643,6 +719,10 @@ LTileField:getLight(x, y, z)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:computeLight({ ambient = { r = 0.1, g = 0.1, b = 0.1 } })
     local r, g, b, luma = field:getLight(1, 1, 1)
@@ -677,6 +757,10 @@ LTileField:getProfile(name)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     local profile = field:getProfile("wall")
     local move = profile.blocks.move
@@ -707,6 +791,10 @@ LTileField:getSize()
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 10, height = 6, levels = 3 })
     local width, height, levels = field:getSize()
     local cells = width * height * levels
@@ -737,6 +825,10 @@ LTileField:getSunOcclusion(x, y, z)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 2, height = 2 })
     field:setSunOcclusion(1, 1, 1, 0.3)
     local value = field:getSunOcclusion(1, 1, 1)
@@ -765,6 +857,10 @@ LTileField:getTopology()
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 5, height = 5, topology = "iso_square" })
     local topology = field:getTopology()
     local same_logic = topology == "iso_square"
@@ -801,6 +897,10 @@ LTileField:inBounds(x, y, z)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 3, height = 3, levels = 2 })
     local a = field:inBounds(1, 1, 1)
     local b = field:inBounds(4, 1, 1)
@@ -829,6 +929,10 @@ LTileField:line(opts)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 6, height = 6 })
     local line = field:line({ from = { x = 1, y = 1, z = 1 }, to = { x = 5, y = 1, z = 1 } })
     local first = line[1].x
@@ -863,6 +967,10 @@ LTileField:removePointLight(id)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     local id = field:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
     local removed = field:removePointLight(id)
@@ -891,6 +999,10 @@ LTileField:removeProfile(name)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setProfile("temporary", { blocks = { move = true } })
     field:removeProfile("temporary")
@@ -923,6 +1035,10 @@ LTileField:setBlock(x, y, z, channel, blocked)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setBlock(2, 2, 1, "move", true)
     field:setBlock(2, 2, 1, "vision", false)
@@ -954,6 +1070,10 @@ LTileField:setCell(x, y, z, cell)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setCell(2, 2, 1, { blocks = { action = true }, costs = { move = 3 }, sunOcclusion = 0.25 })
     local action = field:blocks(2, 2, 1, "action")
@@ -986,6 +1106,10 @@ LTileField:setCost(x, y, z, channel, cost)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setCost(2, 2, 1, "move", 4)
     field:setCost(2, 3, 1, "move", 2)
@@ -1014,6 +1138,10 @@ LTileField:setGlobalLight(opts)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
     field:setGlobalLight({ intensity = 0.35, color = { r = 1, g = 0.95, b = 0.8 } })
     field:computeLight({ includeGlobalLight = true })
@@ -1043,6 +1171,10 @@ LTileField:setProfile(name, profile_tbl)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 4, height = 4 })
     field:setProfile("bars", { blocks = { move = true, vision = false, action = true }, sunOcclusion = 0.1 })
     field:applyProfile(2, 2, 1, "bars")
@@ -1074,6 +1206,10 @@ LTileField:setSunOcclusion(x, y, z, value)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
     field:setSunOcclusion(1, 1, 2, 0.5)
     field:setGlobalLight({ intensity = 1 })
@@ -1102,6 +1238,10 @@ LTileField:type()
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 2, height = 2 })
     local type_name = field:type()
     local expected = type_name == "LTileField"
@@ -1136,6 +1276,10 @@ LTileField:typeOf(name)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 2, height = 2 })
     local exact = field:typeOf("LTileField")
     local object = field:typeOf("LObject")
@@ -1165,6 +1309,10 @@ LTileField:updatePointLight(id, opts)
 
 ```lua
 do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
     local field = lurek.tilefield.new({ width = 5, height = 5 })
     local id = field:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
     field:updatePointLight(id, { x = 3, y = 3, radius = 4, intensity = 0.5 })

@@ -5,13 +5,13 @@
 describe("integration: AI steering with physics bodies", function()
     -- @integration LSteeringManager:addSeek
     -- @integration LSteeringManager:calculate
-    -- @integration lurek.ai.newSteeringManager
+    -- @integration lurek.pathfind.newSteeringManager
     -- @integration lurek.physics.getBody
     -- @integration lurek.physics.newBody
     -- @integration lurek.physics.newWorld
     -- @integration lurek.physics.setBodyVelocity
     -- @integration lurek.physics.step
-    -- @integration lurek.ai.newSteeringManager
+    -- @integration lurek.pathfind.newSteeringManager
     -- @integration lurek.physics.getBody
     -- @integration lurek.physics.newBody
     -- @integration lurek.physics.newWorld
@@ -24,7 +24,7 @@ describe("integration: AI steering with physics bodies", function()
         local seeker_body = lurek.physics.newBody(world_id, 100, 100, "dynamic")
         local target_body = lurek.physics.newBody(world_id, 400, 400, "static") -- luacheck: ignore
 
-        local sm = lurek.ai.newSteeringManager()
+        local sm = lurek.pathfind.newSteeringManager()
         sm:addSeek(400, 400, 1.0)
 
         -- calculate() returns (fx, fy) steering force components

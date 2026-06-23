@@ -13,8 +13,7 @@ pub fn layout_spiral(nodes: &[LayoutNode], config: &LayoutConfig) -> LayoutResul
     let mut ordered = nodes.to_vec();
     ordered.sort_by_key(|node| node.id);
 
-    let step = (max_node_side(&ordered) + config.h_spacing.max(config.v_spacing).max(1.0))
-        .max(1.0);
+    let step = (max_node_side(&ordered) + config.h_spacing.max(config.v_spacing).max(1.0)).max(1.0);
     let padding = config.h_spacing.max(config.v_spacing).max(1.0) * 0.35;
     let golden_angle = 2.399_963_229_728_653;
     let mut placed: Vec<LayoutNode> = Vec::with_capacity(ordered.len());

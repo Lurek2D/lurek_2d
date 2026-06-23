@@ -16,6 +16,17 @@ Example block: `lurek.ecs.newUniverse`
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local hero = uni:spawn()
     uni:set(hero, "name", "hero")
@@ -71,6 +82,17 @@ lurek.ecs.newRelationshipManager()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("stance", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "stance", "friendly")
@@ -101,6 +123,17 @@ lurek.ecs.newUniverse()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local hero = uni:spawn()
     uni:set(hero, "name", "hero")
@@ -152,6 +185,17 @@ LQueryView:ids()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
@@ -180,6 +224,17 @@ LQueryView:lastTick()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
@@ -208,6 +263,17 @@ LQueryView:type()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
@@ -242,6 +308,17 @@ LQueryView:typeOf(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
@@ -280,6 +357,17 @@ LRelationshipManager:adjustValue(a, b, delta)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:setValue(1, 2, 50)
     rm:adjustValue(1, 2, 10)
@@ -310,6 +398,17 @@ LRelationshipManager:defineType(name, levels, default_level)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:defineType("trust", {"low", "medium", "high"}, "medium")
@@ -348,6 +447,17 @@ LRelationshipManager:getLevel(a, b, type_name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "friendship", "friendly")
@@ -383,6 +493,17 @@ LRelationshipManager:getValue(a, b)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:setValue(1, 2, 50)
     rm:setValue(1, 3, -20)
@@ -411,6 +532,17 @@ LRelationshipManager:pairCount()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "friendship", "friendly")
@@ -441,6 +573,17 @@ LRelationshipManager:removePair(a, b)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "friendship", "friendly")
@@ -471,6 +614,17 @@ LRelationshipManager:removeType(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:defineType("trust", {"low", "medium", "high"}, "medium")
@@ -509,6 +663,17 @@ LRelationshipManager:setLevel(a, b, type_name, level)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "friendship", "friendly")
@@ -539,6 +704,17 @@ LRelationshipManager:setValue(a, b, value)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:setValue(1, 2, 50)
     rm:setValue(1, 3, -20)
@@ -567,6 +743,17 @@ LRelationshipManager:type()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("trust", {"low", "medium", "high"}, "medium")
     local type_name = rm:type()
@@ -596,6 +783,17 @@ LRelationshipManager:typeNames()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:defineType("trust", {"low", "medium", "high"}, "medium")
@@ -631,6 +829,17 @@ LRelationshipManager:typeOf(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("stance", {"hostile", "neutral", "friendly"}, "neutral")
     local is_relationship_manager = rm:typeOf("LRelationshipManager")
@@ -670,6 +879,17 @@ LUniverse:addRelation(from, name, to)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
     local b = uni:spawn()
@@ -699,6 +919,17 @@ LUniverse:addSystem(system, opts)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local sys = { update = function(self, universe, dt) universe:emit("on_tick", dt) end }
     uni:addSystem(sys, {name = "movement", priority = 1})
@@ -730,6 +961,17 @@ LUniverse:addTag(id, tag)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -758,6 +1000,17 @@ LUniverse:applySnapshot(snapshot)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
     u:set(e, "pos", { x = 1, y = 2 })
@@ -795,6 +1048,17 @@ LUniverse:bitmapTag(id, name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -824,6 +1088,17 @@ LUniverse:bitmapUntag(id, name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -847,6 +1122,17 @@ LUniverse:clear()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     local entity = u:spawn()
     u:set(entity, "hp", 10)
@@ -879,6 +1165,17 @@ LUniverse:clearRelations(from, name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
     local b = uni:spawn()
@@ -910,6 +1207,17 @@ LUniverse:defineBlueprint(name, components)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("enemy", {pos = {x = 0, y = 0}, hp = {value = 50}, tag = {value = "hostile"}})
     local comps = uni:getBlueprintComponents("enemy")
@@ -945,6 +1253,17 @@ LUniverse:defineTag(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -973,6 +1292,17 @@ LUniverse:deserialize(snapshot)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "score", {value = 99})
@@ -1002,6 +1332,17 @@ LUniverse:each(name, callback)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "name", {value = "hero"})
@@ -1036,6 +1377,17 @@ LUniverse:emit(event, ...)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local got = false
     uni:addSystem({on_damage = function() got = true end})
@@ -1066,6 +1418,17 @@ LUniverse:extendBlueprint(name, parent, overrides)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
@@ -1090,6 +1453,17 @@ LUniverse:flushObservers()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local fired = 0
     uni:onComponentAdded("hp", function() fired = fired + 1 end)
@@ -1127,6 +1501,17 @@ LUniverse:get(id, name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "hp", {value = 100})
@@ -1161,6 +1546,17 @@ LUniverse:getBitmapTagBit(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     local bit = u:defineTag("enemy")
     local e = u:spawn()
@@ -1197,6 +1593,17 @@ LUniverse:getBlueprintComponents(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("item", {name = {value = "sword"}, damage = {value = 10}})
     local comps = uni:getBlueprintComponents("item")
@@ -1231,6 +1638,17 @@ LUniverse:getChildren(parent_id)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local parent = uni:spawn()
     local c1 = uni:spawn()
@@ -1268,6 +1686,17 @@ LUniverse:getComponents(id)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "pos", {x = 0, y = 0})
@@ -1297,6 +1726,17 @@ LUniverse:getDirtyEntities()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "x", {value = 1})
@@ -1325,6 +1765,17 @@ LUniverse:getEntities()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     uni:spawn()
     uni:spawn()
@@ -1359,6 +1810,17 @@ LUniverse:getEntitiesByLayer(layer)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     local low = u:spawn()
     local high = u:spawn()
@@ -1396,6 +1858,17 @@ LUniverse:getEntitiesByTag(tag)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("unit")
     local e = u:spawn()
@@ -1424,6 +1897,17 @@ LUniverse:getEntitiesSorted()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     local high = u:spawn()
     local low = u:spawn()
@@ -1456,6 +1940,17 @@ LUniverse:getEntityCount()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     uni:spawn()
     uni:spawn()
@@ -1490,6 +1985,17 @@ LUniverse:getLayer(id)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
     u:setLayer(e, 2)
@@ -1526,6 +2032,17 @@ LUniverse:getParent(child_id)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local parent = uni:spawn()
     local child = uni:spawn()
@@ -1555,6 +2072,17 @@ LUniverse:getQueryChangeTick()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
@@ -1590,6 +2118,17 @@ LUniverse:getRelated(from, name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
     local b = uni:spawn()
@@ -1621,6 +2160,17 @@ LUniverse:getSystemCount()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     uni:addSystem({update = function() end}, {name = "movement", priority = 1})
     uni:addSystem({draw = function() end}, {name = "render", priority = 2})
@@ -1657,6 +2207,17 @@ LUniverse:getTags(id)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -1692,6 +2253,17 @@ LUniverse:has(id, name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "speed", {value = 5})
@@ -1730,6 +2302,17 @@ LUniverse:hasBitmapTag(id, name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -1764,6 +2347,17 @@ LUniverse:hasBlueprint(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
@@ -1802,6 +2396,17 @@ LUniverse:hasRelation(from, name, to)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
     local b = uni:spawn()
@@ -1837,6 +2442,17 @@ LUniverse:hasTag(id, tag)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -1871,6 +2487,17 @@ LUniverse:isAlive(id)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local hero = uni:spawn()
     local prop = uni:spawn()
@@ -1901,6 +2528,17 @@ LUniverse:kill(id)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local owner = uni:spawn()
     local minion = uni:spawn()
@@ -1932,6 +2570,17 @@ LUniverse:killRecursive(id)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local root = uni:spawn()
     local child = uni:spawn()
@@ -1961,6 +2610,17 @@ LUniverse:listBlueprints()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
@@ -1999,6 +2659,17 @@ LUniverse:newQueryView(with_table, without_table)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
@@ -2028,6 +2699,17 @@ LUniverse:onComponentAdded(name, cb)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local added = false
     uni:onComponentAdded("hp", function() added = true end)
@@ -2059,6 +2741,17 @@ LUniverse:onComponentRemoved(name, cb)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local removed = false
     uni:onComponentRemoved("hp", function() removed = true end)
@@ -2096,6 +2789,17 @@ LUniverse:query(...)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
     uni:set(a, "pos", {x = 0, y = 0})
@@ -2132,6 +2836,17 @@ LUniverse:queryBitmapAll(names)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -2166,6 +2881,17 @@ LUniverse:queryBitmapAny(names)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -2200,6 +2926,17 @@ LUniverse:queryBitmapTag(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -2229,6 +2966,17 @@ LUniverse:queryMulti(names_table, callback)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "a", {value = 1})
@@ -2270,6 +3018,17 @@ LUniverse:queryNot(with_tbl, without_tbl)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
     local b = uni:spawn()
@@ -2294,6 +3053,17 @@ LUniverse:release()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     local entity = u:spawn()
     u:set(entity, "name", "temp")
@@ -2326,6 +3096,17 @@ LUniverse:remove(id, name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "temp", {flag = true})
@@ -2360,6 +3141,17 @@ LUniverse:removeBlueprint(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
@@ -2390,6 +3182,17 @@ LUniverse:removeRelation(from, name, to)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local a, b = uni:spawn(), uni:spawn()
     uni:addRelation(a, "owns", b)
@@ -2418,6 +3221,17 @@ LUniverse:removeSystem(system)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local sys = {update = function() end}
     uni:addSystem(sys)
@@ -2447,6 +3261,17 @@ LUniverse:removeTag(id, tag)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     local e = u:spawn()
@@ -2470,6 +3295,17 @@ LUniverse:render()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local drawn = false
     uni:addSystem({draw = function() drawn = true end})
@@ -2498,6 +3334,17 @@ LUniverse:serialize()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "data", {k = "v"})
@@ -2528,6 +3375,17 @@ LUniverse:set(id, name, value)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "position", {x = 10, y = 20})
@@ -2559,6 +3417,17 @@ LUniverse:setLayer(id, layer)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
     u:setLayer(e, 2)
@@ -2591,6 +3460,17 @@ LUniverse:setParent(child_id, parent_id)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local parent = uni:spawn()
     local child = uni:spawn()
@@ -2619,6 +3499,17 @@ LUniverse:snapshot()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "val", {value = 42})
@@ -2648,6 +3539,17 @@ LUniverse:spawn()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local hero = uni:spawn()
     local enemy = uni:spawn()
@@ -2685,6 +3587,17 @@ LUniverse:spawnBlueprint(name, overrides)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("npc", {pos = {x = 0, y = 0}})
     local id = uni:spawnBlueprint("npc", {pos = {x = 5, y = 5}})
@@ -2723,6 +3636,17 @@ LUniverse:spawnBulk(name, count, overrides)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("bullet", {pos = {x = 0, y = 0}})
     local ids = uni:spawnBulk("bullet", 10)
@@ -2753,6 +3677,17 @@ LUniverse:takeSnapshotDiff()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
     u:set(e, "pos", { x = 1, y = 2 })
@@ -2781,6 +3716,17 @@ LUniverse:type()
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local type_name = uni:type()
     local entity = uni:spawn()
@@ -2815,6 +3761,17 @@ LUniverse:typeOf(name)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local is_universe = uni:typeOf("LUniverse")
     local is_object = uni:typeOf("LObject")
@@ -2843,6 +3800,17 @@ LUniverse:update(dt)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local called = false
     uni:addSystem({update = function() called = true end})
@@ -2872,6 +3840,17 @@ LUniverse:updatePhase(phase, dt)
 
 ```lua
 do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uni = lurek.ecs.newUniverse()
     local ran = false
     uni:addSystem({update = function() ran = true end}, {phase = "physics"})

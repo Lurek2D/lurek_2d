@@ -1,11 +1,11 @@
-//! Exports the pathfinding subsystem surface that groups grid search, async execution, graph routing, and debug views.
-//! Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, and province graph helpers.
-//! Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, or draw.
+//! Exports the pathfinding subsystem surface for routing, spatial fields, steering, local avoidance, and debug views.
+//! Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, steering, ORCA, and province graph helpers.
+//! Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, movement, or draw.
 //! Open this file when adding or retiring pathfinding owners or when re-export policy for runtime helpers needs changes.
 //! The exports here connect generic tile grids, hex and iso variants, navmeshes, and province graph traversal utilities.
 //! Agents should start here when tracing navigation behavior because it reveals the authoritative file split by feature.
 //! This index owns visibility and re-export contracts rather than live state, queues, caches, or search data itself.
-//! Neighboring work usually spans NavGrid, async request handling, path solvers, and debug rendering adapters below.
+//! Neighboring work usually spans NavGrid, async request handling, path solvers, movement helpers, and debug rendering adapters below.
 
 /// AI-oriented flow field with steering integration.
 pub mod ai_flow_field;
@@ -15,6 +15,8 @@ pub mod astar;
 pub mod async_pool;
 /// Bidirectional A* search meeting in the middle.
 pub mod bidir;
+/// Slot-based context steering for local movement direction selection.
+pub mod context_steering;
 /// Dijkstra-based flow field for multi-target distance maps.
 pub mod flow_field;
 /// Multi-source Dijkstra distance field for goal-oriented AI movement.
@@ -31,16 +33,23 @@ pub mod influence_map;
 pub mod nav_grid;
 /// Triangle-based navigation mesh for free-form 2D areas.
 pub mod navmesh;
+/// ORCA-style reciprocal local collision avoidance.
+pub mod orca;
 /// Cell-based path grid with obstacle and cost marking.
 pub mod pathgrid;
 /// Debug and visualization rendering for pathfinding structures.
 pub mod render;
+/// Steering behaviors, path following, flocking, and named-entity pursuit/evade helpers.
+pub mod steering;
 /// Per-unit pathfinder with waypoint queue and replanning.
 pub mod unit_pathfinder;
+/// Shared validation limits for pathfinding movement helpers.
+pub mod validation;
 pub use ai_flow_field::FlowField as SimpleFlowField;
 pub use astar::{astar, smooth_path};
 pub use async_pool::{AsyncPathEvent, AsyncPathRequest, PathEventStatus, PathThreadPool};
 pub use bidir::bidirectional_astar;
+pub use context_steering::{ContextBehavior, ContextBehaviorKind, ContextSteering};
 pub use flow_field::FlowField;
 pub use goal_map::{GoalMap, GoalSource, UNREACHABLE};
 pub use graph_path::{find_province_path, province_reachable, ProvinceCostFn, ProvincePath};
@@ -49,7 +58,9 @@ pub use hpa::{build_abstract, is_reachable as hpa_is_reachable, AbstractGraph};
 pub use influence_map::InfluenceMap;
 pub use nav_grid::{DiagonalMode, NavGrid};
 pub use navmesh::NavMesh;
+pub use orca::{ORCAAgent, ORCASolver};
 pub use pathgrid::{Cell, PathGrid};
+pub use steering::*;
 pub use unit_pathfinder::{UnitPathfinder, Waypoint};
 #[cfg(feature = "flownet")]
 /// Graph-based A* and range queries on abstract node networks.

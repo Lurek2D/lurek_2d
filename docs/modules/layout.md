@@ -16,6 +16,14 @@ Example block: `lurek.layout.tree`
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local nodes = {
         { id = 1, width = 110, height = 34, label = "Root" },
         { id = 2, width = 70, height = 28, label = "HUD" },
@@ -89,6 +97,14 @@ lurek.layout.centerInArea(result, width, height)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local result = {
         nodes = {
             { id = 1, x = 0, y = 0, width = 50, height = 30 },
@@ -129,6 +145,14 @@ lurek.layout.circular(nodes, config)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local nodes = {
         { id = 1, width = 64, height = 28, label = "Auth" },
         { id = 2, width = 72, height = 28, label = "API" },
@@ -174,6 +198,14 @@ lurek.layout.dag(nodes, edges, config)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local nodes = {
         { id = 1, width = 86, height = 34, label = "Source" },
         { id = 2, width = 96, height = 48, label = "Build" },
@@ -227,6 +259,14 @@ lurek.layout.force(nodes, edges, config)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local nodes = {
         { id = 1, width = 62, height = 28, label = "Core" },
         { id = 2, width = 78, height = 30, label = "AI" },
@@ -284,6 +324,14 @@ lurek.layout.grid(nodes, config)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local nodes = {
         { id = 1, width = 58, height = 24, label = "HP" },
         { id = 2, width = 90, height = 30, label = "Inventory" },
@@ -329,6 +377,14 @@ lurek.layout.radial(nodes, edges, root, config)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local nodes = {
         { id = 1, width = 70, height = 30, label = "Gateway" },
         { id = 2, width = 64, height = 28, label = "Auth" },
@@ -380,6 +436,14 @@ lurek.layout.snapToGrid(result, gridSize)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local result = {
         nodes = {
             { id = 1, x = 13.5, y = 27.3, width = 40, height = 20 },
@@ -420,6 +484,14 @@ lurek.layout.spiral(nodes, config)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local nodes = {
         { id = 1, width = 58, height = 26, label = "S1" },
         { id = 2, width = 78, height = 28, label = "S2" },
@@ -467,6 +539,14 @@ lurek.layout.stress(nodes, edges, config)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local nodes = {
         { id = 1, width = 58, height = 26, label = "A1" },
         { id = 2, width = 58, height = 26, label = "A2" },
@@ -523,6 +603,14 @@ lurek.layout.tree(nodes, children, root, config)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local nodes = {
         { id = 1, width = 110, height = 34, label = "Root" },
         { id = 2, width = 70, height = 28, label = "HUD" },

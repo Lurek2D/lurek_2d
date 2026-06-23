@@ -85,7 +85,8 @@ impl Minimap {
             for gx in start_gx..end_gx {
                 stats.visible_cells += 1;
                 let terrain = self.get_terrain(gx, gy);
-                let [r, g, b, a] = self.resolve_cell_color(gx, gy, terrain, &owner_colors);
+                let base_color = self.resolve_cell_color(gx, gy, terrain, &owner_colors);
+                let [r, g, b, a] = self.resolve_layered_cell_color(gx, gy, base_color);
                 let color = if fog_enabled {
                     match self.get_fog_level(gx, gy) {
                         FogLevel::Hidden => [fcr, fcg, fcb, fca],

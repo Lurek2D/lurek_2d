@@ -674,6 +674,122 @@ describe("minimap layers", function()
         end)
     end)
 
+    -- @covers LMinimap:setLayerVisible
+    it("setLayerVisible toggles passive layer composition", function()
+        local mm = lurek.minimap.newMinimap(2, 2)
+        mm:setLayerData(1, {1, 0, 0, 1})
+        mm:setLayerVisible(1, true)
+        expect_true(mm:isLayerVisible(1))
+        mm:setLayerVisible(1, false)
+        expect_false(mm:isLayerVisible(1))
+        expect_error(function()
+            mm:setLayerVisible(4, true)
+        end)
+    end)
+
+    -- @covers LMinimap:isLayerVisible
+    it("isLayerVisible returns nil for missing layers", function()
+        local mm = lurek.minimap.newMinimap(2, 2)
+        expect_nil(mm:isLayerVisible(3))
+        mm:setLayerData(1, {0, 0, 0, 0})
+        expect_false(mm:isLayerVisible(1))
+    end)
+
+    -- @covers LMinimap:setLayerAlpha
+    it("setLayerAlpha stores a clamped opacity", function()
+        local mm = lurek.minimap.newMinimap(2, 2)
+        mm:setLayerData(1, {1, 1, 1, 1})
+        mm:setLayerAlpha(1, 0.35)
+        expect_near(0.35, mm:getLayerAlpha(1))
+        mm:setLayerAlpha(1, 2.0)
+        expect_near(1.0, mm:getLayerAlpha(1))
+    end)
+
+    -- @covers LMinimap:getLayerAlpha
+    it("getLayerAlpha returns nil for missing layers", function()
+        local mm = lurek.minimap.newMinimap(2, 2)
+        expect_nil(mm:getLayerAlpha(9))
+        mm:setLayerData(1, {0, 0, 0, 0})
+        expect_type("number", mm:getLayerAlpha(1))
+    end)
+
+    -- @covers LMinimap:setLayerColor
+    it("setLayerColor stores a palette color for raw layer values", function()
+        local mm = lurek.minimap.newMinimap(2, 2)
+        mm:setLayerData(1, {1, 2, 1, 2})
+        mm:setLayerColor(1, 2, 0.9, 0.2, 0.1, 0.75)
+        local r, g, b, a = mm:getLayerColor(1, 2)
+        expect_near(0.9, r)
+        expect_near(0.2, g)
+        expect_near(0.1, b)
+        expect_near(0.75, a)
+    end)
+
+    -- @covers LMinimap:getLayerColor
+    it("getLayerColor returns nil channels for missing palette entries", function()
+        local mm = lurek.minimap.newMinimap(2, 2)
+        mm:setLayerData(1, {1, 1, 1, 1})
+        local r, g, b, a = mm:getLayerColor(1, 7)
+        expect_nil(r)
+        expect_nil(g)
+        expect_nil(b)
+        expect_nil(a)
+    end)
+
+    -- @covers LMinimap:setLayerBlendMode
+    it("setLayerBlendMode accepts supported blend modes and rejects unknown ones", function()
+        local mm = lurek.minimap.newMinimap(2, 2)
+        mm:setLayerData(1, {1, 1, 1, 1})
+        mm:setLayerBlendMode(1, "add")
+        expect_equal("add", mm:getLayerBlendMode(1))
+        mm:setLayerBlendMode(1, "multiply")
+        expect_equal("multiply", mm:getLayerBlendMode(1))
+        expect_error(function()
+            mm:setLayerBlendMode(1, "screen")
+        end)
+    end)
+
+    -- @covers LMinimap:getLayerBlendMode
+    it("getLayerBlendMode returns nil for missing layers", function()
+        local mm = lurek.minimap.newMinimap(2, 2)
+        expect_nil(mm:getLayerBlendMode(1))
+        mm:setLayerData(1, {1, 1, 1, 1})
+        expect_equal("normal", mm:getLayerBlendMode(1))
+    end)
+
+    -- @covers LMinimap:syncProvinceRegistry
+    it("syncProvinceRegistry copies province terrain visibility and palette", function()
+        local reg = lurek.province.newFromPng("minimap-sync-province", "content/examples/assets/textures/province_map.png")
+        local ids = reg:provinceIds()
+        local province_id = ids[1]
+        expect_true(province_id ~= nil, "province fixture should contain at least one province")
+        expect_true(reg:setTerrainType(province_id, 7))
+        expect_true(reg:setVisibilityState(province_id, 255))
+        expect_true(reg:setPoliticalColor(province_id, 0.2, 0.4, 0.8, 1.0))
+
+        local target_x, target_y = nil, nil
+        for y = 1, reg:getHeight() do
+            for x = 1, reg:getWidth() do
+                if reg:getAt(x, y) == province_id then
+                    target_x, target_y = x, y
+                    break
+                end
+            end
+            if target_x then break end
+        end
+
+        local mm = lurek.minimap.newMinimap(reg:getWidth(), reg:getHeight())
+        mm:syncProvinceRegistry(reg)
+
+        expect_equal(7, mm:getTerrain(target_x, target_y))
+        expect_equal(2, mm:getFogLevel(target_x, target_y))
+        local r, g, b, a = mm:getTerrainColor(7)
+        expect_near(0.2, r)
+        expect_near(0.4, g)
+        expect_near(0.8, b)
+        expect_near(1.0, a)
+    end)
+
     -- @covers LMinimap:setMarkerTexture
     it("accepts texture-backed icons for markers and rejects missing markers", function()
         local mm = lurek.minimap.newMinimap(32, 32)

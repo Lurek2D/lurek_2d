@@ -16,6 +16,16 @@ Example block: `lurek.province.newFromPng`
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("new_from_png")
     local width = reg:getWidth()
     local height = reg:getHeight()
@@ -76,6 +86,16 @@ lurek.province.clearProperties(id)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("prop_clear", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -116,6 +136,16 @@ lurek.province.exists(name)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("exists")
     local name = reg:getName()
     local exists_now = lurek.province.exists(name)
@@ -151,6 +181,16 @@ lurek.province.get(name)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local created = province_registry("get")
     local name = created:getName()
     local reg = lurek.province.get(name)
@@ -180,6 +220,16 @@ lurek.province.getActive()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     lurek.province.newFromPng("check_reg_active", "content/examples/assets/textures/province_map.png")
     lurek.province.setActive("check_reg_active")
 
@@ -217,6 +267,16 @@ lurek.province.getAttr(id, key)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("attr_get", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -257,6 +317,16 @@ lurek.province.getProperty(id, key)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("prop_get", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -297,6 +367,16 @@ lurek.province.hasFlag(id, bit)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("flag_get", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -337,6 +417,16 @@ lurek.province.newFromPng(name, png_path)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("new_from_png")
     local width = reg:getWidth()
     local height = reg:getHeight()
@@ -373,6 +463,16 @@ lurek.province.remove(name)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("remove")
     local name = reg:getName()
     local existed_before = lurek.province.exists(name)
@@ -410,6 +510,16 @@ lurek.province.sanitizeMarkedPng(input_png, output_png, opts)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local summary = lurek.province.sanitizeMarkedPng(
         "content/examples/assets/images/sample_texture.png",
         "save/province_sanitized.png",
@@ -447,6 +557,16 @@ lurek.province.setActive(name)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     lurek.province.newFromPng("map_a", "content/examples/assets/textures/province_map.png")
     lurek.province.newFromPng("map_b", "content/examples/assets/textures/province_map.png")
 
@@ -482,6 +602,16 @@ lurek.province.setAttr(id, key, value)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("attr_set", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -517,6 +647,16 @@ lurek.province.setFlag(id, bit, value)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("flag_set", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -552,6 +692,16 @@ lurek.province.setProperty(id, key, value)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("prop_set", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -597,6 +747,16 @@ lurek.province.zoomCameraAt(anchor_x, anchor_y, cam_x, cam_y, old_zoom, new_zoom
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local cam_x = 100
     local cam_y = 80
     local new_cam_x, new_cam_y = lurek.province.zoomCameraAt(400, 300, cam_x, cam_y, 1.0, 2.0)
@@ -646,6 +806,16 @@ LProvinceRegistry:adjacencies()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("pairs", "content/examples/assets/textures/province_map.png")
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -675,6 +845,16 @@ LProvinceRegistry:borderSegments()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("geo_segments", "content/examples/assets/textures/province_map.png")
     local segments = reg:borderSegments()
     local first = segments[1]
@@ -710,6 +890,16 @@ LProvinceRegistry:findIsolatedProvinces(owner_attr)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("isolated", "content/examples/assets/province/map.png")
     local ids = reg:provinceIds()
     local a = ids[1]
@@ -751,6 +941,16 @@ LProvinceRegistry:findRoute(from_id, to_id, cost_fn)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("find_route", "content/examples/assets/province/map.png")
     local ids = reg:provinceIds()
     local from_id = ids[1]
@@ -788,6 +988,16 @@ LProvinceRegistry:findRoutes(pairs, cost_fn)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("find_routes", "content/examples/assets/province/map.png")
     local ids = reg:provinceIds()
     local pairs = { { from = ids[1], to = ids[2] or ids[1] }, { from = ids[1], to = ids[#ids] or ids[1] } }
@@ -827,6 +1037,16 @@ LProvinceRegistry:fitCamera(screen_w, screen_h, pixel_size)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("cam_fit", "content/examples/assets/textures/province_map.png")
     local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
 
@@ -863,6 +1083,16 @@ LProvinceRegistry:getAt(x, y)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("get_at")
     local scout_x = 50
     local scout_y = 50
@@ -900,6 +1130,16 @@ LProvinceRegistry:getBorderClass(a, b)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("border_class_get", "content/examples/assets/textures/province_map.png")
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -941,6 +1181,16 @@ LProvinceRegistry:getBorderPairStyle(a, b)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("border_pair_get", "content/examples/assets/textures/province_map.png")
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -988,6 +1238,16 @@ LProvinceRegistry:getBorderType(a, b)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("borders_get", "content/examples/assets/textures/province_map.png")
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -1028,6 +1288,16 @@ LProvinceRegistry:getChangesSince(revision)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("changes_since", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -1065,6 +1335,16 @@ LProvinceRegistry:getConnectedComponents()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("components", "content/examples/assets/province/map.png")
     local components = reg:getConnectedComponents()
     local first_component = components[1] or {}
@@ -1095,6 +1375,16 @@ LProvinceRegistry:getHeight()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("get_height")
     local height = reg:getHeight()
     local width = reg:getWidth()
@@ -1125,6 +1415,16 @@ LProvinceRegistry:getMapMode()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("map_mode_get", "content/examples/assets/textures/province_map.png")
 
     reg:registerMapMode("political_plus", {
@@ -1159,6 +1459,16 @@ LProvinceRegistry:getName()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("get_name")
     local name = reg:getName()
     local set_active = lurek.province.setActive(name)
@@ -1194,6 +1504,16 @@ LProvinceRegistry:getNeighbors(id)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("adj", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -1230,6 +1550,16 @@ LProvinceRegistry:getProvince(id)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("snap", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -1261,6 +1591,16 @@ LProvinceRegistry:getRevision()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("changes_revision", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -1295,6 +1635,16 @@ LProvinceRegistry:getWidth()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("get_width")
     local width = reg:getWidth()
     local height = reg:getHeight()
@@ -1331,6 +1681,16 @@ LProvinceRegistry:importMetadataFromFiles(opts)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("meta_import", "content/examples/assets/province/map.png")
     local summary = reg:importMetadataFromFiles({
         color_map_png = "content/examples/assets/province/map.png",
@@ -1372,6 +1732,16 @@ LProvinceRegistry:isConnected(from_id, to_id)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("is_connected", "content/examples/assets/province/map.png")
     local ids = reg:provinceIds()
     local from_id = ids[1]
@@ -1402,6 +1772,16 @@ LProvinceRegistry:provinceCount()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("province_count")
     local ids = reg:provinceIds()
     local count = reg:provinceCount()
@@ -1432,6 +1812,16 @@ LProvinceRegistry:provinceIds()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("info_ids", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
 
@@ -1461,6 +1851,16 @@ LProvinceRegistry:provinceSpans()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("geo_spans", "content/examples/assets/textures/province_map.png")
     local spans = reg:provinceSpans()
     local first = spans[1]
@@ -1491,6 +1891,16 @@ LProvinceRegistry:registerBorderType(type_id, config)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("border_type_register", "content/examples/assets/textures/province_map.png")
     local pairs = reg:adjacencies()
 
@@ -1522,6 +1932,16 @@ LProvinceRegistry:registerMapMode(name, config)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("map_mode_register", "content/examples/assets/textures/province_map.png")
 
     reg:registerMapMode("economy", {
@@ -1561,6 +1981,16 @@ LProvinceRegistry:render(opts)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("render", "content/examples/assets/textures/province_map.png")
     local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
     local ids = reg:provinceIds()
@@ -1628,6 +2058,16 @@ LProvinceRegistry:screenToMap(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("cam_map", "content/examples/assets/textures/province_map.png")
     local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
     local map_x, map_y = reg:screenToMap(400, 300, cam_x, cam_y, zoom, 1.0)
@@ -1668,6 +2108,16 @@ LProvinceRegistry:screenToProvince(screen_x, screen_y, cam_x, cam_y, zoom, pixel
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("screen_to_province")
     local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
     local map_x, map_y = reg:screenToMap(400, 300, cam_x, cam_y, zoom, 1.0)
@@ -1705,6 +2155,16 @@ LProvinceRegistry:setAttr(id, key, value)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("attrs", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -1741,6 +2201,16 @@ LProvinceRegistry:setBorderClass(a, b, border_type)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("border_class_set", "content/examples/assets/textures/province_map.png")
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -1785,6 +2255,16 @@ LProvinceRegistry:setBorderPairStyle(a, b, style)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("border_pair_set", "content/examples/assets/textures/province_map.png")
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -1830,6 +2310,16 @@ LProvinceRegistry:setBorderStyle(id, border_style)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("style_border", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -1866,6 +2356,16 @@ LProvinceRegistry:setBorderType(a, b, border_type)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("borders_set", "content/examples/assets/textures/province_map.png")
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -1908,6 +2408,16 @@ LProvinceRegistry:setCapital(id, x, y)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("labels_capital", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -1949,6 +2459,16 @@ LProvinceRegistry:setFogState(id, fog_state)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("style_fog", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -1993,6 +2513,16 @@ LProvinceRegistry:setLabelLine(id, ax, ay, bx, by)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("labels_line", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -2034,6 +2564,16 @@ LProvinceRegistry:setLabelText(id, text)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("labels_text", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -2074,6 +2614,16 @@ LProvinceRegistry:setMapMode(name)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("map_mode_set", "content/examples/assets/textures/province_map.png")
 
     reg:registerMapMode("terrain_view", {
@@ -2121,6 +2671,16 @@ LProvinceRegistry:setPoliticalColor(id, r, g, b, a)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("colors", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -2162,6 +2722,16 @@ LProvinceRegistry:setTerrainType(id, terrain_type)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("style_terrain", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -2203,6 +2773,16 @@ LProvinceRegistry:setVisibilityState(id, visibility_state)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = lurek.province.newFromPng("style_visibility", "content/examples/assets/textures/province_map.png")
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -2245,6 +2825,16 @@ LProvinceRegistry:totalAttrForOwner(owner_attr, owner_val, sum_attr)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("total_attr", "content/examples/assets/province/map.png")
     local ids = reg:provinceIds()
     local a = ids[1]
@@ -2278,6 +2868,16 @@ LProvinceRegistry:type()
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("type")
     local type_name = reg:type()
     local matches_registry = reg:typeOf("LProvinceRegistry")
@@ -2313,6 +2913,16 @@ LProvinceRegistry:typeOf(name)
 
 ```lua
 do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
     local reg = province_registry("type_of")
     local is_registry = reg:typeOf("LProvinceRegistry")
     local is_object = reg:typeOf("Object")

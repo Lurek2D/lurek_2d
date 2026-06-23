@@ -16,6 +16,25 @@ Example block: `lurek.thread.newChannel`
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:push("spawn_enemy")
     local type_name = channel:type()
@@ -75,6 +94,25 @@ lurek.thread.async(codeOrFunc, ...)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
     local type_name = promise:type()
     local done = promise:isDone()
@@ -109,6 +147,25 @@ lurek.thread.getChannel(name)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local events = clear_named_channel("events")
     events:push("player_died")
     local same = lurek.thread.getChannel("events")
@@ -137,6 +194,25 @@ lurek.thread.getWorkerCapabilities()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local caps = lurek.thread.getWorkerCapabilities()
     local first = caps[1] or "none"
     local count = #caps
@@ -171,6 +247,25 @@ lurek.thread.newBoundedChannel(capacity)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newBoundedChannel(10)
     channel:push("frame_1")
     local bounded = channel:isBounded()
@@ -199,6 +294,25 @@ lurek.thread.newChannel()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:push("spawn_enemy")
     local type_name = channel:type()
@@ -234,6 +348,25 @@ lurek.thread.newPool(size, code)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local pool = make_worker_pool()
     local type_name = pool:type()
     local size = pool:size()
@@ -268,6 +401,25 @@ lurek.thread.newThread(code)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local results = clear_named_channel("thread_results")
     local thread = lurek.thread.newThread([[
         local ch = lurek.thread.getChannel("thread_results")
@@ -320,6 +472,25 @@ LChannel:clear()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:push("x")
     channel:push("y")
@@ -356,6 +527,25 @@ LChannel:demand(timeout)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:push("ready")
     local immediate = channel:demand(1.0)
@@ -384,6 +574,25 @@ LChannel:getCapacity()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newBoundedChannel(3)
     channel:push("job")
     local capacity = channel:getCapacity()
@@ -412,6 +621,25 @@ LChannel:getCount()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:push("x")
     channel:push("y")
@@ -441,6 +669,25 @@ LChannel:isBounded()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newBoundedChannel(1)
     channel:push("job")
     local bounded = channel:isBounded()
@@ -470,6 +717,25 @@ LChannel:peek()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:push("first")
     channel:push("second")
@@ -500,6 +766,25 @@ LChannel:pop()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:push("hello")
     channel:push("world")
@@ -529,6 +814,25 @@ LChannel:popBytes()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:pushBytes(string.rep("\x00\xFF", 100))
     local payload = channel:popBytes()
@@ -557,6 +861,25 @@ LChannel:popTable()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:pushTable({ name = "player", hp = 100 })
     local result = channel:popTable()
@@ -591,6 +914,25 @@ LChannel:push(value)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     local id = channel:push("quest_started")
     local queued = channel:getCount()
@@ -625,6 +967,25 @@ LChannel:pushBytes(data)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     local payload = string.rep("\x00\xFF", 100)
     local id = channel:pushBytes(payload)
@@ -659,6 +1020,25 @@ LChannel:pushTable(value)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     local payload = { name = "player", hp = 100, items = { "sword", "shield" } }
     local id = channel:pushTable(payload)
@@ -693,6 +1073,25 @@ LChannel:supply(value)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newBoundedChannel(2)
     channel:tryPush("a")
     channel:tryPush("b")
@@ -728,6 +1127,25 @@ LChannel:tryPush(value)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newBoundedChannel(2)
     local first = channel:tryPush("a")
     local second = channel:tryPush("b")
@@ -756,6 +1174,25 @@ LChannel:type()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:push("job")
     local type_name = channel:type()
@@ -790,6 +1227,25 @@ LChannel:typeOf(name)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local channel = lurek.thread.newChannel()
     channel:push("job")
     local matches = channel:typeOf("LChannel")
@@ -833,6 +1289,25 @@ LPromise:chain(code, ...)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local first = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(10)")
     while not first:isDone() do
     end
@@ -865,6 +1340,25 @@ LPromise:getError()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
     local done = promise:isDone()
     local result = promise:result()
@@ -893,6 +1387,25 @@ LPromise:isDone()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
     local before = promise:isDone()
     local result = promise:result()
@@ -922,6 +1435,25 @@ LPromise:result()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
     local type_name = promise:type()
     local result = promise:result()
@@ -950,6 +1482,25 @@ LPromise:type()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
     local type_name = promise:type()
     local result = promise:result()
@@ -984,6 +1535,25 @@ LPromise:typeOf(name)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
     local is_promise = promise:typeOf("LPromise")
     local result = promise:result()
@@ -1020,6 +1590,25 @@ LThreadHandle:getError()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local thread = lurek.thread.newThread("return 1")
     thread:start()
     thread:wait()
@@ -1048,6 +1637,25 @@ LThreadHandle:isRunning()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local thread = lurek.thread.newThread("return 1")
     local before = thread:isRunning()
     thread:start()
@@ -1077,6 +1685,25 @@ LThreadHandle:start(...)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local results = clear_named_channel("thread_handle_start")
     local thread = lurek.thread.newThread([[lurek.thread.getChannel("thread_handle_start"):push("ok")]])
     thread:start()
@@ -1099,6 +1726,25 @@ LThreadHandle:wait()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local results = clear_named_channel("thread_handle_wait")
     local thread = lurek.thread.newThread([[lurek.thread.getChannel("thread_handle_wait"):push(99)]])
     thread:start()
@@ -1136,6 +1782,25 @@ LThreadPool:collect()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local pool = make_worker_pool()
     pool:submit(10)
     pool:join(1.0)
@@ -1164,6 +1829,25 @@ LThreadPool:getInputChannel()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local pool = make_worker_pool()
     local input = pool:getInputChannel()
     pool:submit(7)
@@ -1192,6 +1876,25 @@ LThreadPool:getOutputChannel()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local pool = make_worker_pool()
     local output = pool:getOutputChannel()
     pool:submit(5)
@@ -1227,6 +1930,25 @@ LThreadPool:join(timeout)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local pool = make_worker_pool()
     pool:submit(8)
     local joined = pool:join(2.0)
@@ -1255,6 +1977,25 @@ LThreadPool:size()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local pool = make_worker_pool()
     pool:submit(3)
     local size = pool:size()
@@ -1283,6 +2024,25 @@ LThreadPool:submit(value)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local pool = make_worker_pool()
     pool:submit(10)
     local queued = pool:getInputChannel():getCount()
@@ -1311,6 +2071,25 @@ LThreadPool:type()
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local pool = make_worker_pool()
     pool:submit(3)
     local type_name = pool:type()
@@ -1345,6 +2124,25 @@ LThreadPool:typeOf(name)
 
 ```lua
 do
+    local function thread_log(message)
+        lurek.log.info("[thread] " .. message)
+    end
+    local function clear_named_channel(name)
+        local channel = lurek.thread.getChannel(name)
+        channel:clear()
+        return channel
+    end
+    local function make_worker_pool()
+        return lurek.thread.newPool(2, [[
+            local input = lurek.thread.getChannel("__pool_input")
+            local output = lurek.thread.getChannel("__pool_output")
+            local value = input:demand(0.1)
+            if value then
+                output:push(value * 2)
+            end
+        ]])
+    end
+
     local pool = make_worker_pool()
     local matches = pool:typeOf("LThreadPool")
     pool:submit(4)

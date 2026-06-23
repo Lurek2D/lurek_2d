@@ -16,12 +16,12 @@ Example block: `lurek.charts.newLine`
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 400, height = 300, title = "Monthly Sales" })
-    chart:addSeries("North", {{1, 12}, {2, 18}, {3, 15}})
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("line chart created=" .. tostring(chart ~= nil))
-    lurek.log.info("line chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("line width=" .. tostring(width))
+    lurek.log.info("line height=" .. tostring(height))
 end
 ```
 
@@ -74,11 +74,12 @@ lurek.charts.defaultPalette()
 
 ```lua
 do
-    local pal = lurek.charts.defaultPalette()
-    example_print_log("palette colors = " .. #pal)
-    if #pal > 0 then
-        example_print_log("first color r=" .. string.format("%.2f", pal[1][1]))
-    end
+    local palette = lurek.charts.defaultPalette()
+    local first = palette[1]
+    local second = lurek.charts.seriesColor(2)
+    lurek.log.info("palette count=" .. tostring(#palette))
+    lurek.log.info("first color=" .. tostring(first))
+    lurek.log.info("series color=" .. tostring(second))
 end
 ```
 
@@ -108,12 +109,12 @@ lurek.charts.newArea(config)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 400, height = 300, title = "Cumulative Users" })
-    chart:addSeries("Users", {{1, 20}, {2, 32}, {3, 50}})
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("area chart created=" .. tostring(chart ~= nil))
-    lurek.log.info("area chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("area width=" .. tostring(width))
+    lurek.log.info("area height=" .. tostring(height))
 end
 ```
 
@@ -143,12 +144,12 @@ lurek.charts.newBar(config)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 400, height = 300, title = "Revenue by Category" })
-    chart:addSeries("Weapons", {{1, 20}, {2, 14}, {3, 18}})
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("bar chart created=" .. tostring(chart ~= nil))
-    lurek.log.info("bar chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("bar width=" .. tostring(width))
+    lurek.log.info("bar height=" .. tostring(height))
 end
 ```
 
@@ -178,12 +179,12 @@ lurek.charts.newBoxPlot(config)
 
 ```lua
 do
-    local chart = lurek.charts.newBoxPlot({ width = 320, height = 180, title = "Latency Spread" })
-    chart:addSeries("latency", { 10, 12, 14, 20, 24, 28, 60 })
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("boxplot created=" .. tostring(chart ~= nil))
-    lurek.log.info("boxplot size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("boxplot width=" .. tostring(width))
+    lurek.log.info("boxplot height=" .. tostring(height))
 end
 ```
 
@@ -213,12 +214,12 @@ lurek.charts.newBubble(config)
 
 ```lua
 do
-    local chart = lurek.charts.newBubble({ width = 320, height = 180, title = "City Map" })
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
     chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("bubble created=" .. tostring(chart ~= nil))
-    lurek.log.info("bubble size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("bubble width=" .. tostring(width))
+    lurek.log.info("bubble height=" .. tostring(height))
 end
 ```
 
@@ -248,12 +249,13 @@ lurek.charts.newCandlestick(config)
 
 ```lua
 do
-    local chart = lurek.charts.newCandlestick({ width = 320, height = 180, title = "OHLC" })
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
     chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("candlestick chart created=" .. tostring(chart ~= nil))
-    lurek.log.info("candlestick size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("candlestick width=" .. tostring(width))
+    lurek.log.info("candlestick height=" .. tostring(height))
 end
 ```
 
@@ -283,13 +285,12 @@ lurek.charts.newHeatmap(config)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180, title = "Region Load" })
-    chart:setMatrix({ { 2, 4 }, { 6, 8 } }, { "North", "South" }, { "Q1", "Q2" })
-    local typeName = chart:type()
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("heatmap type=" .. tostring(typeName))
-    lurek.log.info("heatmap size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("heatmap width=" .. tostring(width))
+    lurek.log.info("heatmap height=" .. tostring(height))
 end
 ```
 
@@ -319,13 +320,12 @@ lurek.charts.newHistogram(config)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180, title = "Response Times" })
-    chart:addSeries("ms", { 14, 18, 22, 18, 15, 21, 29, 18 })
-    local typeName = chart:type()
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("histogram type=" .. tostring(typeName))
-    lurek.log.info("histogram size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("histogram width=" .. tostring(width))
+    lurek.log.info("histogram height=" .. tostring(height))
 end
 ```
 
@@ -355,12 +355,12 @@ lurek.charts.newLine(config)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 400, height = 300, title = "Monthly Sales" })
-    chart:addSeries("North", {{1, 12}, {2, 18}, {3, 15}})
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("line chart created=" .. tostring(chart ~= nil))
-    lurek.log.info("line chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("line width=" .. tostring(width))
+    lurek.log.info("line height=" .. tostring(height))
 end
 ```
 
@@ -390,13 +390,13 @@ lurek.charts.newPie(config)
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 300, height = 300, title = "Market Share" })
-    chart:addSlice("North", 42)
-    chart:addSlice("South", 33)
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("pie chart created=" .. tostring(chart ~= nil))
-    lurek.log.info("pie chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("pie width=" .. tostring(width))
+    lurek.log.info("pie height=" .. tostring(height))
 end
 ```
 
@@ -426,13 +426,13 @@ lurek.charts.newRadar(config)
 
 ```lua
 do
-    local chart = lurek.charts.newRadar({ width = 320, height = 220, title = "Unit Stats" })
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
     chart:setAxes({ "speed", "power", "range", "cost" })
     chart:addSeries("Scout", { 5, 2, 4, 3 })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("radar created=" .. tostring(chart ~= nil))
-    lurek.log.info("radar size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("radar width=" .. tostring(width))
+    lurek.log.info("radar height=" .. tostring(height))
 end
 ```
 
@@ -462,12 +462,12 @@ lurek.charts.newScatter(config)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 400, height = 300, title = "Test Scores" })
-    chart:addSeries("Players", {{1, 12}, {2, 18}, {3, 14}})
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("scatter chart created=" .. tostring(chart ~= nil))
-    lurek.log.info("scatter chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("scatter width=" .. tostring(width))
+    lurek.log.info("scatter height=" .. tostring(height))
 end
 ```
 
@@ -497,13 +497,13 @@ lurek.charts.newTreemap(config)
 
 ```lua
 do
-    local chart = lurek.charts.newTreemap({ width = 320, height = 220, title = "Budget" })
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
     chart:addItem("Rendering", 45)
     chart:addItem("Audio", 18)
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("treemap created=" .. tostring(chart ~= nil))
-    lurek.log.info("treemap size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("treemap width=" .. tostring(width))
+    lurek.log.info("treemap height=" .. tostring(height))
 end
 ```
 
@@ -533,12 +533,12 @@ lurek.charts.seriesColor(index)
 
 ```lua
 do
-    local c = lurek.charts.seriesColor(1)
-    local c2 = lurek.charts.seriesColor(2)
-    local firstColor = string.format("%.2f,%.2f,%.2f", c[1], c[2], c[3])
-    local secondColor = string.format("%.2f,%.2f,%.2f", c2[1], c2[2], c2[3])
-    lurek.log.info("series 1 color=" .. tostring(firstColor) .. " a=" .. string.format("%.2f", c[4]))
-    lurek.log.info("series 2 color=" .. tostring(secondColor) .. " differs=" .. tostring(firstColor ~= secondColor))
+    local first = lurek.charts.seriesColor(1)
+    local second = lurek.charts.seriesColor(2)
+    local palette = lurek.charts.defaultPalette()
+    lurek.log.info("first color=" .. tostring(first))
+    lurek.log.info("second color=" .. tostring(second))
+    lurek.log.info("palette count=" .. tostring(#palette))
 end
 ```
 
@@ -601,13 +601,13 @@ LAreaChart:addLayer(name, values, color)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180, title = "Area Layers" })
-    chart:addLayer("north", { 10, 14, 18, 20 })
-    chart:addLayer("south", { 8, 11, 14, 16 })
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:addLayer("trend", { 8, 12, 10 })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("added area layers north and south")
-    lurek.log.info("area layer chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("addLayer width=" .. tostring(width))
+    lurek.log.info("addLayer height=" .. tostring(height))
 end
 ```
 
@@ -641,11 +641,19 @@ LAreaChart:addLayerFromDataFrame(name, df, value_col, color, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180 })
-    local df = charts_df()
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local df = lurek.dataframe.fromTable({
+        { month = 1, label = "Jan", north = 12, south = 8, east = 5, value = 12, x = 1, y = 12, row = "North", col = "Q1" },
+        { month = 2, label = "Feb", north = 18, south = 11, east = 7, value = 18, x = 2, y = 18, row = "North", col = "Q2" },
+        { month = 3, label = "Mar", north = 15, south = 14, east = 9, value = 15, x = 3, y = 15, row = "South", col = "Q1" },
+    })
     local added = chart:addLayerFromDataFrame("north", df, "north")
-    example_print_log("rows added = " .. tostring(added))
-    example_print_log("height = " .. chart:getHeight())
+    lurek.log.info("rows added=" .. tostring(added))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addLayerFromDataFrame width=" .. tostring(width))
+    lurek.log.info("addLayerFromDataFrame height=" .. tostring(height))
 end
 ```
 
@@ -677,12 +685,13 @@ LAreaChart:addSeries(name, data, color)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 400, height = 300 })
-    chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:addSeries("north", { { 1, 9 }, { 2, 14 }, { 3, 11 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("area series added for trend view")
-    lurek.log.info("area chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("addSeries width=" .. tostring(width))
+    lurek.log.info("addSeries height=" .. tostring(height))
 end
 ```
 
@@ -715,11 +724,13 @@ LAreaChart:appendPoint(name, x, y, color)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180 })
-    chart:addSeries("trend", { { 1, 12 }, { 2, 16 } })
-    chart:appendPoint("trend", 3, 21)
-    local _, _, pixels = chart:render()
-    example_print_log("append point pixels = " .. #pixels)
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:appendPoint("north", 4, 17)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("appendPoint width=" .. tostring(width))
+    lurek.log.info("appendPoint height=" .. tostring(height))
 end
 ```
 
@@ -737,12 +748,14 @@ LAreaChart:clear()
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 400, height = 300 })
-    chart:addSeries("data", { {1, 1}, {2, 2}, {3, 3} })
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:clear()
-    local w, h, pixels = chart:render()
-    example_print_log("LAreaChart:clear ok")
-    example_print_log("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -774,11 +787,14 @@ LAreaChart:draw(x, y, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 256, height = 128 })
-    chart:addLayer("north", { 5, 6, 9, 12 })
-    chart:draw(24, 16, {})
-    example_print_log("draw call issued")
-    example_print_log("area type = " .. chart:type())
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -802,11 +818,15 @@ LAreaChart:drawToImage(target)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 256, height = 128 })
-    local target = chart_target_image(256, 128)
-    chart:addLayer("north", { 5, 6, 9, 12 })
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local target = lurek.image.newImageData(160, 120)
     chart:drawToImage(target)
-    example_print_log("target size = " .. target:getWidth() .. "x" .. target:getHeight())
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -830,12 +850,13 @@ LAreaChart:getHeight()
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 400, height = 300 })
-    chart:addSeries("North", {{1, 5}, {2, 7}, {3, 8}})
-    local height = chart:getHeight()
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
     local width = chart:getWidth()
-    lurek.log.info("area height=" .. tostring(height))
-    lurek.log.info("area width=" .. tostring(width))
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -859,12 +880,13 @@ LAreaChart:getWidth()
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 400, height = 300 })
-    chart:addSeries("North", {{1, 5}, {2, 7}, {3, 8}})
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("area width=" .. tostring(width))
-    lurek.log.info("area height=" .. tostring(height))
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -890,11 +912,15 @@ LAreaChart:render()
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 400, height = 300 })
-    chart:addSeries("data", { {1, 5}, {2, 3}, {3, 8}, {4, 2}, {5, 6} })
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     local w, h, pixels = chart:render()
-    example_print_log("LAreaChart:render ok")
-    example_print_log("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -912,11 +938,14 @@ LAreaChart:renderImage()
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 256, height = 128 })
-    chart:addLayer("north", { 5, 6, 9, 12 })
-    local img = chart:renderImage()
-    example_print_log("render image type = " .. img:type())
-    example_print_log("render image size = " .. img:getWidth() .. "x" .. img:getHeight())
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -940,12 +969,13 @@ LAreaChart:setShowLegend(value)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180 })
-    chart:addLayer("north", { 5, 6, 7, 8 })
-    chart:addLayer("south", { 4, 5, 5, 6 })
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:setShowLegend(true)
-    local _, _, pixels = chart:render()
-    example_print_log("legend bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -969,13 +999,13 @@ LAreaChart:setTitle(title)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 400, height = 300 })
-    chart:setTitle("Monthly Sales")
-    chart:addSeries("North", {{1, 5}, {2, 7}, {3, 8}})
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setTitle("Area example")
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("area title set for monthly sales")
-    lurek.log.info("area chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -999,11 +1029,13 @@ LAreaChart:setWindow(max_points)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180 })
-    chart:addSeries("trend", { { 1, 8 }, { 2, 12 }, { 3, 15 }, { 4, 19 } })
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:setWindow(2)
-    local _, _, pixels = chart:render()
-    example_print_log("windowed render bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setWindow width=" .. tostring(width))
+    lurek.log.info("setWindow height=" .. tostring(height))
 end
 ```
 
@@ -1027,11 +1059,13 @@ LAreaChart:setXLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:setXLabel("Month")
-    chart:setYLabel("Users")
-    local _, _, pixels = chart:render()
-    example_print_log("labeled area bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXLabel width=" .. tostring(width))
+    lurek.log.info("setXLabel height=" .. tostring(height))
 end
 ```
 
@@ -1055,11 +1089,13 @@ LAreaChart:setXTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180 })
-    chart:setXTickCount(5)
-    chart:addLayer("api", { 3, 5, 8, 13 })
-    local _, _, pixels = chart:render()
-    example_print_log("x ticks bytes = " .. #pixels)
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setXTickCount(4)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXTickCount width=" .. tostring(width))
+    lurek.log.info("setXTickCount height=" .. tostring(height))
 end
 ```
 
@@ -1083,11 +1119,13 @@ LAreaChart:setYLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180 })
-    chart:setYLabel("Requests")
-    chart:addLayer("api", { 3, 5, 8, 13 })
-    local _, _, pixels = chart:render()
-    example_print_log("area label bytes = " .. #pixels)
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setYLabel("Value")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYLabel width=" .. tostring(width))
+    lurek.log.info("setYLabel height=" .. tostring(height))
 end
 ```
 
@@ -1111,11 +1149,13 @@ LAreaChart:setYMax(value)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180 })
-    chart:addSeries("trend", { { 1, 8 }, { 2, 12 }, { 3, 15 } })
-    chart:setYMax(20)
-    example_print_log("manual y max applied")
-    example_print_log("type = " .. chart:type())
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setYMax(30)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYMax width=" .. tostring(width))
+    lurek.log.info("setYMax height=" .. tostring(height))
 end
 ```
 
@@ -1139,11 +1179,13 @@ LAreaChart:setYTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 320, height = 180 })
-    chart:setYTickCount(6)
-    chart:addLayer("api", { 3, 5, 8, 13 })
-    local _, _, pixels = chart:render()
-    example_print_log("y ticks bytes = " .. #pixels)
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setYTickCount(4)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYTickCount width=" .. tostring(width))
+    lurek.log.info("setYTickCount height=" .. tostring(height))
 end
 ```
 
@@ -1167,12 +1209,13 @@ LAreaChart:type()
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 256, height = 128 })
-    chart:addLayer("north", { 5, 6, 9, 12 })
-    local typeName = chart:type()
-    local isObject = chart:typeOf("LObject")
-    lurek.log.info("area chart type=" .. tostring(typeName))
-    lurek.log.info("area chart is object=" .. tostring(isObject))
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -1202,12 +1245,14 @@ LAreaChart:typeOf(name)
 
 ```lua
 do
-    local chart = lurek.charts.newArea({ width = 256, height = 128 })
-    chart:addLayer("north", { 5, 6, 9, 12 })
-    local isArea = chart:typeOf("LAreaChart")
-    local isBar = chart:typeOf("LBarChart")
-    lurek.log.info("typeOf LAreaChart=" .. tostring(isArea))
-    lurek.log.info("typeOf LBarChart=" .. tostring(isBar))
+    local chart = lurek.charts.newArea({ width = 160, height = 120, title = "Area" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LAreaChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -1248,11 +1293,19 @@ LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 320, height = 180 })
-    local df = charts_df()
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local df = lurek.dataframe.fromTable({
+        { month = 1, label = "Jan", north = 12, south = 8, east = 5, value = 12, x = 1, y = 12, row = "North", col = "Q1" },
+        { month = 2, label = "Feb", north = 18, south = 11, east = 7, value = 18, x = 2, y = 18, row = "North", col = "Q2" },
+        { month = 3, label = "Mar", north = 15, south = 14, east = 9, value = 15, x = 3, y = 15, row = "South", col = "Q1" },
+    })
     local added = chart:addCategoriesFromDataFrame(df, "label", { "north", "south", "east" })
-    example_print_log("categories added = " .. tostring(added))
-    example_print_log("height = " .. chart:getHeight())
+    lurek.log.info("categories added=" .. tostring(added))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addCategoriesFromDataFrame width=" .. tostring(width))
+    lurek.log.info("addCategoriesFromDataFrame height=" .. tostring(height))
 end
 ```
 
@@ -1283,11 +1336,13 @@ LBarChart:addCategory(label, values)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 320, height = 180 })
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:addCategory("Q1", { 12, 8, 5 })
-    chart:addCategory("Q2", { 18, 11, 7 })
-    local _, _, pixels = chart:render()
-    example_print_log("categories bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addCategory width=" .. tostring(width))
+    lurek.log.info("addCategory height=" .. tostring(height))
 end
 ```
 
@@ -1319,12 +1374,13 @@ LBarChart:addSeries(name, data, color)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 400, height = 300 })
-    chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:addSeries("north", { { 1, 9 }, { 2, 14 }, { 3, 11 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("bar series added for quarterly sales")
-    lurek.log.info("bar chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("addSeries width=" .. tostring(width))
+    lurek.log.info("addSeries height=" .. tostring(height))
 end
 ```
 
@@ -1342,12 +1398,14 @@ LBarChart:clear()
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 400, height = 300 })
-    chart:addSeries("data", { {1, 1}, {2, 2}, {3, 3} })
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:clear()
-    local w, h, pixels = chart:render()
-    example_print_log("LBarChart:clear ok")
-    example_print_log("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -1379,11 +1437,14 @@ LBarChart:draw(x, y, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 256, height = 128 })
-    chart:addCategory("Q1", { 12, 8, 5 })
-    chart:draw(12, 8, {})
-    example_print_log("bar draw issued")
-    example_print_log("bar type = " .. chart:type())
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -1407,11 +1468,15 @@ LBarChart:drawToImage(target)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 256, height = 128 })
-    local target = chart_target_image(256, 128)
-    chart:addCategory("Q1", { 12, 8, 5 })
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local target = lurek.image.newImageData(160, 120)
     chart:drawToImage(target)
-    example_print_log("bar target bytes = " .. target:getWidth() .. "x" .. target:getHeight())
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -1435,12 +1500,13 @@ LBarChart:getHeight()
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 400, height = 300 })
-    chart:addSeries("North", {{1, 10}, {2, 12}, {3, 14}})
-    local height = chart:getHeight()
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
     local width = chart:getWidth()
-    lurek.log.info("bar height=" .. tostring(height))
-    lurek.log.info("bar width=" .. tostring(width))
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -1464,12 +1530,13 @@ LBarChart:getWidth()
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 400, height = 300 })
-    chart:addSeries("North", {{1, 10}, {2, 12}, {3, 14}})
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("bar width=" .. tostring(width))
-    lurek.log.info("bar height=" .. tostring(height))
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -1495,11 +1562,15 @@ LBarChart:render()
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 400, height = 300 })
-    chart:addSeries("data", { {1, 5}, {2, 3}, {3, 8}, {4, 2}, {5, 6} })
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     local w, h, pixels = chart:render()
-    example_print_log("LBarChart:render ok")
-    example_print_log("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -1517,11 +1588,14 @@ LBarChart:renderImage()
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 256, height = 128 })
-    chart:addCategory("Q1", { 12, 8, 5 })
-    local img = chart:renderImage()
-    example_print_log("bar image type = " .. img:type())
-    example_print_log("bar image size = " .. img:getWidth() .. "x" .. img:getHeight())
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -1545,13 +1619,13 @@ LBarChart:setBarWidth(width)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 400, height = 300 })
-    chart:setBarWidth(20.0)
-    chart:addSeries("North", {{1, 10}, {2, 12}, {3, 14}})
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setBarWidth(0.65)
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("bar width set to 20")
-    lurek.log.info("bar chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("setBarWidth width=" .. tostring(width))
+    lurek.log.info("setBarWidth height=" .. tostring(height))
 end
 ```
 
@@ -1575,12 +1649,13 @@ LBarChart:setShowLegend(value)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 320, height = 180 })
-    chart:addCategory("Q1", { 12, 8, 5 })
-    chart:addCategory("Q2", { 18, 11, 7 })
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:setShowLegend(true)
-    local _, _, pixels = chart:render()
-    example_print_log("bar legend bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -1604,13 +1679,13 @@ LBarChart:setTitle(title)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 400, height = 300 })
-    chart:setTitle("Monthly Sales")
-    chart:addSeries("North", {{1, 10}, {2, 12}, {3, 14}})
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setTitle("Bar example")
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("bar title set for monthly sales")
-    lurek.log.info("bar chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -1634,11 +1709,13 @@ LBarChart:setXLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 320, height = 180 })
-    chart:setXLabel("Quarter")
-    chart:addCategory("Q1", { 12, 8, 5 })
-    local _, _, pixels = chart:render()
-    example_print_log("bar x label bytes = " .. #pixels)
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setXLabel("Month")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXLabel width=" .. tostring(width))
+    lurek.log.info("setXLabel height=" .. tostring(height))
 end
 ```
 
@@ -1662,12 +1739,13 @@ LBarChart:setXTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 320, height = 180 })
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:setXTickCount(4)
-    chart:addCategory("Q1", { 12, 8, 5 })
-    chart:addCategory("Q2", { 18, 11, 7 })
-    local _, _, pixels = chart:render()
-    example_print_log("bar x ticks bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXTickCount width=" .. tostring(width))
+    lurek.log.info("setXTickCount height=" .. tostring(height))
 end
 ```
 
@@ -1691,11 +1769,13 @@ LBarChart:setYLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 320, height = 180 })
-    chart:setYLabel("Sales")
-    chart:addCategory("Q1", { 12, 8, 5 })
-    local _, _, pixels = chart:render()
-    example_print_log("bar y label bytes = " .. #pixels)
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setYLabel("Value")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYLabel width=" .. tostring(width))
+    lurek.log.info("setYLabel height=" .. tostring(height))
 end
 ```
 
@@ -1719,12 +1799,13 @@ LBarChart:setYTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 320, height = 180 })
-    chart:setYTickCount(6)
-    chart:addCategory("Q1", { 12, 8, 5 })
-    chart:addCategory("Q2", { 18, 11, 7 })
-    local _, _, pixels = chart:render()
-    example_print_log("bar y ticks bytes = " .. #pixels)
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setYTickCount(4)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYTickCount width=" .. tostring(width))
+    lurek.log.info("setYTickCount height=" .. tostring(height))
 end
 ```
 
@@ -1748,12 +1829,13 @@ LBarChart:type()
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 256, height = 128 })
-    chart:addCategory("Q1", { 12, 8, 5 })
-    local typeName = chart:type()
-    local isObject = chart:typeOf("LObject")
-    lurek.log.info("bar chart type=" .. tostring(typeName))
-    lurek.log.info("bar chart is object=" .. tostring(isObject))
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -1783,12 +1865,14 @@ LBarChart:typeOf(name)
 
 ```lua
 do
-    local chart = lurek.charts.newBar({ width = 256, height = 128 })
-    chart:addCategory("Q1", { 12, 8, 5 })
-    local isBar = chart:typeOf("LBarChart")
-    local isArea = chart:typeOf("LAreaChart")
-    lurek.log.info("typeOf LBarChart=" .. tostring(isBar))
-    lurek.log.info("typeOf LAreaChart=" .. tostring(isArea))
+    local chart = lurek.charts.newBar({ width = 160, height = 120, title = "Bar" })
+    chart:addSeries("items", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LBarChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -1822,12 +1906,13 @@ LBoxPlotChart:addSeries(name, values, color)
 
 ```lua
 do
-    local chart = lurek.charts.newBoxPlot({ width = 320, height = 180 })
-    chart:addSeries("train", { 10, 12, 14, 20, 24, 28, 60 })
-    chart:addSeries("valid", { 11, 13, 18, 22, 30, 42 })
-    local _, _, pixels = chart:render()
-    example_print_log("boxplot series bytes = " .. #pixels)
-    example_print_log("boxplot width = " .. chart:getWidth())
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    chart:addSeries("latency", { 10, 12, 18, 24, 30 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addSeries width=" .. tostring(width))
+    lurek.log.info("addSeries height=" .. tostring(height))
 end
 ```
 
@@ -1853,13 +1938,13 @@ LBoxPlotChart:appendValue(name, value, color)
 
 ```lua
 do
-    local chart = lurek.charts.newBoxPlot({ width = 320, height = 180 })
-    chart:appendValue("latency", 10)
-    chart:appendValue("latency", 14)
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
     chart:appendValue("latency", 28)
-    local _, _, pixels = chart:render()
-    example_print_log("boxplot append bytes = " .. #pixels)
-    example_print_log("boxplot type = " .. chart:type())
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("appendValue width=" .. tostring(width))
+    lurek.log.info("appendValue height=" .. tostring(height))
 end
 ```
 
@@ -1877,12 +1962,14 @@ LBoxPlotChart:clear()
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "clear",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    chart:clear()
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -1914,12 +2001,14 @@ LBoxPlotChart:draw(x, y, opts)
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "draw",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -1943,12 +2032,15 @@ LBoxPlotChart:drawToImage(target)
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "drawToImage",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    local target = lurek.image.newImageData(160, 120)
+    chart:drawToImage(target)
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -1972,12 +2064,13 @@ LBoxPlotChart:getHeight()
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "getHeight",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -2001,12 +2094,13 @@ LBoxPlotChart:getWidth()
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "getWidth",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -2032,12 +2126,15 @@ LBoxPlotChart:render()
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "render",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    local w, h, pixels = chart:render()
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -2055,12 +2152,14 @@ LBoxPlotChart:renderImage()
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "renderImage",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -2084,12 +2183,13 @@ LBoxPlotChart:setShowLegend(value)
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "setShowLegend",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    chart:setShowLegend(true)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -2113,12 +2213,13 @@ LBoxPlotChart:setTitle(title)
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "setTitle",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    chart:setTitle("BoxPlot example")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -2142,12 +2243,13 @@ LBoxPlotChart:type()
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "type",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -2177,12 +2279,14 @@ LBoxPlotChart:typeOf(name)
 
 ```lua
 do
-    local type_name = "LBoxPlotChart"
-    chart_common_example(
-        "boxplot",
-        "typeOf",
-        type_name
-    )
+    local chart = lurek.charts.newBoxPlot({ width = 160, height = 120, title = "BoxPlot" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 40 })
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LBoxPlotChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -2216,11 +2320,13 @@ LBubbleChart:addSeries(name, data, color)
 
 ```lua
 do
-    local chart = lurek.charts.newBubble({ width = 320, height = 180 })
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
     chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
-    local _, _, pixels = chart:render()
-    example_print_log("bubble series bytes = " .. #pixels)
-    example_print_log("bubble width = " .. chart:getWidth())
+    chart:addSeries("cities", { { 1, 2, 8 }, { 2, 3, 16 } })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addSeries width=" .. tostring(width))
+    lurek.log.info("addSeries height=" .. tostring(height))
 end
 ```
 
@@ -2248,12 +2354,13 @@ LBubbleChart:appendPoint(name, x, y, size, color)
 
 ```lua
 do
-    local chart = lurek.charts.newBubble({ width = 320, height = 180 })
-    chart:appendPoint("cities", 1, 2, 10)
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
     chart:appendPoint("cities", 2, 3, 20)
-    local _, _, pixels = chart:render()
-    example_print_log("bubble append bytes = " .. #pixels)
-    example_print_log("bubble type = " .. chart:type())
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("appendPoint width=" .. tostring(width))
+    lurek.log.info("appendPoint height=" .. tostring(height))
 end
 ```
 
@@ -2271,12 +2378,14 @@ LBubbleChart:clear()
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "clear",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    chart:clear()
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -2308,12 +2417,14 @@ LBubbleChart:draw(x, y, opts)
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "draw",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -2337,12 +2448,15 @@ LBubbleChart:drawToImage(target)
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "drawToImage",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    local target = lurek.image.newImageData(160, 120)
+    chart:drawToImage(target)
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -2366,12 +2480,13 @@ LBubbleChart:getHeight()
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "getHeight",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -2395,12 +2510,13 @@ LBubbleChart:getWidth()
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "getWidth",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -2426,12 +2542,15 @@ LBubbleChart:render()
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "render",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    local w, h, pixels = chart:render()
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -2449,12 +2568,14 @@ LBubbleChart:renderImage()
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "renderImage",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -2479,12 +2600,13 @@ LBubbleChart:setRadiusRange(min, max)
 
 ```lua
 do
-    local chart = lurek.charts.newBubble({ width = 320, height = 180 })
-    chart:setRadiusRange(3, 18)
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
     chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
-    local _, _, pixels = chart:render()
-    example_print_log("bubble radius bytes = " .. #pixels)
-    example_print_log("bubble height = " .. chart:getHeight())
+    chart:setRadiusRange(3, 18)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setRadiusRange width=" .. tostring(width))
+    lurek.log.info("setRadiusRange height=" .. tostring(height))
 end
 ```
 
@@ -2508,12 +2630,13 @@ LBubbleChart:setShowLegend(value)
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "setShowLegend",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    chart:setShowLegend(true)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -2537,12 +2660,13 @@ LBubbleChart:setTitle(title)
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "setTitle",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    chart:setTitle("Bubble example")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -2566,12 +2690,13 @@ LBubbleChart:type()
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "type",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -2601,12 +2726,14 @@ LBubbleChart:typeOf(name)
 
 ```lua
 do
-    local type_name = "LBubbleChart"
-    chart_common_example(
-        "bubble",
-        "typeOf",
-        type_name
-    )
+    local chart = lurek.charts.newBubble({ width = 160, height = 120, title = "Bubble" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LBubbleChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -2642,12 +2769,14 @@ LCandlestickChart:appendCandle(label, open, high, low, close)
 
 ```lua
 do
-    local chart = lurek.charts.newCandlestick({ width = 320, height = 180 })
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
     chart:appendCandle("Mon", 10, 14, 9, 13)
     chart:appendCandle("Tue", 13, 16, 12, 15)
-    local _, _, pixels = chart:render()
-    example_print_log("append candle bytes = " .. #pixels)
-    example_print_log("append candle width = " .. chart:getWidth())
+    chart:appendCandle("Wed", 15, 18, 14, 17)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("appendCandle width=" .. tostring(width))
+    lurek.log.info("appendCandle height=" .. tostring(height))
 end
 ```
 
@@ -2665,12 +2794,16 @@ LCandlestickChart:clear()
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "clear",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    chart:clear()
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -2702,12 +2835,15 @@ LCandlestickChart:draw(x, y, opts)
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "draw",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -2731,12 +2867,16 @@ LCandlestickChart:drawToImage(target)
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "drawToImage",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    local target = lurek.image.newImageData(160, 120)
+    chart:drawToImage(target)
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -2760,12 +2900,14 @@ LCandlestickChart:getHeight()
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "getHeight",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -2789,12 +2931,14 @@ LCandlestickChart:getWidth()
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "getWidth",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -2820,12 +2964,16 @@ LCandlestickChart:render()
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "render",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    local w, h, pixels = chart:render()
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -2843,12 +2991,15 @@ LCandlestickChart:renderImage()
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "renderImage",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -2872,14 +3023,17 @@ LCandlestickChart:setCandles(candles)
 
 ```lua
 do
-    local chart = lurek.charts.newCandlestick({ width = 320, height = 180 })
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
     chart:setCandles({
         { label = "Mon", open = 10, high = 14, low = 9, close = 13 },
         { label = "Tue", open = 13, high = 16, low = 12, close = 15 },
     })
-    local _, _, pixels = chart:render()
-    example_print_log("candles bytes = " .. #pixels)
-    example_print_log("candles height = " .. chart:getHeight())
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setCandles width=" .. tostring(width))
+    lurek.log.info("setCandles height=" .. tostring(height))
 end
 ```
 
@@ -2904,12 +3058,14 @@ LCandlestickChart:setColors(up, down)
 
 ```lua
 do
-    local chart = lurek.charts.newCandlestick({ width = 320, height = 180 })
-    chart:setColors({ 0.1, 0.8, 0.2, 1.0 }, { 0.9, 0.1, 0.1, 1.0 })
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
     chart:appendCandle("Mon", 10, 14, 9, 13)
-    local _, _, pixels = chart:render()
-    example_print_log("colored candle bytes = " .. #pixels)
-    example_print_log("colored candle type = " .. chart:type())
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    chart:setColors({ 0.1, 0.8, 0.2, 1.0 }, { 0.9, 0.1, 0.1, 1.0 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setColors width=" .. tostring(width))
+    lurek.log.info("setColors height=" .. tostring(height))
 end
 ```
 
@@ -2933,12 +3089,14 @@ LCandlestickChart:setShowLegend(value)
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "setShowLegend",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    chart:setShowLegend(true)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -2962,12 +3120,14 @@ LCandlestickChart:setTitle(title)
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "setTitle",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    chart:setTitle("Candlestick example")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -2991,12 +3151,14 @@ LCandlestickChart:type()
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "type",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -3026,12 +3188,15 @@ LCandlestickChart:typeOf(name)
 
 ```lua
 do
-    local type_name = "LCandlestickChart"
-    chart_common_example(
-        "candlestick",
-        "typeOf",
-        type_name
-    )
+    local chart = lurek.charts.newCandlestick({ width = 160, height = 120, title = "Candlestick" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LCandlestickChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -3057,11 +3222,14 @@ LHeatmapChart:clear()
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
     chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     chart:clear()
-    local _, _, pixels = chart:render()
-    example_print_log("cleared heatmap bytes = " .. #pixels)
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -3079,12 +3247,14 @@ LHeatmapChart:clearValueRange()
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     chart:setValueRange(0, 10)
     chart:clearValueRange()
-    local _, _, pixels = chart:render()
-    example_print_log("cleared range bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clearValueRange width=" .. tostring(width))
+    lurek.log.info("clearValueRange height=" .. tostring(height))
 end
 ```
 
@@ -3116,11 +3286,14 @@ LHeatmapChart:draw(x, y, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 256, height = 128 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
-    chart:draw(18, 10, {})
-    example_print_log("heatmap draw issued")
-    example_print_log("heatmap type = " .. chart:type())
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -3144,11 +3317,15 @@ LHeatmapChart:drawToImage(target)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 256, height = 128 })
-    local target = chart_target_image(256, 128)
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    local target = lurek.image.newImageData(160, 120)
     chart:drawToImage(target)
-    example_print_log("heatmap target width = " .. target:getWidth())
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -3172,12 +3349,13 @@ LHeatmapChart:getHeight()
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 333, height = 144 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
-    local height = chart:getHeight()
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
     local width = chart:getWidth()
-    lurek.log.info("heatmap height=" .. tostring(height))
-    lurek.log.info("heatmap width=" .. tostring(width))
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -3201,12 +3379,13 @@ LHeatmapChart:getWidth()
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 333, height = 144 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("heatmap width=" .. tostring(width))
-    lurek.log.info("heatmap height=" .. tostring(height))
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -3232,11 +3411,15 @@ LHeatmapChart:render()
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     local w, h, pixels = chart:render()
-    example_print_log("render size = " .. w .. "x" .. h)
-    example_print_log("render bytes = " .. #pixels)
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -3254,11 +3437,14 @@ LHeatmapChart:renderImage()
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 256, height = 128 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
-    local img = chart:renderImage()
-    example_print_log("heatmap image type = " .. img:type())
-    example_print_log("heatmap image width = " .. img:getWidth())
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -3283,12 +3469,15 @@ LHeatmapChart:resize(rows, cols)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     chart:resize(3, 2)
     chart:setCell(1, 1, 1.5)
     chart:setCell(3, 2, 4.5)
-    local _, _, pixels = chart:render()
-    example_print_log("resized heatmap bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("resize width=" .. tostring(width))
+    lurek.log.info("resize height=" .. tostring(height))
 end
 ```
 
@@ -3314,12 +3503,15 @@ LHeatmapChart:setCell(row, col, value)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     chart:resize(2, 2)
     chart:setCell(1, 1, 2.5)
     chart:setCell(2, 2, 7.5)
-    local _, _, pixels = chart:render()
-    example_print_log("heatmap cell bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setCell width=" .. tostring(width))
+    lurek.log.info("setCell height=" .. tostring(height))
 end
 ```
 
@@ -3350,11 +3542,13 @@ LHeatmapChart:setColorRange(low, high)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
-    chart:setColorRange({ 0.10, 0.20, 0.60, 1.0 }, { 0.90, 0.20, 0.10, 1.0 })
-    local _, _, pixels = chart:render()
-    example_print_log("color range bytes = " .. #pixels)
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    chart:setColorRange({ 0.1, 0.2, 0.8, 1.0 }, { 0.9, 0.1, 0.1, 1.0 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setColorRange width=" .. tostring(width))
+    lurek.log.info("setColorRange height=" .. tostring(height))
 end
 ```
 
@@ -3378,11 +3572,13 @@ LHeatmapChart:setColumnLabels(labels)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     chart:setColumnLabels({ "Q1", "Q2" })
-    local _, _, pixels = chart:render()
-    example_print_log("column labels bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setColumnLabels width=" .. tostring(width))
+    lurek.log.info("setColumnLabels height=" .. tostring(height))
 end
 ```
 
@@ -3414,13 +3610,13 @@ LHeatmapChart:setMatrix(matrix, row_labels, col_labels)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
     chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
-    local _, _, pixels = chart:render()
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("heatmap matrix bytes=" .. tostring(#pixels))
-    lurek.log.info("heatmap size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("setMatrix width=" .. tostring(width))
+    lurek.log.info("setMatrix height=" .. tostring(height))
 end
 ```
 
@@ -3454,11 +3650,19 @@ LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    local df = charts_df()
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    local df = lurek.dataframe.fromTable({
+        { month = 1, label = "Jan", north = 12, south = 8, east = 5, value = 12, x = 1, y = 12, row = "North", col = "Q1" },
+        { month = 2, label = "Feb", north = 18, south = 11, east = 7, value = 18, x = 2, y = 18, row = "North", col = "Q2" },
+        { month = 3, label = "Mar", north = 15, south = 14, east = 9, value = 15, x = 3, y = 15, row = "South", col = "Q1" },
+    })
     local cells = chart:setMatrixFromDataFrame(df, "row", "col", "value")
-    example_print_log("matrix cells = " .. tostring(cells))
-    example_print_log("width = " .. chart:getWidth())
+    lurek.log.info("cells=" .. tostring(cells))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setMatrixFromDataFrame width=" .. tostring(width))
+    lurek.log.info("setMatrixFromDataFrame height=" .. tostring(height))
 end
 ```
 
@@ -3482,11 +3686,13 @@ LHeatmapChart:setRowLabels(labels)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     chart:setRowLabels({ "North", "South" })
-    local _, _, pixels = chart:render()
-    example_print_log("row labels bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setRowLabels width=" .. tostring(width))
+    lurek.log.info("setRowLabels height=" .. tostring(height))
 end
 ```
 
@@ -3510,11 +3716,13 @@ LHeatmapChart:setShowLegend(value)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     chart:setShowLegend(true)
-    local _, _, pixels = chart:render()
-    example_print_log("heatmap legend bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -3538,11 +3746,13 @@ LHeatmapChart:setShowValues(value)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     chart:setShowValues(true)
-    local _, _, pixels = chart:render()
-    example_print_log("show values bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowValues width=" .. tostring(width))
+    lurek.log.info("setShowValues height=" .. tostring(height))
 end
 ```
 
@@ -3566,11 +3776,13 @@ LHeatmapChart:setTitle(title)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setTitle("Throughput Grid")
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
-    local _, _, pixels = chart:render()
-    example_print_log("heatmap title bytes = " .. #pixels)
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    chart:setTitle("Heatmap example")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -3595,11 +3807,13 @@ LHeatmapChart:setValueRange(min, max)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
     chart:setValueRange(0, 10)
-    local _, _, pixels = chart:render()
-    example_print_log("value range bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setValueRange width=" .. tostring(width))
+    lurek.log.info("setValueRange height=" .. tostring(height))
 end
 ```
 
@@ -3623,12 +3837,13 @@ LHeatmapChart:type()
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
-    local typeName = chart:type()
-    local isObject = chart:typeOf("LObject")
-    lurek.log.info("heatmap type=" .. tostring(typeName))
-    lurek.log.info("heatmap is object=" .. tostring(isObject))
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -3658,12 +3873,14 @@ LHeatmapChart:typeOf(name)
 
 ```lua
 do
-    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
-    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
-    local isHeatmap = chart:typeOf("LHeatmapChart")
-    local isPie = chart:typeOf("LPieChart")
-    lurek.log.info("typeOf LHeatmapChart=" .. tostring(isHeatmap))
-    lurek.log.info("typeOf LPieChart=" .. tostring(isPie))
+    local chart = lurek.charts.newHeatmap({ width = 160, height = 120, title = "Heatmap" })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LHeatmapChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -3703,13 +3920,13 @@ LHistogramChart:addSeries(name, data, color)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18, 18, 22, 25, 18 })
-    local _, _, pixels = chart:render()
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:addSeries("latency", { 10, 12, 18, 24, 30 })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("histogram render bytes=" .. tostring(#pixels))
-    lurek.log.info("histogram size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("addSeries width=" .. tostring(width))
+    lurek.log.info("addSeries height=" .. tostring(height))
 end
 ```
 
@@ -3744,11 +3961,19 @@ LHistogramChart:addSeriesFromDataFrame(name, df, x_col, y_col, color, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    local df = charts_df()
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    local df = lurek.dataframe.fromTable({
+        { month = 1, label = "Jan", north = 12, south = 8, east = 5, value = 12, x = 1, y = 12, row = "North", col = "Q1" },
+        { month = 2, label = "Feb", north = 18, south = 11, east = 7, value = 18, x = 2, y = 18, row = "North", col = "Q2" },
+        { month = 3, label = "Mar", north = 15, south = 14, east = 9, value = 15, x = 3, y = 15, row = "South", col = "Q1" },
+    })
     local added = chart:addSeriesFromDataFrame("north", df, "north")
-    example_print_log("histogram rows added = " .. tostring(added))
-    example_print_log("width = " .. chart:getWidth())
+    lurek.log.info("rows added=" .. tostring(added))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addSeriesFromDataFrame width=" .. tostring(width))
+    lurek.log.info("addSeriesFromDataFrame height=" .. tostring(height))
 end
 ```
 
@@ -3780,11 +4005,13 @@ LHistogramChart:appendValue(name, value, color)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18 })
-    chart:appendValue("response", 21)
-    local _, _, pixels = chart:render()
-    example_print_log("append histogram bytes = " .. #pixels)
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:appendValue("latency", 28)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("appendValue width=" .. tostring(width))
+    lurek.log.info("appendValue height=" .. tostring(height))
 end
 ```
 
@@ -3802,11 +4029,14 @@ LHistogramChart:clear()
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18 })
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
     chart:clear()
-    local _, _, pixels = chart:render()
-    example_print_log("cleared histogram bytes = " .. #pixels)
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -3824,12 +4054,14 @@ LHistogramChart:clearRange()
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
     chart:setRange(10, 30)
     chart:clearRange()
-    local _, _, pixels = chart:render()
-    example_print_log("clear range histogram bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clearRange width=" .. tostring(width))
+    lurek.log.info("clearRange height=" .. tostring(height))
 end
 ```
 
@@ -3861,11 +4093,14 @@ LHistogramChart:draw(x, y, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 256, height = 128 })
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
-    chart:draw(16, 8, {})
-    example_print_log("histogram draw issued")
-    example_print_log("histogram type = " .. chart:type())
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -3889,11 +4124,15 @@ LHistogramChart:drawToImage(target)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 256, height = 128 })
-    local target = chart_target_image(256, 128)
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    local target = lurek.image.newImageData(160, 120)
     chart:drawToImage(target)
-    example_print_log("histogram target width = " .. target:getWidth())
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -3917,12 +4156,13 @@ LHistogramChart:getHeight()
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 345, height = 176 })
-    chart:addSeries("response", { 12, 14, 18, 21 })
-    local height = chart:getHeight()
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
     local width = chart:getWidth()
-    lurek.log.info("histogram height=" .. tostring(height))
-    lurek.log.info("histogram width=" .. tostring(width))
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -3946,12 +4186,13 @@ LHistogramChart:getWidth()
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 345, height = 176 })
-    chart:addSeries("response", { 12, 14, 18, 21 })
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("histogram width=" .. tostring(width))
-    lurek.log.info("histogram height=" .. tostring(height))
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -3977,11 +4218,15 @@ LHistogramChart:render()
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
     local w, h, pixels = chart:render()
-    example_print_log("histogram size = " .. w .. "x" .. h)
-    example_print_log("histogram bytes = " .. #pixels)
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -3999,11 +4244,14 @@ LHistogramChart:renderImage()
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 256, height = 128 })
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
-    local img = chart:renderImage()
-    example_print_log("histogram image type = " .. img:type())
-    example_print_log("histogram image width = " .. img:getWidth())
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -4035,11 +4283,13 @@ LHistogramChart:replaceSeries(name, data, color)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18 })
-    chart:replaceSeries("response", { 30, 28, 26, 24 })
-    local _, _, pixels = chart:render()
-    example_print_log("replaced histogram bytes = " .. #pixels)
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:replaceSeries("latency", { 10, 12, 18, 24, 30 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("replaceSeries width=" .. tostring(width))
+    lurek.log.info("replaceSeries height=" .. tostring(height))
 end
 ```
 
@@ -4063,11 +4313,13 @@ LHistogramChart:setBinCount(bins)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
-    chart:setBinCount(5)
-    local _, _, pixels = chart:render()
-    example_print_log("bins histogram bytes = " .. #pixels)
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:setBinCount(8)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setBinCount width=" .. tostring(width))
+    lurek.log.info("setBinCount height=" .. tostring(height))
 end
 ```
 
@@ -4091,11 +4343,13 @@ LHistogramChart:setDensity(enabled)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
     chart:setDensity(true)
-    local _, _, pixels = chart:render()
-    example_print_log("density histogram bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setDensity width=" .. tostring(width))
+    lurek.log.info("setDensity height=" .. tostring(height))
 end
 ```
 
@@ -4120,11 +4374,13 @@ LHistogramChart:setRange(min, max)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
     chart:setRange(10, 30)
-    local _, _, pixels = chart:render()
-    example_print_log("range histogram bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setRange width=" .. tostring(width))
+    lurek.log.info("setRange height=" .. tostring(height))
 end
 ```
 
@@ -4148,12 +4404,13 @@ LHistogramChart:setShowLegend(value)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("north", { 12, 14, 18, 21 })
-    chart:addSeries("south", { 9, 10, 11, 15 })
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
     chart:setShowLegend(true)
-    local _, _, pixels = chart:render()
-    example_print_log("histogram legend bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -4177,11 +4434,13 @@ LHistogramChart:setTitle(title)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:setTitle("Response Times")
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
-    local _, _, pixels = chart:render()
-    example_print_log("histogram title bytes = " .. #pixels)
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:setTitle("Histogram example")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -4205,11 +4464,13 @@ LHistogramChart:setWindow(max_points)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
-    chart:setWindow(4)
-    local _, _, pixels = chart:render()
-    example_print_log("window histogram bytes = " .. #pixels)
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:setWindow(2)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setWindow width=" .. tostring(width))
+    lurek.log.info("setWindow height=" .. tostring(height))
 end
 ```
 
@@ -4233,11 +4494,13 @@ LHistogramChart:setXLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:setXLabel("Latency")
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
-    local _, _, pixels = chart:render()
-    example_print_log("histogram x label bytes = " .. #pixels)
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:setXLabel("Month")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXLabel width=" .. tostring(width))
+    lurek.log.info("setXLabel height=" .. tostring(height))
 end
 ```
 
@@ -4261,11 +4524,13 @@ LHistogramChart:setXTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:setXTickCount(5)
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
-    local _, _, pixels = chart:render()
-    example_print_log("histogram x ticks bytes = " .. #pixels)
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:setXTickCount(4)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXTickCount width=" .. tostring(width))
+    lurek.log.info("setXTickCount height=" .. tostring(height))
 end
 ```
 
@@ -4289,11 +4554,13 @@ LHistogramChart:setYLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:setYLabel("Frequency")
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
-    local _, _, pixels = chart:render()
-    example_print_log("histogram y label bytes = " .. #pixels)
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:setYLabel("Value")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYLabel width=" .. tostring(width))
+    lurek.log.info("setYLabel height=" .. tostring(height))
 end
 ```
 
@@ -4317,11 +4584,13 @@ LHistogramChart:setYTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:setYTickCount(6)
-    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
-    local _, _, pixels = chart:render()
-    example_print_log("histogram y ticks bytes = " .. #pixels)
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    chart:setYTickCount(4)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYTickCount width=" .. tostring(width))
+    lurek.log.info("setYTickCount height=" .. tostring(height))
 end
 ```
 
@@ -4345,12 +4614,13 @@ LHistogramChart:type()
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18, 21 })
-    local typeName = chart:type()
-    local isObject = chart:typeOf("LObject")
-    lurek.log.info("histogram type=" .. tostring(typeName))
-    lurek.log.info("histogram is object=" .. tostring(isObject))
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -4380,12 +4650,14 @@ LHistogramChart:typeOf(name)
 
 ```lua
 do
-    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
-    chart:addSeries("response", { 12, 14, 18, 21 })
-    local isHistogram = chart:typeOf("LHistogramChart")
-    local isLine = chart:typeOf("LLineChart")
-    lurek.log.info("typeOf LHistogramChart=" .. tostring(isHistogram))
-    lurek.log.info("typeOf LLineChart=" .. tostring(isLine))
+    local chart = lurek.charts.newHistogram({ width = 160, height = 120, title = "Histogram" })
+    chart:addSeries("response", { 10, 12, 18, 20, 24, 30 })
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LHistogramChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -4425,12 +4697,13 @@ LLineChart:addSeries(name, data, color)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 400, height = 300 })
-    chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:addSeries("north", { { 1, 9 }, { 2, 14 }, { 3, 11 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("line series added for cadence chart")
-    lurek.log.info("line chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("addSeries width=" .. tostring(width))
+    lurek.log.info("addSeries height=" .. tostring(height))
 end
 ```
 
@@ -4465,11 +4738,19 @@ LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, color, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
-    local df = charts_df()
-    local added = chart:addSeriesFromDataFrame("north", df, "month", "north")
-    example_print_log("line rows added = " .. tostring(added))
-    example_print_log("width = " .. chart:getWidth())
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local df = lurek.dataframe.fromTable({
+        { month = 1, label = "Jan", north = 12, south = 8, east = 5, value = 12, x = 1, y = 12, row = "North", col = "Q1" },
+        { month = 2, label = "Feb", north = 18, south = 11, east = 7, value = 18, x = 2, y = 18, row = "North", col = "Q2" },
+        { month = 3, label = "Mar", north = 15, south = 14, east = 9, value = 15, x = 3, y = 15, row = "South", col = "Q1" },
+    })
+    local added = chart:addSeriesFromDataFrame("north", df, "x", "y")
+    lurek.log.info("rows added=" .. tostring(added))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addSeriesFromDataFrame width=" .. tostring(width))
+    lurek.log.info("addSeriesFromDataFrame height=" .. tostring(height))
 end
 ```
 
@@ -4502,11 +4783,13 @@ LLineChart:appendPoint(name, x, y, color)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
-    chart:addSeries("north", { { 1, 12 }, { 2, 18 } })
-    chart:appendPoint("north", 3, 15)
-    local _, _, pixels = chart:render()
-    example_print_log("line append bytes = " .. #pixels)
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:appendPoint("north", 4, 17)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("appendPoint width=" .. tostring(width))
+    lurek.log.info("appendPoint height=" .. tostring(height))
 end
 ```
 
@@ -4524,12 +4807,14 @@ LLineChart:clear()
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 400, height = 300 })
-    chart:addSeries("data", { {1, 1}, {2, 2}, {3, 3} })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:clear()
-    local w, h, pixels = chart:render()
-    example_print_log("LLineChart:clear ok")
-    example_print_log("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -4561,11 +4846,14 @@ LLineChart:draw(x, y, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 256, height = 128 })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    chart:draw(20, 12, {})
-    example_print_log("line draw issued")
-    example_print_log("line type = " .. chart:type())
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -4589,11 +4877,15 @@ LLineChart:drawToImage(target)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 256, height = 128 })
-    local target = chart_target_image(256, 128)
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local target = lurek.image.newImageData(160, 120)
     chart:drawToImage(target)
-    example_print_log("line target width = " .. target:getWidth())
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -4617,12 +4909,13 @@ LLineChart:getHeight()
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 400, height = 300 })
-    chart:addSeries("North", {{1, 10}, {2, 14}, {3, 11}})
-    local height = chart:getHeight()
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
     local width = chart:getWidth()
-    lurek.log.info("line height=" .. tostring(height))
-    lurek.log.info("line width=" .. tostring(width))
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -4646,12 +4939,13 @@ LLineChart:getWidth()
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 400, height = 300 })
-    chart:addSeries("North", {{1, 10}, {2, 14}, {3, 11}})
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("line width=" .. tostring(width))
-    lurek.log.info("line height=" .. tostring(height))
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -4682,11 +4976,14 @@ LLineChart:nearest(x, y)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local hit = chart:nearest(120, 80)
-    example_print_log("line nearest found = " .. tostring(hit ~= nil))
-    example_print_log("line nearest series = " .. tostring(hit and hit.series))
+    local hit = chart:nearest(80, 60)
+    lurek.log.info("nearest=" .. tostring(hit ~= nil))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("nearest width=" .. tostring(width))
+    lurek.log.info("nearest height=" .. tostring(height))
 end
 ```
 
@@ -4712,11 +5009,15 @@ LLineChart:render()
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 400, height = 300 })
-    chart:addSeries("data", { {1, 5}, {2, 3}, {3, 8}, {4, 2}, {5, 6} })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     local w, h, pixels = chart:render()
-    example_print_log("LLineChart:render ok")
-    example_print_log("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -4734,11 +5035,14 @@ LLineChart:renderImage()
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 256, height = 128 })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local img = chart:renderImage()
-    example_print_log("line image type = " .. img:type())
-    example_print_log("line image width = " .. img:getWidth())
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -4770,11 +5074,13 @@ LLineChart:replaceSeries(name, data, color)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
-    chart:addSeries("north", { { 1, 12 }, { 2, 18 } })
-    chart:replaceSeries("north", { { 1, 9 }, { 2, 11 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("line replace bytes = " .. #pixels)
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:replaceSeries("north", { { 1, 9 }, { 2, 14 }, { 3, 11 } })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("replaceSeries width=" .. tostring(width))
+    lurek.log.info("replaceSeries height=" .. tostring(height))
 end
 ```
 
@@ -4798,12 +5104,13 @@ LLineChart:setShowLegend(value)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    chart:addSeries("south", { { 1, 8 }, { 2, 11 }, { 3, 16 } })
     chart:setShowLegend(true)
-    local _, _, pixels = chart:render()
-    example_print_log("line legend bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -4827,13 +5134,13 @@ LLineChart:setTitle(title)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 400, height = 300 })
-    chart:setTitle("Monthly Sales")
-    chart:addSeries("North", {{1, 10}, {2, 14}, {3, 11}})
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setTitle("Line example")
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("line title set for monthly sales")
-    lurek.log.info("line chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -4857,11 +5164,13 @@ LLineChart:setWindow(max_points)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
-    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 }, { 4, 24 } })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:setWindow(2)
-    local _, _, pixels = chart:render()
-    example_print_log("line window bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setWindow width=" .. tostring(width))
+    lurek.log.info("setWindow height=" .. tostring(height))
 end
 ```
 
@@ -4885,11 +5194,13 @@ LLineChart:setXLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
-    chart:setXLabel("Month")
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("line x label bytes = " .. #pixels)
+    chart:setXLabel("Month")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXLabel width=" .. tostring(width))
+    lurek.log.info("setXLabel height=" .. tostring(height))
 end
 ```
 
@@ -4913,11 +5224,13 @@ LLineChart:setXMax(value)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    chart:setXMax(6)
-    local _, _, pixels = chart:render()
-    example_print_log("line x max bytes = " .. #pixels)
+    chart:setXMax(5)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXMax width=" .. tostring(width))
+    lurek.log.info("setXMax height=" .. tostring(height))
 end
 ```
 
@@ -4941,11 +5254,13 @@ LLineChart:setXTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
-    chart:setXTickCount(5)
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("line x ticks bytes = " .. #pixels)
+    chart:setXTickCount(4)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXTickCount width=" .. tostring(width))
+    lurek.log.info("setXTickCount height=" .. tostring(height))
 end
 ```
 
@@ -4969,11 +5284,13 @@ LLineChart:setYLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
-    chart:setYLabel("Users")
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("line y label bytes = " .. #pixels)
+    chart:setYLabel("Value")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYLabel width=" .. tostring(width))
+    lurek.log.info("setYLabel height=" .. tostring(height))
 end
 ```
 
@@ -4997,11 +5314,13 @@ LLineChart:setYMax(value)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:setYMax(30)
-    local _, _, pixels = chart:render()
-    example_print_log("line y max bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYMax width=" .. tostring(width))
+    lurek.log.info("setYMax height=" .. tostring(height))
 end
 ```
 
@@ -5025,11 +5344,13 @@ LLineChart:setYTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 320, height = 180 })
-    chart:setYTickCount(6)
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("line y ticks bytes = " .. #pixels)
+    chart:setYTickCount(4)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYTickCount width=" .. tostring(width))
+    lurek.log.info("setYTickCount height=" .. tostring(height))
 end
 ```
 
@@ -5053,12 +5374,13 @@ LLineChart:type()
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 256, height = 128 })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local typeName = chart:type()
-    local isObject = chart:typeOf("LObject")
-    lurek.log.info("line chart type=" .. tostring(typeName))
-    lurek.log.info("line chart is object=" .. tostring(isObject))
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -5088,12 +5410,14 @@ LLineChart:typeOf(name)
 
 ```lua
 do
-    local chart = lurek.charts.newLine({ width = 256, height = 128 })
+    local chart = lurek.charts.newLine({ width = 160, height = 120, title = "Line" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local isLine = chart:typeOf("LLineChart")
-    local isArea = chart:typeOf("LAreaChart")
-    lurek.log.info("typeOf LLineChart=" .. tostring(isLine))
-    lurek.log.info("typeOf LAreaChart=" .. tostring(isArea))
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LLineChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -5133,11 +5457,14 @@ LPieChart:addSegment(label, value, color)
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 320, height = 180 })
-    chart:addSegment("North", 42, { 0.9, 0.3, 0.2, 1.0 })
-    chart:addSegment("South", 33, { 0.2, 0.6, 0.9, 1.0 })
-    local _, _, pixels = chart:render()
-    example_print_log("pie segment bytes = " .. #pixels)
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    chart:addSegment("East", 6)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addSegment width=" .. tostring(width))
+    lurek.log.info("addSegment height=" .. tostring(height))
 end
 ```
 
@@ -5170,15 +5497,20 @@ LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 320, height = 180 })
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
     local df = lurek.dataframe.fromTable({
-        { label = "North", value = 42 },
-        { label = "South", value = 33 },
-        { label = "East", value = 25 },
+        { month = 1, label = "Jan", north = 12, south = 8, east = 5, value = 12, x = 1, y = 12, row = "North", col = "Q1" },
+        { month = 2, label = "Feb", north = 18, south = 11, east = 7, value = 18, x = 2, y = 18, row = "North", col = "Q2" },
+        { month = 3, label = "Mar", north = 15, south = 14, east = 9, value = 15, x = 3, y = 15, row = "South", col = "Q1" },
     })
     local added = chart:addSegmentsFromDataFrame(df, "label", "value")
-    example_print_log("pie segments added = " .. tostring(added))
-    example_print_log("pie height = " .. chart:getHeight())
+    lurek.log.info("segments added=" .. tostring(added))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addSegmentsFromDataFrame width=" .. tostring(width))
+    lurek.log.info("addSegmentsFromDataFrame height=" .. tostring(height))
 end
 ```
 
@@ -5210,11 +5542,14 @@ LPieChart:addSlice(label, value, color)
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 400, height = 300 })
-    chart:addSlice("Food", 45.0, { 0.9, 0.3, 0.1, 1.0 })
-    chart:addSlice("Transport", 20.0, { 0.2, 0.6, 0.9, 1.0 })
-    example_print_log("LPieChart:addSlice ok")
-    example_print_log("width = " .. tostring(chart:getWidth()))
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    chart:addSlice("East", 6)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addSlice width=" .. tostring(width))
+    lurek.log.info("addSlice height=" .. tostring(height))
 end
 ```
 
@@ -5232,13 +5567,16 @@ LPieChart:clear()
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 400, height = 300 })
-    chart:addSlice("A", 1)
-    chart:addSlice("B", 2)
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
     chart:clear()
-    local w, h, pixels = chart:render()
-    example_print_log("LPieChart:clear ok")
-    example_print_log("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -5270,12 +5608,15 @@ LPieChart:draw(x, y, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 256, height = 128 })
-    chart:addSegment("North", 42)
-    chart:addSegment("South", 33)
-    chart:draw(20, 10, {})
-    example_print_log("pie draw issued")
-    example_print_log("pie type = " .. chart:type())
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -5299,12 +5640,16 @@ LPieChart:drawToImage(target)
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 256, height = 128 })
-    local target = chart_target_image(256, 128)
-    chart:addSegment("North", 42)
-    chart:addSegment("South", 33)
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    local target = lurek.image.newImageData(160, 120)
     chart:drawToImage(target)
-    example_print_log("pie target width = " .. target:getWidth())
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -5328,13 +5673,14 @@ LPieChart:getHeight()
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 400, height = 300 })
-    chart:addSlice("North", 42)
-    chart:addSlice("South", 33)
-    local height = chart:getHeight()
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
     local width = chart:getWidth()
-    lurek.log.info("pie height=" .. tostring(height))
-    lurek.log.info("pie width=" .. tostring(width))
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -5358,13 +5704,14 @@ LPieChart:getWidth()
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 400, height = 300 })
-    chart:addSlice("North", 42)
-    chart:addSlice("South", 33)
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("pie width=" .. tostring(width))
-    lurek.log.info("pie height=" .. tostring(height))
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -5390,13 +5737,16 @@ LPieChart:render()
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 400, height = 300 })
-    chart:addSlice("A", 5)
-    chart:addSlice("B", 3)
-    chart:addSlice("C", 8)
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
     local w, h, pixels = chart:render()
-    example_print_log("LPieChart:render ok")
-    example_print_log("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -5414,12 +5764,15 @@ LPieChart:renderImage()
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 256, height = 128 })
-    chart:addSegment("North", 42)
-    chart:addSegment("South", 33)
-    local img = chart:renderImage()
-    example_print_log("pie image type = " .. img:type())
-    example_print_log("pie image width = " .. img:getWidth())
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -5443,12 +5796,14 @@ LPieChart:setShowLegend(value)
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 320, height = 180 })
-    chart:addSegment("North", 42)
-    chart:addSegment("South", 33)
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
     chart:setShowLegend(true)
-    local _, _, pixels = chart:render()
-    example_print_log("pie legend bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -5472,14 +5827,14 @@ LPieChart:setTitle(title)
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 400, height = 300 })
-    chart:setTitle("Monthly Sales")
-    chart:addSlice("North", 42)
-    chart:addSlice("South", 33)
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    chart:setTitle("Pie example")
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("pie title set for monthly sales")
-    lurek.log.info("pie chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -5503,13 +5858,14 @@ LPieChart:type()
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 256, height = 128 })
-    chart:addSegment("North", 42)
-    chart:addSegment("South", 33)
-    local typeName = chart:type()
-    local isObject = chart:typeOf("LObject")
-    lurek.log.info("pie chart type=" .. tostring(typeName))
-    lurek.log.info("pie chart is object=" .. tostring(isObject))
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -5539,13 +5895,15 @@ LPieChart:typeOf(name)
 
 ```lua
 do
-    local chart = lurek.charts.newPie({ width = 256, height = 128 })
-    chart:addSegment("North", 42)
-    chart:addSegment("South", 33)
-    local isPie = chart:typeOf("LPieChart")
-    local isBar = chart:typeOf("LBarChart")
-    lurek.log.info("typeOf LPieChart=" .. tostring(isPie))
-    lurek.log.info("typeOf LBarChart=" .. tostring(isBar))
+    local chart = lurek.charts.newPie({ width = 160, height = 120, title = "Pie" })
+    chart:addSlice("North", 12)
+    chart:addSlice("South", 8)
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LPieChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -5579,13 +5937,14 @@ LRadarChart:addSeries(name, values, color)
 
 ```lua
 do
-    local chart = lurek.charts.newRadar({ width = 320, height = 220 })
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
     chart:setAxes({ "speed", "power", "range", "cost" })
     chart:addSeries("Scout", { 5, 2, 4, 3 })
-    chart:addSeries("Tank", { 2, 5, 2, 4 })
-    local _, _, pixels = chart:render()
-    example_print_log("radar series bytes = " .. #pixels)
-    example_print_log("radar type = " .. chart:type())
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addSeries width=" .. tostring(width))
+    lurek.log.info("addSeries height=" .. tostring(height))
 end
 ```
 
@@ -5603,12 +5962,16 @@ LRadarChart:clear()
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "clear",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    chart:clear()
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -5626,14 +5989,15 @@ LRadarChart:clearMaxValue()
 
 ```lua
 do
-    local chart = lurek.charts.newRadar({ width = 320, height = 220 })
-    chart:setMaxValue(10)
-    chart:clearMaxValue()
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
     chart:setAxes({ "speed", "power", "range", "cost" })
     chart:addSeries("Scout", { 5, 2, 4, 3 })
-    local _, _, pixels = chart:render()
-    example_print_log("radar clear max bytes = " .. #pixels)
-    example_print_log("radar width = " .. chart:getWidth())
+    chart:setMaxValue(10)
+    chart:clearMaxValue()
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clearMaxValue width=" .. tostring(width))
+    lurek.log.info("clearMaxValue height=" .. tostring(height))
 end
 ```
 
@@ -5665,12 +6029,15 @@ LRadarChart:draw(x, y, opts)
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "draw",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -5694,12 +6061,16 @@ LRadarChart:drawToImage(target)
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "drawToImage",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    local target = lurek.image.newImageData(160, 120)
+    chart:drawToImage(target)
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -5723,12 +6094,14 @@ LRadarChart:getHeight()
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "getHeight",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -5752,12 +6125,14 @@ LRadarChart:getWidth()
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "getWidth",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -5783,12 +6158,16 @@ LRadarChart:render()
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "render",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    local w, h, pixels = chart:render()
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -5806,12 +6185,15 @@ LRadarChart:renderImage()
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "renderImage",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -5835,12 +6217,14 @@ LRadarChart:setAxes(axes)
 
 ```lua
 do
-    local chart = lurek.charts.newRadar({ width = 320, height = 220 })
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
     chart:setAxes({ "speed", "power", "range", "cost" })
     chart:addSeries("Scout", { 5, 2, 4, 3 })
-    local _, _, pixels = chart:render()
-    example_print_log("radar axes bytes = " .. #pixels)
-    example_print_log("radar width = " .. chart:getWidth())
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setAxes width=" .. tostring(width))
+    lurek.log.info("setAxes height=" .. tostring(height))
 end
 ```
 
@@ -5864,13 +6248,14 @@ LRadarChart:setMaxValue(value)
 
 ```lua
 do
-    local chart = lurek.charts.newRadar({ width = 320, height = 220 })
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
     chart:setAxes({ "speed", "power", "range", "cost" })
-    chart:setMaxValue(10)
     chart:addSeries("Scout", { 5, 2, 4, 3 })
-    local _, _, pixels = chart:render()
-    example_print_log("radar max bytes = " .. #pixels)
-    example_print_log("radar height = " .. chart:getHeight())
+    chart:setMaxValue(10)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setMaxValue width=" .. tostring(width))
+    lurek.log.info("setMaxValue height=" .. tostring(height))
 end
 ```
 
@@ -5894,12 +6279,14 @@ LRadarChart:setShowLegend(value)
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "setShowLegend",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    chart:setShowLegend(true)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -5923,12 +6310,14 @@ LRadarChart:setTitle(title)
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "setTitle",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    chart:setTitle("Radar example")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -5952,12 +6341,14 @@ LRadarChart:type()
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "type",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -5987,12 +6378,15 @@ LRadarChart:typeOf(name)
 
 ```lua
 do
-    local type_name = "LRadarChart"
-    chart_common_example(
-        "radar",
-        "typeOf",
-        type_name
-    )
+    local chart = lurek.charts.newRadar({ width = 160, height = 120, title = "Radar" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LRadarChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -6032,12 +6426,13 @@ LScatterPlot:addSeries(name, data, color)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 400, height = 300 })
-    chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:addSeries("north", { { 1, 9 }, { 2, 14 }, { 3, 11 } })
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("scatter series added for player scores")
-    lurek.log.info("scatter chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("addSeries width=" .. tostring(width))
+    lurek.log.info("addSeries height=" .. tostring(height))
 end
 ```
 
@@ -6072,11 +6467,19 @@ LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, color, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
-    local df = charts_df()
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local df = lurek.dataframe.fromTable({
+        { month = 1, label = "Jan", north = 12, south = 8, east = 5, value = 12, x = 1, y = 12, row = "North", col = "Q1" },
+        { month = 2, label = "Feb", north = 18, south = 11, east = 7, value = 18, x = 2, y = 18, row = "North", col = "Q2" },
+        { month = 3, label = "Mar", north = 15, south = 14, east = 9, value = 15, x = 3, y = 15, row = "South", col = "Q1" },
+    })
     local added = chart:addSeriesFromDataFrame("north", df, "x", "y")
-    example_print_log("scatter rows added = " .. tostring(added))
-    example_print_log("scatter width = " .. chart:getWidth())
+    lurek.log.info("rows added=" .. tostring(added))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addSeriesFromDataFrame width=" .. tostring(width))
+    lurek.log.info("addSeriesFromDataFrame height=" .. tostring(height))
 end
 ```
 
@@ -6109,11 +6512,13 @@ LScatterPlot:appendPoint(name, x, y, color)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
-    chart:addSeries("north", { { 1, 12 }, { 2, 18 } })
-    chart:appendPoint("north", 3, 15)
-    local _, _, pixels = chart:render()
-    example_print_log("scatter append bytes = " .. #pixels)
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:appendPoint("north", 4, 17)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("appendPoint width=" .. tostring(width))
+    lurek.log.info("appendPoint height=" .. tostring(height))
 end
 ```
 
@@ -6131,12 +6536,14 @@ LScatterPlot:clear()
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 400, height = 300 })
-    chart:addSeries("data", { {1, 1}, {2, 2}, {3, 3} })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:clear()
-    local w, h, pixels = chart:render()
-    example_print_log("LScatterPlot:clear ok")
-    example_print_log("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -6168,11 +6575,14 @@ LScatterPlot:draw(x, y, opts)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    chart:draw(20, 10, {})
-    example_print_log("scatter draw issued")
-    example_print_log("scatter type = " .. chart:type())
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -6196,11 +6606,15 @@ LScatterPlot:drawToImage(target)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
-    local target = chart_target_image(256, 128)
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local target = lurek.image.newImageData(160, 120)
     chart:drawToImage(target)
-    example_print_log("scatter target width = " .. target:getWidth())
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -6224,12 +6638,13 @@ LScatterPlot:getHeight()
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 400, height = 300 })
-    chart:addSeries("Players", {{1, 10}, {2, 12}, {3, 18}})
-    local height = chart:getHeight()
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
     local width = chart:getWidth()
-    lurek.log.info("scatter height=" .. tostring(height))
-    lurek.log.info("scatter width=" .. tostring(width))
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -6253,12 +6668,13 @@ LScatterPlot:getWidth()
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 400, height = 300 })
-    chart:addSeries("Players", {{1, 10}, {2, 12}, {3, 18}})
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("scatter width=" .. tostring(width))
-    lurek.log.info("scatter height=" .. tostring(height))
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -6289,11 +6705,14 @@ LScatterPlot:nearest(x, y)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local hit = chart:nearest(120, 80)
-    example_print_log("scatter nearest found = " .. tostring(hit ~= nil))
-    example_print_log("scatter nearest series = " .. tostring(hit and hit.series))
+    local hit = chart:nearest(80, 60)
+    lurek.log.info("nearest=" .. tostring(hit ~= nil))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("nearest width=" .. tostring(width))
+    lurek.log.info("nearest height=" .. tostring(height))
 end
 ```
 
@@ -6319,11 +6738,15 @@ LScatterPlot:render()
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 400, height = 300 })
-    chart:addSeries("data", { {1, 5}, {2, 3}, {3, 8}, {4, 2}, {5, 6} })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     local w, h, pixels = chart:render()
-    example_print_log("LScatterPlot:render ok")
-    example_print_log("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -6341,11 +6764,14 @@ LScatterPlot:renderImage()
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local img = chart:renderImage()
-    example_print_log("scatter image type = " .. img:type())
-    example_print_log("scatter image width = " .. img:getWidth())
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -6377,11 +6803,13 @@ LScatterPlot:replaceSeries(name, data, color)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
-    chart:addSeries("north", { { 1, 12 }, { 2, 18 } })
-    chart:replaceSeries("north", { { 1, 9 }, { 2, 11 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("scatter replace bytes = " .. #pixels)
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:replaceSeries("north", { { 1, 9 }, { 2, 14 }, { 3, 11 } })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("replaceSeries width=" .. tostring(width))
+    lurek.log.info("replaceSeries height=" .. tostring(height))
 end
 ```
 
@@ -6405,13 +6833,13 @@ LScatterPlot:setDotRadius(radius)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 400, height = 300 })
-    chart:setDotRadius(5.0)
-    chart:addSeries("Players", {{1, 10}, {2, 12}, {3, 18}})
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setDotRadius(4)
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("scatter dot radius set to 5")
-    lurek.log.info("scatter chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("setDotRadius width=" .. tostring(width))
+    lurek.log.info("setDotRadius height=" .. tostring(height))
 end
 ```
 
@@ -6435,12 +6863,13 @@ LScatterPlot:setShowLegend(value)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    chart:addSeries("south", { { 1, 8 }, { 2, 11 }, { 3, 16 } })
     chart:setShowLegend(true)
-    local _, _, pixels = chart:render()
-    example_print_log("scatter legend bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -6464,13 +6893,13 @@ LScatterPlot:setTitle(title)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 400, height = 300 })
-    chart:setTitle("Monthly Sales")
-    chart:addSeries("Players", {{1, 10}, {2, 12}, {3, 18}})
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setTitle("Scatter example")
     local width = chart:getWidth()
     local height = chart:getHeight()
-    lurek.log.info("scatter title set for monthly sales")
-    lurek.log.info("scatter chart size=" .. tostring(width) .. "x" .. tostring(height))
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -6494,11 +6923,13 @@ LScatterPlot:setWindow(max_points)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
-    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 }, { 4, 24 } })
-    chart:setWindow(3)
-    local _, _, pixels = chart:render()
-    example_print_log("scatter window bytes = " .. #pixels)
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setWindow(2)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setWindow width=" .. tostring(width))
+    lurek.log.info("setWindow height=" .. tostring(height))
 end
 ```
 
@@ -6522,11 +6953,13 @@ LScatterPlot:setXLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
-    chart:setXLabel("Hours")
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("scatter x label bytes = " .. #pixels)
+    chart:setXLabel("Month")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXLabel width=" .. tostring(width))
+    lurek.log.info("setXLabel height=" .. tostring(height))
 end
 ```
 
@@ -6551,11 +6984,13 @@ LScatterPlot:setXRange(min_x, max_x)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:setXRange(0, 6)
-    local _, _, pixels = chart:render()
-    example_print_log("scatter x range bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXRange width=" .. tostring(width))
+    lurek.log.info("setXRange height=" .. tostring(height))
 end
 ```
 
@@ -6579,11 +7014,13 @@ LScatterPlot:setXTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
-    chart:setXTickCount(5)
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("scatter x ticks bytes = " .. #pixels)
+    chart:setXTickCount(4)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setXTickCount width=" .. tostring(width))
+    lurek.log.info("setXTickCount height=" .. tostring(height))
 end
 ```
 
@@ -6607,11 +7044,13 @@ LScatterPlot:setYLabel(label)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
-    chart:setYLabel("Score")
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("scatter y label bytes = " .. #pixels)
+    chart:setYLabel("Value")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYLabel width=" .. tostring(width))
+    lurek.log.info("setYLabel height=" .. tostring(height))
 end
 ```
 
@@ -6636,11 +7075,13 @@ LScatterPlot:setYRange(min_y, max_y)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
     chart:setYRange(0, 30)
-    local _, _, pixels = chart:render()
-    example_print_log("scatter y range bytes = " .. #pixels)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYRange width=" .. tostring(width))
+    lurek.log.info("setYRange height=" .. tostring(height))
 end
 ```
 
@@ -6664,11 +7105,13 @@ LScatterPlot:setYTickCount(count)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
-    chart:setYTickCount(6)
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local _, _, pixels = chart:render()
-    example_print_log("scatter y ticks bytes = " .. #pixels)
+    chart:setYTickCount(4)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setYTickCount width=" .. tostring(width))
+    lurek.log.info("setYTickCount height=" .. tostring(height))
 end
 ```
 
@@ -6692,12 +7135,13 @@ LScatterPlot:type()
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local typeName = chart:type()
-    local isObject = chart:typeOf("LObject")
-    lurek.log.info("scatter chart type=" .. tostring(typeName))
-    lurek.log.info("scatter chart is object=" .. tostring(isObject))
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -6727,12 +7171,14 @@ LScatterPlot:typeOf(name)
 
 ```lua
 do
-    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
+    local chart = lurek.charts.newScatter({ width = 160, height = 120, title = "Scatter" })
     chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
-    local isScatter = chart:typeOf("LScatterPlot")
-    local isPie = chart:typeOf("LPieChart")
-    lurek.log.info("typeOf LScatterPlot=" .. tostring(isScatter))
-    lurek.log.info("typeOf LPieChart=" .. tostring(isPie))
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LScatterPlot")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 
@@ -6766,13 +7212,14 @@ LTreemapChart:addItem(label, value, color)
 
 ```lua
 do
-    local chart = lurek.charts.newTreemap({ width = 320, height = 220 })
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
     chart:addItem("Rendering", 45)
     chart:addItem("Audio", 18)
     chart:addItem("Input", 12)
-    local _, _, pixels = chart:render()
-    example_print_log("treemap add bytes = " .. #pixels)
-    example_print_log("treemap width = " .. chart:getWidth())
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("addItem width=" .. tostring(width))
+    lurek.log.info("addItem height=" .. tostring(height))
 end
 ```
 
@@ -6790,12 +7237,16 @@ LTreemapChart:clear()
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "clear",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    chart:clear()
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("clear width=" .. tostring(width))
+    lurek.log.info("clear height=" .. tostring(height))
 end
 ```
 
@@ -6827,12 +7278,15 @@ LTreemapChart:draw(x, y, opts)
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "draw",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    chart:draw(12, 18, {})
+    lurek.log.info("draw issued=true")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("draw width=" .. tostring(width))
+    lurek.log.info("draw height=" .. tostring(height))
 end
 ```
 
@@ -6856,12 +7310,16 @@ LTreemapChart:drawToImage(target)
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "drawToImage",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    local target = lurek.image.newImageData(160, 120)
+    chart:drawToImage(target)
+    lurek.log.info("target width=" .. tostring(target:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("drawToImage width=" .. tostring(width))
+    lurek.log.info("drawToImage height=" .. tostring(height))
 end
 ```
 
@@ -6885,12 +7343,14 @@ LTreemapChart:getHeight()
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "getHeight",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    lurek.log.info("height=" .. tostring(chart:getHeight()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getHeight width=" .. tostring(width))
+    lurek.log.info("getHeight height=" .. tostring(height))
 end
 ```
 
@@ -6914,12 +7374,14 @@ LTreemapChart:getWidth()
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "getWidth",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    lurek.log.info("width=" .. tostring(chart:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("getWidth width=" .. tostring(width))
+    lurek.log.info("getWidth height=" .. tostring(height))
 end
 ```
 
@@ -6945,12 +7407,16 @@ LTreemapChart:render()
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "render",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    local w, h, pixels = chart:render()
+    lurek.log.info("render size=" .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("render bytes=" .. tostring(#pixels))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("render width=" .. tostring(width))
+    lurek.log.info("render height=" .. tostring(height))
 end
 ```
 
@@ -6968,12 +7434,15 @@ LTreemapChart:renderImage()
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "renderImage",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    local image = chart:renderImage()
+    lurek.log.info("image width=" .. tostring(image:getWidth()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("renderImage width=" .. tostring(width))
+    lurek.log.info("renderImage height=" .. tostring(height))
 end
 ```
 
@@ -6997,15 +7466,18 @@ LTreemapChart:setItems(items)
 
 ```lua
 do
-    local chart = lurek.charts.newTreemap({ width = 320, height = 220 })
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
     chart:setItems({
         { label = "Rendering", value = 45 },
         { label = "Audio", value = 18 },
         { label = "Input", value = 12 },
     })
-    local _, _, pixels = chart:render()
-    example_print_log("treemap items bytes = " .. #pixels)
-    example_print_log("treemap type = " .. chart:type())
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setItems width=" .. tostring(width))
+    lurek.log.info("setItems height=" .. tostring(height))
 end
 ```
 
@@ -7029,12 +7501,14 @@ LTreemapChart:setShowLegend(value)
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "setShowLegend",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    chart:setShowLegend(true)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setShowLegend width=" .. tostring(width))
+    lurek.log.info("setShowLegend height=" .. tostring(height))
 end
 ```
 
@@ -7058,12 +7532,14 @@ LTreemapChart:setTitle(title)
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "setTitle",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    chart:setTitle("Treemap example")
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("setTitle width=" .. tostring(width))
+    lurek.log.info("setTitle height=" .. tostring(height))
 end
 ```
 
@@ -7087,12 +7563,14 @@ LTreemapChart:type()
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "type",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    lurek.log.info("type=" .. tostring(chart:type()))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("type width=" .. tostring(width))
+    lurek.log.info("type height=" .. tostring(height))
 end
 ```
 
@@ -7122,12 +7600,15 @@ LTreemapChart:typeOf(name)
 
 ```lua
 do
-    local type_name = "LTreemapChart"
-    chart_common_example(
-        "treemap",
-        "typeOf",
-        type_name
-    )
+    local chart = lurek.charts.newTreemap({ width = 160, height = 120, title = "Treemap" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    lurek.log.info("typeOf exact=" .. tostring(chart:typeOf("LTreemapChart")))
+    lurek.log.info("typeOf object=" .. tostring(chart:typeOf("LObject")))
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("typeOf width=" .. tostring(width))
+    lurek.log.info("typeOf height=" .. tostring(height))
 end
 ```
 

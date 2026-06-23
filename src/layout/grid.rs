@@ -28,13 +28,11 @@ pub fn layout_grid(nodes: &[LayoutNode], config: &LayoutConfig) -> LayoutResult 
 
     let mut x_offsets = vec![config.margin; cols];
     for col in 1..cols {
-        x_offsets[col] =
-            x_offsets[col - 1] + col_widths[col - 1] + config.h_spacing.max(0.0);
+        x_offsets[col] = x_offsets[col - 1] + col_widths[col - 1] + config.h_spacing.max(0.0);
     }
     let mut y_offsets = vec![config.margin; rows];
     for row in 1..rows {
-        y_offsets[row] =
-            y_offsets[row - 1] + row_heights[row - 1] + config.v_spacing.max(0.0);
+        y_offsets[row] = y_offsets[row - 1] + row_heights[row - 1] + config.v_spacing.max(0.0);
     }
 
     for (index, node) in ordered.iter_mut().enumerate() {

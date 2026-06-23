@@ -16,6 +16,17 @@ Example block: `lurek.overlay.new`
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     local w, h = ov:getDimensions()
     overlay_log("new type=" .. ov:type())
@@ -76,6 +87,17 @@ lurek.overlay.new(w, h)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     local w, h = ov:getDimensions()
     overlay_log("new type=" .. ov:type())
@@ -113,6 +135,17 @@ lurek.overlay.newTransition(kind, duration, color_tbl)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tr = lurek.overlay.newTransition("wipe", 0.75, { 0.05, 0.10, 0.15, 1.0 })
     local r, g, b, a = tr:color()
     overlay_log("newTransition type=" .. tr:type())
@@ -157,6 +190,17 @@ LOverlay:clear()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFlash(1, 1, 1, 0.5, 0.1)
     example_print_log("LOverlay:clear before=" .. tostring(ov:isActive()))
@@ -192,6 +236,17 @@ LOverlay:drawToImage(w, h)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(200, 150)
     ov:flash(0.9, 0.95, 1.0, 0.6, 0.2)
     local img = ov:drawToImage(200, 150)
@@ -224,6 +279,17 @@ LOverlay:fade(r, g, b, a, dur)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:fade(0.05, 0.05, 0.10, 0.85, 0.5)
     ov:update(0.1)
@@ -258,6 +324,17 @@ LOverlay:flash(r, g, b, a, dur)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -289,6 +366,17 @@ LOverlay:getAccessibilityPolicy()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setAccessibilityPolicy({
         max_flash_alpha = 0.3,
@@ -325,6 +413,17 @@ LOverlay:getAmbientColor()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -356,6 +455,17 @@ LOverlay:getCloudCount()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudCount(8)
     ov:setCloudShadows(true)
@@ -386,6 +496,17 @@ LOverlay:getCloudOpacity()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -416,6 +537,17 @@ LOverlay:getCloudScale()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -446,6 +578,17 @@ LOverlay:getCloudSpeed()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -477,6 +620,17 @@ LOverlay:getDimensions()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     local w, h = ov:getDimensions()
     overlay_log("getDimensions=" .. w .. "x" .. h)
@@ -506,6 +660,17 @@ LOverlay:getFilmGrainIntensity()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -536,6 +701,17 @@ LOverlay:getFlashAlpha()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -569,6 +745,17 @@ LOverlay:getFogColor()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -600,6 +787,17 @@ LOverlay:getFogDensity()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -630,6 +828,17 @@ LOverlay:getHeatHazeIntensity()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -660,6 +869,17 @@ LOverlay:getHeight()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     local w, h = ov:getDimensions()
     overlay_log("getHeight=" .. ov:getHeight())
@@ -689,6 +909,17 @@ LOverlay:getLightningAlpha()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -722,6 +953,17 @@ LOverlay:getLightningColor()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -753,6 +995,17 @@ LOverlay:getRenderPlan()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFogEnabled(true)
     ov:setWater(0.2, 1.0, 0.5)
@@ -786,6 +1039,17 @@ LOverlay:getShakeOffset()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function pair_text(x, y)
         return string.format("(%.2f, %.2f)", x, y)
     end
@@ -817,6 +1081,17 @@ LOverlay:getStats()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherEnabled(true)
     ov:setWeather("rain")
@@ -848,6 +1123,17 @@ LOverlay:getTimeOfDay()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setTimeOfDay(0.75)
     ov:setAmbientEnabled(true)
@@ -879,6 +1165,17 @@ LOverlay:getVignetteStrength()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -909,6 +1206,17 @@ LOverlay:getWater()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -941,6 +1249,17 @@ LOverlay:getWeather()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeather("rain")
     ov:setWeatherEnabled(true)
@@ -972,6 +1291,17 @@ LOverlay:getWeatherIntensity()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -1002,6 +1332,17 @@ LOverlay:getWeatherRngState()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherSeed(246813579)
     local state = ov:getWeatherRngState()
@@ -1030,6 +1371,17 @@ LOverlay:getWidth()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     local w, h = ov:getDimensions()
     overlay_log("getWidth=" .. ov:getWidth())
@@ -1059,6 +1411,17 @@ LOverlay:getWindDirection()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -1089,6 +1452,17 @@ LOverlay:getWindSpeed()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -1119,6 +1493,17 @@ LOverlay:isActive()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFlash(1, 1, 1, 0.5, 0.3)
     overlay_log("isActive after flash=" .. tostring(ov:isActive()))
@@ -1148,6 +1533,17 @@ LOverlay:isAmbientEnabled()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setAmbientEnabled(true)
     local r, g, b, a = ov:getAmbientColor()
@@ -1178,6 +1574,17 @@ LOverlay:isCloudShadowsEnabled()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudShadows(true)
     ov:setCloudCount(6)
@@ -1208,6 +1615,17 @@ LOverlay:isFading()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFade(0.0, 0.0, 0.0, 1.0, 0.4)
     ov:update(0.1)
@@ -1238,6 +1656,17 @@ LOverlay:isFilmGrainEnabled()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFilmGrainEnabled(true)
     ov:setFilmGrainIntensity(0.35)
@@ -1268,6 +1697,17 @@ LOverlay:isFlashing()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFlash(1, 0, 0, 1.0, 0.5)
     overlay_log("isFlashing=" .. tostring(ov:isFlashing()))
@@ -1297,6 +1737,17 @@ LOverlay:isFogEnabled()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFogEnabled(true)
     ov:setFogDensity(0.45)
@@ -1327,6 +1778,17 @@ LOverlay:isHeatHazeEnabled()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setHeatHazeEnabled(true)
     ov:setHeatHazeIntensity(0.25)
@@ -1357,6 +1819,17 @@ LOverlay:isShaking()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerShake(5.0, 0.5)
     local ox, oy = ov:getShakeOffset()
@@ -1387,6 +1860,17 @@ LOverlay:isVignetteEnabled()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setVignetteEnabled(true)
     ov:setVignetteStrength(0.55)
@@ -1417,6 +1901,17 @@ LOverlay:isWeatherEnabled()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherEnabled(true)
     ov:setWeather("snow")
@@ -1442,6 +1937,17 @@ LOverlay:pullAmbientFromLight()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -1471,6 +1977,17 @@ LOverlay:pushAmbientToLight()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -1500,6 +2017,17 @@ LOverlay:render()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -1533,6 +2061,17 @@ LOverlay:resize(w, h)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:resize(1280, 720)
     local w, h = ov:getDimensions()
@@ -1563,6 +2102,17 @@ LOverlay:setAccessibilityPolicy(policy)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setAccessibilityPolicy({
         reduced_motion = true,
@@ -1601,6 +2151,17 @@ LOverlay:setAmbientColor(r, g, b, a)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -1632,6 +2193,17 @@ LOverlay:setAmbientEnabled(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setAmbientEnabled(true)
     local r, g, b, a = ov:getAmbientColor()
@@ -1662,6 +2234,17 @@ LOverlay:setCloudCount(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudCount(12)
     ov:setCloudShadows(true)
@@ -1692,6 +2275,17 @@ LOverlay:setCloudOpacity(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -1722,6 +2316,17 @@ LOverlay:setCloudScale(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -1752,6 +2357,17 @@ LOverlay:setCloudShadows(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudShadows(true)
     ov:setCloudCount(5)
@@ -1782,6 +2398,17 @@ LOverlay:setCloudSpeed(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -1812,6 +2439,17 @@ LOverlay:setCustomShader(name)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCustomShader("scanlines")
     local img_with_shader = ov:drawToImage(96, 64)
@@ -1841,6 +2479,17 @@ LOverlay:setFilmGrainEnabled(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFilmGrainEnabled(true)
     ov:setFilmGrainIntensity(0.25)
@@ -1871,6 +2520,17 @@ LOverlay:setFilmGrainIntensity(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -1904,6 +2564,17 @@ LOverlay:setFogColor(r, g, b, a)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -1935,6 +2606,17 @@ LOverlay:setFogDensity(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -1965,6 +2647,17 @@ LOverlay:setFogEnabled(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFogEnabled(true)
     ov:setFogDensity(0.5)
@@ -1995,6 +2688,17 @@ LOverlay:setHeatHazeEnabled(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setHeatHazeEnabled(true)
     ov:setHeatHazeIntensity(0.4)
@@ -2025,6 +2729,17 @@ LOverlay:setHeatHazeIntensity(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2058,6 +2773,17 @@ LOverlay:setLightningColor(r, g, b, a)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -2089,6 +2815,17 @@ LOverlay:setTimeOfDay(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setTimeOfDay(0.5)
     local r, g, b, a = ov:getAmbientColor()
@@ -2119,6 +2856,17 @@ LOverlay:setVignetteEnabled(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setVignetteEnabled(true)
     ov:setVignetteStrength(0.6)
@@ -2149,6 +2897,17 @@ LOverlay:setVignetteStrength(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2181,6 +2940,17 @@ LOverlay:setWater(amplitude, frequency, speed)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2216,6 +2986,17 @@ LOverlay:setWaterTint(r, g, b, strength)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2248,6 +3029,17 @@ LOverlay:setWeather(name)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeather("snow")
     ov:setWeatherEnabled(true)
@@ -2279,6 +3071,17 @@ LOverlay:setWeatherEnabled(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherEnabled(true)
     ov:setWeather("rain")
@@ -2310,6 +3113,17 @@ LOverlay:setWeatherIntensity(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2340,6 +3154,17 @@ LOverlay:setWeatherRngState(state)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherRngState(987654321)
     overlay_log("weather rng state=" .. tostring(ov:getWeatherRngState()))
@@ -2368,6 +3193,17 @@ LOverlay:setWeatherSeed(seed)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherSeed(123456789)
     overlay_log("weather seed state=" .. tostring(ov:getWeatherRngState()))
@@ -2396,6 +3232,17 @@ LOverlay:setWindDirection(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2426,6 +3273,17 @@ LOverlay:setWindSpeed(v)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2457,6 +3315,17 @@ LOverlay:shake(intensity, dur)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:shake(8.0, 0.4)
     local ox, oy = ov:getShakeOffset()
@@ -2487,6 +3356,17 @@ LOverlay:syncAmbientWithLight(mode)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -2526,6 +3406,17 @@ LOverlay:triggerFade(r, g, b, target_alpha, duration)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFade(1.0, 0, 0, 0, 0.2)
     ov:update(0.05)
@@ -2560,6 +3451,17 @@ LOverlay:triggerFlash(r, g, b, a, duration)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFlash(1, 1, 0, 1.0, 0.2)
     overlay_log("triggerFlash isFlashing=" .. tostring(ov:isFlashing()))
@@ -2583,6 +3485,17 @@ LOverlay:triggerLightning()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2614,6 +3527,17 @@ LOverlay:triggerShake(intensity, duration)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerShake(6.0, 0.3)
     local ox, oy = ov:getShakeOffset()
@@ -2644,6 +3568,17 @@ LOverlay:type()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     local w, h = ov:getDimensions()
     overlay_log("type=" .. ov:type())
@@ -2679,6 +3614,17 @@ LOverlay:typeOf(name)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     overlay_log("typeOf LOverlay=" .. tostring(ov:typeOf("LOverlay")))
     overlay_log("overlay width=" .. tostring(ov:getWidth()))
@@ -2707,6 +3653,17 @@ LOverlay:update(dt)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerShake(5.0, 1.0)
     ov:update(0.016)
@@ -2749,6 +3706,17 @@ LScreenTransition:color()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -2779,6 +3747,17 @@ LScreenTransition:isActive()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     tr:play()
     overlay_log("transition isActive=" .. tostring(tr:isActive()))
@@ -2808,6 +3787,17 @@ LScreenTransition:isDone()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tr = lurek.overlay.newTransition("fade", 0.2, { 0.0, 0.0, 0.0, 1.0 })
     tr:play()
     tr:update(1.0)
@@ -2838,6 +3828,17 @@ LScreenTransition:kind()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tr = lurek.overlay.newTransition("iris", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     local r, g, b, a = tr:color()
     overlay_log("transition kind=" .. tr:kind())
@@ -2861,6 +3862,17 @@ LScreenTransition:play()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2892,6 +3904,17 @@ LScreenTransition:progress()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2917,6 +3940,17 @@ LScreenTransition:reverse()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end
@@ -2948,6 +3982,17 @@ LScreenTransition:setColor(color)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
     end
@@ -2979,6 +4024,17 @@ LScreenTransition:type()
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     local r, g, b, a = tr:color()
     overlay_log("transition type=" .. tr:type())
@@ -3014,6 +4070,17 @@ LScreenTransition:typeOf(name)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     overlay_log("typeOf LScreenTransition=" .. tostring(tr:typeOf("LScreenTransition")))
     overlay_log("typeOf LObject=" .. tostring(tr:typeOf("LObject")))
@@ -3048,6 +4115,17 @@ LScreenTransition:update(dt)
 
 ```lua
 do
+    local function overlay_log(message)
+        lurek.log.info("[overlay.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function f2(value)
         return string.format("%.2f", value)
     end

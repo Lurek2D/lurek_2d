@@ -213,6 +213,50 @@ fn render_commands_batch_same_color_cells() {
 }
 
 #[test]
+fn active_layer_colors_affect_image_and_render_commands() {
+    let mut map = Minimap::new(2, 1, 20, 10);
+    map.set_terrain_color(0, [0.0, 0.0, 0.0, 1.0]);
+    map.try_set_layer_data(
+        1,
+        LayerData {
+            cells: vec![1, 0],
+            width: 2,
+            height: 1,
+        },
+    )
+    .expect("layer data should load");
+    map.set_layer_color(1, 1, [1.0, 0.0, 0.0, 1.0])
+        .expect("layer palette should update");
+    map.set_layer_blend_mode(1, LayerBlendMode::Replace)
+        .expect("layer blend mode should update");
+    map.set_layer_alpha(1, 1.0)
+        .expect("layer alpha should update");
+    assert!(map.set_layer(1));
+
+    let image = map.draw_to_image(10);
+    let red = image
+        .get_pixel(5, 5)
+        .expect("first active-layer cell should render");
+    let black = image
+        .get_pixel(15, 5)
+        .expect("second inactive cell should render");
+    assert!(red.0 > 220 && red.1 < 40 && red.2 < 40, "got {red:?}");
+    assert!(
+        black.0 < 40 && black.1 < 40 && black.2 < 40,
+        "got {black:?}"
+    );
+
+    let commands = map.generate_render_commands(0.0, 0.0);
+    assert!(
+        commands.iter().any(|cmd| matches!(
+            cmd,
+            RenderCommand::SetColor(r, g, b, _) if *r > 0.9 && *g < 0.1 && *b < 0.1
+        )),
+        "active layer color should be present in render commands"
+    );
+}
+
+#[test]
 fn build_render_commands_matches_generate_render_commands() {
     let mut map = Minimap::new(12, 12, 120, 120);
     let unit_type = map.add_object_type("unit".to_string(), [0.9, 0.1, 0.1, 1.0]);

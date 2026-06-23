@@ -16,6 +16,17 @@ Example block: `lurek.effect.newEffect`
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setThreshold(0.65)
     fx:setIntensity(1.8)
@@ -70,6 +81,17 @@ lurek.effect.getEffectTypes()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local types = lurek.effect.getEffectTypes()
     local stack = lurek.effect.newStack(640, 360)
     stack:add(lurek.effect.newEffect(types[1] or "bloom"))
@@ -98,6 +120,17 @@ lurek.effect.getPresetNames()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local names = lurek.effect.getPresetNames()
     local preset = names[1] or "retro_tv"
     local stack = lurek.effect.newPresetStack(preset, 320, 180)
@@ -126,6 +159,17 @@ lurek.effect.getShaderErrorDisplay()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local on = lurek.effect.getShaderErrorDisplay()
     local stack = lurek.effect.newStack(320, 180)
     stack:add(lurek.effect.newEffect("bloom"))
@@ -160,6 +204,17 @@ lurek.effect.newCustomEffect(shader_id)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
     local fx = lurek.effect.newCustomEffect(shader:getId())
     fx:setParameter("distortion", 0.15)
@@ -195,6 +250,17 @@ lurek.effect.newEffect(type_name)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setThreshold(0.65)
     fx:setIntensity(1.8)
@@ -230,6 +296,17 @@ lurek.effect.newImageEffect(spec, params)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     ie:addEffect("blur")
@@ -264,6 +341,17 @@ lurek.effect.newPass(shader_id)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
     local fx = lurek.effect.newPass(shader:getId())
     fx:setParameter("exposure", 1.1)
@@ -301,6 +389,17 @@ lurek.effect.newPresetStack(name, w, h)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newPresetStack("retro_tv", 320, 240)
     stack:setFeedback(0.2)
     local count = stack:getEffectCount()
@@ -336,6 +435,17 @@ lurek.effect.newStack(w, h)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:add(lurek.effect.newEffect("blur"))
@@ -364,6 +474,17 @@ lurek.effect.setShaderErrorDisplay(enabled)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.effect.setShaderErrorDisplay(true)
     local fx = lurek.effect.newEffect("blur")
     fx:setRadius(6.0)
@@ -420,6 +541,17 @@ LImageEffect:addEffect(name)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     local fx = ie:addEffect("bloom")
     ie:addEffect("blur")
@@ -442,6 +574,17 @@ LImageEffect:clear()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     ie:clear()
@@ -465,6 +608,17 @@ LImageEffect:clearEffects()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("crt")
     ie:clearEffects()
@@ -494,6 +648,17 @@ LImageEffect:clone()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     local copy = ie:clone()
@@ -523,6 +688,17 @@ LImageEffect:effectCount()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("crt")
     ie:addEffect("bloom")
@@ -557,6 +733,17 @@ LImageEffect:getEffect(key)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("blur")
     local fx = ie:getEffect("blur")
@@ -586,6 +773,17 @@ LImageEffect:getEffectCount()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     ie:addEffect("blur")
@@ -621,6 +819,17 @@ LImageEffect:removeByIndex(idx)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     local ok = ie:removeByIndex(0)
@@ -655,6 +864,17 @@ LImageEffect:removeByName(name)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("blur")
     local ok = ie:removeByName("blur")
@@ -689,6 +909,17 @@ LImageEffect:removeEffect(key)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     local ok = ie:removeEffect("bloom")
@@ -717,6 +948,17 @@ LImageEffect:save()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     ie:addEffect("crt")
@@ -746,6 +988,17 @@ LImageEffect:type()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     local type_name = ie:type()
@@ -780,6 +1033,17 @@ LImageEffect:typeOf(name)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     local is_image_effect = ie:typeOf("LImageEffect")
@@ -810,6 +1074,17 @@ LPostFxEffect:disableAutoUniforms()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:disableAutoUniforms()
     fx:setIntensity(1.4)
@@ -832,6 +1107,17 @@ LPostFxEffect:enableAutoUniforms()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:enableAutoUniforms()
     fx:setIntensity(1.4)
@@ -860,6 +1146,17 @@ LPostFxEffect:getEffectType()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setThreshold(0.7)
     fx:setIntensity(1.6)
@@ -895,6 +1192,17 @@ LPostFxEffect:getParameter(name, default)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setParameter("intensity", 1.5)
     local v = fx:getParameter("intensity", 1.0)
@@ -923,6 +1231,17 @@ LPostFxEffect:getParameterNames()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setParameter("threshold", 0.5)
     fx:setParameter("intensity", 1.3)
@@ -952,6 +1271,17 @@ LPostFxEffect:getType()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("blur")
     fx:setRadius(8.0)
     fx:setStrength(0.4)
@@ -980,6 +1310,17 @@ LPostFxEffect:getTypeName()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("crt")
     fx:setScanlineStrength(0.35)
     fx:setEnabled(true)
@@ -1014,6 +1355,17 @@ LPostFxEffect:hasParameter(name)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("blur")
     fx:setParameter("radius", 4)
     fx:setStrength(0.4)
@@ -1042,6 +1394,17 @@ LPostFxEffect:isAutoUniforms()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:enableAutoUniforms()
     fx:setThreshold(0.7)
@@ -1070,6 +1433,17 @@ LPostFxEffect:isBuiltIn()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("blur")
     fx:setRadius(4.0)
     fx:setEnabled(true)
@@ -1098,6 +1472,17 @@ LPostFxEffect:isEnabled()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setIntensity(2.2)
     fx:setThreshold(0.6)
@@ -1126,6 +1511,17 @@ LPostFxEffect:setBrightness(v)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("colourgrade")
     fx:setBrightness(1.2)
     fx:setContrast(1.05)
@@ -1154,6 +1550,17 @@ LPostFxEffect:setContrast(v)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("colourgrade")
     fx:setContrast(1.1)
     fx:setBrightness(0.95)
@@ -1182,6 +1589,17 @@ LPostFxEffect:setEnabled(enabled)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setEnabled(false)
     fx:setIntensity(2.0)
@@ -1210,6 +1628,17 @@ LPostFxEffect:setIntensity(v)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setIntensity(2.0)
     fx:setThreshold(0.6)
@@ -1238,6 +1667,17 @@ LPostFxEffect:setOffset(v)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("chromatic")
     fx:setOffset(0.002)
     fx:setEnabled(true)
@@ -1267,6 +1707,17 @@ LPostFxEffect:setParameter(name, value)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setParameter("threshold", 0.8)
     fx:setParameter("intensity", 1.4)
@@ -1295,6 +1746,17 @@ LPostFxEffect:setRadius(v)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("blur")
     fx:setRadius(8)
     fx:setStrength(0.25)
@@ -1323,6 +1785,17 @@ LPostFxEffect:setSaturation(v)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("colourgrade")
     fx:setSaturation(0.8)
     fx:setContrast(1.1)
@@ -1351,6 +1824,17 @@ LPostFxEffect:setScanlineStrength(v)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("crt")
     fx:setScanlineStrength(0.3)
     fx:setEnabled(true)
@@ -1379,6 +1863,17 @@ LPostFxEffect:setStrength(v)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("blur")
     fx:setStrength(0.5)
     fx:setRadius(6.0)
@@ -1407,6 +1902,17 @@ LPostFxEffect:setThreshold(v)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("bloom")
     fx:setThreshold(0.6)
     fx:setIntensity(1.7)
@@ -1435,6 +1941,17 @@ LPostFxEffect:type()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("blur")
     fx:setRadius(5.0)
     fx:setEnabled(true)
@@ -1469,6 +1986,17 @@ LPostFxEffect:typeOf(name)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fx = lurek.effect.newEffect("blur")
     fx:setRadius(5.0)
     fx:setStrength(0.4)
@@ -1505,6 +2033,17 @@ LPostFxStack:add(effect_ud)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("bloom")
     stack:add(fx)
@@ -1528,6 +2067,17 @@ LPostFxStack:apply()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:beginCapture()
@@ -1551,6 +2101,17 @@ LPostFxStack:beginCapture()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:beginCapture()
@@ -1574,6 +2135,17 @@ LPostFxStack:clear()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:clear()
@@ -1597,6 +2169,17 @@ LPostFxStack:clearFeedback()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:setFeedback(0.8)
     stack:clearFeedback()
@@ -1626,6 +2209,17 @@ LPostFxStack:dedup()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("bloom")
     stack:add(fx)
@@ -1649,6 +2243,17 @@ LPostFxStack:endCapture()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:beginCapture()
@@ -1678,6 +2283,17 @@ LPostFxStack:getDimensions()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("blur"))
     local w, h = stack:getDimensions()
@@ -1712,6 +2328,17 @@ LPostFxStack:getEffect(index)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     local fx = stack:getEffect(1)
@@ -1741,6 +2368,17 @@ LPostFxStack:getEffectCount()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:add(lurek.effect.newEffect("blur"))
@@ -1770,6 +2408,17 @@ LPostFxStack:getEnabledEffects()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:add(lurek.effect.newEffect("blur"))
@@ -1798,6 +2447,17 @@ LPostFxStack:getFeedback()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:setFeedback(0.3)
     stack:add(lurek.effect.newEffect("crt"))
@@ -1826,6 +2486,17 @@ LPostFxStack:getHeight()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(1024, 768)
     stack:add(lurek.effect.newEffect("bloom"))
     local height = stack:getHeight()
@@ -1854,6 +2525,17 @@ LPostFxStack:getWidth()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(1024, 768)
     stack:add(lurek.effect.newEffect("bloom"))
     local width = stack:getWidth()
@@ -1883,6 +2565,17 @@ LPostFxStack:insert(position, effect_ud)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:insert(1, lurek.effect.newEffect("blur"))
@@ -1912,6 +2605,17 @@ LPostFxStack:isCapturing()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:setFeedback(0.15)
@@ -1940,6 +2644,17 @@ LPostFxStack:isEmpty()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     local empty = stack:isEmpty()
@@ -1974,6 +2689,17 @@ LPostFxStack:isEnabled(position)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("blur")
     stack:add(fx)
@@ -2003,6 +2729,17 @@ LPostFxStack:len()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:add(lurek.effect.newEffect("blur"))
@@ -2037,6 +2774,17 @@ LPostFxStack:remove(effect_ud)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("blur")
     stack:add(fx)
@@ -2066,6 +2814,17 @@ LPostFxStack:resize(w, h)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:resize(1920, 1080)
@@ -2095,6 +2854,17 @@ LPostFxStack:setEnabled(position, enabled)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("bloom")
     stack:add(fx)
@@ -2123,6 +2893,17 @@ LPostFxStack:setFeedback(factor)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:setFeedback(0.5)
     stack:add(lurek.effect.newEffect("crt"))
@@ -2151,6 +2932,17 @@ LPostFxStack:type()
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     local type_name = stack:type()
@@ -2185,6 +2977,17 @@ LPostFxStack:typeOf(name)
 
 ```lua
 do
+    local function effect_log(message)
+        lurek.log.info("[effect.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     local is_stack = stack:typeOf("LPostFxStack")

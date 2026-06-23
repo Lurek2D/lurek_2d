@@ -1892,3 +1892,144 @@ do
     local type_name = mm:type()
     minimap_log(type_name .. " -> LMinimap=" .. tostring(is_minimap) .. " LObject=" .. tostring(is_object))
 end
+
+--@api: LMinimap:setLayerVisible
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local heat = {}
+    for i = 1, 16 do heat[i] = i % 4 end
+    mm:setLayerData(1, heat)
+    mm:setLayerColor(1, 3, 1.0, 0.2, 0.1, 0.75)
+    mm:setLayerVisible(1, true)
+    minimap_log("heat layer visible = " .. tostring(mm:isLayerVisible(1)))
+end
+
+--@api: LMinimap:isLayerVisible
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local danger = {}
+    for i = 1, 16 do danger[i] = i % 2 end
+    mm:setLayerData(1, danger)
+    local before = mm:isLayerVisible(1)
+    mm:setLayerVisible(1, true)
+    local after = mm:isLayerVisible(1)
+    minimap_log("danger layer visible " .. tostring(before) .. " -> " .. tostring(after))
+end
+
+--@api: LMinimap:setLayerAlpha
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local light = {}
+    for i = 1, 16 do light[i] = math.min(9, i) end
+    mm:setLayerData(1, light)
+    mm:setLayerAlpha(1, 0.35)
+    mm:setLayerVisible(1, true)
+    minimap_log("light layer alpha = " .. tostring(mm:getLayerAlpha(1)))
+end
+
+--@api: LMinimap:getLayerAlpha
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local data = {}
+    for i = 1, 16 do data[i] = 1 end
+    mm:setLayerData(1, data)
+    mm:setLayerAlpha(1, 0.8)
+    local alpha = mm:getLayerAlpha(1)
+    minimap_log("stored overlay alpha = " .. tostring(alpha))
+end
+
+--@api: LMinimap:setLayerColor
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local control = {}
+    for i = 1, 16 do control[i] = i % 3 end
+    mm:setLayerData(1, control)
+    mm:setLayerColor(1, 2, 0.1, 0.6, 1.0, 0.9)
+    mm:setLayerVisible(1, true)
+    local r = select(1, mm:getLayerColor(1, 2))
+    minimap_log("control layer color red = " .. tostring(r))
+end
+
+--@api: LMinimap:getLayerColor
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local influence = {}
+    for i = 1, 16 do influence[i] = i % 2 end
+    mm:setLayerData(1, influence)
+    mm:setLayerColor(1, 1, 0.9, 0.8, 0.2, 1.0)
+    local r, g, b, a = mm:getLayerColor(1, 1)
+    minimap_log("influence color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+end
+
+--@api: LMinimap:setLayerBlendMode
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local light = {}
+    for i = 1, 16 do light[i] = i % 10 end
+    mm:setLayerData(1, light)
+    mm:setLayerBlendMode(1, "add")
+    mm:setLayerVisible(1, true)
+    minimap_log("light layer blend = " .. tostring(mm:getLayerBlendMode(1)))
+end
+
+--@api: LMinimap:getLayerBlendMode
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local fog_hint = {}
+    for i = 1, 16 do fog_hint[i] = i % 2 end
+    mm:setLayerData(1, fog_hint)
+    local before = mm:getLayerBlendMode(1)
+    mm:setLayerBlendMode(1, "multiply")
+    local after = mm:getLayerBlendMode(1)
+    minimap_log("fog hint blend " .. tostring(before) .. " -> " .. tostring(after))
+end
+
+--@api: LMinimap:syncProvinceRegistry
+do
+    local function minimap_log(message)
+        lurek.log.info("[minimap.example] " .. tostring(message))
+    end
+
+    local reg = lurek.province.newFromPng("minimap_sync_example", "content/examples/assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    local province_id = ids[1]
+    reg:setTerrainType(province_id, 6)
+    reg:setVisibilityState(province_id, 255)
+    reg:setPoliticalColor(province_id, 0.2, 0.5, 0.9, 1.0)
+
+    local mm = lurek.minimap.newMinimap(reg:getWidth(), reg:getHeight())
+    mm:syncProvinceRegistry(reg)
+    minimap_log("province minimap terrain color blue = " .. tostring(select(3, mm:getTerrainColor(6))))
+end

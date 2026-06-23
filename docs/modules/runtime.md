@@ -16,6 +16,16 @@ Example block: `lurek.runtime.getVersion`
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local version = lurek.runtime.getVersion()
     local major = version:match("^[^.]+") or "0"
     local parts = lurek.runtime.parseArgs({ "--version=" .. version })
@@ -80,6 +90,16 @@ lurek.runtime.errorSnapshot(msg)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local snapshot = lurek.runtime.errorSnapshot("Renderer warmup failed")
     local has_message = snapshot:find('"message"') ~= nil
     local has_code = snapshot:find('"code"') ~= nil
@@ -108,6 +128,16 @@ lurek.runtime.getArch()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local arch = lurek.runtime.getArch()
     local cpus = lurek.runtime.getProcessorCount()
     local memory = lurek.runtime.getMemorySize()
@@ -136,6 +166,16 @@ lurek.runtime.getArgs()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local args = lurek.runtime.getArgs()
     local first = first_or(args, "none")
     local parsed = lurek.runtime.parseArgs(args)
@@ -172,6 +212,16 @@ lurek.runtime.getBatchResults(results)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local results = {
         ok = { status = "passed", time = 0.01 },
         bad = { status = "failed", time = 0.02, error = "nope" },
@@ -202,6 +252,16 @@ lurek.runtime.getClipboardText()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     lurek.runtime.setClipboardText("mission:relay")
     local text = lurek.runtime.getClipboardText()
     local length = #text
@@ -230,6 +290,16 @@ lurek.runtime.getConfig()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local config = lurek.runtime.getConfig()
     local mode = config.runtime_mode
     local physics = tostring(config.physics_tick_rate)
@@ -258,6 +328,16 @@ lurek.runtime.getDebugOverlay()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     lurek.runtime.setDebugOverlay(false)
     local before = lurek.runtime.getDebugOverlay()
     lurek.runtime.setDebugOverlay(true)
@@ -292,6 +372,16 @@ lurek.runtime.getEnv(name)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local path = lurek.runtime.getEnv("PATH")
     local user = lurek.runtime.getEnv("USERNAME") or lurek.runtime.getEnv("USER")
     local missing = lurek.runtime.getEnv("LUREK_NONEXISTENT_VAR")
@@ -320,6 +410,16 @@ lurek.runtime.getInfo()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local info = lurek.runtime.getInfo()
     local summary = info.engine .. " " .. info.version
     local host = info.os .. "/" .. tostring(info.processors)
@@ -348,6 +448,16 @@ lurek.runtime.getLastError()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local err = lurek.runtime.getLastError()
     local kind = type(err)
     local message = err and err.message or "none"
@@ -376,6 +486,16 @@ lurek.runtime.getLogLevel()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local initial = lurek.runtime.getLogLevel()
     lurek.runtime.setLogLevel("info")
     local info_level = lurek.runtime.getLogLevel()
@@ -404,6 +524,16 @@ lurek.runtime.getMemorySize()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local memory = lurek.runtime.getMemorySize()
     local info = lurek.runtime.getInfo()
     local enough = tostring(memory > 0)
@@ -438,6 +568,16 @@ lurek.runtime.getMessage(id)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local boot = lurek.runtime.getMessage("L001")
     local loaded = lurek.runtime.getMessage("L003")
     local missing = lurek.runtime.getMessage("ZZUNKNOWN")
@@ -466,6 +606,16 @@ lurek.runtime.getMessageCount()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local count = lurek.runtime.getMessageCount()
     local boot = lurek.runtime.getMessage("L001")
     local loaded = lurek.runtime.getMessage("L003")
@@ -494,6 +644,16 @@ lurek.runtime.getOS()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local os = lurek.runtime.getOS()
     local arch = lurek.runtime.getArch()
     local host = os .. "-" .. arch
@@ -524,6 +684,16 @@ lurek.runtime.getPowerInfo()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local state, percent, seconds = lurek.runtime.getPowerInfo()
     local battery = tostring(percent)
     local eta = tostring(seconds)
@@ -552,6 +722,16 @@ lurek.runtime.getPreferredLocales()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local locales = lurek.runtime.getPreferredLocales()
     local first = first_or(locales, "en_US")
     local parsed = lurek.runtime.parseArgs({ "--locale=" .. first })
@@ -580,6 +760,16 @@ lurek.runtime.getProcessorCount()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local cpus = lurek.runtime.getProcessorCount()
     local workers = math.max(cpus - 1, 1)
     local batch = lurek.runtime.runBatch({ ai = function() return workers end })
@@ -608,6 +798,16 @@ lurek.runtime.getVersion()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local version = lurek.runtime.getVersion()
     local major = version:match("^[^.]+") or "0"
     local parts = lurek.runtime.parseArgs({ "--version=" .. version })
@@ -642,6 +842,16 @@ lurek.runtime.hasMessage(id)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local boot = lurek.runtime.hasMessage("L001")
     local render = lurek.runtime.hasMessage("L010")
     local unknown = lurek.runtime.hasMessage("ZZUNKNOWN")
@@ -671,6 +881,16 @@ lurek.runtime.log(level, message)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local before = lurek.runtime.getLogLevel()
     lurek.runtime.log("info", "Boot sequence ready")
     lurek.runtime.log("warn", "Shader cache cold")
@@ -705,6 +925,16 @@ lurek.runtime.openURL(url)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local mode = lurek.runtime.getConfig().runtime_mode
     local docs_ok = (mode == "headless" or mode == "cli") and lurek.runtime.openURL("https://lurek2d.dev/docs") or false
     local issue_ok = (mode == "headless" or mode == "cli") and lurek.runtime.openURL("mailto:support@lurek2d.dev") or false
@@ -740,6 +970,16 @@ lurek.runtime.parseArgs(args)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local parsed = lurek.runtime.parseArgs({ "--debug", "--level=5", "demo.lua", "--", "tail.txt" })
     local debug_flag = tostring(parsed.flags.debug == true)
     local level = tostring(parsed.options.level)
@@ -762,6 +1002,16 @@ lurek.runtime.reloadConfig()
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local before = lurek.runtime.getConfig().config_reload_revision
     lurek.runtime.reloadConfig()
     local after = lurek.runtime.getConfig().config_reload_revision
@@ -797,6 +1047,16 @@ lurek.runtime.runBatch(tasks, opts)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local results = lurek.runtime.runBatch({
         compile = function() return true end,
         package = function() return "zip" end,
@@ -827,6 +1087,16 @@ lurek.runtime.setClipboardText(text)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local payload = "save-slot-02"
     lurek.runtime.setClipboardText(payload)
     local echoed = lurek.runtime.getClipboardText()
@@ -855,6 +1125,16 @@ lurek.runtime.setDebugOverlay(enabled)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local before = lurek.runtime.getDebugOverlay()
     lurek.runtime.setDebugOverlay(true)
     local enabled = lurek.runtime.getDebugOverlay()
@@ -883,6 +1163,16 @@ lurek.runtime.setLogLevel(level)
 
 ```lua
 do
+    local function runtime_log(message)
+        lurek.log.info("[runtime] " .. message)
+    end
+    local function first_or(list, fallback)
+        if list ~= nil and list[1] ~= nil then
+            return tostring(list[1])
+        end
+        return fallback
+    end
+
     local before = lurek.runtime.getLogLevel()
     lurek.runtime.setLogLevel("warn")
     local during = lurek.runtime.getLogLevel()

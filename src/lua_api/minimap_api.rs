@@ -1,10 +1,13 @@
 //! Registers the `lurek.minimap` Lua API for minimap userdata, icon parsing, colors, and minimap rendering.
 
 use super::camera_api::LuaCamera2D;
+use super::province_api::LuaProvinceRegistry;
 use super::render_api::LuaImage;
 use super::SharedState;
+use crate::minimap::province_adapter;
 use crate::minimap::{
-    ColorMode, FogLevel, LayerData, MarkerAnimation, Minimap, MinimapError, MinimapLimits,
+    ColorMode, FogLevel, LayerBlendMode, LayerData, MarkerAnimation, Minimap, MinimapError,
+    MinimapLimits,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -305,6 +308,52 @@ impl LuaUserData for LuaMinimap {
             }
             this.inner.try_set_fog_data(&bytes).map_err(minimap_error)
         });
+        // -- syncProvinceRegistry --
+        /// Copies province registry terrain, visibility, and palette data into this minimap.
+        /// @param | registry | LProvinceRegistry | Province registry handle.
+        /// @param | opts | table? | Optional `{terrain?, visibility?, palette?}` booleans, all default true.
+        methods.add_method_mut(
+            "syncProvinceRegistry",
+            |_, this, (registry_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let registry = registry_ud.borrow::<LuaProvinceRegistry>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.minimap: syncProvinceRegistry expects an LProvinceRegistry"
+                            .to_string(),
+                    )
+                })?;
+                let terrain = opts
+                    .as_ref()
+                    .map(|t| t.get::<_, Option<bool>>("terrain"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(true);
+                let visibility = opts
+                    .as_ref()
+                    .map(|t| t.get::<_, Option<bool>>("visibility"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(true);
+                let palette = opts
+                    .as_ref()
+                    .map(|t| t.get::<_, Option<bool>>("palette"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(true);
+
+                registry.with_registry(|province_registry| {
+                    if terrain {
+                        province_adapter::apply_terrain(&mut this.inner, province_registry);
+                    }
+                    if visibility {
+                        province_adapter::apply_visibility(&mut this.inner, province_registry);
+                    }
+                    if palette {
+                        province_adapter::apply_terrain_palette(&mut this.inner, province_registry);
+                    }
+                })?;
+                Ok(())
+            },
+        );
         // -- addObjectType --
         /// Adds an object type and returns its one-based index.
         /// @param | name | string | Object type name.
@@ -970,6 +1019,101 @@ impl LuaUserData for LuaMinimap {
                 tbl.set(index + 1, *cell)?;
             }
             Ok(Some(tbl))
+        });
+        // -- setLayerVisible --
+        /// Sets whether a minimap data layer is drawn even when it is not the active layer.
+        /// @param | layer | integer | Layer index.
+        /// @param | visible | boolean | Visibility flag.
+        methods.add_method_mut(
+            "setLayerVisible",
+            |_, this, (layer, visible): (usize, bool)| {
+                this.inner
+                    .set_layer_visible(layer, visible)
+                    .map_err(minimap_error)
+            },
+        );
+        // -- isLayerVisible --
+        /// Returns whether a minimap data layer is drawn when it is not active.
+        /// @param | layer | integer | Layer index.
+        /// @return | boolean | True when the layer is visible, or nil when missing.
+        methods.add_method("isLayerVisible", |_, this, layer: usize| {
+            Ok(this.inner.layer_visible(layer))
+        });
+        // -- setLayerAlpha --
+        /// Sets the opacity multiplier for a minimap data layer.
+        /// @param | layer | integer | Layer index.
+        /// @param | alpha | number | Opacity clamped to 0..1.
+        methods.add_method_mut("setLayerAlpha", |_, this, (layer, alpha): (usize, f32)| {
+            this.inner
+                .set_layer_alpha(layer, alpha)
+                .map_err(minimap_error)
+        });
+        // -- getLayerAlpha --
+        /// Returns the opacity multiplier for a minimap data layer.
+        /// @param | layer | integer | Layer index.
+        /// @return | number | Opacity multiplier, or nil when missing.
+        methods.add_method("getLayerAlpha", |_, this, layer: usize| {
+            Ok(this.inner.layer_alpha(layer))
+        });
+        // -- setLayerColor --
+        /// Sets a palette color for one raw value in a minimap data layer.
+        /// @param | layer | integer | Layer index.
+        /// @param | value | integer | Raw byte value in the layer data.
+        /// @param | r | number | Red channel.
+        /// @param | g | number | Green channel.
+        /// @param | b | number | Blue channel.
+        /// @param | a | number? | Alpha channel, defaults to 1.0.
+        methods.add_method_mut(
+            "setLayerColor",
+            |_, this, (layer, value, r, g, b, a): (usize, u8, f32, f32, f32, Option<f32>)| {
+                let color = clamp_unit_color("layer color", [r, g, b, a.unwrap_or(1.0)])?;
+                this.inner
+                    .set_layer_color(layer, value, color)
+                    .map_err(minimap_error)
+            },
+        );
+        // -- getLayerColor --
+        /// Returns the palette color for one raw value in a minimap data layer.
+        /// @param | layer | integer | Layer index.
+        /// @param | value | integer | Raw byte value in the layer data.
+        /// @return | number | Red channel, or nil when missing.
+        /// @return | number | Green channel, or nil when missing.
+        /// @return | number | Blue channel, or nil when missing.
+        /// @return | number | Alpha channel, or nil when missing.
+        methods.add_method(
+            "getLayerColor",
+            |_, this, (layer, value): (usize, u8)| match this.inner.get_layer_color(layer, value) {
+                Some(c) => Ok((Some(c[0]), Some(c[1]), Some(c[2]), Some(c[3]))),
+                None => Ok((None, None, None, None)),
+            },
+        );
+        // -- setLayerBlendMode --
+        /// Sets how a minimap data layer is blended over the base terrain.
+        /// @param | layer | integer | Layer index.
+        /// @param | mode | string | Blend mode: `normal`, `multiply`, `add`, or `replace`.
+        methods.add_method_mut(
+            "setLayerBlendMode",
+            |_, this, (layer, mode): (usize, String)| {
+                let Some(mode) = LayerBlendMode::parse_mode(mode.as_str()) else {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.minimap: unknown layer blend mode '{}', expected 'normal', 'multiply', 'add', or 'replace'",
+                        mode
+                    )));
+                };
+                this.inner
+                    .set_layer_blend_mode(layer, mode)
+                    .map_err(minimap_error)
+            },
+        );
+        // -- getLayerBlendMode --
+        /// Returns how a minimap data layer is blended over the base terrain.
+        /// @param | layer | integer | Layer index.
+        /// @return | string | Blend mode, or nil when missing.
+        methods.add_method("getLayerBlendMode", |_, this, layer: usize| {
+            Ok(this
+                .inner
+                .layer_blend_mode(layer)
+                .map(|mode| mode.as_str().to_string()))
         });
         // -- setAntiAlias --
         /// Enables or disables minimap anti-aliasing.

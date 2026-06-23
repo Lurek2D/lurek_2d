@@ -6,6 +6,7 @@
 //! Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
 //! Use this file when changing types defaults, lifecycle handling, validation, or data ownership.
 
+use std::collections::HashMap;
 use thiserror::Error;
 
 /// Whether minimap cells are coloured by terrain type or by political owner.
@@ -175,6 +176,66 @@ pub struct LayerData {
     pub width: u32,
     /// Number of rows in this layer grid.
     pub height: u32,
+}
+
+/// Blend operation used when a minimap data layer is composed over the base terrain.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LayerBlendMode {
+    /// Alpha-blend the layer color over the current cell color.
+    Normal,
+    /// Multiply the current cell color by the layer color.
+    Multiply,
+    /// Add the layer color contribution to the current cell color.
+    Add,
+    /// Replace the current cell color with the layer color.
+    Replace,
+}
+
+impl LayerBlendMode {
+    /// Parse a Lua-facing blend mode string.
+    pub fn parse_mode(s: &str) -> Option<Self> {
+        match s {
+            "normal" => Some(Self::Normal),
+            "multiply" => Some(Self::Multiply),
+            "add" => Some(Self::Add),
+            "replace" => Some(Self::Replace),
+            _ => None,
+        }
+    }
+
+    /// Return the canonical Lua-facing blend mode string.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Normal => "normal",
+            Self::Multiply => "multiply",
+            Self::Add => "add",
+            Self::Replace => "replace",
+        }
+    }
+}
+
+/// Presentation state for one raw minimap data layer.
+#[derive(Debug, Clone)]
+pub struct LayerStyle {
+    /// Whether this layer is composed even when it is not the active layer.
+    pub visible: bool,
+    /// Layer opacity multiplier in `[0, 1]`.
+    pub alpha: f32,
+    /// Blend operation used for non-zero cells and explicit palette colors.
+    pub blend_mode: LayerBlendMode,
+    /// Optional palette mapping raw cell values to RGBA colors.
+    pub palette: HashMap<u8, [f32; 4]>,
+}
+
+impl Default for LayerStyle {
+    fn default() -> Self {
+        Self {
+            visible: false,
+            alpha: 0.65,
+            blend_mode: LayerBlendMode::Normal,
+            palette: HashMap::new(),
+        }
+    }
 }
 
 /// Hard limits that prevent oversized minimap allocations and unbounded overlay growth.

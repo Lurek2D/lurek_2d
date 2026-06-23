@@ -14,6 +14,16 @@ Example block: `lurek.cinematic.newTimeline`
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = lurek.cinematic.newTimeline()
     timeline:addTrack("camera")
     local state = timeline:getState()
@@ -57,6 +67,16 @@ lurek.cinematic.new()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "fade_from_black")
     local type_name = cinematic:type()
@@ -85,6 +105,16 @@ lurek.cinematic.newTimeline()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = lurek.cinematic.newTimeline()
     timeline:addTrack("camera")
     local state = timeline:getState()
@@ -135,6 +165,16 @@ LCinematic:addCut(time, description)
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "intro_pan")
     cinematic:addCut(1.5, "player_reveal")
@@ -157,6 +197,16 @@ LCinematic:clear()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "temp_intro")
     cinematic:addCut(0.5, "temp_pan")
@@ -185,6 +235,16 @@ LCinematic:cutCount()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "drone_establish")
     cinematic:addCut(2.0, "control_room_zoom")
@@ -207,6 +267,16 @@ LCinematic:play()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "alarm_start")
     cinematic:addCut(0.5, "lights_flash")
@@ -235,6 +305,16 @@ LCinematic:type()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "intro")
     local type_name = cinematic:type()
@@ -269,6 +349,16 @@ LCinematic:typeOf(name)
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "intro")
     local is_cinematic = cinematic:typeOf("LCinematic")
@@ -308,6 +398,16 @@ LCinematicTimeline:addClip(track_name, at, duration, clip_table)
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = lurek.cinematic.newTimeline()
     timeline:addTrack("camera")
     timeline:addTrack("signals")
@@ -338,6 +438,16 @@ LCinematicTimeline:addLabel(name, time)
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:addLabel("intro", 0.0)
     timeline:addLabel("reveal", 1.0)
@@ -372,6 +482,16 @@ LCinematicTimeline:addTrack(name)
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = lurek.cinematic.newTimeline()
     timeline:addTrack("camera")
     timeline:addTrack("audio")
@@ -406,6 +526,16 @@ LCinematicTimeline:branch(label)
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:addLabel("checkpoint", 1.5)
     timeline:seek(0.25)
@@ -434,6 +564,16 @@ LCinematicTimeline:getDuration()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = lurek.cinematic.newTimeline()
     timeline:addTrack("signals")
     timeline:addClip("signals", 0.0, 5.0, { type = "signal", name = "intro" })
@@ -462,6 +602,16 @@ LCinematicTimeline:getState()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     local before = timeline:getState()
     timeline:play()
@@ -490,6 +640,16 @@ LCinematicTimeline:getTime()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:seek(0.6)
     local time = timeline:getTime()
@@ -518,6 +678,16 @@ LCinematicTimeline:isComplete()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     local before = timeline:isComplete()
     timeline:skipToEnd()
@@ -546,6 +716,16 @@ LCinematicTimeline:isPlaying()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     local before = timeline:isPlaying()
     timeline:play()
@@ -568,6 +748,16 @@ LCinematicTimeline:pause()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:play()
     timeline:update(1.25)
@@ -590,6 +780,16 @@ LCinematicTimeline:play()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:play()
     local state = timeline:getState()
@@ -618,6 +818,16 @@ LCinematicTimeline:seek(time)
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:addClip("signals", 3.0, 1.0, { type = "signal", name = "camera_pan", data = "phase_2" })
     timeline:seek(1.75)
@@ -640,6 +850,16 @@ LCinematicTimeline:skipToEnd()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     local duration = timeline:getDuration()
     timeline:skipToEnd()
@@ -662,6 +882,16 @@ LCinematicTimeline:stop()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:play()
     timeline:update(1.5)
@@ -690,6 +920,16 @@ LCinematicTimeline:type()
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:seek(0.5)
     local type_name = timeline:type()
@@ -724,6 +964,16 @@ LCinematicTimeline:typeOf(name)
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:play()
     local is_timeline = timeline:typeOf("LCinematicTimeline")
@@ -752,6 +1002,16 @@ LCinematicTimeline:update(dt)
 
 ```lua
 do
+    local function cinematic_log(message)
+        lurek.log.info("[cinematic] " .. message)
+    end
+    local function make_timeline_with_signal_clip()
+        local timeline = lurek.cinematic.newTimeline()
+        timeline:addTrack("signals")
+        timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+        return timeline
+    end
+
     local timeline = make_timeline_with_signal_clip()
     timeline:play()
     timeline:update(0.75)

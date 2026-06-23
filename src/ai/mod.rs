@@ -1,11 +1,11 @@
-//! Exports the AI subsystem surface that groups decision models, sensing, planning, steering, pacing, and debug tools.
+//! Exports the AI subsystem surface that groups decision models, sensing, planning, pacing, and debug tools.
 //! Acts as the navigation index for agent state, behavior trees, GOAP, HTN, MCTS, squads, and utility scoring.
 //! Keeps module boundaries explicit so callers can find whether an AI concern belongs to storage, reasoning, or draw.
 //! Open this file when adding or retiring AI owners or when public re-export policy for shared AI APIs changes.
-//! The exported set here connects tactical motion, world awareness, strategic choice, and supporting data models.
+//! The exported set here connects world awareness, strategic choice, internal drives, and supporting data models.
 //! Agents should start here when tracing AI behavior because it reveals the authoritative file split by concern.
 //! This index owns visibility and compatibility re-exports rather than world state, planners, or runtime solvers.
-//! Neighboring work usually spans Agent, AIWorld, steering, planning modules, and debug visualization helpers.
+//! Neighboring work usually spans Agent, AIWorld, planning modules, and debug visualization helpers.
 //! It is the right owner for composition-level AI API changes that should not alter any one behavior algorithm.
 //! Read this file first when generated specs or Lua bindings need to map a feature to its concrete Rust owner.
 
@@ -28,15 +28,11 @@ pub mod goap;
 pub mod render;
 /// Squad membership and formation logic.
 pub mod squad;
-/// Steering behaviors and movement guidance.
-pub mod steering;
 /// Utility-AI scoring and action selection.
 pub mod utility_ai;
 /// Abstract world view consumed by AI logic.
 pub mod world;
 
-/// Context-steering behavior composition.
-pub mod context_steering;
 /// Dialogue state, branches, and topic selection (re-exported from dialog module).
 pub mod dialogue {
     pub use crate::dialog::{DialogueAI, DialogueBranch, DialogueTopic};
@@ -55,8 +51,6 @@ pub mod mcts;
 /// Need evaluation and advertisement system.
 pub mod needs;
 
-/// ORCA-based local avoidance.
-pub mod orca;
 /// Perception stimuli, sensors, and world state.
 pub mod perception;
 /// Higher-level strategy selection.
@@ -71,13 +65,6 @@ pub mod planning {
     pub use super::goap::{GOAPAction, GOAPGoal, GOAPPlanner, PlanFailureReason};
     pub use super::htn::{HTNDomain, HTNMethod, HTNPlanner, HTNTask, WorldState};
     pub use super::mcts::{MCTSConfig, MCTSEngine};
-}
-
-/// Grouped movement and avoidance APIs for callers that only need locomotion-side AI.
-pub mod movement {
-    pub use super::context_steering::{ContextBehavior, ContextBehaviorKind, ContextSteering};
-    pub use super::orca::{ORCAAgent, ORCASolver};
-    pub use super::steering::*;
 }
 
 /// Grouped decision APIs for callers that only need reasoning primitives.
@@ -123,15 +110,11 @@ pub use fsm::{StateCallbacks, StateMachine, Transition};
 pub use goap::{GOAPAction, GOAPGoal, GOAPPlanner, PlanFailureReason};
 /// Squad container and formation mode.
 pub use squad::{FormationType, Squad};
-/// Steering behavior primitives and helpers.
-pub use steering::*;
 /// Utility-AI considerations, response curves, and actions.
 pub use utility_ai::{Consideration, ResponseCurve, UAAction, UtilityAI};
 /// AI-facing world abstraction.
 pub use world::AIWorld;
 
-/// Context-steering behaviors and runtime type.
-pub use context_steering::{ContextBehavior, ContextBehaviorKind, ContextSteering};
 /// Shared AI callback and decision traces.
 pub use diagnostics::{
     CallbackErrorTrace, GoapPlanTrace, MctsDecisionTrace, UtilityActionTrace,
@@ -153,8 +136,6 @@ pub use lod::{AILod, LodTier};
 pub use mcts::{MCTSConfig, MCTSEngine};
 /// Need system state and advertisements.
 pub use needs::{Need, NeedAdvertisement, NeedSystem};
-/// ORCA avoidance solver types.
-pub use orca::{ORCAAgent, ORCASolver};
 /// Perception events, sensors, and stimulus world.
 pub use perception::{DetectedStimulus, Sensor, Stimulus, StimulusType, StimulusWorld};
 /// Strategy layer goals and controller.

@@ -771,33 +771,28 @@
   },
   "minimap": {
     "baseline_artifacts": [
-      "tests/artifacts/baselines/minimap/minimap_blips.png",
-      "tests/artifacts/baselines/minimap/minimap_circular_border.png",
-      "tests/artifacts/baselines/minimap/minimap_floor_level0.png",
-      "tests/artifacts/baselines/minimap/minimap_floor_level1_active.png",
-      "tests/artifacts/baselines/minimap/minimap_floor_level2.png",
-      "tests/artifacts/baselines/minimap/minimap_fog.png",
-      "tests/artifacts/baselines/minimap/minimap_radar_sweep.png",
-      "tests/artifacts/baselines/minimap/minimap_terrain.png",
-      "tests/artifacts/baselines/minimap/minimap_unexplored_mask.png",
-      "tests/artifacts/baselines/minimap/minimap_viewport_bounds.png",
-      "tests/artifacts/baselines/minimap/minimap_waypoints.png",
-      "tests/artifacts/baselines/minimap/minimap_zoomed_sector.png"
+      "tests/artifacts/baselines/minimap/minimap_fog_states.png",
+      "tests/artifacts/baselines/minimap/minimap_layer_blend_modes.png",
+      "tests/artifacts/baselines/minimap/minimap_layer_visibility_toggle.png",
+      "tests/artifacts/baselines/minimap/minimap_markers_objects_pings.png",
+      "tests/artifacts/baselines/minimap/minimap_paths_and_overlay_shapes.png",
+      "tests/artifacts/baselines/minimap/minimap_province_registry_compact.png",
+      "tests/artifacts/baselines/minimap/minimap_terrain_palette_grid.png",
+      "tests/artifacts/baselines/minimap/minimap_tilefield_layers.png",
+      "tests/artifacts/baselines/minimap/minimap_viewport_rect.png",
+      "tests/artifacts/baselines/minimap/minimap_visibility_fog_action.png"
     ],
     "current_artifacts": [
-      "tests/artifacts/current/minimap/minimap_blips.png",
-      "tests/artifacts/current/minimap/minimap_circular_border.png",
-      "tests/artifacts/current/minimap/minimap_command_overlay_route.png",
-      "tests/artifacts/current/minimap/minimap_floor_level0.png",
-      "tests/artifacts/current/minimap/minimap_floor_level1_active.png",
-      "tests/artifacts/current/minimap/minimap_floor_level2.png",
-      "tests/artifacts/current/minimap/minimap_fog.png",
-      "tests/artifacts/current/minimap/minimap_radar_sweep.png",
-      "tests/artifacts/current/minimap/minimap_terrain.png",
-      "tests/artifacts/current/minimap/minimap_unexplored_mask.png",
-      "tests/artifacts/current/minimap/minimap_viewport_bounds.png",
-      "tests/artifacts/current/minimap/minimap_waypoints.png",
-      "tests/artifacts/current/minimap/minimap_zoomed_sector.png"
+      "tests/artifacts/current/minimap/minimap_fog_states.png",
+      "tests/artifacts/current/minimap/minimap_layer_blend_modes.png",
+      "tests/artifacts/current/minimap/minimap_layer_visibility_toggle.png",
+      "tests/artifacts/current/minimap/minimap_markers_objects_pings.png",
+      "tests/artifacts/current/minimap/minimap_paths_and_overlay_shapes.png",
+      "tests/artifacts/current/minimap/minimap_province_registry_compact.png",
+      "tests/artifacts/current/minimap/minimap_terrain_palette_grid.png",
+      "tests/artifacts/current/minimap/minimap_tilefield_layers.png",
+      "tests/artifacts/current/minimap/minimap_viewport_rect.png",
+      "tests/artifacts/current/minimap/minimap_visibility_fog_action.png"
     ],
     "evidence_tests": [
       "tests/lua/evidence/test_minimap_evidence.lua"

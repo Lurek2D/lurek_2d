@@ -16,6 +16,17 @@ Example block: `lurek.image.newImageData`
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(128, 64)
     img:fill(20, 30, 60, 255)
     local w, h = img:getDimensions()
@@ -77,6 +88,17 @@ lurek.image.fromScreen()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local capture = lurek.image.fromScreen()
     local status = capture and (capture:getWidth() .. "x" .. capture:getHeight()) or "not ready yet"
     local sampled_alpha = capture and select(4, capture:getPixel(0, 0)) or -1
@@ -111,6 +133,17 @@ lurek.image.isCompressed(filename)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dds_path = "content/examples/assets/images/sample_normal.dds"
     local png_path = "content/examples/assets/images/sample_texture.png"
     local dds = lurek.image.isCompressed(dds_path)
@@ -147,6 +180,17 @@ lurek.image.loadImage(filename)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local src = lurek.image.newImageData(8, 8)
     src:fill(255, 0, 0, 255)
     lurek.image.saveImage(src, "save/sample_image.limg")
@@ -181,6 +225,17 @@ lurek.image.loadLayered(filename)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/sample_layered.limg"
     local loaded = lurek.image.loadLayered(path)
     local count = loaded:layerCount()
@@ -215,6 +270,17 @@ lurek.image.newCompressedData(filename)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w, h = cdata:getDimensions()
     local fmt = cdata:getFormat()
@@ -250,6 +316,17 @@ lurek.image.newImageData(width_or_filename, height)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(128, 64)
     img:fill(20, 30, 60, 255)
     local w, h = img:getDimensions()
@@ -286,6 +363,17 @@ lurek.image.newImageDataFromBytes(w, h, bytes)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bytes = string.rep("\255\0\0\255", 4)
     local img = lurek.image.newImageDataFromBytes(2, 2, bytes)
     local w, h = img:getDimensions()
@@ -321,6 +409,17 @@ lurek.image.newLayeredImage(width, height)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(256, 256)
     local idx = li:addLayer("paint")
     local paint = li:getLayer(idx)
@@ -351,6 +450,17 @@ lurek.image.newPaletteLut()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 0, 0, 255, 255, 255, 0, 255)
     lut:setColor(0, 0, 255, 255, 120, 220, 255, 255)
@@ -386,6 +496,17 @@ lurek.image.newProvinceGrid(filename)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local w, h = grid:getWidth(), grid:getHeight()
     local provinces = grid:provinceCount()
@@ -416,6 +537,17 @@ lurek.image.saveGIF(frames, filename, opts)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local frames = {}
 
     local a = lurek.image.newImageData(32, 32)
@@ -454,6 +586,17 @@ lurek.image.saveImage(img_ud, filename)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(32, 32)
     img:fill(255, 0, 0, 255)
     img:drawRect(8, 8, 16, 16, 255, 255, 255, 255)
@@ -484,6 +627,17 @@ lurek.image.savePNG(img_ud, filename)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(0, 255, 0, 255)
     img:drawCircle(8, 8, 4, 255, 255, 255, 255)
@@ -538,6 +692,17 @@ LCompressedImageData:getDimensions()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w, h = cdata:getDimensions()
     local fmt = cdata:getFormat()
@@ -566,6 +731,17 @@ LCompressedImageData:getFormat()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w = cdata:getWidth()
     local h = cdata:getHeight()
@@ -594,6 +770,17 @@ LCompressedImageData:getHeight()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w = cd:getWidth()
     local h = cd:getHeight()
@@ -622,6 +809,17 @@ LCompressedImageData:getMipmapCount()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local fmt = cdata:getFormat()
     local w = cdata:getWidth()
@@ -650,6 +848,17 @@ LCompressedImageData:getWidth()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w = cd:getWidth()
     local h = cd:getHeight()
@@ -678,6 +887,17 @@ LCompressedImageData:type()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local fmt = cdata:getFormat()
     local w = cdata:getWidth()
@@ -712,6 +932,17 @@ LCompressedImageData:typeOf(name)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local fmt = cdata:getFormat()
     local is_object = cdata:typeOf("LObject")
@@ -748,6 +979,17 @@ LImageData:alphaMask(factor)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(255, 0, 0, 255)
     img:alphaMask(0.5)
@@ -776,6 +1018,17 @@ LImageData:applyPaletteLut(lut_ud)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     local lut = lurek.image.newPaletteLut()
     img:fill(255, 0, 0, 255)
@@ -810,6 +1063,17 @@ LImageData:blit(src_ud, dst_x, dst_y)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dst = lurek.image.newImageData(64, 64)
     local src = lurek.image.newImageData(16, 16)
     src:fill(255, 255, 0, 255)
@@ -844,6 +1108,17 @@ LImageData:blur(radius)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(64, 64)
     img:fill(255, 0, 0, 255)
     local blurred = img:blur(3)
@@ -872,6 +1147,17 @@ LImageData:brightness(factor)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(128, 128, 128, 255)
     img:brightness(1.5)
@@ -900,6 +1186,17 @@ LImageData:contrast(factor)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(102, 153, 128, 255)
     img:contrast(2.0)
@@ -935,6 +1232,17 @@ LImageData:convolve(kernel_t, ksize)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(32, 32)
     local kernel = {0, -1, 0, -1, 5, -1, 0, -1, 0}
     local result = img:convolve(kernel, 3)
@@ -972,6 +1280,17 @@ LImageData:crop(x, y, w, h)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(100, 100)
     img:drawRect(10, 10, 50, 50, 255, 0, 0, 255)
     local cropped = img:crop(10, 10, 50, 50)
@@ -1006,6 +1325,17 @@ LImageData:diff(other_ud)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.image.newImageData(8, 8)
     local b = lurek.image.newImageData(8, 8)
     b:setPixel(0, 0, 1, 0, 0, 1)
@@ -1040,6 +1370,17 @@ LImageData:drawCircle(cx, cy, radius, r, g, b, a)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(64, 64)
     img:drawCircle(32, 32, 16, 255, 0, 0, 255)
     local r, g, b, a = img:getPixel(32, 32)
@@ -1075,6 +1416,17 @@ LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(32, 32)
     img:drawLine(0, 0, 31, 31, 255, 255, 0, 255)
     local r, g, b, a = img:getPixel(0, 0)
@@ -1115,6 +1467,17 @@ LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dst = lurek.image.newImageData(64, 64)
     local src = lurek.image.newImageData(32, 32)
     src:fill(128, 128, 128, 255)
@@ -1150,6 +1513,17 @@ LImageData:drawRect(x, y, w, h, r, g, b, a)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(32, 32)
     img:drawRect(4, 4, 24, 24, 0, 255, 0, 255)
     local r, g, b, a = img:getPixel(4, 4)
@@ -1184,6 +1558,17 @@ LImageData:encode(format)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(4, 4)
     img:fill(255, 0, 0, 255)
     local bytes = img:encode("png")
@@ -1215,6 +1600,17 @@ LImageData:fill(r, g, b, a)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(8, 8)
     img:fill(0, 0, 255, 255)
     local r, g, b, a = img:getPixel(0, 0)
@@ -1237,6 +1633,17 @@ LImageData:flipHorizontal()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:setPixel(0, 0, 255, 0, 0, 255)
     img:flipHorizontal()
@@ -1259,6 +1666,17 @@ LImageData:flipVertical()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:setPixel(0, 0, 0, 255, 0, 255)
     img:flipVertical()
@@ -1287,6 +1705,17 @@ LImageData:gamma(gamma)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(128, 128, 128, 255)
     img:gamma(2.2)
@@ -1316,6 +1745,17 @@ LImageData:getDimensions()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(100, 50)
     img:fill(10, 20, 30, 255)
     local w, h = img:getDimensions()
@@ -1344,6 +1784,17 @@ LImageData:getHeight()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(80, 40)
     img:fill(50, 60, 70, 255)
     local height = img:getHeight()
@@ -1382,6 +1833,17 @@ LImageData:getPixel(x, y)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(10, 10)
     img:fill(255, 128, 0, 255)
     local r, g, b, a = img:getPixel(5, 5)
@@ -1410,6 +1872,17 @@ LImageData:getRawBytes()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(2, 2)
     img:fill(10, 20, 30, 255)
     local raw = img:getRawBytes()
@@ -1447,6 +1920,17 @@ LImageData:getRegion(x, y, w, h)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(64, 64)
     local region = img:getRegion(0, 0, 32, 32)
     if region then
@@ -1475,6 +1959,17 @@ LImageData:getString()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(2, 2)
     img:fill(10, 20, 30, 255)
     local str = img:getString()
@@ -1503,6 +1998,17 @@ LImageData:getWidth()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(80, 40)
     img:fill(50, 60, 70, 255)
     local width = img:getWidth()
@@ -1525,6 +2031,17 @@ LImageData:grayscale()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(32, 32)
     img:fill(255, 0, 0, 255)
     img:grayscale()
@@ -1547,6 +2064,17 @@ LImageData:invert()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(8, 8)
     img:fill(255, 0, 0, 255)
     img:invert()
@@ -1575,6 +2103,17 @@ LImageData:mapPixel(func)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(8, 8)
     img:fill(255, 255, 255, 255)
     img:mapPixel(function(_, _, r, g, b, a)
@@ -1604,6 +2143,17 @@ LImageData:mapPixels(func)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(8, 8)
     img:mapPixels(function(x, y)
         return x * 32, y * 32, 0, 255
@@ -1632,6 +2182,17 @@ LImageData:noise(amount)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(32, 32)
     img:fill(128, 128, 128, 255)
     img:noise(16)
@@ -1662,6 +2223,17 @@ LImageData:paste(src_ud, dx, dy)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dst = lurek.image.newImageData(64, 64)
     local src = lurek.image.newImageData(8, 8)
     src:fill(0, 255, 255, 255)
@@ -1690,6 +2262,17 @@ LImageData:posterize(levels)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(179, 77, 128, 255)
     img:posterize(4)
@@ -1726,6 +2309,17 @@ LImageData:resize(width, height, filter)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(64, 64)
     img:drawRect(16, 16, 32, 32, 255, 210, 80, 255)
     local resized = img:resize(128, 128, "bilinear")
@@ -1762,6 +2356,17 @@ LImageData:resizeNearest(new_w, new_h)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(32, 32)
     img:drawRect(8, 8, 16, 16, 0, 200, 255, 255)
     local resized = img:resizeNearest(64, 64)
@@ -1791,6 +2396,17 @@ LImageData:rotate90cw()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(20, 40)
     img:setPixel(2, 30, 255, 0, 0, 255)
     local rotated = img:rotate90cw()
@@ -1820,6 +2436,17 @@ LImageData:saturation(factor)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(255, 0, 0, 255)
     img:saturation(0.5)
@@ -1842,6 +2469,17 @@ LImageData:sepia()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(128, 128, 128, 255)
     img:sepia()
@@ -1875,6 +2513,17 @@ LImageData:setPixel(x, y, r, g, b, a)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(10, 10)
     img:setPixel(0, 0, 255, 255, 255, 255)
     local r, g, b, a = img:getPixel(0, 0)
@@ -1903,6 +2552,17 @@ LImageData:setRawData(bytes)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(2, 2)
     local bytes = string.rep("\0\255\0\255", 4)
     img:setRawData(bytes)
@@ -1931,6 +2591,17 @@ LImageData:sharpen()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(64, 64)
     img:fill(128, 128, 128, 255)
     local sharp = img:sharpen()
@@ -1959,6 +2630,17 @@ LImageData:threshold(value)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(153, 153, 153, 255)
     img:threshold(128)
@@ -1990,6 +2672,17 @@ LImageData:tint(tr, tg, tb, factor)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(16, 16)
     img:fill(255, 255, 255, 255)
     img:tint(255, 0, 0, 0.5)
@@ -2018,6 +2711,17 @@ LImageData:type()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(1, 1)
     img:setPixel(0, 0, 255, 255, 255, 255)
     local type_name = img:type()
@@ -2052,6 +2756,17 @@ LImageData:typeOf(name)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.image.newImageData(1, 1)
     img:setPixel(0, 0, 255, 255, 255, 255)
     local is_image = img:typeOf("LImageData")
@@ -2094,6 +2809,17 @@ LLayeredImage:addLayer(name)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(64, 64)
     local idx = li:addLayer("background")
     local layer = li:getLayer(idx)
@@ -2123,6 +2849,17 @@ LLayeredImage:getHeight()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(100, 50)
     li:addLayer("preview")
     local width = li:getWidth()
@@ -2158,6 +2895,17 @@ LLayeredImage:getLayer(index)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(16, 16)
     local idx = li:addLayer("green")
     local data = li:getLayer(1)
@@ -2193,6 +2941,17 @@ LLayeredImage:getName(index)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     local idx = li:addLayer("background")
     local name = li:getName(1)
@@ -2227,6 +2986,17 @@ LLayeredImage:getOpacity(index)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("layer")
     li:setOpacity(1, 0.35)
@@ -2256,6 +3026,17 @@ LLayeredImage:getWidth()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(100, 50)
     li:addLayer("preview")
     local width = li:getWidth()
@@ -2291,6 +3072,17 @@ LLayeredImage:isVisible(index)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("vis")
     li:setVisible(1, false)
@@ -2321,6 +3113,17 @@ LLayeredImage:layerCount()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     local empty = li:layerCount()
     li:addLayer("terrain")
@@ -2350,6 +3153,17 @@ LLayeredImage:merge()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(32, 32)
     local base = li:addLayer("base")
     local fx = li:addLayer("fx")
@@ -2388,6 +3202,17 @@ LLayeredImage:moveLayer(from_idx, to_idx)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("first")
     li:addLayer("second")
@@ -2422,6 +3247,17 @@ LLayeredImage:removeLayer(index)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(32, 32)
     li:addLayer("background")
     li:addLayer("temp")
@@ -2453,6 +3289,17 @@ LLayeredImage:save(path)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(16, 16)
     local idx = li:addLayer("only")
     li:getLayer(idx):fill(255, 255, 255, 255)
@@ -2489,6 +3336,17 @@ LLayeredImage:setLayer(index, img)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(16, 16)
     li:addLayer("slot")
     local replacement = lurek.image.newImageData(16, 16)
@@ -2526,6 +3384,17 @@ LLayeredImage:setName(index, name)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("old")
     li:setName(1, "renamed")
@@ -2562,6 +3431,17 @@ LLayeredImage:setOpacity(index, opacity)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("layer")
     li:setOpacity(1, 0.5)
@@ -2599,6 +3479,17 @@ LLayeredImage:setVisible(index, visible)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("toggle")
     li:setVisible(1, false)
@@ -2636,6 +3527,17 @@ LLayeredImage:swapLayers(a, b)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("alpha")
     li:addLayer("beta")
@@ -2664,6 +3566,17 @@ LLayeredImage:type()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("debug")
     local type_name = li:type()
@@ -2699,6 +3612,17 @@ LLayeredImage:typeOf(name)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("debug")
     local type_name = li:type()
@@ -2730,6 +3654,17 @@ LPaletteLUT:clear()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 0, 0, 255, 0, 0, 255, 255)
     local before = lut:getColorCount()
@@ -2760,6 +3695,17 @@ LPaletteLUT:cycle(offset)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 0, 0, 255, 0, 255, 0, 255)
     lut:setColor(0, 255, 0, 255, 0, 0, 255, 255)
@@ -2788,6 +3734,17 @@ LPaletteLUT:getColorCount()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 0, 0, 255, 128, 0, 0, 255)
     lut:setColor(0, 255, 0, 255, 0, 128, 0, 255)
@@ -2824,6 +3781,17 @@ LPaletteLUT:setColor(fr, fg, fb, fa, tr, tg, tb, ta)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 0, 0, 255, 0, 255, 0, 255)
     lut:setColor(0, 0, 255, 255, 255, 255, 255, 255)
@@ -2853,6 +3821,17 @@ LPaletteLUT:type()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 255, 255, 255, 200, 200, 200, 255)
     local count = lut:getColorCount()
@@ -2887,6 +3866,17 @@ LPaletteLUT:typeOf(name)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 255, 255, 255, 200, 200, 200, 255)
     local is_object = lut:typeOf("LObject")
@@ -2923,6 +3913,17 @@ LProvinceGrid:adjacencies()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local adj = grid:adjacencies()
     local borders = grid:borderSegments()
@@ -2951,6 +3952,17 @@ LProvinceGrid:borderSegments()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local segs = grid:borderSegments()
     local polys = grid:getPolygonsSimplified()
@@ -2985,6 +3997,17 @@ LProvinceGrid:deserializeShapeData(bytes)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local data = grid:serializeShapeData()
     example_print_log("serialized " .. #data .. " bytes")
@@ -3022,6 +4045,17 @@ LProvinceGrid:drawShapes(x, y, w, h)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local count = grid:drawShapes(0, 0, 800, 600)
     local provinces = grid:provinceCount()
@@ -3057,6 +4091,17 @@ LProvinceGrid:getAt(x, y)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local id = grid:getAt(10, 10)
     local neighbor = grid:getAt(11, 10)
@@ -3085,6 +4130,17 @@ LProvinceGrid:getHeight()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local width = grid:getWidth()
     local provinces = grid:provinceCount()
@@ -3113,6 +4169,17 @@ LProvinceGrid:getPolygons()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local polys = grid:getPolygons()
     local simplified = grid:getPolygonsSimplified()
@@ -3141,6 +4208,17 @@ LProvinceGrid:getPolygonsSimplified()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local polys = grid:getPolygonsSimplified()
     local full = grid:getPolygons()
@@ -3169,6 +4247,17 @@ LProvinceGrid:getWidth()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local height = grid:getHeight()
     local provinces = grid:provinceCount()
@@ -3197,6 +4286,17 @@ LProvinceGrid:provinceCount()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local w = grid:getWidth()
     local h = grid:getHeight()
@@ -3225,6 +4325,17 @@ LProvinceGrid:provinceSpans()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local spans = grid:provinceSpans()
     local provinces = grid:provinceCount()
@@ -3253,6 +4364,17 @@ LProvinceGrid:serializeShapeData()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local data = grid:serializeShapeData()
     example_print_log("serialized " .. #data .. " bytes")
@@ -3281,6 +4403,17 @@ LProvinceGrid:type()
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local sample = grid:getAt(10, 10)
     local provinces = grid:provinceCount()
@@ -3315,6 +4448,17 @@ LProvinceGrid:typeOf(name)
 
 ```lua
 do
+    local function image_log(message)
+        lurek.log.info("[image.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local sample = grid:getAt(10, 10)
     local is_object = grid:typeOf("LObject")

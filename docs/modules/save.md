@@ -16,6 +16,14 @@ Example block: `lurek.save.newSaveManager`
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSaveManager
     local mgr = lurek.save.newSaveManager()
     mgr:setSummary("New Game")
@@ -64,6 +72,14 @@ lurek.save.newSaveManager()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSaveManager
     local mgr = lurek.save.newSaveManager()
     mgr:setSummary("New Game")
@@ -115,6 +131,14 @@ LSaveManager:addMigration(fromVersion, func)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:setSchemaVersion(3)
     mgr:addMigration(1, function(data)
@@ -154,6 +178,14 @@ LSaveManager:collect()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     local hp = 100
     mgr:register("player", function() return { hp = hp } end, function(data) hp = data.hp end)
@@ -191,6 +223,14 @@ LSaveManager:delete(slot)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("score", function() return { value = 9999 } end, function(_) end)
     local slot = "example_delete_slot"
@@ -214,6 +254,14 @@ LSaveManager:disableAutoSave()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
     mgr:enableAutoSave(5.0, "autosave")
@@ -244,6 +292,14 @@ LSaveManager:enableAutoSave(interval, slot)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
     local slot = "example_autosave_slot"
@@ -281,6 +337,14 @@ LSaveManager:exists(slot)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("score", function() return { value = 9999 } end, function(_) end)
     local slot = "example_exists_slot"
@@ -310,6 +374,14 @@ LSaveManager:getSchemaVersion()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:setSchemaVersion(3)
     mgr:addMigration(1, function(data)
@@ -352,6 +424,14 @@ LSaveManager:getSlotInfo(slot)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("data", function() return { level = 5 } end, function(_) end)
     local slot = "example_slot_info"
@@ -384,6 +464,14 @@ LSaveManager:getSlots()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("data", function() return { level = 5 } end, function(_) end)
     local slot = "example_slots_slot"
@@ -416,6 +504,14 @@ LSaveManager:getSummary()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("progress", function() return { chapter = 3 } end, function(_) end)
     local data = mgr:collect()
@@ -444,6 +540,14 @@ LSaveManager:isCompressed()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:setCompress(true)
     mgr:setSummary("Compressed Save")
@@ -473,6 +577,14 @@ LSaveManager:isDirty()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
     example_print_log("dirty = " .. tostring(mgr:isDirty()))
@@ -508,6 +620,14 @@ LSaveManager:load(slot)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     local score = 9999
     mgr:register("score", function() return { value = score } end, function(data) score = data.value end)
@@ -536,6 +656,14 @@ LSaveManager:markDirty()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
     example_print_log("dirty = " .. tostring(mgr:isDirty()))
@@ -564,6 +692,14 @@ LSaveManager:onAfterLoad(func)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("state", function() return { x = 10, y = 20 } end, function(_) end)
     mgr:onAfterLoad(function(slot) example_print_log("after:" .. slot) end)
@@ -594,6 +730,14 @@ LSaveManager:onBeforeSave(func)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("state", function() return { x = 10, y = 20 } end, function(_) end)
     mgr:onBeforeSave(function(slot) example_print_log("before:" .. slot) end)
@@ -625,6 +769,14 @@ LSaveManager:register(name, collectFn, restoreFn)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     local hp = 100
     mgr:register("player", function() return { hp = hp } end, function(data) hp = data.hp end)
@@ -649,6 +801,14 @@ LSaveManager:reset()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("section_a", function() return {} end, function(_) end)
     mgr:register("section_b", function() return {} end, function(_) end)
@@ -680,6 +840,14 @@ LSaveManager:restore(data)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     local hp = 100
     mgr:register("player", function() return { hp = hp } end, function(data) hp = data.hp end)
@@ -709,6 +877,14 @@ LSaveManager:save(slot)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("score", function() return { value = 9999 } end, function(_) end)
     local slot = "example_save_slot"
@@ -739,6 +915,14 @@ LSaveManager:setCompress(enabled)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     example_print_log("before compress = " .. tostring(mgr:isCompressed()))
     mgr:setCompress(true)
@@ -768,6 +952,14 @@ LSaveManager:setSchemaVersion(version)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:setSchemaVersion(3)
     mgr:addMigration(1, function(data)
@@ -804,6 +996,14 @@ LSaveManager:setSummary(summary)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     example_print_log("summary before = " .. mgr:getSummary())
     mgr:setSummary("Chapter 3 — The Dark Forest")
@@ -833,6 +1033,14 @@ LSaveManager:type()
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSaveManager
     local sm = lurek.save.newSaveManager()
     sm:setSummary("Type Check")
@@ -868,6 +1076,14 @@ LSaveManager:typeOf(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSaveManager
     local sm = lurek.save.newSaveManager()
     local is_save = sm:typeOf("LSaveManager")
@@ -900,6 +1116,14 @@ LSaveManager:unregister(name)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("section_a", function() return {} end, function(_) end)
     mgr:register("section_b", function() return {} end, function(_) end)
@@ -936,6 +1160,14 @@ LSaveManager:update(dt)
 
 ```lua
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
     local slot = "example_update_slot"

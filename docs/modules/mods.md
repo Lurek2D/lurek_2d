@@ -16,6 +16,30 @@ Example block: `lurek.mods.newMod`
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({
         id = "my_mod",
         name = "My Mod",
@@ -87,6 +111,30 @@ lurek.mods.checkApiVersion(mod_ud, host_version)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "compat", name = "Compat" })
     mod:setApiVersion("2.0.0")
     local ok, err = lurek.mods.checkApiVersion(mod, "1.5.0")
@@ -121,6 +169,30 @@ lurek.mods.newMod(info)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({
         id = "my_mod",
         name = "My Mod",
@@ -154,6 +226,30 @@ lurek.mods.newModManager()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local core = lurek.mods.newMod({ id = "core_pack", name = "Core Pack", priority = 0 })
     mgr:registerMod(core)
@@ -183,6 +279,30 @@ lurek.mods.newRegistry()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local reg = lurek.mods.newRegistry()
     reg:registerType("encounter")
     reg:register("encounter", "bandits", { difficulty = 3, biome = "forest" })
@@ -242,6 +362,30 @@ LContentRegistry:get(type_name, id)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
     reg:register("item", "sword", { name = "Sword", damage = 10 })
@@ -277,6 +421,30 @@ LContentRegistry:getAll(type_name)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
     reg:register("item", "shield", { name = "Shield", armor = 5 })
@@ -307,6 +475,30 @@ LContentRegistry:getTypes()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
     reg:registerType("npc")
@@ -337,6 +529,30 @@ LContentRegistry:register(type_name, id, obj)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
     reg:register("item", "sword", { name = "Sword", damage = 10 })
@@ -366,6 +582,30 @@ LContentRegistry:registerType(type_name)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
     reg:registerType("npc")
@@ -394,6 +634,30 @@ LContentRegistry:type()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local reg = lurek.mods.newRegistry()
     reg:registerType("encounter")
     reg:register("encounter", "wolves", { strength = 2 })
@@ -430,6 +694,30 @@ LContentRegistry:typeOf(name)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local reg = lurek.mods.newRegistry()
     reg:registerType("loot")
     local is_registry = reg:typeOf("LContentRegistry")
@@ -468,6 +756,30 @@ LMod:getApiVersion()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "save_patch", name = "Save Patch" })
     local host_version = "1.3.0"
     mod:setApiVersion("1.2.0")
@@ -497,6 +809,30 @@ LMod:getAuthor()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "narrative_pack", name = "Narrative Pack", author = "Dev" })
     local author = mod:getAuthor()
     local name = mod:getName()
@@ -527,6 +863,30 @@ LMod:getCapabilities()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "renderer_pack", name = "Renderer Pack" })
     local manager = lurek.mods.newModManager()
     mod:setCapabilities({ "renderer", "audio", "physics" })
@@ -559,6 +919,30 @@ LMod:getConfig()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "cfg", name = "Cfg" })
     mod:setConfig({ difficulty = "story", subtitles = true })
     local config = mod:getConfig()
@@ -587,6 +971,30 @@ LMod:getConfigSchema()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "schema", name = "Schema" })
     mod:setConfigSchema({
         { key = "volume", type = "number", default = "0.5" },
@@ -618,6 +1026,30 @@ LMod:getDependencies()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({
         id = "deps",
         name = "Deps",
@@ -649,6 +1081,30 @@ LMod:getDescription()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({
         id = "my_mod",
         name = "My Mod",
@@ -684,6 +1140,30 @@ LMod:getHook(name)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "hooks", name = "Hooks" })
     mod:setHook("onLoad", function()
         mods_log("hook fired")
@@ -713,6 +1193,30 @@ LMod:getHookNames()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "hooks", name = "Hooks" })
     mod:setHook("onLoad", function()
     end)
@@ -744,6 +1248,30 @@ LMod:getId()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "ui_overhaul", name = "UI Overhaul" })
     local id = mod:getId()
     local name = mod:getName()
@@ -774,6 +1302,30 @@ LMod:getName()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "economy_patch", name = "Economy Patch" })
     local name = mod:getName()
     local id = mod:getId()
@@ -803,6 +1355,30 @@ LMod:getPriority()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "late_patch", name = "Late Patch", priority = 25 })
     local priority = mod:getPriority()
     local manager = lurek.mods.newModManager()
@@ -834,6 +1410,30 @@ LMod:getSandbox()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     ensure_dir("save")
     local root = "save/_mods_sandbox_readback"
     local root_abs = lurek.filesystem.getSaveDirectory() .. "/_mods_sandbox_readback"
@@ -877,6 +1477,30 @@ LMod:getVersion()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "patch_notes", name = "Patch Notes", version = "1.4.2" })
     local version = mod:getVersion()
     local id = mod:getId()
@@ -912,6 +1536,30 @@ LMod:hasHook(name)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "hooks", name = "Hooks" })
     mods_log("before = " .. tostring(mod:hasHook("onLoad")))
     mod:setHook("onLoad", function()
@@ -940,6 +1588,30 @@ LMod:isEnabled()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "ruleset", name = "Ruleset Override" })
     local default_enabled = mod:isEnabled()
     mod:setEnabled(false)
@@ -970,6 +1642,30 @@ LMod:isLoaded()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "fresh_manifest", name = "Fresh Manifest" })
     local before_register = mod:isLoaded()
     local manager = lurek.mods.newModManager()
@@ -994,6 +1690,30 @@ LMod:releaseRefs()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "release", name = "Release" })
     mod:setHook("test", function()
     end)
@@ -1030,6 +1750,30 @@ LMod:runHook(name)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "runtime_hooks", name = "Runtime Hooks" })
     mod:setSandbox({
         hook_mode = "allow_list",
@@ -1064,6 +1808,30 @@ LMod:setApiVersion(api_version)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "ui_patch", name = "UI Patch" })
     local host_version = "1.5.0"
     mod:setApiVersion("2.0.0")
@@ -1093,6 +1861,30 @@ LMod:setCapabilities(caps)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "caps", name = "Caps" })
     mod:setCapabilities({ "renderer", "audio", "physics" })
     local capabilities = mod:getCapabilities()
@@ -1121,6 +1913,30 @@ LMod:setConfig(value)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "cfg", name = "Cfg" })
     mod:setConfig({ difficulty = "hard", volume = 0.8 })
     local config = mod:getConfig()
@@ -1149,6 +1965,30 @@ LMod:setConfigSchema(schema)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "schema", name = "Schema" })
     mod:setConfigSchema({
         { key = "volume", type = "number", default = "0.5" },
@@ -1180,6 +2020,30 @@ LMod:setEnabled(enabled)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "toggle_campaign", name = "Toggle Campaign Rules" })
     local before = mod:isEnabled()
     mod:setEnabled(false)
@@ -1211,6 +2075,30 @@ LMod:setHook(name, func)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "hooks", name = "Hooks" })
     mod:setHook("onLoad", function()
         mods_log("hook fired")
@@ -1240,6 +2128,30 @@ LMod:setSandbox(sandbox)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     ensure_dir("save")
     ensure_dir("save/example-mods")
     local root = "save/_mods_sandbox_unit"
@@ -1283,6 +2195,30 @@ LMod:type()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "strict_type", name = "Strict Type" })
     local type_name = mod:type()
     local is_mod = mod:typeOf("LMod")
@@ -1318,6 +2254,30 @@ LMod:typeOf(name)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mod = lurek.mods.newMod({ id = "type_guard", name = "Type Guard" })
     local is_mod = mod:typeOf("LMod")
     local is_object = mod:typeOf("LObject")
@@ -1349,6 +2309,30 @@ LModManager:clearLoadOrder()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod_a = lurek.mods.newMod({ id = "a", name = "A", priority = 0 })
     local mod_b = lurek.mods.newMod({ id = "b", name = "B", priority = 10 })
@@ -1375,6 +2359,30 @@ LModManager:clearReloadQueue()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "hot", name = "Hot" })
     mgr:registerMod(mod)
@@ -1404,6 +2412,30 @@ LModManager:getAllMods()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "list", name = "List", version = "2.0.0" })
     mgr:registerMod(mod)
@@ -1433,6 +2465,30 @@ LModManager:getLoadOrder()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local core = lurek.mods.newMod({ id = "core", name = "Core", priority = 0 })
     local patch = lurek.mods.newMod({
@@ -1469,6 +2525,30 @@ LModManager:getModCount()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "core", name = "Core", priority = 0 })
     mods_log("before = " .. mgr:getModCount())
@@ -1503,6 +2583,30 @@ LModManager:getModPath(mod_id)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "memory_only", name = "Memory Only" })
     mgr:registerMod(mod)
@@ -1538,6 +2642,30 @@ LModManager:getModsByCapability(capability)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "render_mod", name = "Renderer Mod" })
     mod:setCapabilities({ "renderer" })
@@ -1568,6 +2696,30 @@ LModManager:getReloadQueue()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "hot", name = "Hot" })
     mgr:registerMod(mod)
@@ -1596,6 +2748,30 @@ LModManager:hasCircularDependencies()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod_a = lurek.mods.newMod({ id = "a", name = "A", dependencies = { "b" } })
     local mod_b = lurek.mods.newMod({ id = "b", name = "B", dependencies = { "a" } })
@@ -1631,6 +2807,30 @@ LModManager:hasMod(mod_id)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "core", name = "Core", priority = 0 })
     mods_log("before = " .. tostring(mgr:hasMod("core")))
@@ -1665,6 +2865,30 @@ LModManager:markForReload(mod_id)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "hot", name = "Hot" })
     mgr:registerMod(mod)
@@ -1694,6 +2918,30 @@ LModManager:processReloadQueue()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "hot", name = "Hot" })
     mgr:registerMod(mod)
@@ -1724,6 +2972,30 @@ LModManager:registerMod(ud)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "core", name = "Core", priority = 0 })
     mod:setEnabled(true)
@@ -1758,6 +3030,30 @@ LModManager:scanFolder(path)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local root = "save/example-mods/scan_case"
     prepare_scan_folder(root)
@@ -1789,6 +3085,30 @@ LModManager:setLoadOrder(order_table)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod_a = lurek.mods.newMod({ id = "a", name = "A", priority = 0 })
     local mod_b = lurek.mods.newMod({ id = "b", name = "B", priority = 10 })
@@ -1821,6 +3141,30 @@ LModManager:type()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "typed_manager_mod", name = "Typed Manager Mod" })
     mgr:registerMod(mod)
@@ -1857,6 +3201,30 @@ LModManager:typeOf(name)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     mgr:registerMod(lurek.mods.newMod({ id = "guarded_mod", name = "Guarded Mod" }))
     local is_manager = mgr:typeOf("LModManager")
@@ -1893,6 +3261,30 @@ LModManager:unregisterMod(mod_id)
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "temp", name = "Temp" })
     mgr:registerMod(mod)
@@ -1921,6 +3313,30 @@ LModManager:validateDependencies()
 
 ```lua
 do
+    local function mods_log(message)
+        lurek.log.info("[mods.example] " .. tostring(message))
+    end
+    local function ensure_dir(path)
+        if not lurek.filesystem.exists(path) then
+            lurek.filesystem.createDirectory(path)
+        end
+    end
+    local function prepare_scan_folder(root)
+        local mod_dir = root .. "/demo_pack"
+        if lurek.filesystem.exists(root) then
+            lurek.filesystem.removeDir(root)
+        end
+        ensure_dir("save")
+        ensure_dir("save/example-mods")
+        ensure_dir(root)
+        ensure_dir(mod_dir)
+        lurek.filesystem.write(
+            mod_dir .. "/mod.toml",
+            "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
+        )
+        return mod_dir
+    end
+
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({
         id = "addon",

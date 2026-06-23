@@ -16,6 +16,36 @@ Example block: `lurek.svg.load`
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local width, height = svg:getDimensions()
     local count = svg:getElementCount()
@@ -61,6 +91,36 @@ lurek.svg.load(path)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local width, height = svg:getDimensions()
     local count = svg:getElementCount()
@@ -111,6 +171,36 @@ LSvgImage:cacheToCanvas(id, w, h)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     svg:cacheToCanvas("group1", 100, 100)
     local key = svg:getCanvasKey("group1")
@@ -145,6 +235,36 @@ LSvgImage:draw(x, y, rotation, sx, sy, ox, oy)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     svg:setElementVisible("prov_2", false)
     svg:setElementColor("prov_1", 1.0, 0.3, 0.3, 1.0)
@@ -180,6 +300,36 @@ LSvgImage:getAdjacencies(prefix, epsilon)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local adjacency = svg:getAdjacencies("prov_", 5.0)
     local p1 = adjacency["prov_1"] or {}
@@ -214,6 +364,36 @@ LSvgImage:getCanvas(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     svg:cacheToCanvas("group1", 100, 100)
     local canvas = svg:getCanvas("group1")
@@ -248,6 +428,36 @@ LSvgImage:getCanvasKey(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     svg:cacheToCanvas("group1", 100, 100)
     local key = svg:getCanvasKey("group1")
@@ -277,6 +487,36 @@ LSvgImage:getDimensions()
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local width, height = svg:getDimensions()
     local count = svg:getElementCount()
@@ -311,6 +551,36 @@ LSvgImage:getElementBounds(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local bounds = svg:getElementBounds("prov_1")
     local width = bounds.max_x - bounds.min_x
@@ -345,6 +615,36 @@ LSvgImage:getElementChildren(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local children = svg:getElementChildren("group1")
     local first = children[1] or "none"
@@ -379,6 +679,36 @@ LSvgImage:getElementColor(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local before = svg:getElementColor("prov_1")
     svg:setElementColor("prov_1", 0.5, 0.25, 0.0, 1.0)
@@ -407,6 +737,36 @@ LSvgImage:getElementCount()
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local count = svg:getElementCount()
     local ids = svg:getElementIds()
@@ -435,6 +795,36 @@ LSvgImage:getElementIds()
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local ids = svg:getElementIds()
     table.sort(ids)
@@ -469,6 +859,36 @@ LSvgImage:getElementParent(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local parent = svg:getElementParent("prov_1")
     local siblings = parent and svg:getElementChildren(parent) or {}
@@ -504,6 +924,36 @@ LSvgImage:getElementPoints(id, step_size)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local points = svg:getElementPoints("prov_1", 10.0)
     local first = points[1]
@@ -538,6 +988,36 @@ LSvgImage:getElementTransform(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local initial = svg:getElementTransform("prov_1")
     svg:setElementTransform("prov_1", 10, 20, 0.5, 2.0, 3.0)
@@ -572,6 +1052,36 @@ LSvgImage:getElementVisible(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local before = svg:getElementVisible("prov_1")
     svg:setElementVisible("prov_1", false)
@@ -600,6 +1110,36 @@ LSvgImage:getHeight()
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local height = svg:getHeight()
     local width = svg:getWidth()
@@ -628,6 +1168,36 @@ LSvgImage:getWidth()
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local width = svg:getWidth()
     local height = svg:getHeight()
@@ -656,6 +1226,36 @@ LSvgImage:resetElementColor(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     svg:setElementColor("prov_1", 1.0, 0.1, 0.1, 1.0)
     local before = svg:getElementColor("prov_1")
@@ -684,6 +1284,36 @@ LSvgImage:resetElementTransform(id)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     svg:setElementTransform("prov_1", 100, 200, 1.0, 3.0, 3.0)
     local before = svg:getElementTransform("prov_1")
@@ -716,6 +1346,36 @@ LSvgImage:setElementColor(id, r, g, b, a)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     svg:setElementColor("prov_1", 1.0, 0.0, 0.0, 1.0)
     local color = svg:getElementColor("prov_1")
@@ -749,6 +1409,36 @@ LSvgImage:setElementTransform(id, tx, ty, rotation, sx, sy)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     svg:setElementTransform("prov_1", 5, 10, 0.2, 1.5, 1.5)
     local transform = svg:getElementTransform("prov_1")
@@ -778,6 +1468,36 @@ LSvgImage:setElementVisible(id, visible)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     svg:setElementVisible("prov_1", false)
     local hidden = svg:getElementVisible("prov_1")
@@ -806,6 +1526,36 @@ LSvgImage:type()
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local kind = svg:type()
     local width, height = svg:getDimensions()
@@ -840,6 +1590,36 @@ LSvgImage:typeOf(name)
 
 ```lua
 do
+    local function svg_log(message)
+        lurek.log.info("[svg] " .. message)
+    end
+    local function load_example_svg()
+        return lurek.svg.load("content/examples/assets/test.svg")
+    end
+    local function color_text(color)
+        if not color then
+            return "nil"
+        end
+        return table.concat({
+            tostring(color[1]),
+            tostring(color[2]),
+            tostring(color[3]),
+            tostring(color[4]),
+        }, ",")
+    end
+    local function transform_text(transform)
+        if not transform then
+            return "nil"
+        end
+        return table.concat({
+            tostring(transform[1]),
+            tostring(transform[2]),
+            tostring(transform[3]),
+            tostring(transform[4]),
+            tostring(transform[5]),
+        }, ",")
+    end
+
     local svg = load_example_svg()
     local is_svg = svg:typeOf("LSvgImage")
     local is_object = svg:typeOf("LObject")

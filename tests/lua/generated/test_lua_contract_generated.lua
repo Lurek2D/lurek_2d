@@ -143,11 +143,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ai.newCondition)
     end)
 
-    -- @covers lurek.ai.newContextSteering
-    it("lurek.ai.newContextSteering exists", function()
-        expect_type("function", lurek.ai.newContextSteering)
-    end)
-
     -- @covers lurek.ai.newDialogueAI
     it("lurek.ai.newDialogueAI exists", function()
         expect_type("function", lurek.ai.newDialogueAI)
@@ -173,11 +168,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ai.newHTNDomain)
     end)
 
-    -- @covers lurek.ai.newInfluenceMap
-    it("lurek.ai.newInfluenceMap exists", function()
-        expect_type("function", lurek.ai.newInfluenceMap)
-    end)
-
     -- @covers lurek.ai.newInverter
     it("lurek.ai.newInverter exists", function()
         expect_type("function", lurek.ai.newInverter)
@@ -191,11 +181,6 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.ai.newNeedSystem
     it("lurek.ai.newNeedSystem exists", function()
         expect_type("function", lurek.ai.newNeedSystem)
-    end)
-
-    -- @covers lurek.ai.newORCASolver
-    it("lurek.ai.newORCASolver exists", function()
-        expect_type("function", lurek.ai.newORCASolver)
     end)
 
     -- @covers lurek.ai.newParallel
@@ -226,11 +211,6 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.ai.newStateMachine
     it("lurek.ai.newStateMachine exists", function()
         expect_type("function", lurek.ai.newStateMachine)
-    end)
-
-    -- @covers lurek.ai.newSteeringManager
-    it("lurek.ai.newSteeringManager exists", function()
-        expect_type("function", lurek.ai.newSteeringManager)
     end)
 
     -- @covers lurek.ai.newStimulusWorld
@@ -4593,6 +4573,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.pathfind.getThreadCount)
     end)
 
+    -- @covers lurek.pathfind.newContextSteering
+    it("lurek.pathfind.newContextSteering exists", function()
+        expect_type("function", lurek.pathfind.newContextSteering)
+    end)
+
     -- @covers lurek.pathfind.newFlowField
     it("lurek.pathfind.newFlowField exists", function()
         expect_type("function", lurek.pathfind.newFlowField)
@@ -4606,6 +4591,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.pathfind.newHexGrid
     it("lurek.pathfind.newHexGrid exists", function()
         expect_type("function", lurek.pathfind.newHexGrid)
+    end)
+
+    -- @covers lurek.pathfind.newInfluenceMap
+    it("lurek.pathfind.newInfluenceMap exists", function()
+        expect_type("function", lurek.pathfind.newInfluenceMap)
     end)
 
     -- @covers lurek.pathfind.newJpsGrid
@@ -4633,6 +4623,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.pathfind.newNavMesh)
     end)
 
+    -- @covers lurek.pathfind.newORCASolver
+    it("lurek.pathfind.newORCASolver exists", function()
+        expect_type("function", lurek.pathfind.newORCASolver)
+    end)
+
     -- @covers lurek.pathfind.newPathFlowField
     it("lurek.pathfind.newPathFlowField exists", function()
         expect_type("function", lurek.pathfind.newPathFlowField)
@@ -4646,6 +4641,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.pathfind.newPathfinder
     it("lurek.pathfind.newPathfinder exists", function()
         expect_type("function", lurek.pathfind.newPathfinder)
+    end)
+
+    -- @covers lurek.pathfind.newSteeringManager
+    it("lurek.pathfind.newSteeringManager exists", function()
+        expect_type("function", lurek.pathfind.newSteeringManager)
     end)
 
     -- @covers lurek.pathfind.pollAsyncPaths
