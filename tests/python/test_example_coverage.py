@@ -132,6 +132,20 @@ class ExampleCoverageLintTests(unittest.TestCase):
         )
         self.assertIn("E8", codes)
 
+    def test_flags_bloated_file_average(self) -> None:
+        noisy_lines = "\n".join(f"                local v{i} = {i}" for i in range(70))
+        codes = self.lint_codes(
+            "bloated.lua",
+            f"""
+            --@api: lurek.render.print
+            do
+{noisy_lines}
+                lurek.render.print("hello", 0, 0)
+            end
+            """,
+        )
+        self.assertIn("E9", codes)
+
 
 if __name__ == "__main__":
     unittest.main()

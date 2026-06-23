@@ -16,6 +16,7 @@ Structural lint checks (E-codes) run automatically after the summary:
     E6 -- marker text appears more than once across example files
     E7 -- top-level ``do`` block has no immediately preceding ``--@api:`` / ``--@api-stub:``
     E8 -- top-level Lua code appears outside a marker-owned ``do ... end`` block
+    E9 -- file is bloated relative to its API marker count
 
 Workflow:
   1. Run example_add_missing.py  -- adds --@api-stub: blocks with -- TODO: (pending)
@@ -572,6 +573,7 @@ MARKER_VALID_RE = re.compile(
     r'(?:\.\d+)?$'                    # optional .N dedup suffix
 )
 LINT_MIN_BODY_LINES = 5  # code lines inside a do block; comments and blanks do not count
+LINT_MAX_AVG_LINES_PER_MARKER = 60
 
 EXTRA_LINT_ISSUES: list[tuple[str, int, str, str]] = []
 
@@ -640,6 +642,7 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
       E6  marker text appears more than once across example files
       E7  top-level ``do`` block has no immediately preceding example marker
       E8  top-level Lua code outside a marker-owned ``do ... end`` block
+      E9  file has too many lines per API marker, usually from duplicated helper scaffolding
     """
     issues: list = []
 
@@ -649,6 +652,11 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
 
         lines = p.read_text(encoding='utf-8', errors='replace').splitlines()
         n = len(lines)
+        marker_count = sum(1 for line in lines if MARKER_TAG_RE.match(line.strip()))
+        if marker_count and (n / marker_count) > LINT_MAX_AVG_LINES_PER_MARKER:
+            issues.append((p.name, 1, 'E9',
+                f"file averages {n / marker_count:.1f} lines per API marker "
+                f"(max {LINT_MAX_AVG_LINES_PER_MARKER}); keep examples compact and duplicate only minimal setup"))
         i = 0
         top_level_depth = 0
         while i < n:
