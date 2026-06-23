@@ -34,7 +34,6 @@ Callbacks: [Runtime callbacks](api/callbacks.md)
 | [Globe](modules/globe.md) | `lurek.globe` | The globe module is the planetary-map surface for users who want a world-scale spherical view to behave as a full gameplay and tooling system instead of a decorative background. |
 | [Graph](modules/graph.md) | `lurek.graph` | The graph module is the logistics-graph simulation surface for users who want resources, items, queues, routes, and transformation rules to behave as one explicit networked system. |
 | [Grep](modules/grep.md) | `lurek.grep` | The grep module is the scriptable text-search surface for users who want to scan project files, logs, or structured content from inside the engine environment. |
-| [Html](modules/html.md) | `lurek.html` | The html module is the in-engine document-style UI surface for users who want markup, styles, and DOM-like interaction inside the runtime. |
 | [I18n](modules/i18n.md) | `lurek.i18n` | The i18n module is the localization surface for projects that want translated text, locale-aware formatting, and language switching to behave as one system. |
 | [Image](modules/image.md) | `lurek.image` | The image module is the engine's CPU-side image workbench for users who need pixel data to be loaded, transformed, composed, inspected, compared, and exported under one coherent API. |
 | [Input](modules/input.md) | `lurek.input` | The input module is the engine's unified control surface for users who need keyboard, mouse, gamepad, and touch state to behave as one coherent runtime system. |

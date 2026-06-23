@@ -97,8 +97,7 @@ describe("Part", function()
         expect_false(fy)
     end)
 
-    -- @library LHtmlElement:getAttribute
-    -- @library LHtmlElement:setAttribute
+    -- @library lurek.library_doll
     it("sets and gets attributes", function()
         local p = doll.newPart()
         p:setAttribute("material", "steel")
@@ -108,7 +107,7 @@ describe("Part", function()
         expect_nil(p:getAttribute("nonexist"))
     end)
 
-    -- @library LHtmlElement:setAttribute
+    -- @library lurek.library_doll
     it("returns attribute keys", function()
         local p = doll.newPart()
         p:setAttribute("a", 1)
@@ -695,8 +694,7 @@ describe("Part:getAttributes", function()
         expect_equal(0, count)
     end)
 
-    -- @library LHtmlElement:getAttribute
-    -- @library LHtmlElement:setAttribute
+    -- @library lurek.library_doll
     it("returns shallow copy of all attributes", function()
         local p = doll.newPart()
         p:setAttribute("color", "red")

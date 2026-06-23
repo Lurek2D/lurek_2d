@@ -4343,6 +4343,53 @@ end
 
 ---
 
+#### `LWorld:addGravityVector`
+
+Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.
+
+```lua
+LWorld:addGravityVector(gx, gy, layerMask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gx` | number | Horizontal acceleration in world units per second squared. |
+| `gy` | number | Vertical acceleration in world units per second squared. |
+| `layerMask?` | number | Optional body layer mask, defaults to all layers. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable gravity vector ID. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(120, 120, 10, "dynamic")
+    local vector_id = world:addGravityVector(0, 180)
+    world:step(1 / 60)
+    physics_log("gravity vector id=" .. vector_id .. " velocity_y=" .. select(2, body:getVelocity()))
+end
+```
+
+---
+
 #### `LWorld:addMotorJoint`
 
 Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
@@ -4976,6 +5023,39 @@ do
         world:step(1 / 60)
     end
     example_print_log("count", count)
+end
+```
+
+---
+
+#### `LWorld:clearGravityVectors`
+
+Removes all additive gravity vectors from the world.
+
+```lua
+LWorld:clearGravityVectors()
+```
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    world:addGravityVector(40, 0)
+    world:addGravityVector(0, -40)
+    world:clearGravityVectors()
+    physics_log("active gravity vectors=" .. world:getStats().gravityVectors)
 end
 ```
 
@@ -5748,6 +5828,51 @@ end
 
 ---
 
+#### `LWorld:getGravityVector`
+
+Returns an additive gravity vector by ID, or nil when no active vector exists.
+
+```lua
+LWorld:getGravityVector(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Gravity vector ID returned by addGravityVector. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table? | Table with id, gx, gy, layerMask, and enabled fields. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local vector_id = world:addGravityVector(12, -18, 0x4)
+    local vector = world:getGravityVector(vector_id)
+    example_print_log("gravity_vector", vector.id, vector.gx, vector.gy)
+    example_print_log("layer_mask", vector.layerMask)
+end
+```
+
+---
+
 #### `LWorld:getJointBodies`
 
 Returns the two body IDs connected by a joint.
@@ -6113,7 +6238,7 @@ LWorld:getStats()
 
 | Type | Description |
 |------|-------------|
-| LWorldGetStatsResult | Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies. |
+| LWorldGetStatsResult | Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, gravityVectors, sleepingBodies. |
 
 **Example**
 
@@ -6885,6 +7010,51 @@ end
 
 ---
 
+#### `LWorld:removeGravityVector`
+
+Removes one additive gravity vector so it no longer affects future steps.
+
+```lua
+LWorld:removeGravityVector(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Gravity vector ID returned by addGravityVector. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if an active vector was removed. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local vector_id = world:addGravityVector(0, 120)
+    local removed = world:removeGravityVector(vector_id)
+    local vector = world:getGravityVector(vector_id)
+    physics_log("removed=" .. tostring(removed) .. " active=" .. tostring(vector ~= nil))
+end
+```
+
+---
+
 #### `LWorld:resetWorld`
 
 Fully resets the world to its post-construction state.
@@ -7344,6 +7514,49 @@ do
     local gx, gy = world:getGravity()
     example_print_log("gravity", gx, gy)
     example_print_log("body_count", world:getBodyCount())
+end
+```
+
+---
+
+#### `LWorld:setGravityVector`
+
+Replaces the direction, strength, and optional layer mask of an existing additive gravity vector.
+
+```lua
+LWorld:setGravityVector(id, gx, gy, layerMask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Gravity vector ID returned by addGravityVector. |
+| `gx` | number | Horizontal acceleration in world units per second squared. |
+| `gy` | number | Vertical acceleration in world units per second squared. |
+| `layerMask?` | number | Optional body layer mask, defaults to all layers. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local ship = world:newCircleBody(160, 160, 8, "dynamic")
+    local vector_id = world:addGravityVector(80, 0)
+    world:setGravityVector(vector_id, -80, 0)
+    world:step(1 / 60)
+    physics_log("switched gravity vector=" .. vector_id .. " vx=" .. select(1, ship:getVelocity()))
 end
 ```
 
@@ -8029,6 +8242,45 @@ end
 
 ---
 
+#### `LZone:getGravityFalloff`
+
+Returns the current point/repulsor gravity falloff mode.
+
+```lua
+LZone:getGravityFalloff()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Falloff mode name. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 240, 240)
+    zone:setGravityFalloff("inverse")
+    local mode = zone:getGravityFalloff()
+    example_print_log("falloff", mode)
+end
+```
+
+---
+
 #### `LZone:getId`
 
 Returns the unique ID of this zone. This method is available to Lua scripts.
@@ -8065,6 +8317,46 @@ do
     world:step(1 / 60)
     physics_log("zone id=" .. zone:getId() .. " type=" .. zone:type())
     physics_log("scout y=" .. select(2, scout:getPosition()))
+end
+```
+
+---
+
+#### `LZone:isGravityAdditive`
+
+Returns whether this zone adds gravity to other fields.
+
+```lua
+LZone:isGravityAdditive()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when additive gravity mode is enabled. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 200, 200)
+    local before = zone:isGravityAdditive()
+    zone:setGravityAdditive(true)
+    local after = zone:isGravityAdditive()
+    physics_log("additive before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -8195,6 +8487,47 @@ end
 
 ---
 
+#### `LZone:setGravityAdditive`
+
+Controls whether this zone adds gravity to other fields instead of overriding world gravity by priority.
+
+```lua
+LZone:setGravityAdditive(additive)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `additive` | boolean | True to add this zone's gravity; false for priority override behavior. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 60)
+    local zone = world:addZone(0, 0, 200, 200)
+    zone:setGravityDirectional(0, -20)
+    zone:setGravityAdditive(true)
+    local probe = world:newCircleBody(80, 80, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("additive=" .. tostring(zone:isGravityAdditive()) .. " vy=" .. select(2, probe:getVelocity()))
+end
+```
+
+---
+
 #### `LZone:setGravityDirectional`
 
 Sets the zone to apply a constant directional gravity to bodies inside.
@@ -8234,6 +8567,89 @@ do
     end
     example_print_log("position", ball:getPosition())
     example_print_log("velocity", ball:getVelocity())
+end
+```
+
+---
+
+#### `LZone:setGravityFalloff`
+
+Sets point/repulsor gravity falloff. Accepted modes: inverseSquare, inverse, linear, constant.
+
+```lua
+LZone:setGravityFalloff(mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mode` | string | Falloff mode name. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 240, 240)
+    zone:setGravityPoint(120, 120, 90)
+    zone:setGravityFalloff("constant")
+    local probe = world:newCircleBody(180, 120, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("falloff=" .. zone:getGravityFalloff() .. " vx=" .. select(1, probe:getVelocity()))
+end
+```
+
+---
+
+#### `LZone:setGravityLimits`
+
+Sets optional minimum and maximum acceleration clamps for point/repulsor gravity.
+
+```lua
+LZone:setGravityLimits(minAccel, maxAccel)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `minAccel?` | number | Optional minimum acceleration magnitude. |
+| `maxAccel?` | number | Optional maximum acceleration magnitude. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 300, 300)
+    zone:setGravityPoint(150, 150, 2000)
+    zone:setGravityLimits(nil, 80)
+    local probe = world:newCircleBody(230, 150, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("limited gravity vx=" .. select(1, probe:getVelocity()))
 end
 ```
 
@@ -8279,6 +8695,48 @@ do
     end
     example_print_log("position", ball:getPosition())
     example_print_log("velocity", ball:getVelocity())
+end
+```
+
+---
+
+#### `LZone:setGravityRadius`
+
+Sets the inner radius and optional outer radius used by point/repulsor falloff.
+
+```lua
+LZone:setGravityRadius(innerRadius, outerRadius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `innerRadius` | number | Minimum distance used for falloff, must be > 0. |
+| `outerRadius?` | number | Optional maximum active distance, must be greater than innerRadius. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 300, 300)
+    zone:setGravityPoint(150, 150, 200)
+    zone:setGravityRadius(8, 90)
+    local probe = world:newCircleBody(210, 150, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("radius-limited vx=" .. select(1, probe:getVelocity()))
 end
 ```
 
@@ -8449,6 +8907,47 @@ end
 
 ---
 
+#### `LZone:setLinearDrag`
+
+Sets or clears area drag proportional to velocity for bodies inside this zone.
+
+```lua
+LZone:setLinearDrag(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value?` | number | Drag coefficient, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local atmosphere = world:addZone(0, 0, 240, 240)
+    atmosphere:setLinearDrag(2.5)
+    local probe = world:newCircleBody(80, 80, 8, "dynamic")
+    probe:setVelocity(100, 0)
+    world:step(1 / 60)
+    physics_log("linear drag vx=" .. select(1, probe:getVelocity()))
+end
+```
+
+---
+
 #### `LZone:setPriority`
 
 Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
@@ -8483,6 +8982,47 @@ do
     zone:setPriority(1)
     example_print_log("zone_id", zone:getId())
     example_print_log("type", zone:type())
+end
+```
+
+---
+
+#### `LZone:setQuadraticDrag`
+
+Sets or clears area drag proportional to speed times velocity for bodies inside this zone.
+
+```lua
+LZone:setQuadraticDrag(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value?` | number | Drag coefficient, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local nebula = world:addZone(0, 0, 240, 240)
+    nebula:setQuadraticDrag(0.04)
+    local probe = world:newCircleBody(80, 80, 8, "dynamic")
+    probe:setVelocity(120, 0)
+    world:step(1 / 60)
+    physics_log("quadratic drag vx=" .. select(1, probe:getVelocity()))
 end
 ```
 

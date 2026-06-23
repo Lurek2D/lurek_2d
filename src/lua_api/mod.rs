@@ -65,8 +65,6 @@ pub mod font_api;
 pub mod globe_api;
 /// Exposes the `lurek.grep` binding module.
 pub mod grep_api;
-/// Exposes the `lurek.html` binding module.
-pub mod html_api;
 /// Exposes the `lurek.i18n` binding module.
 pub mod i18n_api;
 /// Exposes the `lurek.image` binding module.

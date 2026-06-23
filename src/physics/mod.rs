@@ -38,6 +38,9 @@ pub use shape::{Shape, StandaloneShape};
 pub use terrain::TerrainMap;
 pub use world::BodyContact as CollisionEvent;
 pub use world::{
-    ContactInfo, PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsWorldStats, RaycastHit, World,
+    ContactInfo, GravityVector, PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsWorldStats,
+    RaycastHit, World,
 };
-pub use zone::{PhysicsZone, ZoneBoundary, ZoneEvent, ZoneEventKind, ZoneGravityMode};
+pub use zone::{
+    PhysicsZone, ZoneBoundary, ZoneEvent, ZoneEventKind, ZoneGravityFalloff, ZoneGravityMode,
+};

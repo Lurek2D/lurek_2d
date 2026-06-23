@@ -340,16 +340,6 @@ lua_unit_test = "tests/lua/unit/test_grep_unit.lua"
 user_facing = true
 plugin_tier = "not_evaluated"
 
-[html]
-tier = "feature_systems"
-source = "src/html"
-lua_binding = "src/lua_api/html_api.rs"
-namespace = "lurek.html"
-example_file = "content/examples/html.lua"
-lua_unit_test = "tests/lua/unit/test_html_unit.lua"
-user_facing = true
-plugin_tier = "not_evaluated"
-
 [i18n]
 tier = "feature_systems"
 source = "src/i18n"

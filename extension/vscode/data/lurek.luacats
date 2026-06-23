@@ -1560,6 +1560,7 @@ LWorldGetEndContactEventsResult = {}
 ---@field bodies number Number of active body slots.
 ---@field bodySlots number Total allocated body slots, including inactive tombstones.
 ---@field colliders number Number of active Rapier colliders.
+---@field gravityVectors number Number of active additive gravity vectors.
 ---@field jointSlots number Total allocated joint slots, including inactive tombstones.
 ---@field joints number Number of active joint slots.
 ---@field sleepingBodies number Number of active bodies currently sleeping.
@@ -1685,9 +1686,6 @@ lurek.globe = {}
 
 ---@class lurek.grep
 lurek.grep = {}
-
----@class lurek.html
-lurek.html = {}
 
 ---@class lurek.i18n
 lurek.i18n = {}
@@ -2269,14 +2267,6 @@ LFileFilter = {}
 --- Lua userdata that performs search operations across game content files.
 ---@class LGrepEngine
 LGrepEngine = {}
-
---- Lua-side HTML document handle with DOM state, callbacks, and render command access.
----@class LHtmlDocument
-LHtmlDocument = {}
-
---- Lua-side DOM element handle with stale-generation detection.
----@class LHtmlElement
-LHtmlElement = {}
 
 --- Lua-side handle for compressed DDS image metadata and mipmap data.
 ---@class LCompressedImageData
@@ -11254,8 +11244,9 @@ lurek.dsp.setEffectParam = function(bus_name, effect_id, param_name, value) end
 ---@param output string Relative path for the output PNG file.
 ---@param width number Image width in pixels.
 ---@param height number Image height in pixels.
+---@param options? table Optional FFT settings: `windowSize`/`inputWindowSize` samples, `fftSize`/`fftPoints`, `hopSize`, `dynamicRangeDb`, `logFrequency`, or `frequencyScale`.
 ---@return boolean True when the output image was written successfully.
-lurek.dsp.spectrogramToPng = function(input, output, width, height) end
+lurek.dsp.spectrogramToPng = function(input, output, width, height, options) end
 
 --- Renders a waveform visualization of an audio file and saves it as a PNG image.
 ---@param input string Relative path to the input audio file.
@@ -13918,281 +13909,6 @@ lurek.grep.newFilter = function() end
 ---@param pattern string Text to search for.
 ---@return table Search result.
 lurek.grep.search = function(path, pattern) end
-
---- Appends CSS source text to the document stylesheet.
----@param css string CSS source text to append.
-function LHtmlDocument:addCss(css) end
-
---- Clears all CSS source text from the document.
-function LHtmlDocument:clearCss() end
-
---- Queues render commands for this document at an optional offset.
----@param x? number X offset, defaulting to 0.
----@param y? number Y offset, defaulting to 0.
-function LHtmlDocument:draw(x, y) end
-
---- Looks up the first element with a matching id attribute.
----@param id string Element id attribute.
----@return LuaValue `LHtmlElement` handle, or nil when no element matches.
-function LHtmlDocument:getElementById(id) end
-
---- Returns the current document markup string.
----@return string Current HTML markup.
-function LHtmlDocument:getHtml() end
-
---- Returns the root DOM element handle.
----@return LHtmlElement Root element handle.
-function LHtmlDocument:getRoot() end
-
---- Returns the document layout viewport size.
----@return number Viewport width in pixels.
----@return number Viewport height in pixels.
-function LHtmlDocument:getViewport() end
-
---- Returns whether the document layout is dirty.
----@return boolean True when a relayout is needed.
-function LHtmlDocument:isDirty() end
-
---- Forwards a key press to the focused document element and dispatches `keydown`.
----@param key string Key name.
----@return boolean True when the event was consumed or default was prevented.
-function LHtmlDocument:keypressed(key) end
-
---- Forwards mouse movement to the document.
----@param x number Mouse x coordinate.
----@param y number Mouse y coordinate.
----@return boolean True when an element handled the move.
-function LHtmlDocument:mousemoved(x, y) end
-
---- Forwards a mouse press to the document and dispatches a click event when an element is hit.
----@param x number Mouse x coordinate.
----@param y number Mouse y coordinate.
----@param button? number Mouse button, defaulting to 1.
----@return boolean True when the event was consumed or default was prevented.
-function LHtmlDocument:mousepressed(x, y, button) end
-
---- Forwards a mouse release to the document.
----@param x number Mouse x coordinate.
----@param y number Mouse y coordinate.
----@param button? number Mouse button, defaulting to 1.
----@return boolean True when an element handled the release.
-function LHtmlDocument:mousereleased(x, y, button) end
-
---- Removes a document-level event listener by handle.
----@param handle number Listener handle returned by `on`.
-function LHtmlDocument:off(handle) end
-
---- Registers a document-level event listener.
----@param event string Event name to listen for.
----@param func function Lua callback receiving an event table.
----@return number Listener handle used by `off`.
-function LHtmlDocument:on(event, func) end
-
---- Looks up the first element matching a selector.
----@param selector string Selector supported by the HTML engine.
----@return LuaValue `LHtmlElement` handle, or nil when no element matches.
-function LHtmlDocument:query(selector) end
-
---- Returns all elements matching a selector.
----@param selector string Selector supported by the HTML engine.
----@return LHtmlElement[] `LHtmlElement` handles.
-function LHtmlDocument:queryAll(selector) end
-
---- Rebuilds document layout immediately.
-function LHtmlDocument:relayout() end
-
---- Queues render commands for this document at an optional offset.
----@param x? number X offset, defaulting to 0.
----@param y? number Y offset, defaulting to 0.
-function LHtmlDocument:render(x, y) end
-
---- Replaces the document stylesheet text.
----@param css string CSS source text.
-function LHtmlDocument:setCss(css) end
-
---- Replaces the document markup and invalidates existing element handles.
----@param html string New HTML markup.
-function LHtmlDocument:setHtml(html) end
-
---- Sets the document layout viewport size.
----@param w number Viewport width in pixels.
----@param h number Viewport height in pixels.
-function LHtmlDocument:setViewport(w, h) end
-
---- Forwards text input to the focused document element and dispatches `input`.
----@param text string Input text.
----@return boolean True when the event was consumed or default was prevented.
-function LHtmlDocument:textinput(text) end
-
---- Returns the Lua-visible type name for this HTML document handle.
----@return string The string `LHtmlDocument`.
-function LHtmlDocument:type() end
-
---- Returns whether this document handle matches a supported type name.
----@param name string Type name to compare against `LHtmlDocument` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LHtmlDocument:typeOf(name) end
-
---- Advances document timers and animated state.
----@param dt number Delta time in seconds.
-function LHtmlDocument:update(dt) end
-
---- Forwards mouse wheel movement to the document.
----@param dx number Horizontal wheel delta.
----@param dy number Vertical wheel delta.
----@return boolean True when an element handled the wheel event.
-function LHtmlDocument:wheelmoved(dx, dy) end
-
---- Adds a CSS class to this element's class list.
----@param name string Class name to add.
-function LHtmlElement:addClass(name) end
-
---- Appends HTML source to this element's inner HTML.
----@param html string HTML source to append.
-function LHtmlElement:appendHtml(html) end
-
---- Removes keyboard focus from this element when it is focused.
-function LHtmlElement:blur() end
-
---- Gives keyboard focus to this element.
-function LHtmlElement:focus() end
-
---- Returns an attribute value from this element.
----@param name string Attribute name.
----@return LuaValue Attribute string, or nil when absent.
-function LHtmlElement:getAttribute(name) end
-
---- Returns the document handle that owns this element.
----@return LHtmlDocument Owning document handle.
-function LHtmlElement:getDocument() end
-
---- Returns this element's inner HTML.
----@return string Element inner HTML, or an empty string when unavailable.
-function LHtmlElement:getHtml() end
-
---- Returns this element's id attribute.
----@return LuaValue Id string, or nil when no id attribute exists.
-function LHtmlElement:getId() end
-
---- Returns this element's layout rectangle after relayout if needed.
----@return number X coordinate.
----@return number Y coordinate.
----@return number Width.
----@return number Height.
-function LHtmlElement:getRect() end
-
---- Returns an inline or computed style value for this element.
----@param name string CSS property name.
----@return LuaValue Style value string, or nil when missing.
-function LHtmlElement:getStyle(name) end
-
---- Returns this element's HTML tag name.
----@return string Tag name, or an empty string for missing elements.
-function LHtmlElement:getTagName() end
-
---- Returns this element's text content.
----@return string Text content, or an empty string when none exists.
-function LHtmlElement:getText() end
-
---- Returns whether this element has a CSS class.
----@param name string Class name to check.
----@return boolean True when the class is present.
-function LHtmlElement:hasClass(name) end
-
---- Removes an element-level event listener by handle.
----@param handle number Listener handle returned by `on`.
-function LHtmlElement:off(handle) end
-
---- Registers an element-level event listener.
----@param event string Event name to listen for.
----@param func function Lua callback receiving an event table.
----@return number Listener handle used by `off`.
-function LHtmlElement:on(event, func) end
-
---- Looks up the first descendant element matching a selector.
----@param selector string Selector supported by the HTML engine.
----@return LuaValue `LHtmlElement` handle, or nil when no descendant matches.
-function LHtmlElement:query(selector) end
-
---- Returns all descendant elements matching a selector.
----@param selector string Selector supported by the HTML engine.
----@return LHtmlElement[] `LHtmlElement` handles.
-function LHtmlElement:queryAll(selector) end
-
---- Removes this element from the document.
-function LHtmlElement:remove() end
-
---- Removes an attribute from this element.
----@param name string Attribute name to remove.
-function LHtmlElement:removeAttribute(name) end
-
---- Removes a CSS class from this element.
----@param name string Class name to remove.
-function LHtmlElement:removeClass(name) end
-
---- Sets or clears an attribute on this element.
----@param name string Attribute name.
----@param value? string Attribute value, or nil to remove the attribute.
-function LHtmlElement:setAttribute(name, value) end
-
---- Replaces this element's inner HTML and may invalidate descendant element handles.
----@param html string New inner HTML source.
-function LHtmlElement:setHtml(html) end
-
---- Sets or clears this element's id attribute.
----@param id? string Id attribute value, or nil to clear.
-function LHtmlElement:setId(id) end
-
---- Sets or clears a style property on this element.
----@param name string CSS property name.
----@param value? string CSS value, or nil to clear the property.
-function LHtmlElement:setStyle(name, value) end
-
---- Replaces this element's text content.
----@param text string New text content.
-function LHtmlElement:setText(text) end
-
---- Toggles a CSS class on this element, optionally forcing the final state.
----@param name string Class name to toggle.
----@param force? boolean Forced state.
----@return boolean Final class presence, or false when the element is unavailable.
-function LHtmlElement:toggleClass(name, force) end
-
---- Returns the Lua-visible type name for this HTML element handle.
----@return string The string `LHtmlElement`.
-function LHtmlElement:type() end
-
---- Returns whether this element handle matches a supported type name.
----@param name string Type name to compare against `LHtmlElement` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LHtmlElement:typeOf(name) end
-
---- Returns whether the default action was prevented.
----@return boolean True when the default was prevented.
-lurek.html.isDefaultPrevented = function() end
-
---- Loads an HTML document from GameFS and optionally loads CSS from options or companion file.
----@param path string GameFS path to the HTML file.
----@param opts? table Table with `css`, `cssPath`, `width`, and `height` fields.
----@return LHtmlDocument Loaded HTML document handle.
-lurek.html.loadDocument = function(path, opts) end
-
---- Creates an HTML document from optional source and layout/style options.
----@param source? string HTML source, defaulting to an empty document.
----@param opts? table Table with `css`, `cssPath`, `width`, and `height` fields.
----@return LHtmlDocument New HTML document handle.
-lurek.html.newDocument = function(source, opts) end
-
---- Marks the event as having its default action prevented.
-lurek.html.preventDefault = function() end
-
---- Stops event propagation to remaining listeners.
-lurek.html.stopPropagation = function() end
-
---- Returns whether the HTML engine supports a named feature.
----@param feature string Feature name to query.
----@return boolean True when the feature is supported.
-lurek.html.supports = function(feature) end
 
 --- Builds a word-to-keys search index from the catalog.
 ---@return table Map table from normalized words to arrays of translation keys.
@@ -23500,6 +23216,13 @@ function LWorld:addFrictionJoint(bodyA, bodyB, anchorX, anchorY, maxForce, maxTo
 ---@return number The joint ID.
 function LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY) end
 
+--- Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.
+---@param gx number Horizontal acceleration in world units per second squared.
+---@param gy number Vertical acceleration in world units per second squared.
+---@param layerMask? number Optional body layer mask, defaults to all layers.
+---@return number Stable gravity vector ID.
+function LWorld:addGravityVector(gx, gy, layerMask) end
+
 --- Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
 ---@param bodyA number First body ID.
 ---@param bodyB number Second body ID.
@@ -23595,6 +23318,9 @@ function LWorld:clearBodyOneWay(id) end
 --- Removes the end-contact callback so it is no longer called.
 function LWorld:clearEndContact() end
 
+--- Removes all additive gravity vectors from the world.
+function LWorld:clearGravityVectors() end
+
 --- Removes a body from the world by its ID, along with all attached fixtures and joints.
 ---@param id number The body ID to destroy.
 function LWorld:destroyBody(id) end
@@ -23678,6 +23404,11 @@ function LWorld:getEndContactEvents() end
 ---@return number Gravity Y component in world units per second squared.
 function LWorld:getGravity() end
 
+--- Returns an additive gravity vector by ID, or nil when no active vector exists.
+---@param id number Gravity vector ID returned by addGravityVector.
+---@return table? Table with id, gx, gy, layerMask, and enabled fields.
+function LWorld:getGravityVector(id) end
+
 --- Returns the two body IDs connected by a joint.
 ---@param jointId number The joint ID to query.
 ---@return number Body A ID.
@@ -23718,7 +23449,7 @@ function LWorld:getMeter() end
 function LWorld:getSolverIterations() end
 
 --- Returns active counts and slot diagnostics for the world.
----@return LWorldGetStatsResult Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies.
+---@return LWorldGetStatsResult Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, gravityVectors, sleepingBodies.
 function LWorld:getStats() end
 
 --- Returns all zone enter/leave events from the last step.
@@ -23830,6 +23561,11 @@ function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 ---@return LWorldRaycastClosestResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 
+--- Removes one additive gravity vector so it no longer affects future steps.
+---@param id number Gravity vector ID returned by addGravityVector.
+---@return boolean True if an active vector was removed.
+function LWorld:removeGravityVector(id) end
+
 --- Fully resets the world to its post-construction state.
 function LWorld:resetWorld() end
 
@@ -23884,6 +23620,13 @@ function LWorld:setFixtureSensor(bodyId, fixtureIndex, sensor) end
 ---@param gx number Horizontal gravity component.
 ---@param gy number Vertical gravity component (positive = down in screen space).
 function LWorld:setGravity(gx, gy) end
+
+--- Replaces the direction, strength, and optional layer mask of an existing additive gravity vector.
+---@param id number Gravity vector ID returned by addGravityVector.
+---@param gx number Horizontal acceleration in world units per second squared.
+---@param gy number Vertical acceleration in world units per second squared.
+---@param layerMask? number Optional body layer mask, defaults to all layers.
+function LWorld:setGravityVector(id, gx, gy, layerMask) end
 
 --- Sets the maximum force a joint can withstand before it breaks and is automatically destroyed.
 ---@param jointId number The joint ID.
@@ -23961,9 +23704,17 @@ function LWorld:wakeUpBody(id) end
 --- Removes this zone from the world. Bodies will no longer be affected by it.
 function LZone:destroy() end
 
+--- Returns the current point/repulsor gravity falloff mode.
+---@return string Falloff mode name.
+function LZone:getGravityFalloff() end
+
 --- Returns the unique ID of this zone. This method is available to Lua scripts.
 ---@return number Zone ID.
 function LZone:getId() end
+
+--- Returns whether this zone adds gravity to other fields.
+---@return boolean True when additive gravity mode is enabled.
+function LZone:isGravityAdditive() end
 
 --- Overrides the angular damping of bodies inside this zone, or nil to use each body's own value.
 ---@param value? number Damping override, or nil to clear.
@@ -23979,16 +23730,34 @@ function LZone:setCircle(cx, cy, radius) end
 ---@param enabled boolean True to enable, false to disable.
 function LZone:setEnabled(enabled) end
 
+--- Controls whether this zone adds gravity to other fields instead of overriding world gravity by priority.
+---@param additive boolean True to add this zone's gravity; false for priority override behavior.
+function LZone:setGravityAdditive(additive) end
+
 --- Sets the zone to apply a constant directional gravity to bodies inside.
 ---@param gx number Gravity X component.
 ---@param gy number Gravity Y component.
 function LZone:setGravityDirectional(gx, gy) end
+
+--- Sets point/repulsor gravity falloff. Accepted modes: inverseSquare, inverse, linear, constant.
+---@param mode string Falloff mode name.
+function LZone:setGravityFalloff(mode) end
+
+--- Sets optional minimum and maximum acceleration clamps for point/repulsor gravity.
+---@param minAccel? number Optional minimum acceleration magnitude.
+---@param maxAccel? number Optional maximum acceleration magnitude.
+function LZone:setGravityLimits(minAccel, maxAccel) end
 
 --- Sets the zone to attract bodies toward a center point with a given strength.
 ---@param cx number Attractor center X.
 ---@param cy number Attractor center Y.
 ---@param strength number Pull force magnitude.
 function LZone:setGravityPoint(cx, cy, strength) end
+
+--- Sets the inner radius and optional outer radius used by point/repulsor falloff.
+---@param innerRadius number Minimum distance used for falloff, must be > 0.
+---@param outerRadius? number Optional maximum active distance, must be greater than innerRadius.
+function LZone:setGravityRadius(innerRadius, outerRadius) end
 
 --- Sets the zone to push bodies away from a center point with a given strength.
 ---@param cx number Repulsor center X.
@@ -24007,9 +23776,17 @@ function LZone:setLayerMask(mask) end
 ---@param value? number Damping override, or nil to clear.
 function LZone:setLinearDampingOverride(value) end
 
+--- Sets or clears area drag proportional to velocity for bodies inside this zone.
+---@param value? number Drag coefficient, or nil to clear.
+function LZone:setLinearDrag(value) end
+
 --- Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
 ---@param priority number Integer priority value.
 function LZone:setPriority(priority) end
+
+--- Sets or clears area drag proportional to speed times velocity for bodies inside this zone.
+---@param value? number Drag coefficient, or nil to clear.
+function LZone:setQuadraticDrag(value) end
 
 --- Returns the type name of this object ("LZone").
 ---@return string "LZone".

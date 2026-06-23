@@ -1,3 +1,0 @@
-title=Fixture Title
-body=Loaded text
-title_color=#00ff00

@@ -1,5 +1,0 @@
-card_state=ready
-card_active=true
-card_highlight=true
-label_text=Updated
-inner_text=Inner markup

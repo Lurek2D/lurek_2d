@@ -563,7 +563,7 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local added = lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
+    local added = lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.devtools.watch("content/examples/assets/images")
     local watchedPaths = lurek.devtools.getWatchedPaths()
     lurek.log.info("watch added=" .. tostring(added))
@@ -580,8 +580,8 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
-    local removed = lurek.devtools.unwatch("content/examples/assets/layouts/sample_menu.html")
+    lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
+    local removed = lurek.devtools.unwatch("content/examples/assets/layouts/sample_main_menu.toml")
     local watchedPaths = lurek.devtools.getWatchedPaths()
     local count = #watchedPaths
     lurek.log.info("watch removed=" .. tostring(removed))
@@ -600,7 +600,7 @@ do
 
     lurek.devtools.watch("content/examples/assets/images")
     local paths = lurek.devtools.getWatchedPaths()
-    lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
+    lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
     local updated = lurek.devtools.getWatchedPaths()
     lurek.log.info("watched path count initial=" .. tostring(#paths))
     lurek.log.info("watched path count updated=" .. tostring(#updated))
@@ -616,7 +616,7 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
+    lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
     local changed = lurek.devtools.scan()
     local watchedPaths = lurek.devtools.getWatchedPaths()
     local interval = lurek.devtools.getWatchInterval()
@@ -634,7 +634,7 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
+    lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
     local beforeClear = lurek.devtools.getWatchedPaths()
     lurek.devtools.clearWatches()
     local afterClear = lurek.devtools.getWatchedPaths()
@@ -671,7 +671,7 @@ do
     end
 
     lurek.devtools.setWatchInterval(0.5)
-    lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
+    lurek.devtools.watch("content/examples/assets/layouts/sample_main_menu.toml")
     local interval = lurek.devtools.getWatchInterval()
     local watchedPaths = lurek.devtools.getWatchedPaths()
     lurek.log.info("watch interval set to=" .. tostring(interval))

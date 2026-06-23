@@ -18,7 +18,7 @@ use super::error::PhysicsError;
 use super::limits::{validate_finite, validate_positive, PhysicsLimits};
 use super::shape::Shape;
 use super::types::BodyId;
-use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityMode, ZoneTracker};
+use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityFalloff, ZoneGravityMode, ZoneTracker};
 #[allow(unused_imports)]
 use crate::log_msg;
 use crate::runtime::log_messages::{P001_PULLEY_JOINT_FALLBACK, P002_GEAR_JOINT_FALLBACK};
@@ -180,6 +180,26 @@ impl Default for PhysicsQueryFilter {
         }
     }
 }
+/// Additive directional gravity vector applied to matching dynamic bodies before the solver step.
+/// # Fields
+/// - `id`: stable gravity vector identifier.
+/// - `gx`: x acceleration in world units per second squared.
+/// - `gy`: y acceleration in world units per second squared.
+/// - `layer_mask`: body layer mask; bodies with `body.layer & layer_mask == 0` are skipped.
+/// - `enabled`: whether the vector participates in the next step.
+#[derive(Debug, Clone, Copy)]
+pub struct GravityVector {
+    /// Stable vector id.
+    pub id: usize,
+    /// X acceleration in world units per second squared.
+    pub gx: f32,
+    /// Y acceleration in world units per second squared.
+    pub gy: f32,
+    /// Layer mask used to select affected bodies.
+    pub layer_mask: u32,
+    /// True when this vector is active.
+    pub enabled: bool,
+}
 /// Runtime diagnostics recorded by the physics world across steps and strict mutators.
 /// # Fields
 /// - `skipped_steps`: invalid or empty `step` calls rejected before rapier.
@@ -217,6 +237,7 @@ pub struct PhysicsDiagnostics {
 /// - `joints`: active joint count.
 /// - `joint_slots`: total allocated joint slots.
 /// - `zones`: active zone count.
+/// - `gravity_vectors`: active additive gravity vector count.
 /// - `sleeping_bodies`: active bodies currently sleeping.
 /// - `skipped_steps`: invalid or empty `step` calls rejected before rapier.
 /// - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling.
@@ -240,6 +261,8 @@ pub struct PhysicsWorldStats {
     pub joint_slots: usize,
     /// Active zone count.
     pub zones: usize,
+    /// Active additive gravity vector count.
+    pub gravity_vectors: usize,
     /// Active bodies currently sleeping.
     pub sleeping_bodies: usize,
     /// Invalid or empty `step` calls rejected before rapier.
@@ -297,7 +320,10 @@ pub struct PhysicsWorldStats {
 /// - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides.
 /// - `body_base_linear_damping`: linear damping restored after temporary zone overrides.
 /// - `body_base_angular_damping`: angular damping restored after temporary zone overrides.
+/// - `body_mass_overrides`: explicit mass values authored through `setMass`.
 /// - `zones`: registered physics zones.
+/// - `gravity_vectors`: additive world gravity vectors.
+/// - `gravity_vector_id_counter`: next stable additive gravity vector id.
 /// - `zone_id_counter`: next stable zone id.
 /// - `zone_tracker`: body/zone membership tracker.
 /// - `zone_events`: buffered zone enter/leave events.
@@ -380,8 +406,14 @@ pub struct World {
     body_base_linear_damping: Vec<f32>,
     /// Angular damping restored after temporary zone overrides.
     body_base_angular_damping: Vec<f32>,
+    /// Explicit mass overrides authored through `setMass`; `None` means use Rapier computed mass.
+    body_mass_overrides: Vec<Option<f32>>,
     /// Active trigger zones.
     zones: Vec<PhysicsZone>,
+    /// Additive world gravity vectors applied when no non-additive zone override is active.
+    gravity_vectors: Vec<GravityVector>,
+    /// Monotonically increasing id for additive gravity vectors.
+    gravity_vector_id_counter: usize,
     /// Monotonically increasing id for zones.
     zone_id_counter: usize,
     /// Tracks which bodies are inside each zone.
@@ -707,7 +739,10 @@ impl World {
             body_base_gravity_scales: Vec::new(),
             body_base_linear_damping: Vec::new(),
             body_base_angular_damping: Vec::new(),
+            body_mass_overrides: Vec::new(),
             zones: Vec::new(),
+            gravity_vectors: Vec::new(),
+            gravity_vector_id_counter: 0,
             zone_id_counter: 0,
             zone_tracker: ZoneTracker::new(),
             zone_events: Vec::new(),
@@ -983,6 +1018,7 @@ impl World {
         self.body_base_gravity_scales.push(1.0);
         self.body_base_linear_damping.push(0.0);
         self.body_base_angular_damping.push(0.0);
+        self.body_mass_overrides.push(None);
         BodyId(id)
     }
     /// Add an extra collider shape to an existing body using strict validation.
@@ -1499,10 +1535,11 @@ impl World {
     }
     /// Apply a linear impulse `(ix, iy)` to body `id`.
     pub fn apply_impulse(&mut self, id: usize, ix: f32, iy: f32) {
+        let effective_mass = self.get_body_mass(id);
         if let Some(body) = self.get_body_mut(id) {
             if body.body_type == BodyType::Dynamic {
-                let inv_mass = if body.mass > 0.0 {
-                    1.0 / body.mass
+                let inv_mass = if effective_mass > 0.0 {
+                    1.0 / effective_mass
                 } else {
                     0.0
                 };
@@ -1563,30 +1600,192 @@ impl World {
     pub fn zone_mut(&mut self, id: usize) -> Option<&mut PhysicsZone> {
         self.zones.iter_mut().find(|z| z.id == id)
     }
+    /// Return an immutable reference to zone `id`, or `None` if not found.
+    pub fn zone(&self, id: usize) -> Option<&PhysicsZone> {
+        self.zones.iter().find(|z| z.id == id)
+    }
     /// Return zone enter/exit events from the last `step`.
     pub fn get_zone_events(&self) -> &[ZoneEvent] {
         &self.zone_events
     }
-    /// Apply per-zone gravity/damping overrides to all bodies; updates zone enter/exit events.
+
+    /// Add an additive directional gravity vector and return its stable id.
+    pub fn try_add_gravity_vector(
+        &mut self,
+        gx: f32,
+        gy: f32,
+        layer_mask: u32,
+    ) -> Result<usize, PhysicsError> {
+        validate_finite("gravity_vector.gx", f64::from(gx))?;
+        validate_finite("gravity_vector.gy", f64::from(gy))?;
+        let id = self.gravity_vector_id_counter;
+        self.gravity_vector_id_counter += 1;
+        self.gravity_vectors.push(GravityVector {
+            id,
+            gx,
+            gy,
+            layer_mask,
+            enabled: true,
+        });
+        Ok(id)
+    }
+
+    /// Add an additive directional gravity vector; returns `0` when validation fails.
+    pub fn add_gravity_vector(&mut self, gx: f32, gy: f32, layer_mask: u32) -> usize {
+        match self.try_add_gravity_vector(gx, gy, layer_mask) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
+    }
+
+    /// Replace an existing additive gravity vector.
+    pub fn try_set_gravity_vector(
+        &mut self,
+        id: usize,
+        gx: f32,
+        gy: f32,
+        layer_mask: u32,
+    ) -> Result<(), PhysicsError> {
+        validate_finite("gravity_vector.gx", f64::from(gx))?;
+        validate_finite("gravity_vector.gy", f64::from(gy))?;
+        let vector = self
+            .gravity_vectors
+            .iter_mut()
+            .find(|vector| vector.id == id && vector.enabled)
+            .ok_or(PhysicsError::InvalidGravityVectorReference { vector_id: id })?;
+        vector.gx = gx;
+        vector.gy = gy;
+        vector.layer_mask = layer_mask;
+        Ok(())
+    }
+
+    /// Replace an existing additive gravity vector; records diagnostics when invalid.
+    pub fn set_gravity_vector(&mut self, id: usize, gx: f32, gy: f32, layer_mask: u32) {
+        if self.try_set_gravity_vector(id, gx, gy, layer_mask).is_err() {
+            self.record_invalid_operation();
+        }
+    }
+
+    /// Disable and remove one additive gravity vector by id; returns true when removed.
+    pub fn remove_gravity_vector(&mut self, id: usize) -> bool {
+        if let Some(vector) = self
+            .gravity_vectors
+            .iter_mut()
+            .find(|vector| vector.id == id)
+        {
+            let was_enabled = vector.enabled;
+            vector.enabled = false;
+            return was_enabled;
+        }
+        false
+    }
+
+    /// Disable every additive gravity vector.
+    pub fn clear_gravity_vectors(&mut self) {
+        for vector in &mut self.gravity_vectors {
+            vector.enabled = false;
+        }
+    }
+
+    /// Return an active additive gravity vector by id.
+    pub fn get_gravity_vector(&self, id: usize) -> Option<GravityVector> {
+        self.gravity_vectors
+            .iter()
+            .copied()
+            .find(|vector| vector.id == id && vector.enabled)
+    }
+
+    fn apply_acceleration(rb: &mut RigidBody, ax: f32, ay: f32) {
+        rb.add_force(Vector::new(rb.mass() * ax, rb.mass() * ay), true);
+    }
+
+    fn radial_zone_acceleration(
+        zone: &PhysicsZone,
+        px: f32,
+        py: f32,
+        cx: f32,
+        cy: f32,
+        strength: f32,
+        repulsor: bool,
+    ) -> Option<(f32, f32)> {
+        let mut dx = if repulsor { px - cx } else { cx - px };
+        let mut dy = if repulsor { py - cy } else { cy - py };
+        let raw_dist = (dx * dx + dy * dy).sqrt();
+        if raw_dist <= 1e-6 {
+            return None;
+        }
+        if let Some(outer) = zone.gravity_outer_radius {
+            if raw_dist > outer {
+                return None;
+            }
+        }
+        let dist = raw_dist.max(zone.gravity_inner_radius);
+        dx /= raw_dist;
+        dy /= raw_dist;
+        let mut accel = match zone.gravity_falloff {
+            ZoneGravityFalloff::InverseSquare => strength / (dist * dist),
+            ZoneGravityFalloff::Inverse => strength / dist,
+            ZoneGravityFalloff::Constant => strength,
+            ZoneGravityFalloff::Linear => {
+                if let Some(outer) = zone.gravity_outer_radius {
+                    let span = (outer - zone.gravity_inner_radius).max(1e-6);
+                    let t = ((raw_dist - zone.gravity_inner_radius) / span).clamp(0.0, 1.0);
+                    strength * (1.0 - t)
+                } else {
+                    strength
+                }
+            }
+        };
+        if let Some(min) = zone.gravity_min_accel {
+            accel = accel.max(min);
+        }
+        if let Some(max) = zone.gravity_max_accel {
+            accel = accel.min(max);
+        }
+        Some((accel * dx, accel * dy))
+    }
+
+    fn zone_gravity_acceleration(zone: &PhysicsZone, px: f32, py: f32) -> Option<(f32, f32)> {
+        match zone.gravity_mode {
+            ZoneGravityMode::Zero => None,
+            ZoneGravityMode::Directional { gx, gy } => Some((gx, gy)),
+            ZoneGravityMode::Point { cx, cy, strength } => {
+                Self::radial_zone_acceleration(zone, px, py, cx, cy, strength, false)
+            }
+            ZoneGravityMode::Repulsor { cx, cy, strength } => {
+                Self::radial_zone_acceleration(zone, px, py, cx, cy, strength, true)
+            }
+        }
+    }
+
+    fn apply_zone_gravity(rb: &mut RigidBody, zone: &PhysicsZone, px: f32, py: f32) {
+        if let Some((ax, ay)) = Self::zone_gravity_acceleration(zone, px, py) {
+            Self::apply_acceleration(rb, ax, ay);
+        }
+    }
+
+    fn apply_zone_drag(rb: &mut RigidBody, zone: &PhysicsZone) {
+        let linear = zone.linear_drag.unwrap_or(0.0);
+        let quadratic = zone.quadratic_drag.unwrap_or(0.0);
+        if linear <= 0.0 && quadratic <= 0.0 {
+            return;
+        }
+        let v = rb.linvel();
+        let speed = (v.x * v.x + v.y * v.y).sqrt();
+        if speed <= 1e-6 {
+            return;
+        }
+        let coeff = linear + quadratic * speed;
+        Self::apply_acceleration(rb, -coeff * v.x, -coeff * v.y);
+    }
+
+    /// Apply per-zone gravity/damping/drag and additive world vectors to all bodies; updates zone enter/exit events.
     pub fn apply_zone_forces(&mut self, _dt: f32) {
         self.zone_events.clear();
         let n = self.bodies.len();
-        if self.zones.is_empty() {
-            for body_id in 0..n {
-                if !self.has_body(body_id) || self.bodies[body_id].body_type != BodyType::Dynamic {
-                    continue;
-                }
-                let handle = self.body_handles[body_id];
-                if let Some(rb) = self.rbodies.get_mut(handle) {
-                    rb.set_gravity_scale(self.body_base_gravity_scales[body_id], true);
-                    rb.set_linear_damping(self.body_base_linear_damping[body_id]);
-                    rb.set_angular_damping(self.body_base_angular_damping[body_id]);
-                }
-                let events = self.zone_tracker.update(body_id, HashSet::new());
-                self.zone_events.extend(events);
-            }
-            return;
-        }
         self.sorted_zone_indices.clear();
         self.sorted_zone_indices.extend(0..self.zones.len());
         self.sorted_zone_indices
@@ -1602,90 +1801,54 @@ impl World {
             let px = body.position.x;
             let py = body.position.y;
             let layer = body.layer;
-            let mut current_zones = std::collections::HashSet::new();
-            let mut gravity_applied = false;
+            let handle = self.body_handles[body_id];
+            if let Some(rb) = self.rbodies.get_mut(handle) {
+                rb.set_gravity_scale(self.body_base_gravity_scales[body_id], true);
+                rb.set_linear_damping(self.body_base_linear_damping[body_id]);
+                rb.set_angular_damping(self.body_base_angular_damping[body_id]);
+            }
+            let mut current_zones = HashSet::new();
+            let mut gravity_override_applied = false;
             let mut linear_override_applied = false;
             let mut angular_override_applied = false;
             for &zi in &self.sorted_zone_indices {
                 let zone = &self.zones[zi];
                 self.diagnostics.last_zone_checks += 1;
-                if !zone.enabled {
-                    continue;
-                }
-                if zone.layer_mask & layer == 0 {
-                    continue;
-                }
-                if !zone.boundary.contains(px, py) {
+                if !zone.enabled || zone.layer_mask & layer == 0 || !zone.boundary.contains(px, py)
+                {
                     continue;
                 }
                 current_zones.insert(zone.id);
-                if !gravity_applied {
-                    gravity_applied = true;
-                    let handle = self.body_handles[body_id];
-                    if let Some(rb) = self.rbodies.get_mut(handle) {
-                        match zone.gravity_mode {
-                            ZoneGravityMode::Zero => {
-                                rb.set_gravity_scale(0.0, true);
-                            }
-                            ZoneGravityMode::Directional { gx, gy } => {
-                                rb.set_gravity_scale(0.0, true);
-                                rb.add_force(Vector::new(rb.mass() * gx, rb.mass() * gy), true);
-                            }
-                            ZoneGravityMode::Point { cx, cy, strength } => {
-                                let dx = cx - px;
-                                let dy = cy - py;
-                                let dist2 = (dx * dx + dy * dy).max(1.0);
-                                let dist = dist2.sqrt();
-                                let force = strength / dist2;
-                                rb.set_gravity_scale(0.0, true);
-                                rb.add_force(
-                                    Vector::new(
-                                        rb.mass() * force * dx / dist,
-                                        rb.mass() * force * dy / dist,
-                                    ),
-                                    true,
-                                );
-                            }
-                            ZoneGravityMode::Repulsor { cx, cy, strength } => {
-                                let dx = px - cx;
-                                let dy = py - cy;
-                                let dist2 = (dx * dx + dy * dy).max(1.0);
-                                let dist = dist2.sqrt();
-                                let force = strength / dist2;
-                                rb.set_gravity_scale(0.0, true);
-                                rb.add_force(
-                                    Vector::new(
-                                        rb.mass() * force * dx / dist,
-                                        rb.mass() * force * dy / dist,
-                                    ),
-                                    true,
-                                );
-                            }
+                if let Some(rb) = self.rbodies.get_mut(handle) {
+                    if zone.gravity_additive {
+                        Self::apply_zone_gravity(rb, zone, px, py);
+                    } else if !gravity_override_applied {
+                        gravity_override_applied = true;
+                        rb.set_gravity_scale(0.0, true);
+                        Self::apply_zone_gravity(rb, zone, px, py);
+                    }
+                    if !linear_override_applied {
+                        if let Some(ld) = zone.linear_damping_override {
+                            linear_override_applied = true;
+                            rb.set_linear_damping(ld);
                         }
                     }
-                }
-                let handle = self.body_handles[body_id];
-                if let Some(rb) = self.rbodies.get_mut(handle) {
-                    if let Some(ld) = zone.linear_damping_override {
-                        linear_override_applied = true;
-                        rb.set_linear_damping(ld);
+                    if !angular_override_applied {
+                        if let Some(ad) = zone.angular_damping_override {
+                            angular_override_applied = true;
+                            rb.set_angular_damping(ad);
+                        }
                     }
-                    if let Some(ad) = zone.angular_damping_override {
-                        angular_override_applied = true;
-                        rb.set_angular_damping(ad);
-                    }
+                    Self::apply_zone_drag(rb, zone);
                 }
             }
-            let handle = self.body_handles[body_id];
-            if let Some(rb) = self.rbodies.get_mut(handle) {
-                if !gravity_applied {
-                    rb.set_gravity_scale(self.body_base_gravity_scales[body_id], true);
-                }
-                if !linear_override_applied {
-                    rb.set_linear_damping(self.body_base_linear_damping[body_id]);
-                }
-                if !angular_override_applied {
-                    rb.set_angular_damping(self.body_base_angular_damping[body_id]);
+            if !gravity_override_applied {
+                if let Some(rb) = self.rbodies.get_mut(handle) {
+                    for vector in &self.gravity_vectors {
+                        if vector.enabled && vector.layer_mask & layer != 0 {
+                            Self::apply_acceleration(rb, vector.gx, vector.gy);
+                        }
+                    }
                 }
             }
             let events = self.zone_tracker.update(body_id, current_zones);
@@ -1779,6 +1942,14 @@ impl World {
     }
     /// Return the mass of body `id`; returns 0 if out of range.
     pub fn get_body_mass(&self, id: usize) -> f32 {
+        if let Some(Some(mass)) = self.body_mass_overrides.get(id) {
+            return *mass;
+        }
+        if let Some(handle) = self.active_body_handle(id) {
+            if let Some(rb) = self.rbodies.get(handle) {
+                return rb.mass();
+            }
+        }
         self.get_body(id).map_or(0.0, |b| b.mass)
     }
     /// Override mass of body `id`. This function is part of the public API.
@@ -1789,6 +1960,9 @@ impl World {
         }
         if let Some(body) = self.get_body_mut(id) {
             body.mass = mass;
+        }
+        if let Some(slot) = self.body_mass_overrides.get_mut(id) {
+            *slot = Some(mass);
         }
         if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
@@ -2016,7 +2190,10 @@ impl World {
         self.body_base_gravity_scales.clear();
         self.body_base_linear_damping.clear();
         self.body_base_angular_damping.clear();
+        self.body_mass_overrides.clear();
         self.zones.clear();
+        self.gravity_vectors.clear();
+        self.gravity_vector_id_counter = 0;
         self.zone_id_counter = 0;
         self.zone_tracker.clear();
         self.zone_events.clear();
@@ -2906,6 +3083,7 @@ impl World {
             joints: self.joint_count(),
             joint_slots: self.joint_handles.len(),
             zones: self.zones.len(),
+            gravity_vectors: self.gravity_vectors.iter().filter(|v| v.enabled).count(),
             sleeping_bodies,
             skipped_steps: self.diagnostics.skipped_steps,
             clamped_steps: self.diagnostics.clamped_steps,

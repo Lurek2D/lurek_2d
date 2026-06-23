@@ -1,26 +1,36 @@
 {
-  "generated_at": "2026-06-23T13:52:23.382717+00:00",
+  "generated_at": "2026-06-23T14:47:45.610000+00:00",
   "summary": {
     "rust": {
-      "total": 8734,
-      "covered": 8734,
+      "total": 8673,
+      "covered": 8673,
       "missing": 0,
       "pct": 100.0
     },
     "lua_api": {
-      "total": 185,
+      "total": 186,
       "covered": 185,
-      "missing": 0,
-      "pct": 100.0
+      "missing": 1,
+      "pct": 99.5
     },
     "total": {
-      "total": 8919,
-      "covered": 8919,
-      "missing": 0,
+      "total": 8859,
+      "covered": 8858,
+      "missing": 1,
       "pct": 100.0
     }
   },
-  "missing": [],
+  "missing": [
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 138,
+      "kind": "fn",
+      "name": "collidersRebuilt",
+      "has_doc": false
+    }
+  ],
   "items": [
     {
       "source": "rust",
@@ -17909,7 +17919,25 @@
       "source": "rust",
       "module": "dsp",
       "file": "src/dsp/visualizer.rs",
-      "line": 26,
+      "line": 18,
+      "kind": "struct",
+      "name": "SpectrogramOptions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "dsp",
+      "file": "src/dsp/visualizer.rs",
+      "line": 45,
+      "kind": "fn",
+      "name": "validated",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "dsp",
+      "file": "src/dsp/visualizer.rs",
+      "line": 87,
       "kind": "fn",
       "name": "waveform_to_png",
       "has_doc": true
@@ -17918,9 +17946,18 @@
       "source": "rust",
       "module": "dsp",
       "file": "src/dsp/visualizer.rs",
-      "line": 62,
+      "line": 123,
       "kind": "fn",
       "name": "spectrogram_to_png",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "dsp",
+      "file": "src/dsp/visualizer.rs",
+      "line": 139,
+      "kind": "fn",
+      "name": "spectrogram_to_png_with_options",
       "has_doc": true
     },
     {
@@ -25071,744 +25108,6 @@
     },
     {
       "source": "rust",
-      "module": "html",
-      "file": "src/html/color.rs",
-      "line": 9,
-      "kind": "fn",
-      "name": "parse_css_color_rgba",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 18,
-      "kind": "struct",
-      "name": "HtmlDocumentOptions",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 39,
-      "kind": "struct",
-      "name": "HtmlDrawCommand",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 55,
-      "kind": "struct",
-      "name": "HtmlDocument",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 81,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 85,
-      "kind": "fn",
-      "name": "with_options",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 106,
-      "kind": "fn",
-      "name": "supports",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 124,
-      "kind": "fn",
-      "name": "generation",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 128,
-      "kind": "fn",
-      "name": "root",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 132,
-      "kind": "fn",
-      "name": "element",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 138,
-      "kind": "fn",
-      "name": "get_html",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 142,
-      "kind": "fn",
-      "name": "set_html",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 160,
-      "kind": "fn",
-      "name": "set_css",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 166,
-      "kind": "fn",
-      "name": "add_css",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 171,
-      "kind": "fn",
-      "name": "clear_css",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 177,
-      "kind": "fn",
-      "name": "set_viewport",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 182,
-      "kind": "fn",
-      "name": "viewport",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 186,
-      "kind": "fn",
-      "name": "update",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 192,
-      "kind": "fn",
-      "name": "is_dirty",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 196,
-      "kind": "fn",
-      "name": "relayout",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 208,
-      "kind": "fn",
-      "name": "draw_commands",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 217,
-      "kind": "fn",
-      "name": "get_element_by_id",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 224,
-      "kind": "fn",
-      "name": "query",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 228,
-      "kind": "fn",
-      "name": "query_all",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 235,
-      "kind": "fn",
-      "name": "query_from",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 239,
-      "kind": "fn",
-      "name": "query_all_from",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 246,
-      "kind": "fn",
-      "name": "ancestors_inclusive",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 259,
-      "kind": "fn",
-      "name": "text",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 264,
-      "kind": "fn",
-      "name": "set_text",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 275,
-      "kind": "fn",
-      "name": "element_html",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 287,
-      "kind": "fn",
-      "name": "set_element_html",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 299,
-      "kind": "fn",
-      "name": "append_element_html",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 308,
-      "kind": "fn",
-      "name": "remove_element",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 322,
-      "kind": "fn",
-      "name": "set_attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 336,
-      "kind": "fn",
-      "name": "set_id_attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 345,
-      "kind": "fn",
-      "name": "add_class",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 354,
-      "kind": "fn",
-      "name": "remove_class",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 363,
-      "kind": "fn",
-      "name": "toggle_class",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 375,
-      "kind": "fn",
-      "name": "style_value",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 390,
-      "kind": "fn",
-      "name": "set_style",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 404,
-      "kind": "fn",
-      "name": "focus",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 412,
-      "kind": "fn",
-      "name": "blur",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 419,
-      "kind": "fn",
-      "name": "mouse_pressed",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 427,
-      "kind": "fn",
-      "name": "mouse_released",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 431,
-      "kind": "fn",
-      "name": "mouse_moved",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 436,
-      "kind": "fn",
-      "name": "wheel_moved",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 440,
-      "kind": "fn",
-      "name": "key_pressed",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 444,
-      "kind": "fn",
-      "name": "text_input",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/document.rs",
-      "line": 462,
-      "kind": "fn",
-      "name": "warnings",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 11,
-      "kind": "type",
-      "name": "HtmlElementId",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 14,
-      "kind": "struct",
-      "name": "HtmlRect",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 27,
-      "kind": "fn",
-      "name": "contains",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 33,
-      "kind": "struct",
-      "name": "HtmlElement",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 56,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 74,
-      "kind": "fn",
-      "name": "id",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 78,
-      "kind": "fn",
-      "name": "tag_name",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 82,
-      "kind": "fn",
-      "name": "parent",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 86,
-      "kind": "fn",
-      "name": "children",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 90,
-      "kind": "fn",
-      "name": "rect",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 94,
-      "kind": "fn",
-      "name": "attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 100,
-      "kind": "fn",
-      "name": "set_attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 118,
-      "kind": "fn",
-      "name": "id_attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 122,
-      "kind": "fn",
-      "name": "set_id_attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 126,
-      "kind": "fn",
-      "name": "has_class",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 130,
-      "kind": "fn",
-      "name": "add_class",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 145,
-      "kind": "fn",
-      "name": "remove_class",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 158,
-      "kind": "fn",
-      "name": "toggle_class",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 168,
-      "kind": "fn",
-      "name": "style",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 174,
-      "kind": "fn",
-      "name": "set_style",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 197,
-      "kind": "fn",
-      "name": "is_removed",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 201,
-      "kind": "fn",
-      "name": "is_void_tag",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 205,
-      "kind": "fn",
-      "name": "class_names",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/element.rs",
-      "line": 212,
-      "kind": "fn",
-      "name": "normalise_name",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/parser.rs",
-      "line": 10,
-      "kind": "fn",
-      "name": "parse_into",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/parser.rs",
-      "line": 158,
-      "kind": "fn",
-      "name": "escape_text",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/parser.rs",
-      "line": 164,
-      "kind": "fn",
-      "name": "escape_attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/selector.rs",
-      "line": 35,
-      "kind": "fn",
-      "name": "matches_selector",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/style.rs",
-      "line": 11,
-      "kind": "struct",
-      "name": "CssRule",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/style.rs",
-      "line": 21,
-      "kind": "struct",
-      "name": "CssParseResult",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/style.rs",
-      "line": 28,
-      "kind": "fn",
-      "name": "parse_stylesheets",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/style.rs",
-      "line": 54,
-      "kind": "fn",
-      "name": "parse_declarations",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "html",
-      "file": "src/html/style.rs",
-      "line": 76,
-      "kind": "fn",
-      "name": "parse_length",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
       "module": "i18n",
       "file": "src/i18n/catalog.rs",
       "line": 14,
@@ -29537,7 +28836,7 @@
       "source": "rust",
       "module": "layout",
       "file": "src/layout/types.rs",
-      "line": 181,
+      "line": 187,
       "kind": "fn",
       "name": "relax_overlaps",
       "has_doc": true
@@ -31067,7 +30366,7 @@
       "source": "rust",
       "module": "root",
       "file": "src/lib.rs",
-      "line": 174,
+      "line": 172,
       "kind": "fn",
       "name": "is_lurek_archive_path",
       "has_doc": true
@@ -31076,7 +30375,7 @@
       "source": "rust",
       "module": "root",
       "file": "src/lib.rs",
-      "line": 181,
+      "line": 179,
       "kind": "fn",
       "name": "cli_startup_main_path",
       "has_doc": true
@@ -31085,7 +30384,7 @@
       "source": "rust",
       "module": "root",
       "file": "src/lib.rs",
-      "line": 197,
+      "line": 195,
       "kind": "fn",
       "name": "lurek_run",
       "has_doc": true
@@ -31094,7 +30393,7 @@
       "source": "rust",
       "module": "root",
       "file": "src/lib.rs",
-      "line": 545,
+      "line": 543,
       "kind": "fn",
       "name": "build_builtin_cli_script",
       "has_doc": true
@@ -33641,7 +32940,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/dsp_api.rs",
-      "line": 631,
+      "line": 715,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -33831,15 +33130,6 @@
       "module": "lua_api",
       "file": "src/lua_api/grep_api.rs",
       "line": 161,
-      "kind": "fn",
-      "name": "register",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/html_api.rs",
-      "line": 1012,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -34631,7 +33921,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 274,
+      "line": 290,
       "kind": "struct",
       "name": "LuaWorld",
       "has_doc": true
@@ -34640,7 +33930,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 282,
+      "line": 298,
       "kind": "fn",
       "name": "world_handle",
       "has_doc": true
@@ -34649,7 +33939,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1464,
+      "line": 1537,
       "kind": "struct",
       "name": "LuaZone",
       "has_doc": true
@@ -34658,7 +33948,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1616,
+      "line": 1778,
       "kind": "struct",
       "name": "LuaTerrain",
       "has_doc": true
@@ -34667,7 +33957,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1795,
+      "line": 1957,
       "kind": "struct",
       "name": "LuaBody",
       "has_doc": true
@@ -34676,7 +33966,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1801,
+      "line": 1963,
       "kind": "fn",
       "name": "world_handle",
       "has_doc": true
@@ -34685,7 +33975,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1806,
+      "line": 1968,
       "kind": "fn",
       "name": "body_id",
       "has_doc": true
@@ -34694,7 +33984,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2194,
+      "line": 2356,
       "kind": "struct",
       "name": "LuaPhysicsShape",
       "has_doc": true
@@ -34703,7 +33993,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2350,
+      "line": 2512,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -34973,7 +34263,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/register.rs",
-      "line": 145,
+      "line": 144,
       "kind": "fn",
       "name": "create_lua_vm",
       "has_doc": true
@@ -34982,7 +34272,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/register.rs",
-      "line": 161,
+      "line": 160,
       "kind": "fn",
       "name": "create_headless_vm",
       "has_doc": true
@@ -34991,7 +34281,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/register.rs",
-      "line": 172,
+      "line": 171,
       "kind": "fn",
       "name": "create_test_vm",
       "has_doc": true
@@ -41003,7 +40293,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1525,
+      "line": 1632,
       "kind": "fn",
       "name": "build_render_commands",
       "has_doc": true
@@ -41012,7 +40302,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1534,
+      "line": 1641,
       "kind": "fn",
       "name": "object_type_icon",
       "has_doc": true
@@ -41021,7 +40311,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1539,
+      "line": 1646,
       "kind": "fn",
       "name": "marker_icon",
       "has_doc": true
@@ -41030,7 +40320,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1544,
+      "line": 1651,
       "kind": "fn",
       "name": "owner_colors_by_cell",
       "has_doc": true
@@ -41039,7 +40329,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1558,
+      "line": 1665,
       "kind": "fn",
       "name": "resolve_cell_color",
       "has_doc": true
@@ -41048,7 +40338,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1610,
+      "line": 1717,
       "kind": "fn",
       "name": "resolve_layered_cell_color",
       "has_doc": true
@@ -41057,7 +40347,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1641,
+      "line": 1748,
       "kind": "fn",
       "name": "set_next_marker_id_for_testing",
       "has_doc": true
@@ -41066,7 +40356,7 @@
       "source": "rust",
       "module": "minimap",
       "file": "src/minimap/minimap.rs",
-      "line": 1647,
+      "line": 1754,
       "kind": "fn",
       "name": "set_next_path_id_for_testing",
       "has_doc": true
@@ -50957,7 +50247,16 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 194,
+      "line": 191,
+      "kind": "struct",
+      "name": "GravityVector",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 214,
       "kind": "struct",
       "name": "PhysicsDiagnostics",
       "has_doc": true
@@ -50966,7 +50265,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 230,
+      "line": 251,
       "kind": "struct",
       "name": "PhysicsWorldStats",
       "has_doc": true
@@ -50975,7 +50274,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 312,
+      "line": 338,
       "kind": "struct",
       "name": "World",
       "has_doc": true
@@ -50984,7 +50283,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 407,
+      "line": 439,
       "kind": "fn",
       "name": "draw_debug_to_image",
       "has_doc": true
@@ -50993,7 +50292,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 601,
+      "line": 633,
       "kind": "fn",
       "name": "extract_shape_snapshots",
       "has_doc": true
@@ -51002,7 +50301,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 673,
+      "line": 705,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -51011,7 +50310,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 817,
+      "line": 852,
       "kind": "fn",
       "name": "get_diagnostics",
       "has_doc": true
@@ -51020,7 +50319,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 822,
+      "line": 857,
       "kind": "fn",
       "name": "mark_body_dirty",
       "has_doc": true
@@ -51029,7 +50328,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 828,
+      "line": 863,
       "kind": "fn",
       "name": "has_body",
       "has_doc": true
@@ -51038,7 +50337,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 832,
+      "line": 867,
       "kind": "fn",
       "name": "has_joint",
       "has_doc": true
@@ -51047,7 +50346,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 960,
+      "line": 995,
       "kind": "fn",
       "name": "add_body",
       "has_doc": true
@@ -51056,7 +50355,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 989,
+      "line": 1025,
       "kind": "fn",
       "name": "try_add_fixture",
       "has_doc": true
@@ -51065,7 +50364,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1036,
+      "line": 1072,
       "kind": "fn",
       "name": "add_fixture",
       "has_doc": true
@@ -51074,7 +50373,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1054,
+      "line": 1090,
       "kind": "fn",
       "name": "fixture_count",
       "has_doc": true
@@ -51083,7 +50382,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1061,
+      "line": 1097,
       "kind": "fn",
       "name": "try_set_fixture_friction",
       "has_doc": true
@@ -51092,7 +50391,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1100,
+      "line": 1136,
       "kind": "fn",
       "name": "set_fixture_friction",
       "has_doc": true
@@ -51101,7 +50400,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1109,
+      "line": 1145,
       "kind": "fn",
       "name": "try_set_fixture_restitution",
       "has_doc": true
@@ -51110,7 +50409,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1148,
+      "line": 1184,
       "kind": "fn",
       "name": "set_fixture_restitution",
       "has_doc": true
@@ -51119,7 +50418,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1162,
+      "line": 1198,
       "kind": "fn",
       "name": "try_set_fixture_sensor",
       "has_doc": true
@@ -51128,7 +50427,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1192,
+      "line": 1228,
       "kind": "fn",
       "name": "set_fixture_sensor",
       "has_doc": true
@@ -51137,7 +50436,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1201,
+      "line": 1237,
       "kind": "fn",
       "name": "get_body",
       "has_doc": true
@@ -51146,7 +50445,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1205,
+      "line": 1241,
       "kind": "fn",
       "name": "get_body_mut",
       "has_doc": true
@@ -51155,7 +50454,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1213,
+      "line": 1249,
       "kind": "fn",
       "name": "body_count",
       "has_doc": true
@@ -51164,7 +50463,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1217,
+      "line": 1253,
       "kind": "fn",
       "name": "try_add_revolute_joint",
       "has_doc": true
@@ -51173,7 +50472,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1237,
+      "line": 1273,
       "kind": "fn",
       "name": "add_revolute_joint",
       "has_doc": true
@@ -51182,7 +50481,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1253,
+      "line": 1289,
       "kind": "fn",
       "name": "raycast",
       "has_doc": true
@@ -51191,7 +50490,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1257,
+      "line": 1293,
       "kind": "fn",
       "name": "raycast_filtered",
       "has_doc": true
@@ -51200,7 +50499,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1288,
+      "line": 1324,
       "kind": "fn",
       "name": "step",
       "has_doc": true
@@ -51209,7 +50508,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1501,
+      "line": 1537,
       "kind": "fn",
       "name": "apply_impulse",
       "has_doc": true
@@ -51218,7 +50517,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1520,
+      "line": 1557,
       "kind": "fn",
       "name": "get_collision_events",
       "has_doc": true
@@ -51227,7 +50526,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1524,
+      "line": 1561,
       "kind": "fn",
       "name": "get_begin_contact_events",
       "has_doc": true
@@ -51236,7 +50535,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1528,
+      "line": 1565,
       "kind": "fn",
       "name": "get_end_contact_events",
       "has_doc": true
@@ -51245,7 +50544,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1532,
+      "line": 1569,
       "kind": "fn",
       "name": "try_add_zone",
       "has_doc": true
@@ -51254,7 +50553,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1549,
+      "line": 1586,
       "kind": "fn",
       "name": "add_zone",
       "has_doc": true
@@ -51263,7 +50562,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1559,
+      "line": 1596,
       "kind": "fn",
       "name": "remove_zone",
       "has_doc": true
@@ -51272,7 +50571,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1563,
+      "line": 1600,
       "kind": "fn",
       "name": "zone_mut",
       "has_doc": true
@@ -51281,7 +50580,16 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1567,
+      "line": 1604,
+      "kind": "fn",
+      "name": "zone",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 1608,
       "kind": "fn",
       "name": "get_zone_events",
       "has_doc": true
@@ -51290,7 +50598,70 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1571,
+      "line": 1613,
+      "kind": "fn",
+      "name": "try_add_gravity_vector",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 1634,
+      "kind": "fn",
+      "name": "add_gravity_vector",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 1645,
+      "kind": "fn",
+      "name": "try_set_gravity_vector",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 1666,
+      "kind": "fn",
+      "name": "set_gravity_vector",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 1673,
+      "kind": "fn",
+      "name": "remove_gravity_vector",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 1687,
+      "kind": "fn",
+      "name": "clear_gravity_vectors",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 1694,
+      "kind": "fn",
+      "name": "get_gravity_vector",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/world.rs",
+      "line": 1786,
       "kind": "fn",
       "name": "apply_zone_forces",
       "has_doc": true
@@ -51299,7 +50670,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1696,
+      "line": 1859,
       "kind": "fn",
       "name": "step_fixed",
       "has_doc": true
@@ -51308,7 +50679,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1711,
+      "line": 1874,
       "kind": "fn",
       "name": "set_body_position",
       "has_doc": true
@@ -51317,7 +50688,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1727,
+      "line": 1890,
       "kind": "fn",
       "name": "apply_force",
       "has_doc": true
@@ -51326,7 +50697,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1735,
+      "line": 1898,
       "kind": "fn",
       "name": "apply_torque",
       "has_doc": true
@@ -51335,7 +50706,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1743,
+      "line": 1906,
       "kind": "fn",
       "name": "set_angular_velocity",
       "has_doc": true
@@ -51344,7 +50715,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1758,
+      "line": 1921,
       "kind": "fn",
       "name": "get_angular_velocity",
       "has_doc": true
@@ -51353,7 +50724,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1762,
+      "line": 1925,
       "kind": "fn",
       "name": "get_body_angle",
       "has_doc": true
@@ -51362,7 +50733,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1766,
+      "line": 1929,
       "kind": "fn",
       "name": "set_body_angle",
       "has_doc": true
@@ -51371,7 +50742,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1781,
+      "line": 1944,
       "kind": "fn",
       "name": "get_body_mass",
       "has_doc": true
@@ -51380,7 +50751,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1785,
+      "line": 1956,
       "kind": "fn",
       "name": "set_body_mass",
       "has_doc": true
@@ -51389,7 +50760,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1801,
+      "line": 1975,
       "kind": "fn",
       "name": "set_gravity_scale",
       "has_doc": true
@@ -51398,7 +50769,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1816,
+      "line": 1990,
       "kind": "fn",
       "name": "set_fixed_rotation",
       "has_doc": true
@@ -51407,7 +50778,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1824,
+      "line": 1998,
       "kind": "fn",
       "name": "set_linear_damping",
       "has_doc": true
@@ -51416,7 +50787,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1839,
+      "line": 2013,
       "kind": "fn",
       "name": "set_angular_damping",
       "has_doc": true
@@ -51425,7 +50796,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1854,
+      "line": 2028,
       "kind": "fn",
       "name": "get_gravity_scale",
       "has_doc": true
@@ -51434,7 +50805,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1863,
+      "line": 2037,
       "kind": "fn",
       "name": "is_fixed_rotation",
       "has_doc": true
@@ -51443,7 +50814,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1872,
+      "line": 2046,
       "kind": "fn",
       "name": "get_linear_damping",
       "has_doc": true
@@ -51452,7 +50823,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1881,
+      "line": 2055,
       "kind": "fn",
       "name": "get_angular_damping",
       "has_doc": true
@@ -51461,7 +50832,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1890,
+      "line": 2064,
       "kind": "fn",
       "name": "set_bullet",
       "has_doc": true
@@ -51470,7 +50841,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1898,
+      "line": 2072,
       "kind": "fn",
       "name": "is_bullet",
       "has_doc": true
@@ -51479,7 +50850,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1907,
+      "line": 2081,
       "kind": "fn",
       "name": "apply_force_at_point",
       "has_doc": true
@@ -51488,7 +50859,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1915,
+      "line": 2089,
       "kind": "fn",
       "name": "apply_angular_impulse",
       "has_doc": true
@@ -51497,7 +50868,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1933,
+      "line": 2107,
       "kind": "fn",
       "name": "get_body_ids",
       "has_doc": true
@@ -51506,7 +50877,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1941,
+      "line": 2115,
       "kind": "fn",
       "name": "get_joint_ids",
       "has_doc": true
@@ -51515,7 +50886,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1949,
+      "line": 2123,
       "kind": "fn",
       "name": "get_body_type_str",
       "has_doc": true
@@ -51524,7 +50895,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1963,
+      "line": 2137,
       "kind": "fn",
       "name": "set_body_type",
       "has_doc": true
@@ -51533,7 +50904,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1980,
+      "line": 2154,
       "kind": "fn",
       "name": "get_gravity",
       "has_doc": true
@@ -51542,7 +50913,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1984,
+      "line": 2158,
       "kind": "fn",
       "name": "set_gravity",
       "has_doc": true
@@ -51551,7 +50922,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 1988,
+      "line": 2162,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -51560,7 +50931,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2029,
+      "line": 2206,
       "kind": "fn",
       "name": "reset_world",
       "has_doc": true
@@ -51569,7 +50940,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2034,
+      "line": 2211,
       "kind": "fn",
       "name": "set_sleeping_allowed",
       "has_doc": true
@@ -51578,7 +50949,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2047,
+      "line": 2224,
       "kind": "fn",
       "name": "is_sleeping_allowed",
       "has_doc": true
@@ -51587,7 +50958,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2054,
+      "line": 2231,
       "kind": "fn",
       "name": "destroy_body",
       "has_doc": true
@@ -51596,7 +50967,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2103,
+      "line": 2280,
       "kind": "fn",
       "name": "joint_count",
       "has_doc": true
@@ -51605,7 +50976,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2108,
+      "line": 2285,
       "kind": "fn",
       "name": "try_add_distance_joint",
       "has_doc": true
@@ -51614,7 +50985,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2135,
+      "line": 2312,
       "kind": "fn",
       "name": "add_distance_joint",
       "has_doc": true
@@ -51623,7 +50994,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2154,
+      "line": 2331,
       "kind": "fn",
       "name": "set_body_velocity",
       "has_doc": true
@@ -51632,7 +51003,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2170,
+      "line": 2347,
       "kind": "fn",
       "name": "try_add_prismatic_joint",
       "has_doc": true
@@ -51641,7 +51012,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2201,
+      "line": 2378,
       "kind": "fn",
       "name": "add_prismatic_joint",
       "has_doc": true
@@ -51650,7 +51021,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2219,
+      "line": 2396,
       "kind": "fn",
       "name": "try_add_weld_joint",
       "has_doc": true
@@ -51659,7 +51030,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2239,
+      "line": 2416,
       "kind": "fn",
       "name": "add_weld_joint",
       "has_doc": true
@@ -51668,7 +51039,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2256,
+      "line": 2433,
       "kind": "fn",
       "name": "try_add_rope_joint",
       "has_doc": true
@@ -51677,7 +51048,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2283,
+      "line": 2460,
       "kind": "fn",
       "name": "add_rope_joint",
       "has_doc": true
@@ -51686,7 +51057,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2302,
+      "line": 2479,
       "kind": "fn",
       "name": "get_joint_bodies",
       "has_doc": true
@@ -51695,7 +51066,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2310,
+      "line": 2487,
       "kind": "fn",
       "name": "destroy_joint",
       "has_doc": true
@@ -51704,7 +51075,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2330,
+      "line": 2507,
       "kind": "fn",
       "name": "raycast_closest",
       "has_doc": true
@@ -51713,7 +51084,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2341,
+      "line": 2518,
       "kind": "fn",
       "name": "raycast_closest_filtered",
       "has_doc": true
@@ -51722,7 +51093,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2372,
+      "line": 2549,
       "kind": "fn",
       "name": "raycast_all",
       "has_doc": true
@@ -51731,7 +51102,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2383,
+      "line": 2560,
       "kind": "fn",
       "name": "raycast_all_filtered",
       "has_doc": true
@@ -51740,7 +51111,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2426,
+      "line": 2603,
       "kind": "fn",
       "name": "query_aabb",
       "has_doc": true
@@ -51749,7 +51120,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2430,
+      "line": 2607,
       "kind": "fn",
       "name": "query_aabb_filtered",
       "has_doc": true
@@ -51758,7 +51129,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2456,
+      "line": 2633,
       "kind": "fn",
       "name": "get_body_at_point",
       "has_doc": true
@@ -51767,7 +51138,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2460,
+      "line": 2637,
       "kind": "fn",
       "name": "get_body_at_point_filtered",
       "has_doc": true
@@ -51776,7 +51147,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2483,
+      "line": 2660,
       "kind": "fn",
       "name": "try_add_wheel_joint",
       "has_doc": true
@@ -51785,7 +51156,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2516,
+      "line": 2693,
       "kind": "fn",
       "name": "add_wheel_joint",
       "has_doc": true
@@ -51794,7 +51165,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2535,
+      "line": 2712,
       "kind": "fn",
       "name": "try_add_friction_joint",
       "has_doc": true
@@ -51803,7 +51174,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2569,
+      "line": 2746,
       "kind": "fn",
       "name": "add_friction_joint",
       "has_doc": true
@@ -51812,7 +51183,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2588,
+      "line": 2765,
       "kind": "fn",
       "name": "try_add_motor_joint",
       "has_doc": true
@@ -51821,7 +51192,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2615,
+      "line": 2792,
       "kind": "fn",
       "name": "add_motor_joint",
       "has_doc": true
@@ -51830,7 +51201,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2630,
+      "line": 2807,
       "kind": "fn",
       "name": "try_add_mouse_joint",
       "has_doc": true
@@ -51839,7 +51210,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2659,
+      "line": 2836,
       "kind": "fn",
       "name": "add_mouse_joint",
       "has_doc": true
@@ -51848,7 +51219,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2675,
+      "line": 2852,
       "kind": "fn",
       "name": "set_mouse_joint_target",
       "has_doc": true
@@ -51857,7 +51228,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2684,
+      "line": 2861,
       "kind": "fn",
       "name": "add_pulley_joint",
       "has_doc": true
@@ -51866,7 +51237,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2695,
+      "line": 2872,
       "kind": "fn",
       "name": "add_gear_joint",
       "has_doc": true
@@ -51875,7 +51246,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2706,
+      "line": 2883,
       "kind": "fn",
       "name": "set_joint_motor_speed",
       "has_doc": true
@@ -51884,7 +51255,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2714,
+      "line": 2891,
       "kind": "fn",
       "name": "get_joint_motor_speed",
       "has_doc": true
@@ -51893,7 +51264,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2725,
+      "line": 2902,
       "kind": "fn",
       "name": "set_joint_limits_enabled",
       "has_doc": true
@@ -51902,7 +51273,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2743,
+      "line": 2920,
       "kind": "fn",
       "name": "set_joint_limits",
       "has_doc": true
@@ -51911,7 +51282,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2751,
+      "line": 2928,
       "kind": "fn",
       "name": "get_joint_limits",
       "has_doc": true
@@ -51920,7 +51291,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2762,
+      "line": 2939,
       "kind": "fn",
       "name": "get_joint_type",
       "has_doc": true
@@ -51929,7 +51300,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2769,
+      "line": 2946,
       "kind": "fn",
       "name": "set_meter",
       "has_doc": true
@@ -51938,7 +51309,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2773,
+      "line": 2950,
       "kind": "fn",
       "name": "get_meter",
       "has_doc": true
@@ -51947,7 +51318,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2777,
+      "line": 2954,
       "kind": "fn",
       "name": "to_physics",
       "has_doc": true
@@ -51956,7 +51327,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2785,
+      "line": 2962,
       "kind": "fn",
       "name": "to_pixels",
       "has_doc": true
@@ -51965,7 +51336,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2789,
+      "line": 2966,
       "kind": "fn",
       "name": "get_contacts",
       "has_doc": true
@@ -51974,7 +51345,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2821,
+      "line": 2998,
       "kind": "fn",
       "name": "get_body_contacts",
       "has_doc": true
@@ -51983,7 +51354,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2828,
+      "line": 3005,
       "kind": "fn",
       "name": "set_body_one_way",
       "has_doc": true
@@ -51992,7 +51363,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2837,
+      "line": 3014,
       "kind": "fn",
       "name": "clear_body_one_way",
       "has_doc": true
@@ -52001,7 +51372,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2843,
+      "line": 3020,
       "kind": "fn",
       "name": "get_body_one_way",
       "has_doc": true
@@ -52010,7 +51381,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2850,
+      "line": 3027,
       "kind": "fn",
       "name": "set_joint_break_force",
       "has_doc": true
@@ -52019,7 +51390,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2856,
+      "line": 3033,
       "kind": "fn",
       "name": "get_joint_break_force",
       "has_doc": true
@@ -52028,7 +51399,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2863,
+      "line": 3040,
       "kind": "fn",
       "name": "is_body_sleeping",
       "has_doc": true
@@ -52037,7 +51408,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2872,
+      "line": 3049,
       "kind": "fn",
       "name": "wake_up_body",
       "has_doc": true
@@ -52046,7 +51417,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2880,
+      "line": 3057,
       "kind": "fn",
       "name": "sleep_body",
       "has_doc": true
@@ -52055,7 +51426,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2888,
+      "line": 3065,
       "kind": "fn",
       "name": "set_solver_iterations",
       "has_doc": true
@@ -52064,7 +51435,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2892,
+      "line": 3069,
       "kind": "fn",
       "name": "get_solver_iterations",
       "has_doc": true
@@ -52073,7 +51444,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2896,
+      "line": 3073,
       "kind": "fn",
       "name": "get_stats",
       "has_doc": true
@@ -52082,7 +51453,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/world.rs",
-      "line": 2921,
+      "line": 3099,
       "kind": "fn",
       "name": "add_bodies",
       "has_doc": true
@@ -52111,6 +51482,33 @@
       "file": "src/physics/zone.rs",
       "line": 26,
       "kind": "enum",
+      "name": "ZoneGravityFalloff",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 39,
+      "kind": "fn",
+      "name": "parse",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 54,
+      "kind": "fn",
+      "name": "as_str",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 71,
+      "kind": "enum",
       "name": "ZoneGravityMode",
       "has_doc": true
     },
@@ -52118,7 +51516,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 41,
+      "line": 86,
       "kind": "enum",
       "name": "ZoneBoundary",
       "has_doc": true
@@ -52127,7 +51525,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 66,
+      "line": 111,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -52136,7 +51534,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 89,
+      "line": 134,
       "kind": "fn",
       "name": "contains",
       "has_doc": true
@@ -52145,7 +51543,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 110,
+      "line": 155,
       "kind": "enum",
       "name": "ZoneEventKind",
       "has_doc": true
@@ -52154,7 +51552,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 122,
+      "line": 167,
       "kind": "struct",
       "name": "ZoneEvent",
       "has_doc": true
@@ -52163,7 +51561,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 140,
+      "line": 187,
       "kind": "struct",
       "name": "PhysicsZone",
       "has_doc": true
@@ -52172,7 +51570,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 191,
+      "line": 302,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -52181,7 +51579,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 200,
+      "line": 312,
       "kind": "fn",
       "name": "try_new_rect",
       "has_doc": true
@@ -52190,7 +51588,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 227,
+      "line": 347,
       "kind": "fn",
       "name": "new_rect",
       "has_doc": true
@@ -52199,7 +51597,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 254,
+      "line": 382,
       "kind": "fn",
       "name": "try_set_circle",
       "has_doc": true
@@ -52208,7 +51606,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 262,
+      "line": 390,
       "kind": "fn",
       "name": "set_circle",
       "has_doc": true
@@ -52217,7 +51615,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 267,
+      "line": 395,
       "kind": "fn",
       "name": "try_set_gravity_directional",
       "has_doc": true
@@ -52226,7 +51624,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 275,
+      "line": 403,
       "kind": "fn",
       "name": "set_gravity_directional",
       "has_doc": true
@@ -52235,7 +51633,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 280,
+      "line": 408,
       "kind": "fn",
       "name": "try_set_gravity_point",
       "has_doc": true
@@ -52244,7 +51642,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 293,
+      "line": 421,
       "kind": "fn",
       "name": "set_gravity_point",
       "has_doc": true
@@ -52253,7 +51651,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 298,
+      "line": 426,
       "kind": "fn",
       "name": "try_set_gravity_repulsor",
       "has_doc": true
@@ -52262,7 +51660,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 311,
+      "line": 439,
       "kind": "fn",
       "name": "set_gravity_repulsor",
       "has_doc": true
@@ -52271,7 +51669,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 316,
+      "line": 444,
       "kind": "fn",
       "name": "set_gravity_zero",
       "has_doc": true
@@ -52280,7 +51678,52 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 321,
+      "line": 449,
+      "kind": "fn",
+      "name": "set_gravity_additive",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 454,
+      "kind": "fn",
+      "name": "try_set_gravity_falloff",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 460,
+      "kind": "fn",
+      "name": "set_gravity_falloff",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 465,
+      "kind": "fn",
+      "name": "try_set_gravity_radius",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 488,
+      "kind": "fn",
+      "name": "try_set_gravity_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 511,
       "kind": "fn",
       "name": "try_set_linear_damping_override",
       "has_doc": true
@@ -52289,7 +51732,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 331,
+      "line": 521,
       "kind": "fn",
       "name": "try_set_angular_damping_override",
       "has_doc": true
@@ -52298,7 +51741,25 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 341,
+      "line": 531,
+      "kind": "fn",
+      "name": "try_set_linear_drag",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 538,
+      "kind": "fn",
+      "name": "try_set_quadratic_drag",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/zone.rs",
+      "line": 545,
       "kind": "fn",
       "name": "contains",
       "has_doc": true
@@ -52307,7 +51768,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 348,
+      "line": 552,
       "kind": "struct",
       "name": "ZoneTracker",
       "has_doc": true
@@ -52316,7 +51777,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 355,
+      "line": 559,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -52325,7 +51786,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 362,
+      "line": 566,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -52334,7 +51795,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 388,
+      "line": 592,
       "kind": "fn",
       "name": "remove_body",
       "has_doc": true
@@ -52343,7 +51804,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/zone.rs",
-      "line": 393,
+      "line": 597,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -60524,7 +59985,7 @@
       "source": "rust",
       "module": "repl",
       "file": "src/repl/completer.rs",
-      "line": 130,
+      "line": 129,
       "kind": "fn",
       "name": "complete_prefix",
       "has_doc": true
@@ -78974,7 +78435,7 @@
       "source": "lua_api",
       "module": "dsp_api",
       "file": "src/lua_api/dsp_api.rs",
-      "line": 740,
+      "line": 825,
       "kind": "fn",
       "name": "analyzeFft",
       "has_doc": true
@@ -79388,7 +78849,16 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 139,
+      "line": 138,
+      "kind": "fn",
+      "name": "collidersRebuilt",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 140,
       "kind": "fn",
       "name": "zoneChecks",
       "has_doc": true
@@ -79397,7 +78867,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 141,
+      "line": 142,
       "kind": "fn",
       "name": "contacts",
       "has_doc": true
@@ -79406,7 +78876,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 143,
+      "line": 144,
       "kind": "fn",
       "name": "syncedBodies",
       "has_doc": true

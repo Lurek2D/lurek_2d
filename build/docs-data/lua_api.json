@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-23T13:51:31.290475+00:00",
+    "generated": "2026-06-23T14:46:58.122554+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 6205,
-      "lua_modules": 71,
+      "lua_functions": 6158,
+      "lua_modules": 70,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 6205,
-      "documented": 6205,
+      "total_functions": 6158,
+      "documented": 6158,
       "coverage_pct": 100.0,
-      "modules": 71
+      "modules": 70
     },
     "enums": {},
     "modules": {
@@ -38007,7 +38007,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Effect parameter descriptor table.",
-            "line": 642,
+            "line": 726,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38042,7 +38042,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the output file was written successfully.",
-            "line": 652,
+            "line": 736,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38077,7 +38077,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the output file was written successfully.",
-            "line": 662,
+            "line": 746,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38118,7 +38118,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the output image was written successfully.",
-            "line": 673,
+            "line": 757,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38127,8 +38127,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Renders a spectrogram visualization of an audio file and saves it as a PNG image.",
-            "full_doc": "Renders a spectrogram visualization of an audio file and saves it as a PNG image.\n@param | input | string | Relative path to the input audio file.\n@param | output | string | Relative path for the output PNG file.\n@param | width | integer | Image width in pixels.\n@param | height | integer | Image height in pixels.\n@return | boolean | True when the output image was written successfully.",
-            "params_doc": "- `input` â€” `string`: Relative path to the input audio file.\n- `output` â€” `string`: Relative path for the output PNG file.\n- `width` â€” `integer`: Image width in pixels.\n- `height` â€” `integer`: Image height in pixels.",
+            "full_doc": "Renders a spectrogram visualization of an audio file and saves it as a PNG image.\n@param | input | string | Relative path to the input audio file.\n@param | output | string | Relative path for the output PNG file.\n@param | width | integer | Image width in pixels.\n@param | height | integer | Image height in pixels.\n@param | options | table? | Optional FFT settings: `windowSize`/`inputWindowSize` samples, `fftSize`/`fftPoints`, `hopSize`, `dynamicRangeDb`, `logFrequency`, or `frequencyScale`.\n@return | boolean | True when the output image was written successfully.",
+            "params_doc": "- `input` â€” `string`: Relative path to the input audio file.\n- `output` â€” `string`: Relative path for the output PNG file.\n- `width` â€” `integer`: Image width in pixels.\n- `height` â€” `integer`: Image height in pixels.\n- `options` â€” `table?`: Optional FFT settings: `windowSize`/`inputWindowSize` samples, `fftSize`/`fftPoints`, `hopSize`, `dynamicRangeDb`, `logFrequency`, or `frequencyScale`.",
             "returns_doc": "boolean",
             "inferred_sig": "",
             "typed_params": [
@@ -38155,11 +38155,17 @@
                 "integer",
                 false,
                 "Image height in pixels."
+              ],
+              [
+                "options",
+                "table?",
+                true,
+                "Optional FFT settings: `windowSize`/`inputWindowSize` samples, `fftSize`/`fftPoints`, `hopSize`, `dynamicRangeDb`, `logFrequency`, or `frequencyScale`."
               ]
             ],
             "inferred_return": "boolean",
             "return_description": "True when the output image was written successfully.",
-            "line": 684,
+            "line": 769,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38188,7 +38194,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 694,
+            "line": 779,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38217,7 +38223,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 701,
+            "line": 786,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38252,7 +38258,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 709,
+            "line": 794,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38281,7 +38287,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 716,
+            "line": 801,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38304,7 +38310,7 @@
             ],
             "inferred_return": "number",
             "return_description": "RMS amplitude in the range [0.0, 1.0].",
-            "line": 723,
+            "line": 808,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38327,7 +38333,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Peak amplitude in the range [0.0, 1.0].",
-            "line": 730,
+            "line": 815,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38356,7 +38362,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of tables, each with `frequency` (number, Hz) and `magnitude` (number) fields.",
-            "line": 740,
+            "line": 825,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38385,7 +38391,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of tables, each with `frequency` (number, Hz) and `magnitude` (number) fields.",
-            "line": 740,
+            "line": 825,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38420,7 +38426,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Numeric effect ID handle for use with `removeEffectFromBus` and `setEffectParam`.",
-            "line": 750,
+            "line": 835,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38449,7 +38455,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "`true` if the effect was successfully removed.",
-            "line": 759,
+            "line": 844,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38490,7 +38496,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "`true` if the parameter was set successfully.",
-            "line": 770,
+            "line": 855,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38531,7 +38537,7 @@
             ],
             "inferred_return": "LSoundData",
             "return_description": "Generated audio buffer.",
-            "line": 781,
+            "line": 866,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38572,7 +38578,7 @@
             ],
             "inferred_return": "LSoundData",
             "return_description": "Generated audio buffer.",
-            "line": 795,
+            "line": 880,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38613,7 +38619,7 @@
             ],
             "inferred_return": "LSoundData",
             "return_description": "Generated audio buffer.",
-            "line": 809,
+            "line": 894,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38654,7 +38660,7 @@
             ],
             "inferred_return": "LSoundData",
             "return_description": "Generated audio buffer.",
-            "line": 823,
+            "line": 908,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38695,7 +38701,7 @@
             ],
             "inferred_return": "LSoundData",
             "return_description": "Generated noise buffer.",
-            "line": 837,
+            "line": 922,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38748,7 +38754,7 @@
             ],
             "inferred_return": "LSoundData",
             "return_description": "Generated synthesized sound buffer.",
-            "line": 858,
+            "line": 943,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38771,7 +38777,7 @@
             ],
             "inferred_return": "LLevelDetector",
             "return_description": "New level detector instance.",
-            "line": 866,
+            "line": 951,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38794,7 +38800,7 @@
             ],
             "inferred_return": "LSpectrumAnalyzer",
             "return_description": "New spectrum analyzer instance.",
-            "line": 881,
+            "line": 966,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38823,7 +38829,7 @@
             ],
             "inferred_return": "LWaveform",
             "return_description": "New waveform descriptor instance.",
-            "line": 897,
+            "line": 982,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38864,7 +38870,7 @@
             ],
             "inferred_return": "LAdsrEnvelope",
             "return_description": "New ADSR envelope instance.",
-            "line": 910,
+            "line": 995,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38887,7 +38893,7 @@
             ],
             "inferred_return": "LSynthesizer",
             "return_description": "New synthesizer instance.",
-            "line": 925,
+            "line": 1010,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38916,7 +38922,7 @@
             ],
             "inferred_return": "LDspNode",
             "return_description": "New graph node instance.",
-            "line": 937,
+            "line": 1022,
             "file": "src/lua_api/dsp_api.rs"
           },
           {
@@ -38932,7 +38938,7 @@
             "typed_params": [],
             "inferred_return": "LDspGraph",
             "return_description": "New DSP graph instance.",
-            "line": 947,
+            "line": 1032,
             "file": "src/lua_api/dsp_api.rs"
           }
         ],
@@ -38961,7 +38967,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 326,
+                "line": 410,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -38984,7 +38990,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table with `rms`, `peak`, and `clipping` fields.",
-                "line": 334,
+                "line": 418,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39000,7 +39006,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "RMS amplitude in linear scale.",
-                "line": 350,
+                "line": 434,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39016,7 +39022,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Peak absolute amplitude in linear scale.",
-                "line": 354,
+                "line": 438,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39039,7 +39045,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Converted dBFS value.",
-                "line": 359,
+                "line": 443,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39055,7 +39061,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 362,
+                "line": 446,
                 "file": "src/lua_api/dsp_api.rs"
               }
             ]
@@ -39084,7 +39090,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 375,
+                "line": 459,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39107,7 +39113,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array with `frequency` and `magnitude` fields per bin.",
-                "line": 383,
+                "line": 467,
                 "file": "src/lua_api/dsp_api.rs"
               }
             ]
@@ -39154,7 +39160,7 @@
                 ],
                 "inferred_return": "LSoundData",
                 "return_description": "Generated mono sound buffer.",
-                "line": 412,
+                "line": 496,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39170,7 +39176,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "One of `sine`, `square`, `sawtooth`, `triangle`, or `white_noise`.",
-                "line": 421,
+                "line": 505,
                 "file": "src/lua_api/dsp_api.rs"
               }
             ]
@@ -39192,7 +39198,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 430,
+                "line": 514,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39208,7 +39214,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 436,
+                "line": 520,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39224,7 +39230,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Current envelope gain after stepping.",
-                "line": 443,
+                "line": 527,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39240,7 +39246,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when the envelope is idle.",
-                "line": 449,
+                "line": 533,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39263,7 +39269,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 453,
+                "line": 537,
                 "file": "src/lua_api/dsp_api.rs"
               }
             ]
@@ -39292,7 +39298,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 471,
+                "line": 555,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39315,7 +39321,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 498,
+                "line": 582,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39356,7 +39362,7 @@
                 ],
                 "inferred_return": "LSoundData",
                 "return_description": "Generated sound buffer.",
-                "line": 515,
+                "line": 599,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39397,7 +39403,7 @@
                 ],
                 "inferred_return": "LSoundData",
                 "return_description": "Generated sound buffer.",
-                "line": 531,
+                "line": 615,
                 "file": "src/lua_api/dsp_api.rs"
               }
             ]
@@ -39432,7 +39438,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 550,
+                "line": 634,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39455,7 +39461,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Current parameter value.",
-                "line": 560,
+                "line": 644,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39471,7 +39477,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Node kind used by this DSP node.",
-                "line": 569,
+                "line": 653,
                 "file": "src/lua_api/dsp_api.rs"
               }
             ]
@@ -39500,7 +39506,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Stable node identifier for connect and disconnect calls.",
-                "line": 582,
+                "line": 666,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39535,7 +39541,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the connection is valid and stored.",
-                "line": 597,
+                "line": 681,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39564,7 +39570,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an existing connection was removed.",
-                "line": 608,
+                "line": 692,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39587,7 +39593,7 @@
                 ],
                 "inferred_return": "LSoundData",
                 "return_description": "Processed sound buffer output.",
-                "line": 615,
+                "line": 699,
                 "file": "src/lua_api/dsp_api.rs"
               },
               {
@@ -39603,7 +39609,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 623,
+                "line": 707,
                 "file": "src/lua_api/dsp_api.rs"
               }
             ]
@@ -52540,1362 +52546,6 @@
                 "return_description": "",
                 "line": 121,
                 "file": "src/lua_api/grep_api.rs"
-              }
-            ]
-          }
-        }
-      },
-      "html": {
-        "description": "Registers the `lurek.html` Lua API for DOM-like elements, event emission, listeners, and HTML userdata.",
-        "source_file": "src/lua_api/html_api.rs",
-        "functions": [
-          {
-            "name": "preventDefault",
-            "lua_name": "lurek.html.preventDefault",
-            "kind": "function",
-            "owner_type": "",
-            "description": "Marks the event as having its default action prevented.",
-            "full_doc": "Marks the event as having its default action prevented.",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "()",
-            "typed_params": [],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 879,
-            "file": "src/lua_api/html_api.rs"
-          },
-          {
-            "name": "stopPropagation",
-            "lua_name": "lurek.html.stopPropagation",
-            "kind": "function",
-            "owner_type": "",
-            "description": "Stops event propagation to remaining listeners.",
-            "full_doc": "Stops event propagation to remaining listeners.",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "()",
-            "typed_params": [],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 888,
-            "file": "src/lua_api/html_api.rs"
-          },
-          {
-            "name": "isDefaultPrevented",
-            "lua_name": "lurek.html.isDefaultPrevented",
-            "kind": "function",
-            "owner_type": "",
-            "description": "Returns whether the default action was prevented.",
-            "full_doc": "Returns whether the default action was prevented.\n@return | boolean | True when the default was prevented.",
-            "params_doc": "",
-            "returns_doc": "boolean",
-            "inferred_sig": "()",
-            "typed_params": [],
-            "inferred_return": "boolean",
-            "return_description": "True when the default was prevented.",
-            "line": 897,
-            "file": "src/lua_api/html_api.rs"
-          },
-          {
-            "name": "newDocument",
-            "lua_name": "lurek.html.newDocument",
-            "kind": "function",
-            "owner_type": "",
-            "description": "Creates an HTML document from optional source and layout/style options.",
-            "full_doc": "Creates an HTML document from optional source and layout/style options.\n@param | source | string? | HTML source, defaulting to an empty document.\n@param | opts | table? | Table with `css`, `cssPath`, `width`, and `height` fields.\n@return | LHtmlDocument | New HTML document handle.",
-            "params_doc": "- `source` â€” `string?`: HTML source, defaulting to an empty document.\n- `opts` â€” `table?`: Table with `css`, `cssPath`, `width`, and `height` fields.",
-            "returns_doc": "LHtmlDocument",
-            "inferred_sig": "([source], [opts])",
-            "typed_params": [
-              [
-                "source",
-                "string?",
-                true,
-                "HTML source, defaulting to an empty document."
-              ],
-              [
-                "opts",
-                "table?",
-                true,
-                "Table with `css`, `cssPath`, `width`, and `height` fields."
-              ]
-            ],
-            "inferred_return": "LHtmlDocument",
-            "return_description": "New HTML document handle.",
-            "line": 1020,
-            "file": "src/lua_api/html_api.rs"
-          },
-          {
-            "name": "loadDocument",
-            "lua_name": "lurek.html.loadDocument",
-            "kind": "function",
-            "owner_type": "",
-            "description": "Loads an HTML document from GameFS and optionally loads CSS from options or companion file.",
-            "full_doc": "Loads an HTML document from GameFS and optionally loads CSS from options or companion file.\n@param | path | string | GameFS path to the HTML file.\n@param | opts | table? | Table with `css`, `cssPath`, `width`, and `height` fields.\n@return | LHtmlDocument | Loaded HTML document handle.",
-            "params_doc": "- `path` â€” `string`: GameFS path to the HTML file.\n- `opts` â€” `table?`: Table with `css`, `cssPath`, `width`, and `height` fields.",
-            "returns_doc": "LHtmlDocument",
-            "inferred_sig": "(path, [opts])",
-            "typed_params": [
-              [
-                "path",
-                "string",
-                false,
-                "GameFS path to the HTML file."
-              ],
-              [
-                "opts",
-                "table?",
-                true,
-                "Table with `css`, `cssPath`, `width`, and `height` fields."
-              ]
-            ],
-            "inferred_return": "LHtmlDocument",
-            "return_description": "Loaded HTML document handle.",
-            "line": 1038,
-            "file": "src/lua_api/html_api.rs"
-          },
-          {
-            "name": "supports",
-            "lua_name": "lurek.html.supports",
-            "kind": "function",
-            "owner_type": "",
-            "description": "Returns whether the HTML engine supports a named feature.",
-            "full_doc": "Returns whether the HTML engine supports a named feature.\n@param | feature | string | Feature name to query.\n@return | boolean | True when the feature is supported.",
-            "params_doc": "- `feature` â€” `string`: Feature name to query.",
-            "returns_doc": "boolean",
-            "inferred_sig": "(feature)",
-            "typed_params": [
-              [
-                "feature",
-                "string",
-                false,
-                "Feature name to query."
-              ]
-            ],
-            "inferred_return": "boolean",
-            "return_description": "True when the feature is supported.",
-            "line": 1081,
-            "file": "src/lua_api/html_api.rs"
-          }
-        ],
-        "classes": {
-          "LHtmlDocument": {
-            "description": "Lua-side HTML document handle with DOM state, callbacks, and render command access.",
-            "fields": [],
-            "methods": [
-              {
-                "name": "setHtml",
-                "lua_name": "LHtmlDocument:setHtml",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Replaces the document markup and invalidates existing element handles.",
-                "full_doc": "Replaces the document markup and invalidates existing element handles.\n@param | html | string | New HTML markup.",
-                "params_doc": "- `html` â€” `string`: New HTML markup.",
-                "returns_doc": "",
-                "inferred_sig": "(html)",
-                "typed_params": [
-                  [
-                    "html",
-                    "string",
-                    false,
-                    "New HTML markup."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 102,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getHtml",
-                "lua_name": "LHtmlDocument:getHtml",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Returns the current document markup string.",
-                "full_doc": "Returns the current document markup string.\n@return | string | Current HTML markup.",
-                "params_doc": "",
-                "returns_doc": "string",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "string",
-                "return_description": "Current HTML markup.",
-                "line": 109,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "setCss",
-                "lua_name": "LHtmlDocument:setCss",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Replaces the document stylesheet text.",
-                "full_doc": "Replaces the document stylesheet text.\n@param | css | string | CSS source text.",
-                "params_doc": "- `css` â€” `string`: CSS source text.",
-                "returns_doc": "",
-                "inferred_sig": "(css)",
-                "typed_params": [
-                  [
-                    "css",
-                    "string",
-                    false,
-                    "CSS source text."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 115,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "addCss",
-                "lua_name": "LHtmlDocument:addCss",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Appends CSS source text to the document stylesheet.",
-                "full_doc": "Appends CSS source text to the document stylesheet.\n@param | css | string | CSS source text to append.",
-                "params_doc": "- `css` â€” `string`: CSS source text to append.",
-                "returns_doc": "",
-                "inferred_sig": "(css)",
-                "typed_params": [
-                  [
-                    "css",
-                    "string",
-                    false,
-                    "CSS source text to append."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 122,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "clearCss",
-                "lua_name": "LHtmlDocument:clearCss",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Clears all CSS source text from the document.",
-                "full_doc": "Clears all CSS source text from the document.",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 128,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "setViewport",
-                "lua_name": "LHtmlDocument:setViewport",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Sets the document layout viewport size.",
-                "full_doc": "Sets the document layout viewport size.\n@param | w | number | Viewport width in pixels.\n@param | h | number | Viewport height in pixels.",
-                "params_doc": "- `w` â€” `number`: Viewport width in pixels.\n- `h` â€” `number`: Viewport height in pixels.",
-                "returns_doc": "",
-                "inferred_sig": "(w, h)",
-                "typed_params": [
-                  [
-                    "w",
-                    "number",
-                    false,
-                    "Viewport width in pixels."
-                  ],
-                  [
-                    "h",
-                    "number",
-                    false,
-                    "Viewport height in pixels."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 136,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getViewport",
-                "lua_name": "LHtmlDocument:getViewport",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Returns the document layout viewport size.",
-                "full_doc": "Returns the document layout viewport size.\n@return | number | Viewport width in pixels.\n@return | number | Viewport height in pixels.",
-                "params_doc": "",
-                "returns_doc": "number",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "number",
-                "return_description": "Viewport width in pixels.",
-                "line": 144,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "update",
-                "lua_name": "LHtmlDocument:update",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Advances document timers and animated state.",
-                "full_doc": "Advances document timers and animated state.\n@param | dt | number | Delta time in seconds.",
-                "params_doc": "- `dt` â€” `number`: Delta time in seconds.",
-                "returns_doc": "",
-                "inferred_sig": "(dt)",
-                "typed_params": [
-                  [
-                    "dt",
-                    "number",
-                    false,
-                    "Delta time in seconds."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 150,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "draw",
-                "lua_name": "LHtmlDocument:draw",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Queues render commands for this document at an optional offset.",
-                "full_doc": "Queues render commands for this document at an optional offset.\n@param | x | number? | X offset, defaulting to 0.\n@param | y | number? | Y offset, defaulting to 0.",
-                "params_doc": "- `x` â€” `number?`: X offset, defaulting to 0.\n- `y` â€” `number?`: Y offset, defaulting to 0.",
-                "returns_doc": "",
-                "inferred_sig": "([x], [y])",
-                "typed_params": [
-                  [
-                    "x",
-                    "number?",
-                    true,
-                    "X offset, defaulting to 0."
-                  ],
-                  [
-                    "y",
-                    "number?",
-                    true,
-                    "Y offset, defaulting to 0."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 158,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "render",
-                "lua_name": "LHtmlDocument:render",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Queues render commands for this document at an optional offset.",
-                "full_doc": "Queues render commands for this document at an optional offset.\n@param | x | number? | X offset, defaulting to 0.\n@param | y | number? | Y offset, defaulting to 0.",
-                "params_doc": "- `x` â€” `number?`: X offset, defaulting to 0.\n- `y` â€” `number?`: Y offset, defaulting to 0.",
-                "returns_doc": "",
-                "inferred_sig": "([x], [y])",
-                "typed_params": [
-                  [
-                    "x",
-                    "number?",
-                    true,
-                    "X offset, defaulting to 0."
-                  ],
-                  [
-                    "y",
-                    "number?",
-                    true,
-                    "Y offset, defaulting to 0."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 170,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "relayout",
-                "lua_name": "LHtmlDocument:relayout",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Rebuilds document layout immediately.",
-                "full_doc": "Rebuilds document layout immediately.",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 180,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "isDirty",
-                "lua_name": "LHtmlDocument:isDirty",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Returns whether the document layout is dirty.",
-                "full_doc": "Returns whether the document layout is dirty.\n@return | boolean | True when a relayout is needed.",
-                "params_doc": "",
-                "returns_doc": "boolean",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "boolean",
-                "return_description": "True when a relayout is needed.",
-                "line": 187,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getRoot",
-                "lua_name": "LHtmlDocument:getRoot",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Returns the root DOM element handle.",
-                "full_doc": "Returns the root DOM element handle.\n@return | LHtmlElement | Root element handle.",
-                "params_doc": "",
-                "returns_doc": "LHtmlElement",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "LHtmlElement",
-                "return_description": "Root element handle.",
-                "line": 191,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getElementById",
-                "lua_name": "LHtmlDocument:getElementById",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Looks up the first element with a matching id attribute.",
-                "full_doc": "Looks up the first element with a matching id attribute.\n@param | id | string | Element id attribute.\n@return | LuaValue | `LHtmlElement` handle, or nil when no element matches.",
-                "params_doc": "- `id` â€” `string`: Element id attribute.",
-                "returns_doc": "LuaValue",
-                "inferred_sig": "(id)",
-                "typed_params": [
-                  [
-                    "id",
-                    "string",
-                    false,
-                    "Element id attribute."
-                  ]
-                ],
-                "inferred_return": "LuaValue",
-                "return_description": "`LHtmlElement` handle, or nil when no element matches.",
-                "line": 198,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "query",
-                "lua_name": "LHtmlDocument:query",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Looks up the first element matching a selector.",
-                "full_doc": "Looks up the first element matching a selector.\n@param | selector | string | Selector supported by the HTML engine.\n@return | LuaValue | `LHtmlElement` handle, or nil when no element matches.",
-                "params_doc": "- `selector` â€” `string`: Selector supported by the HTML engine.",
-                "returns_doc": "LuaValue",
-                "inferred_sig": "(selector)",
-                "typed_params": [
-                  [
-                    "selector",
-                    "string",
-                    false,
-                    "Selector supported by the HTML engine."
-                  ]
-                ],
-                "inferred_return": "LuaValue",
-                "return_description": "`LHtmlElement` handle, or nil when no element matches.",
-                "line": 205,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "queryAll",
-                "lua_name": "LHtmlDocument:queryAll",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Returns all elements matching a selector.",
-                "full_doc": "Returns all elements matching a selector.\n@param | selector | string | Selector supported by the HTML engine.\n@return | LHtmlElement[] | `LHtmlElement` handles.",
-                "params_doc": "- `selector` â€” `string`: Selector supported by the HTML engine.",
-                "returns_doc": "LHtmlElement[]",
-                "inferred_sig": "(selector)",
-                "typed_params": [
-                  [
-                    "selector",
-                    "string",
-                    false,
-                    "Selector supported by the HTML engine."
-                  ]
-                ],
-                "inferred_return": "LHtmlElement[]",
-                "return_description": "`LHtmlElement` handles.",
-                "line": 212,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "on",
-                "lua_name": "LHtmlDocument:on",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Registers a document-level event listener.",
-                "full_doc": "Registers a document-level event listener.\n@param | event | string | Event name to listen for.\n@param | func | function | Lua callback receiving an event table.\n@return | integer | Listener handle used by `off`.",
-                "params_doc": "- `event` â€” `string`: Event name to listen for.\n- `func` â€” `function`: Lua callback receiving an event table.",
-                "returns_doc": "integer",
-                "inferred_sig": "(event, func)",
-                "typed_params": [
-                  [
-                    "event",
-                    "string",
-                    false,
-                    "Event name to listen for."
-                  ],
-                  [
-                    "func",
-                    "function",
-                    false,
-                    "Lua callback receiving an event table."
-                  ]
-                ],
-                "inferred_return": "integer",
-                "return_description": "Listener handle used by `off`.",
-                "line": 220,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "off",
-                "lua_name": "LHtmlDocument:off",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Removes a document-level event listener by handle.",
-                "full_doc": "Removes a document-level event listener by handle.\n@param | handle | integer | Listener handle returned by `on`.",
-                "params_doc": "- `handle` â€” `integer`: Listener handle returned by `on`.",
-                "returns_doc": "",
-                "inferred_sig": "(handle)",
-                "typed_params": [
-                  [
-                    "handle",
-                    "integer",
-                    false,
-                    "Listener handle returned by `on`."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 233,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "mousepressed",
-                "lua_name": "LHtmlDocument:mousepressed",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Forwards a mouse press to the document and dispatches a click event when an element is hit.",
-                "full_doc": "Forwards a mouse press to the document and dispatches a click event when an element is hit.\n@param | x | number | Mouse x coordinate.\n@param | y | number | Mouse y coordinate.\n@param | button | integer? | Mouse button, defaulting to 1.\n@return | boolean | True when the event was consumed or default was prevented.",
-                "params_doc": "- `x` â€” `number`: Mouse x coordinate.\n- `y` â€” `number`: Mouse y coordinate.\n- `button` â€” `integer?`: Mouse button, defaulting to 1.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(x, y, [button])",
-                "typed_params": [
-                  [
-                    "x",
-                    "number",
-                    false,
-                    "Mouse x coordinate."
-                  ],
-                  [
-                    "y",
-                    "number",
-                    false,
-                    "Mouse y coordinate."
-                  ],
-                  [
-                    "button",
-                    "integer?",
-                    true,
-                    "Mouse button, defaulting to 1."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True when the event was consumed or default was prevented.",
-                "line": 245,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "mousereleased",
-                "lua_name": "LHtmlDocument:mousereleased",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Forwards a mouse release to the document.",
-                "full_doc": "Forwards a mouse release to the document.\n@param | x | number | Mouse x coordinate.\n@param | y | number | Mouse y coordinate.\n@param | button | integer? | Mouse button, defaulting to 1.\n@return | boolean | True when an element handled the release.",
-                "params_doc": "- `x` â€” `number`: Mouse x coordinate.\n- `y` â€” `number`: Mouse y coordinate.\n- `button` â€” `integer?`: Mouse button, defaulting to 1.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(x, y, [button])",
-                "typed_params": [
-                  [
-                    "x",
-                    "number",
-                    false,
-                    "Mouse x coordinate."
-                  ],
-                  [
-                    "y",
-                    "number",
-                    false,
-                    "Mouse y coordinate."
-                  ],
-                  [
-                    "button",
-                    "integer?",
-                    true,
-                    "Mouse button, defaulting to 1."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True when an element handled the release.",
-                "line": 272,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "mousemoved",
-                "lua_name": "LHtmlDocument:mousemoved",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Forwards mouse movement to the document.",
-                "full_doc": "Forwards mouse movement to the document.\n@param | x | number | Mouse x coordinate.\n@param | y | number | Mouse y coordinate.\n@return | boolean | True when an element handled the move.",
-                "params_doc": "- `x` â€” `number`: Mouse x coordinate.\n- `y` â€” `number`: Mouse y coordinate.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(x, y)",
-                "typed_params": [
-                  [
-                    "x",
-                    "number",
-                    false,
-                    "Mouse x coordinate."
-                  ],
-                  [
-                    "y",
-                    "number",
-                    false,
-                    "Mouse y coordinate."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True when an element handled the move.",
-                "line": 287,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "wheelmoved",
-                "lua_name": "LHtmlDocument:wheelmoved",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Forwards mouse wheel movement to the document.",
-                "full_doc": "Forwards mouse wheel movement to the document.\n@param | dx | number | Horizontal wheel delta.\n@param | dy | number | Vertical wheel delta.\n@return | boolean | True when an element handled the wheel event.",
-                "params_doc": "- `dx` â€” `number`: Horizontal wheel delta.\n- `dy` â€” `number`: Vertical wheel delta.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(dx, dy)",
-                "typed_params": [
-                  [
-                    "dx",
-                    "number",
-                    false,
-                    "Horizontal wheel delta."
-                  ],
-                  [
-                    "dy",
-                    "number",
-                    false,
-                    "Vertical wheel delta."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True when an element handled the wheel event.",
-                "line": 295,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "keypressed",
-                "lua_name": "LHtmlDocument:keypressed",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Forwards a key press to the focused document element and dispatches `keydown`.",
-                "full_doc": "Forwards a key press to the focused document element and dispatches `keydown`.\n@param | key | string | Key name.\n@return | boolean | True when the event was consumed or default was prevented.",
-                "params_doc": "- `key` â€” `string`: Key name.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(key)",
-                "typed_params": [
-                  [
-                    "key",
-                    "string",
-                    false,
-                    "Key name."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True when the event was consumed or default was prevented.",
-                "line": 302,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "textinput",
-                "lua_name": "LHtmlDocument:textinput",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Forwards text input to the focused document element and dispatches `input`.",
-                "full_doc": "Forwards text input to the focused document element and dispatches `input`.\n@param | text | string | Input text.\n@return | boolean | True when the event was consumed or default was prevented.",
-                "params_doc": "- `text` â€” `string`: Input text.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(text)",
-                "typed_params": [
-                  [
-                    "text",
-                    "string",
-                    false,
-                    "Input text."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True when the event was consumed or default was prevented.",
-                "line": 321,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "type",
-                "lua_name": "LHtmlDocument:type",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Returns the Lua-visible type name for this HTML document handle.",
-                "full_doc": "Returns the Lua-visible type name for this HTML document handle.\n@return | string | The string `LHtmlDocument`.",
-                "params_doc": "",
-                "returns_doc": "string",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "string",
-                "return_description": "The string `LHtmlDocument`.",
-                "line": 341,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "typeOf",
-                "lua_name": "LHtmlDocument:typeOf",
-                "kind": "method",
-                "owner_type": "LHtmlDocument",
-                "description": "Returns whether this document handle matches a supported type name.",
-                "full_doc": "Returns whether this document handle matches a supported type name.\n@param | name | string | Type name to compare against `LHtmlDocument` and `Object`.\n@return | boolean | True when the supplied type name matches this handle.",
-                "params_doc": "- `name` â€” `string`: Type name to compare against `LHtmlDocument` and `Object`.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(name)",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Type name to compare against `LHtmlDocument` and `Object`."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True when the supplied type name matches this handle.",
-                "line": 346,
-                "file": "src/lua_api/html_api.rs"
-              }
-            ]
-          },
-          "LHtmlElement": {
-            "description": "Lua-side DOM element handle with stale-generation detection.",
-            "fields": [],
-            "methods": [
-              {
-                "name": "getDocument",
-                "lua_name": "LHtmlElement:getDocument",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns the document handle that owns this element.",
-                "full_doc": "Returns the document handle that owns this element.\n@return | LHtmlDocument | Owning document handle.",
-                "params_doc": "",
-                "returns_doc": "LHtmlDocument",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "LHtmlDocument",
-                "return_description": "Owning document handle.",
-                "line": 357,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getTagName",
-                "lua_name": "LHtmlElement:getTagName",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns this element's HTML tag name.",
-                "full_doc": "Returns this element's HTML tag name.\n@return | string | Tag name, or an empty string for missing elements.",
-                "params_doc": "",
-                "returns_doc": "string",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "string",
-                "return_description": "Tag name, or an empty string for missing elements.",
-                "line": 367,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getId",
-                "lua_name": "LHtmlElement:getId",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns this element's id attribute.",
-                "full_doc": "Returns this element's id attribute.\n@return | LuaValue | Id string, or nil when no id attribute exists.",
-                "params_doc": "",
-                "returns_doc": "LuaValue",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "LuaValue",
-                "return_description": "Id string, or nil when no id attribute exists.",
-                "line": 379,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "setId",
-                "lua_name": "LHtmlElement:setId",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Sets or clears this element's id attribute.",
-                "full_doc": "Sets or clears this element's id attribute.\n@param | id | string? | Id attribute value, or nil to clear.",
-                "params_doc": "- `id` â€” `string?`: Id attribute value, or nil to clear.",
-                "returns_doc": "",
-                "inferred_sig": "([id])",
-                "typed_params": [
-                  [
-                    "id",
-                    "string?",
-                    true,
-                    "Id attribute value, or nil to clear."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 390,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getText",
-                "lua_name": "LHtmlElement:getText",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns this element's text content.",
-                "full_doc": "Returns this element's text content.\n@return | string | Text content, or an empty string when none exists.",
-                "params_doc": "",
-                "returns_doc": "string",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "string",
-                "return_description": "Text content, or an empty string when none exists.",
-                "line": 400,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "setText",
-                "lua_name": "LHtmlElement:setText",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Replaces this element's text content.",
-                "full_doc": "Replaces this element's text content.\n@param | text | string | New text content.",
-                "params_doc": "- `text` â€” `string`: New text content.",
-                "returns_doc": "",
-                "inferred_sig": "(text)",
-                "typed_params": [
-                  [
-                    "text",
-                    "string",
-                    false,
-                    "New text content."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 411,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getHtml",
-                "lua_name": "LHtmlElement:getHtml",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns this element's inner HTML.",
-                "full_doc": "Returns this element's inner HTML.\n@return | string | Element inner HTML, or an empty string when unavailable.",
-                "params_doc": "",
-                "returns_doc": "string",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "string",
-                "return_description": "Element inner HTML, or an empty string when unavailable.",
-                "line": 419,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "setHtml",
-                "lua_name": "LHtmlElement:setHtml",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Replaces this element's inner HTML and may invalidate descendant element handles.",
-                "full_doc": "Replaces this element's inner HTML and may invalidate descendant element handles.\n@param | html | string | New inner HTML source.",
-                "params_doc": "- `html` â€” `string`: New inner HTML source.",
-                "returns_doc": "",
-                "inferred_sig": "(html)",
-                "typed_params": [
-                  [
-                    "html",
-                    "string",
-                    false,
-                    "New inner HTML source."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 430,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "appendHtml",
-                "lua_name": "LHtmlElement:appendHtml",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Appends HTML source to this element's inner HTML.",
-                "full_doc": "Appends HTML source to this element's inner HTML.\n@param | html | string | HTML source to append.",
-                "params_doc": "- `html` â€” `string`: HTML source to append.",
-                "returns_doc": "",
-                "inferred_sig": "(html)",
-                "typed_params": [
-                  [
-                    "html",
-                    "string",
-                    false,
-                    "HTML source to append."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 440,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "remove",
-                "lua_name": "LHtmlElement:remove",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Removes this element from the document.",
-                "full_doc": "Removes this element from the document.",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 449,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getAttribute",
-                "lua_name": "LHtmlElement:getAttribute",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns an attribute value from this element.",
-                "full_doc": "Returns an attribute value from this element.\n@param | name | string | Attribute name.\n@return | LuaValue | Attribute string, or nil when absent.",
-                "params_doc": "- `name` â€” `string`: Attribute name.",
-                "returns_doc": "LuaValue",
-                "inferred_sig": "(name)",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Attribute name."
-                  ]
-                ],
-                "inferred_return": "LuaValue",
-                "return_description": "Attribute string, or nil when absent.",
-                "line": 458,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "setAttribute",
-                "lua_name": "LHtmlElement:setAttribute",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Sets or clears an attribute on this element.",
-                "full_doc": "Sets or clears an attribute on this element.\n@param | name | string | Attribute name.\n@param | value | string? | Attribute value, or nil to remove the attribute.",
-                "params_doc": "- `name` â€” `string`: Attribute name.\n- `value` â€” `string?`: Attribute value, or nil to remove the attribute.",
-                "returns_doc": "",
-                "inferred_sig": "(name, [value])",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Attribute name."
-                  ],
-                  [
-                    "value",
-                    "string?",
-                    true,
-                    "Attribute value, or nil to remove the attribute."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 470,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "removeAttribute",
-                "lua_name": "LHtmlElement:removeAttribute",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Removes an attribute from this element.",
-                "full_doc": "Removes an attribute from this element.\n@param | name | string | Attribute name to remove.",
-                "params_doc": "- `name` â€” `string`: Attribute name to remove.",
-                "returns_doc": "",
-                "inferred_sig": "(name)",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Attribute name to remove."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 483,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "hasClass",
-                "lua_name": "LHtmlElement:hasClass",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns whether this element has a CSS class.",
-                "full_doc": "Returns whether this element has a CSS class.\n@param | name | string | Class name to check.\n@return | boolean | True when the class is present.",
-                "params_doc": "- `name` â€” `string`: Class name to check.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(name)",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Class name to check."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True when the class is present.",
-                "line": 494,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "addClass",
-                "lua_name": "LHtmlElement:addClass",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Adds a CSS class to this element's class list.",
-                "full_doc": "Adds a CSS class to this element's class list.\n@param | name | string | Class name to add.",
-                "params_doc": "- `name` â€” `string`: Class name to add.",
-                "returns_doc": "",
-                "inferred_sig": "(name)",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Class name to add."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 505,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "removeClass",
-                "lua_name": "LHtmlElement:removeClass",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Removes a CSS class from this element.",
-                "full_doc": "Removes a CSS class from this element.\n@param | name | string | Class name to remove.",
-                "params_doc": "- `name` â€” `string`: Class name to remove.",
-                "returns_doc": "",
-                "inferred_sig": "(name)",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Class name to remove."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 513,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "toggleClass",
-                "lua_name": "LHtmlElement:toggleClass",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Toggles a CSS class on this element, optionally forcing the final state.",
-                "full_doc": "Toggles a CSS class on this element, optionally forcing the final state.\n@param | name | string | Class name to toggle.\n@param | force | boolean? | Forced state.\n@return | boolean | Final class presence, or false when the element is unavailable.",
-                "params_doc": "- `name` â€” `string`: Class name to toggle.\n- `force` â€” `boolean?`: Forced state.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(name, [force])",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Class name to toggle."
-                  ],
-                  [
-                    "force",
-                    "boolean?",
-                    true,
-                    "Forced state."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "Final class presence, or false when the element is unavailable.",
-                "line": 525,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getStyle",
-                "lua_name": "LHtmlElement:getStyle",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns an inline or computed style value for this element.",
-                "full_doc": "Returns an inline or computed style value for this element.\n@param | name | string | CSS property name.\n@return | LuaValue | Style value string, or nil when missing.",
-                "params_doc": "- `name` â€” `string`: CSS property name.",
-                "returns_doc": "LuaValue",
-                "inferred_sig": "(name)",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "CSS property name."
-                  ]
-                ],
-                "inferred_return": "LuaValue",
-                "return_description": "Style value string, or nil when missing.",
-                "line": 540,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "setStyle",
-                "lua_name": "LHtmlElement:setStyle",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Sets or clears a style property on this element.",
-                "full_doc": "Sets or clears a style property on this element.\n@param | name | string | CSS property name.\n@param | value | string? | CSS value, or nil to clear the property.",
-                "params_doc": "- `name` â€” `string`: CSS property name.\n- `value` â€” `string?`: CSS value, or nil to clear the property.",
-                "returns_doc": "",
-                "inferred_sig": "(name, [value])",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "CSS property name."
-                  ],
-                  [
-                    "value",
-                    "string?",
-                    true,
-                    "CSS value, or nil to clear the property."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 548,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "getRect",
-                "lua_name": "LHtmlElement:getRect",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns this element's layout rectangle after relayout if needed.",
-                "full_doc": "Returns this element's layout rectangle after relayout if needed.\n@return | number | X coordinate.\n@return | number | Y coordinate.\n@return | number | Width.\n@return | number | Height.",
-                "params_doc": "",
-                "returns_doc": "number",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "number",
-                "return_description": "X coordinate.",
-                "line": 564,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "focus",
-                "lua_name": "LHtmlElement:focus",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Gives keyboard focus to this element.",
-                "full_doc": "Gives keyboard focus to this element.",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 578,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "blur",
-                "lua_name": "LHtmlElement:blur",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Removes keyboard focus from this element when it is focused.",
-                "full_doc": "Removes keyboard focus from this element when it is focused.",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 585,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "query",
-                "lua_name": "LHtmlElement:query",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Looks up the first descendant element matching a selector.",
-                "full_doc": "Looks up the first descendant element matching a selector.\n@param | selector | string | Selector supported by the HTML engine.\n@return | LuaValue | `LHtmlElement` handle, or nil when no descendant matches.",
-                "params_doc": "- `selector` â€” `string`: Selector supported by the HTML engine.",
-                "returns_doc": "LuaValue",
-                "inferred_sig": "(selector)",
-                "typed_params": [
-                  [
-                    "selector",
-                    "string",
-                    false,
-                    "Selector supported by the HTML engine."
-                  ]
-                ],
-                "inferred_return": "LuaValue",
-                "return_description": "`LHtmlElement` handle, or nil when no descendant matches.",
-                "line": 594,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "queryAll",
-                "lua_name": "LHtmlElement:queryAll",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns all descendant elements matching a selector.",
-                "full_doc": "Returns all descendant elements matching a selector.\n@param | selector | string | Selector supported by the HTML engine.\n@return | LHtmlElement[] | `LHtmlElement` handles.",
-                "params_doc": "- `selector` â€” `string`: Selector supported by the HTML engine.",
-                "returns_doc": "LHtmlElement[]",
-                "inferred_sig": "(selector)",
-                "typed_params": [
-                  [
-                    "selector",
-                    "string",
-                    false,
-                    "Selector supported by the HTML engine."
-                  ]
-                ],
-                "inferred_return": "LHtmlElement[]",
-                "return_description": "`LHtmlElement` handles.",
-                "line": 613,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "on",
-                "lua_name": "LHtmlElement:on",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Registers an element-level event listener.",
-                "full_doc": "Registers an element-level event listener.\n@param | event | string | Event name to listen for.\n@param | func | function | Lua callback receiving an event table.\n@return | integer | Listener handle used by `off`.",
-                "params_doc": "- `event` â€” `string`: Event name to listen for.\n- `func` â€” `function`: Lua callback receiving an event table.",
-                "returns_doc": "integer",
-                "inferred_sig": "(event, func)",
-                "typed_params": [
-                  [
-                    "event",
-                    "string",
-                    false,
-                    "Event name to listen for."
-                  ],
-                  [
-                    "func",
-                    "function",
-                    false,
-                    "Lua callback receiving an event table."
-                  ]
-                ],
-                "inferred_return": "integer",
-                "return_description": "Listener handle used by `off`.",
-                "line": 633,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "off",
-                "lua_name": "LHtmlElement:off",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Removes an element-level event listener by handle.",
-                "full_doc": "Removes an element-level event listener by handle.\n@param | handle | integer | Listener handle returned by `on`.",
-                "params_doc": "- `handle` â€” `integer`: Listener handle returned by `on`.",
-                "returns_doc": "",
-                "inferred_sig": "(handle)",
-                "typed_params": [
-                  [
-                    "handle",
-                    "integer",
-                    false,
-                    "Listener handle returned by `on`."
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 649,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "type",
-                "lua_name": "LHtmlElement:type",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns the Lua-visible type name for this HTML element handle.",
-                "full_doc": "Returns the Lua-visible type name for this HTML element handle.\n@return | string | The string `LHtmlElement`.",
-                "params_doc": "",
-                "returns_doc": "string",
-                "inferred_sig": "()",
-                "typed_params": [],
-                "inferred_return": "string",
-                "return_description": "The string `LHtmlElement`.",
-                "line": 665,
-                "file": "src/lua_api/html_api.rs"
-              },
-              {
-                "name": "typeOf",
-                "lua_name": "LHtmlElement:typeOf",
-                "kind": "method",
-                "owner_type": "LHtmlElement",
-                "description": "Returns whether this element handle matches a supported type name.",
-                "full_doc": "Returns whether this element handle matches a supported type name.\n@param | name | string | Type name to compare against `LHtmlElement` and `Object`.\n@return | boolean | True when the supplied type name matches this handle.",
-                "params_doc": "- `name` â€” `string`: Type name to compare against `LHtmlElement` and `Object`.",
-                "returns_doc": "boolean",
-                "inferred_sig": "(name)",
-                "typed_params": [
-                  [
-                    "name",
-                    "string",
-                    false,
-                    "Type name to compare against `LHtmlElement` and `Object`."
-                  ]
-                ],
-                "inferred_return": "boolean",
-                "return_description": "True when the supplied type name matches this handle.",
-                "line": 670,
-                "file": "src/lua_api/html_api.rs"
               }
             ]
           }
@@ -97169,7 +95819,7 @@
             ],
             "inferred_return": "LWorld",
             "return_description": "The new physics world.",
-            "line": 2358,
+            "line": 2520,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97198,7 +95848,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2376,
+            "line": 2538,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97221,7 +95871,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2390,
+            "line": 2552,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97262,7 +95912,7 @@
             ],
             "inferred_return": "LBody",
             "return_description": "The newly created body.",
-            "line": 2401,
+            "line": 2563,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97291,7 +95941,7 @@
             ],
             "inferred_return": "number",
             "return_description": "X position.",
-            "line": 2413,
+            "line": 2575,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97332,7 +95982,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2435,
+            "line": 2597,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97361,7 +96011,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if sleeping is allowed.",
-            "line": 2448,
+            "line": 2610,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97396,7 +96046,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2463,
+            "line": 2625,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97425,7 +96075,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 2480,
+            "line": 2642,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97448,7 +96098,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 2492,
+            "line": 2654,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97489,7 +96139,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 2507,
+            "line": 2669,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97512,7 +96162,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 2519,
+            "line": 2681,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97541,7 +96191,7 @@
             ],
             "inferred_return": "LPhysicsShape",
             "return_description": "The shape object.",
-            "line": 2528,
+            "line": 2690,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97570,7 +96220,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2538,
+            "line": 2700,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97593,7 +96243,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of collision event tables.",
-            "line": 2564,
+            "line": 2726,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97616,7 +96266,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2576,
+            "line": 2738,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97645,7 +96295,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2588,
+            "line": 2750,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97686,7 +96336,7 @@
             ],
             "inferred_return": "LTerrain",
             "return_description": "The terrain object.",
-            "line": 2605,
+            "line": 2767,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97751,7 +96401,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the rectangles overlap.",
-            "line": 2630,
+            "line": 2792,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97804,7 +96454,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the circles overlap.",
-            "line": 2649,
+            "line": 2811,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97857,7 +96507,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the point is inside.",
-            "line": 2668,
+            "line": 2830,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -97916,7 +96566,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if circle and AABB overlap.",
-            "line": 2688,
+            "line": 2850,
             "file": "src/lua_api/physics_api.rs"
           }
         ],
@@ -97969,7 +96619,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 295,
+                "line": 311,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -97992,7 +96642,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 320,
+                "line": 336,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98008,7 +96658,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 342,
+                "line": 358,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98024,7 +96674,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 349,
+                "line": 365,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98040,7 +96690,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Gravity X component in world units per second squared.",
-                "line": 357,
+                "line": 373,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98069,7 +96719,145 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 364,
+                "line": 380,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "addGravityVector",
+                "lua_name": "LWorld:addGravityVector",
+                "kind": "method",
+                "owner_type": "LWorld",
+                "description": "Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.",
+                "full_doc": "Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.\n@param | gx | number | Horizontal acceleration in world units per second squared.\n@param | gy | number | Vertical acceleration in world units per second squared.\n@param | layerMask | integer? | Optional body layer mask, defaults to all layers.\n@return | integer | Stable gravity vector ID.",
+                "params_doc": "- `gx` â€” `number`: Horizontal acceleration in world units per second squared.\n- `gy` â€” `number`: Vertical acceleration in world units per second squared.\n- `layerMask` â€” `integer?`: Optional body layer mask, defaults to all layers.",
+                "returns_doc": "integer",
+                "inferred_sig": "(gx, gy, [layer_mask])",
+                "typed_params": [
+                  [
+                    "gx",
+                    "number",
+                    false,
+                    "Horizontal acceleration in world units per second squared."
+                  ],
+                  [
+                    "gy",
+                    "number",
+                    false,
+                    "Vertical acceleration in world units per second squared."
+                  ],
+                  [
+                    "layerMask",
+                    "integer?",
+                    true,
+                    "Optional body layer mask, defaults to all layers."
+                  ]
+                ],
+                "inferred_return": "integer",
+                "return_description": "Stable gravity vector ID.",
+                "line": 390,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "setGravityVector",
+                "lua_name": "LWorld:setGravityVector",
+                "kind": "method",
+                "owner_type": "LWorld",
+                "description": "Replaces the direction, strength, and optional layer mask of an existing additive gravity vector.",
+                "full_doc": "Replaces the direction, strength, and optional layer mask of an existing additive gravity vector.\n@param | id | integer | Gravity vector ID returned by addGravityVector.\n@param | gx | number | Horizontal acceleration in world units per second squared.\n@param | gy | number | Vertical acceleration in world units per second squared.\n@param | layerMask | integer? | Optional body layer mask, defaults to all layers.",
+                "params_doc": "- `id` â€” `integer`: Gravity vector ID returned by addGravityVector.\n- `gx` â€” `number`: Horizontal acceleration in world units per second squared.\n- `gy` â€” `number`: Vertical acceleration in world units per second squared.\n- `layerMask` â€” `integer?`: Optional body layer mask, defaults to all layers.",
+                "returns_doc": "",
+                "inferred_sig": "(id, gx, gy, [layer_mask])",
+                "typed_params": [
+                  [
+                    "id",
+                    "integer",
+                    false,
+                    "Gravity vector ID returned by addGravityVector."
+                  ],
+                  [
+                    "gx",
+                    "number",
+                    false,
+                    "Horizontal acceleration in world units per second squared."
+                  ],
+                  [
+                    "gy",
+                    "number",
+                    false,
+                    "Vertical acceleration in world units per second squared."
+                  ],
+                  [
+                    "layerMask",
+                    "integer?",
+                    true,
+                    "Optional body layer mask, defaults to all layers."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 407,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "removeGravityVector",
+                "lua_name": "LWorld:removeGravityVector",
+                "kind": "method",
+                "owner_type": "LWorld",
+                "description": "Removes one additive gravity vector so it no longer affects future steps.",
+                "full_doc": "Removes one additive gravity vector so it no longer affects future steps.\n@param | id | integer | Gravity vector ID returned by addGravityVector.\n@return | boolean | True if an active vector was removed.",
+                "params_doc": "- `id` â€” `integer`: Gravity vector ID returned by addGravityVector.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(id)",
+                "typed_params": [
+                  [
+                    "id",
+                    "integer",
+                    false,
+                    "Gravity vector ID returned by addGravityVector."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True if an active vector was removed.",
+                "line": 421,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "clearGravityVectors",
+                "lua_name": "LWorld:clearGravityVectors",
+                "kind": "method",
+                "owner_type": "LWorld",
+                "description": "Removes all additive gravity vectors from the world.",
+                "full_doc": "Removes all additive gravity vectors from the world.",
+                "params_doc": "",
+                "returns_doc": "",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 426,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "getGravityVector",
+                "lua_name": "LWorld:getGravityVector",
+                "kind": "method",
+                "owner_type": "LWorld",
+                "description": "Returns an additive gravity vector by ID, or nil when no active vector exists.",
+                "full_doc": "Returns an additive gravity vector by ID, or nil when no active vector exists.\n@param | id | integer | Gravity vector ID returned by addGravityVector.\n@return | table? | Table with id, gx, gy, layerMask, and enabled fields.",
+                "params_doc": "- `id` â€” `integer`: Gravity vector ID returned by addGravityVector.",
+                "returns_doc": "table?",
+                "inferred_sig": "(id)",
+                "typed_params": [
+                  [
+                    "id",
+                    "integer",
+                    false,
+                    "Gravity vector ID returned by addGravityVector."
+                  ]
+                ],
+                "inferred_return": "table?",
+                "return_description": "Table with id, gx, gy, layerMask, and enabled fields.",
+                "line": 434,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98092,7 +96880,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 371,
+                "line": 443,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98108,7 +96896,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Pixels per meter.",
-                "line": 378,
+                "line": 450,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98131,7 +96919,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Equivalent value in physics meters.",
-                "line": 385,
+                "line": 457,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98154,7 +96942,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Equivalent value in pixels.",
-                "line": 392,
+                "line": 464,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98170,7 +96958,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Body count.",
-                "line": 398,
+                "line": 470,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98193,7 +96981,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the body is active.",
-                "line": 405,
+                "line": 477,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98209,7 +96997,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Body ID numbers.",
-                "line": 411,
+                "line": 483,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98232,7 +97020,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the joint is active.",
-                "line": 418,
+                "line": 490,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98241,14 +97029,14 @@
                 "kind": "method",
                 "owner_type": "LWorld",
                 "description": "Returns active counts and slot diagnostics for the world.",
-                "full_doc": "Returns active counts and slot diagnostics for the world.\n@return | table | Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies.\n@field | bodies | integer | Number of active body slots.\n@field | bodySlots | integer | Total allocated body slots, including inactive tombstones.\n@field | colliders | integer | Number of active Rapier colliders.\n@field | joints | integer | Number of active joint slots.\n@field | jointSlots | integer | Total allocated joint slots, including inactive tombstones.\n@field | zones | integer | Number of active physics zones.\n@field | sleepingBodies | integer | Number of active bodies currently sleeping.",
+                "full_doc": "Returns active counts and slot diagnostics for the world.\n@return | table | Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, gravityVectors, sleepingBodies.\n@field | bodies | integer | Number of active body slots.\n@field | bodySlots | integer | Total allocated body slots, including inactive tombstones.\n@field | colliders | integer | Number of active Rapier colliders.\n@field | joints | integer | Number of active joint slots.\n@field | jointSlots | integer | Total allocated joint slots, including inactive tombstones.\n@field | zones | integer | Number of active physics zones.\n@field | gravityVectors | integer | Number of active additive gravity vectors.\n@field | sleepingBodies | integer | Number of active bodies currently sleeping.",
                 "params_doc": "",
                 "returns_doc": "table",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "return_description": "Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies.",
-                "line": 431,
+                "return_description": "Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, gravityVectors, sleepingBodies.",
+                "line": 504,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98271,7 +97059,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 438,
+                "line": 511,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98306,7 +97094,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 448,
+                "line": 521,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98347,7 +97135,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 489,
+                "line": 562,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98388,7 +97176,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 509,
+                "line": 582,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98447,7 +97235,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 542,
+                "line": 615,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98494,7 +97282,7 @@
                 ],
                 "inferred_return": "LBody",
                 "return_description": "The newly created body handle.",
-                "line": 564,
+                "line": 637,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98553,7 +97341,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The fixture index on the body.",
-                "line": 596,
+                "line": 669,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98576,7 +97364,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of attached fixtures.",
-                "line": 622,
+                "line": 695,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98611,7 +97399,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 630,
+                "line": 703,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98646,7 +97434,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 645,
+                "line": 718,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98681,7 +97469,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 660,
+                "line": 733,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98722,7 +97510,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 677,
+                "line": 750,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98781,7 +97569,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 697,
+                "line": 770,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98834,7 +97622,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 715,
+                "line": 788,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98875,7 +97663,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 731,
+                "line": 804,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98934,7 +97722,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 751,
+                "line": 824,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -98987,7 +97775,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 769,
+                "line": 842,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99040,7 +97828,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 787,
+                "line": 860,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99075,7 +97863,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 802,
+                "line": 875,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99116,7 +97904,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 818,
+                "line": 891,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99157,7 +97945,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 834,
+                "line": 907,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99198,7 +97986,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The joint ID.",
-                "line": 850,
+                "line": 923,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99214,7 +98002,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Joint count.",
-                "line": 862,
+                "line": 935,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99230,7 +98018,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Joint ID numbers.",
-                "line": 868,
+                "line": 941,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99253,7 +98041,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Body A ID.",
-                "line": 876,
+                "line": 949,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99276,7 +98064,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 885,
+                "line": 958,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99299,7 +98087,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The joint type name.",
-                "line": 893,
+                "line": 966,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99328,7 +98116,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 900,
+                "line": 973,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99351,7 +98139,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Motor speed value.",
-                "line": 918,
+                "line": 991,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99380,7 +98168,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 925,
+                "line": 998,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99415,7 +98203,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 944,
+                "line": 1017,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99438,7 +98226,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Lower limit.",
-                "line": 963,
+                "line": 1036,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99473,7 +98261,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 971,
+                "line": 1044,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99520,7 +98308,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.",
-                "line": 999,
+                "line": 1072,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99573,7 +98361,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.",
-                "line": 1026,
+                "line": 1099,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99626,7 +98414,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of hit tables {bodyId, x, y, normalX, normalY, toi}.",
-                "line": 1058,
+                "line": 1131,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99673,7 +98461,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Body ID numbers found in the region.",
-                "line": 1084,
+                "line": 1157,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99708,7 +98496,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Body ID at the point, or nil.",
-                "line": 1099,
+                "line": 1172,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99724,7 +98512,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of collision event tables.",
-                "line": 1111,
+                "line": 1184,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99740,7 +98528,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB} tables.",
-                "line": 1128,
+                "line": 1201,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99756,7 +98544,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB} tables.",
-                "line": 1145,
+                "line": 1218,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99772,7 +98560,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.",
-                "line": 1165,
+                "line": 1238,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99795,7 +98583,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.",
-                "line": 1182,
+                "line": 1255,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99824,7 +98612,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1194,
+                "line": 1267,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99847,7 +98635,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Body type: \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
-                "line": 1203,
+                "line": 1276,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99870,7 +98658,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1209,
+                "line": 1282,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99886,7 +98674,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1215,
+                "line": 1288,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99909,7 +98697,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1222,
+                "line": 1295,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99925,7 +98713,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1228,
+                "line": 1301,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99954,7 +98742,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1236,
+                "line": 1309,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -99977,7 +98765,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "The stored value, or nil if none was set.",
-                "line": 1248,
+                "line": 1321,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100000,7 +98788,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1258,
+                "line": 1331,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100029,7 +98817,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1269,
+                "line": 1342,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100052,7 +98840,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if CCD is enabled.",
-                "line": 1277,
+                "line": 1350,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100087,7 +98875,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1285,
+                "line": 1358,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100110,7 +98898,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1295,
+                "line": 1368,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100133,7 +98921,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Normal X, or nil if not a one-way body.",
-                "line": 1304,
+                "line": 1377,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100162,7 +98950,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1314,
+                "line": 1387,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100185,7 +98973,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Break force value.",
-                "line": 1322,
+                "line": 1395,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100208,7 +98996,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the body is sleeping.",
-                "line": 1329,
+                "line": 1402,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100231,7 +99019,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1335,
+                "line": 1408,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100254,7 +99042,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1342,
+                "line": 1415,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100277,7 +99065,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1349,
+                "line": 1422,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100293,7 +99081,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Iteration count.",
-                "line": 1356,
+                "line": 1429,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100316,7 +99104,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Body ID numbers in creation order.",
-                "line": 1363,
+                "line": 1436,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100351,7 +99139,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Remaining unstepped time to carry into next frame.",
-                "line": 1394,
+                "line": 1467,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100392,7 +99180,7 @@
                 ],
                 "inferred_return": "LZone",
                 "return_description": "The zone handle.",
-                "line": 1411,
+                "line": 1484,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100408,7 +99196,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of {zone_id, body_id, kind} tables where kind is \"enter\" or \"leave\".",
-                "line": 1430,
+                "line": 1503,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100424,7 +99212,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LWorld\".",
-                "line": 1452,
+                "line": 1525,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100447,7 +99235,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 1457,
+                "line": 1530,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -100469,7 +99257,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Zone ID.",
-                "line": 1473,
+                "line": 1546,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100492,7 +99280,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1477,
+                "line": 1550,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100515,7 +99303,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1487,
+                "line": 1560,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100538,7 +99326,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1497,
+                "line": 1570,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100573,7 +99361,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1509,
+                "line": 1582,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100602,7 +99390,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1521,
+                "line": 1594,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100637,7 +99425,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1534,
+                "line": 1607,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100672,7 +99460,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1550,
+                "line": 1623,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100688,7 +99476,143 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1563,
+                "line": 1636,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "setGravityAdditive",
+                "lua_name": "LZone:setGravityAdditive",
+                "kind": "method",
+                "owner_type": "LZone",
+                "description": "Controls whether this zone adds gravity to other fields instead of overriding world gravity by priority.",
+                "full_doc": "Controls whether this zone adds gravity to other fields instead of overriding world gravity by priority.\n@param | additive | boolean | True to add this zone's gravity; false for priority override behavior.",
+                "params_doc": "- `additive` â€” `boolean`: True to add this zone's gravity; false for priority override behavior.",
+                "returns_doc": "",
+                "inferred_sig": "(additive)",
+                "typed_params": [
+                  [
+                    "additive",
+                    "boolean",
+                    false,
+                    "True to add this zone's gravity; false for priority override behavior."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1646,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "isGravityAdditive",
+                "lua_name": "LZone:isGravityAdditive",
+                "kind": "method",
+                "owner_type": "LZone",
+                "description": "Returns whether this zone adds gravity to other fields.",
+                "full_doc": "Returns whether this zone adds gravity to other fields.\n@return | boolean | True when additive gravity mode is enabled.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "True when additive gravity mode is enabled.",
+                "line": 1656,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "setGravityFalloff",
+                "lua_name": "LZone:setGravityFalloff",
+                "kind": "method",
+                "owner_type": "LZone",
+                "description": "Sets point/repulsor gravity falloff. Accepted modes: inverseSquare, inverse, linear, constant.",
+                "full_doc": "Sets point/repulsor gravity falloff. Accepted modes: inverseSquare, inverse, linear, constant.\n@param | mode | string | Falloff mode name.",
+                "params_doc": "- `mode` â€” `string`: Falloff mode name.",
+                "returns_doc": "",
+                "inferred_sig": "(mode)",
+                "typed_params": [
+                  [
+                    "mode",
+                    "string",
+                    false,
+                    "Falloff mode name."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1663,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "getGravityFalloff",
+                "lua_name": "LZone:getGravityFalloff",
+                "kind": "method",
+                "owner_type": "LZone",
+                "description": "Returns the current point/repulsor gravity falloff mode.",
+                "full_doc": "Returns the current point/repulsor gravity falloff mode.\n@return | string | Falloff mode name.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Falloff mode name.",
+                "line": 1674,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "setGravityRadius",
+                "lua_name": "LZone:setGravityRadius",
+                "kind": "method",
+                "owner_type": "LZone",
+                "description": "Sets the inner radius and optional outer radius used by point/repulsor falloff.",
+                "full_doc": "Sets the inner radius and optional outer radius used by point/repulsor falloff.\n@param | innerRadius | number | Minimum distance used for falloff, must be > 0.\n@param | outerRadius | number? | Optional maximum active distance, must be greater than innerRadius.",
+                "params_doc": "- `innerRadius` â€” `number`: Minimum distance used for falloff, must be > 0.\n- `outerRadius` â€” `number?`: Optional maximum active distance, must be greater than innerRadius.",
+                "returns_doc": "",
+                "inferred_sig": "(inner_radius, [outer_radius])",
+                "typed_params": [
+                  [
+                    "innerRadius",
+                    "number",
+                    false,
+                    "Minimum distance used for falloff, must be > 0."
+                  ],
+                  [
+                    "outerRadius",
+                    "number?",
+                    true,
+                    "Optional maximum active distance, must be greater than innerRadius."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1684,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "setGravityLimits",
+                "lua_name": "LZone:setGravityLimits",
+                "kind": "method",
+                "owner_type": "LZone",
+                "description": "Sets optional minimum and maximum acceleration clamps for point/repulsor gravity.",
+                "full_doc": "Sets optional minimum and maximum acceleration clamps for point/repulsor gravity.\n@param | minAccel | number? | Optional minimum acceleration magnitude.\n@param | maxAccel | number? | Optional maximum acceleration magnitude.",
+                "params_doc": "- `minAccel` â€” `number?`: Optional minimum acceleration magnitude.\n- `maxAccel` â€” `number?`: Optional maximum acceleration magnitude.",
+                "returns_doc": "",
+                "inferred_sig": "([min_accel], [max_accel])",
+                "typed_params": [
+                  [
+                    "minAccel",
+                    "number?",
+                    true,
+                    "Optional minimum acceleration magnitude."
+                  ],
+                  [
+                    "maxAccel",
+                    "number?",
+                    true,
+                    "Optional maximum acceleration magnitude."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1699,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100711,7 +99635,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1573,
+                "line": 1713,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100734,7 +99658,53 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1584,
+                "line": 1724,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "setLinearDrag",
+                "lua_name": "LZone:setLinearDrag",
+                "kind": "method",
+                "owner_type": "LZone",
+                "description": "Sets or clears area drag proportional to velocity for bodies inside this zone.",
+                "full_doc": "Sets or clears area drag proportional to velocity for bodies inside this zone.\n@param | value | number? | Drag coefficient, or nil to clear.",
+                "params_doc": "- `value` â€” `number?`: Drag coefficient, or nil to clear.",
+                "returns_doc": "",
+                "inferred_sig": "([value])",
+                "typed_params": [
+                  [
+                    "value",
+                    "number?",
+                    true,
+                    "Drag coefficient, or nil to clear."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1738,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "setQuadraticDrag",
+                "lua_name": "LZone:setQuadraticDrag",
+                "kind": "method",
+                "owner_type": "LZone",
+                "description": "Sets or clears area drag proportional to speed times velocity for bodies inside this zone.",
+                "full_doc": "Sets or clears area drag proportional to speed times velocity for bodies inside this zone.\n@param | value | number? | Drag coefficient, or nil to clear.",
+                "params_doc": "- `value` â€” `number?`: Drag coefficient, or nil to clear.",
+                "returns_doc": "",
+                "inferred_sig": "([value])",
+                "typed_params": [
+                  [
+                    "value",
+                    "number?",
+                    true,
+                    "Drag coefficient, or nil to clear."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1749,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100750,7 +99720,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1597,
+                "line": 1759,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100766,7 +99736,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LZone\".",
-                "line": 1604,
+                "line": 1766,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100789,7 +99759,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 1609,
+                "line": 1771,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -100830,7 +99800,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1627,
+                "line": 1789,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100859,7 +99829,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the cell is solid.",
-                "line": 1636,
+                "line": 1798,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100900,7 +99870,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1645,
+                "line": 1807,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100947,7 +99917,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1662,
+                "line": 1824,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100970,7 +99940,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1675,
+                "line": 1837,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -100986,7 +99956,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1681,
+                "line": 1843,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101002,7 +99972,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if a flush is needed.",
-                "line": 1690,
+                "line": 1852,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101018,7 +99988,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Number of columns collapsed.",
-                "line": 1696,
+                "line": 1858,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101034,7 +100004,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with x and y fields (cell coordinates).",
-                "line": 1704,
+                "line": 1866,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101069,7 +100039,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of body IDs for the spawned debris.",
-                "line": 1721,
+                "line": 1883,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101122,7 +100092,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Raw RGBA pixel bytes.",
-                "line": 1753,
+                "line": 1915,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101138,7 +100108,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Binary terrain data.",
-                "line": 1767,
+                "line": 1929,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101161,7 +100131,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if loading succeeded.",
-                "line": 1774,
+                "line": 1936,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101177,7 +100147,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LTerrain\".",
-                "line": 1783,
+                "line": 1945,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101200,7 +100170,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 1788,
+                "line": 1950,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -101222,7 +100192,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Body ID.",
-                "line": 1815,
+                "line": 1977,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101238,7 +100208,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the body has not been destroyed.",
-                "line": 1819,
+                "line": 1981,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101254,7 +100224,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "X coordinate.",
-                "line": 1826,
+                "line": 1988,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101283,7 +100253,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1837,
+                "line": 1999,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101299,7 +100269,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "X coordinate.",
-                "line": 1844,
+                "line": 2006,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101315,7 +100285,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Y coordinate.",
-                "line": 1851,
+                "line": 2013,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101331,7 +100301,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Velocity X component.",
-                "line": 1859,
+                "line": 2021,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101360,7 +100330,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1870,
+                "line": 2032,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101376,7 +100346,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Angle in radians.",
-                "line": 1877,
+                "line": 2039,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101399,7 +100369,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1883,
+                "line": 2045,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101415,7 +100385,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Angular velocity in radians per second.",
-                "line": 1890,
+                "line": 2052,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101438,7 +100408,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1896,
+                "line": 2058,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101454,7 +100424,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Mass in kilograms.",
-                "line": 1905,
+                "line": 2067,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101477,7 +100447,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1911,
+                "line": 2073,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101493,7 +100463,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Body type: \"static\", \"dynamic\", \"kinematic\", or \"sensor\".",
-                "line": 1918,
+                "line": 2080,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101516,7 +100486,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1924,
+                "line": 2086,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101532,7 +100502,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Width in world units.",
-                "line": 1932,
+                "line": 2094,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101548,7 +100518,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Height in world units.",
-                "line": 1939,
+                "line": 2101,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101564,7 +100534,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Friction value.",
-                "line": 1946,
+                "line": 2108,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101587,7 +100557,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1953,
+                "line": 2115,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101603,7 +100573,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Restitution (0 = no bounce, 1 = perfectly elastic).",
-                "line": 1963,
+                "line": 2125,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101626,7 +100596,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1970,
+                "line": 2132,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101642,7 +100612,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer bitmask.",
-                "line": 1980,
+                "line": 2142,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101665,7 +100635,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1987,
+                "line": 2149,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101681,7 +100651,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Mask bitmask.",
-                "line": 1997,
+                "line": 2159,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101704,7 +100674,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2004,
+                "line": 2166,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101733,7 +100703,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2015,
+                "line": 2177,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101762,7 +100732,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2023,
+                "line": 2185,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101785,7 +100755,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2030,
+                "line": 2192,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101826,7 +100796,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2040,
+                "line": 2202,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101849,7 +100819,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2052,
+                "line": 2214,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101865,7 +100835,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Gravity scale.",
-                "line": 2061,
+                "line": 2223,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101888,7 +100858,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2067,
+                "line": 2229,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101904,7 +100874,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if rotation is fixed.",
-                "line": 2074,
+                "line": 2236,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101927,7 +100897,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2080,
+                "line": 2242,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101943,7 +100913,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Damping value.",
-                "line": 2087,
+                "line": 2249,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101966,7 +100936,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2093,
+                "line": 2255,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -101982,7 +100952,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Angular damping value.",
-                "line": 2102,
+                "line": 2264,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102005,7 +100975,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2108,
+                "line": 2270,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102021,7 +100991,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if CCD is active.",
-                "line": 2117,
+                "line": 2279,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102044,7 +101014,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2123,
+                "line": 2285,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102060,7 +101030,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if sleeping is allowed.",
-                "line": 2130,
+                "line": 2292,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102083,7 +101053,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2136,
+                "line": 2298,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102099,7 +101069,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2144,
+                "line": 2306,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102115,7 +101085,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if sleeping.",
-                "line": 2151,
+                "line": 2313,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102131,7 +101101,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2156,
+                "line": 2318,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102147,7 +101117,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2162,
+                "line": 2324,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102163,7 +101133,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LBody\".",
-                "line": 2169,
+                "line": 2331,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102186,7 +101156,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 2174,
+                "line": 2336,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -102208,7 +101178,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Shape type name.",
-                "line": 2216,
+                "line": 2378,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102224,7 +101194,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Circle radius.",
-                "line": 2229,
+                "line": 2391,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102240,7 +101210,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Minimum X.",
-                "line": 2241,
+                "line": 2403,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102263,7 +101233,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2273,
+                "line": 2435,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102286,7 +101256,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2286,
+                "line": 2448,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102309,7 +101279,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2299,
+                "line": 2461,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102332,7 +101302,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2312,
+                "line": 2474,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102348,7 +101318,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2318,
+                "line": 2480,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102364,7 +101334,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"LPhysicsShape\".",
-                "line": 2322,
+                "line": 2484,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -102387,7 +101357,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object matches.",
-                "line": 2327,
+                "line": 2489,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]

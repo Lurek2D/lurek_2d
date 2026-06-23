@@ -15,7 +15,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `22` functions, `17` types, `173` methods
+- Lua API surface: `22` functions, `17` types, `186` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -357,6 +357,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...) -> integer`: Attaches a new collider shape to an existing body with material properties.
 - `LWorld:addFrictionJoint(bodyA, bodyB, anchorX, anchorY, maxForce, maxTorque) -> integer`: Creates a friction joint that applies resistance to relative motion between two bodies.
 - `LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY) -> integer`: Creates a gear joint that synchronizes rotation between two bodies at an anchor.
+- `LWorld:addGravityVector(gx, gy, layerMask?) -> integer`: Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.
 - `LWorld:addMotorJoint(bodyA, bodyB, factor) -> integer`: Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
 - `LWorld:addMouseJoint(bodyId, targetX, targetY, maxForce) -> integer`: Creates a mouse joint that pulls a body toward a world target point with spring-like force.
 - `LWorld:addPrismaticJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY) -> integer`: Creates a prismatic (slider) joint that constrains body B to move along an axis relative to body A.
@@ -371,6 +372,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:clearBodyData(id) -> nil`: Removes and releases the Lua data attached to a body.
 - `LWorld:clearBodyOneWay(id) -> nil`: Removes the one-way platform behavior from a body, making it block from all directions.
 - `LWorld:clearEndContact() -> nil`: Removes the end-contact callback so it is no longer called.
+- `LWorld:clearGravityVectors() -> nil`: Removes all additive gravity vectors from the world.
 - `LWorld:destroyBody(id) -> nil`: Removes a body from the world by its ID, along with all attached fixtures and joints.
 - `LWorld:destroyJoint(jointId) -> nil`: Removes a joint from the world, disconnecting the two bodies it linked.
 - `LWorld:drawDebug(target, r?, g?, b?, a?) -> nil`: Renders a debug visualization of all physics bodies onto a software ImageData target.
@@ -388,6 +390,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getContacts() -> table`: Returns all currently active contact manifolds with normals and touching state.
 - `LWorld:getEndContactEvents() -> table`: Returns contact-end events from the last step (pairs of bodies that stopped touching).
 - `LWorld:getGravity() -> number`: Returns the current world gravity vector.
+- `LWorld:getGravityVector(id) -> table?`: Returns an additive gravity vector by ID, or nil when no active vector exists.
 - `LWorld:getJointBodies(jointId) -> integer`: Returns the two body IDs connected by a joint.
 - `LWorld:getJointBreakForce(jointId) -> number`: Returns the break force threshold for a joint.
 - `LWorld:getJointIds() -> integer[]`: Returns a sequential table of all joint IDs currently in the world.
@@ -412,6 +415,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:raycast(x1, y1, x2, y2, filter?) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 - `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
 - `LWorld:raycastClosest(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
+- `LWorld:removeGravityVector(id) -> boolean`: Removes one additive gravity vector so it no longer affects future steps.
 - `LWorld:resetWorld() -> nil`: Fully resets the world to its post-construction state.
 - `LWorld:setBeginContact(callback) -> nil`: Registers a callback function invoked whenever two bodies begin touching.
 - `LWorld:setBodyCCD(id, enabled) -> nil`: Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
@@ -423,6 +427,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:setFixtureRestitution(bodyId, fixtureIndex, restitution) -> nil`: Updates the restitution (bounciness) of a specific fixture on a body.
 - `LWorld:setFixtureSensor(bodyId, fixtureIndex, sensor) -> nil`: Toggles whether a fixture acts as a sensor (overlap detection only, no physical response).
 - `LWorld:setGravity(gx, gy) -> nil`: Sets the world gravity vector. Affects all dynamic bodies.
+- `LWorld:setGravityVector(id, gx, gy, layerMask?) -> nil`: Replaces the direction, strength, and optional layer mask of an existing additive gravity vector.
 - `LWorld:setJointBreakForce(jointId, force) -> nil`: Sets the maximum force a joint can withstand before it breaks and is automatically destroyed.
 - `LWorld:setJointLimits(jointId, lower, upper) -> nil`: Sets the lower and upper bounds for a joint's limited range of motion.
 - `LWorld:setJointLimitsEnabled(jointId, enabled) -> nil`: Enables or disables angular/linear limits on a joint.
@@ -519,6 +524,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `bodies` (`integer`): Number of active body slots.
 - `bodySlots` (`integer`): Total allocated body slots, including inactive tombstones.
 - `colliders` (`integer`): Number of active Rapier colliders.
+- `gravityVectors` (`integer`): Number of active additive gravity vectors.
 - `jointSlots` (`integer`): Total allocated joint slots, including inactive tombstones.
 - `joints` (`integer`): Number of active joint slots.
 - `sleepingBodies` (`integer`): Number of active bodies currently sleeping.
@@ -604,17 +610,25 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 ##### Methods
 
 - `LZone:destroy() -> nil`: Removes this zone from the world. Bodies will no longer be affected by it.
+- `LZone:getGravityFalloff() -> string`: Returns the current point/repulsor gravity falloff mode.
 - `LZone:getId() -> integer`: Returns the unique ID of this zone. This method is available to Lua scripts.
+- `LZone:isGravityAdditive() -> boolean`: Returns whether this zone adds gravity to other fields.
 - `LZone:setAngularDampingOverride(value?) -> nil`: Overrides the angular damping of bodies inside this zone, or nil to use each body's own value.
 - `LZone:setCircle(cx, cy, radius) -> nil`: Changes this zone's shape to a circle (overrides the initial rectangle).
 - `LZone:setEnabled(enabled) -> nil`: Enables or disables this zone. Disabled zones have no effect on bodies.
+- `LZone:setGravityAdditive(additive) -> nil`: Controls whether this zone adds gravity to other fields instead of overriding world gravity by priority.
 - `LZone:setGravityDirectional(gx, gy) -> nil`: Sets the zone to apply a constant directional gravity to bodies inside.
+- `LZone:setGravityFalloff(mode) -> nil`: Sets point/repulsor gravity falloff. Accepted modes: inverseSquare, inverse, linear, constant.
+- `LZone:setGravityLimits(minAccel?, maxAccel?) -> nil`: Sets optional minimum and maximum acceleration clamps for point/repulsor gravity.
 - `LZone:setGravityPoint(cx, cy, strength) -> nil`: Sets the zone to attract bodies toward a center point with a given strength.
+- `LZone:setGravityRadius(innerRadius, outerRadius?) -> nil`: Sets the inner radius and optional outer radius used by point/repulsor falloff.
 - `LZone:setGravityRepulsor(cx, cy, strength) -> nil`: Sets the zone to push bodies away from a center point with a given strength.
 - `LZone:setGravityZero() -> nil`: Sets the zone to cancel all gravity for bodies inside (zero-G area).
 - `LZone:setLayerMask(mask) -> nil`: Sets a bitmask controlling which body layers this zone affects.
 - `LZone:setLinearDampingOverride(value?) -> nil`: Overrides the linear damping of bodies inside this zone, or nil to use each body's own value.
+- `LZone:setLinearDrag(value?) -> nil`: Sets or clears area drag proportional to velocity for bodies inside this zone.
 - `LZone:setPriority(priority) -> nil`: Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
+- `LZone:setQuadraticDrag(value?) -> nil`: Sets or clears area drag proportional to speed times velocity for bodies inside this zone.
 - `LZone:type() -> string`: Returns the type name of this object ("LZone").
 - `LZone:typeOf(name) -> boolean`: Checks if this object is of a given type name.
 
@@ -633,6 +647,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 |---|---|
 | Evidence test | `tests/lua/evidence/test_physics_evidence.lua` |
 | Golden test | `tests/lua/golden/test_physics_golden.lua` |
+| Current artifact | `tests/artifacts/current/physics/physics_additive_gravity_drag_fields.png` |
 | Current artifact | `tests/artifacts/current/physics/physics_collision_bands.png` |
 | Current artifact | `tests/artifacts/current/physics/physics_constraint_mouse_slider.gif` |
 | Current artifact | `tests/artifacts/current/physics/physics_gravity_drop.png` |

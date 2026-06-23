@@ -16,6 +16,51 @@ pub type ZoneId = usize;
 /// Alias for zone processing priority (higher wins).
 pub type ZonePriority = i32;
 
+/// Falloff curve used by point and repulsor zone gravity.
+/// # Variants
+/// - `InverseSquare`: acceleration is `strength / distance^2`.
+/// - `Inverse`: acceleration is `strength / distance`.
+/// - `Linear`: acceleration fades from `strength` at the inner radius to zero at the outer radius.
+/// - `Constant`: acceleration is always `strength` inside the active radius.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ZoneGravityFalloff {
+    /// Acceleration is `strength / distance^2`.
+    InverseSquare,
+    /// Acceleration is `strength / distance`.
+    Inverse,
+    /// Acceleration fades between inner and outer radius.
+    Linear,
+    /// Acceleration is constant inside the zone.
+    Constant,
+}
+/// `ZoneGravityFalloff` parsing helpers.
+impl ZoneGravityFalloff {
+    /// Parse a Lua-facing falloff mode name.
+    pub fn parse(mode: &str) -> Result<Self, PhysicsError> {
+        match mode {
+            "inverseSquare" | "inverse_square" | "inverse-square" => Ok(Self::InverseSquare),
+            "inverse" => Ok(Self::Inverse),
+            "linear" => Ok(Self::Linear),
+            "constant" => Ok(Self::Constant),
+            _ => Err(PhysicsError::InvalidMode {
+                context: "zone gravity falloff",
+                value: mode.to_string(),
+                expected: "inverseSquare, inverse, linear, or constant",
+            }),
+        }
+    }
+
+    /// Return the canonical Lua-facing mode name.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::InverseSquare => "inverseSquare",
+            Self::Inverse => "inverse",
+            Self::Linear => "linear",
+            Self::Constant => "constant",
+        }
+    }
+}
+
 /// Gravity behaviour applied to bodies inside the zone.
 /// # Variants
 /// - `Directional`: constant gravity vector override.
@@ -135,6 +180,8 @@ pub struct ZoneEvent {
 /// - `priority`: higher-priority zones win during overlap.
 /// - `linear_damping_override`: optional linear damping override.
 /// - `angular_damping_override`: optional angular damping override.
+/// - `linear_drag`: optional area drag proportional to velocity.
+/// - `quadratic_drag`: optional area drag proportional to speed times velocity.
 /// - `layer_mask`: body layer filter mask.
 /// - `enabled`: whether the zone participates in updates.
 pub struct PhysicsZone {
@@ -150,6 +197,22 @@ pub struct PhysicsZone {
     pub linear_damping_override: Option<f32>,
     /// Optional angular damping override applied while inside.
     pub angular_damping_override: Option<f32>,
+    /// When true, zone gravity is added to other gravity instead of replacing it.
+    pub gravity_additive: bool,
+    /// Falloff used by point and repulsor gravity modes.
+    pub gravity_falloff: ZoneGravityFalloff,
+    /// Optional minimum point/repulsor acceleration magnitude.
+    pub gravity_min_accel: Option<f32>,
+    /// Optional maximum point/repulsor acceleration magnitude.
+    pub gravity_max_accel: Option<f32>,
+    /// Minimum distance used for point/repulsor falloff to avoid singularities.
+    pub gravity_inner_radius: f32,
+    /// Optional maximum active distance for point/repulsor gravity.
+    pub gravity_outer_radius: Option<f32>,
+    /// Optional drag acceleration coefficient proportional to velocity.
+    pub linear_drag: Option<f32>,
+    /// Optional drag acceleration coefficient proportional to speed times velocity.
+    pub quadratic_drag: Option<f32>,
     /// Bitmask: only bodies whose `layer & layer_mask != 0` are affected.
     pub layer_mask: u32,
     /// When false the zone is skipped entirely.
@@ -187,12 +250,61 @@ impl PhysicsZone {
         Ok(())
     }
 
+    fn validate_non_negative(field: &'static str, value: Option<f32>) -> Result<(), PhysicsError> {
+        if let Some(value) = value {
+            validate_finite(field, f64::from(value))?;
+            if value < 0.0 {
+                return Err(PhysicsError::ValueOutOfRange {
+                    field,
+                    min: 0.0,
+                    max: f64::INFINITY,
+                    value: f64::from(value),
+                });
+            }
+        }
+        Ok(())
+    }
+
+    fn validate_gravity_tuning(&self) -> Result<(), PhysicsError> {
+        validate_positive(
+            "zone.gravity_inner_radius",
+            f64::from(self.gravity_inner_radius),
+        )?;
+        Self::validate_non_negative("zone.gravity_min_accel", self.gravity_min_accel)?;
+        Self::validate_non_negative("zone.gravity_max_accel", self.gravity_max_accel)?;
+        if let (Some(min), Some(max)) = (self.gravity_min_accel, self.gravity_max_accel) {
+            if max < min {
+                return Err(PhysicsError::ValueOutOfRange {
+                    field: "zone.gravity_max_accel",
+                    min: f64::from(min),
+                    max: f64::INFINITY,
+                    value: f64::from(max),
+                });
+            }
+        }
+        if let Some(outer) = self.gravity_outer_radius {
+            validate_positive("zone.gravity_outer_radius", f64::from(outer))?;
+            if outer <= self.gravity_inner_radius {
+                return Err(PhysicsError::ValueOutOfRange {
+                    field: "zone.gravity_outer_radius",
+                    min: f64::from(self.gravity_inner_radius),
+                    max: f64::INFINITY,
+                    value: f64::from(outer),
+                });
+            }
+        }
+        Self::validate_non_negative("zone.linear_drag", self.linear_drag)?;
+        Self::validate_non_negative("zone.quadratic_drag", self.quadratic_drag)?;
+        Ok(())
+    }
+
     /// Validate the zone boundary, gravity mode, and optional overrides.
     pub fn validate(&self) -> Result<(), PhysicsError> {
         self.boundary.validate()?;
         Self::validate_gravity_mode(&self.gravity_mode)?;
         Self::validate_damping("zone.linear_damping", self.linear_damping_override)?;
         Self::validate_damping("zone.angular_damping", self.angular_damping_override)?;
+        self.validate_gravity_tuning()?;
         Ok(())
     }
 
@@ -216,6 +328,14 @@ impl PhysicsZone {
             priority: 0,
             linear_damping_override: None,
             angular_damping_override: None,
+            gravity_additive: false,
+            gravity_falloff: ZoneGravityFalloff::InverseSquare,
+            gravity_min_accel: None,
+            gravity_max_accel: None,
+            gravity_inner_radius: 1.0,
+            gravity_outer_radius: None,
+            linear_drag: None,
+            quadratic_drag: None,
             layer_mask: 0xFFFF_FFFF,
             enabled: true,
         };
@@ -245,6 +365,14 @@ impl PhysicsZone {
             priority: 0,
             linear_damping_override: None,
             angular_damping_override: None,
+            gravity_additive: false,
+            gravity_falloff: ZoneGravityFalloff::InverseSquare,
+            gravity_min_accel: None,
+            gravity_max_accel: None,
+            gravity_inner_radius: 1.0,
+            gravity_outer_radius: None,
+            linear_drag: None,
+            quadratic_drag: None,
             layer_mask: 0xFFFF_FFFF,
             enabled: true,
         })
@@ -317,6 +445,68 @@ impl PhysicsZone {
         self.gravity_mode = ZoneGravityMode::Zero;
     }
 
+    /// Set whether this zone adds gravity to other fields instead of overriding world gravity.
+    pub fn set_gravity_additive(&mut self, additive: bool) {
+        self.gravity_additive = additive;
+    }
+
+    /// Set point/repulsor falloff mode using a Lua-facing mode name.
+    pub fn try_set_gravity_falloff(&mut self, mode: &str) -> Result<(), PhysicsError> {
+        self.gravity_falloff = ZoneGravityFalloff::parse(mode)?;
+        Ok(())
+    }
+
+    /// Set point/repulsor falloff mode using a Lua-facing mode name.
+    pub fn set_gravity_falloff(&mut self, mode: &str) {
+        let _ = self.try_set_gravity_falloff(mode);
+    }
+
+    /// Set inner and optional outer radius used by point/repulsor falloff.
+    pub fn try_set_gravity_radius(
+        &mut self,
+        inner_radius: f32,
+        outer_radius: Option<f32>,
+    ) -> Result<(), PhysicsError> {
+        validate_positive("zone.gravity_inner_radius", f64::from(inner_radius))?;
+        if let Some(outer) = outer_radius {
+            validate_positive("zone.gravity_outer_radius", f64::from(outer))?;
+            if outer <= inner_radius {
+                return Err(PhysicsError::ValueOutOfRange {
+                    field: "zone.gravity_outer_radius",
+                    min: f64::from(inner_radius),
+                    max: f64::INFINITY,
+                    value: f64::from(outer),
+                });
+            }
+        }
+        self.gravity_inner_radius = inner_radius;
+        self.gravity_outer_radius = outer_radius;
+        Ok(())
+    }
+
+    /// Set optional acceleration clamps for point/repulsor gravity.
+    pub fn try_set_gravity_limits(
+        &mut self,
+        min_accel: Option<f32>,
+        max_accel: Option<f32>,
+    ) -> Result<(), PhysicsError> {
+        Self::validate_non_negative("zone.gravity_min_accel", min_accel)?;
+        Self::validate_non_negative("zone.gravity_max_accel", max_accel)?;
+        if let (Some(min), Some(max)) = (min_accel, max_accel) {
+            if max < min {
+                return Err(PhysicsError::ValueOutOfRange {
+                    field: "zone.gravity_max_accel",
+                    min: f64::from(min),
+                    max: f64::INFINITY,
+                    value: f64::from(max),
+                });
+            }
+        }
+        self.gravity_min_accel = min_accel;
+        self.gravity_max_accel = max_accel;
+        Ok(())
+    }
+
     /// Set or clear the linear damping override using strict validation.
     pub fn try_set_linear_damping_override(
         &mut self,
@@ -334,6 +524,20 @@ impl PhysicsZone {
     ) -> Result<(), PhysicsError> {
         Self::validate_damping("zone.angular_damping", value)?;
         self.angular_damping_override = value;
+        Ok(())
+    }
+
+    /// Set or clear area drag proportional to velocity using strict validation.
+    pub fn try_set_linear_drag(&mut self, value: Option<f32>) -> Result<(), PhysicsError> {
+        Self::validate_non_negative("zone.linear_drag", value)?;
+        self.linear_drag = value;
+        Ok(())
+    }
+
+    /// Set or clear area drag proportional to speed times velocity using strict validation.
+    pub fn try_set_quadratic_drag(&mut self, value: Option<f32>) -> Result<(), PhysicsError> {
+        Self::validate_non_negative("zone.quadratic_drag", value)?;
+        self.quadratic_drag = value;
         Ok(())
     }
 

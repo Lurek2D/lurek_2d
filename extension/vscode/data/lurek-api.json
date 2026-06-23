@@ -7606,7 +7606,7 @@
         {
           "name": "spectrogramToPng",
           "fullPath": "lurek.dsp.spectrogramToPng",
-          "signature": "lurek.dsp.spectrogramToPng(input, output, width, height)",
+          "signature": "lurek.dsp.spectrogramToPng(input, output, width, height, [options])",
           "description": "Renders a spectrogram visualization of an audio file and saves it as a PNG image.",
           "parameters": [
             {
@@ -7632,6 +7632,12 @@
               "type": "integer",
               "description": "Image height in pixels.",
               "optional": false
+            },
+            {
+              "name": "options",
+              "type": "table",
+              "description": "Optional FFT settings: `windowSize`/`inputWindowSize` samples, `fftSize`/`fftPoints`, `hopSize`, `dynamicRangeDb`, `logFrequency`, or `frequencyScale`.",
+              "optional": true
             }
           ],
           "returns": "boolean",
@@ -10556,112 +10562,6 @@
           ],
           "returns": "table",
           "returnType": "table",
-          "isMethod": false,
-          "objectType": null
-        }
-      ],
-      "methods": []
-    },
-    {
-      "name": "html",
-      "description": "Registers the `lurek.html` Lua API for DOM-like elements, event emission, listeners, and HTML userdata.",
-      "functions": [
-        {
-          "name": "preventDefault",
-          "fullPath": "lurek.html.preventDefault",
-          "signature": "()",
-          "description": "Marks the event as having its default action prevented.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "stopPropagation",
-          "fullPath": "lurek.html.stopPropagation",
-          "signature": "()",
-          "description": "Stops event propagation to remaining listeners.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "isDefaultPrevented",
-          "fullPath": "lurek.html.isDefaultPrevented",
-          "signature": "()",
-          "description": "Returns whether the default action was prevented.",
-          "parameters": [],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newDocument",
-          "fullPath": "lurek.html.newDocument",
-          "signature": "([source], [opts])",
-          "description": "Creates an HTML document from optional source and layout/style options.",
-          "parameters": [
-            {
-              "name": "source",
-              "type": "string",
-              "description": "HTML source, defaulting to an empty document.",
-              "optional": true
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Table with `css`, `cssPath`, `width`, and `height` fields.",
-              "optional": true
-            }
-          ],
-          "returns": "LHtmlDocument",
-          "returnType": "LHtmlDocument",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "loadDocument",
-          "fullPath": "lurek.html.loadDocument",
-          "signature": "(path, [opts])",
-          "description": "Loads an HTML document from GameFS and optionally loads CSS from options or companion file.",
-          "parameters": [
-            {
-              "name": "path",
-              "type": "string",
-              "description": "GameFS path to the HTML file.",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Table with `css`, `cssPath`, `width`, and `height` fields.",
-              "optional": true
-            }
-          ],
-          "returns": "LHtmlDocument",
-          "returnType": "LHtmlDocument",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "supports",
-          "fullPath": "lurek.html.supports",
-          "signature": "(feature)",
-          "description": "Returns whether the HTML engine supports a named feature.",
-          "parameters": [
-            {
-              "name": "feature",
-              "type": "string",
-              "description": "Feature name to query.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
           "isMethod": false,
           "objectType": null
         }
@@ -75927,955 +75827,6 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LHistogramChart"
-        }
-      ]
-    },
-    {
-      "name": "LHtmlDocument",
-      "description": "Lua-side HTML document handle with DOM state, callbacks, and render command access.",
-      "methods": [
-        {
-          "name": "setHtml",
-          "fullPath": "LHtmlDocument:setHtml",
-          "signature": "(html)",
-          "description": "Replaces the document markup and invalidates existing element handles.",
-          "parameters": [
-            {
-              "name": "html",
-              "type": "string",
-              "description": "New HTML markup.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "getHtml",
-          "fullPath": "LHtmlDocument:getHtml",
-          "signature": "()",
-          "description": "Returns the current document markup string.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "setCss",
-          "fullPath": "LHtmlDocument:setCss",
-          "signature": "(css)",
-          "description": "Replaces the document stylesheet text.",
-          "parameters": [
-            {
-              "name": "css",
-              "type": "string",
-              "description": "CSS source text.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "addCss",
-          "fullPath": "LHtmlDocument:addCss",
-          "signature": "(css)",
-          "description": "Appends CSS source text to the document stylesheet.",
-          "parameters": [
-            {
-              "name": "css",
-              "type": "string",
-              "description": "CSS source text to append.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "clearCss",
-          "fullPath": "LHtmlDocument:clearCss",
-          "signature": "()",
-          "description": "Clears all CSS source text from the document.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "setViewport",
-          "fullPath": "LHtmlDocument:setViewport",
-          "signature": "(w, h)",
-          "description": "Sets the document layout viewport size.",
-          "parameters": [
-            {
-              "name": "w",
-              "type": "number",
-              "description": "Viewport width in pixels.",
-              "optional": false
-            },
-            {
-              "name": "h",
-              "type": "number",
-              "description": "Viewport height in pixels.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "getViewport",
-          "fullPath": "LHtmlDocument:getViewport",
-          "signature": "()",
-          "description": "Returns the document layout viewport size.",
-          "parameters": [],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "update",
-          "fullPath": "LHtmlDocument:update",
-          "signature": "(dt)",
-          "description": "Advances document timers and animated state.",
-          "parameters": [
-            {
-              "name": "dt",
-              "type": "number",
-              "description": "Delta time in seconds.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "draw",
-          "fullPath": "LHtmlDocument:draw",
-          "signature": "([x], [y])",
-          "description": "Queues render commands for this document at an optional offset.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "X offset, defaulting to 0.",
-              "optional": true
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "Y offset, defaulting to 0.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "render",
-          "fullPath": "LHtmlDocument:render",
-          "signature": "([x], [y])",
-          "description": "Queues render commands for this document at an optional offset.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "X offset, defaulting to 0.",
-              "optional": true
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "Y offset, defaulting to 0.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "relayout",
-          "fullPath": "LHtmlDocument:relayout",
-          "signature": "()",
-          "description": "Rebuilds document layout immediately.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "isDirty",
-          "fullPath": "LHtmlDocument:isDirty",
-          "signature": "()",
-          "description": "Returns whether the document layout is dirty.",
-          "parameters": [],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "getRoot",
-          "fullPath": "LHtmlDocument:getRoot",
-          "signature": "()",
-          "description": "Returns the root DOM element handle.",
-          "parameters": [],
-          "returns": "LHtmlElement",
-          "returnType": "LHtmlElement",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "getElementById",
-          "fullPath": "LHtmlDocument:getElementById",
-          "signature": "(id)",
-          "description": "Looks up the first element with a matching id attribute.",
-          "parameters": [
-            {
-              "name": "id",
-              "type": "string",
-              "description": "Element id attribute.",
-              "optional": false
-            }
-          ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "query",
-          "fullPath": "LHtmlDocument:query",
-          "signature": "(selector)",
-          "description": "Looks up the first element matching a selector.",
-          "parameters": [
-            {
-              "name": "selector",
-              "type": "string",
-              "description": "Selector supported by the HTML engine.",
-              "optional": false
-            }
-          ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "queryAll",
-          "fullPath": "LHtmlDocument:queryAll",
-          "signature": "(selector)",
-          "description": "Returns all elements matching a selector.",
-          "parameters": [
-            {
-              "name": "selector",
-              "type": "string",
-              "description": "Selector supported by the HTML engine.",
-              "optional": false
-            }
-          ],
-          "returns": "LHtmlElement[]",
-          "returnType": "LHtmlElement[]",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "on",
-          "fullPath": "LHtmlDocument:on",
-          "signature": "(event, func)",
-          "description": "Registers a document-level event listener.",
-          "parameters": [
-            {
-              "name": "event",
-              "type": "string",
-              "description": "Event name to listen for.",
-              "optional": false
-            },
-            {
-              "name": "func",
-              "type": "function",
-              "description": "Lua callback receiving an event table.",
-              "optional": false
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "off",
-          "fullPath": "LHtmlDocument:off",
-          "signature": "(handle)",
-          "description": "Removes a document-level event listener by handle.",
-          "parameters": [
-            {
-              "name": "handle",
-              "type": "integer",
-              "description": "Listener handle returned by `on`.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "mousepressed",
-          "fullPath": "LHtmlDocument:mousepressed",
-          "signature": "(x, y, [button])",
-          "description": "Forwards a mouse press to the document and dispatches a click event when an element is hit.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "Mouse x coordinate.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "Mouse y coordinate.",
-              "optional": false
-            },
-            {
-              "name": "button",
-              "type": "integer",
-              "description": "Mouse button, defaulting to 1.",
-              "optional": true
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "mousereleased",
-          "fullPath": "LHtmlDocument:mousereleased",
-          "signature": "(x, y, [button])",
-          "description": "Forwards a mouse release to the document.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "Mouse x coordinate.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "Mouse y coordinate.",
-              "optional": false
-            },
-            {
-              "name": "button",
-              "type": "integer",
-              "description": "Mouse button, defaulting to 1.",
-              "optional": true
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "mousemoved",
-          "fullPath": "LHtmlDocument:mousemoved",
-          "signature": "(x, y)",
-          "description": "Forwards mouse movement to the document.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "Mouse x coordinate.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "Mouse y coordinate.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "wheelmoved",
-          "fullPath": "LHtmlDocument:wheelmoved",
-          "signature": "(dx, dy)",
-          "description": "Forwards mouse wheel movement to the document.",
-          "parameters": [
-            {
-              "name": "dx",
-              "type": "number",
-              "description": "Horizontal wheel delta.",
-              "optional": false
-            },
-            {
-              "name": "dy",
-              "type": "number",
-              "description": "Vertical wheel delta.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "keypressed",
-          "fullPath": "LHtmlDocument:keypressed",
-          "signature": "(key)",
-          "description": "Forwards a key press to the focused document element and dispatches `keydown`.",
-          "parameters": [
-            {
-              "name": "key",
-              "type": "string",
-              "description": "Key name.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "textinput",
-          "fullPath": "LHtmlDocument:textinput",
-          "signature": "(text)",
-          "description": "Forwards text input to the focused document element and dispatches `input`.",
-          "parameters": [
-            {
-              "name": "text",
-              "type": "string",
-              "description": "Input text.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "type",
-          "fullPath": "LHtmlDocument:type",
-          "signature": "()",
-          "description": "Returns the Lua-visible type name for this HTML document handle.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LHtmlDocument:typeOf",
-          "signature": "(name)",
-          "description": "Returns whether this document handle matches a supported type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to compare against `LHtmlDocument` and `Object`.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlDocument"
-        }
-      ]
-    },
-    {
-      "name": "LHtmlElement",
-      "description": "Lua-side DOM element handle with stale-generation detection.",
-      "methods": [
-        {
-          "name": "getDocument",
-          "fullPath": "LHtmlElement:getDocument",
-          "signature": "()",
-          "description": "Returns the document handle that owns this element.",
-          "parameters": [],
-          "returns": "LHtmlDocument",
-          "returnType": "LHtmlDocument",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "getTagName",
-          "fullPath": "LHtmlElement:getTagName",
-          "signature": "()",
-          "description": "Returns this element's HTML tag name.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "getId",
-          "fullPath": "LHtmlElement:getId",
-          "signature": "()",
-          "description": "Returns this element's id attribute.",
-          "parameters": [],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "setId",
-          "fullPath": "LHtmlElement:setId",
-          "signature": "([id])",
-          "description": "Sets or clears this element's id attribute.",
-          "parameters": [
-            {
-              "name": "id",
-              "type": "string",
-              "description": "Id attribute value, or nil to clear.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "getText",
-          "fullPath": "LHtmlElement:getText",
-          "signature": "()",
-          "description": "Returns this element's text content.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "setText",
-          "fullPath": "LHtmlElement:setText",
-          "signature": "(text)",
-          "description": "Replaces this element's text content.",
-          "parameters": [
-            {
-              "name": "text",
-              "type": "string",
-              "description": "New text content.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "getHtml",
-          "fullPath": "LHtmlElement:getHtml",
-          "signature": "()",
-          "description": "Returns this element's inner HTML.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "setHtml",
-          "fullPath": "LHtmlElement:setHtml",
-          "signature": "(html)",
-          "description": "Replaces this element's inner HTML and may invalidate descendant element handles.",
-          "parameters": [
-            {
-              "name": "html",
-              "type": "string",
-              "description": "New inner HTML source.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "appendHtml",
-          "fullPath": "LHtmlElement:appendHtml",
-          "signature": "(html)",
-          "description": "Appends HTML source to this element's inner HTML.",
-          "parameters": [
-            {
-              "name": "html",
-              "type": "string",
-              "description": "HTML source to append.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "remove",
-          "fullPath": "LHtmlElement:remove",
-          "signature": "()",
-          "description": "Removes this element from the document.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "getAttribute",
-          "fullPath": "LHtmlElement:getAttribute",
-          "signature": "(name)",
-          "description": "Returns an attribute value from this element.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Attribute name.",
-              "optional": false
-            }
-          ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "setAttribute",
-          "fullPath": "LHtmlElement:setAttribute",
-          "signature": "(name, [value])",
-          "description": "Sets or clears an attribute on this element.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Attribute name.",
-              "optional": false
-            },
-            {
-              "name": "value",
-              "type": "string",
-              "description": "Attribute value, or nil to remove the attribute.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "removeAttribute",
-          "fullPath": "LHtmlElement:removeAttribute",
-          "signature": "(name)",
-          "description": "Removes an attribute from this element.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Attribute name to remove.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "hasClass",
-          "fullPath": "LHtmlElement:hasClass",
-          "signature": "(name)",
-          "description": "Returns whether this element has a CSS class.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Class name to check.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "addClass",
-          "fullPath": "LHtmlElement:addClass",
-          "signature": "(name)",
-          "description": "Adds a CSS class to this element's class list.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Class name to add.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "removeClass",
-          "fullPath": "LHtmlElement:removeClass",
-          "signature": "(name)",
-          "description": "Removes a CSS class from this element.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Class name to remove.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "toggleClass",
-          "fullPath": "LHtmlElement:toggleClass",
-          "signature": "(name, [force])",
-          "description": "Toggles a CSS class on this element, optionally forcing the final state.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Class name to toggle.",
-              "optional": false
-            },
-            {
-              "name": "force",
-              "type": "boolean",
-              "description": "Forced state.",
-              "optional": true
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "getStyle",
-          "fullPath": "LHtmlElement:getStyle",
-          "signature": "(name)",
-          "description": "Returns an inline or computed style value for this element.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "CSS property name.",
-              "optional": false
-            }
-          ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "setStyle",
-          "fullPath": "LHtmlElement:setStyle",
-          "signature": "(name, [value])",
-          "description": "Sets or clears a style property on this element.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "CSS property name.",
-              "optional": false
-            },
-            {
-              "name": "value",
-              "type": "string",
-              "description": "CSS value, or nil to clear the property.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "getRect",
-          "fullPath": "LHtmlElement:getRect",
-          "signature": "()",
-          "description": "Returns this element's layout rectangle after relayout if needed.",
-          "parameters": [],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "focus",
-          "fullPath": "LHtmlElement:focus",
-          "signature": "()",
-          "description": "Gives keyboard focus to this element.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "blur",
-          "fullPath": "LHtmlElement:blur",
-          "signature": "()",
-          "description": "Removes keyboard focus from this element when it is focused.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "query",
-          "fullPath": "LHtmlElement:query",
-          "signature": "(selector)",
-          "description": "Looks up the first descendant element matching a selector.",
-          "parameters": [
-            {
-              "name": "selector",
-              "type": "string",
-              "description": "Selector supported by the HTML engine.",
-              "optional": false
-            }
-          ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "queryAll",
-          "fullPath": "LHtmlElement:queryAll",
-          "signature": "(selector)",
-          "description": "Returns all descendant elements matching a selector.",
-          "parameters": [
-            {
-              "name": "selector",
-              "type": "string",
-              "description": "Selector supported by the HTML engine.",
-              "optional": false
-            }
-          ],
-          "returns": "LHtmlElement[]",
-          "returnType": "LHtmlElement[]",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "on",
-          "fullPath": "LHtmlElement:on",
-          "signature": "(event, func)",
-          "description": "Registers an element-level event listener.",
-          "parameters": [
-            {
-              "name": "event",
-              "type": "string",
-              "description": "Event name to listen for.",
-              "optional": false
-            },
-            {
-              "name": "func",
-              "type": "function",
-              "description": "Lua callback receiving an event table.",
-              "optional": false
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "off",
-          "fullPath": "LHtmlElement:off",
-          "signature": "(handle)",
-          "description": "Removes an element-level event listener by handle.",
-          "parameters": [
-            {
-              "name": "handle",
-              "type": "integer",
-              "description": "Listener handle returned by `on`.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "type",
-          "fullPath": "LHtmlElement:type",
-          "signature": "()",
-          "description": "Returns the Lua-visible type name for this HTML element handle.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LHtmlElement:typeOf",
-          "signature": "(name)",
-          "description": "Returns whether this element handle matches a supported type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to compare against `LHtmlElement` and `Object`.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHtmlElement"
         }
       ]
     },
@@ -163516,6 +162467,119 @@
           "objectType": "LWorld"
         },
         {
+          "name": "addGravityVector",
+          "fullPath": "LWorld:addGravityVector",
+          "signature": "(gx, gy, [layer_mask])",
+          "description": "Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.",
+          "parameters": [
+            {
+              "name": "gx",
+              "type": "number",
+              "description": "Horizontal acceleration in world units per second squared.",
+              "optional": false
+            },
+            {
+              "name": "gy",
+              "type": "number",
+              "description": "Vertical acceleration in world units per second squared.",
+              "optional": false
+            },
+            {
+              "name": "layerMask",
+              "type": "integer",
+              "description": "Optional body layer mask, defaults to all layers.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "setGravityVector",
+          "fullPath": "LWorld:setGravityVector",
+          "signature": "(id, gx, gy, [layer_mask])",
+          "description": "Replaces the direction, strength, and optional layer mask of an existing additive gravity vector.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Gravity vector ID returned by addGravityVector.",
+              "optional": false
+            },
+            {
+              "name": "gx",
+              "type": "number",
+              "description": "Horizontal acceleration in world units per second squared.",
+              "optional": false
+            },
+            {
+              "name": "gy",
+              "type": "number",
+              "description": "Vertical acceleration in world units per second squared.",
+              "optional": false
+            },
+            {
+              "name": "layerMask",
+              "type": "integer",
+              "description": "Optional body layer mask, defaults to all layers.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "removeGravityVector",
+          "fullPath": "LWorld:removeGravityVector",
+          "signature": "(id)",
+          "description": "Removes one additive gravity vector so it no longer affects future steps.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Gravity vector ID returned by addGravityVector.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "clearGravityVectors",
+          "fullPath": "LWorld:clearGravityVectors",
+          "signature": "()",
+          "description": "Removes all additive gravity vectors from the world.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "getGravityVector",
+          "fullPath": "LWorld:getGravityVector",
+          "signature": "(id)",
+          "description": "Returns an additive gravity vector by ID, or nil when no active vector exists.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Gravity vector ID returned by addGravityVector.",
+              "optional": false
+            }
+          ],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
           "name": "setMeter",
           "fullPath": "LWorld:setMeter",
           "signature": "(ppm)",
@@ -165788,6 +164852,112 @@
           "objectType": "LZone"
         },
         {
+          "name": "setGravityAdditive",
+          "fullPath": "LZone:setGravityAdditive",
+          "signature": "(additive)",
+          "description": "Controls whether this zone adds gravity to other fields instead of overriding world gravity by priority.",
+          "parameters": [
+            {
+              "name": "additive",
+              "type": "boolean",
+              "description": "True to add this zone's gravity; false for priority override behavior.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LZone"
+        },
+        {
+          "name": "isGravityAdditive",
+          "fullPath": "LZone:isGravityAdditive",
+          "signature": "()",
+          "description": "Returns whether this zone adds gravity to other fields.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LZone"
+        },
+        {
+          "name": "setGravityFalloff",
+          "fullPath": "LZone:setGravityFalloff",
+          "signature": "(mode)",
+          "description": "Sets point/repulsor gravity falloff. Accepted modes: inverseSquare, inverse, linear, constant.",
+          "parameters": [
+            {
+              "name": "mode",
+              "type": "string",
+              "description": "Falloff mode name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LZone"
+        },
+        {
+          "name": "getGravityFalloff",
+          "fullPath": "LZone:getGravityFalloff",
+          "signature": "()",
+          "description": "Returns the current point/repulsor gravity falloff mode.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LZone"
+        },
+        {
+          "name": "setGravityRadius",
+          "fullPath": "LZone:setGravityRadius",
+          "signature": "(inner_radius, [outer_radius])",
+          "description": "Sets the inner radius and optional outer radius used by point/repulsor falloff.",
+          "parameters": [
+            {
+              "name": "innerRadius",
+              "type": "number",
+              "description": "Minimum distance used for falloff, must be > 0.",
+              "optional": false
+            },
+            {
+              "name": "outerRadius",
+              "type": "number",
+              "description": "Optional maximum active distance, must be greater than innerRadius.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LZone"
+        },
+        {
+          "name": "setGravityLimits",
+          "fullPath": "LZone:setGravityLimits",
+          "signature": "([min_accel], [max_accel])",
+          "description": "Sets optional minimum and maximum acceleration clamps for point/repulsor gravity.",
+          "parameters": [
+            {
+              "name": "minAccel",
+              "type": "number",
+              "description": "Optional minimum acceleration magnitude.",
+              "optional": true
+            },
+            {
+              "name": "maxAccel",
+              "type": "number",
+              "description": "Optional maximum acceleration magnitude.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LZone"
+        },
+        {
           "name": "setLinearDampingOverride",
           "fullPath": "LZone:setLinearDampingOverride",
           "signature": "([value])",
@@ -165815,6 +164985,42 @@
               "name": "value",
               "type": "number",
               "description": "Damping override, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LZone"
+        },
+        {
+          "name": "setLinearDrag",
+          "fullPath": "LZone:setLinearDrag",
+          "signature": "([value])",
+          "description": "Sets or clears area drag proportional to velocity for bodies inside this zone.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "number",
+              "description": "Drag coefficient, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LZone"
+        },
+        {
+          "name": "setQuadraticDrag",
+          "fullPath": "LZone:setQuadraticDrag",
+          "signature": "([value])",
+          "description": "Sets or clears area drag proportional to speed times velocity for bodies inside this zone.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "number",
+              "description": "Drag coefficient, or nil to clear.",
               "optional": true
             }
           ],

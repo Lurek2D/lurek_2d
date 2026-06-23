@@ -364,10 +364,6 @@ name = "flownet_tests"
 path = "tests/rust/unit/flownet_tests.rs"
 
 [[test]]
-name = "html_tests"
-path = "tests/rust/unit/html_tests.rs"
-
-[[test]]
 name = "i18n_tests"
 path = "tests/rust/unit/i18n_tests.rs"
 

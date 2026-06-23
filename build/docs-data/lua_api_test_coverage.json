@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-23T13:52:50.556950+00:00",
+    "generated": "2026-06-23T14:48:18.532245+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6205,
-    "marker_covered": 6165,
+    "total_api_functions": 6158,
+    "marker_covered": 6118,
     "describe_covered": 152,
-    "describe_coverage_pct": 2.4,
+    "describe_coverage_pct": 2.5,
     "heuristic_covered": 0,
-    "total_covered": 6205,
+    "total_covered": 6158,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -20866,563 +20866,6 @@
         }
       ]
     },
-    "html": {
-      "total": 60,
-      "marker_covered": 60,
-      "describe_covered": 0,
-      "heuristic_covered": 0,
-      "covered": 60,
-      "coverage_pct": 100.0,
-      "describe_coverage_pct": 0.0,
-      "describe_score": 0.0,
-      "uncovered": [],
-      "test_files": [
-        "tests/lua/unit/test_html_unit.lua"
-      ],
-      "describe_files": [],
-      "functions": [
-        {
-          "lua_name": "lurek.html.preventDefault",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.html.stopPropagation",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.html.isDefaultPrevented",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.html.newDocument",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.html.loadDocument",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.html.supports",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:setHtml",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:getHtml",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:setCss",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:addCss",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:clearCss",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:setViewport",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:getViewport",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:update",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:draw",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:render",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:relayout",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:isDirty",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:getRoot",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:getElementById",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:query",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:queryAll",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:on",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:off",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:mousepressed",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:mousereleased",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:mousemoved",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:wheelmoved",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:keypressed",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:textinput",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:type",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlDocument:typeOf",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:getDocument",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:getTagName",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:getId",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:setId",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:getText",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:setText",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:getHtml",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:setHtml",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:appendHtml",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:remove",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:getAttribute",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:setAttribute",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:removeAttribute",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:hasClass",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:addClass",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:removeClass",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:toggleClass",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:getStyle",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:setStyle",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:getRect",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:focus",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:blur",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:query",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:queryAll",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:on",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:off",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:type",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LHtmlElement:typeOf",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        }
-      ]
-    },
     "i18n": {
       "total": 36,
       "marker_covered": 36,
@@ -38061,11 +37504,11 @@
       ]
     },
     "physics": {
-      "total": 195,
-      "marker_covered": 195,
+      "total": 208,
+      "marker_covered": 208,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 195,
+      "covered": 208,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -38321,6 +37764,51 @@
         },
         {
           "lua_name": "LWorld:setGravity",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:addGravityVector",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:setGravityVector",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:removeGravityVector",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:clearGravityVectors",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:getGravityVector",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39121,6 +38609,60 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LZone:setGravityAdditive",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LZone:isGravityAdditive",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LZone:setGravityFalloff",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LZone:getGravityFalloff",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LZone:setGravityRadius",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LZone:setGravityLimits",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LZone:setLinearDampingOverride",
           "kind": "method",
           "marker_covered": true,
@@ -39131,6 +38673,24 @@
         },
         {
           "lua_name": "LZone:setAngularDampingOverride",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LZone:setLinearDrag",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LZone:setQuadraticDrag",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

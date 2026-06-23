@@ -88,6 +88,107 @@ do
     example_print_log("velocity", body:getVelocity())
 end
 
+--@api: LWorld:addGravityVector
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(120, 120, 10, "dynamic")
+    local vector_id = world:addGravityVector(0, 180)
+    world:step(1 / 60)
+    physics_log("gravity vector id=" .. vector_id .. " velocity_y=" .. select(2, body:getVelocity()))
+end
+
+--@api: LWorld:setGravityVector
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local ship = world:newCircleBody(160, 160, 8, "dynamic")
+    local vector_id = world:addGravityVector(80, 0)
+    world:setGravityVector(vector_id, -80, 0)
+    world:step(1 / 60)
+    physics_log("switched gravity vector=" .. vector_id .. " vx=" .. select(1, ship:getVelocity()))
+end
+
+--@api: LWorld:getGravityVector
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local vector_id = world:addGravityVector(12, -18, 0x4)
+    local vector = world:getGravityVector(vector_id)
+    example_print_log("gravity_vector", vector.id, vector.gx, vector.gy)
+    example_print_log("layer_mask", vector.layerMask)
+end
+
+--@api: LWorld:removeGravityVector
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local vector_id = world:addGravityVector(0, 120)
+    local removed = world:removeGravityVector(vector_id)
+    local vector = world:getGravityVector(vector_id)
+    physics_log("removed=" .. tostring(removed) .. " active=" .. tostring(vector ~= nil))
+end
+
+--@api: LWorld:clearGravityVectors
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    world:addGravityVector(40, 0)
+    world:addGravityVector(0, -40)
+    world:clearGravityVectors()
+    physics_log("active gravity vectors=" .. world:getStats().gravityVectors)
+end
+
 --@api: LWorld:stepFixed
 do
     local function physics_log(message)
@@ -2822,6 +2923,179 @@ do
     end
     example_print_log("velocity", diver:getVelocity())
     example_print_log("position", diver:getPosition())
+end
+
+--@api: LZone:setGravityAdditive
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 60)
+    local zone = world:addZone(0, 0, 200, 200)
+    zone:setGravityDirectional(0, -20)
+    zone:setGravityAdditive(true)
+    local probe = world:newCircleBody(80, 80, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("additive=" .. tostring(zone:isGravityAdditive()) .. " vy=" .. select(2, probe:getVelocity()))
+end
+
+--@api: LZone:isGravityAdditive
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 200, 200)
+    local before = zone:isGravityAdditive()
+    zone:setGravityAdditive(true)
+    local after = zone:isGravityAdditive()
+    physics_log("additive before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+
+--@api: LZone:setGravityFalloff
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 240, 240)
+    zone:setGravityPoint(120, 120, 90)
+    zone:setGravityFalloff("constant")
+    local probe = world:newCircleBody(180, 120, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("falloff=" .. zone:getGravityFalloff() .. " vx=" .. select(1, probe:getVelocity()))
+end
+
+--@api: LZone:getGravityFalloff
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 240, 240)
+    zone:setGravityFalloff("inverse")
+    local mode = zone:getGravityFalloff()
+    example_print_log("falloff", mode)
+end
+
+--@api: LZone:setGravityRadius
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 300, 300)
+    zone:setGravityPoint(150, 150, 200)
+    zone:setGravityRadius(8, 90)
+    local probe = world:newCircleBody(210, 150, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("radius-limited vx=" .. select(1, probe:getVelocity()))
+end
+
+--@api: LZone:setGravityLimits
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local zone = world:addZone(0, 0, 300, 300)
+    zone:setGravityPoint(150, 150, 2000)
+    zone:setGravityLimits(nil, 80)
+    local probe = world:newCircleBody(230, 150, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("limited gravity vx=" .. select(1, probe:getVelocity()))
+end
+
+--@api: LZone:setLinearDrag
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local atmosphere = world:addZone(0, 0, 240, 240)
+    atmosphere:setLinearDrag(2.5)
+    local probe = world:newCircleBody(80, 80, 8, "dynamic")
+    probe:setVelocity(100, 0)
+    world:step(1 / 60)
+    physics_log("linear drag vx=" .. select(1, probe:getVelocity()))
+end
+
+--@api: LZone:setQuadraticDrag
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local nebula = world:addZone(0, 0, 240, 240)
+    nebula:setQuadraticDrag(0.04)
+    local probe = world:newCircleBody(80, 80, 8, "dynamic")
+    probe:setVelocity(120, 0)
+    world:step(1 / 60)
+    physics_log("quadratic drag vx=" .. select(1, probe:getVelocity()))
 end
 
 --@api: LZone:setAngularDampingOverride

@@ -16,16 +16,16 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 
 ## Official API Sources
 
-- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9344 lines)
-- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33646 lines)
+- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9271 lines)
+- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33423 lines)
 - Runtime callbacks: [docs/api/callbacks.md](../blob/main/docs/api/callbacks.md)
 - Lureksome library API: [docs/api/lureksome.md](../blob/main/docs/api/lureksome.md)
 - Machine-readable Lua API data: [build/docs-data/lua_api.json](../blob/main/build/docs-data/lua_api.json)
 
 ## Coverage
 
-- 71 modules
-- 6201 functions and methods
+- 70 modules
+- 6154 functions and methods
 - 100.0% documented
 
 ## Module Map
@@ -62,7 +62,6 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.font](https://lurek2d.github.io/lurek_2d/modules/font.html) | The font module is the typography layer for users who need predictable text behavior in UI, HUDs, overlays, or retro-style screens. |
 | [lurek.globe](https://lurek2d.github.io/lurek_2d/modules/globe.html) | The globe module is the planetary-map surface for users who want a world-scale spherical view to behave as a full gameplay and tooling system instead of a decorative background. |
 | [lurek.grep](https://lurek2d.github.io/lurek_2d/modules/grep.html) | The grep module is the scriptable text-search surface for users who want to scan project files, logs, or structured content from inside the engine environment. |
-| [lurek.html](https://lurek2d.github.io/lurek_2d/modules/html.html) | The html module is the in-engine document-style UI surface for users who want markup, styles, and DOM-like interaction inside the runtime. |
 | [lurek.i18n](https://lurek2d.github.io/lurek_2d/modules/i18n.html) | The i18n module is the localization surface for projects that want translated text, locale-aware formatting, and language switching to behave as one system. |
 | [lurek.image](https://lurek2d.github.io/lurek_2d/modules/image.html) | The image module is the engine's CPU-side image workbench for users who need pixel data to be loaded, transformed, composed, inspected, compared, and exported under one coherent API. |
 | [lurek.input](https://lurek2d.github.io/lurek_2d/modules/input.html) | The input module is the engine's unified control surface for users who need keyboard, mouse, gamepad, and touch state to behave as one coherent runtime system. |

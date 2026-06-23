@@ -3,10 +3,36 @@
 
 local OUT = evidence_output_dir("dsp")
 local FIXTURE_WAVE = "tests/fixtures/sine_mono_44100.wav"
+local SPECTROGRAM_OPTIONS = {
+    inputWindowSize = 512,
+    fftPoints = 2048,
+    dynamicRangeDb = 78,
+    frequencyScale = "log",
+}
 
 local function save_png(img, path)
     lurek.image.savePNG(img, path)
     expect_evidence_created(path)
+end
+
+local function save_wav(sound, path)
+    lurek.audio.saveWAV(sound, path)
+    expect_evidence_created(path)
+end
+
+local function save_waveform_from_wav(wav_path, waveform_path)
+    lurek.dsp.waveformToPng(wav_path, waveform_path, 1024, 256)
+    expect_evidence_created(waveform_path)
+end
+
+local function save_spectrogram_from_wav(wav_path, spectrogram_path)
+    lurek.dsp.spectrogramToPng(wav_path, spectrogram_path, 640, 320, SPECTROGRAM_OPTIONS)
+    expect_evidence_created(spectrogram_path)
+end
+
+local function save_spectrogram_from_sound(sound, wav_path, spectrogram_path)
+    save_wav(sound, wav_path)
+    save_spectrogram_from_wav(wav_path, spectrogram_path)
 end
 
 local function draw_outline(img, x, y, w, h, r, g, b, a)
@@ -86,7 +112,7 @@ describe("Evidence: lurek.dsp waveform, filter, and export flows", function()
 
     -- Does: Applies a low-pass filter to one generated tone and writes separate source/filtered sample previews.
     -- Shows: The PNG pair should reveal the smoothing effect of the low-pass operation without collapsing both evidences into one file.
-    -- Artifact: tests/artifacts/current/dsp/dsp_lowpass_source.png, tests/artifacts/current/dsp/dsp_lowpass_filtered.png
+    -- Artifact: tests/artifacts/current/dsp/dsp_lowpass_source.png, tests/artifacts/current/dsp/dsp_lowpass_filtered.png, tests/artifacts/current/dsp/dsp_lowpass_filtered.wav, tests/artifacts/current/dsp/dsp_lowpass_filtered_spectrogram.png
     -- Why: This is meaningful because both files come from actual DSP output buffers and not from hand-made art.
 
     it("PNG: low-pass before-after comparison", function()
@@ -101,11 +127,16 @@ describe("Evidence: lurek.dsp waveform, filter, and export flows", function()
             OUT .. "dsp_lowpass_filtered.png",
             { 255, 160, 80 }
         )
+        save_spectrogram_from_sound(
+            after,
+            OUT .. "dsp_lowpass_filtered.wav",
+            OUT .. "dsp_lowpass_filtered_spectrogram.png"
+        )
     end)
 
     -- Does: Applies a high-pass filter to one low-frequency tone and writes separate source/filtered previews.
     -- Shows: The filtered PNG should collapse much of the original low-frequency energy without sharing a board with the source.
-    -- Artifact: tests/artifacts/current/dsp/dsp_highpass_source.png, tests/artifacts/current/dsp/dsp_highpass_filtered.png
+    -- Artifact: tests/artifacts/current/dsp/dsp_highpass_source.png, tests/artifacts/current/dsp/dsp_highpass_filtered.png, tests/artifacts/current/dsp/dsp_highpass_filtered.wav, tests/artifacts/current/dsp/dsp_highpass_filtered_spectrogram.png
     -- Why: This is meaningful because the effect is produced by lurek.dsp.applyHighpass on the sampled sound buffer.
 
     it("PNG: high-pass before-after comparison", function()
@@ -120,11 +151,16 @@ describe("Evidence: lurek.dsp waveform, filter, and export flows", function()
             OUT .. "dsp_highpass_filtered.png",
             { 255, 160, 80 }
         )
+        save_spectrogram_from_sound(
+            after,
+            OUT .. "dsp_highpass_filtered.wav",
+            OUT .. "dsp_highpass_filtered_spectrogram.png"
+        )
     end)
 
     -- Does: Applies a band-pass filter to deterministic noise and writes separate source/filtered previews.
     -- Shows: The filtered PNG should show a visibly narrower waveform texture without sharing a composite compare board.
-    -- Artifact: tests/artifacts/current/dsp/dsp_bandpass_source.png, tests/artifacts/current/dsp/dsp_bandpass_filtered.png
+    -- Artifact: tests/artifacts/current/dsp/dsp_bandpass_source.png, tests/artifacts/current/dsp/dsp_bandpass_filtered.png, tests/artifacts/current/dsp/dsp_bandpass_filtered.wav, tests/artifacts/current/dsp/dsp_bandpass_filtered_spectrogram.png
     -- Why: This is meaningful because the output is created by lurek.dsp.applyBandpass on one real noise buffer.
 
     it("PNG: band-pass filtered noise comparison", function()
@@ -139,12 +175,31 @@ describe("Evidence: lurek.dsp waveform, filter, and export flows", function()
             OUT .. "dsp_bandpass_filtered.png",
             { 255, 180, 100 }
         )
+        save_spectrogram_from_sound(
+            after,
+            OUT .. "dsp_bandpass_filtered.wav",
+            OUT .. "dsp_bandpass_filtered_spectrogram.png"
+        )
     end)
 
-    -- Does: Processes a fixture WAV offline with one low-pass step and exports the resulting audio.
-    -- Shows: The output fixture should be ready for listening or later golden comparison as a filtered reference.
-    -- Artifact: tests/artifacts/current/dsp/dsp_offline_lowpass_1khz.wav
-    -- Why: This is meaningful because the file is emitted by lurek.dsp.processOffline from a stable source fixture.
+    -- Does: Applies a gain transform to one generated tone and writes both waveform and spectrogram previews.
+    -- Shows: The waveform should retain the tone shape with larger amplitude, while the spectrogram should keep the same frequency band with brighter energy.
+    -- Artifact: tests/artifacts/current/dsp/dsp_gain_boost.wav, tests/artifacts/current/dsp/dsp_gain_boost_waveform.png, tests/artifacts/current/dsp/dsp_gain_boost_spectrogram.png
+    -- Why: This is meaningful because the preview pair comes from a buffer transformed by lurek.dsp.applyGain.
+
+    it("PNG: gain transform waveform and spectrogram", function()
+        local sound = lurek.dsp.newSineWave(880, 0.08, 22050, 0.35)
+        lurek.dsp.applyGain(sound, 2.0)
+        local wav = OUT .. "dsp_gain_boost.wav"
+        save_wav(sound, wav)
+        save_waveform_from_wav(wav, OUT .. "dsp_gain_boost_waveform.png")
+        save_spectrogram_from_wav(wav, OUT .. "dsp_gain_boost_spectrogram.png")
+    end)
+
+    -- Does: Processes a fixture WAV offline with one low-pass step and exports the resulting audio plus waveform and spectrogram previews.
+    -- Shows: The output fixture should be ready for listening or later golden comparison, and the PNGs should show the filtered time and frequency shape.
+    -- Artifact: tests/artifacts/current/dsp/dsp_offline_lowpass_1khz.wav, tests/artifacts/current/dsp/dsp_offline_lowpass_1khz_waveform.png, tests/artifacts/current/dsp/dsp_offline_lowpass_1khz_spectrogram.png
+    -- Why: This is meaningful because every artifact is emitted from lurek.dsp.processOffline output using stable public visualization helpers.
 
     it("WAV: offline processed low-pass fixture", function()
         local out = OUT .. "dsp_offline_lowpass_1khz.wav"
@@ -152,21 +207,25 @@ describe("Evidence: lurek.dsp waveform, filter, and export flows", function()
             { type = "lowpass", cutoff = 1000.0 },
         })
         expect_evidence_created(out)
+        save_waveform_from_wav(out, OUT .. "dsp_offline_lowpass_1khz_waveform.png")
+        save_spectrogram_from_wav(out, OUT .. "dsp_offline_lowpass_1khz_spectrogram.png")
     end)
 
-    -- Does: Normalizes one fixture WAV to a target peak and exports the result for later inspection.
-    -- Shows: The output should preserve the source shape while lifting or lowering the peak to the requested value.
-    -- Artifact: tests/artifacts/current/dsp/dsp_normalized_peak_09.wav
-    -- Why: This is meaningful because lurek.dsp.normalize writes a concrete transformed audio artifact instead of a manual report.
+    -- Does: Normalizes one fixture WAV to a target peak and exports the result plus waveform and spectrogram previews.
+    -- Shows: The output should preserve the source shape while lifting or lowering the peak to the requested value across the audio and PNG artifacts.
+    -- Artifact: tests/artifacts/current/dsp/dsp_normalized_peak_09.wav, tests/artifacts/current/dsp/dsp_normalized_peak_09_waveform.png, tests/artifacts/current/dsp/dsp_normalized_peak_09_spectrogram.png
+    -- Why: This is meaningful because lurek.dsp.normalize writes the transformed audio and the visualizations inspect that exact output.
 
     it("WAV: normalized fixture", function()
         local out = OUT .. "dsp_normalized_peak_09.wav"
         lurek.dsp.normalize(FIXTURE_WAVE, out, 0.9)
         expect_evidence_created(out)
+        save_waveform_from_wav(out, OUT .. "dsp_normalized_peak_09_waveform.png")
+        save_spectrogram_from_wav(out, OUT .. "dsp_normalized_peak_09_spectrogram.png")
     end)
 
-    -- Does: Exports both waveform and spectrogram PNGs from the same fixture WAV using the public DSP export helpers.
-    -- Shows: The pair should give time-domain and frequency-domain views of the same source audio.
+    -- Does: Exports both waveform and spectrogram PNGs from the same fixture WAV using explicit spectrogram window and FFT sizes.
+    -- Shows: The pair should give time-domain and frequency-domain views of the same source audio, with the spectrogram using a larger FFT than input window for sharper frequency detail.
     -- Artifact: tests/artifacts/current/dsp/dsp_fixture_waveform.png, tests/artifacts/current/dsp/dsp_fixture_spectrogram.png
     -- Why: This is meaningful because the exported images are the direct output of DSP analysis APIs on a real WAV fixture.
 
@@ -174,7 +233,7 @@ describe("Evidence: lurek.dsp waveform, filter, and export flows", function()
         local waveform = OUT .. "dsp_fixture_waveform.png"
         local spectrogram = OUT .. "dsp_fixture_spectrogram.png"
         lurek.dsp.waveformToPng(FIXTURE_WAVE, waveform, 1024, 256)
-        lurek.dsp.spectrogramToPng(FIXTURE_WAVE, spectrogram, 512, 256)
+        lurek.dsp.spectrogramToPng(FIXTURE_WAVE, spectrogram, 640, 320, SPECTROGRAM_OPTIONS)
         expect_evidence_created(waveform)
         expect_evidence_created(spectrogram)
     end)

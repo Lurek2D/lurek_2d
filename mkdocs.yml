@@ -125,7 +125,6 @@ nav:
     - Globe: modules/globe.md
     - Graph: modules/graph.md
     - Grep: modules/grep.md
-    - Html: modules/html.md
     - I18n: modules/i18n.md
     - Image: modules/image.md
     - Input: modules/input.md

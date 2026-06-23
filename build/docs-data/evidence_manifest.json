@@ -340,15 +340,28 @@
   "dsp": {
     "baseline_artifacts": [
       "tests/artifacts/baselines/dsp/dsp_bandpass_filtered.png",
+      "tests/artifacts/baselines/dsp/dsp_bandpass_filtered.wav",
+      "tests/artifacts/baselines/dsp/dsp_bandpass_filtered_spectrogram.png",
       "tests/artifacts/baselines/dsp/dsp_bandpass_source.png",
       "tests/artifacts/baselines/dsp/dsp_fixture_spectrogram.png",
       "tests/artifacts/baselines/dsp/dsp_fixture_waveform.png",
+      "tests/artifacts/baselines/dsp/dsp_gain_boost.wav",
+      "tests/artifacts/baselines/dsp/dsp_gain_boost_spectrogram.png",
+      "tests/artifacts/baselines/dsp/dsp_gain_boost_waveform.png",
       "tests/artifacts/baselines/dsp/dsp_highpass_filtered.png",
+      "tests/artifacts/baselines/dsp/dsp_highpass_filtered.wav",
+      "tests/artifacts/baselines/dsp/dsp_highpass_filtered_spectrogram.png",
       "tests/artifacts/baselines/dsp/dsp_highpass_source.png",
       "tests/artifacts/baselines/dsp/dsp_lowpass_filtered.png",
+      "tests/artifacts/baselines/dsp/dsp_lowpass_filtered.wav",
+      "tests/artifacts/baselines/dsp/dsp_lowpass_filtered_spectrogram.png",
       "tests/artifacts/baselines/dsp/dsp_lowpass_source.png",
       "tests/artifacts/baselines/dsp/dsp_normalized_peak_09.wav",
+      "tests/artifacts/baselines/dsp/dsp_normalized_peak_09_spectrogram.png",
+      "tests/artifacts/baselines/dsp/dsp_normalized_peak_09_waveform.png",
       "tests/artifacts/baselines/dsp/dsp_offline_lowpass_1khz.wav",
+      "tests/artifacts/baselines/dsp/dsp_offline_lowpass_1khz_spectrogram.png",
+      "tests/artifacts/baselines/dsp/dsp_offline_lowpass_1khz_waveform.png",
       "tests/artifacts/baselines/dsp/dsp_waveform_sawtooth.png",
       "tests/artifacts/baselines/dsp/dsp_waveform_sine.png",
       "tests/artifacts/baselines/dsp/dsp_waveform_square.png",
@@ -357,19 +370,33 @@
       "tests/artifacts/baselines/dsp/normalized.wav",
       "tests/artifacts/baselines/dsp/offline_chain.wav",
       "tests/artifacts/baselines/dsp/spectrogram.png",
+      "tests/artifacts/baselines/dsp/spectrogram_window_fft.png",
       "tests/artifacts/baselines/dsp/waveform.png"
     ],
     "current_artifacts": [
       "tests/artifacts/current/dsp/dsp_bandpass_filtered.png",
+      "tests/artifacts/current/dsp/dsp_bandpass_filtered.wav",
+      "tests/artifacts/current/dsp/dsp_bandpass_filtered_spectrogram.png",
       "tests/artifacts/current/dsp/dsp_bandpass_source.png",
       "tests/artifacts/current/dsp/dsp_fixture_spectrogram.png",
       "tests/artifacts/current/dsp/dsp_fixture_waveform.png",
+      "tests/artifacts/current/dsp/dsp_gain_boost.wav",
+      "tests/artifacts/current/dsp/dsp_gain_boost_spectrogram.png",
+      "tests/artifacts/current/dsp/dsp_gain_boost_waveform.png",
       "tests/artifacts/current/dsp/dsp_highpass_filtered.png",
+      "tests/artifacts/current/dsp/dsp_highpass_filtered.wav",
+      "tests/artifacts/current/dsp/dsp_highpass_filtered_spectrogram.png",
       "tests/artifacts/current/dsp/dsp_highpass_source.png",
       "tests/artifacts/current/dsp/dsp_lowpass_filtered.png",
+      "tests/artifacts/current/dsp/dsp_lowpass_filtered.wav",
+      "tests/artifacts/current/dsp/dsp_lowpass_filtered_spectrogram.png",
       "tests/artifacts/current/dsp/dsp_lowpass_source.png",
       "tests/artifacts/current/dsp/dsp_normalized_peak_09.wav",
+      "tests/artifacts/current/dsp/dsp_normalized_peak_09_spectrogram.png",
+      "tests/artifacts/current/dsp/dsp_normalized_peak_09_waveform.png",
       "tests/artifacts/current/dsp/dsp_offline_lowpass_1khz.wav",
+      "tests/artifacts/current/dsp/dsp_offline_lowpass_1khz_spectrogram.png",
+      "tests/artifacts/current/dsp/dsp_offline_lowpass_1khz_waveform.png",
       "tests/artifacts/current/dsp/dsp_waveform_sawtooth.png",
       "tests/artifacts/current/dsp/dsp_waveform_sine.png",
       "tests/artifacts/current/dsp/dsp_waveform_square.png",
@@ -378,6 +405,7 @@
       "tests/artifacts/current/dsp/normalized.wav",
       "tests/artifacts/current/dsp/offline_chain.wav",
       "tests/artifacts/current/dsp/spectrogram.png",
+      "tests/artifacts/current/dsp/spectrogram_window_fft.png",
       "tests/artifacts/current/dsp/waveform.png"
     ],
     "evidence_tests": [
@@ -492,31 +520,6 @@
     ],
     "golden_tests": [
       "tests/lua/golden/test_globe_golden.lua"
-    ]
-  },
-  "html": {
-    "baseline_artifacts": [
-      "tests/artifacts/baselines/html/html_click_event_trace.txt",
-      "tests/artifacts/baselines/html/html_document_markup_snapshot.txt",
-      "tests/artifacts/baselines/html/html_element_state.json",
-      "tests/artifacts/baselines/html/html_mutation_snapshot.txt",
-      "tests/artifacts/baselines/html/html_query_viewport_snapshot.json"
-    ],
-    "current_artifacts": [
-      "tests/artifacts/current/html/html_click_event_trace.txt",
-      "tests/artifacts/current/html/html_document_markup_snapshot.txt",
-      "tests/artifacts/current/html/html_element_state.json",
-      "tests/artifacts/current/html/html_lifecycle_trace.txt",
-      "tests/artifacts/current/html/html_loaded_document_snapshot.txt",
-      "tests/artifacts/current/html/html_mutation_snapshot.txt",
-      "tests/artifacts/current/html/html_query_viewport_snapshot.json",
-      "tests/artifacts/current/html/html_support_render_trace.txt"
-    ],
-    "evidence_tests": [
-      "tests/lua/evidence/test_html_evidence.lua"
-    ],
-    "golden_tests": [
-      "tests/lua/golden/test_html_golden.lua"
     ]
   },
   "image": {
@@ -904,6 +907,7 @@
       "tests/artifacts/current/pathfind/pathfind_api_surface.png",
       "tests/artifacts/current/pathfind/pathfind_astar_gap_trace.json",
       "tests/artifacts/current/pathfind/pathfind_flow_field_samples.json",
+      "tests/artifacts/current/pathfind/pathfind_movement_surface_snapshot.txt",
       "tests/artifacts/current/pathfind/pathfind_weighted_route_trace.json",
       "tests/artifacts/current/pathfind/weighted_route.png"
     ],
@@ -933,6 +937,7 @@
       "tests/artifacts/baselines/physics/physics_zone_priority_fields.png"
     ],
     "current_artifacts": [
+      "tests/artifacts/current/physics/physics_additive_gravity_drag_fields.png",
       "tests/artifacts/current/physics/physics_collision_bands.png",
       "tests/artifacts/current/physics/physics_constraint_mouse_slider.gif",
       "tests/artifacts/current/physics/physics_gravity_drop.png",

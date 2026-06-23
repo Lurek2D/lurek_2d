@@ -198,7 +198,7 @@ The primary requirement for these editors is that they **must generate and save 
 ### 6. DialogEditor
 - **Reference / Inspiration:** Twine, Yarn Spinner, Articy: Draft.
 - **Use case:** Composing branching and multi-threaded narrative dialogue for RPGs or adventure games.
-- **Lurek API Integration:** Generates data for `LDialogueAI` inside the `lurek.ai` namespace, rendering text via `lurek.html`.
+- **Lurek API Integration:** Generates data for `LDialogueAI` inside the `lurek.ai` namespace, rendering text through `lurek.ui` dialogue panels.
 - **Ideas / Vision:** Uniquely bridges narrative with AI logic. It must not overlap with the QuestTreeEditor: Dialog is strictly for conversational text and dialogue AI choices, while QuestTree tracks game-state progress. It utilizes `LDialogueAI` for topic and branch selection.
 - **Feature list:**
   - Node-based branching narrative and conversation structure layout.
@@ -258,8 +258,8 @@ The primary requirement for these editors is that they **must generate and save 
 ### 10. GuiWidgetEditor
 - **Reference / Inspiration:** Figma, Godot Control Nodes, Unity UI Builder.
 - **Use case:** Visually designing and composing user interfaces (UI/HUD, inventory windows, health bars, menus).
-- **Lurek API Integration:** Outputs UI layouts designed with HTML/CSS directly for the `lurek.html` namespace.
-- **Ideas / Vision:** Focuses purely on screen-space anchors and relative positioning using standard web technologies. It provides a visual builder so developers don't have to guess X/Y pixel coordinates in code, letting `lurek.html` natively render the resulting layouts.
+- **Lurek API Integration:** Outputs TOML UI layouts and widget settings for the `lurek.ui` namespace.
+- **Ideas / Vision:** Focuses on retained widgets, TOML-authored structure, screen-space anchors, and relative positioning. It provides a visual builder so developers don't have to guess X/Y pixel coordinates in code, letting `lurek.ui` natively render the resulting layouts.
 - **Feature list:**
   - Drag-and-drop UI component canvas (Divs, Text, Buttons).
   - Screen anchor and alignment snapping features.
@@ -498,7 +498,7 @@ The primary requirement for these editors is that they **must generate and save 
 ### 26. FontPreviewEditor
 - **Reference / Inspiration:** BMFont, FontForge preview.
 - **Use case:** Inspecting how vector fonts (TTF) or bitmap fonts render under scaling.
-- **Lurek API Integration:** Generates font atlas data used by `lurek.render` and UI text rendered by `lurek.html`.
+- **Lurek API Integration:** Generates font atlas data used by `lurek.render` and UI text rendered by `lurek.ui`.
 - **Ideas / Vision:** Ensures text rendering is performant and visually crisp in `lurek.render`. By previewing exactly how Lurek's rasterizer will pack the glyphs into a texture atlas, developers can tweak kerning visually before committing to UI layouts.
 - **Feature list:**
   - Custom sample text input testing rendering.
@@ -648,7 +648,7 @@ The primary requirement for these editors is that they **must generate and save 
 ### 36. GuiThemeEditor
 - **Reference / Inspiration:** Godot Theme Editor.
 - **Use case:** Establishing global CSS styling constants for all UI widgets.
-- **Lurek API Integration:** Generates global CSS stylesheets injected into `lurek.html`.
+- **Lurek API Integration:** Generates theme and style data consumed by `lurek.ui`.
 - **Ideas / Vision:** Separates UI layout (GuiWidgetEditor) from UI styling. Ensures that changing the "Button" color updates across the entire game immediately, preventing hardcoded styles.
 - **Feature list:**
   - Component-specific styling (Buttons, Sliders, TextBoxes).
@@ -656,9 +656,9 @@ The primary requirement for these editors is that they **must generate and save 
   - Border radius, box-shadow, and stroke editing.
   - Nine-patch scale configuration for UI panels.
   - Custom font assignment and baseline shifting.
-  - CSS variable generation and overriding.
+  - Theme token generation and overriding.
   - Live preview across a sample "UI Gallery".
-  - Theme exporting to global `.css` files.
+  - Theme exporting to TOML or Lua theme data.
 
 ### 37. NetworkTopologyEditor
 - **Reference / Inspiration:** Godot MultiplayerSynchronizer/Spawner, Photon PUN.

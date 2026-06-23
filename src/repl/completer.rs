@@ -90,7 +90,6 @@ const STATIC_COMPLETIONS: &[&str] = &[
     "lurek.filesystem",
     "lurek.globe",
     "lurek.graph",
-    "lurek.html",
     "lurek.i18n",
     "lurek.image",
     "lurek.input",

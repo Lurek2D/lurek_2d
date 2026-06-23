@@ -162,12 +162,30 @@ describe("lurek.dsp offline file processing", function()
     end)
 
     -- @covers lurek.dsp.spectrogramToPng
-    it("spectrogramToPng writes a PNG for valid input", function()
+    it("spectrogramToPng writes PNGs with default and explicit FFT options", function()
         expect_type("function", lurek.dsp.spectrogramToPng)
         local out = OUT_DIR .. "spectrogram.png"
         local ok = lurek.dsp.spectrogramToPng(WAVE, out, 256, 128)
         expect_equal(true, ok)
         expect_true(lurek.filesystem.exists(out), "spectrogram PNG output should exist")
+
+        local tuned = OUT_DIR .. "spectrogram_window_fft.png"
+        ok = lurek.dsp.spectrogramToPng(WAVE, tuned, 320, 160, {
+            inputWindowSize = 512,
+            fftPoints = 2048,
+            hopSize = 128,
+            dynamicRangeDb = 72,
+            frequencyScale = "log",
+        })
+        expect_equal(true, ok)
+        expect_true(lurek.filesystem.exists(tuned), "tuned spectrogram PNG output should exist")
+
+        expect_error(function()
+            lurek.dsp.spectrogramToPng(WAVE, OUT_DIR .. "spectrogram_bad_fft.png", 128, 64, {
+                inputWindowSize = 2048,
+                fftPoints = 512,
+            })
+        end, "fftSize")
     end)
 end)
 

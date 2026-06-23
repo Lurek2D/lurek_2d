@@ -1104,7 +1104,7 @@ end
 Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 
 ```lua
-lurek.dsp.spectrogramToPng(input, output, width, height)
+lurek.dsp.spectrogramToPng(input, output, width, height, options)
 ```
 
 **Parameters**
@@ -1115,6 +1115,7 @@ lurek.dsp.spectrogramToPng(input, output, width, height)
 | `output` | string | Relative path for the output PNG file. |
 | `width` | number | Image width in pixels. |
 | `height` | number | Image height in pixels. |
+| `options?` | table | Optional FFT settings: `windowSize`/`inputWindowSize` samples, `fftSize`/`fftPoints`, `hopSize`, `dynamicRangeDb`, `logFrequency`, or `frequencyScale`. |
 
 **Returns**
 

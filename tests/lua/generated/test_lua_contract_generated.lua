@@ -2698,36 +2698,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.grep.search)
     end)
 
-    -- @covers lurek.html.isDefaultPrevented
-    it("lurek.html.isDefaultPrevented exists", function()
-        expect_type("function", lurek.html.isDefaultPrevented)
-    end)
-
-    -- @covers lurek.html.loadDocument
-    it("lurek.html.loadDocument exists", function()
-        expect_type("function", lurek.html.loadDocument)
-    end)
-
-    -- @covers lurek.html.newDocument
-    it("lurek.html.newDocument exists", function()
-        expect_type("function", lurek.html.newDocument)
-    end)
-
-    -- @covers lurek.html.preventDefault
-    it("lurek.html.preventDefault exists", function()
-        expect_type("function", lurek.html.preventDefault)
-    end)
-
-    -- @covers lurek.html.stopPropagation
-    it("lurek.html.stopPropagation exists", function()
-        expect_type("function", lurek.html.stopPropagation)
-    end)
-
-    -- @covers lurek.html.supports
-    it("lurek.html.supports exists", function()
-        expect_type("function", lurek.html.supports)
-    end)
-
     -- @covers lurek.i18n.buildIndex
     it("lurek.i18n.buildIndex exists", function()
         expect_type("function", lurek.i18n.buildIndex)

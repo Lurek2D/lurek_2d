@@ -33,7 +33,6 @@ Krótki indeks modułów Rust generowany ze specek.
 | [`font`](rust_modules/font.md) | `src/font/` | 5 |
 | [`globe`](rust_modules/globe.md) | `src/globe/` | 18 |
 | [`grep`](rust_modules/grep.md) | `src/grep/` | 11 |
-| [`html`](rust_modules/html.md) | `src/html/` | 7 |
 | [`i18n`](rust_modules/i18n.md) | `src/i18n/` | 5 |
 | [`image`](rust_modules/image.md) | `src/image/` | 23 |
 | [`input`](rust_modules/input.md) | `src/input/` | 9 |
@@ -156,9 +155,6 @@ Każdy moduł ma osobną stronę z `General Info`, `Summary` i `Files`.
 
 - [`grep`](rust_modules/grep.md)
   - This module represents the high-performance content-search and text-scanning subsystem, supplying systems with tools to query files. It supports multiple search strategies including exact literals, regular expressions, shell globs, and edit-distance fuzzy matching. By checking search configurations, the scanning engine bounds processing loads by enforcing maximum file size limits, whole-word constraints, and case filters.
-
-- [`html`](rust_modules/html.md)
-  - This module provides the HTML/CSS user interface subsystem, letting developers build interactive menus and HUDs. It parses markup and CSS stylesheets into dynamic DOM trees. The layout engine computes bounds using a box model, resolving cascades into precise pixel coordinates for rendering.
 
 - [`i18n`](rust_modules/i18n.md)
   - This module represents the internationalization and localization subsystem, providing tools to manage translations and regional formatting during runtime. It hosts a translation catalog that maps hierarchical locale keys from TOML, JSON, or nested Lua tables into a flattened namespace. Resilient lookup chains resolve missing text strings by walking configured fallbacks before reporting coverage gaps, facilitating language switching without restarting the game.

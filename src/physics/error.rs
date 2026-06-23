@@ -43,6 +43,12 @@ pub enum PhysicsError {
         context: &'static str,
         detail: &'static str,
     },
+    /// A string mode did not match the accepted set for a physics option.
+    InvalidMode {
+        context: &'static str,
+        value: String,
+        expected: &'static str,
+    },
     /// A referenced body id does not point to an active body.
     InvalidBodyReference { body_id: usize },
     /// A referenced fixture index does not exist on the body.
@@ -54,6 +60,8 @@ pub enum PhysicsError {
     InvalidJointReference { joint_id: usize },
     /// A referenced zone id does not point to an active zone.
     InvalidZoneReference { zone_id: usize },
+    /// A referenced additive gravity vector id does not point to an active vector.
+    InvalidGravityVectorReference { vector_id: usize },
     /// The requested physics step dt was NaN, infinite, zero, or negative.
     InvalidStepDt { value: f32 },
     /// Terrain dimensions overflowed before a cell count could be computed.
@@ -134,6 +142,15 @@ impl fmt::Display for PhysicsError {
             Self::DegenerateGeometry { context, detail } => {
                 write!(f, "{} geometry is invalid: {}", context, detail)
             }
+            Self::InvalidMode {
+                context,
+                value,
+                expected,
+            } => write!(
+                f,
+                "{} mode '{}' is invalid; expected {}",
+                context, value, expected
+            ),
             Self::InvalidBodyReference { body_id } => {
                 write!(f, "physics body id {} is not active", body_id)
             }
@@ -150,6 +167,9 @@ impl fmt::Display for PhysicsError {
             }
             Self::InvalidZoneReference { zone_id } => {
                 write!(f, "physics zone id {} is not active", zone_id)
+            }
+            Self::InvalidGravityVectorReference { vector_id } => {
+                write!(f, "physics gravity vector id {} is not active", vector_id)
             }
             Self::InvalidStepDt { value } => {
                 write!(f, "physics step dt must be finite and > 0, got {}", value)

@@ -35,11 +35,12 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 - Owning tier: `Platform Services`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/dsp_api.rs`
-- Referenced engine modules: `audio`, `runtime`
+- Referenced engine modules: `audio`, `compute`, `runtime`
 
 ## Imports
 
 - `audio`: Imports or references `src/audio/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `compute`: Imports or references `src/compute/`. Cross-group dependency from `Platform Services` into `Foundations`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
 ## Source Files
@@ -101,7 +102,7 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 ### visualizer.rs
 
 - `src/dsp/visualizer.rs` converts decoded audio buffers into waveform and spectrogram PNG diagnostics.
-- It owns mono reduction, windowing, DFT-style magnitude sampling, and pixel-color mapping for offline visual inspection.
+- It owns mono reduction, windowing, FFT magnitude sampling, and pixel-color mapping for offline visual inspection.
 - Waveform and spectrogram export live here so audio-image tooling stays separate from playback, synthesis, and effects.
 - This file is the visual diagnostics boundary for DSP assets; it does not own meters or generated sample output.
 - Read it when DSP image export, heatmap encoding, or waveform rendering rules for inspection tools need changes.
@@ -139,7 +140,7 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 - `lurek.dsp.processOffline(input, output, effects) -> boolean`: Processes an audio file offline through a chain of effects and writes the result to an output file.
 - `lurek.dsp.removeEffectFromBus(bus_name, effect_id) -> boolean`: Removes an effect from a named audio bus by effect ID.
 - `lurek.dsp.setEffectParam(bus_name, effect_id, param_name, value) -> boolean`: Sets a parameter value on an effect attached to a named audio bus.
-- `lurek.dsp.spectrogramToPng(input, output, width, height) -> boolean`: Renders a spectrogram visualization of an audio file and saves it as a PNG image.
+- `lurek.dsp.spectrogramToPng(input, output, width, height, options?) -> boolean`: Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 - `lurek.dsp.waveformToPng(input, output, width, height) -> boolean`: Renders a waveform visualization of an audio file and saves it as a PNG image.
 
 ### Callbacks
@@ -272,15 +273,28 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 | Evidence test | `tests/lua/evidence/test_dsp_evidence.lua` |
 | Golden test | `tests/lua/golden/test_dsp_golden.lua` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_bandpass_filtered.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_bandpass_filtered.wav` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_bandpass_filtered_spectrogram.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_bandpass_source.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_fixture_spectrogram.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_fixture_waveform.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_gain_boost.wav` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_gain_boost_spectrogram.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_gain_boost_waveform.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_highpass_filtered.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_highpass_filtered.wav` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_highpass_filtered_spectrogram.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_highpass_source.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_lowpass_filtered.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_lowpass_filtered.wav` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_lowpass_filtered_spectrogram.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_lowpass_source.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_normalized_peak_09.wav` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_normalized_peak_09_spectrogram.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_normalized_peak_09_waveform.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_offline_lowpass_1khz.wav` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_offline_lowpass_1khz_spectrogram.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_offline_lowpass_1khz_waveform.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_waveform_sawtooth.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_waveform_sine.png` |
 | Current artifact | `tests/artifacts/current/dsp/dsp_waveform_square.png` |
@@ -289,17 +303,31 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 | Current artifact | `tests/artifacts/current/dsp/normalized.wav` |
 | Current artifact | `tests/artifacts/current/dsp/offline_chain.wav` |
 | Current artifact | `tests/artifacts/current/dsp/spectrogram.png` |
+| Current artifact | `tests/artifacts/current/dsp/spectrogram_window_fft.png` |
 | Current artifact | `tests/artifacts/current/dsp/waveform.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_bandpass_filtered.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_bandpass_filtered.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_bandpass_filtered_spectrogram.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_bandpass_source.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_fixture_spectrogram.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_fixture_waveform.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_gain_boost.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_gain_boost_spectrogram.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_gain_boost_waveform.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_highpass_filtered.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_highpass_filtered.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_highpass_filtered_spectrogram.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_highpass_source.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_lowpass_filtered.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_lowpass_filtered.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_lowpass_filtered_spectrogram.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_lowpass_source.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_normalized_peak_09.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_normalized_peak_09_spectrogram.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_normalized_peak_09_waveform.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_offline_lowpass_1khz.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_offline_lowpass_1khz_spectrogram.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_offline_lowpass_1khz_waveform.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_waveform_sawtooth.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_waveform_sine.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/dsp_waveform_square.png` |
@@ -308,6 +336,7 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 | Baseline artifact | `tests/artifacts/baselines/dsp/normalized.wav` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/offline_chain.wav` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/spectrogram.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/spectrogram_window_fft.png` |
 | Baseline artifact | `tests/artifacts/baselines/dsp/waveform.png` |
 
 ## Architecture Links

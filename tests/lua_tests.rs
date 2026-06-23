@@ -280,11 +280,6 @@ fn lua_evidence_globe_evidence() {
 }
 
 #[test]
-fn lua_evidence_html_evidence() {
-    run_lua_test("evidence/test_html_evidence.lua");
-}
-
-#[test]
 fn lua_evidence_image_evidence() {
     run_lua_test("evidence/test_image_evidence.lua");
 }
@@ -531,14 +526,6 @@ fn lua_golden_effect_golden() {
     run_lua_golden_test(
         "golden/test_effect_golden.lua",
         &["evidence/test_effect_evidence.lua"],
-    );
-}
-
-#[test]
-fn lua_golden_html_golden() {
-    run_lua_golden_test(
-        "golden/test_html_golden.lua",
-        &["evidence/test_html_evidence.lua"],
     );
 }
 
@@ -1449,11 +1436,6 @@ fn lua_unit_globe_unit() {
 #[test]
 fn lua_unit_grep_unit() {
     run_lua_test("unit/test_grep_unit.lua");
-}
-
-#[test]
-fn lua_unit_html_unit() {
-    run_lua_test("unit/test_html_unit.lua");
 }
 
 #[test]

@@ -42,7 +42,6 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [globe.lua](../blob/main/content/examples/globe.lua) | `lurek.globe` | API example |
 | [flownet.lua](../blob/main/content/examples/flownet.lua) | `lurek.graph` | API example |
 | [grep.lua](../blob/main/content/examples/grep.lua) | `lurek.grep` | API example |
-| [html.lua](../blob/main/content/examples/html.lua) | `lurek.html` | API example |
 | [i18n.lua](../blob/main/content/examples/i18n.lua) | `lurek.i18n` | API example |
 | [image.lua](../blob/main/content/examples/image.lua) | `lurek.image` | API example |
 | [input.lua](../blob/main/content/examples/input.lua) | `lurek.input` | API example |

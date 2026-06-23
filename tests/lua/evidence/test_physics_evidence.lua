@@ -558,6 +558,70 @@ describe("Evidence: lurek.physics visual scenarios", function()
         lurek.physics.destroyWorld(world)
     end)
 
+    -- Does: Builds additive world gravity vectors, an additive point-gravity zone with falloff limits, and a drag zone, then traces separate probe bodies.
+    -- Shows: The PNG separates composed gravity and air resistance: one probe follows summed vectors, one curves toward the bounded well, and one slows inside drag.
+    -- Artifact: tests/artifacts/current/physics/physics_additive_gravity_drag_fields.png
+    -- Why: Additive fields and drag are gameplay physics behavior; the artifact makes the new LWorld gravity-vector APIs and LZone falloff/drag APIs visible.
+    it("PNG: additive gravity vectors and drag fields", function()
+        local world = lurek.physics.newWorld(0, 0)
+        world:addGravityVector(28, 0)
+        world:addGravityVector(0, 16)
+
+        local well = world:addZone(70, 54, 150, 132)
+        well:setGravityPoint(145, 120, 420)
+        well:setGravityAdditive(true)
+        well:setGravityFalloff("linear")
+        well:setGravityRadius(12, 120)
+        well:setGravityLimits(nil, 70)
+
+        local drag = world:addZone(236, 62, 118, 126)
+        drag:setLinearDrag(2.6)
+        drag:setQuadraticDrag(0.015)
+
+        local vector_probe = world:newCircleBody(28, 38, 6, "dynamic")
+        local well_probe = world:newCircleBody(208, 176, 6, "dynamic")
+        local drag_probe = world:newCircleBody(250, 96, 6, "dynamic")
+        drag_probe:setVelocity(120, 0)
+
+        local traces = { {}, {}, {} }
+        local bodies = { vector_probe, well_probe, drag_probe }
+        for step = 1, 150 do
+            world:step(1 / 120)
+            if step % 5 == 0 then
+                for i, body in ipairs(bodies) do
+                    local x, y = body:getPosition()
+                    traces[i][#traces[i] + 1] = { x = x, y = y }
+                end
+            end
+        end
+
+        local img = new_board("ADDITIVE GRAVITY DRAG", 420, 250)
+        img:drawRect(70, 54, 150, 132, 56, 92, 190, 70)
+        img:drawCircle(145, 120, 12, 112, 184, 255, 180)
+        img:drawCircle(145, 120, 120, 76, 116, 220, 90)
+        img:drawRect(236, 62, 118, 126, 70, 168, 128, 80)
+        img:drawLine(30, 208, 90, 208, 255, 210, 112, 230)
+        img:drawLine(90, 208, 78, 202, 255, 210, 112, 230)
+        img:drawLine(90, 208, 78, 214, 255, 210, 112, 230)
+        img:drawLine(34, 214, 34, 236, 255, 210, 112, 230)
+        local colors = {
+            { 255, 210, 112 },
+            { 130, 190, 255 },
+            { 130, 255, 178 },
+        }
+        for i, trace in ipairs(traces) do
+            local c = colors[i]
+            for p = 2, #trace do
+                img:drawLine(trace[p - 1].x, trace[p - 1].y, trace[p].x, trace[p].y, c[1], c[2], c[3], 210)
+            end
+        end
+        draw_text(img, "SUMMED", 24, 222, 1, 255, 210, 112)
+        draw_text(img, "FALLOFF WELL", 94, 222, 1, 130, 190, 255)
+        draw_text(img, "DRAG", 270, 222, 1, 130, 255, 178)
+        save_png(img, OUT .. "physics_additive_gravity_drag_fields.png")
+        lurek.physics.destroyWorld(world)
+    end)
+
     -- Does: Places bodies on different collision layers, then visualizes raycastClosest, raycastAll, getBodyAtPoint, and queryAABB results.
     -- Shows: The PNG separates spatial query lanes so a reviewer can see how filters include or exclude bodies from the same physics world.
     -- Artifact: tests/artifacts/current/physics/physics_raycast_filter_lanes.png

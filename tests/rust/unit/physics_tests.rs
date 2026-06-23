@@ -234,6 +234,18 @@ mod world_tests {
     }
 
     #[test]
+    fn computed_mass_reflects_fixture_density_until_overridden() {
+        let mut w = World::new(0.0, 0.0);
+        let body = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        let before = w.get_body_mass(body.0);
+        w.add_fixture(body.0, Shape::Circle { radius: 2.0 }, 10.0, 0.5, 0.0, false);
+        let after = w.get_body_mass(body.0);
+        assert!(after > before);
+        w.set_body_mass(body.0, 7.5);
+        assert!((w.get_body_mass(body.0) - 7.5).abs() < 1e-6);
+    }
+
+    #[test]
     fn query_filter_uses_layer_mask_and_sensor_flag() {
         let mut w = World::new(0.0, 0.0);
         let mut solid = Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Static);
@@ -271,6 +283,23 @@ mod world_tests {
         let mut w = World::new(0.0, 9.8);
         let zone = PhysicsZone::new_rect(0, 0.0, 0.0, 200.0, 200.0);
         let _zid = w.add_zone(zone); // just verify no panic
+    }
+
+    #[test]
+    fn additive_gravity_vectors_are_stable_and_counted() {
+        let mut w = World::new(0.0, 0.0);
+        let first = w.add_gravity_vector(10.0, 0.0, u32::MAX);
+        let second = w.add_gravity_vector(0.0, 10.0, 0x2);
+        assert_eq!(first, 0);
+        assert_eq!(second, 1);
+        assert_eq!(w.get_stats().gravity_vectors, 2);
+        w.set_gravity_vector(second, 0.0, -10.0, 0x4);
+        let vector = w.get_gravity_vector(second).expect("active vector");
+        assert_eq!(vector.layer_mask, 0x4);
+        assert!(w.remove_gravity_vector(first));
+        assert_eq!(w.get_stats().gravity_vectors, 1);
+        w.clear_gravity_vectors();
+        assert_eq!(w.get_stats().gravity_vectors, 0);
     }
 
     #[test]

@@ -121,7 +121,7 @@ fn contact_to_table<'lua>(
 
 /// Serializes world diagnostics into a Lua table.
 fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<LuaTable<'lua>> {
-    // @return table: { bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies, skippedSteps, clampedSteps, invalidOperations, bodiesScanned, collidersRebuilt, zoneChecks, contacts, syncedBodies }
+    // @return table: { bodies, bodySlots, colliders, joints, jointSlots, zones, gravityVectors, sleepingBodies, skippedSteps, clampedSteps, invalidOperations, bodiesScanned, collidersRebuilt, zoneChecks, contacts, syncedBodies }
     let tbl = lua.create_table()?;
     tbl.set("bodies", stats.bodies)?;
     tbl.set("bodySlots", stats.body_slots)?;
@@ -129,6 +129,7 @@ fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<L
     tbl.set("joints", stats.joints)?;
     tbl.set("jointSlots", stats.joint_slots)?;
     tbl.set("zones", stats.zones)?;
+    tbl.set("gravityVectors", stats.gravity_vectors)?;
     tbl.set("sleepingBodies", stats.sleeping_bodies)?;
     tbl.set("skippedSteps", stats.skipped_steps)?;
     tbl.set("clampedSteps", stats.clamped_steps)?;
@@ -141,6 +142,21 @@ fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<L
     tbl.set("contacts", stats.contacts)?;
     /// Number of body transforms synchronized back to runtime state.
     tbl.set("syncedBodies", stats.synced_bodies)?;
+    Ok(tbl)
+}
+
+/// Serializes an additive gravity vector into Lua.
+fn gravity_vector_to_table<'lua>(
+    lua: &'lua Lua,
+    vector: crate::physics::GravityVector,
+) -> LuaResult<LuaTable<'lua>> {
+    // @return table: { id, gx, gy, layerMask, enabled }
+    let tbl = lua.create_table()?;
+    tbl.set("id", vector.id)?;
+    tbl.set("gx", vector.gx)?;
+    tbl.set("gy", vector.gy)?;
+    tbl.set("layerMask", vector.layer_mask)?;
+    tbl.set("enabled", vector.enabled)?;
     Ok(tbl)
 }
 
@@ -365,6 +381,62 @@ impl LuaUserData for LuaWorld {
             this.world.borrow_mut().set_gravity(gx, gy);
             Ok(())
         });
+        // -- addGravityVector --
+        /// Adds an extra directional gravity vector that is summed with world gravity when no non-additive zone override is active.
+        /// @param | gx | number | Horizontal acceleration in world units per second squared.
+        /// @param | gy | number | Vertical acceleration in world units per second squared.
+        /// @param | layerMask | integer? | Optional body layer mask, defaults to all layers.
+        /// @return | integer | Stable gravity vector ID.
+        methods.add_method(
+            "addGravityVector",
+            |_, this, (gx, gy, layer_mask): (f32, f32, Option<u32>)| {
+                let id = this
+                    .world
+                    .borrow_mut()
+                    .try_add_gravity_vector(gx, gy, layer_mask.unwrap_or(u32::MAX))
+                    .map_err(|err| physics_runtime_error("addGravityVector", err))?;
+                Ok(id)
+            },
+        );
+        // -- setGravityVector --
+        /// Replaces the direction, strength, and optional layer mask of an existing additive gravity vector.
+        /// @param | id | integer | Gravity vector ID returned by addGravityVector.
+        /// @param | gx | number | Horizontal acceleration in world units per second squared.
+        /// @param | gy | number | Vertical acceleration in world units per second squared.
+        /// @param | layerMask | integer? | Optional body layer mask, defaults to all layers.
+        methods.add_method(
+            "setGravityVector",
+            |_, this, (id, gx, gy, layer_mask): (usize, f32, f32, Option<u32>)| {
+                this.world
+                    .borrow_mut()
+                    .try_set_gravity_vector(id, gx, gy, layer_mask.unwrap_or(u32::MAX))
+                    .map_err(|err| physics_runtime_error("setGravityVector", err))?;
+                Ok(())
+            },
+        );
+        // -- removeGravityVector --
+        /// Removes one additive gravity vector so it no longer affects future steps.
+        /// @param | id | integer | Gravity vector ID returned by addGravityVector.
+        /// @return | boolean | True if an active vector was removed.
+        methods.add_method("removeGravityVector", |_, this, id: usize| {
+            Ok(this.world.borrow_mut().remove_gravity_vector(id))
+        });
+        // -- clearGravityVectors --
+        /// Removes all additive gravity vectors from the world.
+        methods.add_method("clearGravityVectors", |_, this, ()| {
+            this.world.borrow_mut().clear_gravity_vectors();
+            Ok(())
+        });
+        // -- getGravityVector --
+        /// Returns an additive gravity vector by ID, or nil when no active vector exists.
+        /// @param | id | integer | Gravity vector ID returned by addGravityVector.
+        /// @return | table? | Table with id, gx, gy, layerMask, and enabled fields.
+        methods.add_method("getGravityVector", |lua, this, id: usize| {
+            match this.world.borrow().get_gravity_vector(id) {
+                Some(vector) => Ok(Some(gravity_vector_to_table(lua, vector)?)),
+                None => Ok(None),
+            }
+        });
         // -- setMeter --
         /// Sets the pixels-per-meter scale used to convert between pixel coordinates and physics units.
         /// @param | ppm | number | Pixels per meter (e.g. 64 means 64 px = 1 meter in physics).
@@ -420,13 +492,14 @@ impl LuaUserData for LuaWorld {
         });
         // -- getStats --
         /// Returns active counts and slot diagnostics for the world.
-        /// @return | table | Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies.
+        /// @return | table | Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, gravityVectors, sleepingBodies.
         /// @field | bodies | integer | Number of active body slots.
         /// @field | bodySlots | integer | Total allocated body slots, including inactive tombstones.
         /// @field | colliders | integer | Number of active Rapier colliders.
         /// @field | joints | integer | Number of active joint slots.
         /// @field | jointSlots | integer | Total allocated joint slots, including inactive tombstones.
         /// @field | zones | integer | Number of active physics zones.
+        /// @field | gravityVectors | integer | Number of active additive gravity vectors.
         /// @field | sleepingBodies | integer | Number of active bodies currently sleeping.
         methods.add_method("getStats", |lua, this, ()| {
             let stats = this.world.borrow().get_stats();
@@ -1567,6 +1640,73 @@ impl LuaUserData for LuaZone {
             }
             Ok(())
         });
+        // -- setGravityAdditive --
+        /// Controls whether this zone adds gravity to other fields instead of overriding world gravity by priority.
+        /// @param | additive | boolean | True to add this zone's gravity; false for priority override behavior.
+        methods.add_method("setGravityAdditive", |_, this, additive: bool| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.set_gravity_additive(additive);
+            }
+            Ok(())
+        });
+        // -- isGravityAdditive --
+        /// Returns whether this zone adds gravity to other fields.
+        /// @return | boolean | True when additive gravity mode is enabled.
+        methods.add_method("isGravityAdditive", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.zone(this.zone_id).is_some_and(|z| z.gravity_additive))
+        });
+        // -- setGravityFalloff --
+        /// Sets point/repulsor gravity falloff. Accepted modes: inverseSquare, inverse, linear, constant.
+        /// @param | mode | string | Falloff mode name.
+        methods.add_method("setGravityFalloff", |_, this, mode: String| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.try_set_gravity_falloff(&mode)
+                    .map_err(|err| physics_runtime_error("setGravityFalloff", err))?;
+            }
+            Ok(())
+        });
+        // -- getGravityFalloff --
+        /// Returns the current point/repulsor gravity falloff mode.
+        /// @return | string | Falloff mode name.
+        methods.add_method("getGravityFalloff", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.zone(this.zone_id)
+                .map(|z| z.gravity_falloff.as_str())
+                .unwrap_or("inverseSquare"))
+        });
+        // -- setGravityRadius --
+        /// Sets the inner radius and optional outer radius used by point/repulsor falloff.
+        /// @param | innerRadius | number | Minimum distance used for falloff, must be > 0.
+        /// @param | outerRadius | number? | Optional maximum active distance, must be greater than innerRadius.
+        methods.add_method(
+            "setGravityRadius",
+            |_, this, (inner_radius, outer_radius): (f32, Option<f32>)| {
+                let mut w = this.world.borrow_mut();
+                if let Some(z) = w.zone_mut(this.zone_id) {
+                    z.try_set_gravity_radius(inner_radius, outer_radius)
+                        .map_err(|err| physics_runtime_error("setGravityRadius", err))?;
+                }
+                Ok(())
+            },
+        );
+        // -- setGravityLimits --
+        /// Sets optional minimum and maximum acceleration clamps for point/repulsor gravity.
+        /// @param | minAccel | number? | Optional minimum acceleration magnitude.
+        /// @param | maxAccel | number? | Optional maximum acceleration magnitude.
+        methods.add_method(
+            "setGravityLimits",
+            |_, this, (min_accel, max_accel): (Option<f32>, Option<f32>)| {
+                let mut w = this.world.borrow_mut();
+                if let Some(z) = w.zone_mut(this.zone_id) {
+                    z.try_set_gravity_limits(min_accel, max_accel)
+                        .map_err(|err| physics_runtime_error("setGravityLimits", err))?;
+                }
+                Ok(())
+            },
+        );
         // -- setLinearDampingOverride --
         /// Overrides the linear damping of bodies inside this zone, or nil to use each body's own value.
         /// @param | value | number? | Damping override, or nil to clear.
@@ -1592,6 +1732,28 @@ impl LuaUserData for LuaZone {
                 Ok(())
             },
         );
+        // -- setLinearDrag --
+        /// Sets or clears area drag proportional to velocity for bodies inside this zone.
+        /// @param | value | number? | Drag coefficient, or nil to clear.
+        methods.add_method("setLinearDrag", |_, this, value: Option<f32>| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.try_set_linear_drag(value)
+                    .map_err(|err| physics_runtime_error("setLinearDrag", err))?;
+            }
+            Ok(())
+        });
+        // -- setQuadraticDrag --
+        /// Sets or clears area drag proportional to speed times velocity for bodies inside this zone.
+        /// @param | value | number? | Drag coefficient, or nil to clear.
+        methods.add_method("setQuadraticDrag", |_, this, value: Option<f32>| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.try_set_quadratic_drag(value)
+                    .map_err(|err| physics_runtime_error("setQuadraticDrag", err))?;
+            }
+            Ok(())
+        });
         // -- destroy --
         /// Removes this zone from the world. Bodies will no longer be affected by it.
         methods.add_method("destroy", |_, this, ()| {

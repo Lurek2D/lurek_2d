@@ -76,8 +76,6 @@ pub mod grep;
 #[cfg(feature = "flownet")]
 /// Backward-compatible re-export so existing `crate::graph` imports continue to work.
 pub use flownet as graph;
-/// Exposes the HTML subsystem module.
-pub mod html;
 /// Exposes the internationalization subsystem module.
 pub mod i18n;
 /// Exposes the image subsystem module.

@@ -814,11 +814,6 @@ fn lua_unit_ui_features_unit() {
 }
 
 #[test]
-fn lua_unit_html_unit() {
-    run_lua_test("unit/test_html_core_unit.lua");
-}
-
-#[test]
 fn lua_unit_window_unit() {
     run_lua_test("unit/test_window_core_unit.lua");
 }
@@ -838,11 +833,6 @@ fn lua_evidence_audio_evidence() {
 #[test]
 fn lua_evidence_camera_evidence() {
     run_lua_test("evidence/test_camera_evidence.lua");
-}
-
-#[test]
-fn lua_evidence_html_evidence() {
-    run_lua_test("evidence/test_html_evidence.lua");
 }
 
 #[test]

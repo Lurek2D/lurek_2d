@@ -5,6 +5,7 @@ use crate::audio::sound_data::SoundData;
 use crate::dsp::analysis::{LevelDetector, SpectrumAnalyzer};
 use crate::dsp::graph::{DspGraph, DspNode, NodeId};
 use crate::dsp::synthesis::{AdsrEnvelope, Synthesizer, Waveform};
+use crate::dsp::visualizer::SpectrogramOptions;
 use crate::dsp::{
     add_effect_to_shared_chain, remove_effect_from_shared_chain, set_shared_chain_effect_param,
     EffectType,
@@ -142,12 +143,95 @@ fn helper_waveform_to_png(
 
 fn helper_spectrogram_to_png(
     state: Rc<RefCell<SharedState>>,
-    (input, output, width, height): (String, String, u32, u32),
+    args: LuaMultiValue,
 ) -> LuaResult<bool> {
+    let (input, output, width, height, options) = helper_parse_spectrogram_args(args)?;
     let (input_path, output_path) = helper_resolve_output_paths(state, &input, &output)?;
-    crate::dsp::visualizer::spectrogram_to_png(&input_path, &output_path, width, height)
-        .map_err(LuaError::external)
-        .map(|_| true)
+    crate::dsp::visualizer::spectrogram_to_png_with_options(
+        &input_path,
+        &output_path,
+        width,
+        height,
+        options,
+    )
+    .map_err(LuaError::external)
+    .map(|_| true)
+}
+
+fn helper_parse_spectrogram_args(
+    args: LuaMultiValue,
+) -> LuaResult<(String, String, u32, u32, SpectrogramOptions)> {
+    let input = helper_arg_string(&args, 0, "lurek.dsp.spectrogramToPng: input path required")?;
+    let output = helper_arg_string(&args, 1, "lurek.dsp.spectrogramToPng: output path required")?;
+    let width = helper_arg_u32(
+        &args,
+        2,
+        "lurek.dsp.spectrogramToPng: width must be a positive integer",
+    )?;
+    let height = helper_arg_u32(
+        &args,
+        3,
+        "lurek.dsp.spectrogramToPng: height must be a positive integer",
+    )?;
+    let mut options = SpectrogramOptions::default();
+    if let Some(LuaValue::Table(table)) = args.get(4) {
+        if let Ok(window_size) = table.get::<_, usize>("windowSize") {
+            options.window_size = window_size;
+        }
+        if let Ok(window_size) = table.get::<_, usize>("inputWindowSize") {
+            options.window_size = window_size;
+        }
+        if let Ok(fft_size) = table.get::<_, usize>("fftSize") {
+            options.fft_size = fft_size;
+        }
+        if let Ok(fft_size) = table.get::<_, usize>("fftPoints") {
+            options.fft_size = fft_size;
+        }
+        if let Ok(hop_size) = table.get::<_, usize>("hopSize") {
+            options.hop_size = Some(hop_size);
+        }
+        if let Ok(dynamic_range_db) = table.get::<_, f32>("dynamicRangeDb") {
+            options.dynamic_range_db = dynamic_range_db;
+        }
+        if let Ok(log_frequency) = table.get::<_, bool>("logFrequency") {
+            options.log_frequency = log_frequency;
+        }
+        if let Ok(scale) = table.get::<_, String>("frequencyScale") {
+            options.log_frequency = match scale.as_str() {
+                "linear" => false,
+                "log" | "logarithmic" => true,
+                other => {
+                    return Err(LuaError::RuntimeError(format!(
+                    "lurek.dsp.spectrogramToPng: frequencyScale must be 'log' or 'linear', got {}",
+                    other
+                )))
+                }
+            };
+        }
+    } else if args.get(4).is_some() {
+        return Err(LuaError::RuntimeError(
+            "lurek.dsp.spectrogramToPng: options must be a table".into(),
+        ));
+    }
+    Ok((input, output, width, height, options))
+}
+
+fn helper_arg_string(args: &LuaMultiValue, index: usize, message: &str) -> LuaResult<String> {
+    match args.get(index) {
+        Some(LuaValue::String(value)) => value
+            .to_str()
+            .map(|value| value.to_string())
+            .map_err(LuaError::external),
+        _ => Err(LuaError::RuntimeError(message.into())),
+    }
+}
+
+fn helper_arg_u32(args: &LuaMultiValue, index: usize, message: &str) -> LuaResult<u32> {
+    match args.get(index) {
+        Some(LuaValue::Integer(value)) if *value > 0 => Ok(*value as u32),
+        Some(LuaValue::Number(value)) if *value > 0.0 => Ok(*value as u32),
+        _ => Err(LuaError::RuntimeError(message.into())),
+    }
 }
 
 fn helper_apply_lowpass((sd_ud, cutoff_hz): (LuaAnyUserData, f32)) -> LuaResult<()> {
@@ -680,6 +764,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | output | string | Relative path for the output PNG file.
     /// @param | width | integer | Image width in pixels.
     /// @param | height | integer | Image height in pixels.
+    /// @param | options | table? | Optional FFT settings: `windowSize`/`inputWindowSize` samples, `fftSize`/`fftPoints`, `hopSize`, `dynamicRangeDb`, `logFrequency`, or `frequencyScale`.
     /// @return | boolean | True when the output image was written successfully.
     tbl.set(
         "spectrogramToPng",

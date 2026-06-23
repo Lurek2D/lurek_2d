@@ -882,7 +882,7 @@ The `library/dialog` and `library/narrative` Lureksome modules provide pre-built
 
 - `library/dialog` provides conversation graph, branching choices, and state tracking out of the box.
 - `library/narrative` handles story flags, chapter progression, and conditional scenes.
-- `lurek.html.*` renders rich HTML+CSS dialogue boxes and UI screens (see `tests/lua/evidence/test_html_evidence.lua` for durable artifact coverage).
+- `lurek.ui.*` renders retained dialogue boxes and UI screens, with TOML layouts and UI evidence covering the durable artifact path.
 - `agent` module enables dynamic LLM dialogue — characters respond to player history.
 - `tween` handles smooth sprite slide-in, text fade, and background transitions.
 - `i18n` supports localisation of all dialogue text from a single string table.
