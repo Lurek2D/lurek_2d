@@ -69,7 +69,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [runtime.lua](../blob/main/content/examples/runtime.lua) | `lurek.runtime` | API example |
 | [save.lua](../blob/main/content/examples/save.lua) | `lurek.save` | API example |
 | [scene.lua](../blob/main/content/examples/scene.lua) | `lurek.scene` | API example |
-| [serialize.lua](../blob/main/content/examples/serialize.lua) | `lurek.serial` | API example |
+| [serialize.lua](../blob/main/content/examples/serialize.lua) | `lurek.serialize` | API example |
 | [spine.lua](../blob/main/content/examples/spine.lua) | `lurek.spine` | API example |
 | [sprite.lua](../blob/main/content/examples/sprite.lua) | `lurek.sprite` | API example |
 | [svg.lua](../blob/main/content/examples/svg.lua) | `lurek.svg` | API example |

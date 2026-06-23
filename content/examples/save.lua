@@ -4,6 +4,52 @@
 
 --- Save Module: persistent game state management
 
+--@api: lurek.save.newManager
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    ---@type LSaveManager
+    local mgr = lurek.save.newManager()
+    mgr:setSummary("Canonical Manager")
+    example_print_log("type = " .. mgr:type())
+    example_print_log("format = " .. mgr:getFormat())
+end
+
+--@api: LSaveManager:setFormat
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local mgr = lurek.save.newManager()
+    mgr:setFormat("json")
+    example_print_log("save format = " .. mgr:getFormat())
+end
+
+--@api: LSaveManager:getFormat
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local mgr = lurek.save.newManager()
+    example_print_log("default save format = " .. mgr:getFormat())
+end
+
 
 --@api: lurek.save.newSaveManager
 do

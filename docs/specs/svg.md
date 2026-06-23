@@ -1,15 +1,15 @@
-<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/vector.md or source docstrings instead. -->
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/svg.md or source docstrings instead. -->
 
-# vector
+# svg
 
 ## TL;DR
 
-- Provides dynamic SVG vector parsing, hit-testing, state read-back, hierarchy navigation, and GPU-cached rendering.
+- Provides dynamic SVG parsing, hit-testing, state read-back, hierarchy navigation, and GPU-cached rendering.
 
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/vector`
+- Source path: `src/svg`
 - Binding: `src/lua_api/svg_api.rs`
 - Namespace: `lurek.svg`
 - Lua API surface: `1` functions, `1` types, `24` methods
@@ -18,8 +18,8 @@
 
 ## Summary
 
-- The `vector` module is the engine surface for scalable vector artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible.
-- It keeps vector parsing, scene representation, and runtime conversion behavior together so vector assets can live inside the normal content flow instead of being forced into a separate external pipeline.
+- The `svg` module is the engine surface for scalable SVG artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible.
+- It keeps SVG parsing, scene representation, and runtime conversion behavior together so SVG assets can live inside the normal content flow instead of being forced into a separate external pipeline.
 - This is useful for UI artwork that should survive scaling without raster duplication.
 - Read it as the point where scalable art becomes usable in the rest of the engine while staying distinct from raster-first asset workflows.
 
@@ -27,7 +27,7 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 
 ## Ownership
 
-- Canonical source: `src/vector`
+- Canonical source: `src/svg`
 - Owning tier: `Foundations`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/svg_api.rs`
@@ -43,7 +43,7 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 
 ### mod.rs
 
-- `src/vector/mod.rs` is the vector module index, exposing SVG document types and loading surfaces for runtime rendering.
+- `src/svg/mod.rs` is the SVG module index, exposing SVG document types and loading surfaces for runtime rendering.
 - It reexports `SvgElement`, `SvgImage`, and `SvgPath` so callers reach vector scene data through one stable boundary.
 - No parsed vector state lives here; this file defines visibility while parsing logic stays in `svg_image.rs`.
 - Read this index when wiring vector features, because it shows which SVG-facing contracts are public and shared.
@@ -52,7 +52,7 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 
 ### svg_image.rs
 
-- `src/vector/svg_image.rs` owns SVG parsing, normalized scene representation, and runtime rendering for vector content.
+- `src/svg/svg_image.rs` owns SVG parsing, normalized scene representation, and runtime rendering for SVG content.
 - It defines `SvgPath`, `SvgElement`, and `SvgImage`, keeping geometry, hierarchy state, and canvas handles together.
 - Raw SVG bytes are parsed here into a tree of groups and paths, then normalized into engine-owned element maps and IDs.
 - Element transforms, visibility, color overrides, and cached subtree canvases are managed here as runtime vector state.
@@ -122,11 +122,21 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 ## Tests
 
 - Lua unit: `tests/lua/unit/test_svg_unit.lua` (present)
-- Rust: none detected.
+- Rust: `src/svg/svg_image.rs`
 
 ## Evidence / Golden
 
-- No evidence or golden artifacts registered.
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_svg_evidence.lua` |
+| Golden test | `tests/lua/golden/test_svg_golden.lua` |
+| Current artifact | `tests/artifacts/current/svg/svg_geometry_debug.png` |
+| Current artifact | `tests/artifacts/current/svg/svg_hierarchy_reset_trace.txt` |
+| Current artifact | `tests/artifacts/current/svg/svg_report.txt` |
+| Current artifact | `tests/artifacts/current/svg/svg_transform_visibility.png` |
+| Baseline artifact | `tests/artifacts/baselines/svg/svg_geometry_debug.png` |
+| Baseline artifact | `tests/artifacts/baselines/svg/svg_report.txt` |
+| Baseline artifact | `tests/artifacts/baselines/svg/svg_transform_visibility.png` |
 
 ## Architecture Links
 

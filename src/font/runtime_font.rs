@@ -1,4 +1,4 @@
-//! Owns font assets, glyph metrics, and atlas layout used by text rendering across runtime UI and debug views.
+//! Owns runtime font assets, glyph metrics, and atlas layout used by text rendering across runtime UI and debug views.
 //! Supports bundled Courier New atlases at multiple sizes alongside dynamic fontdue rasterization from bytes.
 //! Maps characters to atlas cells, UV coordinates, advances, and fallback substitutions under one font contract.
 //! Provides nearest-size lookup so callers can request practical font points without managing raw atlas sets.

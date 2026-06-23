@@ -13,7 +13,7 @@ Kluczowe mechaniki i potok przetwarzania danych (data pipeline):
    - Buduje bazę danych w pamięci (**LDatabase**) i wykonuje złożone, parametryzowane zapytania SQL zlokalizowane w zewnętrznych plikach katalogu `sql/` przy użyciu `LDatabase:queryParams`.
    - Wykorzystuje silnik analityczny **LDataFrame** do zaawansowanych obliczeń statystycznych: wyznaczanie z-score, detekcja anomalii (outliers), ruchome średnie (rolling mean), ruchome sumy, zmiany procentowe oraz wyliczanie wskaźnika płynności finansowej (runway months).
 3. **Pamięć Podręczna (Database Cache)**:
-   - Zapisuje i odtwarza przetworzoną bazę za pomocą `LDatabase:save` i `lurek.dataframe.loadDatabase`, a mały plik manifestu serializuje z użyciem `lurek.serial.toJson`.
+   - Zapisuje i odtwarza przetworzoną bazę za pomocą `LDatabase:save` i `lurek.dataframe.loadDatabase`, a mały plik manifestu serializuje z użyciem `lurek.serialize.toJson`.
 4. **Interaktywne Widżety UI (lurek.ui)**:
    - Bogaty interfejs użytkownika z zakładkami (Tabs), filtrami, listami rozwijanymi (Combo Boxes), suwakami (Sliders), przełącznikami oraz tabelami GUI (`LGuiTable`) zasilanymi bezpośrednio z DataFrame.
    - Generuje dynamiczne wykresy finansowe na bazie danych DataFrame i zapisuje je jako tekstury/obrazy do wyrenderowania na ekranie.
@@ -56,7 +56,7 @@ Aplikacja jest najbardziej kompleksowym pokazem zaawansowanych funkcji bazodanow
 - `lurek.dataframe` (`LDataFrame` & `LDatabase`) – Baza danych SQL w pamięci, asynchroniczne ładowanie CSV, funkcje data-science (rolling stats, outliers, z-score).
 - `lurek.ui` – Zaawansowane wczytywanie i generowanie całego bogatego interfejsu użytkownika na podstawie plików definicji TOML (`layouts/`), w tym widżety tabel i wykresów.
 - `lurek.math.newRandomGenerator` – Generuje spójne, deterministyczne dane transakcyjne na przestrzeni 5 lat.
-- `lurek.serial.toJson` – Serializuje metadane i stany pamięci podręcznej do JSON.
+- `lurek.serialize.toJson` – Serializuje metadane i stany pamięci podręcznej do JSON.
 - `lurek.render` – Niskopoziomowy rendering statycznych, ultra-ostrych czcionek wektorowych i bitmapowych oraz wykresów.
 - `lurek.timer` – Kontroluje opóźnienia filtrów (debouncing) oraz dostarcza precyzyjne czasy klatkowe i renderowania (`timer.getFPS`).
 - `lurek.window` & `lurek.event` – Kontrola nad oknem i bezpiecznym wyjściem.

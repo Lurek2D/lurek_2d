@@ -1360,7 +1360,7 @@ library.loot.setDefaultRng( rng : userdata|table )  -- Install a custom default 
 library.loot.getDefaultRng(  ) -> userdata|table  -- Get the module's current default RNG (resolves on first use).
 library.loot.newTable(  ) -> LootTable  -- Create an empty weighted loot table.
 library.loot.fromList( entries : table ) -> LootTable  -- Bulk-build a loot table from a list of `{id, weight, meta?}` entries.
-library.loot.fromToml( path : string ) -> LootTable  -- Load a loot table from a TOML file via `lurek.filesystem.read` + `lurek.serial.fromToml`. The file must contain an `entries = [...]` array.
+library.loot.fromToml( path : string ) -> LootTable  -- Load a loot table from a TOML file via `lurek.filesystem.read` + `lurek.serialize.fromToml`. The file must contain an `entries = [...]` array.
 library.loot.merge( ... : LootTable ) -> LootTable  -- Combine multiple LootTables into a single new one. Identical IDs sum weights.
 library.loot.newDrop(  ) -> DropSet  -- Create a composable drop description.
 library.loot.newPity( target_id : string, threshold : integer ) -> Pity  -- Guarantee `target_id` is forced after `threshold` consecutive misses.
@@ -1626,7 +1626,7 @@ All other transitions are rejected and return false.
 to receive `quest_started` / `quest_advanced` / `quest_completed` /
 `quest_failed` events.
 * Serialisation: `M.toJson(log)` / `M.fromJson(str)` round-trip the log
-through `lurek.serialize.toJson` / `lurek.serialize.fromJson`.
+through `lurek.serializeize.toJson` / `lurek.serializeize.fromJson`.
 * Persistence: register a custom collector with `lurek.save.SaveManager`
 that calls `M.toJson(log)` on save and `M.fromJson(str)` on load.
 * Time-limited objectives: drive expiry from a `lurek.timer.Scheduler` you
@@ -1652,7 +1652,7 @@ library.quest.newObjective( id : string, description : string, required : number
 library.quest.newQuestStage( id : string, name : string ) -> QuestStage  -- Create a new empty quest stage.
 library.quest.newQuest( id : string, title : string, max_journal_entries : number ) -> Quest  -- Create a new quest in the "available" state. Valid status transitions: available ? active ? completed | failed.
 library.quest.newQuestLog(  ) -> QuestLog  -- Create an empty quest log.
-library.quest.toJson( log : QuestLog ) -> string  -- Encode a `QuestLog` to a JSON string via `lurek.serialize.toJson`.
+library.quest.toJson( log : QuestLog ) -> string  -- Encode a `QuestLog` to a JSON string via `lurek.serializeize.toJson`.
 library.quest.fromJson( str : string, into : QuestLog ) -> QuestLog  -- Decode a JSON-encoded log into a fresh `QuestLog`. The optional `into` argument lets the caller reuse an existing log (its quests are replaced).
 ```
 
@@ -1907,8 +1907,8 @@ library.stats.getRaceNames(  ) -> table  -- Return a sorted list of all register
 library.stats.getClassNames(  ) -> table  -- Return a sorted list of all registered class names.
 library.stats.applyArchetypes( sheet : Sheet, race_name : string|nil, class_name : string|nil )  -- Apply race and/or class archetypes to an existing sheet. Base stat bonuses are added and listed traits are applied as permanent buffs.
 library.stats.newSheet(  ) -> Sheet  -- Create a new character sheet.
-library.stats.snapshotToJson( snap : table ) -> string  -- Encode a snapshot table to a JSON string via `lurek.serialize.toJson`.
-library.stats.snapshotFromJson( str : string ) -> table  -- Decode a JSON snapshot string back into a Lua table via `lurek.serialize.fromJson`. The returned table can be passed to `Sheet:restore`.
+library.stats.snapshotToJson( snap : table ) -> string  -- Encode a snapshot table to a JSON string via `lurek.serializeize.toJson`.
+library.stats.snapshotFromJson( str : string ) -> table  -- Decode a JSON snapshot string back into a Lua table via `lurek.serializeize.fromJson`. The returned table can be passed to `Sheet:restore`.
 ```
 
 ### `Buff`

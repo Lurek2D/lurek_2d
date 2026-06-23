@@ -102,7 +102,6 @@ LUA_API_JSON = module_registry.lua_api_json_path()
 LUA_API_MODULE_ALIASES: dict[str, list[str]] = {
     "app": ["engine"],
     "runtime": ["system", "engine"],
-    "vector": ["svg"],
 }
 
 

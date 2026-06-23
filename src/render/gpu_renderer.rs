@@ -670,7 +670,7 @@ impl GpuRenderer {
         surface: &wgpu::Surface<'static>,
         commands: &[RenderCommand],
         textures: &SlotMap<TextureKey, TextureData>,
-        fonts: &mut SlotMap<FontKey, crate::render::Font>,
+        fonts: &mut SlotMap<FontKey, crate::font::Font>,
         light_world: &crate::light::light_world::LightWorld,
         sprite_batches: &SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>,
         shapes: &SlotMap<ShapeKey, crate::render::CompoundShape>,

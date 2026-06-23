@@ -35,7 +35,7 @@
 -- @module library.narrative
 -- @status partial
 -- @see lurek.filesystem.read         load `.ink` files
--- @see lurek.serial.toJson    precompile / save state serialisation
+-- @see lurek.serialize.toJson    precompile / save state serialisation
 -- @see lurek.save        wire `story:save`/`resume` into a SaveManager
 -- @see lurek.i18n.t  used by `M.localiseStory` for {loc:key} markers
 -- @see lurek.event          optional trace event sink

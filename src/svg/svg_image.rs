@@ -1,4 +1,4 @@
-//! `src/vector/svg_image.rs` owns SVG parsing, normalized scene representation, and runtime rendering for vector content.
+//! `src/svg/svg_image.rs` owns SVG parsing, normalized scene representation, and runtime rendering for SVG content.
 //! It defines `SvgPath`, `SvgElement`, and `SvgImage`, keeping geometry, hierarchy state, and canvas handles together.
 //! Raw SVG bytes are parsed here into a tree of groups and paths, then normalized into engine-owned element maps and IDs.
 //! Element transforms, visibility, color overrides, and cached subtree canvases are managed here as runtime vector state.

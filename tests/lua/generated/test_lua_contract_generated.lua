@@ -5538,9 +5538,9 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.render.newMesh)
     end)
 
-    -- @covers lurek.render.newNineSlice
-    it("lurek.render.newNineSlice exists", function()
-        expect_type("function", lurek.render.newNineSlice)
+    -- @covers lurek.sprite.newNineSlice
+    it("lurek.sprite.newNineSlice exists", function()
+        expect_type("function", lurek.sprite.newNineSlice)
     end)
 
     -- @covers lurek.render.newQuad
@@ -6243,79 +6243,79 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.scene.update)
     end)
 
-    -- @covers lurek.serial.applyDefaults
-    it("lurek.serial.applyDefaults exists", function()
-        expect_type("function", lurek.serial.applyDefaults)
+    -- @covers lurek.serialize.applyDefaults
+    it("lurek.serialize.applyDefaults exists", function()
+        expect_type("function", lurek.serialize.applyDefaults)
     end)
 
-    -- @covers lurek.serial.decode
-    it("lurek.serial.decode exists", function()
-        expect_type("function", lurek.serial.decode)
+    -- @covers lurek.serialize.decode
+    it("lurek.serialize.decode exists", function()
+        expect_type("function", lurek.serialize.decode)
     end)
 
-    -- @covers lurek.serial.decodeMsgPack
-    it("lurek.serial.decodeMsgPack exists", function()
-        expect_type("function", lurek.serial.decodeMsgPack)
+    -- @covers lurek.serialize.decodeMsgPack
+    it("lurek.serialize.decodeMsgPack exists", function()
+        expect_type("function", lurek.serialize.decodeMsgPack)
     end)
 
-    -- @covers lurek.serial.decodeXml
-    it("lurek.serial.decodeXml exists", function()
-        expect_type("function", lurek.serial.decodeXml)
+    -- @covers lurek.serialize.decodeXml
+    it("lurek.serialize.decodeXml exists", function()
+        expect_type("function", lurek.serialize.decodeXml)
     end)
 
-    -- @covers lurek.serial.detectFormat
-    it("lurek.serial.detectFormat exists", function()
-        expect_type("function", lurek.serial.detectFormat)
+    -- @covers lurek.serialize.detectFormat
+    it("lurek.serialize.detectFormat exists", function()
+        expect_type("function", lurek.serialize.detectFormat)
     end)
 
-    -- @covers lurek.serial.encode
-    it("lurek.serial.encode exists", function()
-        expect_type("function", lurek.serial.encode)
+    -- @covers lurek.serialize.encode
+    it("lurek.serialize.encode exists", function()
+        expect_type("function", lurek.serialize.encode)
     end)
 
-    -- @covers lurek.serial.encodeMsgPack
-    it("lurek.serial.encodeMsgPack exists", function()
-        expect_type("function", lurek.serial.encodeMsgPack)
+    -- @covers lurek.serialize.encodeMsgPack
+    it("lurek.serialize.encodeMsgPack exists", function()
+        expect_type("function", lurek.serialize.encodeMsgPack)
     end)
 
-    -- @covers lurek.serial.fromCsv
-    it("lurek.serial.fromCsv exists", function()
-        expect_type("function", lurek.serial.fromCsv)
+    -- @covers lurek.serialize.fromCsv
+    it("lurek.serialize.fromCsv exists", function()
+        expect_type("function", lurek.serialize.fromCsv)
     end)
 
-    -- @covers lurek.serial.fromIni
-    it("lurek.serial.fromIni exists", function()
-        expect_type("function", lurek.serial.fromIni)
+    -- @covers lurek.serialize.fromIni
+    it("lurek.serialize.fromIni exists", function()
+        expect_type("function", lurek.serialize.fromIni)
     end)
 
-    -- @covers lurek.serial.fromJson
-    it("lurek.serial.fromJson exists", function()
-        expect_type("function", lurek.serial.fromJson)
+    -- @covers lurek.serialize.fromJson
+    it("lurek.serialize.fromJson exists", function()
+        expect_type("function", lurek.serialize.fromJson)
     end)
 
-    -- @covers lurek.serial.fromToml
-    it("lurek.serial.fromToml exists", function()
-        expect_type("function", lurek.serial.fromToml)
+    -- @covers lurek.serialize.fromToml
+    it("lurek.serialize.fromToml exists", function()
+        expect_type("function", lurek.serialize.fromToml)
     end)
 
-    -- @covers lurek.serial.toCsv
-    it("lurek.serial.toCsv exists", function()
-        expect_type("function", lurek.serial.toCsv)
+    -- @covers lurek.serialize.toCsv
+    it("lurek.serialize.toCsv exists", function()
+        expect_type("function", lurek.serialize.toCsv)
     end)
 
-    -- @covers lurek.serial.toJson
-    it("lurek.serial.toJson exists", function()
-        expect_type("function", lurek.serial.toJson)
+    -- @covers lurek.serialize.toJson
+    it("lurek.serialize.toJson exists", function()
+        expect_type("function", lurek.serialize.toJson)
     end)
 
-    -- @covers lurek.serial.toToml
-    it("lurek.serial.toToml exists", function()
-        expect_type("function", lurek.serial.toToml)
+    -- @covers lurek.serialize.toToml
+    it("lurek.serialize.toToml exists", function()
+        expect_type("function", lurek.serialize.toToml)
     end)
 
-    -- @covers lurek.serial.validate
-    it("lurek.serial.validate exists", function()
-        expect_type("function", lurek.serial.validate)
+    -- @covers lurek.serialize.validate
+    it("lurek.serialize.validate exists", function()
+        expect_type("function", lurek.serialize.validate)
     end)
 
     -- @covers lurek.spine.animationFromJson

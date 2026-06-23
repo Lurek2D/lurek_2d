@@ -41,11 +41,12 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Owning tier: `Feature Systems`
 - Plugin tier: `tier_2_plugin`
 - Lua binding owner: `src/lua_api/mods_api.rs`
-- Referenced engine modules: `runtime`
+- Referenced engine modules: `runtime`, `serialize`
 
 ## Imports
 
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
+- `serialize`: Imports or references `src/serialize/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 
 ## Source Files
 
@@ -77,7 +78,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ### mod_loader.rs
 
 - `src/mods/mod_loader.rs` parses TOML content files into typed `ModInstance` records ready for registry validation.
-- It owns `FieldValue`, `ModContentLoadOptions`, scalar coercion helpers, real TOML decoding, and source-path attachment.
+- It owns `FieldValue`, `ModContentLoadOptions`, scalar coercion helpers, and source-path attachment.
 - Instance bootstrap from content files happens here so manifest decoding stays separate from registration and execution.
 - Complex field values remain structured instead of being flattened into strings during parse time.
 - This file does not manage dependency order or sandbox policy; it only turns content text into structured instances.

@@ -4863,7 +4863,7 @@ function library.loot.newTable() end
 ---@return LootTable
 function library.loot.fromList(entries) end
 
---- Load a loot table from a TOML file via `lurek.filesystem.read` + `lurek.serial.fromToml`. The file must contain an `entries = [...]` array.
+--- Load a loot table from a TOML file via `lurek.filesystem.read` + `lurek.serialize.fromToml`. The file must contain an `entries = [...]` array.
 ---@param path string
 ---@return LootTable
 function library.loot.fromToml(path) end
@@ -5837,7 +5837,7 @@ function QuestLog:completedCount() end
 ---@return boolean
 function Objective:removeTag(tag) end
 
---- Encode a `QuestLog` to a JSON string via `lurek.serialize.toJson`.
+--- Encode a `QuestLog` to a JSON string via `lurek.serializeize.toJson`.
 ---@param log QuestLog
 ---@return string
 function library.quest.toJson(log) end
@@ -6590,12 +6590,12 @@ function Sheet:snapshot() end
 ---@return nil
 function Sheet:restore(snap) end
 
---- Encode a snapshot table to a JSON string via `lurek.serialize.toJson`.
+--- Encode a snapshot table to a JSON string via `lurek.serializeize.toJson`.
 ---@param snap table
 ---@return string
 function library.stats.snapshotToJson(snap) end
 
---- Decode a JSON snapshot string back into a Lua table via `lurek.serialize.fromJson`. The returned table can be passed to `Sheet:restore`.
+--- Decode a JSON snapshot string back into a Lua table via `lurek.serializeize.fromJson`. The returned table can be passed to `Sheet:restore`.
 ---@param str string
 ---@return table
 function library.stats.snapshotFromJson(str) end

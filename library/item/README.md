@@ -21,4 +21,4 @@ print("History entries:", mgr:historySize())
 
 ## Dependencies
 
-- `lurek.math` (optional), `lurek.serialize` (optional)
+- `lurek.math` (optional), `lurek.serializeize` (optional)

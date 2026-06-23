@@ -2,13 +2,22 @@
 
 use super::SharedState;
 use crate::save::{
-    compress_save_content_with_limits, decompress_save_content_with_limits,
-    parse_save_table_with_limits, serialize_table, SaveManager, SaveValue,
+    compress_save_content_with_limits, decompress_save_content_with_limits, SaveLuaLimits,
+    SaveManager, SaveParseLimits,
 };
+use crate::serialize::lua_table::to_lua;
+use crate::serialize::{
+    decode_bytes_with_options, decode_text, encode, from_lua_with_limits, DecodeOptions,
+    EncodeOptions, EncodedValue, SerialFormat, SerializeLimits,
+};
+use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::{BTreeSet, HashMap};
 use std::rc::Rc;
+
+const SAVE_PAYLOAD_HEADER_PREFIX: &str = "--[[LUREK_SAVE v2 ";
+const SAVE_PAYLOAD_HEADER_SUFFIX: &str = "]]";
 /// Extracts a logical slot name from a `slot_<name>.sav` filename.
 fn slot_name_from_filename(filename: &str) -> Option<&str> {
     filename.strip_prefix("slot_").and_then(|s| {
@@ -22,13 +31,117 @@ fn parse_save_content<'a>(
     content: &str,
     manager: &SaveManager,
 ) -> LuaResult<LuaTable<'a>> {
-    let root =
-        parse_save_table_with_limits(content, &manager.limits().parse).map_err(LuaError::from)?;
-    match SaveValue::Table(root).to_lua(lua)? {
+    let value = decode_save_payload(content, manager)?;
+    match to_lua(lua, &value)? {
         LuaValue::Table(table) => Ok(table),
         _ => Err(LuaError::RuntimeError(
             "save root must decode to a table".to_string(),
         )),
+    }
+}
+
+fn serialize_limits(parse: &SaveParseLimits, lua: &SaveLuaLimits) -> SerializeLimits {
+    SerializeLimits {
+        max_depth: lua.max_depth,
+        max_nodes: lua.max_total_nodes,
+        max_string_chars: lua.max_string_chars,
+        max_table_entries: lua.max_table_entries,
+        max_sequence_len: lua.max_table_entries,
+        max_input_bytes: parse.max_input_bytes,
+        max_detect_attempts: 1,
+    }
+}
+
+fn decode_options(manager: &SaveManager) -> DecodeOptions {
+    DecodeOptions {
+        limits: serialize_limits(&manager.limits().parse, &manager.limits().lua),
+        allowed_formats: vec![manager.format()],
+        ..DecodeOptions::default()
+    }
+}
+
+fn encode_options(manager: &SaveManager) -> EncodeOptions {
+    EncodeOptions {
+        limits: serialize_limits(&manager.limits().parse, &manager.limits().lua),
+        ..EncodeOptions::default()
+    }
+}
+
+fn parse_save_payload_header(content: &str) -> Result<(SerialFormat, &str, &str), String> {
+    let (header, payload) = content
+        .split_once('\n')
+        .ok_or_else(|| "save payload missing header".to_string())?;
+    let body = header
+        .strip_prefix(SAVE_PAYLOAD_HEADER_PREFIX)
+        .and_then(|rest| rest.strip_suffix(SAVE_PAYLOAD_HEADER_SUFFIX))
+        .ok_or_else(|| "save payload header is invalid".to_string())?;
+    let mut format = None;
+    let mut encoding = None;
+    for field in body.split_whitespace() {
+        if let Some(value) = field.strip_prefix("format=") {
+            format = SerialFormat::parse(value);
+        } else if let Some(value) = field.strip_prefix("encoding=") {
+            encoding = Some(value);
+        }
+    }
+    let format = format.ok_or_else(|| "save payload format is invalid".to_string())?;
+    let encoding = encoding.ok_or_else(|| "save payload encoding is missing".to_string())?;
+    Ok((format, encoding, payload))
+}
+
+fn encode_save_payload(_lua: &Lua, value: LuaValue, manager: &SaveManager) -> LuaResult<String> {
+    let limits = serialize_limits(&manager.limits().parse, &manager.limits().lua);
+    let serial = from_lua_with_limits(&value, &limits)
+        .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
+    let encoded = encode(&serial, manager.format(), encode_options(manager))
+        .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
+    match encoded {
+        EncodedValue::Text(text) => Ok(format!(
+            "{}format={} encoding=text{}\n{}",
+            SAVE_PAYLOAD_HEADER_PREFIX,
+            manager.format().as_str(),
+            SAVE_PAYLOAD_HEADER_SUFFIX,
+            text
+        )),
+        EncodedValue::Binary(bytes) => Ok(format!(
+            "{}format={} encoding=base64{}\n{}",
+            SAVE_PAYLOAD_HEADER_PREFIX,
+            manager.format().as_str(),
+            SAVE_PAYLOAD_HEADER_SUFFIX,
+            BASE64.encode(bytes)
+        )),
+    }
+}
+
+fn decode_save_payload(
+    content: &str,
+    manager: &SaveManager,
+) -> LuaResult<crate::serialize::SerialValue> {
+    let (format, encoding, payload) =
+        parse_save_payload_header(content).map_err(LuaError::RuntimeError)?;
+    if format != manager.format() {
+        return Err(LuaError::RuntimeError(format!(
+            "save payload format '{}' does not match manager format '{}'",
+            format.as_str(),
+            manager.format().as_str()
+        )));
+    }
+    let opts = decode_options(manager);
+    match encoding {
+        "text" => decode_text(payload, Some(format), opts)
+            .map_err(|err| LuaError::RuntimeError(err.to_string())),
+        "base64" => {
+            let bytes = BASE64
+                .decode(payload.trim())
+                .map_err(|err| LuaError::RuntimeError(format!("save payload base64: {err}")))?;
+            decode_bytes_with_options(&bytes, format, opts)
+                .map(|decoded| decoded.value)
+                .map_err(|err| LuaError::RuntimeError(err.to_string()))
+        }
+        other => Err(LuaError::RuntimeError(format!(
+            "save payload encoding '{}' is not supported",
+            other
+        ))),
     }
 }
 /// Manages persistent game state: registering data collectors/restorers, serializing to named.
@@ -129,16 +242,7 @@ impl LuaSaveManager {
     }
     fn serialize_collected(&self, lua: &Lua) -> LuaResult<String> {
         let data_table = self.collect_data(lua)?;
-        let mut data_map = HashMap::new();
-        for pair in data_table.pairs::<String, LuaValue>() {
-            let (k, v) = pair?;
-            data_map.insert(
-                k,
-                SaveValue::from_lua_with_limits(&v, &self.manager.limits().lua)?,
-            );
-        }
-        let body = serialize_table(&data_map, 0).map_err(LuaError::RuntimeError)?;
-        Ok(format!("return {}\n", body))
+        encode_save_payload(lua, LuaValue::Table(data_table), &self.manager)
     }
     fn save_to_slot(&mut self, lua: &Lua, slot: &str) -> LuaResult<()> {
         if let Some(ref key) = self.before_save {
@@ -532,6 +636,32 @@ impl LuaUserData for LuaSaveManager {
         /// Check whether save compression is currently enabled.
         /// @return | boolean | True if future saves will be LZ4-compressed.
         methods.add_method("isCompressed", |_, this, ()| Ok(this.compress));
+        // -- setFormat --
+        /// Set the payload serialization format for future saves and loads.
+        /// Supported formats are `"msgpack"`, `"json"`, and `"toml"`; MessagePack is the default.
+        /// @param | format | string | Payload format name.
+        methods.add_method_mut("setFormat", |_, this, format: String| {
+            let parsed = SerialFormat::parse(&format).ok_or_else(|| {
+                LuaError::RuntimeError(format!("lurek.save:setFormat: unknown format '{}'", format))
+            })?;
+            if !matches!(
+                parsed,
+                SerialFormat::MsgPack | SerialFormat::Json | SerialFormat::Toml
+            ) {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.save:setFormat: '{}' is not a supported save format",
+                    parsed.as_str()
+                )));
+            }
+            this.manager.set_format(parsed);
+            Ok(())
+        });
+        // -- getFormat --
+        /// Return the payload serialization format used for saves and loads.
+        /// @return | string | Current format name.
+        methods.add_method("getFormat", |_, this, ()| {
+            Ok(this.manager.format().as_str().to_string())
+        });
         // -- onBeforeSave --
         /// Set a hook function called immediately before each save operation begins.
         /// Useful for last-moment state snapshots or UI feedback ("Saving...").
@@ -636,6 +766,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LSaveManager | A fresh save manager with no registered sections.
     tbl.set(
         "newSaveManager",
+        lua.create_function(move |lua, ()| lua.create_userdata(LuaSaveManager::new(s.clone())))?,
+    )?;
+    let s = state.clone();
+    // -- newManager --
+    /// Create a new SaveManager instance for managing persistent game saves.
+    /// @return | LSaveManager | A fresh save manager with no registered sections.
+    tbl.set(
+        "newManager",
         lua.create_function(move |lua, ()| lua.create_userdata(LuaSaveManager::new(s.clone())))?,
     )?;
     /// Performs the 'save' operation.

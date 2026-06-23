@@ -3,20 +3,20 @@
 
 -- @describe data + compute integration
 describe("data + compute integration", function()
-    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serialize.fromJson
     -- @integration lurek.compute.fromTable
     -- @integration LArray:sum
-    -- @integration lurek.serial.toJson
+    -- @integration lurek.serialize.toJson
     it("JSON round-trip preserves data for compute", function()
         local original = {
             values = { 1.5, 2.7, 3.14, 4.0 },
             label = "test_buffer"
         }
 
-        local encoded = lurek.serial.toJson(original)
+        local encoded = lurek.serialize.toJson(original)
         expect_type("string", encoded)
 
-        local decoded = lurek.serial.fromJson(encoded)
+        local decoded = lurek.serialize.fromJson(encoded)
         expect_type("table", decoded)
         expect_equal("test_buffer", decoded.label, "label preserved")
         expect_equal(4, #decoded.values, "4 values preserved")
@@ -27,17 +27,17 @@ describe("data + compute integration", function()
         expect_near(11.34, arr:sum(), 0.01, "sum preserved through serial + compute")
     end)
 
-    -- @integration lurek.serial.fromToml
+    -- @integration lurek.serialize.fromToml
     -- @integration LArray:getSize
     -- @integration lurek.compute.zeros
-    -- @integration lurek.serial.toToml
+    -- @integration lurek.serialize.toToml
     -- @integration lurek.binary.compress
     -- @integration lurek.compute.fromTable
     -- @integration lurek.compute.zeros
-    -- @integration lurek.serial.fromJson
-    -- @integration lurek.serial.fromToml
-    -- @integration lurek.serial.toJson
-    -- @integration lurek.serial.toToml
+    -- @integration lurek.serialize.fromJson
+    -- @integration lurek.serialize.fromToml
+    -- @integration lurek.serialize.toJson
+    -- @integration lurek.serialize.toToml
     it("TOML round-trip preserves typed data", function()
         local config = {
             compute = {
@@ -47,10 +47,10 @@ describe("data + compute integration", function()
             }
         }
 
-        local encoded = lurek.serial.toToml(config)
+        local encoded = lurek.serialize.toToml(config)
         expect_type("string", encoded)
 
-        local decoded = lurek.serial.fromToml(encoded)
+        local decoded = lurek.serialize.fromToml(encoded)
         expect_type("table", decoded)
         expect_equal(1024, decoded.compute.buffer_size, "buffer_size preserved")
         expect_equal("float32", decoded.compute.precision, "precision preserved")
@@ -61,10 +61,10 @@ describe("data + compute integration", function()
         expect_equal(1024, buf:getSize(), "decoded buffer_size used by compute")
     end)
 
-    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serialize.fromJson
     -- @integration lurek.compute.fromTable
     -- @integration LArray:sum
-    -- @integration lurek.serial.toJson
+    -- @integration lurek.serialize.toJson
     it("serial round-trip preserves compute config", function()
         -- lurek.binary.compress is not available headless; test serial round-trip instead
         local payload = {
@@ -72,9 +72,9 @@ describe("data + compute integration", function()
             dispatch = { x = 64, y = 1, z = 1 },
             precision = "float32",
         }
-        local encoded   = lurek.serial.toJson(payload)
+        local encoded   = lurek.serialize.toJson(payload)
         expect_type("string", encoded)
-        local decoded = lurek.serial.fromJson(encoded)
+        local decoded = lurek.serialize.fromJson(encoded)
         expect_not_nil(decoded, "decoded is non-nil")
         expect_equal("float32", decoded.precision, "precision preserved")
         expect_equal(64, decoded.dispatch.x, "dispatch.x preserved")
@@ -86,20 +86,20 @@ describe("data + compute integration", function()
         expect_equal(2048, arr:sum(), "decoded buffer sizes usable by compute")
     end)
 
-    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serialize.fromJson
     -- @integration lurek.compute.fromTable
     -- @integration LArray:mean
-    -- @integration lurek.serial.toJson
+    -- @integration lurek.serialize.toJson
     it("large table serialization stress", function()
         local big = {}
         for i = 1, 1000 do
             big[i] = { x = i * 0.1, y = i * 0.2, name = "item_" .. i }
         end
 
-        local encoded = lurek.serial.toJson(big)
+        local encoded = lurek.serialize.toJson(big)
         expect_true(#encoded > 1000, "encoded has content")
 
-        local decoded = lurek.serial.fromJson(encoded)
+        local decoded = lurek.serialize.fromJson(encoded)
         expect_equal(1000, #decoded, "1000 items decoded")
         expect_near(100.0, decoded[1000].x, 0.01, "last item x correct")
 

@@ -18,7 +18,7 @@
 -- @module library.loot
 -- @status full
 -- @see lurek.math.newRandomGenerator   default RNG source for sampling
--- @see lurek.serial.fromToml             designer-authored loot tables (`fromToml`)
+-- @see lurek.serialize.fromToml             designer-authored loot tables (`fromToml`)
 -- @see lurek.filesystem.read                    sandboxed file load for `fromToml`
 -- @see lurek.save                   `Pity:save`/`restore` collector wiring
 
@@ -131,7 +131,7 @@ function M.fromList(entries)
     return t
 end
 
---- Load a loot table from a TOML file via `lurek.filesystem.read` + `lurek.serial.fromToml`.
+--- Load a loot table from a TOML file via `lurek.filesystem.read` + `lurek.serialize.fromToml`.
 -- The file must contain an `entries = [...]` array.
 -- @param path string Sandboxed game-path to a TOML file.
 -- @treturn LootTable
@@ -141,12 +141,12 @@ function M.fromToml(path)
        or type(lurek.filesystem.read) ~= "function" then
         error("loot.fromToml: lurek.filesystem.read unavailable", 2)
     end
-    if type(lurek.serial) ~= "table" or type(lurek.serial.fromToml) ~= "function" then
-        error("loot.fromToml: lurek.serial.fromToml unavailable", 2)
+    if type(lurek.serialize) ~= "table" or type(lurek.serialize.fromToml) ~= "function" then
+        error("loot.fromToml: lurek.serialize.fromToml unavailable", 2)
     end
     local ok_read, src = pcall(lurek.filesystem.read, path)
     if not ok_read then error("loot.fromToml: read failed: " .. tostring(src), 2) end
-    local ok_parse, data = pcall(lurek.serial.fromToml, src)
+    local ok_parse, data = pcall(lurek.serialize.fromToml, src)
     if not ok_parse then error("loot.fromToml: parse failed: " .. tostring(data), 2) end
     if type(data) ~= "table" or type(data.entries) ~= "table" then
         error("loot.fromToml: expected top-level 'entries' array", 2)

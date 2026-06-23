@@ -23,7 +23,7 @@
 ---
 --- @see lurek.image.newProvinceGrid
 --- @see lurek.graph.newGraph
---- @see lurek.serial.toJson
+--- @see lurek.serialize.toJson
 
 local M = {}
 

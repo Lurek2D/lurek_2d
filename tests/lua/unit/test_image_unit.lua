@@ -349,15 +349,6 @@ describe("LImageData methods", function()
         expect_equal(255, a)
     end)
 
-    -- @covers LImageData:drawNineSlice
-    it("drawNineSlice stretches the center patch into the target", function()
-        local src = solid_image(6, 6, 10, 10, 10, 255)
-        local dst = solid_image(20, 20, 0, 0, 0, 0)
-        src:drawRect(2, 2, 2, 2, 220, 30, 30, 255)
-        dst:drawNineSlice(src, 0, 0, 6, 6, 4, 4, 12, 12, 2, 2, 2, 2)
-        expect_pixel(dst, 10, 10, 220, 30, 30, 255)
-    end)
-
     -- @covers LImageData:drawRect
     it("drawRect fills the requested rectangle", function()
         local img = solid_image(8, 8, 0, 0, 0, 0)

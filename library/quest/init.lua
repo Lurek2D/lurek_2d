@@ -19,7 +19,7 @@
 --   to receive `quest_started` / `quest_advanced` / `quest_completed` /
 --   `quest_failed` events.
 -- * Serialisation: `M.toJson(log)` / `M.fromJson(str)` round-trip the log
---   through `lurek.serialize.toJson` / `lurek.serialize.fromJson`.
+--   through `lurek.serializeize.toJson` / `lurek.serializeize.fromJson`.
 -- * Persistence: register a custom collector with `lurek.save.SaveManager`
 --   that calls `M.toJson(log)` on save and `M.fromJson(str)` on load.
 -- * Time-limited objectives: drive expiry from a `lurek.timer.Scheduler` you
@@ -42,8 +42,8 @@
 -- @module library.quest
 -- @status full
 -- @see lurek.patterns.newEventBus
--- @see lurek.serialize.toJson
--- @see lurek.serialize.fromJson
+-- @see lurek.serializeize.toJson
+-- @see lurek.serializeize.fromJson
 -- @see lurek.save.SaveManager
 -- @see lurek.timer.Scheduler
 
@@ -814,18 +814,18 @@ local function _table_to_quest(t)
     return q
 end
 
---- Encode a `QuestLog` to a JSON string via `lurek.serialize.toJson`.
+--- Encode a `QuestLog` to a JSON string via `lurek.serializeize.toJson`.
 -- @tparam QuestLog log
 -- @treturn string JSON-encoded log.
--- @see lurek.serialize.toJson
+-- @see lurek.serializeize.toJson
 function M.toJson(log)
-    assert(lurek and lurek.serialize and lurek.serialize.toJson,
-        "library.quest.toJson requires lurek.serialize.toJson")
+    assert(lurek and lurek.serializeize and lurek.serializeize.toJson,
+        "library.quest.toJson requires lurek.serializeize.toJson")
     local quests = {}
     for _, id in ipairs(log._order) do
         quests[#quests+1] = _quest_to_table(log._quests[id])
     end
-    return lurek.serialize.toJson({ quests = quests })
+    return lurek.serializeize.toJson({ quests = quests })
 end
 
 --- Decode a JSON-encoded log into a fresh `QuestLog`. The optional `into`
@@ -833,11 +833,11 @@ end
 -- @tparam string str JSON-encoded log produced by `M.toJson`.
 -- @tparam[opt] QuestLog into Existing log to populate; a new one is created when nil.
 -- @treturn QuestLog
--- @see lurek.serialize.fromJson
+-- @see lurek.serializeize.fromJson
 function M.fromJson(str, into)
-    assert(lurek and lurek.serialize and lurek.serialize.fromJson,
-        "library.quest.fromJson requires lurek.serialize.fromJson")
-    local data = lurek.serialize.fromJson(str)
+    assert(lurek and lurek.serializeize and lurek.serializeize.fromJson,
+        "library.quest.fromJson requires lurek.serializeize.fromJson")
+    local data = lurek.serializeize.fromJson(str)
     local log = into or M.newQuestLog()
     log._quests = {}
     log._order = {}

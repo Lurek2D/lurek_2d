@@ -5,7 +5,7 @@
 | **Tier**       | Tier 3 â€” Lureksome (pure Lua)                                                                                                                                    |
 | **Source**     | `library/narrative/init.lua`                                                                                                                                    |
 | **Lua Tests**  | `tests/lua/library/test_library_narrative.lua`                                                                                                                  |
-| **Depends on** | `lurek.filesystem.read` (loadFile), `lurek.serial` (precompile blobs), `lurek.i18n.t` (optional), `lurek.log.debug` (trace), `lurek.save` (collector wiring) |
+| **Depends on** | `lurek.filesystem.read` (loadFile), `lurek.serialize` (precompile blobs), `lurek.i18n.t` (optional), `lurek.log.debug` (trace), `lurek.save` (collector wiring) |
 | **Status**     | partial â€” usable Ink subset; full Ink parity is non-goal                                                                                                        |
 
 ## Purpose
@@ -67,7 +67,7 @@ VAR name = value         -- declare initial variable
 ## Dependencies
 
 - **`lurek.filesystem.read`** â€” reads `.ink` files for `M.loadFile`.
-- **`lurek.serial`** â€” caller may persist `precompile` output via JSON.
+- **`lurek.serialize`** â€” caller may persist `precompile` output via JSON.
 - **`lurek.i18n.t`** â€” only used if `M.localiseStory` is invoked.
 - **`lurek.log.debug`** â€” used when `story:trace(true)` is enabled.
 - **`lurek.save`** â€” caller wires `story:save()/resume()` collectors.
@@ -93,7 +93,7 @@ choices, conditions, tags, and save/resume.
   story's `_vars` and `_fns` tables â€” host globals are not visible.
 - `story:save()` only persists scalar (number/string/boolean) variables;
   table-valued variables are skipped to keep the blob safely round-trippable
-  through `lurek.serial.toJson`.
+  through `lurek.serialize.toJson`.
 - `M.localiseStory` is a thin wrapper â€” it translates `{loc:KEY}` markers
   found in already-substituted prose; richer i18n (gendered plurals, etc.)
   belongs in `lurek.i18n` itself.

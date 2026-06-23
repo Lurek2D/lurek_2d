@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-23T14:48:18.532245+00:00",
+    "generated": "2026-06-23T16:30:20.702351+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6158,
-    "marker_covered": 6118,
+    "total_api_functions": 6160,
+    "marker_covered": 6120,
     "describe_covered": 152,
     "describe_coverage_pct": 2.5,
     "heuristic_covered": 0,
-    "total_covered": 6158,
+    "total_covered": 6160,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -21210,11 +21210,11 @@
       ]
     },
     "image": {
-      "total": 103,
-      "marker_covered": 103,
+      "total": 102,
+      "marker_covered": 102,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 103,
+      "covered": 102,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -21991,15 +21991,6 @@
         },
         {
           "lua_name": "LImageData:blit",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LImageData:drawNineSlice",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -42356,11 +42347,11 @@
       ]
     },
     "render": {
-      "total": 206,
-      "marker_covered": 206,
+      "total": 205,
+      "marker_covered": 205,
       "describe_covered": 2,
       "heuristic_covered": 0,
-      "covered": 206,
+      "covered": 205,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 1.0,
       "describe_score": 0.01,
@@ -42369,7 +42360,8 @@
         "tests/lua/unit/test_font_unit.lua",
         "tests/lua/unit/test_image_unit.lua",
         "tests/lua/unit/test_render_unit.lua",
-        "tests/lua/unit/test_shape_unit.lua"
+        "tests/lua/unit/test_shape_unit.lua",
+        "tests/lua/unit/test_sprite_unit.lua"
       ],
       "describe_files": [
         "tests/lua/unit/test_render_unit.lua"
@@ -43184,15 +43176,6 @@
           "heuristic_covered": false,
           "covered": true,
           "describe_score": 1.0
-        },
-        {
-          "lua_name": "lurek.render.newNineSlice",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
         },
         {
           "lua_name": "lurek.render.drawNineSlice",
@@ -44321,14 +44304,14 @@
       ]
     },
     "save": {
-      "total": 28,
-      "marker_covered": 28,
+      "total": 31,
+      "marker_covered": 31,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 28,
+      "covered": 31,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 3.6,
-      "describe_score": 0.036,
+      "describe_coverage_pct": 3.2,
+      "describe_score": 0.032,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_save_unit.lua"
@@ -44339,6 +44322,15 @@
       "functions": [
         {
           "lua_name": "lurek.save.newSaveManager",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.save.newManager",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -44492,6 +44484,24 @@
         },
         {
           "lua_name": "LSaveManager:isCompressed",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSaveManager:setFormat",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSaveManager:getFormat",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -45355,7 +45365,7 @@
       "describe_files": [],
       "functions": [
         {
-          "lua_name": "lurek.serial.fromJson",
+          "lua_name": "lurek.serialize.fromJson",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45364,7 +45374,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.toJson",
+          "lua_name": "lurek.serialize.toJson",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45373,7 +45383,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.fromToml",
+          "lua_name": "lurek.serialize.fromToml",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45382,7 +45392,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.fromIni",
+          "lua_name": "lurek.serialize.fromIni",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45391,7 +45401,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.toToml",
+          "lua_name": "lurek.serialize.toToml",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45400,7 +45410,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.fromCsv",
+          "lua_name": "lurek.serialize.fromCsv",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45409,7 +45419,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.toCsv",
+          "lua_name": "lurek.serialize.toCsv",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45418,7 +45428,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.encodeMsgPack",
+          "lua_name": "lurek.serialize.encodeMsgPack",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45427,7 +45437,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.encodeMsgPack",
+          "lua_name": "lurek.serialize.encodeMsgPack",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45436,7 +45446,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.decodeMsgPack",
+          "lua_name": "lurek.serialize.decodeMsgPack",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45445,7 +45455,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.decodeXml",
+          "lua_name": "lurek.serialize.decodeXml",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45454,7 +45464,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.validate",
+          "lua_name": "lurek.serialize.validate",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45463,7 +45473,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.detectFormat",
+          "lua_name": "lurek.serialize.detectFormat",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45472,7 +45482,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.decode",
+          "lua_name": "lurek.serialize.decode",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45481,7 +45491,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.encode",
+          "lua_name": "lurek.serialize.encode",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45490,7 +45500,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.serial.applyDefaults",
+          "lua_name": "lurek.serialize.applyDefaults",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -45860,16 +45870,17 @@
       ]
     },
     "sprite": {
-      "total": 61,
-      "marker_covered": 61,
+      "total": 62,
+      "marker_covered": 62,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 61,
+      "covered": 62,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 1.6,
       "describe_score": 0.016,
       "uncovered": [],
       "test_files": [
+        "tests/lua/unit/test_render_unit.lua",
         "tests/lua/unit/test_sprite_unit.lua"
       ],
       "describe_files": [
@@ -45932,6 +45943,15 @@
         },
         {
           "lua_name": "lurek.sprite.newAtlasPacker",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.sprite.newNineSlice",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,

@@ -31,11 +31,11 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 - Owning tier: `Platform Services`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/font_api.rs`
-- Referenced engine modules: None detected from Rust imports.
+- Referenced engine modules: `runtime`
 
 ## Imports
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
 ## Source Files
 
@@ -58,7 +58,7 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 
 - `src/font/mod.rs` is the font module index, exposing atlas, metrics, registry, and shaping surfaces in one place.
 - It reexports the public text stack so renderers, UI systems, and bindings can reach font services through one boundary.
-- No runtime font state lives here; this file defines visibility and navigation while implementation stays in child files.
+- Runtime font atlas state lives in `runtime_font`, while this file defines visibility and navigation.
 - Read this index when wiring text features, because it shows which font symbols are intentionally public and stable.
 - Changes here alter the typography boundary, since reexports decide what the engine and Lua-facing layers may import.
 - This module groups loading, measurement, shaping, and lookup concerns without collapsing them into one file.
@@ -70,6 +70,17 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 - Replacement, default-font selection, and registration order live here so text consumers share one asset authority.
 - Open this file when font ownership, lookup semantics, or public handle metadata for runtime text assets must change.
 - Neighboring systems should treat this file as the font boundary for asset access, not the place for shaping or metrics.
+
+### runtime_font.rs
+
+- Owns runtime font assets, glyph metrics, and atlas layout used by text rendering across runtime UI and debug views.
+- Supports bundled Courier New atlases at multiple sizes alongside dynamic fontdue rasterization from bytes.
+- Maps characters to atlas cells, UV coordinates, advances, and fallback substitutions under one font contract.
+- Provides nearest-size lookup so callers can request practical font points without managing raw atlas sets.
+- Handles wrapping, alignment metrics, and pen movement needed by layout and draw code above this layer.
+- Extends character mapping with retro symbols and box characters used by terminal or pixel-art interfaces.
+- Acts as the text-asset boundary rather than the owner of final UI or renderer command emission.
+- Open this file when glyph lookup, atlas data, wrapping, or dynamic font loading behaves incorrectly.
 
 ### shaping.rs
 

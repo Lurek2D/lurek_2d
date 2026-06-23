@@ -1,4 +1,4 @@
-//! Exports the render subsystem surface that groups canvases, GPU owners, fonts, shapes, shaders, and pipelines.
+//! Exports the render subsystem surface that groups canvases, GPU owners, shapes, shaders, and pipelines.
 //! Acts as the render ownership index so callers can map a rendering concern to its concrete Rust owner file.
 //! Centralizes module visibility and re-exports instead of storing live frame state or issuing draw work itself.
 //! Connects front-end draw commands, geometry assets, shader tools, and GPU execution modules into one stack.
@@ -13,8 +13,6 @@ pub mod canvas;
 pub mod decal_surface;
 /// Draw-layer abstraction: ordered buckets of `RenderCommand`s flushed each frame.
 pub mod draw_layer;
-/// Fontdue-backed font rasterisation and glyph atlas management.
-pub mod font;
 /// GPU canvas render-target synchronization and dimension helpers.
 pub mod gpu_canvas_pass;
 /// Prepared draw encoding into active GPU render passes.
@@ -73,7 +71,6 @@ pub mod software_capture;
 pub use canvas::Canvas;
 pub use decal_surface::DecalSurface;
 pub use draw_layer::DrawLayer;
-pub use font::Font;
 pub use gpu_pipeline::GpuStencilMode;
 pub use gpu_renderer::GpuRenderer;
 pub use image_effect::ShaderPassDescriptor;

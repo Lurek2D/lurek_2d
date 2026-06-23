@@ -1898,9 +1898,9 @@ LBoxPlotChart:addSeries(name, values, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `values` | any |  |
-| `color?` | any |  |
+| `name` | string | Distribution series name. |
+| `values` | table | Numeric sample values for the distribution. |
+| `color?` | table | Optional RGBA color table for the series. |
 
 **Example**
 
@@ -1930,9 +1930,9 @@ LBoxPlotChart:appendValue(name, value, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `value` | any |  |
-| `color?` | any |  |
+| `name` | string | Distribution series name. |
+| `value` | number | Numeric sample value to append. |
+| `color?` | table | Optional RGBA color table for a new series. |
 
 **Example**
 
@@ -2312,9 +2312,9 @@ LBubbleChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `data` | any |  |
-| `color?` | any |  |
+| `name` | string | Bubble series name. |
+| `data` | table | Array-style table of `{x, y, size}` rows. |
+| `color?` | table | Optional RGBA color table for the series. |
 
 **Example**
 
@@ -2344,11 +2344,11 @@ LBubbleChart:appendPoint(name, x, y, size, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `x` | any |  |
-| `y` | any |  |
-| `size` | any |  |
-| `color?` | any |  |
+| `name` | string | Bubble series name. |
+| `x` | number | X value for the point. |
+| `y` | number | Y value for the point. |
+| `size` | number | Relative bubble size value. |
+| `color?` | table | Optional RGBA color table for a new series. |
 
 **Example**
 
@@ -2593,8 +2593,8 @@ LBubbleChart:setRadiusRange(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | any |  |
-| `max` | any |  |
+| `min` | number | Minimum bubble radius in pixels. |
+| `max` | number | Maximum bubble radius in pixels. |
 
 **Example**
 
@@ -2759,11 +2759,11 @@ LCandlestickChart:appendCandle(label, open, high, low, close)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
-| `open` | any |  |
-| `high` | any |  |
-| `low` | any |  |
-| `close` | any |  |
+| `label` | string | Label for the candle, usually a time or category. |
+| `open` | number | Opening value for the candle. |
+| `high` | number | Highest value for the candle. |
+| `low` | number | Lowest value for the candle. |
+| `close` | number | Closing value for the candle. |
 
 **Example**
 
@@ -3017,7 +3017,7 @@ LCandlestickChart:setCandles(candles)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `candles` | any |  |
+| `candles` | table | Array-style table containing OHLC candle rows. |
 
 **Example**
 
@@ -3041,7 +3041,7 @@ end
 
 #### `LCandlestickChart:setColors`
 
-Sets up/down candle colors.
+Sets the rising and falling candle colors used by the candlestick renderer.
 
 ```lua
 LCandlestickChart:setColors(up, down)
@@ -3051,8 +3051,8 @@ LCandlestickChart:setColors(up, down)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `up` | any |  |
-| `down` | any |  |
+| `up` | table | RGBA color table for rising candles. |
+| `down` | table | RGBA color table for falling candles. |
 
 **Example**
 
@@ -5929,9 +5929,9 @@ LRadarChart:addSeries(name, values, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `values` | any |  |
-| `color?` | any |  |
+| `name` | string | Radar series name. |
+| `values` | table | Numeric values matching the configured axes. |
+| `color?` | table | Optional RGBA color table for the series. |
 
 **Example**
 
@@ -6201,7 +6201,7 @@ end
 
 #### `LRadarChart:setAxes`
 
-Replaces radar axis labels.
+Replaces the radar axis labels used for each radial spoke.
 
 ```lua
 LRadarChart:setAxes(axes)
@@ -6211,7 +6211,7 @@ LRadarChart:setAxes(axes)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `axes` | any |  |
+| `axes` | table | Array-style table of axis label strings. |
 
 **Example**
 
@@ -6242,7 +6242,7 @@ LRadarChart:setMaxValue(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | number | Maximum value used to scale radar series. |
 
 **Example**
 
@@ -7194,7 +7194,7 @@ end
 
 #### `LTreemapChart:addItem`
 
-Adds one weighted treemap item.
+Adds one weighted treemap item to the current rectangle layout.
 
 ```lua
 LTreemapChart:addItem(label, value, color)
@@ -7204,9 +7204,9 @@ LTreemapChart:addItem(label, value, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
-| `value` | any |  |
-| `color?` | any |  |
+| `label` | string | Label to display for the treemap item. |
+| `value` | number | Positive weight value used for layout area. |
+| `color?` | table | Optional RGBA color table for this item. |
 
 **Example**
 
@@ -7460,7 +7460,7 @@ LTreemapChart:setItems(items)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `items` | any |  |
+| `items` | table | Array-style table of weighted treemap item rows. |
 
 **Example**
 

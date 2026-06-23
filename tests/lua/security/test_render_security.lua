@@ -442,10 +442,10 @@ end)
 
 -- @describe fuzz: P0 modules nil type extreme
 describe("fuzz: P0 modules nil type extreme", function()
-    -- @security lurek.serial.fromJson
+    -- @security lurek.serialize.fromJson
     it("serial.fromJson rejects hostile payloads without panic", function()
         expect_error(function()
-            lurek.serial.fromJson(string.rep("{", 2048))
+            lurek.serialize.fromJson(string.rep("{", 2048))
         end)
     end)
 end)

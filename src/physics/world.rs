@@ -12,6 +12,7 @@
 //! Meter conversion helpers keep pixel-authored content aligned with simulation units without spreading scale math.
 //! Debug extraction exposes shape snapshots and image drawing support so tools can inspect runtime geometry easily.
 //! Open this file when runtime ownership or physics behavior changes; pure shape and zone definitions live nearby.
+//! Keep Lua conversion, renderer submission, asset parsing, and editor UI policy outside this simulation owner.
 
 use super::body::{Body, BodyShape, BodyType};
 use super::error::PhysicsError;

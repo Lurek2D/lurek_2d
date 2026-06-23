@@ -1249,6 +1249,25 @@
       "tests/lua/golden/test_sprite_golden.lua"
     ]
   },
+  "svg": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/svg/svg_geometry_debug.png",
+      "tests/artifacts/baselines/svg/svg_report.txt",
+      "tests/artifacts/baselines/svg/svg_transform_visibility.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/svg/svg_geometry_debug.png",
+      "tests/artifacts/current/svg/svg_hierarchy_reset_trace.txt",
+      "tests/artifacts/current/svg/svg_report.txt",
+      "tests/artifacts/current/svg/svg_transform_visibility.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_svg_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_svg_golden.lua"
+    ]
+  },
   "terminal": {
     "baseline_artifacts": [
       "tests/artifacts/baselines/terminal/terminal_tui_chart_panels.png",

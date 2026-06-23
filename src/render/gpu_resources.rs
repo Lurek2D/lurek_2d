@@ -317,7 +317,7 @@ impl GpuRenderer {
     pub(crate) fn ensure_font_atlas(
         &mut self,
         font_key: FontKey,
-        font: &mut crate::render::Font,
+        font: &mut crate::font::Font,
         default_filter: &(String, String, u32),
     ) -> bool {
         let (data, w, h) = font.atlas_data();
@@ -445,7 +445,7 @@ impl GpuRenderer {
     pub(crate) fn prune_released_resources(
         &mut self,
         textures: &SlotMap<TextureKey, TextureData>,
-        fonts: &SlotMap<FontKey, crate::render::Font>,
+        fonts: &SlotMap<FontKey, crate::font::Font>,
         canvases: &SlotMap<CanvasKey, crate::render::Canvas>,
         shaders: &SlotMap<ShaderKey, Shader>,
         meshes: &SlotMap<MeshKey, crate::render::Mesh>,

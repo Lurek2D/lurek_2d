@@ -2068,7 +2068,7 @@ LRadarChart = {}
 ---@class LScatterPlot
 LScatterPlot = {}
 
---- Lua handle for a treemap chart.
+--- Lua handle for a treemap chart that renders weighted hierarchical rectangles.
 ---@class LTreemapChart
 LTreemapChart = {}
 
@@ -7354,15 +7354,15 @@ function LBarChart:type() end
 function LBarChart:typeOf(name) end
 
 --- Adds or replaces a named distribution sample series.
----@param name any
----@param values any
----@param color? any
+---@param name string Distribution series name.
+---@param values table Numeric sample values for the distribution.
+---@param color? table Optional RGBA color table for the series.
 function LBoxPlotChart:addSeries(name, values, color) end
 
 --- Appends one numeric sample to a named distribution.
----@param name any
----@param value any
----@param color? any
+---@param name string Distribution series name.
+---@param value number Numeric sample value to append.
+---@param color? table Optional RGBA color table for a new series.
 function LBoxPlotChart:appendValue(name, value, color) end
 
 --- Clears all chart data and cached chart state.
@@ -7414,17 +7414,17 @@ function LBoxPlotChart:type() end
 function LBoxPlotChart:typeOf(name) end
 
 --- Adds or replaces a weighted point series from `{x, y, size}` rows.
----@param name any
----@param data any
----@param color? any
+---@param name string Bubble series name.
+---@param data table Array-style table of `{x, y, size}` rows.
+---@param color? table Optional RGBA color table for the series.
 function LBubbleChart:addSeries(name, data, color) end
 
 --- Appends one weighted point to a named bubble series.
----@param name any
----@param x any
----@param y any
----@param size any
----@param color? any
+---@param name string Bubble series name.
+---@param x number X value for the point.
+---@param y number Y value for the point.
+---@param size number Relative bubble size value.
+---@param color? table Optional RGBA color table for a new series.
 function LBubbleChart:appendPoint(name, x, y, size, color) end
 
 --- Clears all chart data and cached chart state.
@@ -7459,8 +7459,8 @@ function LBubbleChart:render() end
 function LBubbleChart:renderImage() end
 
 --- Sets the minimum and maximum bubble radius in pixels.
----@param min any
----@param max any
+---@param min number Minimum bubble radius in pixels.
+---@param max number Maximum bubble radius in pixels.
 function LBubbleChart:setRadiusRange(min, max) end
 
 --- Controls whether the chart legend is rendered.
@@ -7481,11 +7481,11 @@ function LBubbleChart:type() end
 function LBubbleChart:typeOf(name) end
 
 --- Appends one labeled OHLC candle to the end of the current candlestick stream.
----@param label any
----@param open any
----@param high any
----@param low any
----@param close any
+---@param label string Label for the candle, usually a time or category.
+---@param open number Opening value for the candle.
+---@param high number Highest value for the candle.
+---@param low number Lowest value for the candle.
+---@param close number Closing value for the candle.
 function LCandlestickChart:appendCandle(label, open, high, low, close) end
 
 --- Clears all chart data and cached chart state.
@@ -7520,12 +7520,12 @@ function LCandlestickChart:render() end
 function LCandlestickChart:renderImage() end
 
 --- Replaces all OHLC candles from table rows with open/high/low/close fields or values 1..4.
----@param candles any
+---@param candles table Array-style table containing OHLC candle rows.
 function LCandlestickChart:setCandles(candles) end
 
---- Sets up/down candle colors.
----@param up any
----@param down any
+--- Sets the rising and falling candle colors used by the candlestick renderer.
+---@param up table RGBA color table for rising candles.
+---@param down table RGBA color table for falling candles.
 function LCandlestickChart:setColors(up, down) end
 
 --- Controls whether the chart legend is rendered.
@@ -7946,9 +7946,9 @@ function LPieChart:type() end
 function LPieChart:typeOf(name) end
 
 --- Adds or replaces a named radar series.
----@param name any
----@param values any
----@param color? any
+---@param name string Radar series name.
+---@param values table Numeric values matching the configured axes.
+---@param color? table Optional RGBA color table for the series.
 function LRadarChart:addSeries(name, values, color) end
 
 --- Clears all chart data and cached chart state.
@@ -7985,12 +7985,12 @@ function LRadarChart:render() end
 --- Renders the chart into a new LImage userdata.
 function LRadarChart:renderImage() end
 
---- Replaces radar axis labels.
----@param axes any
+--- Replaces the radar axis labels used for each radial spoke.
+---@param axes table Array-style table of axis label strings.
 function LRadarChart:setAxes(axes) end
 
 --- Sets the explicit maximum radial value.
----@param value any
+---@param value number Maximum value used to scale radar series.
 function LRadarChart:setMaxValue(value) end
 
 --- Controls whether the chart legend is rendered.
@@ -8130,10 +8130,10 @@ function LScatterPlot:type() end
 ---@return boolean True when the supplied type name matches this chart userdata.
 function LScatterPlot:typeOf(name) end
 
---- Adds one weighted treemap item.
----@param label any
----@param value any
----@param color? any
+--- Adds one weighted treemap item to the current rectangle layout.
+---@param label string Label to display for the treemap item.
+---@param value number Positive weight value used for layout area.
+---@param color? table Optional RGBA color table for this item.
 function LTreemapChart:addItem(label, value, color) end
 
 --- Clears all chart data and cached chart state.
@@ -8168,7 +8168,7 @@ function LTreemapChart:render() end
 function LTreemapChart:renderImage() end
 
 --- Replaces weighted treemap items from label/value rows or fields.
----@param items any
+---@param items table Array-style table of weighted treemap item rows.
 function LTreemapChart:setItems(items) end
 
 --- Controls whether the chart legend is rendered.
@@ -14180,22 +14180,6 @@ function LImageData:drawCircle(cx, cy, radius, r, g, b, a) end
 ---@param b number Blue channel.
 ---@param a number Alpha channel.
 function LImageData:drawLine(x0, y0, x1, y1, r, g, b, a) end
-
---- Draws a nine-slice region from a source image into this image.
----@param src_ud LImageData Source image data handle.
----@param src_x number Source region x coordinate.
----@param src_y number Source region y coordinate.
----@param src_w number Source region width.
----@param src_h number Source region height.
----@param dst_x number Destination x coordinate.
----@param dst_y number Destination y coordinate.
----@param dst_w number Destination width.
----@param dst_h number Destination height.
----@param inset_left number Left inset width.
----@param inset_right number Right inset width.
----@param inset_top number Top inset height.
----@param inset_bottom number Bottom inset height.
-function LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom) end
 
 --- Draws a filled rectangle into this image.
 ---@param x number Rectangle x coordinate.
@@ -26658,15 +26642,6 @@ lurek.render.newLayer = function(name, zOrder) end
 ---@return LMesh The created mesh handle.
 lurek.render.newMesh = function(verts, mode) end
 
---- Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
----@param image LImage Source texture.
----@param top number Top border inset in pixels.
----@param right number Right border inset.
----@param bottom number Bottom border inset.
----@param left number Left border inset.
----@return LNineSlice The 9-slice handle.
-lurek.render.newNineSlice = function(image, top, right, bottom, left) end
-
 --- Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
 ---@param x number Left edge in texture pixels.
 ---@param y number Top edge in texture pixels.
@@ -27007,6 +26982,10 @@ function LSaveManager:enableAutoSave(interval, slot) end
 ---@return boolean True if the slot file is present.
 function LSaveManager:exists(slot) end
 
+--- Return the payload serialization format used for saves and loads.
+---@return string Current format name.
+function LSaveManager:getFormat() end
+
 --- Return the current schema version number set for this save manager.
 ---@return number The active schema version.
 function LSaveManager:getSchemaVersion() end
@@ -27070,6 +27049,10 @@ function LSaveManager:save(slot) end
 ---@param enabled boolean True to compress future saves, false to write plain text.
 function LSaveManager:setCompress(enabled) end
 
+--- Set the payload serialization format for future saves and loads.
+---@param format string Payload format name.
+function LSaveManager:setFormat(format) end
+
 --- Set the current schema version number for saves produced by this game build.
 ---@param version number Integer schema version (must increase with each breaking data format change).
 function LSaveManager:setSchemaVersion(version) end
@@ -27095,6 +27078,10 @@ function LSaveManager:unregister(name) end
 ---@param dt number Delta time in seconds since the last frame.
 ---@return string Auto-save slot name when save work is due, or nil when no flush is needed yet.
 function LSaveManager:update(dt) end
+
+--- Create a new SaveManager instance for managing persistent game saves.
+---@return LSaveManager A fresh save manager with no registered sections.
+lurek.save.newManager = function() end
 
 --- Create a new SaveManager instance for managing persistent game saves.
 ---@return LSaveManager A fresh save manager with no registered sections.
@@ -27472,93 +27459,93 @@ lurek.scene.transitions.wipe = function(duration) end
 ---@param value any The data value that may have missing fields.
 ---@param schema table A schema table containing `default` entries for fields.
 ---@return table A new table with defaults applied for any absent fields.
-lurek.serial.applyDefaults = function(value, schema) end
+lurek.serialize.applyDefaults = function(value, schema) end
 
 --- Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
 ---@param payload string The raw string (or binary for msgpack) to decode.
 ---@param format? string Format hint: "json", "toml", "csv", "xml", "ini", or "msgpack". Nil triggers auto-detection.
 ---@param opts? table Optional settings table. For CSV: `delimiter` (string) and `has_headers` (boolean).
 ---@return table The decoded Lua table.
-lurek.serial.decode = function(payload, format, opts) end
+lurek.serialize.decode = function(payload, format, opts) end
 
 --- Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
 ---@param bytes string A binary string containing valid MessagePack data.
 ---@return table The decoded Lua table from the MessagePack payload.
-lurek.serial.decodeMsgPack = function(bytes) end
+lurek.serialize.decodeMsgPack = function(bytes) end
 
 --- Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.
 ---@param text string A valid XML string to parse.
 ---@return table A nested Lua table representing the XML document structure.
-lurek.serial.decodeXml = function(text) end
+lurek.serialize.decodeXml = function(text) end
 
 --- Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.
 ---@param text string The raw text content to analyze.
 ---@return string The detected format name ("json", "toml", "csv", "xml", "ini"), or nil if unrecognized.
-lurek.serial.detectFormat = function(text) end
+lurek.serialize.detectFormat = function(text) end
 
 --- Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
 ---@param value any The Lua value to encode.
 ---@param format string Target format: "json", "toml", "csv", or "msgpack".
 ---@param opts? table Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
 ---@return string The encoded string (text or binary depending on format).
-lurek.serial.encode = function(value, format, opts) end
+lurek.serialize.encode = function(value, format, opts) end
 
 --- Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 ---@param value table The Lua table to encode. Must be a table (not a primitive).
 ---@return string A binary string containing the MessagePack-encoded data.
-lurek.serial.encodeMsgPack = function(value) end
+lurek.serialize.encodeMsgPack = function(value) end
 
 --- Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 ---@param value table The Lua table to encode. Must be a table (not a primitive).
 ---@return string A binary string containing the MessagePack-encoded data.
-lurek.serial.encodeMsgPack = function(value) end
+lurek.serialize.encodeMsgPack = function(value) end
 
 --- Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.
 ---@param text string The CSV content to parse.
 ---@param delimiter? string Single-character field delimiter. Defaults to comma (",").
 ---@param hasHeaders? boolean When true, the first row is treated as column names and each data row becomes a keyed table. Defaults to true.
 ---@return table An array of row tables containing the parsed CSV data.
-lurek.serial.fromCsv = function(text, delimiter, hasHeaders) end
+lurek.serialize.fromCsv = function(text, delimiter, hasHeaders) end
 
 --- Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become string fields. Useful for legacy config files or simple settings.
 ---@param text string A valid INI string to parse.
 ---@return table The decoded Lua table with section names as keys and their key-value pairs as nested tables.
-lurek.serial.fromIni = function(text) end
+lurek.serialize.fromIni = function(text) end
 
 --- Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.
 ---@param text string A valid JSON string to parse.
 ---@return table The decoded Lua table representing the JSON structure.
-lurek.serial.fromJson = function(text) end
+lurek.serialize.fromJson = function(text) end
 
 --- Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and engine settings stored in TOML format.
 ---@param text string A valid TOML string to parse.
 ---@return table The decoded Lua table representing the TOML structure.
-lurek.serial.fromToml = function(text) end
+lurek.serialize.fromToml = function(text) end
 
 --- Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consistent keys or be an indexed array. Use this to export leaderboards, save tabular data, or generate spreadsheet-compatible output.
 ---@param value table An array of row tables to serialize.
 ---@param delimiter? string Single-character field delimiter. Defaults to comma (",").
 ---@param hasHeaders? boolean When true, writes column names as the first row. Defaults to true.
 ---@return string The CSV-encoded string of the table data.
-lurek.serial.toCsv = function(value, delimiter, hasHeaders) end
+lurek.serialize.toCsv = function(value, delimiter, hasHeaders) end
 
 --- Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
 ---@param value any The Lua value to serialize into JSON.
 ---@param pretty? boolean When true, outputs indented human-readable JSON. Defaults to false (compact).
 ---@return string The JSON-encoded string representation of the value.
-lurek.serial.toJson = function(value, pretty) end
+lurek.serialize.toJson = function(value, pretty) end
 
 --- Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.
 ---@param value table The Lua table to serialize into TOML.
 ---@return string The TOML-encoded string representation of the table.
-lurek.serial.toToml = function(value) end
+lurek.serialize.toToml = function(value) end
 
 --- Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
 ---@param value any The data to validate.
 ---@param schema table A schema table defining the expected structure and constraints.
 ---@return boolean True if validation passes; false otherwise.
 ---@return string An error message describing the validation failure; or nil on success.
-lurek.serial.validate = function(value, schema) end
+lurek.serialize.validate = function(value, schema) end
 
 --- Registers a SkeletonAnimation object with this skeleton so it can be played by name.
 ---@param anim LSkeletonAnimation The animation userdata to register. Consumed by this call.
@@ -28013,6 +28000,15 @@ lurek.sprite.newAtlasPacker = function(width, height, padding) end
 ---@param sh number Sheet texture height in pixels.
 ---@return LSpriteSheet A new sprite sheet derived from the atlas entries.
 lurek.sprite.newAtlasSheet = function(atlas, sw, sh) end
+
+--- Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
+---@param image LImage Source texture.
+---@param top number Top border inset in pixels.
+---@param right number Right border inset.
+---@param bottom number Bottom border inset.
+---@param left number Left border inset.
+---@return LNineSlice The 9-slice handle.
+lurek.sprite.newNineSlice = function(image, top, right, bottom, left) end
 
 --- Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 ---@param tw number Full texture width in pixels.
@@ -28986,36 +28982,38 @@ lurek.thread.newThread = function(code) end
 function LTileField:addPointLight(opts) end
 
 --- Applies a named profile to one cell.
----@param x any
----@param y any
----@param z? any
----@param name any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param name string Profile name to apply to the cell.
 function LTileField:applyProfile(x, y, z, name) end
 
 --- Returns whether a cell blocks a channel.
----@param x any
----@param y any
----@param z? any
----@param channel any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param channel string Blocker channel name to query.
+---@return boolean True when the addressed cell blocks the channel.
 function LTileField:blocks(x, y, z, channel) end
 
 --- Clears all cell gameplay state and computed light values.
 function LTileField:clear() end
 
---- Clears one cell.
+--- Clears gameplay state and light values for one addressed cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
 function LTileField:clearCell(x, y, z) end
 
 --- Returns true when the line between two cell tables has no blocker for a channel.
----@param from_tbl any
----@param to_tbl any
----@param channel any
----@param opts? any
+---@param from_tbl table Start cell table with one-based x, y, and optional z fields.
+---@param to_tbl table End cell table with one-based x, y, and optional z fields.
+---@param channel string Blocker channel name to test along the line.
+---@param opts? table Reserved optional line query options.
+---@return boolean True when no blocker exists between the two cells.
 function LTileField:clearLine(from_tbl, to_tbl, channel, opts) end
 
---- Removes all point lights.
+--- Removes all point lights currently stored on this tilefield.
 function LTileField:clearPointLights() end
 
 --- Computes tile light from ambient, point lights, and global top light.
@@ -29023,13 +29021,15 @@ function LTileField:clearPointLights() end
 function LTileField:computeLight(opts) end
 
 --- Exports one blocker channel and level as a row-major boolean array.
----@param channel any
----@param z? any
+---@param channel string Blocker channel name to export.
+---@param z? number One-based level, default 1.
+---@return table Row-major boolean array for the requested channel and level.
 function LTileField:exportBlockLayer(channel, z) end
 
 --- Exports one cost channel and level as a row-major number array.
----@param channel any
----@param z? any
+---@param channel string Cost channel name to export.
+---@param z? number One-based level, default 1.
+---@return table Row-major number array for the requested channel and level.
 function LTileField:exportCostLayer(channel, z) end
 
 --- Exports one level of computed light as row-major `{r,g,b,luma}` tables.
@@ -29046,10 +29046,11 @@ function LTileField:exportLightVolume() end
 function LTileField:exportProfileLayer(z) end
 
 --- Returns the first one-based blocking cell table between two cells, or nil.
----@param from_tbl any
----@param to_tbl any
----@param channel any
----@param opts? any
+---@param from_tbl table Start cell table with one-based x, y, and optional z fields.
+---@param to_tbl table End cell table with one-based x, y, and optional z fields.
+---@param channel string Blocker channel name to test along the line.
+---@param opts? table Reserved optional line query options.
+---@return table nil | First blocking cell table, or nil when the line is clear.
 function LTileField:firstBlocker(from_tbl, to_tbl, channel, opts) end
 
 --- Returns a table with blockers, costs, sun occlusion, and optional profile name.
@@ -29060,10 +29061,11 @@ function LTileField:firstBlocker(from_tbl, to_tbl, channel, opts) end
 function LTileField:getCell(x, y, z) end
 
 --- Returns the cost for one cell/channel.
----@param x any
----@param y any
----@param z? any
----@param channel any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param channel string Cost channel name to query.
+---@return number Movement or traversal cost value.
 function LTileField:getCost(x, y, z, channel) end
 
 --- Returns r, g, b, and luma for one cell.
@@ -29088,12 +29090,13 @@ function LTileField:getProfile(name) end
 function LTileField:getSize() end
 
 --- Returns top-light occlusion in the inclusive range 0..1.
----@param x any
----@param y any
----@param z? any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return number Top-light occlusion value in the inclusive range 0..1.
 function LTileField:getSunOcclusion(x, y, z) end
 
---- Returns the field topology name.
+--- Returns the field topology name used for coordinate interpretation.
 ---@return string `square`, `iso_square`, or `hex`.
 function LTileField:getTopology() end
 
@@ -29113,16 +29116,16 @@ function LTileField:line(opts) end
 ---@return boolean True when a point light was removed.
 function LTileField:removePointLight(id) end
 
---- Removes a named object profile.
+--- Removes a named object profile from the tilefield profile registry.
 ---@param name string Profile name to remove.
 function LTileField:removeProfile(name) end
 
 --- Sets whether a cell blocks a channel.
----@param x any
----@param y any
----@param z? any
----@param channel any
----@param blocked any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param channel string Blocker channel name to update.
+---@param blocked boolean True when the channel should be blocked.
 function LTileField:setBlock(x, y, z, channel, blocked) end
 
 --- Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
@@ -29133,27 +29136,27 @@ function LTileField:setBlock(x, y, z, channel, blocked) end
 function LTileField:setCell(x, y, z, cell) end
 
 --- Sets the cost for one cell/channel.
----@param x any
----@param y any
----@param z? any
----@param channel any
----@param cost any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param channel string Cost channel name to update.
+---@param cost number Movement or traversal cost value.
 function LTileField:setCost(x, y, z, channel, cost) end
 
---- Sets top-down global light.
+--- Sets top-down global light parameters used during light computation.
 ---@param opts table `{intensity?, color?}` global top-light settings.
 function LTileField:setGlobalLight(opts) end
 
 --- Registers or replaces a named object profile.
----@param name any
----@param profile_tbl any
+---@param name string Profile name to create or replace.
+---@param profile_tbl table Profile table with blockers, costs, and sunOcclusion fields.
 function LTileField:setProfile(name, profile_tbl) end
 
 --- Sets top-light occlusion in the inclusive range 0..1.
----@param x any
----@param y any
----@param z? any
----@param value any
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param value number Top-light occlusion value in the inclusive range 0..1.
 function LTileField:setSunOcclusion(x, y, z, value) end
 
 --- Returns the Lua-visible type name for this tilefield handle.
@@ -29166,8 +29169,8 @@ function LTileField:type() end
 function LTileField:typeOf(name) end
 
 --- Updates an existing point light by id.
----@param id any
----@param opts any
+---@param id number Stable point light id returned by `addPointLight`.
+---@param opts table Partial light update table with x, y, z, radius, intensity, or color.
 function LTileField:updatePointLight(id, opts) end
 
 --- Copies a tilemap layer into a tilefield using solid and empty profiles.
@@ -29176,7 +29179,7 @@ function LTileField:updatePointLight(id, opts) end
 ---@return LTileField New tilefield copied from the tilemap layer.
 lurek.tilefield.fromTileMap = function(tilemap, opts) end
 
---- Creates a multi-level tilefield.
+--- Creates a multi-level tilefield with explicit dimensions and topology.
 ---@param opts table `{width, height, levels?, topology?}`.
 ---@return LTileField New tilefield handle.
 lurek.tilefield.new = function(opts) end
@@ -33025,58 +33028,65 @@ function LFov:typeOf(name) end
 function LFov:visibleCells() end
 
 --- Returns all currently actionable cells for a player, optionally filtered to a level.
----@param player any
----@param z? any
+---@param player string Player identifier to query.
+---@param z? number Optional one-based level filter.
+---@return table Array of one-based actionable cell tables.
 function LTileVisibility:actionCells(player, z) end
 
 --- Returns whether a one-based cell is currently actionable for a player.
----@param player any
----@param x any
----@param y any
----@param z? any
+---@param player string Player identifier to query.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the cell is currently actionable.
 function LTileVisibility:canActOn(player, x, y, z) end
 
 --- Clears current, explored, and action masks for all players.
 function LTileVisibility:clearAll() end
 
 --- Clears current, explored, and action masks for one player.
----@param player any
+---@param player string Player identifier whose visibility state should be cleared.
 function LTileVisibility:clearPlayer(player) end
 
 --- Computes one player's current action mask from a tilefield origin.
----@param player any
----@param opts any
+---@param player string Player identifier whose action mask should be computed.
+---@param opts table Options table with origin, range, and optional action channel.
 function LTileVisibility:computeAction(player, opts) end
 
 --- Computes one player's current visible mask from a tilefield origin.
----@param player any
----@param opts any
+---@param player string Player identifier whose visibility mask should be computed.
+---@param opts table Options table with origin, range, and optional vision channel.
 function LTileVisibility:computeVisible(player, opts) end
 
 --- Returns whether a one-based cell has been explored for a player.
----@param player any
----@param x any
----@param y any
----@param z? any
+---@param player string Player identifier to query.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the cell has been explored.
 function LTileVisibility:isExplored(player, x, y, z) end
 
 --- Returns whether a one-based cell is currently visible for a player.
----@param player any
----@param x any
----@param y any
----@param z? any
+---@param player string Player identifier to query.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the cell is currently visible.
 function LTileVisibility:isVisible(player, x, y, z) end
 
 --- Returns the Lua-visible type name for this tile visibility handle.
+---@return string The string `LTileVisibility`.
 function LTileVisibility:type() end
 
 --- Returns whether this handle matches a supported type name.
----@param name any
+---@param name string Type name to compare against this handle.
+---@return boolean True for `LTileVisibility` or `LObject`.
 function LTileVisibility:typeOf(name) end
 
 --- Returns all currently visible cells for a player, optionally filtered to a level.
----@param player any
----@param z? any
+---@param player string Player identifier to query.
+---@param z? number Optional one-based level filter.
+---@return table Array of one-based visible cell tables.
 function LTileVisibility:visibleCells(player, z) end
 
 --- Drains and returns all pending visibility events.

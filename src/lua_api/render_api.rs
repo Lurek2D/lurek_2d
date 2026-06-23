@@ -2,6 +2,7 @@
 
 use super::scene_api::LuaDepthSorter;
 use super::SharedState;
+use crate::font::Font;
 use crate::image::ImageData;
 use crate::image::Texture;
 use crate::image::TextureColorSpace;
@@ -10,7 +11,7 @@ use crate::render::draw_layer::allocate_callback_id;
 use crate::render::renderer::{BevelStyle, GradientDirection, HexOrientation, PathSegment};
 use crate::render::shape::{CompoundShape, ShapeCommand};
 use crate::render::{
-    BlendMode, Canvas, CompareMode, DepthMode, DrawMode, Font, Mesh, MeshDrawMode, MeshVertex,
+    BlendMode, Canvas, CompareMode, DepthMode, DrawMode, Mesh, MeshDrawMode, MeshVertex,
     RenderCommand, Shader, StencilAction, StencilMode, TextAlign, UniformValue,
 };
 use crate::runtime::resource_keys::*;
@@ -126,13 +127,13 @@ pub struct LuaImage {
 /// Texture with defined border insets for scalable 9-slice rendering (e.g., UI panels, buttons).
 #[derive(Clone)]
 pub struct LuaNineSlice {
-    key: TextureKey,
-    tex_w: u32,
-    tex_h: u32,
-    top: f32,
-    right: f32,
-    bottom: f32,
-    left: f32,
+    pub(crate) key: TextureKey,
+    pub(crate) tex_w: u32,
+    pub(crate) tex_h: u32,
+    pub(crate) top: f32,
+    pub(crate) right: f32,
+    pub(crate) bottom: f32,
+    pub(crate) left: f32,
 }
 impl LuaUserData for LuaNineSlice {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -342,17 +343,35 @@ fn active_font_key(st: &SharedState) -> Option<FontKey> {
 }
 
 fn resolve_font_key(font_ud: &LuaAnyUserData) -> LuaResult<FontKey> {
-    let font = font_ud.borrow::<LuaFont>()?;
-    let key = font.key;
-    let valid = font.state.borrow().fonts.contains_key(key);
-    drop(font);
-    if valid {
-        Ok(key)
-    } else {
-        Err(LuaError::RuntimeError(
-            "font handle is not valid or was released".into(),
-        ))
+    if let Ok(font) = font_ud.borrow::<LuaFont>() {
+        let key = font.key;
+        let valid = font.state.borrow().fonts.contains_key(key);
+        drop(font);
+        return if valid {
+            Ok(key)
+        } else {
+            Err(LuaError::RuntimeError(
+                "font handle is not valid or was released".into(),
+            ))
+        };
     }
+
+    if let Ok(font) = font_ud.borrow::<crate::lua_api::font_api::LuaFont>() {
+        let key = font.key();
+        let valid = font.is_valid();
+        drop(font);
+        return if valid {
+            Ok(key)
+        } else {
+            Err(LuaError::RuntimeError(
+                "font handle is not valid or was released".into(),
+            ))
+        };
+    }
+
+    Err(LuaError::RuntimeError(
+        "font handle is not valid or was released".into(),
+    ))
 }
 
 fn builtin_font_key_by_name(st: &SharedState, name: &str) -> Option<FontKey> {
@@ -2473,10 +2492,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getFontSizes",
         lua.create_function(|lua, ()| {
             let tbl = lua.create_table()?;
-            for (i, &size) in crate::render::font::AVAILABLE_POINT_SIZES
-                .iter()
-                .enumerate()
-            {
+            for (i, &size) in crate::font::AVAILABLE_POINT_SIZES.iter().enumerate() {
                 tbl.set(i + 1, size)?;
             }
             Ok(tbl)
@@ -2489,7 +2505,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getBuiltInFontNames",
         lua.create_function(|lua, ()| {
             let tbl = lua.create_table()?;
-            for (i, name) in crate::render::font::BUILTIN_FONT_NAMES.iter().enumerate() {
+            for (i, name) in crate::font::BUILTIN_FONT_NAMES.iter().enumerate() {
                 tbl.set(i + 1, *name)?;
             }
             Ok(tbl)
@@ -2586,7 +2602,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 } else {
                     &st.default_fonts
                 };
-                let slot = crate::render::Font::nearest_point_size(st.default_font_size);
+                let slot = crate::font::Font::nearest_point_size(st.default_font_size);
                 if let Some(k) = new_arr[slot] {
                     st.active_font = Some(k);
                     st.default_font = Some(k);
@@ -3717,42 +3733,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             callback.call::<_, ()>(ud)?;
             Ok(())
         })?,
-    )?;
-    // -- newNineSlice --
-    /// Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
-    /// @param | image | LImage | Source texture.
-    /// @param | top | number | Top border inset in pixels.
-    /// @param | right | number | Right border inset.
-    /// @param | bottom | number | Bottom border inset.
-    /// @param | left | number | Left border inset.
-    /// @return | LNineSlice | The 9-slice handle.
-    graphics.set(
-        "newNineSlice",
-        lua.create_function(
-            |_, (image, top, right, bottom, left): (LuaAnyUserData, f32, f32, f32, f32)| {
-                if top < 0.0 || right < 0.0 || bottom < 0.0 || left < 0.0 {
-                    return Err(LuaError::RuntimeError(
-                        "newNineSlice: border insets must be non-negative".into(),
-                    ));
-                }
-                let img = image.borrow::<LuaImage>()?;
-                let state = img.state.borrow();
-                let (tex_w, tex_h) = state
-                    .textures
-                    .get(img.key)
-                    .map(|t| (t.width, t.height))
-                    .unwrap_or((0, 0));
-                Ok(LuaNineSlice {
-                    key: img.key,
-                    tex_w,
-                    tex_h,
-                    top,
-                    right,
-                    bottom,
-                    left,
-                })
-            },
-        )?,
     )?;
     let s = state.clone();
     // -- drawNineSlice --

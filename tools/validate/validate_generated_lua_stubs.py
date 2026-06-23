@@ -73,6 +73,19 @@ CLASS_RE = re.compile(
     re.MULTILINE,
 )
 GENERIC_ALIAS_RE = re.compile(r"^---@alias\s+(\w+)\s+(.+)$", re.MULTILINE)
+BASIC_CHART_METHODS = (
+    "clear",
+    "setTitle",
+    "setShowLegend",
+    "render",
+    "renderImage",
+    "drawToImage",
+    "draw",
+    "getWidth",
+    "getHeight",
+    "type",
+    "typeOf",
+)
 
 
 def _load_module(module_name: str, module_path: Path):
@@ -108,8 +121,29 @@ def _collect_lua_api_source_entries() -> list[tuple[str, int, str]]:
         rel = path.relative_to(ROOT).as_posix()
         lines = path.read_text(encoding="utf-8").splitlines()
         seen: set[tuple[str, int, str]] = set()
+        in_macro_rules = False
+        macro_brace_depth = 0
 
         for idx, line in enumerate(lines):
+            stripped = line.strip()
+            if not in_macro_rules and stripped.startswith("macro_rules!"):
+                in_macro_rules = True
+                macro_brace_depth = line.count("{") - line.count("}")
+                continue
+            if in_macro_rules:
+                macro_brace_depth += line.count("{") - line.count("}")
+                if macro_brace_depth <= 0:
+                    in_macro_rules = False
+                continue
+
+            if "add_basic_chart_methods!" in line:
+                for method_name in BASIC_CHART_METHODS:
+                    key = (rel, idx + 1, method_name)
+                    if key not in seen:
+                        seen.add(key)
+                        source_entries.append(key)
+                continue
+
             name = None
             window = "\n".join(lines[idx : min(len(lines), idx + 4)])
 

@@ -223,7 +223,7 @@ struct LuaRadarChart {
     cache: ChartTextureCache,
 }
 
-/// Lua handle for a treemap chart.
+/// Lua handle for a treemap chart that renders weighted hierarchical rectangles.
 struct LuaTreemapChart {
     inner: RefCell<TreemapChart>,
     count: Cell<usize>,
@@ -662,25 +662,33 @@ fn push_nearest_point<'lua>(
 
 macro_rules! add_basic_chart_methods {
     ($methods:ident, $type_name:literal, $api_prefix:literal) => {
-        // Clears all chart data and cached chart state.
+        /// Clears all chart data and cached chart state.
         $methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.dirty.set(true);
             Ok(())
         });
-        // Sets the chart title text shown in rendered output.
+        /// Sets the chart title text shown in rendered output.
+        ///
+        /// @param | title | string | Title text to display above the chart.
         $methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
-        // Controls whether the chart legend is rendered.
+        /// Controls whether the chart legend is rendered.
+        ///
+        /// @param | value | boolean | True to show the legend, false to hide it.
         $methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
-        // Renders the chart into raw RGBA image bytes.
+        /// Renders the chart into raw RGBA image bytes.
+        ///
+        /// @return | integer | Rendered chart width in pixels.
+        /// @return | integer | Rendered chart height in pixels.
+        /// @return | string | Raw RGBA bytes for the rendered chart image.
         $methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -691,7 +699,9 @@ macro_rules! add_basic_chart_methods {
                 })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
-        // Renders the chart into a new LImage userdata.
+        /// Renders the chart into a new LImage userdata.
+        ///
+        /// @return | LImage | New image containing the rendered chart.
         $methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
             chart_image_userdata(
@@ -702,7 +712,9 @@ macro_rules! add_basic_chart_methods {
                 |buffer| chart.render(buffer),
             )
         });
-        // Draws the rendered chart into an existing image.
+        /// Draws the rendered chart into an existing image.
+        ///
+        /// @param | target | LImageData | Mutable image data target to receive chart pixels.
         $methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -714,7 +726,11 @@ macro_rules! add_basic_chart_methods {
                 |buffer| chart.render(buffer),
             )
         });
-        // Draws the chart at world or screen coordinates using optional transform options.
+        /// Draws the chart at world or screen coordinates using optional transform options.
+        ///
+        /// @param | x | number | X coordinate where the chart should be drawn.
+        /// @param | y | number | Y coordinate where the chart should be drawn.
+        /// @param | opts | table? | Optional draw transform options such as scale and rotation.
         $methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -730,17 +746,26 @@ macro_rules! add_basic_chart_methods {
                 )
             },
         );
-        // Returns the configured chart width in pixels.
+        /// Returns the configured chart width in pixels.
+        ///
+        /// @return | integer | Configured chart width in pixels.
         $methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
-        // Returns the configured chart height in pixels.
+        /// Returns the configured chart height in pixels.
+        ///
+        /// @return | integer | Configured chart height in pixels.
         $methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
-        // Returns the runtime userdata type name for this chart.
+        /// Returns the runtime userdata type name for this chart.
+        ///
+        /// @return | string | Runtime userdata type name.
         $methods.add_method("type", |_, _, ()| Ok($type_name));
-        // Checks whether a type name matches this chart userdata.
+        /// Checks whether a type name matches this chart userdata.
+        ///
+        /// @param | name | string | Type name to compare with this chart userdata.
+        /// @return | boolean | True when the name matches this chart type or `LObject`.
         $methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == $type_name || name == "LObject")
         });
@@ -2691,6 +2716,8 @@ impl LuaUserData for LuaHeatmapChart {
 impl LuaUserData for LuaCandlestickChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Replaces all OHLC candles from table rows with open/high/low/close fields or values 1..4.
+        ///
+        /// @param | candles | table | Array-style table containing OHLC candle rows.
         methods.add_method("setCandles", |_, this, candles: LuaTable| {
             let candles = parse_candles(&candles, "lurek.charts.LCandlestickChart:setCandles")?;
             this.inner.borrow_mut().set_candles(candles);
@@ -2700,6 +2727,11 @@ impl LuaUserData for LuaCandlestickChart {
         /// Appends one labeled OHLC candle to the end of the current candlestick stream.
         ///
         /// Values must be finite numbers; maxPoints from chart config trims the oldest candles.
+        /// @param | label | string | Label for the candle, usually a time or category.
+        /// @param | open | number | Opening value for the candle.
+        /// @param | high | number | Highest value for the candle.
+        /// @param | low | number | Lowest value for the candle.
+        /// @param | close | number | Closing value for the candle.
         methods.add_method(
             "appendCandle",
             |_, this, (label, open, high, low, close): (String, f32, f32, f32, f32)| {
@@ -2719,7 +2751,10 @@ impl LuaUserData for LuaCandlestickChart {
                 Ok(())
             },
         );
-        /// Sets up/down candle colors.
+        /// Sets the rising and falling candle colors used by the candlestick renderer.
+        ///
+        /// @param | up | table | RGBA color table for rising candles.
+        /// @param | down | table | RGBA color table for falling candles.
         methods.add_method("setColors", |_, this, (up, down): (LuaTable, LuaTable)| {
             this.inner
                 .borrow_mut()
@@ -2738,6 +2773,10 @@ impl LuaUserData for LuaCandlestickChart {
 impl LuaUserData for LuaBoxPlotChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Adds or replaces a named distribution sample series.
+        ///
+        /// @param | name | string | Distribution series name.
+        /// @param | values | table | Numeric sample values for the distribution.
+        /// @param | color | table? | Optional RGBA color table for the series.
         methods.add_method(
             "addSeries",
             |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
@@ -2750,6 +2789,10 @@ impl LuaUserData for LuaBoxPlotChart {
             },
         );
         /// Appends one numeric sample to a named distribution.
+        ///
+        /// @param | name | string | Distribution series name.
+        /// @param | value | number | Numeric sample value to append.
+        /// @param | color | table? | Optional RGBA color table for a new series.
         methods.add_method(
             "appendValue",
             |_, this, (name, value, color): (String, f32, Option<LuaTable>)| {
@@ -2771,6 +2814,10 @@ impl LuaUserData for LuaBoxPlotChart {
 impl LuaUserData for LuaBubbleChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Adds or replaces a weighted point series from `{x, y, size}` rows.
+        ///
+        /// @param | name | string | Bubble series name.
+        /// @param | data | table | Array-style table of `{x, y, size}` rows.
+        /// @param | color | table? | Optional RGBA color table for the series.
         methods.add_method(
             "addSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -2783,6 +2830,12 @@ impl LuaUserData for LuaBubbleChart {
             },
         );
         /// Appends one weighted point to a named bubble series.
+        ///
+        /// @param | name | string | Bubble series name.
+        /// @param | x | number | X value for the point.
+        /// @param | y | number | Y value for the point.
+        /// @param | size | number | Relative bubble size value.
+        /// @param | color | table? | Optional RGBA color table for a new series.
         methods.add_method(
             "appendPoint",
             |_, this, (name, x, y, size, color): (String, f32, f32, f32, Option<LuaTable>)| {
@@ -2795,6 +2848,9 @@ impl LuaUserData for LuaBubbleChart {
             },
         );
         /// Sets the minimum and maximum bubble radius in pixels.
+        ///
+        /// @param | min | number | Minimum bubble radius in pixels.
+        /// @param | max | number | Maximum bubble radius in pixels.
         methods.add_method("setRadiusRange", |_, this, (min, max): (f32, f32)| {
             this.inner.borrow_mut().set_radius_range(min, max);
             this.dirty.set(true);
@@ -2806,7 +2862,9 @@ impl LuaUserData for LuaBubbleChart {
 
 impl LuaUserData for LuaRadarChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        /// Replaces radar axis labels.
+        /// Replaces the radar axis labels used for each radial spoke.
+        ///
+        /// @param | axes | table | Array-style table of axis label strings.
         methods.add_method("setAxes", |_, this, axes: LuaTable| {
             this.inner
                 .borrow_mut()
@@ -2815,6 +2873,10 @@ impl LuaUserData for LuaRadarChart {
             Ok(())
         });
         /// Adds or replaces a named radar series.
+        ///
+        /// @param | name | string | Radar series name.
+        /// @param | values | table | Numeric values matching the configured axes.
+        /// @param | color | table? | Optional RGBA color table for the series.
         methods.add_method(
             "addSeries",
             |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
@@ -2827,6 +2889,8 @@ impl LuaUserData for LuaRadarChart {
             },
         );
         /// Sets the explicit maximum radial value.
+        ///
+        /// @param | value | number | Maximum value used to scale radar series.
         methods.add_method("setMaxValue", |_, this, value: f32| {
             this.inner.borrow_mut().set_max_value(value);
             this.dirty.set(true);
@@ -2845,6 +2909,8 @@ impl LuaUserData for LuaRadarChart {
 impl LuaUserData for LuaTreemapChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Replaces weighted treemap items from label/value rows or fields.
+        ///
+        /// @param | items | table | Array-style table of weighted treemap item rows.
         methods.add_method("setItems", |_, this, items: LuaTable| {
             let items = parse_treemap_items(
                 &items,
@@ -2856,7 +2922,11 @@ impl LuaUserData for LuaTreemapChart {
             this.dirty.set(true);
             Ok(())
         });
-        /// Adds one weighted treemap item.
+        /// Adds one weighted treemap item to the current rectangle layout.
+        ///
+        /// @param | label | string | Label to display for the treemap item.
+        /// @param | value | number | Positive weight value used for layout area.
+        /// @param | color | table? | Optional RGBA color table for this item.
         methods.add_method(
             "addItem",
             |_, this, (label, value, color): (String, f32, Option<LuaTable>)| {

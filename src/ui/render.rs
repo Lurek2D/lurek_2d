@@ -14,9 +14,9 @@
 //! Open this file when a widget exists and lays out correctly but still draws with the wrong visual behavior.
 //! It is the right owner for UI paint bugs because control semantics stay elsewhere and visuals converge here.
 
+use crate::font::Font;
 use crate::math::Rect;
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
-use crate::render::Font;
 use crate::runtime::resource_keys::FontKey;
 use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::theme::{ThemeToken, WidgetStyle};
@@ -334,7 +334,7 @@ fn hsv_to_rgb(h: f32, s: f32, v: f32) -> (u8, u8, u8) {
 #[allow(clippy::too_many_arguments)]
 fn draw_cpu_text(
     img: &mut crate::image::ImageData,
-    font: Option<&crate::render::font::Font>,
+    font: Option<&crate::font::Font>,
     text: &str,
     x: i32,
     y: i32,
@@ -355,7 +355,7 @@ fn draw_tree_nodes_cpu(
     nodes: &[crate::ui::extras::TreeNode],
     idx: usize,
     img: &mut crate::image::ImageData,
-    font: Option<&crate::render::font::Font>,
+    font: Option<&crate::font::Font>,
     x: i32,
     ry: i32,
     max_y: i32,
@@ -2133,9 +2133,9 @@ impl GuiContext {
         let mut img = crate::image::ImageData::new(width, height);
         img.fill(24, 26, 34, 255);
         // Load the 12-point bundled bitmap font for CPU text rendering.
-        let ui_font: Option<crate::render::font::Font> = {
-            let slot = crate::render::font::Font::nearest_point_size(12);
-            let sizes = crate::render::font::Font::load_all_sizes();
+        let ui_font: Option<crate::font::Font> = {
+            let slot = crate::font::Font::nearest_point_size(12);
+            let sizes = crate::font::Font::load_all_sizes();
             sizes.into_iter().nth(slot).map(|(f, _, _)| f)
         };
         let mut layout_ctx = self.clone();

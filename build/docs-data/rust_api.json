@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-06-23T14:46:55.410841+00:00",
+    "generated": "2026-06-23T19:03:08.805806+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3034,
+      "rust_items": 3029,
       "rust_modules": 715,
       "rust_tests": 488,
       "lua_tests": 273
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3034,
-      "documented": 3034,
+      "total_items": 3029,
+      "documented": 3029,
       "modules": 715
     },
     "modules": {
@@ -1144,7 +1144,7 @@
         ]
       },
       "ai::validation": {
-        "module_doc": "Owns validation limits and numeric guards for AI decision, planning, and callback-heavy evaluators. Keeps reasoning-side safety ceilings near the AI systems that enforce them.",
+        "module_doc": "Owns shared validation limits for AI worlds, behavior trees, GOAP, utility AI, MCTS, and sensors. Centralizes numeric guards so planners, registries, and Lua-facing helpers reject the same bad shapes. Provides finite, count, and dimension checks with structured `AiError` output instead of panics. Keeps safety ceilings near AI domain code while avoiding ownership of any planner or evaluator state. Update this file when AI modules need new limits, validation helpers, or cross-module guard policy.",
         "source_file": "src/ai/validation.rs",
         "items": [
           {
@@ -1152,49 +1152,49 @@
             "kind": "struct",
             "description": "Shared safety limits for AI registries, planners, trees, and callback-heavy evaluators.",
             "file": "src/ai/validation.rs",
-            "line": 8
+            "line": 11
           },
           {
             "name": "finite_f32",
             "kind": "fn",
             "description": "Reject NaN and infinite `f32` inputs.",
             "file": "src/ai/validation.rs",
-            "line": 64
+            "line": 67
           },
           {
             "name": "finite_f64",
             "kind": "fn",
             "description": "Reject NaN and infinite `f64` inputs.",
             "file": "src/ai/validation.rs",
-            "line": 75
+            "line": 78
           },
           {
             "name": "non_negative",
             "kind": "fn",
             "description": "Reject negative inputs after confirming finiteness.",
             "file": "src/ai/validation.rs",
-            "line": 83
+            "line": 86
           },
           {
             "name": "positive_nonzero",
             "kind": "fn",
             "description": "Reject non-positive inputs after confirming finiteness.",
             "file": "src/ai/validation.rs",
-            "line": 92
+            "line": 95
           },
           {
             "name": "validate_count",
             "kind": "fn",
             "description": "Reject counts above a configured ceiling.",
             "file": "src/ai/validation.rs",
-            "line": 105
+            "line": 108
           },
           {
             "name": "validate_depth",
             "kind": "fn",
             "description": "Reject depths above a configured ceiling.",
             "file": "src/ai/validation.rs",
-            "line": 117
+            "line": 120
           }
         ]
       },
@@ -1571,7 +1571,7 @@
         ]
       },
       "app::app": {
-        "module_doc": "This file owns the desktop runtime loop, from startup target selection through steady frame execution and shutdown. It defines viewport helpers, splash-title utilities, startup-drop classification, and key rules for the splash screen. `RunState` models running, fatal-error, and restarting modes, while `LurekApp` stores the live host-side app state. That state includes window and surface handles, renderer and Lua ownership, hot-reload watchers, timing, and input. GPU setup, present-mode selection, surface configuration, resize clamping, and vsync switching are centralized here. Lua initialization also lives here, including VM creation, shared-state hookup, startup file loading, and callbacks. Per-frame control is split across tick, update, render, splash render, and error render paths with deterministic order. Window actions are deferred through local helpers so resize, focus, visibility, cursor, and fullscreen stay guarded. The file owns weather-free host input routing for keyboard, mouse, text, wheel, touch, drag-drop, and window events. Gamepad polling and vibration effects are handled here too, including slot assignment, naming, and feedback playback. Hot reload for scripts, assets, and config files is coordinated here through watcher refresh and polling helpers. Screenshot capture, auto-quit timers, perf logging, archive extraction, and restart flow are also app-level concerns. The `ApplicationHandler` impl binds winit lifecycle callbacks to safe runtime operations and guarded Lua dispatch. The outer `App` and `AppRunOptions` types provide bootstrap input, logger setup, and event-loop launch entrypoints. Open this file when desktop host orchestration changes; splash, errors, HUD, and callback helpers live in siblings. @engine-callback | draw | function lurek.draw() | Called every frame to queue world render commands. @engine-callback | draw_ui | function lurek.draw_ui() | Called every frame after world drawing to queue UI and HUD render commands. @engine-callback | exit | function lurek.exit() | Called before the runtime exits after an explicit close path. @engine-callback | fixedUpdate | function lurek.fixedUpdate(dt) | Deprecated fixed-step update callback; use `lurek.process_physics(dt)`. @engine-param | fixedUpdate | dt | number | false | Fixed timestep in seconds. @engine-callback | focus | function lurek.focus(focused) | Called when the application window gains or loses focus. @engine-param | focus | focused | boolean | false | True when the window is focused. @engine-callback | gamepadaxis | function lurek.gamepadaxis(id, axis, value) | Called when a connected gamepad axis changes. @engine-param | gamepadaxis | id | integer | false | Gamepad slot id. @engine-param | gamepadaxis | axis | string | false | Axis name. @engine-param | gamepadaxis | value | number | false | Axis value reported by the backend. @engine-callback | gamepadconnected | function lurek.gamepadconnected(id) | Called when a gamepad connects. @engine-param | gamepadconnected | id | integer | false | Gamepad slot id. @engine-callback | gamepaddisconnected | function lurek.gamepaddisconnected(id) | Called when a gamepad disconnects. @engine-param | gamepaddisconnected | id | integer | false | Gamepad slot id. @engine-callback | gamepadpressed | function lurek.gamepadpressed(id, button) | Called when a gamepad button is pressed. @engine-param | gamepadpressed | id | integer | false | Gamepad slot id. @engine-param | gamepadpressed | button | string | false | Button name. @engine-callback | gamepadreleased | function lurek.gamepadreleased(id, button) | Called when a gamepad button is released. @engine-param | gamepadreleased | id | integer | false | Gamepad slot id. @engine-param | gamepadreleased | button | string | false | Button name. @engine-callback | init | function lurek.init() | Called once after the Lua VM, shared state, and `lurek.*` modules are ready. @engine-callback | joystickadded | function lurek.joystickadded(id) | Compatibility callback called when a gamepad connects. @engine-param | joystickadded | id | integer | false | Gamepad slot id. @engine-callback | joystickremoved | function lurek.joystickremoved(id) | Compatibility callback called when a gamepad disconnects. @engine-param | joystickremoved | id | integer | false | Gamepad slot id. @engine-callback | keypressed | function lurek.keypressed(key, scancode, isrepeat) | Called when a keyboard key is pressed and UI did not consume it. @engine-param | keypressed | key | string | false | Normalized key name. @engine-param | keypressed | scancode | string | false | Normalized physical scancode, or an empty string when unavailable. @engine-param | keypressed | isrepeat | boolean | false | True when the key press is an OS repeat event. @engine-callback | keyreleased | function lurek.keyreleased(key, scancode) | Called when a keyboard key is released. @engine-param | keyreleased | key | string | false | Normalized key name. @engine-param | keyreleased | scancode | string | false | Normalized physical scancode, or an empty string when unavailable. @engine-callback | mousemoved | function lurek.mousemoved(x, y, dx, dy) | Called when the pointer moves in game coordinates and UI did not consume it. @engine-param | mousemoved | x | number | false | Pointer x coordinate in game space. @engine-param | mousemoved | y | number | false | Pointer y coordinate in game space. @engine-param | mousemoved | dx | number | false | Delta x since the previous pointer event. @engine-param | mousemoved | dy | number | false | Delta y since the previous pointer event. @engine-callback | mousepressed | function lurek.mousepressed(x, y, button) | Called when a mouse button is pressed and UI did not consume it. @engine-param | mousepressed | x | number | false | Pointer x coordinate in game space. @engine-param | mousepressed | y | number | false | Pointer y coordinate in game space. @engine-param | mousepressed | button | integer | false | One-based mouse button index. @engine-callback | mousereleased | function lurek.mousereleased(x, y, button) | Called when a mouse button is released and UI did not consume it. @engine-param | mousereleased | x | number | false | Pointer x coordinate in game space. @engine-param | mousereleased | y | number | false | Pointer y coordinate in game space. @engine-param | mousereleased | button | integer | false | One-based mouse button index. @engine-callback | process | function lurek.process(dt) | Called every frame for game logic. @engine-param | process | dt | number | false | Frame delta time in seconds. @engine-callback | process_late | function lurek.process_late(dt) | Called every frame after `process` and fixed-step physics callbacks. @engine-param | process_late | dt | number | false | Frame delta time in seconds. @engine-callback | process_physics | function lurek.process_physics(dt) | Called at the fixed timestep zero or more times per rendered frame. @engine-param | process_physics | dt | number | false | Fixed timestep in seconds. @engine-callback | ready | function lurek.ready() | Called once after startup when the first frame resources are ready. @engine-callback | resize | function lurek.resize(width, height) | Called after the renderer and viewport are resized. @engine-param | resize | width | integer | false | Window width in pixels after clamping. @engine-param | resize | height | integer | false | Window height in pixels after clamping. @engine-callback | textinput | function lurek.textinput(text) | Called when committed text input arrives and UI did not consume it. @engine-param | textinput | text | string | false | Committed text. @engine-callback | touchmoved | function lurek.touchmoved(id, x, y, dx, dy, pressure) | Called when a touch point moves. @engine-param | touchmoved | id | integer | false | Touch identifier. @engine-param | touchmoved | x | number | false | Touch x coordinate in game space. @engine-param | touchmoved | y | number | false | Touch y coordinate in game space. @engine-param | touchmoved | dx | number | false | Delta x since the previous touch event. @engine-param | touchmoved | dy | number | false | Delta y since the previous touch event. @engine-param | touchmoved | pressure | number | true | Normalized pressure when available. @engine-callback | touchpressed | function lurek.touchpressed(id, x, y, dx, dy, pressure) | Called when a touch point starts. @engine-param | touchpressed | id | integer | false | Touch identifier. @engine-param | touchpressed | x | number | false | Touch x coordinate in game space. @engine-param | touchpressed | y | number | false | Touch y coordinate in game space. @engine-param | touchpressed | dx | number | false | Initial delta x, normally `0`. @engine-param | touchpressed | dy | number | false | Initial delta y, normally `0`. @engine-param | touchpressed | pressure | number | true | Normalized pressure when available. @engine-callback | touchreleased | function lurek.touchreleased(id, x, y, dx, dy, pressure) | Called when a touch point ends or is cancelled. @engine-param | touchreleased | id | integer | false | Touch identifier. @engine-param | touchreleased | x | number | false | Touch x coordinate in game space. @engine-param | touchreleased | y | number | false | Touch y coordinate in game space. @engine-param | touchreleased | dx | number | false | Delta x since the previous touch event. @engine-param | touchreleased | dy | number | false | Delta y since the previous touch event. @engine-param | touchreleased | pressure | number | true | Normalized pressure when available. @engine-callback | visible | function lurek.visible(visible) | Called when the window occlusion/visibility state changes. @engine-param | visible | visible | boolean | false | True when the window is visible. @engine-callback | wheelmoved | function lurek.wheelmoved(dx, dy) | Called when mouse-wheel input arrives and UI did not consume it. @engine-param | wheelmoved | dx | number | false | Horizontal wheel delta. @engine-param | wheelmoved | dy | number | false | Vertical wheel delta.",
+        "module_doc": "This file owns the desktop runtime loop, from startup target selection through steady frame execution and shutdown. It defines viewport helpers, splash-title utilities, startup-drop classification, and key rules for the splash screen. `RunState` models running, fatal-error, and restarting modes, while `LurekApp` stores the live host-side app state. That state includes window and surface handles, renderer and Lua ownership, hot-reload watchers, timing, and input. GPU setup, present-mode selection, surface configuration, resize clamping, and vsync switching are centralized here. Lua initialization also lives here, including VM creation, shared-state hookup, startup file loading, and callbacks. Per-frame control is split across tick, update, render, splash render, and error render paths with deterministic order. Window actions are deferred through local helpers so resize, focus, visibility, cursor, and fullscreen stay guarded. The file owns weather-free host input routing for keyboard, mouse, text, wheel, touch, drag-drop, and window events. Gamepad polling and vibration effects are handled here too, including slot assignment, naming, and feedback playback. Hot reload for scripts, assets, and config files is coordinated here through watcher refresh and polling helpers. Screenshot capture, auto-quit timers, perf logging, archive extraction, and restart flow are also app-level concerns. The `ApplicationHandler` impl binds winit lifecycle callbacks to safe runtime operations and guarded Lua dispatch. The outer `App` and `AppRunOptions` types provide bootstrap input, logger setup, and event-loop launch entrypoints. Open this file when desktop host orchestration changes; splash, errors, HUD, and callback helpers live in siblings.",
         "source_file": "src/app/app.rs",
         "items": [
           {
@@ -1579,168 +1579,168 @@
             "kind": "fn",
             "description": "Recompute viewport scale and offset from game-space size to current window size.",
             "file": "src/app/app.rs",
-            "line": 154
+            "line": 155
           },
           {
             "name": "RunState",
             "kind": "enum",
             "description": "High-level app runtime state used by the frame/event loop.",
             "file": "src/app/app.rs",
-            "line": 230
+            "line": 231
           },
           {
             "name": "splash_window_title",
             "kind": "fn",
             "description": "Build splash window title with engine version suffix.",
             "file": "src/app/app.rs",
-            "line": 239
+            "line": 240
           },
           {
             "name": "fit_contain_size",
             "kind": "fn",
             "description": "Fit source size into max bounds while preserving aspect ratio.",
             "file": "src/app/app.rs",
-            "line": 243
+            "line": 244
           },
           {
             "name": "DropStartupTarget",
             "kind": "enum",
             "description": "Startup target inferred from a drag-and-drop path.",
             "file": "src/app/app.rs",
-            "line": 252
+            "line": 253
           },
           {
             "name": "AppStartupStage",
             "kind": "enum",
             "description": "GPU startup phase that failed before the app could enter steady execution.",
             "file": "src/app/app.rs",
-            "line": 267
+            "line": 268
           },
           {
             "name": "AppStartupError",
             "kind": "struct",
             "description": "Structured startup failure used to avoid panics during GPU initialization.",
             "file": "src/app/app.rs",
-            "line": 278
+            "line": 279
           },
           {
             "name": "map_startup_error_to_run_state",
             "kind": "fn",
             "description": "Map a structured startup failure into recoverable app error state.",
             "file": "src/app/app.rs",
-            "line": 304
+            "line": 305
           },
           {
             "name": "StartupTargetPolicy",
             "kind": "struct",
             "description": "Policy used to validate startup targets and `.lurek` archives before loading.",
             "file": "src/app/app.rs",
-            "line": 310
+            "line": 311
           },
           {
             "name": "StartupTargetDiagnostic",
             "kind": "enum",
             "description": "Diagnostic emitted while classifying startup input.",
             "file": "src/app/app.rs",
-            "line": 328
+            "line": 329
           },
           {
             "name": "StartupTargetReport",
             "kind": "struct",
             "description": "Classification result plus diagnostics for drag-drop startup input.",
             "file": "src/app/app.rs",
-            "line": 348
+            "line": 349
           },
           {
             "name": "CallbackFailurePolicy",
             "kind": "enum",
             "description": "Callback failure mode used by app-hosted Lua execution.",
             "file": "src/app/app.rs",
-            "line": 357
+            "line": 358
           },
           {
             "name": "CallbackErrorRecord",
             "kind": "struct",
             "description": "Diagnostic record for one Lua callback failure.",
             "file": "src/app/app.rs",
-            "line": 366
+            "line": 367
           },
           {
             "name": "WindowRuntimeReport",
             "kind": "struct",
             "description": "Structured report for one attempted window-state apply cycle.",
             "file": "src/app/app.rs",
-            "line": 379
+            "line": 380
           },
           {
             "name": "InputDispatchTarget",
             "kind": "enum",
             "description": "Dispatch stage used for input-routing diagnostics.",
             "file": "src/app/app.rs",
-            "line": 408
+            "line": 409
           },
           {
             "name": "InputDispatchReport",
             "kind": "struct",
             "description": "Diagnostic report for one input event routed through the app host.",
             "file": "src/app/app.rs",
-            "line": 419
+            "line": 420
           },
           {
             "name": "ReloadReport",
             "kind": "struct",
             "description": "Structured report for one runtime reload attempt.",
             "file": "src/app/app.rs",
-            "line": 434
+            "line": 435
           },
           {
             "name": "HotReloadReport",
             "kind": "struct",
             "description": "Report emitted when hot reload coalesces filesystem changes into one restart.",
             "file": "src/app/app.rs",
-            "line": 451
+            "line": 452
           },
           {
             "name": "classify_drop_startup_target",
             "kind": "fn",
             "description": "Classify a dropped path into archive, game directory, or unsupported input.",
             "file": "src/app/app.rs",
-            "line": 479
+            "line": 480
           },
           {
             "name": "classify_drop_startup_target_with_policy",
             "kind": "fn",
             "description": "Classify a dropped path under an explicit startup policy and retain diagnostics.",
             "file": "src/app/app.rs",
-            "line": 484
+            "line": 485
           },
           {
             "name": "should_open_startup_picker_on_key",
             "kind": "fn",
             "description": "Return `true` when the splash screen should open the startup picker for a key press.",
             "file": "src/app/app.rs",
-            "line": 576
+            "line": 577
           },
           {
             "name": "LurekApp",
             "kind": "struct",
             "description": "Central app runtime state shared by winit callbacks and frame update/render flow.",
             "file": "src/app/app.rs",
-            "line": 580
+            "line": 581
           },
           {
             "name": "App",
             "kind": "struct",
             "description": "Thin bootstrap wrapper that owns startup config and launches `LurekApp` event loop.",
             "file": "src/app/app.rs",
-            "line": 4074
+            "line": 4075
           },
           {
             "name": "AppRunOptions",
             "kind": "struct",
             "description": "Startup options passed to the GUI/TUI/CLI application runner.",
             "file": "src/app/app.rs",
-            "line": 4082
+            "line": 4083
           }
         ]
       },
@@ -2839,7 +2839,7 @@
         ]
       },
       "charts::boxplot": {
-        "module_doc": "This file owns box-and-whisker chart rendering for distributions, benchmark runs, and telemetry spreads. It stores named sample series, computes quartiles on render, and draws whiskers, boxes, medians, and outliers. Shared chart helpers provide axes, ticks, category labels, legends, and background styling for consistency. The renderer sorts only per-series samples and otherwise draws O(series + samples) primitives for fast refreshes. Open it when distribution statistics, outlier policy, or boxplot geometry need to change.",
+        "module_doc": "This file owns box-and-whisker chart rendering for distributions, benchmark runs, and telemetry spreads. It stores named sample series, computes quartiles on render, and draws whiskers, boxes, medians, and outliers. Shared chart helpers provide axes, ticks, category labels, legends, and background styling for consistency. The renderer sorts only per-series samples and otherwise draws O(series + samples) primitives for fast refreshes. The output is CPU `ImageData`, so chart statistics stay here while render modules only consume prepared pixels. Open it when distribution statistics, outlier policy, boxplot geometry, or sample limits need to change.",
         "source_file": "src/charts/boxplot.rs",
         "items": [
           {
@@ -2847,12 +2847,12 @@
             "kind": "struct",
             "description": "Box-and-whisker chart for one or more named distributions.",
             "file": "src/charts/boxplot.rs",
-            "line": 31
+            "line": 32
           }
         ]
       },
       "charts::bubble": {
-        "module_doc": "This file owns bubble chart rendering for weighted point clouds, portfolio maps, and correlation dashboards. It stores named `(x, y, size)` samples, maps size values to radius bounds, and draws one circle per finite sample. Shared chart helpers provide cartesian axes, ticks, grids, labels, and legends while this file owns radius scaling. Streaming append and max-point trimming keep live dashboards bounded for repeated 10 FPS redraws. Open it when bubble-size semantics, weighted scatter ingestion, or radius defaults need to change.",
+        "module_doc": "This file owns bubble chart rendering for weighted point clouds, portfolio maps, and correlation dashboards. It stores named `(x, y, size)` samples, maps size values to radius bounds, and draws one circle per finite sample. Shared chart helpers provide cartesian axes, ticks, grids, labels, and legends while this file owns radius scaling. Streaming append and max-point trimming keep live dashboards bounded for repeated 10 FPS redraws. The output is CPU `ImageData`, so render modules consume pixels without owning weighted scatter semantics. Open it when bubble-size semantics, weighted scatter ingestion, or radius defaults need to change.",
         "source_file": "src/charts/bubble.rs",
         "items": [
           {
@@ -2860,12 +2860,12 @@
             "kind": "struct",
             "description": "Bubble chart with named weighted point series.",
             "file": "src/charts/bubble.rs",
-            "line": 22
+            "line": 23
           }
         ]
       },
       "charts::candlestick": {
-        "module_doc": "This file owns candlestick chart rendering for OHLC financial or telemetry interval data. It stores labeled candles, supports incremental appends, and draws wicks plus open-close bodies in one CPU pass. Axis scaling is derived from high/low values, while shared chart helpers provide grid, ticks, title, and captions. Positive and negative candles use configurable colors so streaming market views remain readable at 10 FPS. Open it when OHLC ingestion, candle body geometry, or finance-style chart semantics need to change.",
+        "module_doc": "This file owns candlestick chart rendering for OHLC financial or telemetry interval data streams. It stores labeled candles, supports incremental appends, and draws wicks plus open-close bodies in one CPU pass. Axis scaling is derived from high/low values, while shared chart helpers provide grid, ticks, title, and captions. Positive and negative candles use configurable colors so streaming market views remain readable at 10 FPS. The output is `ImageData`, keeping market-style chart semantics separate from render submission ownership. Open it when OHLC ingestion, candle body geometry, or finance-style chart semantics need to change.",
         "source_file": "src/charts/candlestick.rs",
         "items": [
           {
@@ -2873,14 +2873,14 @@
             "kind": "struct",
             "description": "One open-high-low-close candle.",
             "file": "src/charts/candlestick.rs",
-            "line": 14
+            "line": 15
           },
           {
             "name": "CandlestickChart",
             "kind": "struct",
             "description": "Candlestick chart for ordered OHLC samples.",
             "file": "src/charts/candlestick.rs",
-            "line": 29
+            "line": 30
           }
         ]
       },
@@ -3096,7 +3096,7 @@
         ]
       },
       "charts::radar": {
-        "module_doc": "This file owns radar/spider chart rendering for multivariate series over shared axes. It stores ordered axis labels and named series values, then draws radial grid rings and closed polygons. The chart can use an explicit maximum value or auto-scale from finite series samples. Rendering is O(axes * series) and avoids per-pixel polygon fills so live dashboards can refresh quickly. Open it when radar axis semantics, scaling, or polygon stroke behavior need to change.",
+        "module_doc": "This file owns radar/spider chart rendering for multivariate series over shared axes and dashboards. It stores ordered axis labels and named series values, then draws radial grid rings and closed polygons. The chart can use an explicit maximum value or auto-scale from finite series samples for stable output. Rendering is O(axes * series) and avoids per-pixel polygon fills so live dashboards can refresh quickly. Shared chart configuration owns common colors and labels while this file owns radial geometry semantics. Open it when radar axis semantics, scaling, polygon stroke behavior, or series limits need to change.",
         "source_file": "src/charts/radar.rs",
         "items": [
           {
@@ -3104,7 +3104,7 @@
             "kind": "struct",
             "description": "Radar chart for comparing named series across shared axes.",
             "file": "src/charts/radar.rs",
-            "line": 20
+            "line": 21
           }
         ]
       },
@@ -3198,7 +3198,7 @@
         ]
       },
       "charts::treemap": {
-        "module_doc": "This file owns treemap chart rendering for part-to-whole dashboards and hierarchical-looking flat summaries. It stores weighted labeled items, applies deterministic squarified rows, and draws colored rectangles with labels. The API accepts flat items because runtime Lua callers commonly aggregate hierarchy before visualization. Rendering is O(n log n) from value sorting plus rectangle fills, keeping repeated refreshes practical. Open it when treemap item ingestion, squarified row packing, or label rendering need to change.",
+        "module_doc": "This file owns treemap chart rendering for part-to-whole dashboards and hierarchical-looking flat summaries. It stores weighted labeled items, applies deterministic squarified rows, and draws colored rectangles with labels. The API accepts flat items because runtime Lua callers commonly aggregate hierarchy before visualization. Rendering is O(n log n) from value sorting plus rectangle fills, keeping repeated refreshes practical. Shared chart configuration provides title, legend, and background while this file owns rectangle packing. The output is CPU `ImageData`, so render modules consume pixels instead of owning treemap layout semantics. Open it when treemap item ingestion, squarified row packing, or label rendering need to change.",
         "source_file": "src/charts/treemap.rs",
         "items": [
           {
@@ -3206,14 +3206,14 @@
             "kind": "struct",
             "description": "One weighted treemap item.",
             "file": "src/charts/treemap.rs",
-            "line": 13
+            "line": 15
           },
           {
             "name": "TreemapChart",
             "kind": "struct",
             "description": "Treemap chart for weighted labeled rectangles.",
             "file": "src/charts/treemap.rs",
-            "line": 32
+            "line": 34
           }
         ]
       },
@@ -5699,7 +5699,7 @@
         ]
       },
       "dsp::visualizer": {
-        "module_doc": "`src/dsp/visualizer.rs` converts decoded audio buffers into waveform and spectrogram PNG diagnostics. It owns mono reduction, windowing, FFT magnitude sampling, and pixel-color mapping for offline visual inspection. Waveform and spectrogram export live here so audio-image tooling stays separate from playback, synthesis, and effects. This file is the visual diagnostics boundary for DSP assets; it does not own meters or generated sample output. Read it when DSP image export, heatmap encoding, or waveform rendering rules for inspection tools need changes.",
+        "module_doc": "`src/dsp/visualizer.rs` converts decoded audio buffers into waveform and spectrogram PNG diagnostics. It owns mono reduction, windowing, FFT magnitude sampling, and pixel-color mapping for offline visual inspection. Waveform and spectrogram export live here so audio-image tooling stays separate from playback, synthesis, and effects. This file is the visual diagnostics boundary for DSP assets; it does not own meters or generated sample output. It reads decoded samples from supported audio sources and writes inspection images through image crate buffers. Update this file when FFT bin mapping, waveform scaling, heatmap coloring, or diagnostic export limits change. Read it when DSP image export, heatmap encoding, or waveform rendering rules for inspection tools need changes.",
         "source_file": "src/dsp/visualizer.rs",
         "items": [
           {
@@ -5707,28 +5707,28 @@
             "kind": "struct",
             "description": "Controls spectrogram short-time Fourier transform and colour mapping.",
             "file": "src/dsp/visualizer.rs",
-            "line": 18
+            "line": 20
           },
           {
             "name": "waveform_to_png",
             "kind": "fn",
             "description": "Render waveform overview of `input_wav` to `output_png` with given image size.",
             "file": "src/dsp/visualizer.rs",
-            "line": 87
+            "line": 89
           },
           {
             "name": "spectrogram_to_png",
             "kind": "fn",
             "description": "Render a spectrogram heatmap of `input_wav` to `output_png` using default FFT options.",
             "file": "src/dsp/visualizer.rs",
-            "line": 123
+            "line": 125
           },
           {
             "name": "spectrogram_to_png_with_options",
             "kind": "fn",
             "description": "Render a spectrogram heatmap of `input_wav` to `output_png` using configurable FFT options.",
             "file": "src/dsp/visualizer.rs",
-            "line": 139
+            "line": 141
           }
         ]
       },
@@ -6756,7 +6756,7 @@
         ]
       },
       "font": {
-        "module_doc": "`src/font/mod.rs` is the font module index, exposing atlas, metrics, registry, and shaping surfaces in one place. It reexports the public text stack so renderers, UI systems, and bindings can reach font services through one boundary. No runtime font state lives here; this file defines visibility and navigation while implementation stays in child files. Read this index when wiring text features, because it shows which font symbols are intentionally public and stable. Changes here alter the typography boundary, since reexports decide what the engine and Lua-facing layers may import. This module groups loading, measurement, shaping, and lookup concerns without collapsing them into one file.",
+        "module_doc": "`src/font/mod.rs` is the font module index, exposing atlas, metrics, registry, and shaping surfaces in one place. It reexports the public text stack so renderers, UI systems, and bindings can reach font services through one boundary. Runtime font atlas state lives in `runtime_font`, while this file defines visibility and navigation. Read this index when wiring text features, because it shows which font symbols are intentionally public and stable. Changes here alter the typography boundary, since reexports decide what the engine and Lua-facing layers may import. This module groups loading, measurement, shaping, and lookup concerns without collapsing them into one file.",
         "source_file": "src/font/mod.rs",
         "items": [
           {
@@ -6781,11 +6781,18 @@
             "line": 13
           },
           {
+            "name": "runtime_font",
+            "kind": "mod",
+            "description": "Runtime font atlas loading, glyph UVs, and dynamic rasterization.",
+            "file": "src/font/mod.rs",
+            "line": 15
+          },
+          {
             "name": "shaping",
             "kind": "mod",
             "description": "Text shaping: word wrapping, line breaking, alignment.",
             "file": "src/font/mod.rs",
-            "line": 15
+            "line": 17
           }
         ]
       },
@@ -6813,6 +6820,131 @@
             "description": "Central font storage mapping handles and names to loaded fonts.",
             "file": "src/font/registry.rs",
             "line": 39
+          }
+        ]
+      },
+      "font::runtime_font": {
+        "module_doc": "Owns runtime font assets, glyph metrics, and atlas layout used by text rendering across runtime UI and debug views. Supports bundled Courier New atlases at multiple sizes alongside dynamic fontdue rasterization from bytes. Maps characters to atlas cells, UV coordinates, advances, and fallback substitutions under one font contract. Provides nearest-size lookup so callers can request practical font points without managing raw atlas sets. Handles wrapping, alignment metrics, and pen movement needed by layout and draw code above this layer. Extends character mapping with retro symbols and box characters used by terminal or pixel-art interfaces. Acts as the text-asset boundary rather than the owner of final UI or renderer command emission. Open this file when glyph lookup, atlas data, wrapping, or dynamic font loading behaves incorrectly.",
+        "source_file": "src/font/runtime_font.rs",
+        "items": [
+          {
+            "name": "MAX_DYNAMIC_FONT_POINT_SIZE",
+            "kind": "const",
+            "description": "Maximum accepted point size for runtime-rasterized font bytes.",
+            "file": "src/font/runtime_font.rs",
+            "line": 22
+          },
+          {
+            "name": "MAX_DYNAMIC_FONT_ATLAS_DIMENSION",
+            "kind": "const",
+            "description": "Maximum width or height for a runtime-rasterized font atlas.",
+            "file": "src/font/runtime_font.rs",
+            "line": 24
+          },
+          {
+            "name": "MAX_DYNAMIC_FONT_ATLAS_BYTES",
+            "kind": "const",
+            "description": "Maximum byte size for a runtime-rasterized RGBA font atlas.",
+            "file": "src/font/runtime_font.rs",
+            "line": 26
+          },
+          {
+            "name": "FIRST_CODEPOINT",
+            "kind": "const",
+            "description": "First Unicode codepoint included in the bundled bitmap atlas range.",
+            "file": "src/font/runtime_font.rs",
+            "line": 29
+          },
+          {
+            "name": "LAST_CODEPOINT",
+            "kind": "const",
+            "description": "Last Unicode codepoint included in the bundled bitmap atlas range.",
+            "file": "src/font/runtime_font.rs",
+            "line": 31
+          },
+          {
+            "name": "GLYPH_COUNT",
+            "kind": "const",
+            "description": "Total number of glyph slots covered by the bundled bitmap atlas range.",
+            "file": "src/font/runtime_font.rs",
+            "line": 33
+          },
+          {
+            "name": "NUM_SIZES",
+            "kind": "const",
+            "description": "Number of bundled font sizes.",
+            "file": "src/font/runtime_font.rs",
+            "line": 54
+          },
+          {
+            "name": "AVAILABLE_POINT_SIZES",
+            "kind": "const",
+            "description": "Point sizes used to generate the bundled atlases.",
+            "file": "src/font/runtime_font.rs",
+            "line": 56
+          },
+          {
+            "name": "AVAILABLE_HEIGHTS",
+            "kind": "const",
+            "description": "Cell heights (pixels) for each bundled size slot.",
+            "file": "src/font/runtime_font.rs",
+            "line": 58
+          },
+          {
+            "name": "AVAILABLE_CELL_SIZES",
+            "kind": "const",
+            "description": "`(cell_width, cell_height)` pairs for each bundled size slot.",
+            "file": "src/font/runtime_font.rs",
+            "line": 60
+          },
+          {
+            "name": "AVAILABLE_REGULAR_NAMES",
+            "kind": "const",
+            "description": "Stable built-in names for regular bundled fonts.",
+            "file": "src/font/runtime_font.rs",
+            "line": 70
+          },
+          {
+            "name": "AVAILABLE_BOLD_NAMES",
+            "kind": "const",
+            "description": "Stable built-in names for bold bundled fonts.",
+            "file": "src/font/runtime_font.rs",
+            "line": 74
+          },
+          {
+            "name": "BUILTIN_FONT_NAMES",
+            "kind": "const",
+            "description": "Full built-in font list in regular-then-bold order.",
+            "file": "src/font/runtime_font.rs",
+            "line": 78
+          },
+          {
+            "name": "GlyphInfo",
+            "kind": "struct",
+            "description": "UV-space coordinates and pixel metrics for a single bitmap glyph.",
+            "file": "src/font/runtime_font.rs",
+            "line": 101
+          },
+          {
+            "name": "Font",
+            "kind": "struct",
+            "description": "Bitmap font atlas queried for per-character UVs and text metrics.",
+            "file": "src/font/runtime_font.rs",
+            "line": 123
+          },
+          {
+            "name": "validate_dynamic_font_point_size",
+            "kind": "fn",
+            "description": "Validate and normalize a dynamic font point size before parsing or rasterizing font bytes.",
+            "file": "src/font/runtime_font.rs",
+            "line": 163
+          },
+          {
+            "name": "validate_dynamic_font_atlas_dimensions",
+            "kind": "fn",
+            "description": "Validate dynamic font atlas dimensions and return the required RGBA byte length.",
+            "file": "src/font/runtime_font.rs",
+            "line": 179
           }
         ]
       },
@@ -8149,7 +8281,7 @@
         ]
       },
       "image": {
-        "module_doc": "Exports the image subsystem surface that groups buffers, effects, formats, atlases, layers, and visuals. Acts as the navigation index for CPU image ownership, showing where loading, edits, packing, and specs live. Re-exports ImageData, compressed assets, palette LUTs, layered images, GIF helpers, and atlas structures. Keeps compatibility exports such as ProvinceGrid local to the module boundary instead of scattered in users. Open this file first when tracing which image feature belongs to storage, processing, serialization, or UI. This owner defines image-module visibility and composition, not the pixel algorithms implemented below it.",
+        "module_doc": "Exports the image subsystem surface for CPU bitmaps, effects, formats, layers, palettes, and visual helpers. Acts as the navigation index for single-bitmap ownership, showing where loading, editing, and specs live. Re-exports `ImageData`, compressed assets, palette LUTs, layered images, GIF helpers, and compatibility types. Keeps atlas, nine-slice, and sprite-sheet concepts outside image so sprite remains the texture-region owner. Open this file when tracing which image feature belongs to storage, processing, serialization, or UI support. This index owns image visibility and composition, not the pixel algorithms implemented in child modules.",
         "source_file": "src/image/mod.rs",
         "items": [
           {
@@ -8223,18 +8355,11 @@
             "line": 35
           },
           {
-            "name": "texture_atlas",
-            "kind": "mod",
-            "description": "Texture atlas packing and nine-slice metadata.",
-            "file": "src/image/mod.rs",
-            "line": 37
-          },
-          {
             "name": "visualization",
             "kind": "mod",
             "description": "Image visualizations for debugging and analysis.",
             "file": "src/image/mod.rs",
-            "line": 39
+            "line": 37
           }
         ]
       },
@@ -8369,33 +8494,6 @@
             "description": "Premultiply RGB channels by alpha for each RGBA pixel in place.",
             "file": "src/image/texture.rs",
             "line": 32
-          }
-        ]
-      },
-      "image::texture_atlas": {
-        "module_doc": "Implements a named texture atlas that packs image regions and records their placement inside one sheet. Stores atlas dimensions, padding, shelf state, and region metadata so sprite lookup stays data driven. Supports optional nine-slice insets per region, making UI skin assets travel with their packing metadata. Exposes region counts, atlas size, and immutable region views for tools that inspect generated sprite maps. Open this file when atlas packing, region lookup, or nine-slice metadata does not match authored assets.",
-        "source_file": "src/image/texture_atlas.rs",
-        "items": [
-          {
-            "name": "NineSliceInsets",
-            "kind": "struct",
-            "description": "Nine-slice border distances used to preserve corners and edges.",
-            "file": "src/image/texture_atlas.rs",
-            "line": 10
-          },
-          {
-            "name": "AtlasRegion",
-            "kind": "struct",
-            "description": "A packed atlas region with coordinates, size, and optional nine-slice data.",
-            "file": "src/image/texture_atlas.rs",
-            "line": 22
-          },
-          {
-            "name": "TextureAtlas",
-            "kind": "struct",
-            "description": "Shelf-based texture atlas for packing named regions into a fixed canvas.",
-            "file": "src/image/texture_atlas.rs",
-            "line": 46
           }
         ]
       },
@@ -11595,7 +11693,7 @@
         ]
       },
       "minimap::minimap": {
-        "module_doc": "Owns minimap behavior with explicit state, validation, and crate-local integration boundaries. Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how minimap data is validated, transformed, or stored before neighboring systems use it. Owns minimap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on minimap behavior while Lua registration stays elsewhere. Documents the boundary where minimap code accepts inputs, reports errors, or updates state. Use this file when changing minimap defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the minimap state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping minimap calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating minimap rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose minimap behavior safely. Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.",
+        "module_doc": "Owns the minimap runtime state, including world bounds, layers, fog, markers, objects, pings, and icon cache. Validates dimensions, zoom, marker counts, layer counts, and geometry inputs before they reach rendering helpers. Tracks dirty state and rebuild decisions so Lua callers can mutate minimap data without duplicating cache rules. Converts camera and world coordinates into minimap draw space while keeping camera ownership outside this file. Maintains overlays, paths, blend modes, color modes, and fog styles as minimap concepts, not renderer concepts. Integrates texture keys for icons by reference while asset cataloging and GPU upload remain in other modules. Produces render data and image output that downstream render paths can consume without owning minimap state. Keeps error reporting, limits, defaults, and deterministic calculations close to the minimap data owner. Provides crate-local helpers for Lua bindings while userdata registration and table conversion stay elsewhere. Update this file when minimap lifecycle, validation, draw planning, fog, marker, or object semantics change. Leave tilemap storage, camera control, renderer submission, and asset parsing in their owning subsystems. This boundary keeps the minimap composable for dashboards, games, debug tools, and generated evidence tests. Tests should assert state transitions here and use Lua integration when proving renderer or asset composition.",
         "source_file": "src/minimap/minimap.rs",
         "items": [
           {
@@ -11603,7 +11701,7 @@
             "kind": "struct",
             "description": "Complete minimap state: terrain, fog, objects, markers, overlays, and rendering configuration.",
             "file": "src/minimap/minimap.rs",
-            "line": 42
+            "line": 43
           }
         ]
       },
@@ -11894,7 +11992,7 @@
         ]
       },
       "mods::mod_loader": {
-        "module_doc": "`src/mods/mod_loader.rs` parses TOML content files into typed `ModInstance` records ready for registry validation. It owns `FieldValue`, `ModContentLoadOptions`, scalar coercion helpers, real TOML decoding, and source-path attachment. Instance bootstrap from content files happens here so manifest decoding stays separate from registration and execution. Complex field values remain structured instead of being flattened into strings during parse time. This file does not manage dependency order or sandbox policy; it only turns content text into structured instances. Read it when TOML parsing, field coercion, instance IDs, or source-file tracking for mods needs to change.",
+        "module_doc": "`src/mods/mod_loader.rs` parses TOML content files into typed `ModInstance` records ready for registry validation. It owns `FieldValue`, `ModContentLoadOptions`, scalar coercion helpers, and source-path attachment. Instance bootstrap from content files happens here so manifest decoding stays separate from registration and execution. Complex field values remain structured instead of being flattened into strings during parse time. This file does not manage dependency order or sandbox policy; it only turns content text into structured instances. Read it when TOML parsing, field coercion, instance IDs, or source-file tracking for mods needs to change.",
         "source_file": "src/mods/mod_loader.rs",
         "items": [
           {
@@ -11902,35 +12000,35 @@
             "kind": "struct",
             "description": "Load options used by the mod content TOML parser.",
             "file": "src/mods/mod_loader.rs",
-            "line": 14
+            "line": 15
           },
           {
             "name": "FieldValue",
             "kind": "enum",
             "description": "A field value in a mod instance.",
             "file": "src/mods/mod_loader.rs",
-            "line": 42
+            "line": 43
           },
           {
             "name": "ModInstance",
             "kind": "struct",
             "description": "A mod instance declaring a game object via the API registry.",
             "file": "src/mods/mod_loader.rs",
-            "line": 87
+            "line": 88
           },
           {
             "name": "load_instances_from_toml",
             "kind": "fn",
             "description": "Load mod instances from a TOML content file using default safety limits.",
             "file": "src/mods/mod_loader.rs",
-            "line": 145
+            "line": 146
           },
           {
             "name": "load_instances_from_toml_with_options",
             "kind": "fn",
             "description": "Load mod instances from a TOML content file with explicit limits.",
             "file": "src/mods/mod_loader.rs",
-            "line": 159
+            "line": 160
           }
         ]
       },
@@ -11943,14 +12041,14 @@
             "kind": "struct",
             "description": "Metadata and runtime state for a single content mod.",
             "file": "src/mods/mod_manager.rs",
-            "line": 29
+            "line": 30
           },
           {
             "name": "ModManager",
             "kind": "struct",
             "description": "Registry of all known mods, their custom load order, and pending hot-reload requests.",
             "file": "src/mods/mod_manager.rs",
-            "line": 175
+            "line": 176
           }
         ]
       },
@@ -13549,7 +13647,7 @@
         ]
       },
       "pathfind::context_steering": {
-        "module_doc": "Implements slot-based context steering that scores angular interest and danger before picking a movement lane. Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot. Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler. Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly. Provides the pathfind-owned local movement boundary between authored context behaviors and the final chosen travel heading. This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion. Open this owner before generic steering when the bug is in lane choice rather than force combination policy.",
+        "module_doc": "Implements slot-based context steering that scores angular interest and danger before choosing a movement lane. Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot. Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler. Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly. Provides the pathfind-owned boundary between authored context behaviors and final travel heading selection. Use this owner when directional slot math or danger suppression yields jittery or unsafe movement choices. Open generic steering only when the bug is force combination policy rather than lane selection semantics.",
         "source_file": "src/pathfind/context_steering.rs",
         "items": [
           {
@@ -13790,7 +13888,7 @@
         ]
       },
       "pathfind": {
-        "module_doc": "Exports the pathfinding subsystem surface for routing, spatial fields, steering, local avoidance, and debug views. Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, steering, ORCA, and province graph helpers. Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, movement, or draw. Open this file when adding or retiring pathfinding owners or when re-export policy for runtime helpers needs changes. The exports here connect generic tile grids, hex and iso variants, navmeshes, and province graph traversal utilities. Agents should start here when tracing navigation behavior because it reveals the authoritative file split by feature. This index owns visibility and re-export contracts rather than live state, queues, caches, or search data itself. Neighboring work usually spans NavGrid, async request handling, path solvers, movement helpers, and debug rendering adapters below.",
+        "module_doc": "Exports the pathfinding surface for routing, spatial fields, steering, local avoidance, and debug views. Acts as the navigation index for A*, HPA, flow fields, influence maps, ORCA, and province graphs. Keeps boundaries explicit so callers can locate data, search, movement, validation, or debug ownership. Re-exports grid, hex, iso, navmesh, steering, tactical, and graph helpers without storing live state. This index owns visibility contracts, not queues, caches, solver internals, or renderer submission data. Start here when tracing navigation behavior because it reveals the authoritative file split by feature. Neighboring changes usually span `NavGrid`, async requests, solvers, steering helpers, and debug adapters. Update this file when adding, retiring, or renaming pathfinding owners or public re-export policy.",
         "source_file": "src/pathfind/mod.rs",
         "items": [
           {
@@ -14055,7 +14153,7 @@
         "items": []
       },
       "pathfind::steering": {
-        "module_doc": "Owns steering behavior stacks for pathfinding-adjacent local movement. Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants. Defines how steering data is validated, transformed, or stored before neighboring systems use it. Keeps path following, flocking, pursuit, evasion, and custom movement forces under the navigation owner. Keeps public crate helpers focused on movement behavior while Lua registration stays elsewhere. Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing steering defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary. Provides the local movement layer that lets callers avoid duplicating path and avoidance rules.",
+        "module_doc": "Owns steering behavior stacks for pathfinding-adjacent local movement and force-based navigation. Centers implementation around `Force`, `SteeringEntity`, manager state, and flock parameter invariants. Validates entity counts, finite vectors, weights, radii, speeds, and target inputs before calculations run. Keeps path following, flocking, pursuit, evasion, wander, arrival, separation, and custom forces here. Produces deterministic movement forces that callers can compose without duplicating path avoidance rules. Stores named entities and behavior lists while route search, grid ownership, and rendering live elsewhere. Keeps crate helpers focused on movement behavior while Lua registration and table conversion stay elsewhere. Reports structured pathfind errors for invalid movement data instead of leaking panics into callers. Update this file when steering defaults, lifecycle handling, validation, or force calculation semantics change. Leave context-slot steering, ORCA, tactical fields, and raw path solvers in their own navigation owners.",
         "source_file": "src/pathfind/steering.rs",
         "items": [
           {
@@ -14123,7 +14221,7 @@
         ]
       },
       "pathfind::validation": {
-        "module_doc": "Validation helpers for pathfinding, tactical fields, steering, and local avoidance. Keeps movement-facing limits near the pathfind owners that enforce them.",
+        "module_doc": "Owns shared validation helpers for pathfinding, tactical fields, steering, and local avoidance modules. Keeps finite number, count, and positive-value checks close to the navigation owners that enforce them. Update this file when movement-facing modules need common limits or structured `PathfindError` guards.",
         "source_file": "src/pathfind/validation.rs",
         "items": [
           {
@@ -14131,21 +14229,21 @@
             "kind": "struct",
             "description": "Shared safety limits for pathfinding-adjacent movement helpers.",
             "file": "src/pathfind/validation.rs",
-            "line": 6
+            "line": 7
           },
           {
             "name": "finite_f32",
             "kind": "fn",
             "description": "Reject NaN and infinite `f32` inputs.",
             "file": "src/pathfind/validation.rs",
-            "line": 26
+            "line": 27
           },
           {
             "name": "validate_count",
             "kind": "fn",
             "description": "Reject counts above a configured ceiling.",
             "file": "src/pathfind/validation.rs",
-            "line": 36
+            "line": 37
           }
         ]
       },
@@ -14943,7 +15041,7 @@
         ]
       },
       "physics::world": {
-        "module_doc": "This file owns `World`, the Rapier-backed runtime that stores live bodies, colliders, joints, and zones. It mirrors authored `Body` data into Rapier sets, keeps stable ids, and tracks tombstones for removed slots. Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors. Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results. Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts. Spatial query helpers provide filtered raycasts, AABB scans, and point tests against the same world state. Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits. Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids. Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths. Zone integration applies priority-ordered gravity and damping overrides, then emits enter and leave events per body. One-way platform handling and sleep controls adapt raw solver behavior to platformer-style gameplay expectations. Meter conversion helpers keep pixel-authored content aligned with simulation units without spreading scale math. Debug extraction exposes shape snapshots and image drawing support so tools can inspect runtime geometry easily. Open this file when runtime ownership or physics behavior changes; pure shape and zone definitions live nearby.",
+        "module_doc": "This file owns `World`, the Rapier-backed runtime that stores live bodies, colliders, joints, and zones. It mirrors authored `Body` data into Rapier sets, keeps stable ids, and tracks tombstones for removed slots. Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors. Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results. Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts. Spatial query helpers provide filtered raycasts, AABB scans, and point tests against the same world state. Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits. Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids. Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths. Zone integration applies priority-ordered gravity and damping overrides, then emits enter and leave events per body. One-way platform handling and sleep controls adapt raw solver behavior to platformer-style gameplay expectations. Meter conversion helpers keep pixel-authored content aligned with simulation units without spreading scale math. Debug extraction exposes shape snapshots and image drawing support so tools can inspect runtime geometry easily. Open this file when runtime ownership or physics behavior changes; pure shape and zone definitions live nearby. Keep Lua conversion, renderer submission, asset parsing, and editor UI policy outside this simulation owner.",
         "source_file": "src/physics/world.rs",
         "items": [
           {
@@ -14951,68 +15049,68 @@
             "kind": "struct",
             "description": "A pair of body ids that have started or are overlapping. # Fields - `body_a`: first body id. - `body_b`: second body id.",
             "file": "src/physics/world.rs",
-            "line": 82
+            "line": 83
           },
           {
             "name": "RaycastHit",
             "kind": "struct",
             "description": "The closest raycast intersection result. # Fields - `body_id`: body hit by the ray. - `point`: world-space hit point. - `normal`: outward hit normal. - `toi`: parametric distance along the cast.",
             "file": "src/physics/world.rs",
-            "line": 95
+            "line": 96
           },
           {
             "name": "ContactInfo",
             "kind": "struct",
             "description": "Contact information between two bodies. # Fields - `body_a`: first body id. - `body_b`: second body id. - `normal_x`: contact normal x component. - `normal_y`: contact normal y component. - `is_touching`: whether the bodies are currently touching.",
             "file": "src/physics/world.rs",
-            "line": 113
+            "line": 114
           },
           {
             "name": "PhysicsShapeSnapshot",
             "kind": "struct",
             "description": "Snapshot of a physics shape used for debug rendering. # Fields - `x`: world-space x center. - `y`: world-space y center. - `half_w`: half-width for box-like shapes. - `half_h`: half-height for box-like shapes. - `angle`: rotation in radians. - `is_static`: whether the source body is static. - `is_sleeping`: whether the source body is sleeping. - `is_sensor`: whether the source collider is a sensor. - `is_circle`: whether the shape should be rendered as a circle. - `hull_verts`: polygon hull vertices for non-rectangular shapes.",
             "file": "src/physics/world.rs",
-            "line": 137
+            "line": 138
           },
           {
             "name": "PhysicsQueryFilter",
             "kind": "struct",
             "description": "Optional filters applied to physics spatial queries. # Fields - `layer`: optional query-side collision layer mask. - `mask`: optional query-side collision mask. - `include_sensors`: whether sensor colliders should be returned.",
             "file": "src/physics/world.rs",
-            "line": 165
+            "line": 166
           },
           {
             "name": "GravityVector",
             "kind": "struct",
             "description": "Additive directional gravity vector applied to matching dynamic bodies before the solver step. # Fields - `id`: stable gravity vector identifier. - `gx`: x acceleration in world units per second squared. - `gy`: y acceleration in world units per second squared. - `layer_mask`: body layer mask; bodies with `body.layer & layer_mask == 0` are skipped. - `enabled`: whether the vector participates in the next step.",
             "file": "src/physics/world.rs",
-            "line": 191
+            "line": 192
           },
           {
             "name": "PhysicsDiagnostics",
             "kind": "struct",
             "description": "Runtime diagnostics recorded by the physics world across steps and strict mutators. # Fields - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `last_bodies_scanned`: body slots examined during the most recent step. - `last_colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `last_zone_checks`: body-zone containment checks performed during the most recent step. - `last_contacts`: contact events emitted during the most recent step. - `last_synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 214
+            "line": 215
           },
           {
             "name": "PhysicsWorldStats",
             "kind": "struct",
             "description": "Lightweight world diagnostics for Lua/editor tooling. # Fields - `bodies`: active body count. - `body_slots`: total allocated body slots. - `colliders`: active collider count. - `joints`: active joint count. - `joint_slots`: total allocated joint slots. - `zones`: active zone count. - `gravity_vectors`: active additive gravity vector count. - `sleeping_bodies`: active bodies currently sleeping. - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `bodies_scanned`: body slots examined during the most recent step. - `colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `zone_checks`: body-zone containment checks performed during the most recent step. - `contacts`: contact events emitted during the most recent step. - `synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 251
+            "line": 252
           },
           {
             "name": "World",
             "kind": "struct",
             "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
             "file": "src/physics/world.rs",
-            "line": 338
+            "line": 339
           }
         ]
       },
       "physics::zone": {
-        "module_doc": "Owns the zone owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around ZoneId, ZonePriority, ZoneGravityMode, with helpers kept close to their invariants. Defines how zone data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on zone behavior while Lua registration stays elsewhere. Documents the boundary where physics code accepts inputs, reports errors, or updates state. Use this file when changing zone defaults, lifecycle handling, validation, or data ownership.",
+        "module_doc": "Owns physics zone definitions, priorities, gravity modes, falloffs, boundaries, and membership tracking events. Keeps zone validation near the data that needs it so invalid radii, damping, and polygon bounds fail early. Provides pure zone containment helpers plus tracker bookkeeping used by `World` during simulation steps. Stores no Rapier sets itself; the world applies zone effects after ordering and filtering these definitions. Separates authored gravity areas from body, fixture, joint, and collision ownership in nearby physics files. Emits enter and leave events through `ZoneTracker` so gameplay reads stable membership changes after stepping. Keeps crate-local helpers focused on physics data while Lua binding translation remains in `lua_api`. Update this file when zone shapes, priority rules, gravity overrides, or membership event semantics change. Keep renderer debug extraction and solver integration outside this file so the zone concept stays reusable.",
         "source_file": "src/physics/zone.rs",
         "items": [
           {
@@ -15020,63 +15118,63 @@
             "kind": "type",
             "description": "Alias for a zone's numeric identifier.",
             "file": "src/physics/zone.rs",
-            "line": 15
+            "line": 17
           },
           {
             "name": "ZonePriority",
             "kind": "type",
             "description": "Alias for zone processing priority (higher wins).",
             "file": "src/physics/zone.rs",
-            "line": 17
+            "line": 19
           },
           {
             "name": "ZoneGravityFalloff",
             "kind": "enum",
             "description": "Falloff curve used by point and repulsor zone gravity. # Variants - `InverseSquare`: acceleration is `strength / distance^2`. - `Inverse`: acceleration is `strength / distance`. - `Linear`: acceleration fades from `strength` at the inner radius to zero at the outer radius. - `Constant`: acceleration is always `strength` inside the active radius.",
             "file": "src/physics/zone.rs",
-            "line": 26
+            "line": 28
           },
           {
             "name": "ZoneGravityMode",
             "kind": "enum",
             "description": "Gravity behaviour applied to bodies inside the zone. # Variants - `Directional`: constant gravity vector override. - `Point`: attraction toward a point. - `Repulsor`: repulsion away from a point. - `Zero`: zero-gravity override.",
             "file": "src/physics/zone.rs",
-            "line": 71
+            "line": 73
           },
           {
             "name": "ZoneBoundary",
             "kind": "enum",
             "description": "Spatial boundary shape for a zone. # Variants - `Rect`: axis-aligned rectangle boundary. - `Circle`: circular boundary.",
             "file": "src/physics/zone.rs",
-            "line": 86
+            "line": 88
           },
           {
             "name": "ZoneEventKind",
             "kind": "enum",
             "description": "Zone enter/exit event discriminant. # Variants - `Enter`: a body entered the zone. - `Leave`: a body left the zone.",
             "file": "src/physics/zone.rs",
-            "line": 155
+            "line": 157
           },
           {
             "name": "ZoneEvent",
             "kind": "struct",
             "description": "A zone crossing event emitted by `ZoneTracker::update`. # Fields - `zone_id`: zone crossed by the body. - `body_id`: body that crossed the boundary. - `kind`: whether it was an enter or leave transition.",
             "file": "src/physics/zone.rs",
-            "line": 167
+            "line": 169
           },
           {
             "name": "PhysicsZone",
             "kind": "struct",
             "description": "A trigger zone that applies gravity and damping overrides to bodies inside it. # Fields - `id`: stable zone identifier. - `boundary`: current containment shape. - `gravity_mode`: override gravity behavior inside the zone. - `priority`: higher-priority zones win during overlap. - `linear_damping_override`: optional linear damping override. - `angular_damping_override`: optional angular damping override. - `linear_drag`: optional area drag proportional to velocity. - `quadratic_drag`: optional area drag proportional to speed times velocity. - `layer_mask`: body layer filter mask. - `enabled`: whether the zone participates in updates.",
             "file": "src/physics/zone.rs",
-            "line": 187
+            "line": 189
           },
           {
             "name": "ZoneTracker",
             "kind": "struct",
             "description": "Tracks which bodies are inside which zones to generate enter/exit events. # Fields - `body_zones`: per-body zone membership cache.",
             "file": "src/physics/zone.rs",
-            "line": 552
+            "line": 554
           }
         ]
       },
@@ -17476,131 +17574,6 @@
           }
         ]
       },
-      "render::font": {
-        "module_doc": "Owns font assets, glyph metrics, and atlas layout used by text rendering across runtime UI and debug views. Supports bundled Courier New atlases at multiple sizes alongside dynamic fontdue rasterization from bytes. Maps characters to atlas cells, UV coordinates, advances, and fallback substitutions under one font contract. Provides nearest-size lookup so callers can request practical font points without managing raw atlas sets. Handles wrapping, alignment metrics, and pen movement needed by layout and draw code above this layer. Extends character mapping with retro symbols and box characters used by terminal or pixel-art interfaces. Acts as the text-asset boundary rather than the owner of final UI or renderer command emission. Open this file when glyph lookup, atlas data, wrapping, or dynamic font loading behaves incorrectly.",
-        "source_file": "src/render/font.rs",
-        "items": [
-          {
-            "name": "MAX_DYNAMIC_FONT_POINT_SIZE",
-            "kind": "const",
-            "description": "Maximum accepted point size for runtime-rasterized font bytes.",
-            "file": "src/render/font.rs",
-            "line": 22
-          },
-          {
-            "name": "MAX_DYNAMIC_FONT_ATLAS_DIMENSION",
-            "kind": "const",
-            "description": "Maximum width or height for a runtime-rasterized font atlas.",
-            "file": "src/render/font.rs",
-            "line": 24
-          },
-          {
-            "name": "MAX_DYNAMIC_FONT_ATLAS_BYTES",
-            "kind": "const",
-            "description": "Maximum byte size for a runtime-rasterized RGBA font atlas.",
-            "file": "src/render/font.rs",
-            "line": 26
-          },
-          {
-            "name": "FIRST_CODEPOINT",
-            "kind": "const",
-            "description": "First Unicode codepoint included in the bundled bitmap atlas range.",
-            "file": "src/render/font.rs",
-            "line": 29
-          },
-          {
-            "name": "LAST_CODEPOINT",
-            "kind": "const",
-            "description": "Last Unicode codepoint included in the bundled bitmap atlas range.",
-            "file": "src/render/font.rs",
-            "line": 31
-          },
-          {
-            "name": "GLYPH_COUNT",
-            "kind": "const",
-            "description": "Total number of glyph slots covered by the bundled bitmap atlas range.",
-            "file": "src/render/font.rs",
-            "line": 33
-          },
-          {
-            "name": "NUM_SIZES",
-            "kind": "const",
-            "description": "Number of bundled font sizes.",
-            "file": "src/render/font.rs",
-            "line": 54
-          },
-          {
-            "name": "AVAILABLE_POINT_SIZES",
-            "kind": "const",
-            "description": "Point sizes used to generate the bundled atlases.",
-            "file": "src/render/font.rs",
-            "line": 56
-          },
-          {
-            "name": "AVAILABLE_HEIGHTS",
-            "kind": "const",
-            "description": "Cell heights (pixels) for each bundled size slot.",
-            "file": "src/render/font.rs",
-            "line": 58
-          },
-          {
-            "name": "AVAILABLE_CELL_SIZES",
-            "kind": "const",
-            "description": "`(cell_width, cell_height)` pairs for each bundled size slot.",
-            "file": "src/render/font.rs",
-            "line": 60
-          },
-          {
-            "name": "AVAILABLE_REGULAR_NAMES",
-            "kind": "const",
-            "description": "Stable built-in names for regular bundled fonts.",
-            "file": "src/render/font.rs",
-            "line": 70
-          },
-          {
-            "name": "AVAILABLE_BOLD_NAMES",
-            "kind": "const",
-            "description": "Stable built-in names for bold bundled fonts.",
-            "file": "src/render/font.rs",
-            "line": 74
-          },
-          {
-            "name": "BUILTIN_FONT_NAMES",
-            "kind": "const",
-            "description": "Full built-in font list in regular-then-bold order.",
-            "file": "src/render/font.rs",
-            "line": 78
-          },
-          {
-            "name": "GlyphInfo",
-            "kind": "struct",
-            "description": "UV-space coordinates and pixel metrics for a single bitmap glyph.",
-            "file": "src/render/font.rs",
-            "line": 101
-          },
-          {
-            "name": "Font",
-            "kind": "struct",
-            "description": "Bitmap font atlas queried for per-character UVs and text metrics.",
-            "file": "src/render/font.rs",
-            "line": 123
-          },
-          {
-            "name": "validate_dynamic_font_point_size",
-            "kind": "fn",
-            "description": "Validate and normalize a dynamic font point size before parsing or rasterizing font bytes.",
-            "file": "src/render/font.rs",
-            "line": 163
-          },
-          {
-            "name": "validate_dynamic_font_atlas_dimensions",
-            "kind": "fn",
-            "description": "Validate dynamic font atlas dimensions and return the required RGBA byte length.",
-            "file": "src/render/font.rs",
-            "line": 179
-          }
-        ]
-      },
       "render::gpu_canvas_pass": {
         "module_doc": "Owns the gpu canvas pass owner for the render subsystem and keeps its rules local to this file. Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how gpu canvas pass data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries.",
         "source_file": "src/render/gpu_canvas_pass.rs",
@@ -18200,7 +18173,7 @@
         ]
       },
       "render": {
-        "module_doc": "Exports the render subsystem surface that groups canvases, GPU owners, fonts, shapes, shaders, and pipelines. Acts as the render ownership index so callers can map a rendering concern to its concrete Rust owner file. Centralizes module visibility and re-exports instead of storing live frame state or issuing draw work itself. Connects front-end draw commands, geometry assets, shader tools, and GPU execution modules into one stack. Provides the first navigation point when tracing whether a render issue belongs to shaders, resources, or passes. Keeps the public render surface coherent while allowing narrow files like mesh or image_effect to stay focused. Open this file first when adding a render owner or changing shared render API re-export policy. Use it to locate the right implementation file before editing orchestration, resources, geometry, or shaders.",
+        "module_doc": "Exports the render subsystem surface that groups canvases, GPU owners, shapes, shaders, and pipelines. Acts as the render ownership index so callers can map a rendering concern to its concrete Rust owner file. Centralizes module visibility and re-exports instead of storing live frame state or issuing draw work itself. Connects front-end draw commands, geometry assets, shader tools, and GPU execution modules into one stack. Provides the first navigation point when tracing whether a render issue belongs to shaders, resources, or passes. Keeps the public render surface coherent while allowing narrow files like mesh or image_effect to stay focused. Open this file first when adding a render owner or changing shared render API re-export policy. Use it to locate the right implementation file before editing orchestration, resources, geometry, or shaders.",
         "source_file": "src/render/mod.rs",
         "items": [
           {
@@ -18225,200 +18198,193 @@
             "line": 15
           },
           {
-            "name": "font",
-            "kind": "mod",
-            "description": "Fontdue-backed font rasterisation and glyph atlas management.",
-            "file": "src/render/mod.rs",
-            "line": 17
-          },
-          {
             "name": "gpu_canvas_pass",
             "kind": "mod",
             "description": "GPU canvas render-target synchronization and dimension helpers.",
             "file": "src/render/mod.rs",
-            "line": 19
+            "line": 17
           },
           {
             "name": "gpu_draw_encode",
             "kind": "mod",
             "description": "Prepared draw encoding into active GPU render passes.",
             "file": "src/render/mod.rs",
-            "line": 21
+            "line": 19
           },
           {
             "name": "gpu_frame_builder",
             "kind": "mod",
             "description": "Per-frame prepared draw list building and coalescing helpers.",
             "file": "src/render/mod.rs",
-            "line": 23
+            "line": 21
           },
           {
             "name": "gpu_light",
             "kind": "mod",
             "description": "GPU light extraction, uniform packing, and light pass helpers.",
             "file": "src/render/mod.rs",
-            "line": 25
+            "line": 23
           },
           {
             "name": "gpu_pipeline",
             "kind": "mod",
             "description": "High-level wgpu pipeline descriptors and render pipeline construction helpers.",
             "file": "src/render/mod.rs",
-            "line": 27
+            "line": 25
           },
           {
             "name": "gpu_renderer",
             "kind": "mod",
             "description": "wgpu device/queue wrapper, pipeline creation, render-pass execution.",
             "file": "src/render/mod.rs",
-            "line": 29
+            "line": 27
           },
           {
             "name": "gpu_resources",
             "kind": "mod",
             "description": "GPU resource upload and bind-group management for textures, buffers, and samplers.",
             "file": "src/render/mod.rs",
-            "line": 31
+            "line": 29
           },
           {
             "name": "gpu_screenshot_readback",
             "kind": "mod",
             "description": "GPU surface readback helpers for screenshot capture.",
             "file": "src/render/mod.rs",
-            "line": 33
+            "line": 31
           },
           {
             "name": "gpu_shader_cache",
             "kind": "mod",
             "description": "Custom shader cache rebuilds, uniform uploads, and custom pipeline lookup.",
             "file": "src/render/mod.rs",
-            "line": 35
+            "line": 33
           },
           {
             "name": "gpu_shaders",
             "kind": "mod",
             "description": "WGSL shader loading, preprocessing, and module creation utilities.",
             "file": "src/render/mod.rs",
-            "line": 37
+            "line": 35
           },
           {
             "name": "gpu_shadows",
             "kind": "mod",
             "description": "Shadow-map and occluder rendering support for GPU lighting passes.",
             "file": "src/render/mod.rs",
-            "line": 39
+            "line": 37
           },
           {
             "name": "gpu_shape_replay",
             "kind": "mod",
             "description": "Registered compound-shape replay into GPU flat-color draw buffers.",
             "file": "src/render/mod.rs",
-            "line": 41
+            "line": 39
           },
           {
             "name": "gpu_state",
             "kind": "mod",
             "description": "Shared renderer state that owns wgpu devices, surfaces, and frame resources.",
             "file": "src/render/mod.rs",
-            "line": 43
+            "line": 41
           },
           {
             "name": "gpu_tess",
             "kind": "mod",
             "description": "Tessellation helpers that convert 2D primitives into GPU vertex/index buffers.",
             "file": "src/render/mod.rs",
-            "line": 45
+            "line": 43
           },
           {
             "name": "gpu_text_replay",
             "kind": "mod",
             "description": "Font-atlas text replay into GPU textured draw buffers.",
             "file": "src/render/mod.rs",
-            "line": 47
+            "line": 45
           },
           {
             "name": "gpu_types",
             "kind": "mod",
             "description": "Common GPU-facing structs, enums, and packed data layouts used by render passes.",
             "file": "src/render/mod.rs",
-            "line": 49
+            "line": 47
           },
           {
             "name": "image_effect",
             "kind": "mod",
             "description": "Per-frame image post-processing effect descriptors and shader parameter blocks.",
             "file": "src/render/mod.rs",
-            "line": 51
+            "line": 49
           },
           {
             "name": "input_validation",
             "kind": "mod",
             "description": "Central validation for render command scalar, color, topology, and count invariants.",
             "file": "src/render/mod.rs",
-            "line": 53
+            "line": 51
           },
           {
             "name": "mesh",
             "kind": "mod",
             "description": "GPU-uploadable mesh geometry: vertices, indices, and draw modes.",
             "file": "src/render/mod.rs",
-            "line": 55
+            "line": 53
           },
           {
             "name": "obj_loader",
             "kind": "mod",
             "description": "Wavefront OBJ parser producing `Mesh` instances from `.obj` text data.",
             "file": "src/render/mod.rs",
-            "line": 58
+            "line": 56
           },
           {
             "name": "postfx_pipeline",
             "kind": "mod",
             "description": "Post-effect pipeline: chain of `ShaderPassDescriptor`s applied after the main pass.",
             "file": "src/render/mod.rs",
-            "line": 60
+            "line": 58
           },
           {
             "name": "province_map_pipeline",
             "kind": "mod",
             "description": "Fullscreen province map shader pipeline and bind-group setup.",
             "file": "src/render/mod.rs",
-            "line": 62
+            "line": 60
           },
           {
             "name": "render_diagnostics",
             "kind": "mod",
             "description": "Per-frame diagnostics for skipped render commands and invalid render resources.",
             "file": "src/render/mod.rs",
-            "line": 64
+            "line": 62
           },
           {
             "name": "renderer",
             "kind": "mod",
             "description": "`RenderCommand` enum and all draw-state types consumed by `GpuRenderer`.",
             "file": "src/render/mod.rs",
-            "line": 66
+            "line": 64
           },
           {
             "name": "shader",
             "kind": "mod",
             "description": "User-uploaded WGSL shader wrappers and `UniformValue` binding types.",
             "file": "src/render/mod.rs",
-            "line": 68
+            "line": 66
           },
           {
             "name": "shape",
             "kind": "mod",
             "description": "Compound 2D shape builder using `ShapeCommand` sequences.",
             "file": "src/render/mod.rs",
-            "line": 70
+            "line": 68
           },
           {
             "name": "software_capture",
             "kind": "mod",
             "description": "CPU fallback for evidence-oriented screenshot capture from queued render commands.",
             "file": "src/render/mod.rs",
-            "line": 72
+            "line": 70
           }
         ]
       },
@@ -21261,12 +21227,12 @@
         ]
       },
       "save": {
-        "module_doc": "`src/save/mod.rs` is the save module index, exposing the persistence surface that gameplay and Lua bindings consume. It reexports `SaveManager`, slot metadata, serialization helpers, compression helpers, and the save value tree. No runtime state lives here; this file keeps the public save boundary stable while logic stays in `save_manager.rs`. Read this index when a caller needs save APIs, because it shows which persistence symbols are intentionally public. The module groups table serialization, compressed slot payload handling, and manager-driven save orchestration together. Changes here alter the persistence boundary, since reexports decide what the engine and Lua layer may import.",
+        "module_doc": "`src/save/mod.rs` is the save module index, exposing the persistence surface that gameplay and Lua bindings consume. It reexports `SaveManager`, slot metadata, and compression helpers while serialization stays in `serialize`. No runtime state lives here; this file keeps the public save boundary stable while logic stays in `save_manager.rs`. Read this index when a caller needs save APIs, because it shows which persistence symbols are intentionally public. The module groups table serialization, compressed slot payload handling, and manager-driven save orchestration together. Changes here alter the persistence boundary, since reexports decide what the engine and Lua layer may import.",
         "source_file": "src/save/mod.rs",
         "items": []
       },
       "save::save_manager": {
-        "module_doc": "Owns the save manager owner for the save subsystem and keeps its rules local to this file. Keeps save data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how save manager data is validated, transformed, or stored before neighboring systems use it. Owns save behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on save manager behavior while Lua registration stays elsewhere. Documents where save callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing save manager defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the save state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping save manager calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating save rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose save manager behavior safely. Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.",
+        "module_doc": "Owns save-slot lifecycle policy: slot names, metadata, autosave timing, migrations, backups, and restore flow. Delegates payload encoding to `serialize` and byte compression or checksum helpers to `binary` boundaries. Stores manager configuration such as format, compression, root path, current slot metadata, and migration hooks. Validates slot paths, migration ordering, content limits, compression envelopes, and checksum corruption cases. Exposes crate-local helpers used by Lua bindings without owning Lua table parsing or generic file codecs. Keeps save-game state semantics separate from static mod definitions, assets, and renderer-owned runtime data. Provides deterministic metadata and content conversion so tests can verify save behavior across formats. Handles legacy compressed markers and the current save envelope while keeping payload data opaque to save. Update this file when save lifecycle rules, version handling, compression policy, or slot safety changes. Leave format-specific parsing in serialization modules and keep filesystem-facing policy visible at this owner.",
         "source_file": "src/save/save_manager.rs",
         "items": [
           {
@@ -21274,140 +21240,105 @@
             "kind": "struct",
             "description": "Metadata stored alongside a save slot; used by Lua to display save-select UI.",
             "file": "src/save/save_manager.rs",
-            "line": 33
+            "line": 31
           },
           {
             "name": "SaveParseLimits",
             "kind": "struct",
             "description": "Maximum parser input, nesting, key, string, and numeric token sizes accepted for save payloads.",
             "file": "src/save/save_manager.rs",
-            "line": 46
+            "line": 44
           },
           {
             "name": "SaveLuaLimits",
             "kind": "struct",
-            "description": "Maximum traversal cost accepted when converting Lua values into `SaveValue`.",
+            "description": "Maximum traversal cost accepted when converting Lua values into serialize-owned save payloads.",
             "file": "src/save/save_manager.rs",
-            "line": 76
+            "line": 74
           },
           {
             "name": "SaveCompressionLimits",
             "kind": "struct",
             "description": "Maximum encoded, compressed, and decompressed payload sizes accepted by save compression helpers.",
             "file": "src/save/save_manager.rs",
-            "line": 103
+            "line": 101
           },
           {
             "name": "SaveLimits",
             "kind": "struct",
             "description": "High-level save limits applied to slot names, compression, parsing, and Lua conversion.",
             "file": "src/save/save_manager.rs",
-            "line": 127
+            "line": 125
           },
           {
             "name": "SaveWritePolicy",
             "kind": "struct",
             "description": "Persistence policy for safe slot writes.",
             "file": "src/save/save_manager.rs",
-            "line": 151
+            "line": 149
           },
           {
             "name": "SaveLoadPolicy",
             "kind": "struct",
             "description": "Load policy for primary-versus-backup save recovery.",
             "file": "src/save/save_manager.rs",
-            "line": 169
+            "line": 167
           },
           {
             "name": "MigrationPlan",
             "kind": "struct",
             "description": "Structured migration routing outcome from one schema version to another.",
             "file": "src/save/save_manager.rs",
-            "line": 184
+            "line": 182
           },
           {
             "name": "SaveDiagnostics",
             "kind": "struct",
             "description": "Rolling diagnostics recorded by the save manager while rejecting unsafe input or recovering from failures.",
             "file": "src/save/save_manager.rs",
-            "line": 197
+            "line": 195
           },
           {
             "name": "SaveError",
             "kind": "enum",
             "description": "Structured save failure covering slot validation, limits, migration routing, integrity, and policy errors.",
             "file": "src/save/save_manager.rs",
-            "line": 225
+            "line": 223
           },
           {
             "name": "SaveManager",
             "kind": "struct",
             "description": "Manages dirty state, auto-save scheduling, schema versioning, migration tracking, and safety policy for lurek.save.",
             "file": "src/save/save_manager.rs",
-            "line": 337
-          },
-          {
-            "name": "serialize_table",
-            "kind": "fn",
-            "description": "Serialize a `HashMap<String, SaveValue>` to a Lua table literal string at `depth` indent level.",
-            "file": "src/save/save_manager.rs",
-            "line": 603
-          },
-          {
-            "name": "serialize_value",
-            "kind": "fn",
-            "description": "Serialize a single `SaveValue` to its Lua literal representation; delegates tables to `serialize_table`.",
-            "file": "src/save/save_manager.rs",
-            "line": 646
-          },
-          {
-            "name": "SaveValue",
-            "kind": "enum",
-            "description": "Lua-serializable value tree produced from a Lua table before writing to disk.",
-            "file": "src/save/save_manager.rs",
-            "line": 674
+            "line": 335
           },
           {
             "name": "compress_save_content",
             "kind": "fn",
             "description": "Compress `plain` with LZ4 and Base64-encode it; return a versioned header plus encoded payload.",
             "file": "src/save/save_manager.rs",
-            "line": 727
+            "line": 614
           },
           {
             "name": "compress_save_content_with_limits",
             "kind": "fn",
             "description": "Compress `plain` with explicit compression limits.",
             "file": "src/save/save_manager.rs",
-            "line": 733
+            "line": 620
           },
           {
             "name": "decompress_save_content",
             "kind": "fn",
             "description": "Decompress a save payload; return `raw` unchanged if it is not compressed.",
             "file": "src/save/save_manager.rs",
-            "line": 767
+            "line": 654
           },
           {
             "name": "decompress_save_content_with_limits",
             "kind": "fn",
             "description": "Decompress a save payload with explicit compression limits.",
             "file": "src/save/save_manager.rs",
-            "line": 773
-          },
-          {
-            "name": "parse_save_table",
-            "kind": "fn",
-            "description": "Parse a serialized `return { ... }` save payload back into a root table.",
-            "file": "src/save/save_manager.rs",
-            "line": 837
-          },
-          {
-            "name": "parse_save_table_with_limits",
-            "kind": "fn",
-            "description": "Parse a serialized save payload with explicit parse limits.",
-            "file": "src/save/save_manager.rs",
-            "line": 843
+            "line": 660
           }
         ]
       },
@@ -22244,7 +22175,7 @@
         ]
       },
       "sprite": {
-        "module_doc": "This module gathers the sprite subsystem surface for single sprites, sheets, atlases, panels, and batches. It keeps navigation explicit by pointing readers to the file that owns clip playback, lookup, scaling, or batching. Re-exports here make `Sprite`, `SpriteSheet`, `SpriteAtlas`, `NineSlice`, and `SpriteBatch` easy to reach. `animator.rs` owns frame-timed clip playback, while `atlas.rs` and `sprite_sheet.rs` own region lookup models. `sprite.rs` stays the minimal per-instance draw state owner, and `sprite_batch.rs` holds grouped submission data. Change this file when the public sprite symbol map moves, not when rendering or animation rules change.",
+        "module_doc": "Exports the sprite surface for single sprites, sheets, atlases, nine-slice panels, texture packs, and batches. Keeps navigation explicit by pointing readers to owners for clip playback, region lookup, scaling, and batching. Re-exports `Sprite`, `SpriteSheet`, `SpriteAtlas`, `TextureAtlas`, `NineSlice`, and `SpriteBatch` symbols. `animator.rs` owns timed playback, atlas files own regions, and `sprite_sheet.rs` owns grid frame lookup. `sprite.rs` stays the per-instance draw state owner, while `sprite_batch.rs` holds grouped submission data. Change this index when the public sprite symbol map moves, not when rendering or animation rules change.",
         "source_file": "src/sprite/mod.rs",
         "items": [
           {
@@ -22288,6 +22219,13 @@
             "description": "SpriteSheet: uniform grid frame extraction from a single texture.",
             "file": "src/sprite/mod.rs",
             "line": 20
+          },
+          {
+            "name": "texture_atlas",
+            "kind": "mod",
+            "description": "Texture atlas packing, named regions, and region-level nine-slice metadata.",
+            "file": "src/sprite/mod.rs",
+            "line": 22
           }
         ]
       },
@@ -22375,6 +22313,73 @@
             "description": "Uniform grid frame extractor for a single texture with optional named groups and directional layout.",
             "file": "src/sprite/sprite_sheet.rs",
             "line": 62
+          }
+        ]
+      },
+      "sprite::texture_atlas": {
+        "module_doc": "Implements a named texture atlas that packs image regions and records their placement inside one sheet. Stores atlas dimensions, padding, shelf state, and region metadata so sprite lookup stays data driven. Supports optional nine-slice insets per region, making UI skin assets travel with their packing metadata. Exposes region counts, atlas size, and immutable region views for tools that inspect generated sprite maps. Open this file when atlas packing, region lookup, or nine-slice metadata does not match authored assets.",
+        "source_file": "src/sprite/texture_atlas.rs",
+        "items": [
+          {
+            "name": "NineSliceInsets",
+            "kind": "struct",
+            "description": "Nine-slice border distances used to preserve corners and edges.",
+            "file": "src/sprite/texture_atlas.rs",
+            "line": 10
+          },
+          {
+            "name": "AtlasRegion",
+            "kind": "struct",
+            "description": "A packed atlas region with coordinates, size, and optional nine-slice data.",
+            "file": "src/sprite/texture_atlas.rs",
+            "line": 22
+          },
+          {
+            "name": "TextureAtlas",
+            "kind": "struct",
+            "description": "Shelf-based texture atlas for packing named regions into a fixed canvas.",
+            "file": "src/sprite/texture_atlas.rs",
+            "line": 46
+          }
+        ]
+      },
+      "svg": {
+        "module_doc": "`src/svg/mod.rs` is the SVG module index, exposing SVG document types and loading surfaces for runtime rendering. It reexports `SvgElement`, `SvgImage`, and `SvgPath` so callers reach vector scene data through one stable boundary. No parsed vector state lives here; this file defines visibility while parsing logic stays in `svg_image.rs`. Read this index when wiring vector features, because it shows which SVG-facing contracts are public and shared. Changes here alter the vector boundary, since reexports decide what runtime systems and bindings may import directly. This module keeps scene representation and vector loading separate from higher-level render and Lua binding layers.",
+        "source_file": "src/svg/mod.rs",
+        "items": [
+          {
+            "name": "svg_image",
+            "kind": "mod",
+            "description": "SVG image document model, parser output structs, and render command conversion helpers.",
+            "file": "src/svg/mod.rs",
+            "line": 9
+          }
+        ]
+      },
+      "svg::svg_image": {
+        "module_doc": "`src/svg/svg_image.rs` owns SVG parsing, normalized scene representation, and runtime rendering for SVG content. It defines `SvgPath`, `SvgElement`, and `SvgImage`, keeping geometry, hierarchy state, and canvas handles together. Raw SVG bytes are parsed here into a tree of groups and paths, then normalized into engine-owned element maps and IDs. Element transforms, visibility, color overrides, and cached subtree canvases are managed here as runtime vector state. Render submission also lives here, so parsed vector data emits `RenderCommand` sequences without a separate adapter. Hierarchy queries, point flattening, bounds extraction, and adjacency detection are handled here for gameplay and tools. Open this file when SVG parse policy, element state semantics, canvas caching, or vector rendering must change. Neighboring systems matter here mainly at the math, render, and runtime boundaries that supply transforms and commands. This file is the owner boundary for vector scene behavior; higher layers should treat it as the source of SVG state.",
+        "source_file": "src/svg/svg_image.rs",
+        "items": [
+          {
+            "name": "SvgPath",
+            "kind": "struct",
+            "description": "Represents a single path element (or shape normalized to path) in the SVG.",
+            "file": "src/svg/svg_image.rs",
+            "line": 20
+          },
+          {
+            "name": "SvgElement",
+            "kind": "struct",
+            "description": "Represents an SVG group (<g>) or path (<path>) element inside the scene graph.",
+            "file": "src/svg/svg_image.rs",
+            "line": 29
+          },
+          {
+            "name": "SvgImage",
+            "kind": "struct",
+            "description": "The root resource representing a parsed SVG vector document.",
+            "file": "src/svg/svg_image.rs",
+            "line": 50
           }
         ]
       },
@@ -24816,46 +24821,6 @@
             "description": "Load rules from a TOML file on disk.",
             "file": "src/validator/rules_toml.rs",
             "line": 89
-          }
-        ]
-      },
-      "vector": {
-        "module_doc": "`src/vector/mod.rs` is the vector module index, exposing SVG document types and loading surfaces for runtime rendering. It reexports `SvgElement`, `SvgImage`, and `SvgPath` so callers reach vector scene data through one stable boundary. No parsed vector state lives here; this file defines visibility while parsing logic stays in `svg_image.rs`. Read this index when wiring vector features, because it shows which SVG-facing contracts are public and shared. Changes here alter the vector boundary, since reexports decide what runtime systems and bindings may import directly. This module keeps scene representation and vector loading separate from higher-level render and Lua binding layers.",
-        "source_file": "src/vector/mod.rs",
-        "items": [
-          {
-            "name": "svg_image",
-            "kind": "mod",
-            "description": "SVG image document model, parser output structs, and render command conversion helpers.",
-            "file": "src/vector/mod.rs",
-            "line": 9
-          }
-        ]
-      },
-      "vector::svg_image": {
-        "module_doc": "`src/vector/svg_image.rs` owns SVG parsing, normalized scene representation, and runtime rendering for vector content. It defines `SvgPath`, `SvgElement`, and `SvgImage`, keeping geometry, hierarchy state, and canvas handles together. Raw SVG bytes are parsed here into a tree of groups and paths, then normalized into engine-owned element maps and IDs. Element transforms, visibility, color overrides, and cached subtree canvases are managed here as runtime vector state. Render submission also lives here, so parsed vector data emits `RenderCommand` sequences without a separate adapter. Hierarchy queries, point flattening, bounds extraction, and adjacency detection are handled here for gameplay and tools. Open this file when SVG parse policy, element state semantics, canvas caching, or vector rendering must change. Neighboring systems matter here mainly at the math, render, and runtime boundaries that supply transforms and commands. This file is the owner boundary for vector scene behavior; higher layers should treat it as the source of SVG state.",
-        "source_file": "src/vector/svg_image.rs",
-        "items": [
-          {
-            "name": "SvgPath",
-            "kind": "struct",
-            "description": "Represents a single path element (or shape normalized to path) in the SVG.",
-            "file": "src/vector/svg_image.rs",
-            "line": 20
-          },
-          {
-            "name": "SvgElement",
-            "kind": "struct",
-            "description": "Represents an SVG group (<g>) or path (<path>) element inside the scene graph.",
-            "file": "src/vector/svg_image.rs",
-            "line": 29
-          },
-          {
-            "name": "SvgImage",
-            "kind": "struct",
-            "description": "The root resource representing a parsed SVG vector document.",
-            "file": "src/vector/svg_image.rs",
-            "line": 50
           }
         ]
       },

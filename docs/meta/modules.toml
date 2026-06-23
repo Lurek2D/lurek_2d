@@ -1,8 +1,6 @@
 [aliases]
-"src.serialize" = "lurek.serial"
 "src.flownet" = "lurek.graph"
 "src.runtime" = "lurek.runtime"
-"src.vector" = "lurek.svg"
 
 [canonical_owner]
 "LAreaChart" = "charts"
@@ -634,7 +632,7 @@ plugin_tier = "not_evaluated"
 tier = "foundations"
 source = "src/serialize"
 lua_binding = "src/lua_api/serialize_api.rs"
-namespace = "lurek.serial"
+namespace = "lurek.serialize"
 example_file = "content/examples/serialize.lua"
 lua_unit_test = "tests/lua/unit/test_serialize_unit.lua"
 user_facing = true
@@ -740,9 +738,9 @@ lua_unit_test = "tests/lua/unit/test_validator_unit.lua"
 user_facing = true
 plugin_tier = "not_evaluated"
 
-[vector]
+[svg]
 tier = "foundations"
-source = "src/vector"
+source = "src/svg"
 lua_binding = "src/lua_api/svg_api.rs"
 namespace = "lurek.svg"
 example_file = "content/examples/svg.lua"

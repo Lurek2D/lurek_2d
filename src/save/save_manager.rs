@@ -1,15 +1,13 @@
-//! Owns the save manager owner for the save subsystem and keeps its rules local to this file.
-//! Keeps save data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-//! Defines how save manager data is validated, transformed, or stored before neighboring systems use it.
-//! Owns save behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on save manager behavior while Lua registration stays elsewhere.
-//! Documents where save callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
-//! Use this file when changing save manager defaults, lifecycle handling, validation, or data ownership.
-//! Keeps failure paths and edge cases near the save state that can explain them while keeping call sites explicit.
-//! Preserves deterministic behavior by keeping save manager calculations explicit at their owner boundary.
-//! Provides the local adaptation layer that lets callers avoid duplicating save rules while keeping call sites explicit.
-//! Maintains small helper surfaces so broader engine modules can compose save manager behavior safely.
-//! Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
+//! Owns save-slot lifecycle policy: slot names, metadata, autosave timing, migrations, backups, and restore flow.
+//! Delegates payload encoding to `serialize` and byte compression or checksum helpers to `binary` boundaries.
+//! Stores manager configuration such as format, compression, root path, current slot metadata, and migration hooks.
+//! Validates slot paths, migration ordering, content limits, compression envelopes, and checksum corruption cases.
+//! Exposes crate-local helpers used by Lua bindings without owning Lua table parsing or generic file codecs.
+//! Keeps save-game state semantics separate from static mod definitions, assets, and renderer-owned runtime data.
+//! Provides deterministic metadata and content conversion so tests can verify save behavior across formats.
+//! Handles legacy compressed markers and the current save envelope while keeping payload data opaque to save.
+//! Update this file when save lifecycle rules, version handling, compression policy, or slot safety changes.
+//! Leave format-specific parsing in serialization modules and keep filesystem-facing policy visible at this owner.
 
 use crate::binary::{
     compress::{compress, decompress, CompressFormat},
@@ -17,9 +15,9 @@ use crate::binary::{
 };
 use crate::log_msg;
 use crate::runtime::log_messages::{SV01, SV02, SV03, SV04};
+use crate::serialize::SerialFormat;
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
-use mlua::prelude::{Lua, LuaError, LuaResult, LuaValue};
-use std::collections::{HashMap, HashSet};
+use mlua::prelude::LuaError;
 use std::fmt;
 
 const LEGACY_COMPRESSED_MARKER: &str = "--[[COMPRESSED]]";
@@ -71,7 +69,7 @@ impl Default for SaveParseLimits {
     }
 }
 
-/// Maximum traversal cost accepted when converting Lua values into `SaveValue`.
+/// Maximum traversal cost accepted when converting Lua values into serialize-owned save payloads.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SaveLuaLimits {
     /// Maximum recursive table nesting depth.
@@ -357,6 +355,8 @@ pub struct SaveManager {
     load_policy: SaveLoadPolicy,
     /// Recent diagnostics emitted while skipping unsafe work or falling back to recovery.
     diagnostics: SaveDiagnostics,
+    /// Serialization format used for save payloads.
+    format: SerialFormat,
 }
 
 impl Default for SaveManager {
@@ -373,6 +373,7 @@ impl Default for SaveManager {
             write_policy: SaveWritePolicy::default(),
             load_policy: SaveLoadPolicy::default(),
             diagnostics: SaveDiagnostics::default(),
+            format: SerialFormat::MsgPack,
         }
     }
 }
@@ -413,6 +414,16 @@ impl SaveManager {
     /// Remove previously recorded diagnostics.
     pub fn clear_diagnostics(&mut self) {
         self.diagnostics.clear();
+    }
+
+    /// Return the serialization format used for save payloads.
+    pub fn format(&self) -> SerialFormat {
+        self.format
+    }
+
+    /// Set the serialization format used for save payloads.
+    pub fn set_format(&mut self, format: SerialFormat) {
+        self.format = format;
     }
 
     /// Register a Lua table name for persistence; no-op if already registered.
@@ -599,130 +610,6 @@ impl SaveManager {
     }
 }
 
-/// Serialize a `HashMap<String, SaveValue>` to a Lua table literal string at `depth` indent level.
-pub fn serialize_table(data: &HashMap<String, SaveValue>, depth: u32) -> Result<String, String> {
-    serialize_table_with_limit(data, depth, SaveParseLimits::default().max_depth as u32)
-        .map_err(|error| error.to_string())
-}
-
-fn serialize_table_with_limit(
-    data: &HashMap<String, SaveValue>,
-    depth: u32,
-    max_depth: u32,
-) -> Result<String, SaveError> {
-    if depth > max_depth {
-        return Err(SaveError::ParseLimit {
-            what: "depth",
-            actual: depth as usize,
-            max: max_depth as usize,
-        });
-    }
-    let mut out = String::from("{\n");
-    let indent = "  ".repeat((depth + 1) as usize);
-    let close_indent = "  ".repeat(depth as usize);
-    let mut keys: Vec<&String> = data.keys().collect();
-    keys.sort_unstable();
-    for key in keys {
-        let value = data
-            .get(key)
-            .ok_or_else(|| SaveError::Parse(format!("missing value for key '{}'", key)))?;
-        let key_str = if is_lua_identifier(key) {
-            key.clone()
-        } else {
-            format!("[\"{}\"]", escape_lua_str(key))
-        };
-        out.push_str(&format!(
-            "{}{} = {},\n",
-            indent,
-            key_str,
-            serialize_value_with_limit(value, depth + 1, max_depth)?
-        ));
-    }
-    out.push_str(&format!("{}}}", close_indent));
-    Ok(out)
-}
-
-/// Serialize a single `SaveValue` to its Lua literal representation; delegates tables to `serialize_table`.
-pub fn serialize_value(value: &SaveValue, depth: u32) -> Result<String, String> {
-    serialize_value_with_limit(value, depth, SaveParseLimits::default().max_depth as u32)
-        .map_err(|error| error.to_string())
-}
-
-fn serialize_value_with_limit(
-    value: &SaveValue,
-    depth: u32,
-    max_depth: u32,
-) -> Result<String, SaveError> {
-    match value {
-        SaveValue::Nil => Ok("nil".to_string()),
-        SaveValue::Bool(b) => Ok(b.to_string()),
-        SaveValue::Number(n) => {
-            if !n.is_finite() {
-                return Err(SaveError::NonFiniteNumber {
-                    context: "save serialization",
-                });
-            }
-            Ok(format!("{}", n))
-        }
-        SaveValue::Str(s) => Ok(format!("\"{}\"", escape_lua_str(s))),
-        SaveValue::Table(t) => serialize_table_with_limit(t, depth, max_depth),
-    }
-}
-
-/// Lua-serializable value tree produced from a Lua table before writing to disk.
-#[derive(Debug, Clone)]
-pub enum SaveValue {
-    /// Lua nil.
-    Nil,
-    /// Lua boolean.
-    Bool(bool),
-    /// Lua number (integer or float unified to f64).
-    Number(f64),
-    /// Lua string.
-    Str(String),
-    /// Lua table, keys serialized as strings.
-    Table(HashMap<String, SaveValue>),
-}
-
-struct SaveLuaConversionState {
-    visited_tables: HashSet<*const std::ffi::c_void>,
-    total_nodes: usize,
-}
-
-/// Conversion from Lua values into the serializable `SaveValue` tree.
-impl SaveValue {
-    /// Convert a `LuaValue` into `SaveValue`; return `LuaError` for unsupported types, cycles, non-finite numbers, or limit failures.
-    pub fn from_lua(value: &LuaValue) -> LuaResult<Self> {
-        Self::from_lua_with_limits(value, &SaveLuaLimits::default())
-    }
-
-    /// Convert a `LuaValue` into `SaveValue` with explicit Lua conversion limits.
-    pub fn from_lua_with_limits(value: &LuaValue, limits: &SaveLuaLimits) -> LuaResult<Self> {
-        let mut state = SaveLuaConversionState {
-            visited_tables: HashSet::new(),
-            total_nodes: 0,
-        };
-        from_lua_inner(value, limits, &mut state, 0)
-    }
-
-    /// Convert a `SaveValue` tree back into the equivalent Lua value.
-    pub fn to_lua<'lua>(&self, lua: &'lua Lua) -> LuaResult<LuaValue<'lua>> {
-        match self {
-            SaveValue::Nil => Ok(LuaValue::Nil),
-            SaveValue::Bool(value) => Ok(LuaValue::Boolean(*value)),
-            SaveValue::Number(value) => Ok(LuaValue::Number(*value)),
-            SaveValue::Str(value) => lua.create_string(value).map(LuaValue::String),
-            SaveValue::Table(entries) => {
-                let table = lua.create_table()?;
-                for (key, value) in entries {
-                    table.set(key.as_str(), value.to_lua(lua)?)?;
-                }
-                Ok(LuaValue::Table(table))
-            }
-        }
-    }
-}
-
 /// Compress `plain` with LZ4 and Base64-encode it; return a versioned header plus encoded payload.
 pub fn compress_save_content(plain: &str) -> Result<String, String> {
     compress_save_content_with_limits(plain, &SaveCompressionLimits::default())
@@ -833,25 +720,6 @@ pub fn decompress_save_content_with_limits(
     Ok(text)
 }
 
-/// Parse a serialized `return { ... }` save payload back into a root table.
-pub fn parse_save_table(content: &str) -> Result<HashMap<String, SaveValue>, String> {
-    parse_save_table_with_limits(content, &SaveParseLimits::default())
-        .map_err(|error| error.to_string())
-}
-
-/// Parse a serialized save payload with explicit parse limits.
-pub fn parse_save_table_with_limits(
-    content: &str,
-    limits: &SaveParseLimits,
-) -> Result<HashMap<String, SaveValue>, SaveError> {
-    let validated = parse_save_string_with_limits(content, limits)?;
-    let mut parser = SaveParser::new(&validated, limits);
-    match parser.parse_root()? {
-        SaveValue::Table(table) => Ok(table),
-        _ => Err(SaveError::Parse("save root must be a table".to_string())),
-    }
-}
-
 fn parse_save_string_with_limits(
     content: &str,
     limits: &SaveParseLimits,
@@ -868,421 +736,6 @@ fn parse_save_string_with_limits(
         });
     }
     Ok(content.to_string())
-}
-
-/// Minimal parser for the constrained Lua table literal format emitted by `serialize_table`.
-struct SaveParser<'a> {
-    input: &'a str,
-    offset: usize,
-    limits: &'a SaveParseLimits,
-    total_entries: usize,
-}
-
-impl<'a> SaveParser<'a> {
-    fn new(input: &'a str, limits: &'a SaveParseLimits) -> Self {
-        Self {
-            input,
-            offset: 0,
-            limits,
-            total_entries: 0,
-        }
-    }
-
-    fn parse_root(&mut self) -> Result<SaveValue, SaveError> {
-        self.skip_whitespace();
-        self.expect_keyword("return")?;
-        self.skip_whitespace();
-        let value = self.parse_value(0)?;
-        self.skip_whitespace();
-        if self.peek_char().is_some() {
-            return Err(SaveError::Parse(
-                "unexpected trailing content after save root".to_string(),
-            ));
-        }
-        Ok(value)
-    }
-
-    fn parse_value(&mut self, depth: usize) -> Result<SaveValue, SaveError> {
-        self.skip_whitespace();
-        match self.peek_char() {
-            Some('{') => self.parse_table(depth + 1).map(SaveValue::Table),
-            Some('"') => self
-                .parse_string(self.limits.max_string_chars, "string chars")
-                .map(SaveValue::Str),
-            Some('t') => {
-                self.expect_keyword("true")?;
-                Ok(SaveValue::Bool(true))
-            }
-            Some('f') => {
-                self.expect_keyword("false")?;
-                Ok(SaveValue::Bool(false))
-            }
-            Some('n') => {
-                self.expect_keyword("nil")?;
-                Ok(SaveValue::Nil)
-            }
-            Some('-' | '0'..='9') => self.parse_number().map(SaveValue::Number),
-            Some(other) => Err(SaveError::Parse(format!(
-                "unexpected save token '{}'",
-                other
-            ))),
-            None => Err(SaveError::Parse(
-                "unexpected end of save content".to_string(),
-            )),
-        }
-    }
-
-    fn parse_table(&mut self, depth: usize) -> Result<HashMap<String, SaveValue>, SaveError> {
-        if depth > self.limits.max_depth {
-            return Err(SaveError::ParseLimit {
-                what: "depth",
-                actual: depth,
-                max: self.limits.max_depth,
-            });
-        }
-        self.expect_char('{')?;
-        self.skip_whitespace();
-        let mut table = HashMap::new();
-        while !matches!(self.peek_char(), Some('}')) {
-            let key = self.parse_key()?;
-            self.skip_whitespace();
-            self.expect_char('=')?;
-            let value = self.parse_value(depth)?;
-            self.total_entries += 1;
-            if self.total_entries > self.limits.max_entries {
-                return Err(SaveError::ParseLimit {
-                    what: "entries",
-                    actual: self.total_entries,
-                    max: self.limits.max_entries,
-                });
-            }
-            table.insert(key, value);
-            self.skip_whitespace();
-            if matches!(self.peek_char(), Some(',')) {
-                self.next_char();
-                self.skip_whitespace();
-                if matches!(self.peek_char(), Some('}')) {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        self.expect_char('}')?;
-        Ok(table)
-    }
-
-    fn parse_key(&mut self) -> Result<String, SaveError> {
-        self.skip_whitespace();
-        if matches!(self.peek_char(), Some('[')) {
-            self.expect_char('[')?;
-            let key = self.parse_string(self.limits.max_key_chars, "key chars")?;
-            self.expect_char(']')?;
-            return Ok(key);
-        }
-        self.parse_identifier()
-    }
-
-    fn parse_identifier(&mut self) -> Result<String, SaveError> {
-        let mut identifier = String::new();
-        let Some(first) = self.peek_char() else {
-            return Err(SaveError::Parse(
-                "unexpected end of save content while reading key".to_string(),
-            ));
-        };
-        if !(first.is_ascii_alphabetic() || first == '_') {
-            return Err(SaveError::Parse(format!(
-                "invalid save key start '{}'",
-                first
-            )));
-        }
-        identifier.push(self.next_char().unwrap_or(first));
-        while let Some(ch) = self.peek_char() {
-            if ch.is_ascii_alphanumeric() || ch == '_' {
-                identifier.push(self.next_char().unwrap_or(ch));
-            } else {
-                break;
-            }
-        }
-        let length = identifier.chars().count();
-        if length > self.limits.max_key_chars {
-            return Err(SaveError::ParseLimit {
-                what: "key chars",
-                actual: length,
-                max: self.limits.max_key_chars,
-            });
-        }
-        Ok(identifier)
-    }
-
-    fn parse_string(
-        &mut self,
-        max_chars: usize,
-        limit_name: &'static str,
-    ) -> Result<String, SaveError> {
-        self.expect_char('"')?;
-        let mut out = String::new();
-        let mut chars = 0usize;
-        loop {
-            let Some(ch) = self.next_char() else {
-                return Err(SaveError::Parse(
-                    "unterminated save string literal".to_string(),
-                ));
-            };
-            match ch {
-                '"' => return Ok(out),
-                '\\' => {
-                    let escaped = self.next_char().ok_or_else(|| {
-                        SaveError::Parse("unterminated save string escape".to_string())
-                    })?;
-                    match escaped {
-                        '\\' => out.push('\\'),
-                        '"' => out.push('"'),
-                        'n' => out.push('\n'),
-                        'r' => out.push('\r'),
-                        '0' => out.push('\0'),
-                        other => out.push(other),
-                    }
-                    chars += 1;
-                }
-                other => {
-                    out.push(other);
-                    chars += 1;
-                }
-            }
-            if chars > max_chars {
-                return Err(SaveError::ParseLimit {
-                    what: limit_name,
-                    actual: chars,
-                    max: max_chars,
-                });
-            }
-        }
-    }
-
-    fn parse_number(&mut self) -> Result<f64, SaveError> {
-        let start = self.offset;
-        if matches!(self.peek_char(), Some('-')) {
-            self.next_char();
-        }
-        self.consume_digits();
-        if matches!(self.peek_char(), Some('.')) {
-            self.next_char();
-            self.consume_digits();
-        }
-        if matches!(self.peek_char(), Some('e' | 'E')) {
-            self.next_char();
-            if matches!(self.peek_char(), Some('+' | '-')) {
-                self.next_char();
-            }
-            self.consume_digits();
-        }
-        let raw = &self.input[start..self.offset];
-        if raw.len() > self.limits.max_number_chars {
-            return Err(SaveError::ParseLimit {
-                what: "number chars",
-                actual: raw.len(),
-                max: self.limits.max_number_chars,
-            });
-        }
-        let parsed = raw.parse::<f64>().map_err(|error| {
-            SaveError::Parse(format!("invalid save number '{}': {}", raw, error))
-        })?;
-        if !parsed.is_finite() {
-            return Err(SaveError::NonFiniteNumber {
-                context: "parsed save payload",
-            });
-        }
-        Ok(parsed)
-    }
-
-    fn consume_digits(&mut self) {
-        while matches!(self.peek_char(), Some('0'..='9')) {
-            self.next_char();
-        }
-    }
-
-    fn expect_keyword(&mut self, keyword: &str) -> Result<(), SaveError> {
-        if !self.remaining().starts_with(keyword) {
-            return Err(SaveError::Parse(format!(
-                "expected '{}' in save payload",
-                keyword
-            )));
-        }
-        self.offset += keyword.len();
-        Ok(())
-    }
-
-    fn expect_char(&mut self, expected: char) -> Result<(), SaveError> {
-        match self.next_char() {
-            Some(actual) if actual == expected => Ok(()),
-            Some(actual) => Err(SaveError::Parse(format!(
-                "expected '{}' but found '{}'",
-                expected, actual
-            ))),
-            None => Err(SaveError::Parse(format!(
-                "expected '{}' but reached end of save content",
-                expected
-            ))),
-        }
-    }
-
-    fn skip_whitespace(&mut self) {
-        while matches!(self.peek_char(), Some(ch) if ch.is_whitespace()) {
-            self.next_char();
-        }
-    }
-
-    fn remaining(&self) -> &'a str {
-        &self.input[self.offset..]
-    }
-
-    fn peek_char(&self) -> Option<char> {
-        self.remaining().chars().next()
-    }
-
-    fn next_char(&mut self) -> Option<char> {
-        let ch = self.peek_char()?;
-        self.offset += ch.len_utf8();
-        Some(ch)
-    }
-}
-
-fn from_lua_inner(
-    value: &LuaValue,
-    limits: &SaveLuaLimits,
-    state: &mut SaveLuaConversionState,
-    depth: usize,
-) -> LuaResult<SaveValue> {
-    if depth > limits.max_depth {
-        return Err(SaveError::LuaLimit {
-            what: "depth",
-            actual: depth,
-            max: limits.max_depth,
-        }
-        .into());
-    }
-    state.total_nodes += 1;
-    if state.total_nodes > limits.max_total_nodes {
-        return Err(SaveError::LuaLimit {
-            what: "total nodes",
-            actual: state.total_nodes,
-            max: limits.max_total_nodes,
-        }
-        .into());
-    }
-
-    match value {
-        LuaValue::Nil => Ok(SaveValue::Nil),
-        LuaValue::Boolean(b) => Ok(SaveValue::Bool(*b)),
-        LuaValue::Integer(i) => Ok(SaveValue::Number(*i as f64)),
-        LuaValue::Number(n) => {
-            if !n.is_finite() {
-                return Err(SaveError::NonFiniteNumber {
-                    context: "Lua save collection",
-                }
-                .into());
-            }
-            Ok(SaveValue::Number(*n))
-        }
-        LuaValue::String(s) => {
-            let text = s.to_str()?.to_string();
-            let length = text.chars().count();
-            if length > limits.max_string_chars {
-                return Err(SaveError::LuaLimit {
-                    what: "string chars",
-                    actual: length,
-                    max: limits.max_string_chars,
-                }
-                .into());
-            }
-            Ok(SaveValue::Str(text))
-        }
-        LuaValue::Table(t) => {
-            let table_ptr = t.to_pointer();
-            if !state.visited_tables.insert(table_ptr) {
-                return Err(SaveError::CyclicLuaTable.into());
-            }
-
-            let result = (|| {
-                let mut map = HashMap::new();
-                let mut entries = 0usize;
-                for pair in t.clone().pairs::<LuaValue, LuaValue>() {
-                    let (key, value) = pair?;
-                    entries += 1;
-                    if entries > limits.max_table_entries {
-                        return Err(SaveError::LuaLimit {
-                            what: "table entries",
-                            actual: entries,
-                            max: limits.max_table_entries,
-                        }
-                        .into());
-                    }
-                    let key_text = save_key_from_lua(&key, limits)?;
-                    map.insert(key_text, from_lua_inner(&value, limits, state, depth + 1)?);
-                }
-                Ok(SaveValue::Table(map))
-            })();
-
-            state.visited_tables.remove(&table_ptr);
-            result
-        }
-        other => Err(LuaError::RuntimeError(format!(
-            "cannot serialize value of type {}",
-            other.type_name()
-        ))),
-    }
-}
-
-fn save_key_from_lua(key: &LuaValue, limits: &SaveLuaLimits) -> LuaResult<String> {
-    let key_text = match key {
-        LuaValue::String(s) => s.to_str()?.to_string(),
-        LuaValue::Integer(i) => i.to_string(),
-        LuaValue::Number(n) => {
-            if !n.is_finite() {
-                return Err(SaveError::NonFiniteNumber {
-                    context: "Lua save key",
-                }
-                .into());
-            }
-            n.to_string()
-        }
-        other => {
-            return Err(LuaError::RuntimeError(format!(
-                "cannot serialize table key of type {}",
-                other.type_name()
-            )))
-        }
-    };
-    let length = key_text.chars().count();
-    if length > limits.max_key_chars {
-        return Err(SaveError::LuaLimit {
-            what: "key chars",
-            actual: length,
-            max: limits.max_key_chars,
-        }
-        .into());
-    }
-    Ok(key_text)
-}
-
-/// Return true if `s` is a valid Lua identifier (ASCII alpha/underscore start, alphanumeric rest).
-fn is_lua_identifier(s: &str) -> bool {
-    let mut chars = s.chars();
-    match chars.next() {
-        Some(c) if c.is_ascii_alphabetic() || c == '_' => {}
-        _ => return false,
-    }
-    chars.all(|c| c.is_ascii_alphanumeric() || c == '_')
-}
-
-/// Escape backslash, double-quote, newline, carriage-return, and null for Lua string literals.
-fn escape_lua_str(s: &str) -> String {
-    s.replace('\\', "\\\\")
-        .replace('"', "\\\"")
-        .replace('\n', "\\n")
-        .replace('\r', "\\r")
-        .replace('\0', "\\0")
 }
 
 fn validate_slot_name_with_limits(slot: &str, limits: &SaveLimits) -> Result<(), SaveError> {

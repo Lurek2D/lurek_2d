@@ -135,6 +135,7 @@ fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<L
     tbl.set("clampedSteps", stats.clamped_steps)?;
     tbl.set("invalidOperations", stats.invalid_operations)?;
     tbl.set("bodiesScanned", stats.bodies_scanned)?;
+    /// Number of collider shapes rebuilt during the last synchronization pass.
     tbl.set("collidersRebuilt", stats.colliders_rebuilt)?;
     /// Number of zone overlap checks performed by the last simulation step.
     tbl.set("zoneChecks", stats.zone_checks)?;

@@ -1,8 +1,9 @@
-//! This file owns radar/spider chart rendering for multivariate series over shared axes.
+//! This file owns radar/spider chart rendering for multivariate series over shared axes and dashboards.
 //! It stores ordered axis labels and named series values, then draws radial grid rings and closed polygons.
-//! The chart can use an explicit maximum value or auto-scale from finite series samples.
+//! The chart can use an explicit maximum value or auto-scale from finite series samples for stable output.
 //! Rendering is O(axes * series) and avoids per-pixel polygon fills so live dashboards can refresh quickly.
-//! Open it when radar axis semantics, scaling, or polygon stroke behavior need to change.
+//! Shared chart configuration owns common colors and labels while this file owns radial geometry semantics.
+//! Open it when radar axis semantics, scaling, polygon stroke behavior, or series limits need to change.
 
 use crate::charts::config::ChartConfig;
 use crate::charts::render_utils::{draw_line, fill_buffer};

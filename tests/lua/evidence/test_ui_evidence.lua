@@ -44,7 +44,7 @@ local function layout_output_name(layout_path)
 end
 
 local function layout_size(layout_path)
-    local parsed = lurek.serial.fromToml(lurek.filesystem.read(layout_path))
+    local parsed = lurek.serialize.fromToml(lurek.filesystem.read(layout_path))
     if parsed.resolution and #parsed.resolution >= 2 then
         return parsed.resolution[1], parsed.resolution[2]
     end

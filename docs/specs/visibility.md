@@ -179,17 +179,17 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ##### Methods
 
-- `LTileVisibility:actionCells(player, z?) -> nil`: Returns all currently actionable cells for a player, optionally filtered to a level.
-- `LTileVisibility:canActOn(player, x, y, z?) -> nil`: Returns whether a one-based cell is currently actionable for a player.
+- `LTileVisibility:actionCells(player, z?) -> table`: Returns all currently actionable cells for a player, optionally filtered to a level.
+- `LTileVisibility:canActOn(player, x, y, z?) -> boolean`: Returns whether a one-based cell is currently actionable for a player.
 - `LTileVisibility:clearAll() -> nil`: Clears current, explored, and action masks for all players.
 - `LTileVisibility:clearPlayer(player) -> nil`: Clears current, explored, and action masks for one player.
 - `LTileVisibility:computeAction(player, opts) -> nil`: Computes one player's current action mask from a tilefield origin.
 - `LTileVisibility:computeVisible(player, opts) -> nil`: Computes one player's current visible mask from a tilefield origin.
-- `LTileVisibility:isExplored(player, x, y, z?) -> nil`: Returns whether a one-based cell has been explored for a player.
-- `LTileVisibility:isVisible(player, x, y, z?) -> nil`: Returns whether a one-based cell is currently visible for a player.
-- `LTileVisibility:type() -> nil`: Returns the Lua-visible type name for this tile visibility handle.
-- `LTileVisibility:typeOf(name) -> nil`: Returns whether this handle matches a supported type name.
-- `LTileVisibility:visibleCells(player, z?) -> nil`: Returns all currently visible cells for a player, optionally filtered to a level.
+- `LTileVisibility:isExplored(player, x, y, z?) -> boolean`: Returns whether a one-based cell has been explored for a player.
+- `LTileVisibility:isVisible(player, x, y, z?) -> boolean`: Returns whether a one-based cell is currently visible for a player.
+- `LTileVisibility:type() -> string`: Returns the Lua-visible type name for this tile visibility handle.
+- `LTileVisibility:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
+- `LTileVisibility:visibleCells(player, z?) -> table`: Returns all currently visible cells for a player, optionally filtered to a level.
 
 #### LVisibilityGrid Type
 

@@ -2,7 +2,7 @@
 //! Owns Rust-side coverage for private serialize limits, reports, and typed error paths.
 
 use indexmap::IndexMap;
-use lurek2d::serial::{
+use lurek2d::serialize::{
     decode_bytes_with_options, decode_text, decode_text_with_schema, detect_format_detailed,
     encode, from_lua_with_limits, to_msgpack, CsvComplexCellPolicy, CsvOptions, DecodeOptions,
     EncodeOptions, SerialFormat, SerialValue, SerializeError, SerializeLimitKind, SerializeLimits,

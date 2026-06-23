@@ -458,7 +458,7 @@ impl ImageData {
             cx += ADVANCE;
         }
     }
-    /// Draw `text` into this image using a bitmap font atlas produced by `crate::render::font::Font`.
+    /// Draw `text` into this image using a bitmap font atlas produced by `crate::font::Font`.
     ///
     /// Glyphs are blitted from the atlas RGBA data with per-pixel alpha blending.
     /// The pen starts at `(x, y)` where `y` is the top of the cell.
@@ -471,7 +471,7 @@ impl ImageData {
         r: u8,
         g: u8,
         b: u8,
-        font: &crate::render::font::Font,
+        font: &crate::font::Font,
     ) {
         let (atlas_bytes, atlas_w, atlas_h) = font.atlas_data();
         let img_w = self.width as i32;

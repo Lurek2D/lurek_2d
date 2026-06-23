@@ -12,7 +12,7 @@
 - Source path: `src/save`
 - Binding: `src/lua_api/save_api.rs`
 - Namespace: `lurek.save`
-- Lua API surface: `1` functions, `3` types, `27` methods
+- Lua API surface: `2` functions, `3` types, `29` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -32,19 +32,20 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - Owning tier: `Feature Systems`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/save_api.rs`
-- Referenced engine modules: `binary`, `runtime`
+- Referenced engine modules: `binary`, `runtime`, `serialize`
 
 ## Imports
 
 - `binary`: Imports or references `src/binary/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
+- `serialize`: Imports or references `src/serialize/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 
 ## Source Files
 
 ### mod.rs
 
 - `src/save/mod.rs` is the save module index, exposing the persistence surface that gameplay and Lua bindings consume.
-- It reexports `SaveManager`, slot metadata, serialization helpers, compression helpers, and the save value tree.
+- It reexports `SaveManager`, slot metadata, and compression helpers while serialization stays in `serialize`.
 - No runtime state lives here; this file keeps the public save boundary stable while logic stays in `save_manager.rs`.
 - Read this index when a caller needs save APIs, because it shows which persistence symbols are intentionally public.
 - The module groups table serialization, compressed slot payload handling, and manager-driven save orchestration together.
@@ -71,6 +72,7 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 ### Functions
 
+- `lurek.save.newManager() -> LSaveManager`: Create a new SaveManager instance for managing persistent game saves.
 - `lurek.save.newSaveManager() -> LSaveManager`: Create a new SaveManager instance for managing persistent game saves.
 
 ### Callbacks
@@ -103,6 +105,7 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - `LSaveManager:disableAutoSave() -> nil`: Disable the periodic auto-save timer. Manual saves via save() still work.
 - `LSaveManager:enableAutoSave(interval, slot) -> nil`: Enable periodic auto-saving: when the dirty flag is set, the system writes to the target slot every interval seconds.
 - `LSaveManager:exists(slot) -> boolean`: Check whether a save slot file exists on disk without reading its contents.
+- `LSaveManager:getFormat() -> string`: Return the payload serialization format used for saves and loads.
 - `LSaveManager:getSchemaVersion() -> integer`: Return the current schema version number set for this save manager.
 - `LSaveManager:getSlotInfo(slot) -> table`: Read metadata for a single save slot without loading its full game state.
 - `LSaveManager:getSlots() -> table`: List all save slots found on disk with their metadata (version, timestamp, summary).
@@ -118,6 +121,7 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - `LSaveManager:restore(data) -> nil`: Apply a previously collected save-data table back into game state by invoking all registered restorers.
 - `LSaveManager:save(slot) -> nil`: Persist all registered data sections to the named slot file on disk.
 - `LSaveManager:setCompress(enabled) -> nil`: Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.
+- `LSaveManager:setFormat(format) -> nil`: Set the payload serialization format for future saves and loads.
 - `LSaveManager:setSchemaVersion(version) -> nil`: Set the current schema version number for saves produced by this game build.
 - `LSaveManager:setSummary(summary) -> nil`: Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 â€“ Forest").
 - `LSaveManager:type() -> string`: Return the type name string for this userdata object.

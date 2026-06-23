@@ -1,14 +1,14 @@
 -- content/snippets/data.lua
 -- Handcrafted snippets for data APIs: lurek.binary owns bytes, checksums,
 -- compression, encoding, ring-buffers, binary reader/writer, and DataView;
--- lurek.serial owns structured TOML and MessagePack conversion.
+-- lurek.serialize owns structured TOML and MessagePack conversion.
 -- API surface covered: pack, unpack, getPackedSize, crc32, hash, encode, decode,
 --   compress, decompress, compressChunks, write, read, size,
 --   newRingBuffer, newByteData, newDataView, newWriter,
 --   fromToml, toToml, encodeMsgPack, decodeMsgPack.
 
 local d = lurek.binary
-local s = lurek.serial
+local s = lurek.serialize
 
 -- ─────────────────────────────────────────────────────────────
 -- BINARY SERIALISATION — pack / unpack
@@ -129,7 +129,7 @@ print("xxh64=" .. fast_key)
 -- @description Use to protect save files and transmitted blobs from silent corruption. Append the CRC to the blob on write; recompute and compare on load before parsing the payload.
 -- @body
 local SNIP_1_d    = lurek.binary
-local SNIP_1_s    = lurek.serial
+local SNIP_1_s    = lurek.serialize
 local save = s.toToml({ player = { level = 5, gold = 300 } })
 local crc  = d.crc32(save)
 -- write: append CRC as 4 bytes
@@ -168,7 +168,7 @@ print(string.format("decoded=0x%04x 0x%04x", a, b))
 -- @description Use zlib compression on save blobs to reduce file-system write size. Level 6 balances speed and ratio for structured config data; verify round-trip before writing with the assert check below.
 -- @body
 local SNIP_1_d   = lurek.binary
-local SNIP_1_s   = lurek.serial
+local SNIP_1_s   = lurek.serialize
 local payload    = s.toToml({ world = { map = "dungeon_01", seed = 42 } })
 local compressed = d.compress("zlib", payload, 6)
 print(string.format("original=%d  compressed=%d  ratio=%.2f",
@@ -208,7 +208,7 @@ print("first section id=" .. section_id)
 -- @module data
 -- @description Use at startup to load a TOML config, apply defaults for optional keys, and validate required fields. Fail fast with a clear error rather than silently propagating nil values into game logic.
 -- @body
-local SNIP_1_s = lurek.serial
+local SNIP_1_s = lurek.serialize
 local toml_str = [[
 [audio]
 volume = 0.8
@@ -227,7 +227,7 @@ print("volume=" .. volume .. "  resolution=" .. res)
 -- @module data
 -- @description Use to apply partial preference updates without rewriting the whole config. fromToml -> mutate the table -> toToml preserves all other keys and structure.
 -- @body
-local SNIP_1_s   = lurek.serial
+local SNIP_1_s   = lurek.serialize
 local raw = [[
 [player]
 name = "Hero"
@@ -249,7 +249,7 @@ print(updated)
 -- @module data
 -- @description Use to load and validate a game manifest (name, version, entry point) during boot. Centralise all schema checks here so the game loop never receives unvalidated manifest data.
 -- @body
-local SNIP_1_s = lurek.serial
+local SNIP_1_s = lurek.serialize
 local manifest_toml = [[
 name    = "Dungeon Explorer"
 version = "1.2.0"
@@ -319,7 +319,7 @@ print(string.format("rolling avg frame_ms=%.2f  window=%d", avg, #samples))
 -- @module data
 -- @description Use encodeMsgPack / decodeMsgPack for compact structured serialisation of game state snapshots passed between Lua VMs via Channel, or written as save slot blobs. Smaller than TOML; more type-safe than raw pack.
 -- @body
-local SNIP_1_s = lurek.serial
+local SNIP_1_s = lurek.serialize
 local state = {
     player = { name = "Hero", hp = 80, level = 5 },
     round  = 3,

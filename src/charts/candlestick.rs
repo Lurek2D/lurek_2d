@@ -1,7 +1,8 @@
-//! This file owns candlestick chart rendering for OHLC financial or telemetry interval data.
+//! This file owns candlestick chart rendering for OHLC financial or telemetry interval data streams.
 //! It stores labeled candles, supports incremental appends, and draws wicks plus open-close bodies in one CPU pass.
 //! Axis scaling is derived from high/low values, while shared chart helpers provide grid, ticks, title, and captions.
 //! Positive and negative candles use configurable colors so streaming market views remain readable at 10 FPS.
+//! The output is `ImageData`, keeping market-style chart semantics separate from render submission ownership.
 //! Open it when OHLC ingestion, candle body geometry, or finance-style chart semantics need to change.
 
 use crate::charts::config::ChartConfig;

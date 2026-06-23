@@ -31,8 +31,8 @@ Modules are grouped by runtime layer. Links open the canonical GitHub Pages modu
 | [math](https://lurek2d.github.io/lurek_2d/modules/math.html) | `lurek.math` | The math module is the engine's shared numerical and geometric foundation for users who need consistent rules for coordinates, shapes, transforms, interpolation, sampling, and spatial reasoning across many feature areas. |
 | [patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html) | `lurek.patterns` | The patterns module is the engine's reusable architectural toolkit for users who want common coordination, control-flow, storage, and utility structures implemented once and then reused across gameplay, tools, UI, AI, and automation features. |
 | [procgen](https://lurek2d.github.io/lurek_2d/modules/procgen.html) | `lurek.procgen` | The procgen module is the engine's procedural-content creation toolkit for users who want maps, regions, structures, names, distributions, and generated support data to be produced inside the engine from reusable algorithms. |
-| [serial](https://lurek2d.github.io/lurek_2d/modules/serialize.html) | `lurek.serial` | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
-| [svg](https://lurek2d.github.io/lurek_2d/modules/vector.html) | `lurek.svg` | The vector module is the engine surface for scalable vector artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |
+| [serialize](https://lurek2d.github.io/lurek_2d/modules/serialize.html) | `lurek.serialize` | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
+| [svg](https://lurek2d.github.io/lurek_2d/modules/svg.html) | `lurek.svg` | The svg module is the engine surface for scalable SVG artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |
 
 ## Core Runtime
 
@@ -108,5 +108,4 @@ Modules are grouped by runtime layer. Links open the canonical GitHub Pages modu
 |---|---|---|
 | [AGENTS](https://lurek2d.github.io/lurek_2d/modules/AGENTS.html) | `lurek.AGENTS` | Lurek2D runtime module. |
 | [engine](https://lurek2d.github.io/lurek_2d/modules/engine.html) | `lurek.engine` | Registers the lurek.engine Lua API for engine timing, profiling, memory inspection, and runtime metrics. |
-| [svg](https://lurek2d.github.io/lurek_2d/modules/svg.html) | `lurek.svg` | Registers the lurek.svg Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control. |
 | [runtime](https://lurek2d.github.io/lurek_2d/modules/system.html) | `lurek.runtime` | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |

@@ -8192,10 +8192,10 @@ LTileField:applyProfile(x, y, z, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `name` | any |  |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `name` | string | Profile name to apply to the cell. |
 
 ---
 
@@ -8211,10 +8211,16 @@ LTileField:blocks(x, y, z, channel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `channel` | any |  |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `channel` | string | Blocker channel name to query. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the addressed cell blocks the channel. |
 
 ---
 
@@ -8230,7 +8236,7 @@ LTileField:clear()
 
 #### `LTileField:clearCell`
 
-Clears one cell.
+Clears gameplay state and light values for one addressed cell.
 
 ```lua
 LTileField:clearCell(x, y, z)
@@ -8258,16 +8264,22 @@ LTileField:clearLine(from_tbl, to_tbl, channel, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_tbl` | any |  |
-| `to_tbl` | any |  |
-| `channel` | any |  |
-| `opts?` | any |  |
+| `from_tbl` | table | Start cell table with one-based x, y, and optional z fields. |
+| `to_tbl` | table | End cell table with one-based x, y, and optional z fields. |
+| `channel` | string | Blocker channel name to test along the line. |
+| `opts?` | table | Reserved optional line query options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when no blocker exists between the two cells. |
 
 ---
 
 #### `LTileField:clearPointLights`
 
-Removes all point lights.
+Removes all point lights currently stored on this tilefield.
 
 ```lua
 LTileField:clearPointLights()
@@ -8303,8 +8315,14 @@ LTileField:exportBlockLayer(channel, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `channel` | any |  |
-| `z?` | any |  |
+| `channel` | string | Blocker channel name to export. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Row-major boolean array for the requested channel and level. |
 
 ---
 
@@ -8320,8 +8338,14 @@ LTileField:exportCostLayer(channel, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `channel` | any |  |
-| `z?` | any |  |
+| `channel` | string | Cost channel name to export. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Row-major number array for the requested channel and level. |
 
 ---
 
@@ -8391,10 +8415,16 @@ LTileField:firstBlocker(from_tbl, to_tbl, channel, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_tbl` | any |  |
-| `to_tbl` | any |  |
-| `channel` | any |  |
-| `opts?` | any |  |
+| `from_tbl` | table | Start cell table with one-based x, y, and optional z fields. |
+| `to_tbl` | table | End cell table with one-based x, y, and optional z fields. |
+| `channel` | string | Blocker channel name to test along the line. |
+| `opts?` | table | Reserved optional line query options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | First blocking cell table, or nil when the line is clear. |
 
 ---
 
@@ -8434,10 +8464,16 @@ LTileField:getCost(x, y, z, channel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `channel` | any |  |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `channel` | string | Cost channel name to query. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Movement or traversal cost value. |
 
 ---
 
@@ -8520,15 +8556,21 @@ LTileField:getSunOcclusion(x, y, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Top-light occlusion value in the inclusive range 0..1. |
 
 ---
 
 #### `LTileField:getTopology`
 
-Returns the field topology name.
+Returns the field topology name used for coordinate interpretation.
 
 ```lua
 LTileField:getTopology()
@@ -8606,7 +8648,7 @@ LTileField:removePointLight(id)
 
 #### `LTileField:removeProfile`
 
-Removes a named object profile.
+Removes a named object profile from the tilefield profile registry.
 
 ```lua
 LTileField:removeProfile(name)
@@ -8632,11 +8674,11 @@ LTileField:setBlock(x, y, z, channel, blocked)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `channel` | any |  |
-| `blocked` | any |  |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `channel` | string | Blocker channel name to update. |
+| `blocked` | boolean | True when the channel should be blocked. |
 
 ---
 
@@ -8671,17 +8713,17 @@ LTileField:setCost(x, y, z, channel, cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `channel` | any |  |
-| `cost` | any |  |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `channel` | string | Cost channel name to update. |
+| `cost` | number | Movement or traversal cost value. |
 
 ---
 
 #### `LTileField:setGlobalLight`
 
-Sets top-down global light.
+Sets top-down global light parameters used during light computation.
 
 ```lua
 LTileField:setGlobalLight(opts)
@@ -8707,8 +8749,8 @@ LTileField:setProfile(name, profile_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `profile_tbl` | any |  |
+| `name` | string | Profile name to create or replace. |
+| `profile_tbl` | table | Profile table with blockers, costs, and sunOcclusion fields. |
 
 ---
 
@@ -8724,10 +8766,10 @@ LTileField:setSunOcclusion(x, y, z, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `z?` | any |  |
-| `value` | any |  |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `value` | number | Top-light occlusion value in the inclusive range 0..1. |
 
 ---
 
@@ -8781,7 +8823,7 @@ LTileField:updatePointLight(id, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | any |  |
-| `opts` | any |  |
+| `id` | number | Stable point light id returned by `addPointLight`. |
+| `opts` | table | Partial light update table with x, y, z, radius, intensity, or color. |
 
 ---

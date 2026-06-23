@@ -1,8 +1,8 @@
-//! Registers the `lurek.svg` Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control.
+//! Registers the `lurek.svg` Lua API for SVG graphics, userdata wrappers, and script-side SVG control.
 
 use crate::lua_api::math_api::LuaVec2;
 use crate::runtime::SharedState;
-use crate::vector::SvgImage;
+use crate::svg::SvgImage;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;

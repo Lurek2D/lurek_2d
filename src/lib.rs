@@ -1,12 +1,12 @@
-//! `src/lib.rs` is the crate root, enumerating engine subsystems and defining the public Rust boundary exported by Lurek2D.
-//! It preserves compatibility through reexports like `binary` as `data` and `serialize` as `serial` for older imports.
-//! Feature gates here decide whether modules such as `automation`, `charts`, `flownet`, `pipeline`, and `spine` compile.
-//! `lurek_run()` owns CLI argument parsing, runtime mode selection, panic reporting, and app startup dispatch.
-//! GUI, TUI, headless, and CLI startup paths all branch here, making this file the runtime entry contract for the binary.
-//! Built-in helpers here create temporary game directories and bootstrap Lua scripts for CLI and TUI fallback modes.
-//! `.lurek` archive launching also lives here, including extraction safety checks before the runtime reads content.
-//! Platform-specific boot hooks, especially Windows timer resolution and crash dialogs, are coordinated from this file.
-//! Read this file first when startup flow, mode routing, archive launch, or top-level module exposure changes.
+//! `src/lib.rs` is the crate root, enumerating subsystems and defining Lurek2D public Rust exposure.
+//! Compatibility reexports such as `binary` as `data` stay here so older imports do not leak elsewhere.
+//! Feature gates decide whether optional modules like automation, charts, flownet, pipeline, and spine compile.
+//! `lurek_run()` owns CLI argument parsing, runtime mode selection, panic reporting, and startup dispatch.
+//! GUI, TUI, headless, and CLI startup paths branch here, making this the binary runtime entry contract.
+//! Built-in helpers create temporary game directories and bootstrap Lua scripts for CLI and TUI fallback modes.
+//! `.lurek` archive launching lives here, including extraction safety checks before the runtime reads content.
+//! Platform boot hooks, especially Windows timer resolution and crash dialogs, are coordinated from this file.
+//! Read this first when startup flow, mode routing, archive launch, or top-level module exposure changes.
 
 #![allow(unused_doc_comments)]
 #![allow(clippy::doc_lazy_continuation)]
@@ -137,8 +137,6 @@ pub mod save;
 pub mod scene;
 /// Exposes the serialization subsystem module.
 pub mod serialize;
-/// Backward-compatibility alias for the `serialize` module.
-pub use serialize as serial;
 #[cfg(feature = "spine")]
 /// Exposes the spine animation subsystem module.
 pub mod spine;
@@ -149,6 +147,8 @@ pub mod terminal;
 /// Exposes the threading subsystem module.
 pub mod thread;
 
+/// Exposes the SVG vector graphics subsystem module.
+pub mod svg;
 /// Exposes tile-based gameplay semantics for movement, visibility, action, and lighting.
 pub mod tilefield;
 /// Exposes the tilemap subsystem module.
@@ -161,8 +161,6 @@ pub mod tween;
 pub mod ui;
 /// Exposes the content validation subsystem module.
 pub mod validator;
-/// Exposes the vector graphics SVG subsystem module.
-pub mod vector;
 /// Exposes the visibility subsystem module.
 pub mod visibility;
 /// Exposes the window subsystem module.

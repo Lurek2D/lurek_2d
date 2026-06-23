@@ -1,13 +1,13 @@
-# vector manual spec overlay
+# svg manual spec overlay
 
 ## TL;DR
 
-- Provides dynamic SVG vector parsing, hit-testing, state read-back, hierarchy navigation, and GPU-cached rendering.
+- Provides dynamic SVG parsing, hit-testing, state read-back, hierarchy navigation, and GPU-cached rendering.
 
 ## Summary
 
-- The `vector` module is the engine surface for scalable vector artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible.
-- It keeps vector parsing, scene representation, and runtime conversion behavior together so vector assets can live inside the normal content flow instead of being forced into a separate external pipeline.
+- The `svg` module is the engine surface for scalable SVG artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible.
+- It keeps SVG parsing, scene representation, and runtime conversion behavior together so SVG assets can live inside the normal content flow instead of being forced into a separate external pipeline.
 - This is useful for UI artwork that should survive scaling without raster duplication.
 - Read it as the point where scalable art becomes usable in the rest of the engine while staying distinct from raster-first asset workflows.
 

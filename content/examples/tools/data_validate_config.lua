@@ -11,7 +11,7 @@ local function example_print_log(...)
     lurek.log.info(table.concat(parts, " "))
 end
 
---@api: lurek.serial.validate
+--@api: lurek.serialize.validate
 do
     local config = {
         title = "Household Finance Lab",
@@ -28,7 +28,7 @@ do
         },
     }
 
-    local ok, err = lurek.serial.validate(config, schema)
+    local ok, err = lurek.serialize.validate(config, schema)
     example_print_log("config schema ok=" .. tostring(ok))
     example_print_log("config schema err=" .. tostring(err))
 end

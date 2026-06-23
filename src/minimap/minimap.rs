@@ -1,15 +1,16 @@
-//! Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-//! Defines how minimap data is validated, transformed, or stored before neighboring systems use it.
-//! Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on minimap behavior while Lua registration stays elsewhere.
-//! Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
-//! Use this file when changing minimap defaults, lifecycle handling, validation, or data ownership.
-//! Keeps failure paths and edge cases near the minimap state that can explain them while keeping call sites explicit.
-//! Preserves deterministic behavior by keeping minimap calculations explicit at their owner boundary.
-//! Provides the local adaptation layer that lets callers avoid duplicating minimap rules while keeping call sites explicit.
-//! Maintains small helper surfaces so broader engine modules can compose minimap behavior safely.
-//! Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
+//! Owns the minimap runtime state, including world bounds, layers, fog, markers, objects, pings, and icon cache.
+//! Validates dimensions, zoom, marker counts, layer counts, and geometry inputs before they reach rendering helpers.
+//! Tracks dirty state and rebuild decisions so Lua callers can mutate minimap data without duplicating cache rules.
+//! Converts camera and world coordinates into minimap draw space while keeping camera ownership outside this file.
+//! Maintains overlays, paths, blend modes, color modes, and fog styles as minimap concepts, not renderer concepts.
+//! Integrates texture keys for icons by reference while asset cataloging and GPU upload remain in other modules.
+//! Produces render data and image output that downstream render paths can consume without owning minimap state.
+//! Keeps error reporting, limits, defaults, and deterministic calculations close to the minimap data owner.
+//! Provides crate-local helpers for Lua bindings while userdata registration and table conversion stay elsewhere.
+//! Update this file when minimap lifecycle, validation, draw planning, fog, marker, or object semantics change.
+//! Leave tilemap storage, camera control, renderer submission, and asset parsing in their owning subsystems.
+//! This boundary keeps the minimap composable for dashboards, games, debug tools, and generated evidence tests.
+//! Tests should assert state transitions here and use Lua integration when proving renderer or asset composition.
 
 use super::types::{
     ColorMode, FogLevel, LayerBlendMode, LayerData, LayerStyle, MarkerAnimation, MinimapError,

@@ -110,5 +110,40 @@ describe("integration: entity position drives draw coordinates", function()
         end
         expect_equal(1, draw_count, "hidden entity skips the second draw")
     end)
+
+    -- @integration LNineSlice:getInsets
+    -- @integration lurek.image.newImageData
+    -- @integration lurek.render.drawNineSlice
+    -- @integration lurek.render.newImage
+    -- @integration lurek.sprite.newNineSlice
+    it("single bitmap data becomes sprite nine-slice data consumed by render", function()
+        local data = lurek.image.newImageData(12, 12)
+        local image = lurek.render.newImage(data)
+        local slice = lurek.sprite.newNineSlice(image, 2, 3, 4, 5)
+        local top, right, bottom, left = slice:getInsets()
+
+        expect_equal(2, top)
+        expect_equal(3, right)
+        expect_equal(4, bottom)
+        expect_equal(5, left)
+
+        expect_no_error(function()
+            lurek.render.drawNineSlice(slice, 10, 20, 48, 32)
+        end)
+    end)
+
+    -- @integration LFont:measure
+    -- @integration lurek.font.getDefault
+    -- @integration lurek.render.printWithFont
+    it("font-owned metrics provide a font handle that render can consume", function()
+        local font = lurek.font.getDefault()
+        local width, height = font:measure("status ready", 1.0)
+
+        expect_true(width > 0)
+        expect_true(height > 0)
+        expect_no_error(function()
+            lurek.render.printWithFont(font, "status ready", 4, 6, 1.0)
+        end)
+    end)
 end)
 test_summary()

@@ -1,5 +1,6 @@
-//! Validation helpers for pathfinding, tactical fields, steering, and local avoidance.
-//! Keeps movement-facing limits near the pathfind owners that enforce them.
+//! Owns shared validation helpers for pathfinding, tactical fields, steering, and local avoidance modules.
+//! Keeps finite number, count, and positive-value checks close to the navigation owners that enforce them.
+//! Update this file when movement-facing modules need common limits or structured `PathfindError` guards.
 
 /// Shared safety limits for pathfinding-adjacent movement helpers.
 #[derive(Debug, Clone, Copy, PartialEq)]

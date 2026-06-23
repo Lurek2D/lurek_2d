@@ -13,7 +13,7 @@
 - Source path: `src/image`
 - Binding: `src/lua_api/image_api.rs`
 - Namespace: `lurek.image`
-- Lua API surface: `13` functions, `10` types, `90` methods
+- Lua API surface: `13` functions, `10` types, `89` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -44,13 +44,14 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - Owning tier: `Platform Services`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/image_api.rs`
-- Referenced engine modules: `animation`, `camera`, `color`, `math`, `province`, `render`, `runtime`
+- Referenced engine modules: `animation`, `camera`, `color`, `font`, `math`, `province`, `render`, `runtime`
 
 ## Imports
 
 - `animation`: Imports or references `src/animation/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
 - `camera`: Imports or references `src/camera/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Foundations`.
+- `font`: Imports or references `src/font/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Platform Services` into `Foundations`.
 - `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
 - `render`: Imports or references `src/render/`. Dependency stays inside `Platform Services` and should remain acyclic.
@@ -108,9 +109,9 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 ### mod.rs
 
-- Exports the image subsystem surface that groups buffers, effects, formats, atlases, layers, and visuals.
-- Acts as the navigation index for CPU image ownership, showing where loading, edits, packing, and specs live.
-- Re-exports ImageData, compressed assets, palette LUTs, layered images, GIF helpers, and atlas structures.
+- Exports the image subsystem surface that groups buffers, effects, formats, layers, and visuals.
+- Acts as the navigation index for CPU image ownership, showing where loading, edits, and specs live.
+- Re-exports ImageData, compressed assets, palette LUTs, layered images, and GIF helpers.
 - Keeps compatibility exports such as ProvinceGrid local to the module boundary instead of scattered in users.
 - Open this file first when tracing which image feature belongs to storage, processing, serialization, or UI.
 - This owner defines image-module visibility and composition, not the pixel algorithms implemented below it.
@@ -153,14 +154,6 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - Parses sRGB and linear color-space labels, rejecting unknown tags before they leak into renderer behavior.
 - Provides alpha premultiplication on RGBA8 bytes for pipelines that expect premultiplied blend semantics.
 - Open this file when texture ingest, color-space tagging, or premultiply handling causes visual mismatches.
-
-### texture_atlas.rs
-
-- Implements a named texture atlas that packs image regions and records their placement inside one sheet.
-- Stores atlas dimensions, padding, shelf state, and region metadata so sprite lookup stays data driven.
-- Supports optional nine-slice insets per region, making UI skin assets travel with their packing metadata.
-- Exposes region counts, atlas size, and immutable region views for tools that inspect generated sprite maps.
-- Open this file when atlas packing, region lookup, or nine-slice metadata does not match authored assets.
 
 ### visualization/animation.rs
 
@@ -335,7 +328,6 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - `LImageData:diff(other_ud) -> number`: Computes a difference metric against another image.
 - `LImageData:drawCircle(cx, cy, radius, r, g, b, a) -> nil`: Draws a filled circle into this image.
 - `LImageData:drawLine(x0, y0, x1, y1, r, g, b, a) -> nil`: Draws a line into this image. This method is available to Lua scripts.
-- `LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom) -> nil`: Draws a nine-slice region from a source image into this image.
 - `LImageData:drawRect(x, y, w, h, r, g, b, a) -> nil`: Draws a filled rectangle into this image.
 - `LImageData:encode(format) -> string`: Encodes image data in a supported format.
 - `LImageData:fill(r, g, b, a) -> nil`: Fills the whole image with one RGBA color.

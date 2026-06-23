@@ -1,11 +1,11 @@
-//! Exports the pathfinding subsystem surface for routing, spatial fields, steering, local avoidance, and debug views.
-//! Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, steering, ORCA, and province graph helpers.
-//! Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, movement, or draw.
-//! Open this file when adding or retiring pathfinding owners or when re-export policy for runtime helpers needs changes.
-//! The exports here connect generic tile grids, hex and iso variants, navmeshes, and province graph traversal utilities.
-//! Agents should start here when tracing navigation behavior because it reveals the authoritative file split by feature.
-//! This index owns visibility and re-export contracts rather than live state, queues, caches, or search data itself.
-//! Neighboring work usually spans NavGrid, async request handling, path solvers, movement helpers, and debug rendering adapters below.
+//! Exports the pathfinding surface for routing, spatial fields, steering, local avoidance, and debug views.
+//! Acts as the navigation index for A*, HPA, flow fields, influence maps, ORCA, and province graphs.
+//! Keeps boundaries explicit so callers can locate data, search, movement, validation, or debug ownership.
+//! Re-exports grid, hex, iso, navmesh, steering, tactical, and graph helpers without storing live state.
+//! This index owns visibility contracts, not queues, caches, solver internals, or renderer submission data.
+//! Start here when tracing navigation behavior because it reveals the authoritative file split by feature.
+//! Neighboring changes usually span `NavGrid`, async requests, solvers, steering helpers, and debug adapters.
+//! Update this file when adding, retiring, or renaming pathfinding owners or public re-export policy.
 
 /// AI-oriented flow field with steering integration.
 pub mod ai_flow_field;

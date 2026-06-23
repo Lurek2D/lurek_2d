@@ -1,5 +1,4 @@
-//! Registers the `lurek.tilefield` Lua API for multi-level tile gameplay semantics.
-//! The binding layer converts Lua tables and one-based coordinates while the Rust domain module owns field behavior.
+//! Registers `lurek.tilefield`, converting Lua tables and one-based coordinates while Rust owns field behavior.
 
 use super::tilemap_api::LuaTileMap;
 use super::SharedState;
@@ -198,7 +197,7 @@ impl LuaUserData for LuaTileField {
         methods.add_method("getSize", |_, this, ()| Ok(this.inner.borrow().size()));
 
         // -- getTopology --
-        /// Returns the field topology name.
+        /// Returns the field topology name used for coordinate interpretation.
         /// @return | string | `square`, `iso_square`, or `hex`.
         methods.add_method("getTopology", |_, this, ()| {
             Ok(this.inner.borrow().topology().as_str().to_string())
@@ -224,7 +223,7 @@ impl LuaUserData for LuaTileField {
         });
 
         // -- clearCell --
-        /// Clears one cell.
+        /// Clears gameplay state and light values for one addressed cell.
         /// @param | x | integer | One-based column.
         /// @param | y | integer | One-based row.
         /// @param | z | integer? | One-based level, default 1.
@@ -308,6 +307,11 @@ impl LuaUserData for LuaTileField {
 
         // -- setBlock --
         /// Sets whether a cell blocks a channel.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | channel | string | Blocker channel name to update.
+        /// @param | blocked | boolean | True when the channel should be blocked.
         methods.add_method(
             "setBlock",
             |_, this, (x, y, z, channel, blocked): (u32, u32, Option<u32>, String, bool)| {
@@ -322,6 +326,11 @@ impl LuaUserData for LuaTileField {
 
         // -- blocks --
         /// Returns whether a cell blocks a channel.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | channel | string | Blocker channel name to query.
+        /// @return | boolean | True when the addressed cell blocks the channel.
         methods.add_method(
             "blocks",
             |_, this, (x, y, z, channel): (u32, u32, Option<u32>, String)| {
@@ -333,6 +342,11 @@ impl LuaUserData for LuaTileField {
 
         // -- setCost --
         /// Sets the cost for one cell/channel.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | channel | string | Cost channel name to update.
+        /// @param | cost | number | Movement or traversal cost value.
         methods.add_method(
             "setCost",
             |_, this, (x, y, z, channel, cost): (u32, u32, Option<u32>, String, f32)| {
@@ -347,6 +361,11 @@ impl LuaUserData for LuaTileField {
 
         // -- getCost --
         /// Returns the cost for one cell/channel.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | channel | string | Cost channel name to query.
+        /// @return | number | Movement or traversal cost value.
         methods.add_method(
             "getCost",
             |_, this, (x, y, z, channel): (u32, u32, Option<u32>, String)| {
@@ -358,6 +377,10 @@ impl LuaUserData for LuaTileField {
 
         // -- setSunOcclusion --
         /// Sets top-light occlusion in the inclusive range 0..1.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | value | number | Top-light occlusion value in the inclusive range 0..1.
         methods.add_method(
             "setSunOcclusion",
             |_, this, (x, y, z, value): (u32, u32, Option<u32>, f32)| {
@@ -371,6 +394,10 @@ impl LuaUserData for LuaTileField {
 
         // -- getSunOcclusion --
         /// Returns top-light occlusion in the inclusive range 0..1.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | number | Top-light occlusion value in the inclusive range 0..1.
         methods.add_method(
             "getSunOcclusion",
             |_, this, (x, y, z): (u32, u32, Option<u32>)| {
@@ -381,6 +408,8 @@ impl LuaUserData for LuaTileField {
 
         // -- setProfile --
         /// Registers or replaces a named object profile.
+        /// @param | name | string | Profile name to create or replace.
+        /// @param | profile_tbl | table | Profile table with blockers, costs, and sunOcclusion fields.
         methods.add_method(
             "setProfile",
             |_, this, (name, profile_tbl): (String, LuaTable)| {
@@ -394,6 +423,10 @@ impl LuaUserData for LuaTileField {
 
         // -- applyProfile --
         /// Applies a named profile to one cell.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | name | string | Profile name to apply to the cell.
         methods.add_method(
             "applyProfile",
             |_, this, (x, y, z, name): (u32, u32, Option<u32>, String)| {
@@ -418,7 +451,7 @@ impl LuaUserData for LuaTileField {
         });
 
         // -- removeProfile --
-        /// Removes a named object profile.
+        /// Removes a named object profile from the tilefield profile registry.
         /// @param | name | string | Profile name to remove.
         methods.add_method("removeProfile", |_, this, name: String| {
             this.inner.borrow_mut().remove_profile(&name);
@@ -444,6 +477,11 @@ impl LuaUserData for LuaTileField {
 
         // -- clearLine --
         /// Returns true when the line between two cell tables has no blocker for a channel.
+        /// @param | from_tbl | table | Start cell table with one-based x, y, and optional z fields.
+        /// @param | to_tbl | table | End cell table with one-based x, y, and optional z fields.
+        /// @param | channel | string | Blocker channel name to test along the line.
+        /// @param | opts | table? | Reserved optional line query options.
+        /// @return | boolean | True when no blocker exists between the two cells.
         methods.add_method(
             "clearLine",
             |_, this, (from_tbl, to_tbl, channel, _opts): (LuaTable, LuaTable, String, Option<LuaTable>)| {
@@ -459,6 +497,11 @@ impl LuaUserData for LuaTileField {
 
         // -- firstBlocker --
         /// Returns the first one-based blocking cell table between two cells, or nil.
+        /// @param | from_tbl | table | Start cell table with one-based x, y, and optional z fields.
+        /// @param | to_tbl | table | End cell table with one-based x, y, and optional z fields.
+        /// @param | channel | string | Blocker channel name to test along the line.
+        /// @param | opts | table? | Reserved optional line query options.
+        /// @return | table|nil | First blocking cell table, or nil when the line is clear.
         methods.add_method(
             "firstBlocker",
             |lua, this, (from_tbl, to_tbl, channel, _opts): (LuaTable, LuaTable, String, Option<LuaTable>)| {
@@ -509,6 +552,8 @@ impl LuaUserData for LuaTileField {
 
         // -- updatePointLight --
         /// Updates an existing point light by id.
+        /// @param | id | integer | Stable point light id returned by `addPointLight`.
+        /// @param | opts | table | Partial light update table with x, y, z, radius, intensity, or color.
         methods.add_method(
             "updatePointLight",
             |_, this, (id, opts): (u32, LuaTable)| {
@@ -570,14 +615,14 @@ impl LuaUserData for LuaTileField {
         });
 
         // -- clearPointLights --
-        /// Removes all point lights.
+        /// Removes all point lights currently stored on this tilefield.
         methods.add_method("clearPointLights", |_, this, ()| {
             this.inner.borrow_mut().clear_point_lights();
             Ok(())
         });
 
         // -- setGlobalLight --
-        /// Sets top-down global light.
+        /// Sets top-down global light parameters used during light computation.
         /// @param | opts | table | `{intensity?, color?}` global top-light settings.
         methods.add_method("setGlobalLight", |_, this, opts: LuaTable| {
             let intensity = opts
@@ -682,6 +727,9 @@ impl LuaUserData for LuaTileField {
 
         // -- exportBlockLayer --
         /// Exports one blocker channel and level as a row-major boolean array.
+        /// @param | channel | string | Blocker channel name to export.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | table | Row-major boolean array for the requested channel and level.
         methods.add_method(
             "exportBlockLayer",
             |lua, this, (channel, z): (String, Option<u32>)| {
@@ -694,6 +742,9 @@ impl LuaUserData for LuaTileField {
 
         // -- exportCostLayer --
         /// Exports one cost channel and level as a row-major number array.
+        /// @param | channel | string | Cost channel name to export.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | table | Row-major number array for the requested channel and level.
         methods.add_method(
             "exportCostLayer",
             |lua, this, (channel, z): (String, Option<u32>)| {
@@ -733,7 +784,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     let tbl = lua.create_table()?;
 
     // -- new --
-    /// Creates a multi-level tilefield.
+    /// Creates a multi-level tilefield with explicit dimensions and topology.
     /// @param | opts | table | `{width, height, levels?, topology?}`.
     /// @return | LTileField | New tilefield handle.
     tbl.set(

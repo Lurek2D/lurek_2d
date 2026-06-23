@@ -13,7 +13,7 @@
 - Source path: `src/sprite`
 - Binding: `src/lua_api/sprite_api.rs`
 - Namespace: `lurek.sprite`
-- Lua API surface: `8` functions, `13` types, `53` methods
+- Lua API surface: `9` functions, `13` types, `53` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -69,8 +69,8 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 - This module gathers the sprite subsystem surface for single sprites, sheets, atlases, panels, and batches.
 - It keeps navigation explicit by pointing readers to the file that owns clip playback, lookup, scaling, or batching.
-- Re-exports here make `Sprite`, `SpriteSheet`, `SpriteAtlas`, `NineSlice`, and `SpriteBatch` easy to reach.
-- `animator.rs` owns frame-timed clip playback, while `atlas.rs` and `sprite_sheet.rs` own region lookup models.
+- Re-exports here make `Sprite`, `SpriteSheet`, `SpriteAtlas`, `TextureAtlas`, `NineSlice`, and `SpriteBatch` easy to reach.
+- `animator.rs` owns frame-timed clip playback, while atlas files and `sprite_sheet.rs` own region lookup models.
 - `sprite.rs` stays the minimal per-instance draw state owner, and `sprite_batch.rs` holds grouped submission data.
 - Change this file when the public sprite symbol map moves, not when rendering or animation rules change.
 
@@ -104,6 +104,14 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - Constructors cover uniform sheets, RPGMaker-style direction sheets, and atlas-backed sheets mapped into groups.
 - Open this file when frame indexing or grouping semantics change; playback and per-instance state live elsewhere.
 
+### texture_atlas.rs
+
+- Implements a named texture atlas that packs image regions and records their placement inside one sheet.
+- Stores atlas dimensions, padding, shelf state, and region metadata so sprite lookup stays data driven.
+- Supports optional nine-slice insets per region, making UI skin assets travel with their packing metadata.
+- Exposes region counts, atlas size, and immutable region views for tools that inspect generated sprite maps.
+- Open this file when atlas packing, region lookup, or nine-slice metadata does not match authored assets.
+
 
 
 ## Lua API Ref
@@ -113,6 +121,7 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - `lurek.sprite.newAnimator(clips?) -> LSpriteAnimator`: Creates a stateful sprite clip animator from an optional clip definition table.
 - `lurek.sprite.newAtlasPacker(width, height, padding) -> LAtlasPacker`: Creates a runtime atlas packer for dynamically allocating named sprite regions.
 - `lurek.sprite.newAtlasSheet(atlas, sw, sh) -> LSpriteSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
+- `lurek.sprite.newNineSlice(image, top, right, bottom, left) -> LNineSlice`: Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
 - `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 - `lurek.sprite.newSheet(tw, th, fw, fh) -> LSpriteSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
 - `lurek.sprite.newSprite(texture_id, x, y) -> LSprite`: Creates a lightweight sprite record with transform and optional normal-map metadata.

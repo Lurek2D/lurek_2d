@@ -110,7 +110,7 @@
     "scope": "lua",
     "body": [
       "local ${1:d}    = lurek.binary",
-      "local ${1:s}    = lurek.serial",
+      "local ${1:s}    = lurek.serialize",
       "local save = s.toToml({ player = { level = 5, gold = 300 } })",
       "local crc  = d.crc32(save)",
       "-- write: append CRC as 4 bytes",
@@ -145,7 +145,7 @@
     "scope": "lua",
     "body": [
       "local ${1:d}   = lurek.binary",
-      "local ${1:s}   = lurek.serial",
+      "local ${1:s}   = lurek.serialize",
       "local payload    = s.toToml({ world = { map = \"dungeon_01\", seed = 42 } })",
       "local compressed = d.compress(\"zlib\", payload, 6)",
       "print(string.format(\"original=%d  compressed=%d  ratio=%.2f\",",
@@ -181,7 +181,7 @@
     "description": "Use at startup to load a TOML config, apply defaults for optional keys, and validate required fields. Fail fast with a clear error rather than silently propagating nil values into game logic.",
     "scope": "lua",
     "body": [
-      "local ${1:s} = lurek.serial",
+      "local ${1:s} = lurek.serialize",
       "local toml_str = [[",
       "[audio]",
       "volume = 0.8",
@@ -200,7 +200,7 @@
     "description": "Use to apply partial preference updates without rewriting the whole config. fromToml -> mutate the table -> toToml preserves all other keys and structure.",
     "scope": "lua",
     "body": [
-      "local ${1:s}   = lurek.serial",
+      "local ${1:s}   = lurek.serialize",
       "local raw = [[",
       "[player]",
       "name = \"Hero\"",
@@ -222,7 +222,7 @@
     "description": "Use to load and validate a game manifest (name, version, entry point) during boot. Centralise all schema checks here so the game loop never receives unvalidated manifest data.",
     "scope": "lua",
     "body": [
-      "local ${1:s} = lurek.serial",
+      "local ${1:s} = lurek.serialize",
       "local manifest_toml = [[",
       "name    = \"Dungeon Explorer\"",
       "version = \"1.2.0\"",
@@ -284,7 +284,7 @@
     "description": "Use encodeMsgPack / decodeMsgPack for compact structured serialisation of game state snapshots passed between Lua VMs via Channel, or written as save slot blobs. Smaller than TOML; more type-safe than raw pack.",
     "scope": "lua",
     "body": [
-      "local ${1:s} = lurek.serial",
+      "local ${1:s} = lurek.serialize",
       "local state = {",
       "    player = { name = \"Hero\", hp = 80, level = 5 },",
       "    round  = 3,",

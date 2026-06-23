@@ -35,12 +35,13 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 - Owning tier: `Edge/Integration`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/engine_api.rs`
-- Referenced engine modules: `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, `math`, `parallax`, `render`, `runtime`, `sprite`, `tilemap`, `window`
+- Referenced engine modules: `event`, `filesystem`, `font`, `image`, `input`, `light`, `lua_api`, `math`, `parallax`, `render`, `runtime`, `sprite`, `tilemap`, `window`
 
 ## Imports
 
 - `event`: Imports or references `src/event/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
 - `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `font`: Imports or references `src/font/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
 - `input`: Imports or references `src/input/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
 - `light`: Imports or references `src/light/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.

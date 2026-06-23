@@ -343,7 +343,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - `LCandlestickChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
 - `LCandlestickChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
 - `LCandlestickChart:setCandles(candles) -> nil`: Replaces all OHLC candles from table rows with open/high/low/close fields or values 1..4.
-- `LCandlestickChart:setColors(up, down) -> nil`: Sets up/down candle colors.
+- `LCandlestickChart:setColors(up, down) -> nil`: Sets the rising and falling candle colors used by the candlestick renderer.
 - `LCandlestickChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
 - `LCandlestickChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
 - `LCandlestickChart:type() -> string`: Returns the runtime userdata type name for this chart.
@@ -494,7 +494,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - `LRadarChart:getWidth() -> integer`: Returns the configured chart width in pixels.
 - `LRadarChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
 - `LRadarChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
-- `LRadarChart:setAxes(axes) -> nil`: Replaces radar axis labels.
+- `LRadarChart:setAxes(axes) -> nil`: Replaces the radar axis labels used for each radial spoke.
 - `LRadarChart:setMaxValue(value) -> nil`: Sets the explicit maximum radial value.
 - `LRadarChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
 - `LRadarChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
@@ -538,7 +538,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 #### LTreemapChart Type
 
-- Lua handle for a treemap chart.
+- Lua handle for a treemap chart that renders weighted hierarchical rectangles.
 
 ##### Fields
 
@@ -546,7 +546,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LTreemapChart:addItem(label, value, color?) -> nil`: Adds one weighted treemap item.
+- `LTreemapChart:addItem(label, value, color?) -> nil`: Adds one weighted treemap item to the current rectangle layout.
 - `LTreemapChart:clear() -> nil`: Clears all chart data and cached chart state.
 - `LTreemapChart:draw(x, y, opts?) -> nil`: Draws the chart at world or screen coordinates using optional transform options.
 - `LTreemapChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.

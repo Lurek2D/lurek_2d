@@ -397,7 +397,7 @@ pub struct SharedState {
     /// Stores blend_mode state.
     pub blend_mode: BlendMode,
     /// Stores fonts state.
-    pub fonts: SlotMap<FontKey, crate::render::Font>,
+    pub fonts: SlotMap<FontKey, crate::font::Font>,
     /// Stores active_font state.
     pub active_font: Option<FontKey>,
     /// Stores default_font state.
@@ -949,7 +949,7 @@ impl SharedState {
         Ok(handle.0)
     }
     fn builtin_default_font_key(&self, point_size: u32, bold: bool) -> Option<FontKey> {
-        let slot = crate::render::Font::nearest_point_size(point_size);
+        let slot = crate::font::Font::nearest_point_size(point_size);
         let fonts = if bold {
             &self.default_bold_fonts
         } else {
@@ -994,13 +994,13 @@ impl SharedState {
             return;
         }
         // Regular Courier New.
-        let regular = crate::render::Font::load_all_sizes();
+        let regular = crate::font::Font::load_all_sizes();
         for (i, (font, _cw, _ch)) in regular.into_iter().enumerate() {
             let key = self.fonts.insert(font);
             self.default_fonts[i] = Some(key);
         }
         // Bold Courier New.
-        let bold = crate::render::Font::load_all_bold();
+        let bold = crate::font::Font::load_all_bold();
         for (i, (font, _cw, _ch)) in bold.into_iter().enumerate() {
             let key = self.fonts.insert(font);
             self.default_bold_fonts[i] = Some(key);

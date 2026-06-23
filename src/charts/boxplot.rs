@@ -2,7 +2,8 @@
 //! It stores named sample series, computes quartiles on render, and draws whiskers, boxes, medians, and outliers.
 //! Shared chart helpers provide axes, ticks, category labels, legends, and background styling for consistency.
 //! The renderer sorts only per-series samples and otherwise draws O(series + samples) primitives for fast refreshes.
-//! Open it when distribution statistics, outlier policy, or boxplot geometry need to change.
+//! The output is CPU `ImageData`, so chart statistics stay here while render modules only consume prepared pixels.
+//! Open it when distribution statistics, outlier policy, boxplot geometry, or sample limits need to change.
 
 use crate::charts::config::ChartConfig;
 use crate::charts::render_utils::{

@@ -63,7 +63,6 @@ def find_target_file(examples_dir: Path, module: str, ex_filename: str) -> Path:
 API_MODULE_TO_REGISTRY_MODULE = {
     "engine": "app",
     "system": "runtime",
-    "svg": "vector",
 }
 
 

@@ -314,6 +314,30 @@ describe("newAtlasPacker()", function()
         expect_equal(3, r.nine_slice.top)
     end)
 
+    -- @covers lurek.sprite.newNineSlice
+    it("newNineSlice creates sprite-owned nine-slice handles", function()
+        local data = lurek.image.newImageData(8, 8)
+        local image = lurek.render.newImage(data)
+        local ns = lurek.sprite.newNineSlice(image, 1, 2, 3, 4)
+        expect_type("userdata", ns)
+
+        expect_error(function()
+            lurek.sprite.newNineSlice(image, -1, 0, 0, 0)
+        end)
+    end)
+
+    -- @covers LNineSlice:getInsets
+    it("getInsets returns sprite-owned nine-slice inset data", function()
+        local data = lurek.image.newImageData(8, 8)
+        local image = lurek.render.newImage(data)
+        local ns = lurek.sprite.newNineSlice(image, 1, 2, 3, 4)
+        local top, right, bottom, left = ns:getInsets()
+        expect_equal(1, top)
+        expect_equal(2, right)
+        expect_equal(3, bottom)
+        expect_equal(4, left)
+    end)
+
     -- @covers LAtlasPacker:clear
     it("clear removes all packed regions", function()
         local p = lurek.sprite.newAtlasPacker(64, 64, 1)

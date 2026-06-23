@@ -9,14 +9,14 @@ describe("integration: data serialization with filesystem I/O", function()
     -- @integration lurek.filesystem.read
     -- @integration lurek.filesystem.remove
     -- @integration lurek.filesystem.write
-    -- @integration lurek.serial.fromJson
-    -- @integration lurek.serial.toJson
+    -- @integration lurek.serialize.fromJson
+    -- @integration lurek.serialize.toJson
     -- @integration lurek.filesystem.exists
     -- @integration lurek.filesystem.read
     -- @integration lurek.filesystem.remove
     -- @integration lurek.filesystem.write
-    -- @integration lurek.serial.fromJson
-    -- @integration lurek.serial.toJson
+    -- @integration lurek.serialize.fromJson
+    -- @integration lurek.serialize.toJson
     it("encodes table to JSON, writes, and reads back", function()
         local record = {
             name  = "player1",
@@ -24,7 +24,7 @@ describe("integration: data serialization with filesystem I/O", function()
             level = 7,
         }
 
-        local json_str = lurek.serial.toJson(record)
+        local json_str = lurek.serialize.toJson(record)
         expect_type("string", json_str, "encoded to JSON string")
         expect_true(#json_str > 0, "JSON string is non-empty")
 
@@ -37,7 +37,7 @@ describe("integration: data serialization with filesystem I/O", function()
         local content = lurek.filesystem.read(TMP_PATH)
         expect_type("string", content, "file content is string")
 
-        local decoded = lurek.serial.fromJson(content)
+        local decoded = lurek.serialize.fromJson(content)
         expect_equal("player1", decoded.name,  "name round-tripped")
         expect_equal(9999,      decoded.score, "score round-tripped")
         expect_equal(7,         decoded.level, "level round-tripped")

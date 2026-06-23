@@ -60,8 +60,8 @@ impl SpriteAtlas {
             name_map: HashMap::new(),
         }
     }
-    /// Build a SpriteAtlas from an image::TextureAtlas, sorting regions by name.
-    pub fn from_texture_atlas(atlas: &crate::image::TextureAtlas) -> Self {
+    /// Build a SpriteAtlas from a sprite `TextureAtlas`, sorting regions by name.
+    pub fn from_texture_atlas(atlas: &crate::sprite::TextureAtlas) -> Self {
         let mut out = Self::new();
         let mut regions = atlas.get_regions();
         regions.sort_by(|a, b| a.name.cmp(&b.name));

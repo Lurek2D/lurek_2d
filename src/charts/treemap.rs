@@ -2,6 +2,8 @@
 //! It stores weighted labeled items, applies deterministic squarified rows, and draws colored rectangles with labels.
 //! The API accepts flat items because runtime Lua callers commonly aggregate hierarchy before visualization.
 //! Rendering is O(n log n) from value sorting plus rectangle fills, keeping repeated refreshes practical.
+//! Shared chart configuration provides title, legend, and background while this file owns rectangle packing.
+//! The output is CPU `ImageData`, so render modules consume pixels instead of owning treemap layout semantics.
 //! Open it when treemap item ingestion, squarified row packing, or label rendering need to change.
 
 use crate::charts::config::ChartConfig;

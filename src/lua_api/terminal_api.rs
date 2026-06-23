@@ -763,7 +763,7 @@ impl LuaUserData for LuaTerminal {
         /// Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
         /// @param | height | integer | Desired font height in pixels.
         methods.add_method("setFont", |_, this, height: u32| {
-            let idx = crate::render::Font::nearest_size(height);
+            let idx = crate::font::Font::nearest_size(height);
             let st = this.binding.shared_state.borrow();
             let arr = if st.active_bold {
                 &st.default_bold_fonts

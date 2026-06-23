@@ -18,6 +18,7 @@ use super::{
 };
 use crate::log_msg;
 use crate::runtime::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};
+use crate::serialize::parse_toml;
 use sha2::{Digest, Sha256};
 use std::cmp::Reverse;
 use std::collections::{BinaryHeap, HashMap, HashSet};
@@ -733,7 +734,7 @@ impl ModManager {
         content: &str,
         policy: &ModScanPolicy,
     ) -> ModResult<(ModInfo, Vec<String>)> {
-        let value: toml::Value = content.parse().map_err(|err| ModError::Parse {
+        let value = parse_toml(content).map_err(|err| ModError::Parse {
             path: entry_path.to_path_buf(),
             detail: format!("invalid TOML: {}", err),
         })?;

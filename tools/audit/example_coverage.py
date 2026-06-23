@@ -75,7 +75,6 @@ STRING_LITERAL_RE = re.compile(r'(?:"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\')')
 API_MODULE_TO_REGISTRY_MODULE = {
     "engine": "app",
     "system": "runtime",
-    "svg": "vector",
 }
 
 

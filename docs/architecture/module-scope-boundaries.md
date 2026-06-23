@@ -54,7 +54,7 @@ Companion documents: [engine-core.md](engine-core.md), [modularity-plugins.md](m
 
 | Pair | Audit result | Required state |
 |---|---|---|
-| `binary` vs `serialize` | Overlap found and fixed. `lurek.binary` previously exposed TOML and MessagePack helpers that duplicated `lurek.serial`. | `binary` exposes byte buffers, packing, compression, hashing, and byte encodings only. TOML, MessagePack, JSON, CSV, XML, and schema-aware structured value conversion stay in `serialize`. |
+| `binary` vs `serialize` | Overlap found and fixed. `lurek.binary` previously exposed TOML and MessagePack helpers that duplicated `lurek.serialize`. | `binary` exposes byte buffers, packing, compression, hashing, and byte encodings only. TOML, MessagePack, JSON, CSV, XML, and schema-aware structured value conversion stay in `serialize`. |
 | `ai` vs `learning` | Overlap found and fixed. `lurek.ai` previously exposed Q-learning, neural-net, genetic, bandit, and neuroevolution constructors that duplicated `lurek.learning`. | `ai` exposes game-behavior decision systems only. ML/RL/evolution constructors stay in `learning`; `ai` may consume learned policies through explicit integration points. |
 | `agent` vs `ai` | Terminology risk, not a functional overlap. `ai` has per-actor `Agent` state, while `agent` is the LLM assistant subsystem. | Keep game actor state under `ai`; keep LLM prompt, memory, backend, and async request lifecycle under `agent`. |
 | `agent` vs `learning` | No direct API overlap found. Both can involve "models", but one owns LLM orchestration and the other owns local learning algorithms. | Keep LLM request/memory/tool orchestration in `agent`; keep trainable tensors, RL, bandits, GA, and ONNX in `learning`. |

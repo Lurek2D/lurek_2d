@@ -69,6 +69,8 @@ impl LuaUserData for LuaTileVisibility {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- computeVisible --
         /// Computes one player's current visible mask from a tilefield origin.
+        /// @param | player | string | Player identifier whose visibility mask should be computed.
+        /// @param | opts | table | Options table with origin, range, and optional vision channel.
         methods.add_method(
             "computeVisible",
             |_, this, (player, opts): (String, LuaTable)| {
@@ -91,6 +93,8 @@ impl LuaUserData for LuaTileVisibility {
 
         // -- computeAction --
         /// Computes one player's current action mask from a tilefield origin.
+        /// @param | player | string | Player identifier whose action mask should be computed.
+        /// @param | opts | table | Options table with origin, range, and optional action channel.
         methods.add_method(
             "computeAction",
             |_, this, (player, opts): (String, LuaTable)| {
@@ -112,6 +116,11 @@ impl LuaUserData for LuaTileVisibility {
 
         // -- isVisible --
         /// Returns whether a one-based cell is currently visible for a player.
+        /// @param | player | string | Player identifier to query.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | boolean | True when the cell is currently visible.
         methods.add_method(
             "isVisible",
             |_, this, (player, x, y, z): (String, u32, u32, Option<u32>)| {
@@ -126,6 +135,11 @@ impl LuaUserData for LuaTileVisibility {
 
         // -- isExplored --
         /// Returns whether a one-based cell has been explored for a player.
+        /// @param | player | string | Player identifier to query.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | boolean | True when the cell has been explored.
         methods.add_method(
             "isExplored",
             |_, this, (player, x, y, z): (String, u32, u32, Option<u32>)| {
@@ -140,6 +154,11 @@ impl LuaUserData for LuaTileVisibility {
 
         // -- canActOn --
         /// Returns whether a one-based cell is currently actionable for a player.
+        /// @param | player | string | Player identifier to query.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @return | boolean | True when the cell is currently actionable.
         methods.add_method(
             "canActOn",
             |_, this, (player, x, y, z): (String, u32, u32, Option<u32>)| {
@@ -154,6 +173,9 @@ impl LuaUserData for LuaTileVisibility {
 
         // -- visibleCells --
         /// Returns all currently visible cells for a player, optionally filtered to a level.
+        /// @param | player | string | Player identifier to query.
+        /// @param | z | integer? | Optional one-based level filter.
+        /// @return | table | Array of one-based visible cell tables.
         methods.add_method(
             "visibleCells",
             |lua, this, (player, z): (String, Option<u32>)| {
@@ -164,6 +186,9 @@ impl LuaUserData for LuaTileVisibility {
 
         // -- actionCells --
         /// Returns all currently actionable cells for a player, optionally filtered to a level.
+        /// @param | player | string | Player identifier to query.
+        /// @param | z | integer? | Optional one-based level filter.
+        /// @return | table | Array of one-based actionable cell tables.
         methods.add_method(
             "actionCells",
             |lua, this, (player, z): (String, Option<u32>)| {
@@ -174,6 +199,7 @@ impl LuaUserData for LuaTileVisibility {
 
         // -- clearPlayer --
         /// Clears current, explored, and action masks for one player.
+        /// @param | player | string | Player identifier whose visibility state should be cleared.
         methods.add_method("clearPlayer", |_, this, player: String| {
             this.inner
                 .borrow_mut()
@@ -190,10 +216,13 @@ impl LuaUserData for LuaTileVisibility {
 
         // -- type --
         /// Returns the Lua-visible type name for this tile visibility handle.
+        /// @return | string | The string `LTileVisibility`.
         methods.add_method("type", |_, _, ()| Ok("LTileVisibility"));
 
         // -- typeOf --
         /// Returns whether this handle matches a supported type name.
+        /// @param | name | string | Type name to compare against this handle.
+        /// @return | boolean | True for `LTileVisibility` or `LObject`.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LTileVisibility" || name == "LObject")
         });

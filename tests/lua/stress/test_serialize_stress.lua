@@ -20,8 +20,8 @@ local function json_cycle_payload(input, cycles)
     local json_last = nil
     local out = nil
     for _ = 1, cycles do
-        json_last = lurek.serial.toJson(input, false)
-        out = lurek.serial.fromJson(json_last)
+        json_last = lurek.serialize.toJson(input, false)
+        out = lurek.serialize.fromJson(json_last)
     end
     return json_last, out
 end
@@ -34,8 +34,8 @@ end
 
 local function serial_json_available()
     return type(lurek.serialize) == "table"
-        and type(lurek.serial.toJson) == "function"
-        and type(lurek.serial.fromJson) == "function"
+        and type(lurek.serialize.toJson) == "function"
+        and type(lurek.serialize.fromJson) == "function"
 end
 
 local function run_compression_cycles(input, cycles)
@@ -70,7 +70,7 @@ end)
 
 -- @describe serial stress: data encode throughput
 describe("serial stress: data encode throughput", function()
-    -- @stress lurek.serial.toJson
+    -- @stress lurek.serialize.toJson
     it("1000 JSON encode-decode cycles", function()
         local input = { x = 1.5, y = 2.5, name = "stress", items = { 1, 2, 3 } }
 

@@ -13,7 +13,7 @@
 -- @status full
 -- @see lurek.render       caller-side renderer that consumes `getDrawList()` entries
 -- @see lurek.image           image/texture loader for `Part:setTexture()`
--- @see lurek.serial.toJson  serialise template + part state for persistence
+-- @see lurek.serialize.toJson  serialise template + part state for persistence
 
 local M = {}
 

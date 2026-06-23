@@ -17,6 +17,13 @@ describe("Factory function", function()
         local sm = lurek.save.newSaveManager()
         expect_true(sm ~= nil, "save manager is not nil")
     end)
+
+    -- @covers lurek.save.newManager
+    it("newManager is exposed as the canonical constructor", function()
+        expect_type("function", lurek.save.newManager)
+        local sm = lurek.save.newManager()
+        expect_true(sm ~= nil, "save manager is not nil")
+    end)
 end)
 
 -- @describe SaveManager registration and metadata
@@ -239,6 +246,33 @@ end)
 
 -- @describe SaveManager regression coverage
 describe("SaveManager regression coverage", function()
+    -- @covers LSaveManager:getFormat
+    it("getFormat returns the selected save payload codec", function()
+        local sm = lurek.save.newSaveManager()
+        expect_equal("msgpack", sm:getFormat())
+
+        sm:setFormat("json")
+        expect_equal("json", sm:getFormat())
+    end)
+
+    -- @covers LSaveManager:setFormat
+    it("setFormat selects supported save payload codecs and rejects unsupported ones", function()
+        local sm = lurek.save.newSaveManager()
+
+        sm:setFormat("json")
+        expect_equal("json", sm:getFormat())
+
+        sm:setFormat("toml")
+        expect_equal("toml", sm:getFormat())
+
+        sm:setFormat("msgpack")
+        expect_equal("msgpack", sm:getFormat())
+
+        expect_error(function()
+            sm:setFormat("csv")
+        end)
+    end)
+
     -- @covers LSaveManager:setCompress
     it("setCompress toggles isCompressed", function()
         local sm = lurek.save.newSaveManager()

@@ -55,11 +55,12 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - Owning tier: `Feature Systems`
 - Plugin tier: `tier_1_plugin`
 - Lua binding owner: `src/lua_api/ui_api.rs`
-- Referenced engine modules: `dataframe`, `image`, `math`, `render`, `runtime`
+- Referenced engine modules: `dataframe`, `font`, `image`, `math`, `render`, `runtime`
 
 ## Imports
 
 - `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `font`: Imports or references `src/font/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.

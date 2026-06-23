@@ -1,11 +1,12 @@
 //! `src/mods/mod_loader.rs` parses TOML content files into typed `ModInstance` records ready for registry validation.
-//! It owns `FieldValue`, `ModContentLoadOptions`, scalar coercion helpers, real TOML decoding, and source-path attachment.
+//! It owns `FieldValue`, `ModContentLoadOptions`, scalar coercion helpers, and source-path attachment.
 //! Instance bootstrap from content files happens here so manifest decoding stays separate from registration and execution.
 //! Complex field values remain structured instead of being flattened into strings during parse time.
 //! This file does not manage dependency order or sandbox policy; it only turns content text into structured instances.
 //! Read it when TOML parsing, field coercion, instance IDs, or source-file tracking for mods needs to change.
 
 use super::{ModError, ModLimits, ModResult};
+use crate::serialize::{from_toml, SerialValue};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
@@ -170,21 +171,31 @@ pub fn load_instances_from_toml_with_options(
         });
     }
 
-    let value: toml::Value = content.parse().map_err(|err| ModError::Parse {
+    let value = from_toml(content).map_err(|err| ModError::Parse {
         path: source_file.to_path_buf(),
         detail: format!("invalid TOML: {}", err),
     })?;
-    let table = value.as_table().ok_or_else(|| ModError::Validation {
-        path: Some(source_file.to_path_buf()),
-        detail: "content file must contain a TOML table".to_string(),
-    })?;
+    let table = match &value {
+        SerialValue::Map(table) => table,
+        _ => {
+            return Err(ModError::Validation {
+                path: Some(source_file.to_path_buf()),
+                detail: "content file must contain a TOML table".to_string(),
+            })
+        }
+    };
 
     let mut instances = Vec::new();
     for (type_name, items) in table {
-        let array = items.as_array().ok_or_else(|| ModError::Validation {
-            path: Some(source_file.to_path_buf()),
-            detail: format!("top-level '{}' must be an array of tables", type_name),
-        })?;
+        let array = match items {
+            SerialValue::Seq(array) => array,
+            _ => {
+                return Err(ModError::Validation {
+                    path: Some(source_file.to_path_buf()),
+                    detail: format!("top-level '{}' must be an array of tables", type_name),
+                })
+            }
+        };
         for item in array {
             if instances.len() >= options.max_instances {
                 return Err(ModError::LimitExceeded {
@@ -193,10 +204,15 @@ pub fn load_instances_from_toml_with_options(
                     max: options.max_instances as u64,
                 });
             }
-            let item_table = item.as_table().ok_or_else(|| ModError::Validation {
-                path: Some(source_file.to_path_buf()),
-                detail: format!("entry in '{}' must be a table", type_name),
-            })?;
+            let item_table = match item {
+                SerialValue::Map(table) => table,
+                _ => {
+                    return Err(ModError::Validation {
+                        path: Some(source_file.to_path_buf()),
+                        detail: format!("entry in '{}' must be a table", type_name),
+                    })
+                }
+            };
             if item_table.len() > options.max_fields {
                 return Err(ModError::LimitExceeded {
                     what: format!("fields for '{}'", type_name),
@@ -206,7 +222,7 @@ pub fn load_instances_from_toml_with_options(
             }
             let instance_id = item_table
                 .get("id")
-                .and_then(|value| value.as_str())
+                .and_then(serial_string)
                 .ok_or_else(|| ModError::Validation {
                     path: Some(source_file.to_path_buf()),
                     detail: format!("'{}.id' must be a string", type_name),
@@ -227,22 +243,22 @@ pub fn load_instances_from_toml_with_options(
 }
 
 fn convert_value(
-    value: &toml::Value,
+    value: &SerialValue,
     source_file: &Path,
     type_name: &str,
     field_name: &str,
 ) -> ModResult<FieldValue> {
     match value {
-        toml::Value::String(text) => Ok(FieldValue::String(text.clone())),
-        toml::Value::Integer(number) => Ok(FieldValue::Integer(*number)),
-        toml::Value::Float(number) => Ok(FieldValue::Float(*number)),
-        toml::Value::Boolean(flag) => Ok(FieldValue::Boolean(*flag)),
-        toml::Value::Array(values) => values
+        SerialValue::Str(text) => Ok(FieldValue::String(text.clone())),
+        SerialValue::Int(number) => Ok(FieldValue::Integer(*number)),
+        SerialValue::Float(number) => Ok(FieldValue::Float(*number)),
+        SerialValue::Bool(flag) => Ok(FieldValue::Boolean(*flag)),
+        SerialValue::Seq(values) => values
             .iter()
             .map(|item| convert_value(item, source_file, type_name, field_name))
             .collect::<ModResult<Vec<_>>>()
             .map(FieldValue::Array),
-        toml::Value::Table(entries) => entries
+        SerialValue::Map(entries) => entries
             .iter()
             .map(|(key, entry)| {
                 convert_value(entry, source_file, type_name, key)
@@ -250,12 +266,19 @@ fn convert_value(
             })
             .collect::<ModResult<HashMap<_, _>>>()
             .map(FieldValue::Table),
-        toml::Value::Datetime(_) => Err(ModError::Validation {
+        SerialValue::Null => Err(ModError::Validation {
             path: Some(source_file.to_path_buf()),
             detail: format!(
-                "unsupported TOML datetime for '{}.{}'; use string, number, boolean, array, or table",
+                "unsupported null value for '{}.{}'; use string, number, boolean, array, or table",
                 type_name, field_name
             ),
         }),
+    }
+}
+
+fn serial_string(value: &SerialValue) -> Option<&str> {
+    match value {
+        SerialValue::Str(text) => Some(text.as_str()),
+        _ => None,
     }
 }

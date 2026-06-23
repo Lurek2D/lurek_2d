@@ -153,7 +153,7 @@ nav:
     - Runtime: modules/runtime.md
     - Save: modules/save.md
     - Scene: modules/scene.md
-    - Serial: modules/serial.md
+    - Serialize: modules/serialize.md
     - Spine: modules/spine.md
     - Sprite: modules/sprite.md
     - SVG: modules/svg.md

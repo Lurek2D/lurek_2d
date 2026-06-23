@@ -109,7 +109,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 ### Functions
 
 - `lurek.tilefield.fromTileMap(tilemap, opts?) -> LTileField`: Copies a tilemap layer into a tilefield using solid and empty profiles.
-- `lurek.tilefield.new(opts) -> LTileField`: Creates a multi-level tilefield.
+- `lurek.tilefield.new(opts) -> LTileField`: Creates a multi-level tilefield with explicit dimensions and topology.
 
 ### Callbacks
 
@@ -133,33 +133,33 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 
 - `LTileField:addPointLight(opts) -> nil`: Adds a point light and returns its stable id.
 - `LTileField:applyProfile(x, y, z?, name) -> nil`: Applies a named profile to one cell.
-- `LTileField:blocks(x, y, z?, channel) -> nil`: Returns whether a cell blocks a channel.
+- `LTileField:blocks(x, y, z?, channel) -> boolean`: Returns whether a cell blocks a channel.
 - `LTileField:clear() -> nil`: Clears all cell gameplay state and computed light values.
-- `LTileField:clearCell(x, y, z?) -> nil`: Clears one cell.
-- `LTileField:clearLine(from_tbl, to_tbl, channel, opts?) -> nil`: Returns true when the line between two cell tables has no blocker for a channel.
-- `LTileField:clearPointLights() -> nil`: Removes all point lights.
+- `LTileField:clearCell(x, y, z?) -> nil`: Clears gameplay state and light values for one addressed cell.
+- `LTileField:clearLine(from_tbl, to_tbl, channel, opts?) -> boolean`: Returns true when the line between two cell tables has no blocker for a channel.
+- `LTileField:clearPointLights() -> nil`: Removes all point lights currently stored on this tilefield.
 - `LTileField:computeLight(opts?) -> nil`: Computes tile light from ambient, point lights, and global top light.
-- `LTileField:exportBlockLayer(channel, z?) -> nil`: Exports one blocker channel and level as a row-major boolean array.
-- `LTileField:exportCostLayer(channel, z?) -> nil`: Exports one cost channel and level as a row-major number array.
+- `LTileField:exportBlockLayer(channel, z?) -> table`: Exports one blocker channel and level as a row-major boolean array.
+- `LTileField:exportCostLayer(channel, z?) -> table`: Exports one cost channel and level as a row-major number array.
 - `LTileField:exportLightLayer(z?) -> table`: Exports one level of computed light as row-major `{r,g,b,luma}` tables.
 - `LTileField:exportLightVolume() -> table`: Exports all computed light levels as nested row-major tables.
 - `LTileField:exportProfileLayer(z?) -> nil`: Exports one level of profile names as a row-major array.
-- `LTileField:firstBlocker(from_tbl, to_tbl, channel, opts?) -> nil`: Returns the first one-based blocking cell table between two cells, or nil.
+- `LTileField:firstBlocker(from_tbl, to_tbl, channel, opts?) -> table|nil`: Returns the first one-based blocking cell table between two cells, or nil.
 - `LTileField:getCell(x, y, z?) -> table`: Returns a table with blockers, costs, sun occlusion, and optional profile name.
-- `LTileField:getCost(x, y, z?, channel) -> nil`: Returns the cost for one cell/channel.
+- `LTileField:getCost(x, y, z?, channel) -> number`: Returns the cost for one cell/channel.
 - `LTileField:getLight(x, y, z?) -> number`: Returns r, g, b, and luma for one cell.
 - `LTileField:getProfile(name) -> table|nil`: Returns a named object profile table, or nil when absent.
 - `LTileField:getSize() -> integer`: Returns field width, height, and level count.
-- `LTileField:getSunOcclusion(x, y, z?) -> nil`: Returns top-light occlusion in the inclusive range 0..1.
-- `LTileField:getTopology() -> string`: Returns the field topology name.
+- `LTileField:getSunOcclusion(x, y, z?) -> number`: Returns top-light occlusion in the inclusive range 0..1.
+- `LTileField:getTopology() -> string`: Returns the field topology name used for coordinate interpretation.
 - `LTileField:inBounds(x, y, z?) -> boolean`: Returns whether one-based coordinates are inside the field.
 - `LTileField:line(opts) -> nil`: Returns topology-aware one-based cells between `from` and `to` tables.
 - `LTileField:removePointLight(id) -> boolean`: Removes a point light by id and returns whether it existed.
-- `LTileField:removeProfile(name) -> nil`: Removes a named object profile.
+- `LTileField:removeProfile(name) -> nil`: Removes a named object profile from the tilefield profile registry.
 - `LTileField:setBlock(x, y, z?, channel, blocked) -> nil`: Sets whether a cell blocks a channel.
 - `LTileField:setCell(x, y, z?, cell) -> nil`: Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
 - `LTileField:setCost(x, y, z?, channel, cost) -> nil`: Sets the cost for one cell/channel.
-- `LTileField:setGlobalLight(opts) -> nil`: Sets top-down global light.
+- `LTileField:setGlobalLight(opts) -> nil`: Sets top-down global light parameters used during light computation.
 - `LTileField:setProfile(name, profile_tbl) -> nil`: Registers or replaces a named object profile.
 - `LTileField:setSunOcclusion(x, y, z?, value) -> nil`: Sets top-light occlusion in the inclusive range 0..1.
 - `LTileField:type() -> string`: Returns the Lua-visible type name for this tilefield handle.

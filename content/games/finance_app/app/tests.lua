@@ -59,7 +59,7 @@ function Tests.build_pipeline(ctx)
 end
 
 function Tests.check_config(root, C)
-    local parsed = lurek.serial.fromToml(lurek.filesystem.read(root .. "app/config.toml"))
+    local parsed = lurek.serialize.fromToml(lurek.filesystem.read(root .. "app/config.toml"))
     return parsed.window.width == C.WIDTH and parsed.paths.csv_path == C.CSV_PATH
 end
 
@@ -296,7 +296,7 @@ end
 
 function Tests.write_report(C, results)
     ensure_dirs(C)
-    lurek.filesystem.write(C.TEST_REPORT_PATH, lurek.serial.toJson({
+    lurek.filesystem.write(C.TEST_REPORT_PATH, lurek.serialize.toJson({
         suite = "household_finance_lab",
         checks = results,
     }, true))

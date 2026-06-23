@@ -4,13 +4,13 @@
 
 use std::collections::HashMap;
 
-use lurek2d::render::canvas::Canvas;
-use lurek2d::render::decal_surface::DecalSurface;
-use lurek2d::render::font::{
+use lurek2d::font::{
     validate_dynamic_font_atlas_dimensions, validate_dynamic_font_point_size, Font,
     AVAILABLE_CELL_SIZES, AVAILABLE_HEIGHTS, MAX_DYNAMIC_FONT_ATLAS_DIMENSION,
     MAX_DYNAMIC_FONT_POINT_SIZE,
 };
+use lurek2d::render::canvas::Canvas;
+use lurek2d::render::decal_surface::DecalSurface;
 use lurek2d::render::image_effect::ShaderPassDescriptor;
 use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshError, MeshVertex};
 use lurek2d::render::postfx_pipeline::params_to_uniform;

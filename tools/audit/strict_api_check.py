@@ -28,7 +28,6 @@ EXAMPLES_DIR = ROOT / 'content' / 'examples'
 API_MODULE_TO_REGISTRY_MODULE = {
     'engine': 'app',
     'system': 'runtime',
-    'svg': 'vector',
 }
 
 

@@ -1,5 +1,5 @@
 //! `src/save/mod.rs` is the save module index, exposing the persistence surface that gameplay and Lua bindings consume.
-//! It reexports `SaveManager`, slot metadata, serialization helpers, compression helpers, and the save value tree.
+//! It reexports `SaveManager`, slot metadata, and compression helpers while serialization stays in `serialize`.
 //! No runtime state lives here; this file keeps the public save boundary stable while logic stays in `save_manager.rs`.
 //! Read this index when a caller needs save APIs, because it shows which persistence symbols are intentionally public.
 //! The module groups table serialization, compressed slot payload handling, and manager-driven save orchestration together.
@@ -8,8 +8,7 @@
 mod save_manager;
 pub use save_manager::{
     compress_save_content, compress_save_content_with_limits, decompress_save_content,
-    decompress_save_content_with_limits, parse_save_table, parse_save_table_with_limits,
-    serialize_table, serialize_value, MigrationPlan, SaveCompressionLimits, SaveDiagnostics,
-    SaveError, SaveLimits, SaveLoadPolicy, SaveLuaLimits, SaveManager, SaveParseLimits, SaveValue,
+    decompress_save_content_with_limits, MigrationPlan, SaveCompressionLimits, SaveDiagnostics,
+    SaveError, SaveLimits, SaveLoadPolicy, SaveLuaLimits, SaveManager, SaveParseLimits,
     SaveWritePolicy, SlotMeta,
 };

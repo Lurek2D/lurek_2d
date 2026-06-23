@@ -1108,26 +1108,6 @@ do
     example_print_log("gradient mapped")
 end
 
---@api: LImageData:drawNineSlice
-do
-    local function image_log(message)
-        lurek.log.info("[image.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local dst = lurek.image.newImageData(64, 64)
-    local src = lurek.image.newImageData(32, 32)
-    src:fill(128, 128, 128, 255)
-    dst:drawNineSlice(src, 0, 0, 32, 32, 0, 0, 64, 64, 8, 8, 8, 8)
-    example_print_log("nine-slice drawn")
-end
-
 --@api: LImageData:applyPaletteLut
 do
     local function image_log(message)

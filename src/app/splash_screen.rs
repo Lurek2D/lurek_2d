@@ -108,7 +108,7 @@ pub fn make_splash_commands(
     width: u32,
     height: u32,
     small_key: FontKey,
-    fonts: &mut SlotMap<FontKey, crate::render::Font>,
+    fonts: &mut SlotMap<FontKey, crate::font::Font>,
     branding: Option<&SplashBranding>,
     drag_hover: bool,
 ) -> Vec<RenderCommand> {

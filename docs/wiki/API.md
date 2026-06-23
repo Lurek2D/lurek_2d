@@ -16,8 +16,8 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 
 ## Official API Sources
 
-- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9271 lines)
-- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33423 lines)
+- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9273 lines)
+- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33419 lines)
 - Runtime callbacks: [docs/api/callbacks.md](../blob/main/docs/api/callbacks.md)
 - Lureksome library API: [docs/api/lureksome.md](../blob/main/docs/api/lureksome.md)
 - Machine-readable Lua API data: [build/docs-data/lua_api.json](../blob/main/build/docs-data/lua_api.json)
@@ -25,7 +25,7 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 ## Coverage
 
 - 70 modules
-- 6154 functions and methods
+- 6156 functions and methods
 - 100.0% documented
 
 ## Module Map
@@ -89,10 +89,10 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.repl](https://lurek2d.github.io/lurek_2d/modules/repl.html) | The repl module is the interactive evaluation surface for users who want to inspect or execute Lua code live inside a running engine context. |
 | [lurek.save](https://lurek2d.github.io/lurek_2d/modules/save.html) | The save module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump. |
 | [lurek.scene](https://lurek2d.github.io/lurek_2d/modules/scene.html) | The scene module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles. |
-| [lurek.serial](https://lurek2d.github.io/lurek_2d/modules/serialize.html) | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
+| [lurek.serialize](https://lurek2d.github.io/lurek_2d/modules/serialize.html) | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
 | [lurek.spine](https://lurek2d.github.io/lurek_2d/modules/spine.html) | The spine module is the skeletal-animation surface for users who want bone-based rigs, slots, skins, and timeline-driven pose changes inside the engine. |
 | [lurek.sprite](https://lurek2d.github.io/lurek_2d/modules/sprite.html) | The sprite module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model. |
-| [lurek.svg](https://lurek2d.github.io/lurek_2d/modules/svg.html) | Registers the lurek.svg Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control. |
+| [lurek.svg](https://lurek2d.github.io/lurek_2d/modules/svg.html) | The svg module is the engine surface for scalable SVG artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |
 | [lurek.runtime](https://lurek2d.github.io/lurek_2d/modules/system.html) | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |
 | [lurek.terminal](https://lurek2d.github.io/lurek_2d/modules/terminal.html) | The terminal module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation. |
 | [lurek.thread](https://lurek2d.github.io/lurek_2d/modules/thread.html) | The thread module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules. |

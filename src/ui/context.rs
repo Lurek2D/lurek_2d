@@ -1943,7 +1943,7 @@ impl GuiContext {
     pub fn calculate_minimum_size(
         &self,
         idx: usize,
-        font: Option<&crate::render::Font>,
+        font: Option<&crate::font::Font>,
     ) -> (f32, f32) {
         if idx >= self.widgets.len() {
             return (0.0, 0.0);
@@ -2078,7 +2078,7 @@ impl GuiContext {
     }
 
     /// Simple text width measurement for min-size calculations.
-    fn measure_text_width(text: &str, font: Option<&crate::render::Font>) -> f32 {
+    fn measure_text_width(text: &str, font: Option<&crate::font::Font>) -> f32 {
         match font {
             Some(f) => f.text_width(text),
             None => text.chars().count() as f32 * 7.0,

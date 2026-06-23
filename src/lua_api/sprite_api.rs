@@ -1,12 +1,13 @@
 //! Registers the `lurek.sprite` Lua API for sprite userdata, clips, quads, frames, and sprite table conversion.
 
 use super::SharedState;
-use crate::image::{NineSliceInsets, TextureAtlas};
+use crate::lua_api::render_api::{LuaImage, LuaNineSlice};
 use crate::math::{Rect, Vec2};
 use crate::sprite::animator::{AnimatorEvent, SpriteAnimator, SpriteClip};
 use crate::sprite::atlas::{parse_aseprite_json, parse_texturepacker_json, SpriteAtlas};
 use crate::sprite::sprite::Sprite;
 use crate::sprite::sprite_sheet::SpriteSheet;
+use crate::sprite::{NineSliceInsets, TextureAtlas};
 use mlua::prelude::*;
 use std::borrow::Borrow;
 use std::cell::RefCell;
@@ -763,6 +764,42 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 inner: TextureAtlas::new(width, height, padding),
             })
         })?,
+    )?;
+    // -- newNineSlice --
+    /// Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
+    /// @param | image | LImage | Source texture.
+    /// @param | top | number | Top border inset in pixels.
+    /// @param | right | number | Right border inset.
+    /// @param | bottom | number | Bottom border inset.
+    /// @param | left | number | Left border inset.
+    /// @return | LNineSlice | The 9-slice handle.
+    tbl.set(
+        "newNineSlice",
+        lua.create_function(
+            |_, (image, top, right, bottom, left): (LuaAnyUserData, f32, f32, f32, f32)| {
+                if top < 0.0 || right < 0.0 || bottom < 0.0 || left < 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.sprite.newNineSlice: border insets must be non-negative".into(),
+                    ));
+                }
+                let img = image.borrow::<LuaImage>()?;
+                let state = RefCell::borrow(img.state.as_ref());
+                let (tex_w, tex_h) = state
+                    .textures
+                    .get(img.key)
+                    .map(|texture| (texture.width, texture.height))
+                    .unwrap_or((0, 0));
+                Ok(LuaNineSlice {
+                    key: img.key,
+                    tex_w,
+                    tex_h,
+                    top,
+                    right,
+                    bottom,
+                    left,
+                })
+            },
+        )?,
     )?;
     // -- parseAsepriteAtlas --
     /// Parses an Aseprite JSON atlas string and returns a sprite atlas object.

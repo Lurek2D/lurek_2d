@@ -12,7 +12,7 @@ Manages game saves with compression, auto-save timers, and schema migrations.
 
 ## Minimal Example
 
-Example block: `lurek.save.newSaveManager`
+Example block: `lurek.save.newManager`
 
 ```lua
 do
@@ -25,17 +25,16 @@ do
     end
 
     ---@type LSaveManager
-    local mgr = lurek.save.newSaveManager()
-    mgr:setSummary("New Game")
-    mgr:setSchemaVersion(1)
+    local mgr = lurek.save.newManager()
+    mgr:setSummary("Canonical Manager")
     example_print_log("type = " .. mgr:type())
-    example_print_log("is LSaveManager = " .. tostring(mgr:typeOf("LSaveManager")))
-    example_print_log("summary = " .. mgr:getSummary())
+    example_print_log("format = " .. mgr:getFormat())
 end
 ```
 
 ## Common Patterns
 
+- Start with `lurek.save.newManager` when exploring this module.
 - Start with `lurek.save.newSaveManager` when exploring this module.
 
 ## API Reference
@@ -53,6 +52,42 @@ end
 This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
+
+### `lurek.save.newManager`
+
+Create a new SaveManager instance for managing persistent game saves.
+
+```lua
+lurek.save.newManager()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSaveManager](#lsavemanager) | A fresh save manager with no registered sections. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    ---@type LSaveManager
+    local mgr = lurek.save.newManager()
+    mgr:setSummary("Canonical Manager")
+    example_print_log("type = " .. mgr:type())
+    example_print_log("format = " .. mgr:getFormat())
+end
+```
+
+---
 
 ### `lurek.save.newSaveManager`
 
@@ -351,6 +386,39 @@ do
     mgr:save(slot)
     example_print_log("exists = " .. tostring(mgr:exists(slot)))
     mgr:delete(slot)
+end
+```
+
+---
+
+#### `LSaveManager:getFormat`
+
+Return the payload serialization format used for saves and loads.
+
+```lua
+LSaveManager:getFormat()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Current format name. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local mgr = lurek.save.newManager()
+    example_print_log("default save format = " .. mgr:getFormat())
 end
 ```
 
@@ -929,6 +997,40 @@ do
     example_print_log("after enable = " .. tostring(mgr:isCompressed()))
     mgr:setCompress(false)
     example_print_log("after disable = " .. tostring(mgr:isCompressed()))
+end
+```
+
+---
+
+#### `LSaveManager:setFormat`
+
+Set the payload serialization format for future saves and loads.
+
+```lua
+LSaveManager:setFormat(format)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `format` | string | Payload format name. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local mgr = lurek.save.newManager()
+    mgr:setFormat("json")
+    example_print_log("save format = " .. mgr:getFormat())
 end
 ```
 

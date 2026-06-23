@@ -1,9 +1,9 @@
-//! Exports the image subsystem surface that groups buffers, effects, formats, atlases, layers, and visuals.
-//! Acts as the navigation index for CPU image ownership, showing where loading, edits, packing, and specs live.
-//! Re-exports ImageData, compressed assets, palette LUTs, layered images, GIF helpers, and atlas structures.
-//! Keeps compatibility exports such as ProvinceGrid local to the module boundary instead of scattered in users.
-//! Open this file first when tracing which image feature belongs to storage, processing, serialization, or UI.
-//! This owner defines image-module visibility and composition, not the pixel algorithms implemented below it.
+//! Exports the image subsystem surface for CPU bitmaps, effects, formats, layers, palettes, and visual helpers.
+//! Acts as the navigation index for single-bitmap ownership, showing where loading, editing, and specs live.
+//! Re-exports `ImageData`, compressed assets, palette LUTs, layered images, GIF helpers, and compatibility types.
+//! Keeps atlas, nine-slice, and sprite-sheet concepts outside image so sprite remains the texture-region owner.
+//! Open this file when tracing which image feature belongs to storage, processing, serialization, or UI support.
+//! This index owns image visibility and composition, not the pixel algorithms implemented in child modules.
 
 /// Core RGBA image storage and drawing helpers.
 pub mod image_data;
@@ -33,8 +33,6 @@ pub mod render;
 pub mod serial;
 /// Texture loading and CPU-side texture metadata.
 pub mod texture;
-/// Texture atlas packing and nine-slice metadata.
-pub mod texture_atlas;
 /// Image visualizations for debugging and analysis.
 pub mod visualization;
 /// Backward-compat re-export: province_grid moved to `crate::province::province_grid`.
@@ -45,5 +43,3 @@ pub use animated_gif::{AnimatedGifOptions, AnimatedGifRepeat};
 pub use rect_packing::{PackedRect, RectPacker};
 /// Texture upload helpers and texture metadata types.
 pub use texture::{premultiply_alpha_rgba8_in_place, Texture, TextureColorSpace};
-/// Texture atlas types and nine-slice metadata.
-pub use texture_atlas::{NineSliceInsets, TextureAtlas};

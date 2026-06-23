@@ -320,9 +320,9 @@ class LuaBindingToolTests(unittest.TestCase):
                 ),
                 self.tool.BindingEntry(
                     module="serialize",
-                    namespace="lurek.serial",
+                    namespace="lurek.serialize",
                     name="encodeMsgPack",
-                    qualified_name="lurek.serial.encodeMsgPack",
+                    qualified_name="lurek.serialize.encodeMsgPack",
                     kind="function",
                     call_style=".",
                     owner="",
@@ -414,9 +414,9 @@ class LuaBindingToolTests(unittest.TestCase):
                 ),
                 self.tool.BindingEntry(
                     module="serialize",
-                    namespace="lurek.serial",
+                    namespace="lurek.serialize",
                     name="encodeMsgPack",
-                    qualified_name="lurek.serial.encodeMsgPack",
+                    qualified_name="lurek.serialize.encodeMsgPack",
                     kind="function",
                     call_style=".",
                     owner="",

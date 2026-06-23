@@ -278,7 +278,7 @@ describe("Evidence: lurek.render", function()
         local img = lurek.render.newImage(TEXTURE)
         local sw, sh = img:getDimensions()
         local quad = lurek.render.newQuad(0, 0, math.floor(sw / 2), math.floor(sh / 2), sw, sh)
-        local ns = lurek.render.newNineSlice(lurek.render.newImage(ICON), 8, 8, 8, 8)
+        local ns = lurek.sprite.newNineSlice(lurek.render.newImage(ICON), 8, 8, 8, 8)
 
         lurek.render.setColor(0.12, 0.13, 0.18, 1.0)
         lurek.render.rectangle("fill", 0, 0, 460, 300)

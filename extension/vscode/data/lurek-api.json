@@ -24042,48 +24042,6 @@
           "objectType": null
         },
         {
-          "name": "newNineSlice",
-          "fullPath": "lurek.render.newNineSlice",
-          "signature": "(image, top, right, bottom, left)",
-          "description": "Creates a 9-slice definition from an image and four border insets for scalable UI rendering.",
-          "parameters": [
-            {
-              "name": "image",
-              "type": "LImage",
-              "description": "Source texture.",
-              "optional": false
-            },
-            {
-              "name": "top",
-              "type": "number",
-              "description": "Top border inset in pixels.",
-              "optional": false
-            },
-            {
-              "name": "right",
-              "type": "number",
-              "description": "Right border inset.",
-              "optional": false
-            },
-            {
-              "name": "bottom",
-              "type": "number",
-              "description": "Bottom border inset.",
-              "optional": false
-            },
-            {
-              "name": "left",
-              "type": "number",
-              "description": "Left border inset.",
-              "optional": false
-            }
-          ],
-          "returns": "LNineSlice",
-          "returnType": "LNineSlice",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
           "name": "drawNineSlice",
           "fullPath": "lurek.render.drawNineSlice",
           "signature": "(slice, x, y, w, h)",
@@ -24840,6 +24798,17 @@
         {
           "name": "newSaveManager",
           "fullPath": "lurek.save.newSaveManager",
+          "signature": "()",
+          "description": "Create a new SaveManager instance for managing persistent game saves.",
+          "parameters": [],
+          "returns": "LSaveManager",
+          "returnType": "LSaveManager",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newManager",
+          "fullPath": "lurek.save.newManager",
           "signature": "()",
           "description": "Create a new SaveManager instance for managing persistent game saves.",
           "parameters": [],
@@ -25958,7 +25927,7 @@
       "functions": [
         {
           "name": "fromJson",
-          "fullPath": "lurek.serial.fromJson",
+          "fullPath": "lurek.serialize.fromJson",
           "signature": "(s)",
           "description": "Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.",
           "parameters": [
@@ -25976,7 +25945,7 @@
         },
         {
           "name": "toJson",
-          "fullPath": "lurek.serial.toJson",
+          "fullPath": "lurek.serialize.toJson",
           "signature": "(value, [pretty])",
           "description": "Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.",
           "parameters": [
@@ -26000,7 +25969,7 @@
         },
         {
           "name": "fromToml",
-          "fullPath": "lurek.serial.fromToml",
+          "fullPath": "lurek.serialize.fromToml",
           "signature": "(s)",
           "description": "Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and engine settings stored in TOML format.",
           "parameters": [
@@ -26018,7 +25987,7 @@
         },
         {
           "name": "fromIni",
-          "fullPath": "lurek.serial.fromIni",
+          "fullPath": "lurek.serialize.fromIni",
           "signature": "(s)",
           "description": "Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become string fields. Useful for legacy config files or simple settings.",
           "parameters": [
@@ -26036,7 +26005,7 @@
         },
         {
           "name": "toToml",
-          "fullPath": "lurek.serial.toToml",
+          "fullPath": "lurek.serialize.toToml",
           "signature": "(value)",
           "description": "Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.",
           "parameters": [
@@ -26054,7 +26023,7 @@
         },
         {
           "name": "fromCsv",
-          "fullPath": "lurek.serial.fromCsv",
+          "fullPath": "lurek.serialize.fromCsv",
           "signature": "(s, [delim], [headers])",
           "description": "Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.",
           "parameters": [
@@ -26084,7 +26053,7 @@
         },
         {
           "name": "toCsv",
-          "fullPath": "lurek.serial.toCsv",
+          "fullPath": "lurek.serialize.toCsv",
           "signature": "(value, [delim], [headers])",
           "description": "Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consistent keys or be an indexed array. Use this to export leaderboards, save tabular data, or generate spreadsheet-compatible output.",
           "parameters": [
@@ -26114,8 +26083,8 @@
         },
         {
           "name": "encodeMsgPack",
-          "fullPath": "lurek.serial.encodeMsgPack",
-          "signature": "lurek.serial.encodeMsgPack(value)",
+          "fullPath": "lurek.serialize.encodeMsgPack",
+          "signature": "lurek.serialize.encodeMsgPack(value)",
           "description": "Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.",
           "parameters": [
             {
@@ -26132,8 +26101,8 @@
         },
         {
           "name": "encodeMsgPack",
-          "fullPath": "lurek.serial.encodeMsgPack",
-          "signature": "lurek.serial.encodeMsgPack(value)",
+          "fullPath": "lurek.serialize.encodeMsgPack",
+          "signature": "lurek.serialize.encodeMsgPack(value)",
           "description": "Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.",
           "parameters": [
             {
@@ -26150,8 +26119,8 @@
         },
         {
           "name": "decodeMsgPack",
-          "fullPath": "lurek.serial.decodeMsgPack",
-          "signature": "lurek.serial.decodeMsgPack(bytes)",
+          "fullPath": "lurek.serialize.decodeMsgPack",
+          "signature": "lurek.serialize.decodeMsgPack(bytes)",
           "description": "Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.",
           "parameters": [
             {
@@ -26168,7 +26137,7 @@
         },
         {
           "name": "decodeXml",
-          "fullPath": "lurek.serial.decodeXml",
+          "fullPath": "lurek.serialize.decodeXml",
           "signature": "(s)",
           "description": "Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.",
           "parameters": [
@@ -26186,7 +26155,7 @@
         },
         {
           "name": "validate",
-          "fullPath": "lurek.serial.validate",
+          "fullPath": "lurek.serialize.validate",
           "signature": "(value, schema)",
           "description": "Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.",
           "parameters": [
@@ -26210,7 +26179,7 @@
         },
         {
           "name": "detectFormat",
-          "fullPath": "lurek.serial.detectFormat",
+          "fullPath": "lurek.serialize.detectFormat",
           "signature": "(s)",
           "description": "Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.",
           "parameters": [
@@ -26228,7 +26197,7 @@
         },
         {
           "name": "decode",
-          "fullPath": "lurek.serial.decode",
+          "fullPath": "lurek.serialize.decode",
           "signature": "(payload, [format], [opts])",
           "description": "Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.",
           "parameters": [
@@ -26258,7 +26227,7 @@
         },
         {
           "name": "encode",
-          "fullPath": "lurek.serial.encode",
+          "fullPath": "lurek.serialize.encode",
           "signature": "(value, format, [opts])",
           "description": "Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.",
           "parameters": [
@@ -26288,7 +26257,7 @@
         },
         {
           "name": "applyDefaults",
-          "fullPath": "lurek.serial.applyDefaults",
+          "fullPath": "lurek.serialize.applyDefaults",
           "signature": "(value, schema)",
           "description": "Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.",
           "parameters": [
@@ -26589,6 +26558,48 @@
           "objectType": null
         },
         {
+          "name": "newNineSlice",
+          "fullPath": "lurek.sprite.newNineSlice",
+          "signature": "(image, top, right, bottom, left)",
+          "description": "Creates a 9-slice definition from an image and four border insets for scalable UI rendering.",
+          "parameters": [
+            {
+              "name": "image",
+              "type": "LImage",
+              "description": "Source texture.",
+              "optional": false
+            },
+            {
+              "name": "top",
+              "type": "number",
+              "description": "Top border inset in pixels.",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "number",
+              "description": "Right border inset.",
+              "optional": false
+            },
+            {
+              "name": "bottom",
+              "type": "number",
+              "description": "Bottom border inset.",
+              "optional": false
+            },
+            {
+              "name": "left",
+              "type": "number",
+              "description": "Left border inset.",
+              "optional": false
+            }
+          ],
+          "returns": "LNineSlice",
+          "returnType": "LNineSlice",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "parseAsepriteAtlas",
           "fullPath": "lurek.sprite.parseAsepriteAtlas",
           "signature": "(json_str)",
@@ -26611,7 +26622,7 @@
     },
     {
       "name": "svg",
-      "description": "Registers the `lurek.svg` Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control.",
+      "description": "Registers the `lurek.svg` Lua API for SVG graphics, userdata wrappers, and script-side SVG control.",
       "functions": [
         {
           "name": "load",
@@ -27913,13 +27924,13 @@
     },
     {
       "name": "tilefield",
-      "description": "Registers the `lurek.tilefield` Lua API for multi-level tile gameplay semantics.\nThe binding layer converts Lua tables and one-based coordinates while the Rust domain module owns field behavior.",
+      "description": "Registers `lurek.tilefield`, converting Lua tables and one-based coordinates while Rust owns field behavior.",
       "functions": [
         {
           "name": "new",
           "fullPath": "lurek.tilefield.new",
           "signature": "(opts)",
-          "description": "Creates a multi-level tilefield.",
+          "description": "Creates a multi-level tilefield with explicit dimensions and topology.",
           "parameters": [
             {
               "name": "opts",
@@ -43970,20 +43981,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Distribution series name.",
               "optional": false
             },
             {
               "name": "values",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Numeric sample values for the distribution.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional RGBA color table for the series.",
               "optional": true
             }
           ],
@@ -44000,20 +44011,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Distribution series name.",
               "optional": false
             },
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Numeric sample value to append.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional RGBA color table for a new series.",
               "optional": true
             }
           ],
@@ -44204,20 +44215,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Bubble series name.",
               "optional": false
             },
             {
               "name": "data",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Array-style table of `{x, y, size}` rows.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional RGBA color table for the series.",
               "optional": true
             }
           ],
@@ -44234,32 +44245,32 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Bubble series name.",
               "optional": false
             },
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "X value for the point.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Y value for the point.",
               "optional": false
             },
             {
               "name": "size",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Relative bubble size value.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional RGBA color table for a new series.",
               "optional": true
             }
           ],
@@ -44276,14 +44287,14 @@
           "parameters": [
             {
               "name": "min",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Minimum bubble radius in pixels.",
               "optional": false
             },
             {
               "name": "max",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Maximum bubble radius in pixels.",
               "optional": false
             }
           ],
@@ -47898,8 +47909,8 @@
           "parameters": [
             {
               "name": "candles",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Array-style table containing OHLC candle rows.",
               "optional": false
             }
           ],
@@ -47916,32 +47927,32 @@
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Label for the candle, usually a time or category.",
               "optional": false
             },
             {
               "name": "open",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Opening value for the candle.",
               "optional": false
             },
             {
               "name": "high",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Highest value for the candle.",
               "optional": false
             },
             {
               "name": "low",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Lowest value for the candle.",
               "optional": false
             },
             {
               "name": "close",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Closing value for the candle.",
               "optional": false
             }
           ],
@@ -47954,18 +47965,18 @@
           "name": "setColors",
           "fullPath": "LCandlestickChart:setColors",
           "signature": "(up, down)",
-          "description": "Sets up/down candle colors.",
+          "description": "Sets the rising and falling candle colors used by the candlestick renderer.",
           "parameters": [
             {
               "name": "up",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "RGBA color table for rising candles.",
               "optional": false
             },
             {
               "name": "down",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "RGBA color table for falling candles.",
               "optional": false
             }
           ],
@@ -76673,96 +76684,6 @@
               "name": "dst_y",
               "type": "integer",
               "description": "Destination y coordinate.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LImageData"
-        },
-        {
-          "name": "drawNineSlice",
-          "fullPath": "LImageData:drawNineSlice",
-          "signature": "LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom)",
-          "description": "Draws a nine-slice region from a source image into this image.",
-          "parameters": [
-            {
-              "name": "src_ud",
-              "type": "LImageData",
-              "description": "Source image data handle.",
-              "optional": false
-            },
-            {
-              "name": "src_x",
-              "type": "integer",
-              "description": "Source region x coordinate.",
-              "optional": false
-            },
-            {
-              "name": "src_y",
-              "type": "integer",
-              "description": "Source region y coordinate.",
-              "optional": false
-            },
-            {
-              "name": "src_w",
-              "type": "integer",
-              "description": "Source region width.",
-              "optional": false
-            },
-            {
-              "name": "src_h",
-              "type": "integer",
-              "description": "Source region height.",
-              "optional": false
-            },
-            {
-              "name": "dst_x",
-              "type": "integer",
-              "description": "Destination x coordinate.",
-              "optional": false
-            },
-            {
-              "name": "dst_y",
-              "type": "integer",
-              "description": "Destination y coordinate.",
-              "optional": false
-            },
-            {
-              "name": "dst_w",
-              "type": "integer",
-              "description": "Destination width.",
-              "optional": false
-            },
-            {
-              "name": "dst_h",
-              "type": "integer",
-              "description": "Destination height.",
-              "optional": false
-            },
-            {
-              "name": "inset_left",
-              "type": "integer",
-              "description": "Left inset width.",
-              "optional": false
-            },
-            {
-              "name": "inset_right",
-              "type": "integer",
-              "description": "Right inset width.",
-              "optional": false
-            },
-            {
-              "name": "inset_top",
-              "type": "integer",
-              "description": "Top inset height.",
-              "optional": false
-            },
-            {
-              "name": "inset_bottom",
-              "type": "integer",
-              "description": "Bottom inset height.",
               "optional": false
             }
           ],
@@ -114889,12 +114810,12 @@
           "name": "setAxes",
           "fullPath": "LRadarChart:setAxes",
           "signature": "(axes)",
-          "description": "Replaces radar axis labels.",
+          "description": "Replaces the radar axis labels used for each radial spoke.",
           "parameters": [
             {
               "name": "axes",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Array-style table of axis label strings.",
               "optional": false
             }
           ],
@@ -114911,20 +114832,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Radar series name.",
               "optional": false
             },
             {
               "name": "values",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Numeric values matching the configured axes.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional RGBA color table for the series.",
               "optional": true
             }
           ],
@@ -114941,8 +114862,8 @@
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Maximum value used to scale radar series.",
               "optional": false
             }
           ],
@@ -119387,6 +119308,35 @@
           "parameters": [],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSaveManager"
+        },
+        {
+          "name": "setFormat",
+          "fullPath": "LSaveManager:setFormat",
+          "signature": "(format)",
+          "description": "Set the payload serialization format for future saves and loads.",
+          "parameters": [
+            {
+              "name": "format",
+              "type": "string",
+              "description": "Payload format name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSaveManager"
+        },
+        {
+          "name": "getFormat",
+          "fullPath": "LSaveManager:getFormat",
+          "signature": "()",
+          "description": "Return the payload serialization format used for saves and loads.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LSaveManager"
         },
@@ -145088,7 +145038,7 @@
           "name": "getTopology",
           "fullPath": "LTileField:getTopology",
           "signature": "()",
-          "description": "Returns the field topology name.",
+          "description": "Returns the field topology name used for coordinate interpretation.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -145140,7 +145090,7 @@
           "name": "clearCell",
           "fullPath": "LTileField:clearCell",
           "signature": "(x, y, [z])",
-          "description": "Clears one cell.",
+          "description": "Clears gameplay state and light values for one addressed cell.",
           "parameters": [
             {
               "name": "x",
@@ -145240,32 +145190,32 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             },
             {
               "name": "channel",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Blocker channel name to update.",
               "optional": false
             },
             {
               "name": "blocked",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "True when the channel should be blocked.",
               "optional": false
             }
           ],
@@ -145282,31 +145232,31 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             },
             {
               "name": "channel",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Blocker channel name to query.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -145318,32 +145268,32 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             },
             {
               "name": "channel",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Cost channel name to update.",
               "optional": false
             },
             {
               "name": "cost",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Movement or traversal cost value.",
               "optional": false
             }
           ],
@@ -145360,31 +145310,31 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             },
             {
               "name": "channel",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Cost channel name to query.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number",
+          "returnType": "number",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -145396,26 +145346,26 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             },
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Top-light occlusion value in the inclusive range 0..1.",
               "optional": false
             }
           ],
@@ -145432,25 +145382,25 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number",
+          "returnType": "number",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -145462,14 +145412,14 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Profile name to create or replace.",
               "optional": false
             },
             {
               "name": "profile_tbl",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Profile table with blockers, costs, and sunOcclusion fields.",
               "optional": false
             }
           ],
@@ -145486,26 +145436,26 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             },
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Profile name to apply to the cell.",
               "optional": false
             }
           ],
@@ -145536,7 +145486,7 @@
           "name": "removeProfile",
           "fullPath": "LTileField:removeProfile",
           "signature": "(name)",
-          "description": "Removes a named object profile.",
+          "description": "Removes a named object profile from the tilefield profile registry.",
           "parameters": [
             {
               "name": "name",
@@ -145576,31 +145526,31 @@
           "parameters": [
             {
               "name": "from_tbl",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Start cell table with one-based x, y, and optional z fields.",
               "optional": false
             },
             {
               "name": "to_tbl",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "End cell table with one-based x, y, and optional z fields.",
               "optional": false
             },
             {
               "name": "channel",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Blocker channel name to test along the line.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Reserved optional line query options.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -145612,31 +145562,31 @@
           "parameters": [
             {
               "name": "from_tbl",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Start cell table with one-based x, y, and optional z fields.",
               "optional": false
             },
             {
               "name": "to_tbl",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "End cell table with one-based x, y, and optional z fields.",
               "optional": false
             },
             {
               "name": "channel",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Blocker channel name to test along the line.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Reserved optional line query options.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table|nil",
+          "returnType": "table|nil",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -145666,14 +145616,14 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Stable point light id returned by `addPointLight`.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Partial light update table with x, y, z, radius, intensity, or color.",
               "optional": false
             }
           ],
@@ -145704,7 +145654,7 @@
           "name": "clearPointLights",
           "fullPath": "LTileField:clearPointLights",
           "signature": "()",
-          "description": "Removes all point lights.",
+          "description": "Removes all point lights currently stored on this tilefield.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -145715,7 +145665,7 @@
           "name": "setGlobalLight",
           "fullPath": "LTileField:setGlobalLight",
           "signature": "(opts)",
-          "description": "Sets top-down global light.",
+          "description": "Sets top-down global light parameters used during light computation.",
           "parameters": [
             {
               "name": "opts",
@@ -145814,19 +145764,19 @@
           "parameters": [
             {
               "name": "channel",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Blocker channel name to export.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -145838,19 +145788,19 @@
           "parameters": [
             {
               "name": "channel",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Cost channel name to export.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -147756,14 +147706,14 @@
           "parameters": [
             {
               "name": "player",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Player identifier whose visibility mask should be computed.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Options table with origin, range, and optional vision channel.",
               "optional": false
             }
           ],
@@ -147780,14 +147730,14 @@
           "parameters": [
             {
               "name": "player",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Player identifier whose action mask should be computed.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Options table with origin, range, and optional action channel.",
               "optional": false
             }
           ],
@@ -147804,31 +147754,31 @@
           "parameters": [
             {
               "name": "player",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Player identifier to query.",
               "optional": false
             },
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileVisibility"
         },
@@ -147840,31 +147790,31 @@
           "parameters": [
             {
               "name": "player",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Player identifier to query.",
               "optional": false
             },
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileVisibility"
         },
@@ -147876,31 +147826,31 @@
           "parameters": [
             {
               "name": "player",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Player identifier to query.",
               "optional": false
             },
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based column.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based row.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "One-based level, default 1.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileVisibility"
         },
@@ -147912,19 +147862,19 @@
           "parameters": [
             {
               "name": "player",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Player identifier to query.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level filter.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTileVisibility"
         },
@@ -147936,19 +147886,19 @@
           "parameters": [
             {
               "name": "player",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Player identifier to query.",
               "optional": false
             },
             {
               "name": "z",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional one-based level filter.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTileVisibility"
         },
@@ -147960,8 +147910,8 @@
           "parameters": [
             {
               "name": "player",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Player identifier whose visibility state should be cleared.",
               "optional": false
             }
           ],
@@ -147987,8 +147937,8 @@
           "signature": "()",
           "description": "Returns the Lua-visible type name for this tile visibility handle.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LTileVisibility"
         },
@@ -148000,13 +147950,13 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Type name to compare against this handle.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileVisibility"
         }
@@ -154932,7 +154882,7 @@
     },
     {
       "name": "LTreemapChart",
-      "description": "Lua handle for a treemap chart.",
+      "description": "Lua handle for a treemap chart that renders weighted hierarchical rectangles.",
       "methods": [
         {
           "name": "setItems",
@@ -154942,8 +154892,8 @@
           "parameters": [
             {
               "name": "items",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Array-style table of weighted treemap item rows.",
               "optional": false
             }
           ],
@@ -154956,24 +154906,24 @@
           "name": "addItem",
           "fullPath": "LTreemapChart:addItem",
           "signature": "(label, value, [color])",
-          "description": "Adds one weighted treemap item.",
+          "description": "Adds one weighted treemap item to the current rectangle layout.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Label to display for the treemap item.",
               "optional": false
             },
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Positive weight value used for layout area.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional RGBA color table for this item.",
               "optional": true
             }
           ],

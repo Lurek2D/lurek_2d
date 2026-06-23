@@ -71,7 +71,7 @@ local function query_params(ctx, name, sql, params)
 end
 
 local function write_manifest(C, names)
-    lurek.filesystem.write(C.CACHE_MANIFEST, lurek.serial.toJson({
+    lurek.filesystem.write(C.CACHE_MANIFEST, lurek.serialize.toJson({
         version = C.CACHE_VERSION,
         format = "lurek.dataframe.database.json",
         database = C.DATABASE_JSON_PATH,
@@ -83,7 +83,7 @@ local function manifest_valid(C)
     if not lurek.filesystem.exists(C.CACHE_MANIFEST) then return false end
     if not lurek.filesystem.exists(C.DATABASE_JSON_PATH) then return false end
     local ok, data = pcall(function()
-        return lurek.serial.fromJson(lurek.filesystem.read(C.CACHE_MANIFEST))
+        return lurek.serialize.fromJson(lurek.filesystem.read(C.CACHE_MANIFEST))
     end)
     return ok and data and data.version == C.CACHE_VERSION and data.database == C.DATABASE_JSON_PATH
 end

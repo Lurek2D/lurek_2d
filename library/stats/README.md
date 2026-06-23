@@ -25,4 +25,4 @@ end
 
 ## Dependencies
 
-- `lurek.math.clamp/lerp` (optional), `lurek.serialize` (optional)
+- `lurek.math.clamp/lerp` (optional), `lurek.serializeize` (optional)

@@ -1312,27 +1312,6 @@ do
     example_print_log("drawMany issued")
 end
 
---@api: lurek.render.newNineSlice
-do
-    local function render_log(message)
-        lurek.log.info("[render.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-    local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
-    local top, right, bottom, left = slice:getInsets()
-    lurek.render.drawNineSlice(slice, 10, 310, 140, 48)
-    example_print_log("nine-slice insets = " .. top .. "," .. right .. "," .. bottom .. "," .. left)
-    example_print_log("nine-slice drawn")
-end
-
 --@api: lurek.render.newDrawLayer
 do
     local function render_log(message)
@@ -3047,7 +3026,7 @@ do
     end
 
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-    local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
+    local slice = lurek.sprite.newNineSlice(image, 4, 4, 4, 4)
     local top, right, bottom, left = slice:getInsets()
     example_print_log("nine-slice insets = " .. top .. "," .. right .. "," .. bottom .. "," .. left)
     example_print_log("nine-slice type = " .. slice:type())
@@ -3068,7 +3047,7 @@ do
     end
 
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-    local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
+    local slice = lurek.sprite.newNineSlice(image, 4, 4, 4, 4)
     local w, h = slice:getTextureSize()
     example_print_log("nine-slice texture size = " .. w .. "x" .. h)
     example_print_log("nine-slice typeOf = " .. tostring(slice:typeOf("LNineSlice")))
@@ -3089,7 +3068,7 @@ do
     end
 
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-    local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
+    local slice = lurek.sprite.newNineSlice(image, 4, 4, 4, 4)
     example_print_log("nine-slice type = " .. slice:type())
     example_print_log("nine-slice texture width = " .. select(1, slice:getTextureSize()))
     image:release()
@@ -3109,7 +3088,7 @@ do
     end
 
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-    local slice = lurek.render.newNineSlice(image, 2, 2, 2, 2)
+    local slice = lurek.sprite.newNineSlice(image, 2, 2, 2, 2)
     example_print_log("nine-slice typeOf LNineSlice = " .. tostring(slice:typeOf("LNineSlice")))
     example_print_log("nine-slice width sample = 140")
     image:release()
@@ -3539,7 +3518,7 @@ do
     end
 
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-    local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
+    local slice = lurek.sprite.newNineSlice(image, 4, 4, 4, 4)
     lurek.render.drawNineSlice(slice, 100, 100, 80, 60)
     example_print_log("drawNineSlice target size = 80x60")
     image:release()

@@ -1437,57 +1437,6 @@ end
 
 ---
 
-#### `LImageData:drawNineSlice`
-
-Draws a nine-slice region from a source image into this image.
-
-```lua
-LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
-| `src_x` | number | Source region x coordinate. |
-| `src_y` | number | Source region y coordinate. |
-| `src_w` | number | Source region width. |
-| `src_h` | number | Source region height. |
-| `dst_x` | number | Destination x coordinate. |
-| `dst_y` | number | Destination y coordinate. |
-| `dst_w` | number | Destination width. |
-| `dst_h` | number | Destination height. |
-| `inset_left` | number | Left inset width. |
-| `inset_right` | number | Right inset width. |
-| `inset_top` | number | Top inset height. |
-| `inset_bottom` | number | Bottom inset height. |
-
-**Example**
-
-```lua
-do
-    local function image_log(message)
-        lurek.log.info("[image.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local dst = lurek.image.newImageData(64, 64)
-    local src = lurek.image.newImageData(32, 32)
-    src:fill(128, 128, 128, 255)
-    dst:drawNineSlice(src, 0, 0, 32, 32, 0, 0, 64, 64, 8, 8, 8, 8)
-    example_print_log("nine-slice drawn")
-end
-```
-
----
-
 #### `LImageData:drawRect`
 
 Draws a filled rectangle into this image.

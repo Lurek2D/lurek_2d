@@ -20,4 +20,4 @@ print("Weapon:", equip:get("weapon").id)
 
 ## Dependencies
 
-- `lurek.serialize` (optional), `lurek.save.SaveManager` (optional)
+- `lurek.serializeize` (optional), `lurek.save.SaveManager` (optional)

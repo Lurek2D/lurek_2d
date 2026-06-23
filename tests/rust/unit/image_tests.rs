@@ -74,7 +74,7 @@ mod render_tests {
 }
 
 mod texture_atlas_tests {
-    use super::*;
+    use lurek2d::sprite::{NineSliceInsets, TextureAtlas};
 
     #[test]
     fn new_atlas_is_empty() {
@@ -196,7 +196,7 @@ mod effects_and_lut_tests {
     use lurek2d::image::effects::ResizeFilter;
     use lurek2d::image::premultiply_alpha_rgba8_in_place;
     use lurek2d::image::serial;
-    use lurek2d::sprite::SpriteAtlas;
+    use lurek2d::sprite::{SpriteAtlas, TextureAtlas};
 
     #[test]
     fn resize_with_lanczos3_returns_expected_dimensions() {

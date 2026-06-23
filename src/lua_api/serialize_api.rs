@@ -473,7 +473,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    lurek.set("serialize", tbl.clone())?;
-    lurek.set("serial", tbl)?;
+    lurek.set("serialize", tbl)?;
     Ok(())
 }

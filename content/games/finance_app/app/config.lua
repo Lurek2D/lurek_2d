@@ -27,7 +27,7 @@ local function sql_files(parsed)
 end
 
 function Config.load(path)
-    local parsed = lurek.serial.fromToml(lurek.filesystem.read(path or "app/config.toml"))
+    local parsed = lurek.serialize.fromToml(lurek.filesystem.read(path or "app/config.toml"))
     local paths = parsed.paths or {}
     local years = parsed.years or {}
     local window = parsed.window or {}

@@ -244,7 +244,7 @@ mod nine_slice_tests {
 
 mod atlas_tests {
     use super::*;
-    use lurek2d::image::{NineSliceInsets, TextureAtlas};
+    use lurek2d::sprite::{NineSliceInsets, TextureAtlas};
 
     #[test]
     fn atlas_hash_format_parses_correctly() {

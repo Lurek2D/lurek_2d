@@ -8260,34 +8260,6 @@ LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
 
 ---
 
-#### `LImageData:drawNineSlice`
-
-Draws a nine-slice region from a source image into this image.
-
-```lua
-LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
-| `src_x` | number | Source region x coordinate. |
-| `src_y` | number | Source region y coordinate. |
-| `src_w` | number | Source region width. |
-| `src_h` | number | Source region height. |
-| `dst_x` | number | Destination x coordinate. |
-| `dst_y` | number | Destination y coordinate. |
-| `dst_w` | number | Destination width. |
-| `dst_h` | number | Destination height. |
-| `inset_left` | number | Left inset width. |
-| `inset_right` | number | Right inset width. |
-| `inset_top` | number | Top inset height. |
-| `inset_bottom` | number | Bottom inset height. |
-
----
-
 #### `LImageData:drawRect`
 
 Draws a filled rectangle into this image.

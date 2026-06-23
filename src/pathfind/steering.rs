@@ -1,13 +1,13 @@
-//! Owns steering behavior stacks for pathfinding-adjacent local movement.
-//! Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants.
-//! Defines how steering data is validated, transformed, or stored before neighboring systems use it.
-//! Keeps path following, flocking, pursuit, evasion, and custom movement forces under the navigation owner.
-//! Keeps public crate helpers focused on movement behavior while Lua registration stays elsewhere.
-//! Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
-//! Use this file when changing steering defaults, lifecycle handling, validation, or data ownership.
-//! Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit.
-//! Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary.
-//! Provides the local movement layer that lets callers avoid duplicating path and avoidance rules.
+//! Owns steering behavior stacks for pathfinding-adjacent local movement and force-based navigation.
+//! Centers implementation around `Force`, `SteeringEntity`, manager state, and flock parameter invariants.
+//! Validates entity counts, finite vectors, weights, radii, speeds, and target inputs before calculations run.
+//! Keeps path following, flocking, pursuit, evasion, wander, arrival, separation, and custom forces here.
+//! Produces deterministic movement forces that callers can compose without duplicating path avoidance rules.
+//! Stores named entities and behavior lists while route search, grid ownership, and rendering live elsewhere.
+//! Keeps crate helpers focused on movement behavior while Lua registration and table conversion stay elsewhere.
+//! Reports structured pathfind errors for invalid movement data instead of leaking panics into callers.
+//! Update this file when steering defaults, lifecycle handling, validation, or force calculation semantics change.
+//! Leave context-slot steering, ORCA, tactical fields, and raw path solvers in their own navigation owners.
 
 use std::collections::HashMap;
 

@@ -2,7 +2,7 @@
 applyTo: "**/saves/*.lua"
 ---
 # Save System Rules
-- All save data serializes to TOML via lurek.serial.toToml()
+- All save data serializes to TOML via lurek.serialize.toToml()
 - ALWAYS include a `save_version` integer field
 - ALWAYS validate save_version on load, migrate if needed
 - NEVER store raw Lua function references in save data

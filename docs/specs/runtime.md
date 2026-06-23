@@ -42,7 +42,7 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - Owning tier: `Core Runtime`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/system_api.rs`
-- Referenced engine modules: `audio`, `camera`, `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, `midi`, `mods`, `parallax`, `particle`, `province`, `raycaster`, `render`, `repl`, `sprite`, `tilemap`, `timer`, `ui`
+- Referenced engine modules: `audio`, `camera`, `event`, `filesystem`, `font`, `image`, `input`, `light`, `lua_api`, `midi`, `mods`, `parallax`, `particle`, `province`, `raycaster`, `render`, `repl`, `sprite`, `tilemap`, `timer`, `ui`
 
 ## Imports
 
@@ -50,6 +50,7 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `camera`: Imports or references `src/camera/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
 - `event`: Imports or references `src/event/`. Dependency stays inside `Core Runtime` and should remain acyclic.
 - `filesystem`: Imports or references `src/filesystem/`. Dependency stays inside `Core Runtime` and should remain acyclic.
+- `font`: Imports or references `src/font/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
 - `input`: Imports or references `src/input/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
 - `light`: Imports or references `src/light/`. Cross-group dependency from `Core Runtime` into `Platform Services`.

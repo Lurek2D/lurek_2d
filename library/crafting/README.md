@@ -26,4 +26,4 @@ end
 
 ## Dependencies
 
-- `lurek.serialize`, `lurek.patterns` (optional), `lurek.event` (optional)
+- `lurek.serializeize`, `lurek.patterns` (optional), `lurek.event` (optional)

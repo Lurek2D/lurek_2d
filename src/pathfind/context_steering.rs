@@ -1,10 +1,10 @@
-//! Implements slot-based context steering that scores angular interest and danger before picking a movement lane.
+//! Implements slot-based context steering that scores angular interest and danger before choosing a movement lane.
 //! Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot.
 //! Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler.
 //! Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly.
-//! Provides the pathfind-owned local movement boundary between authored context behaviors and the final chosen travel heading.
-//! This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion.
-//! Open this owner before generic steering when the bug is in lane choice rather than force combination policy.
+//! Provides the pathfind-owned boundary between authored context behaviors and final travel heading selection.
+//! Use this owner when directional slot math or danger suppression yields jittery or unsafe movement choices.
+//! Open generic steering only when the bug is force combination policy rather than lane selection semantics.
 
 use std::f32::consts::{PI, TAU};
 /// Behavior kind used by context steering slots.

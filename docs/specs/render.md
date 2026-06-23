@@ -15,7 +15,7 @@
 - Source path: `src/render`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `117` functions, `14` types, `89` methods
+- Lua API surface: `116` functions, `14` types, `89` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -110,17 +110,6 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Keeps shape-construction policy separate from GPU orchestration so render passes can stay focused on dispatch.
 - Acts as the geometry boundary between high-level draw commands and raw vertex/index streams.
 - Open this file when primitive tessellation, stroke expansion, or curve segmentation produces wrong geometry.
-
-### font.rs
-
-- Owns font assets, glyph metrics, and atlas layout used by text rendering across runtime UI and debug views.
-- Supports bundled Courier New atlases at multiple sizes alongside dynamic fontdue rasterization from bytes.
-- Maps characters to atlas cells, UV coordinates, advances, and fallback substitutions under one font contract.
-- Provides nearest-size lookup so callers can request practical font points without managing raw atlas sets.
-- Handles wrapping, alignment metrics, and pen movement needed by layout and draw code above this layer.
-- Extends character mapping with retro symbols and box characters used by terminal or pixel-art interfaces.
-- Acts as the text-asset boundary rather than the owner of final UI or renderer command emission.
-- Open this file when glyph lookup, atlas data, wrapping, or dynamic font loading behaves incorrectly.
 
 ### gpu_canvas_pass.rs
 
@@ -309,7 +298,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### mod.rs
 
-- Exports the render subsystem surface that groups canvases, GPU owners, fonts, shapes, shaders, and pipelines.
+- Exports the render subsystem surface that groups canvases, GPU owners, shapes, shaders, and pipelines.
 - Acts as the render ownership index so callers can map a rendering concern to its concrete Rust owner file.
 - Centralizes module visibility and re-exports instead of storing live frame state or issuing draw work itself.
 - Connects front-end draw commands, geometry assets, shader tools, and GPU execution modules into one stack.
@@ -477,7 +466,6 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.newImage(pathOrData, colorSpace?) -> LImage`: Loads a texture from a file path or creates one from an ImageData object.
 - `lurek.render.newLayer(name, zOrder?) -> nil`: Creates a named rendering layer with an optional z-order for draw call organization.
 - `lurek.render.newMesh(verts, mode?) -> LMesh`: Creates a custom vertex mesh from an array of vertex data tables.
-- `lurek.render.newNineSlice(image, top, right, bottom, left) -> LNineSlice`: Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
 - `lurek.render.newQuad(x, y, w, h, sw, sh) -> LQuad`: Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
 - `lurek.render.newShader(code) -> LShader`: Compiles a WGSL shader program from source code and returns a handle.
 - `lurek.render.newShape() -> LShape`: Creates a new retained compound shape for accumulating draw commands.

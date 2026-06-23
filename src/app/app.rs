@@ -13,6 +13,7 @@
 //! The `ApplicationHandler` impl binds winit lifecycle callbacks to safe runtime operations and guarded Lua dispatch.
 //! The outer `App` and `AppRunOptions` types provide bootstrap input, logger setup, and event-loop launch entrypoints.
 //! Open this file when desktop host orchestration changes; splash, errors, HUD, and callback helpers live in siblings.
+// Engine callback metadata remains parsed by docs generators, but is not part of the prose ownership block.
 //! @engine-callback | draw | function lurek.draw() | Called every frame to queue world render commands.
 //! @engine-callback | draw_ui | function lurek.draw_ui() | Called every frame after world drawing to queue UI and HUD render commands.
 //! @engine-callback | exit | function lurek.exit() | Called before the runtime exits after an explicit close path.
@@ -641,7 +642,7 @@ pub struct LurekApp {
     /// Current vsync mode: -1=mailbox, 0=off, 1=fifo.
     window_vsync_mode: i32,
     /// Loaded bitmap fonts used by splash and error screens.
-    engine_fonts: Option<(SlotMap<FontKey, crate::render::Font>, FontKey, FontKey)>,
+    engine_fonts: Option<(SlotMap<FontKey, crate::font::Font>, FontKey, FontKey)>,
     /// Decoded splash branding textures.
     splash_branding: Option<SplashBranding>,
     /// Whether splash branding decode has already failed.
@@ -2370,10 +2371,10 @@ impl LurekApp {
             .as_ref()
             .map_or(0.0, |s| s.borrow().clock.total());
         if self.engine_fonts.is_none() {
-            let mut fonts: SlotMap<FontKey, crate::render::Font> = SlotMap::with_key();
-            let all = crate::render::Font::load_all_sizes();
-            let title_idx = crate::render::Font::nearest_size(36);
-            let small_idx = crate::render::Font::nearest_size(18);
+            let mut fonts: SlotMap<FontKey, crate::font::Font> = SlotMap::with_key();
+            let all = crate::font::Font::load_all_sizes();
+            let title_idx = crate::font::Font::nearest_size(36);
+            let small_idx = crate::font::Font::nearest_size(18);
             let mut title_key = None;
             let mut small_key = None;
             for (i, (font, _cw, _ch)) in all.into_iter().enumerate() {
@@ -2448,7 +2449,7 @@ impl LurekApp {
             let mut st = state_rc.borrow_mut();
             if let Some(body_key) = st.active_font.or(st.default_font) {
                 let heading_slot =
-                    crate::render::Font::nearest_point_size(st.default_font_size.saturating_add(6));
+                    crate::font::Font::nearest_point_size(st.default_font_size.saturating_add(6));
                 let heading_key = if st.active_bold {
                     Some(body_key)
                 } else {
@@ -2501,10 +2502,10 @@ impl LurekApp {
             }
         }
         if self.engine_fonts.is_none() {
-            let mut fonts: SlotMap<FontKey, crate::render::Font> = SlotMap::with_key();
-            let all = crate::render::Font::load_all_sizes();
-            let title_idx = crate::render::Font::nearest_size(36);
-            let small_idx = crate::render::Font::nearest_size(18);
+            let mut fonts: SlotMap<FontKey, crate::font::Font> = SlotMap::with_key();
+            let all = crate::font::Font::load_all_sizes();
+            let title_idx = crate::font::Font::nearest_size(36);
+            let small_idx = crate::font::Font::nearest_size(18);
             let mut title_key = None;
             let mut small_key = None;
             for (i, (font, _cw, _ch)) in all.into_iter().enumerate() {

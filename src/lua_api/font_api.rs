@@ -1,7 +1,7 @@
 //! Registers the `lurek.font` Lua API for font handles, builtin font lookup, and font activation helpers.
 
 use super::SharedState;
-use crate::render::font::{Font, AVAILABLE_POINT_SIZES};
+use crate::font::{Font, AVAILABLE_POINT_SIZES};
 use crate::runtime::resource_keys::FontKey;
 use mlua::prelude::*;
 use slotmap::Key;
@@ -23,6 +23,18 @@ pub struct LuaFont {
     style: String,
     /// Shared runtime state for font access.
     state: Rc<RefCell<SharedState>>,
+}
+
+impl LuaFont {
+    /// Returns the shared runtime font key used by render consumers.
+    pub(crate) fn key(&self) -> FontKey {
+        self.handle_id
+    }
+
+    /// Returns whether this Lua font handle still points at a stored runtime font.
+    pub(crate) fn is_valid(&self) -> bool {
+        self.state.borrow().fonts.contains_key(self.handle_id)
+    }
 }
 
 impl LuaUserData for LuaFont {

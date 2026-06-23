@@ -8,13 +8,25 @@
 
 --- Sprite Module: sheets, atlases, packing, lit sprites, and frame animation.
 
+--@api: lurek.sprite.newNineSlice
+do
+    local function sprite_log(message)
+        lurek.log.info("[sprite] " .. message)
+    end
+
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local slice = lurek.sprite.newNineSlice(image, 4, 4, 4, 4)
+    local top, right, bottom, left = slice:getInsets()
+    sprite_log("newNineSlice insets=" .. top .. "," .. right .. "," .. bottom .. "," .. left)
+end
+
 --@api: lurek.sprite.newSheet
 do
     local function sprite_log(message)
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -24,7 +36,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -60,7 +72,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -70,7 +82,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -106,7 +118,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -116,7 +128,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -152,7 +164,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -162,7 +174,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -198,7 +210,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -208,7 +220,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -244,7 +256,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -254,7 +266,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -290,7 +302,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -300,7 +312,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -336,7 +348,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -346,7 +358,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -383,7 +395,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -393,7 +405,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -429,7 +441,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -439,7 +451,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -475,7 +487,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -485,7 +497,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -521,7 +533,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -531,7 +543,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -567,7 +579,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -577,7 +589,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -613,7 +625,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -623,7 +635,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -659,7 +671,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -669,7 +681,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -706,7 +718,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -716,7 +728,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -752,7 +764,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -762,7 +774,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -798,7 +810,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -808,7 +820,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -844,7 +856,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -854,7 +866,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -890,7 +902,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -900,7 +912,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -936,7 +948,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -946,7 +958,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -982,7 +994,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -992,7 +1004,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1029,7 +1041,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1039,7 +1051,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1075,7 +1087,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1085,7 +1097,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1121,7 +1133,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1131,7 +1143,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1167,7 +1179,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1177,7 +1189,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1213,7 +1225,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1223,7 +1235,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1259,7 +1271,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1269,7 +1281,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1305,7 +1317,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1315,7 +1327,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1351,7 +1363,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1361,7 +1373,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1397,7 +1409,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1407,7 +1419,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1443,7 +1455,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1453,7 +1465,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1489,7 +1501,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1499,7 +1511,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1535,7 +1547,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1545,7 +1557,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1581,7 +1593,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1591,7 +1603,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1627,7 +1639,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1637,7 +1649,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1673,7 +1685,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1683,7 +1695,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1719,7 +1731,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1729,7 +1741,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1765,7 +1777,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1775,7 +1787,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1811,7 +1823,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1821,7 +1833,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1857,7 +1869,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1867,7 +1879,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1903,7 +1915,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1913,7 +1925,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1949,7 +1961,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -1959,7 +1971,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -1995,7 +2007,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2005,7 +2017,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2041,7 +2053,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2051,7 +2063,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2087,7 +2099,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2097,7 +2109,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2133,7 +2145,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2143,7 +2155,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2180,7 +2192,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2190,7 +2202,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2226,7 +2238,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2236,7 +2248,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2273,7 +2285,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2283,7 +2295,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2319,7 +2331,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2329,7 +2341,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2365,7 +2377,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2375,7 +2387,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2412,7 +2424,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2422,7 +2434,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2459,7 +2471,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2469,7 +2481,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2506,7 +2518,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2516,7 +2528,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2553,7 +2565,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2563,7 +2575,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2600,7 +2612,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2610,7 +2622,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2646,7 +2658,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2656,7 +2668,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2692,7 +2704,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2702,7 +2714,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2738,7 +2750,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2748,7 +2760,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },
@@ -2784,7 +2796,7 @@ do
         lurek.log.info("[sprite] " .. message)
     end
     local function make_texturepacker_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 { filename = "hero_idle_0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
                 { filename = "hero_idle_1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
@@ -2794,7 +2806,7 @@ do
         })
     end
     local function make_aseprite_json()
-        return lurek.serial.toJson({
+        return lurek.serialize.toJson({
             frames = {
                 ["hero_walk_0001.png"] = {
                     frame = { x = 0, y = 0, w = 16, h = 16 },

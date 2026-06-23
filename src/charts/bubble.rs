@@ -2,6 +2,7 @@
 //! It stores named `(x, y, size)` samples, maps size values to radius bounds, and draws one circle per finite sample.
 //! Shared chart helpers provide cartesian axes, ticks, grids, labels, and legends while this file owns radius scaling.
 //! Streaming append and max-point trimming keep live dashboards bounded for repeated 10 FPS redraws.
+//! The output is CPU `ImageData`, so render modules consume pixels without owning weighted scatter semantics.
 //! Open it when bubble-size semantics, weighted scatter ingestion, or radius defaults need to change.
 
 use crate::charts::config::ChartConfig;
