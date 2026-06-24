@@ -6,11 +6,38 @@
 //! Documents the boundary where physics code accepts inputs, reports errors, or updates state.
 //! Use this file when changing shape defaults, lifecycle handling, validation, or data ownership.
 
+use crate::image::ImageData;
 use crate::math::Vec2;
 use rapier2d::prelude::*;
 
 use super::error::PhysicsError;
 use super::limits::{validate_finite, validate_positive, validate_range, PhysicsLimits};
+
+/// Options for deriving a collision shape from an image alpha mask.
+#[derive(Debug, Clone, Copy)]
+pub struct AlphaShapeOptions {
+    /// Alpha channel threshold. Pixels with alpha >= threshold are considered solid.
+    pub alpha_threshold: u8,
+    /// Maximum polygon support vertices to emit when the mask is not circle-like or rectangular.
+    pub max_vertices: usize,
+    /// Maximum width/height aspect delta accepted when classifying a mask as a circle.
+    pub circle_aspect_tolerance: f32,
+    /// Maximum fill-ratio error from a filled circle accepted when classifying as a circle.
+    pub circle_fill_tolerance: f32,
+    /// Fill ratio above which the mask is treated as a rectangle.
+    pub rectangle_fill_threshold: f32,
+}
+impl Default for AlphaShapeOptions {
+    fn default() -> Self {
+        Self {
+            alpha_threshold: 8,
+            max_vertices: 8,
+            circle_aspect_tolerance: 0.2,
+            circle_fill_tolerance: 0.18,
+            rectangle_fill_threshold: 0.92,
+        }
+    }
+}
 
 /// Physics primitive shape used in `Body` and `StandaloneShape`.
 /// # Variants
@@ -34,6 +61,31 @@ pub enum Shape {
 }
 /// Conversion helpers for `Shape`.
 impl Shape {
+    fn bounds_from_vertices(vertices: &[Vec2]) -> (f32, f32, f32, f32) {
+        let mut min_x = f32::INFINITY;
+        let mut min_y = f32::INFINITY;
+        let mut max_x = f32::NEG_INFINITY;
+        let mut max_y = f32::NEG_INFINITY;
+        for v in vertices {
+            min_x = min_x.min(v.x);
+            min_y = min_y.min(v.y);
+            max_x = max_x.max(v.x);
+            max_y = max_y.max(v.y);
+        }
+        (min_x, min_y, max_x, max_y)
+    }
+
+    fn local_rect_vertices(width: f32, height: f32) -> Vec<Vec2> {
+        let hw = width / 2.0;
+        let hh = height / 2.0;
+        vec![
+            Vec2::new(-hw, -hh),
+            Vec2::new(hw, -hh),
+            Vec2::new(hw, hh),
+            Vec2::new(-hw, hh),
+        ]
+    }
+
     fn polygon_area2(vertices: &[Vec2]) -> f32 {
         let mut area = 0.0;
         for i in 0..vertices.len() {
@@ -91,6 +143,157 @@ impl Shape {
             validate_finite("vertex.y", f64::from(vertex.y))?;
         }
         Ok(())
+    }
+
+    fn alpha_bounds(image: &ImageData, threshold: u8) -> Option<(u32, u32, u32, u32, usize)> {
+        let mut min_x = u32::MAX;
+        let mut min_y = u32::MAX;
+        let mut max_x = 0;
+        let mut max_y = 0;
+        let mut count = 0usize;
+
+        for y in 0..image.height() {
+            for x in 0..image.width() {
+                if image
+                    .get_pixel(x, y)
+                    .is_some_and(|(_, _, _, a)| a >= threshold)
+                {
+                    min_x = min_x.min(x);
+                    min_y = min_y.min(y);
+                    max_x = max_x.max(x);
+                    max_y = max_y.max(y);
+                    count += 1;
+                }
+            }
+        }
+
+        (count > 0).then_some((min_x, min_y, max_x, max_y, count))
+    }
+
+    fn alpha_support_polygon(
+        image: &ImageData,
+        threshold: u8,
+        min_x: u32,
+        min_y: u32,
+        max_x: u32,
+        max_y: u32,
+        max_vertices: usize,
+    ) -> Vec<Vec2> {
+        let vertex_count = max_vertices.clamp(3, PhysicsLimits::default().max_polygon_vertices);
+        let cx = (min_x as f32 + max_x as f32 + 1.0) * 0.5;
+        let cy = (min_y as f32 + max_y as f32 + 1.0) * 0.5;
+        let mut vertices = Vec::with_capacity(vertex_count);
+
+        for i in 0..vertex_count {
+            let angle = 2.0 * std::f32::consts::PI * (i as f32) / (vertex_count as f32);
+            let dir_x = angle.cos();
+            let dir_y = angle.sin();
+            let mut best_dot = f32::NEG_INFINITY;
+            let mut best = Vec2::new(0.0, 0.0);
+            for y in min_y..=max_y {
+                for x in min_x..=max_x {
+                    if image
+                        .get_pixel(x, y)
+                        .is_some_and(|(_, _, _, a)| a >= threshold)
+                    {
+                        let px = x as f32 + 0.5 - cx;
+                        let py = y as f32 + 0.5 - cy;
+                        let dot = px * dir_x + py * dir_y;
+                        if dot > best_dot {
+                            best_dot = dot;
+                            best = Vec2::new(px, py);
+                        }
+                    }
+                }
+            }
+            if vertices.last().is_none_or(|prev: &Vec2| {
+                (prev.x - best.x).abs() > 0.25 || (prev.y - best.y).abs() > 0.25
+            }) {
+                vertices.push(best);
+            }
+        }
+
+        if vertices.len() > 1 {
+            let first = vertices[0];
+            let last = *vertices.last().unwrap();
+            if (first.x - last.x).abs() <= 0.25 && (first.y - last.y).abs() <= 0.25 {
+                vertices.pop();
+            }
+        }
+        vertices
+    }
+
+    /// Approximate the alpha mask of an image as a simple physics shape.
+    pub fn from_image_alpha(image: &ImageData, options: AlphaShapeOptions) -> Result<Self, String> {
+        let (min_x, min_y, max_x, max_y, solid_pixels) =
+            Self::alpha_bounds(image, options.alpha_threshold)
+                .ok_or_else(|| "image alpha mask has no solid pixels".to_string())?;
+
+        let width = (max_x - min_x + 1) as f32;
+        let height = (max_y - min_y + 1) as f32;
+        let area = width * height;
+        if area <= 0.0 {
+            return Err("image alpha mask has degenerate bounds".into());
+        }
+
+        let fill_ratio = solid_pixels as f32 / area;
+        if fill_ratio >= options.rectangle_fill_threshold {
+            return Ok(Self::Rect { width, height });
+        }
+
+        let aspect_delta = (width - height).abs() / width.max(height);
+        let circle_fill = std::f32::consts::PI / 4.0;
+        if aspect_delta <= options.circle_aspect_tolerance
+            && (fill_ratio - circle_fill).abs() <= options.circle_fill_tolerance
+        {
+            return Ok(Self::Circle {
+                radius: (width + height) * 0.25,
+            });
+        }
+
+        let mut vertices = Self::alpha_support_polygon(
+            image,
+            options.alpha_threshold,
+            min_x,
+            min_y,
+            max_x,
+            max_y,
+            options.max_vertices,
+        );
+
+        if vertices.len() < 3 || !Self::is_convex_polygon(&vertices) {
+            vertices = Self::local_rect_vertices(width, height);
+        }
+
+        let shape = Self::Polygon { vertices };
+        shape
+            .validate(&PhysicsLimits::default())
+            .map_err(|err| err.to_string())?;
+        Ok(shape)
+    }
+
+    /// Return the shape vertices in local space when a finite vertex representation exists.
+    pub fn vertices(&self) -> Option<Vec<Vec2>> {
+        match self {
+            Shape::Rect { width, height } => Some(Self::local_rect_vertices(*width, *height)),
+            Shape::Polygon { vertices } | Shape::Chain { vertices, .. } => Some(vertices.clone()),
+            Shape::Edge { v1, v2 } => Some(vec![*v1, *v2]),
+            Shape::Circle { .. } => None,
+        }
+    }
+
+    /// Return the local-space area used for density-to-mass approximations.
+    pub fn area_estimate(&self) -> f32 {
+        match self {
+            Shape::Rect { width, height } => width * height,
+            Shape::Circle { radius } => std::f32::consts::PI * radius * radius,
+            Shape::Polygon { vertices } => Self::polygon_area2(vertices).abs() * 0.5,
+            Shape::Chain { vertices, .. } => {
+                let (min_x, min_y, max_x, max_y) = Self::bounds_from_vertices(vertices);
+                ((max_x - min_x) * (max_y - min_y)).max(1.0)
+            }
+            Shape::Edge { v1, v2 } => ((v2.x - v1.x).hypot(v2.y - v1.y)).max(1.0),
+        }
     }
 
     /// Validate this shape against the shared physics safety contract.

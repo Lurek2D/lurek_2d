@@ -1,6 +1,9 @@
 //! Registers the `lurek.spine` Lua API for Spine animation userdata, bone options, and validated playback.
 
+use super::physics_api::{lua_body_from_body, LuaPhysicsShape, LuaWorld};
 use super::SharedState;
+use crate::image::ImageData;
+use crate::physics::{AlphaShapeOptions, Body, BodyType, Shape};
 use crate::spine::ik::IKConstraint;
 use crate::spine::timeline::{BoneProperty, EasingType, SkeletonAnimation};
 use crate::spine::{skeleton_from_json_str, BoneParams, Skeleton};
@@ -50,6 +53,222 @@ fn parse_bone_opts(opts: &Option<LuaTable>) -> LuaResult<(f32, f32, f32, f32, f3
         }
     }
     Ok((x, y, rot, sx, sy))
+}
+
+fn parse_easing(api: &str, easing: Option<String>) -> LuaResult<EasingType> {
+    match easing.as_deref().unwrap_or("linear") {
+        "linear" => Ok(EasingType::Linear),
+        "ease_in" => Ok(EasingType::EaseIn),
+        "ease_out" => Ok(EasingType::EaseOut),
+        "ease_in_out" => Ok(EasingType::EaseInOut),
+        "step" => Ok(EasingType::Step),
+        other => Err(LuaError::RuntimeError(format!(
+            "{}: unknown easing '{}'",
+            api, other
+        ))),
+    }
+}
+
+fn parse_bone_property(api: &str, property: &str) -> LuaResult<BoneProperty> {
+    match property {
+        "x" => Ok(BoneProperty::X),
+        "y" => Ok(BoneProperty::Y),
+        "rotation" => Ok(BoneProperty::Rotation),
+        "scale_x" => Ok(BoneProperty::ScaleX),
+        "scale_y" => Ok(BoneProperty::ScaleY),
+        other => Err(LuaError::RuntimeError(format!(
+            "{}: unknown property '{}'",
+            api, other
+        ))),
+    }
+}
+
+fn parse_bone_ref(api: &str, skeleton: &Skeleton, value: LuaValue) -> LuaResult<usize> {
+    match value {
+        LuaValue::Integer(idx) if idx >= 0 => {
+            let idx = idx as usize;
+            if idx < skeleton.bone_count() {
+                Ok(idx)
+            } else {
+                Err(LuaError::RuntimeError(format!(
+                    "{}: bone index {} out of bounds for {} bones",
+                    api,
+                    idx,
+                    skeleton.bone_count()
+                )))
+            }
+        }
+        LuaValue::Number(idx) if idx.fract() == 0.0 && idx >= 0.0 => {
+            parse_bone_ref(api, skeleton, LuaValue::Integer(idx as i64))
+        }
+        LuaValue::String(name) => {
+            let name = name.to_str()?;
+            skeleton
+                .find_bone(name)
+                .ok_or_else(|| LuaError::RuntimeError(format!("{}: unknown bone '{}'", api, name)))
+        }
+        _ => Err(LuaError::RuntimeError(format!(
+            "{}: bone must be a non-negative index or bone name",
+            api
+        ))),
+    }
+}
+
+fn table_opt_f32(tbl: &LuaTable, key: &str) -> LuaResult<Option<f32>> {
+    tbl.get::<_, Option<f32>>(key).and_then(|value| {
+        if let Some(v) = value {
+            finite_f32("spine table option", key, v).map(Some)
+        } else {
+            Ok(None)
+        }
+    })
+}
+
+fn add_key_table_to_animation(
+    api: &str,
+    anim: &mut SkeletonAnimation,
+    bone_idx: usize,
+    key: LuaTable,
+) -> LuaResult<()> {
+    let time = non_negative_f32(api, "time", key.get::<_, f32>("time")?)?;
+    let easing = parse_easing(api, key.get::<_, Option<String>>("easing")?)?;
+    for property in ["x", "y", "rotation", "scale_x", "scale_y"] {
+        if let Some(value) = table_opt_f32(&key, property)? {
+            anim.add_keyframe(
+                bone_idx,
+                parse_bone_property(api, property)?,
+                time,
+                value,
+                easing.clone(),
+            );
+        }
+    }
+    Ok(())
+}
+
+fn add_bone_track_to_animation(
+    api: &str,
+    anim: &mut SkeletonAnimation,
+    bone_idx: usize,
+    keys: LuaTable,
+) -> LuaResult<()> {
+    for key in keys.sequence_values::<LuaTable>() {
+        add_key_table_to_animation(api, anim, bone_idx, key?)?;
+    }
+    Ok(())
+}
+
+fn parse_body_type_for_spine(api: &str, body_type: Option<String>) -> LuaResult<BodyType> {
+    match body_type.as_deref().unwrap_or("dynamic") {
+        "static" => Ok(BodyType::Static),
+        "dynamic" => Ok(BodyType::Dynamic),
+        "kinematic" => Ok(BodyType::Kinematic),
+        "sensor" => Ok(BodyType::Sensor),
+        other => Err(LuaError::RuntimeError(format!(
+            "{}: invalid bodyType '{}'",
+            api, other
+        ))),
+    }
+}
+
+fn alpha_options_for_spine(
+    tbl: &LuaTable,
+    defaults: AlphaShapeOptions,
+) -> LuaResult<AlphaShapeOptions> {
+    let mut options = defaults;
+    if let Some(v) = tbl.get::<_, Option<u8>>("alphaThreshold")? {
+        options.alpha_threshold = v;
+    }
+    if let Some(v) = tbl.get::<_, Option<usize>>("maxVertices")? {
+        options.max_vertices = v;
+    }
+    Ok(options)
+}
+
+fn shape_from_spine_part(
+    lua: &Lua,
+    part: &LuaTable,
+    defaults: AlphaShapeOptions,
+) -> LuaResult<(Shape, f32, f32, f32, bool)> {
+    if let Some(shape_value) = part.get::<_, Option<LuaValue>>("shape")? {
+        if !matches!(shape_value, LuaValue::Nil) {
+            let shape_ud = LuaAnyUserData::from_lua(shape_value, lua)?;
+            let shape = shape_ud.borrow::<LuaPhysicsShape>()?.data();
+            return Ok((
+                shape.shape,
+                shape.density,
+                shape.friction,
+                shape.restitution,
+                shape.sensor,
+            ));
+        }
+    }
+
+    if let Some(image_value) = part.get::<_, Option<LuaValue>>("image")? {
+        if !matches!(image_value, LuaValue::Nil) {
+            let image_ud = LuaAnyUserData::from_lua(image_value, lua)?;
+            let image = image_ud.borrow::<ImageData>()?;
+            let options = alpha_options_for_spine(part, defaults)?;
+            let shape = Shape::from_image_alpha(&image, options)
+                .map_err(|err| LuaError::RuntimeError(format!("LSkeleton:bindPhysics: {err}")))?;
+            let density = part.get::<_, Option<f32>>("density")?.unwrap_or(1.0);
+            let friction = part.get::<_, Option<f32>>("friction")?.unwrap_or(0.5);
+            let restitution = part.get::<_, Option<f32>>("restitution")?.unwrap_or(0.0);
+            let sensor = part.get::<_, Option<bool>>("sensor")?.unwrap_or(false);
+            return Ok((shape, density, friction, restitution, sensor));
+        }
+    }
+
+    let density = part.get::<_, Option<f32>>("density")?.unwrap_or(1.0);
+    let friction = part.get::<_, Option<f32>>("friction")?.unwrap_or(0.5);
+    let restitution = part.get::<_, Option<f32>>("restitution")?.unwrap_or(0.0);
+    let sensor = part.get::<_, Option<bool>>("sensor")?.unwrap_or(false);
+    if let Some(radius) = part.get::<_, Option<f32>>("radius")? {
+        return Ok((
+            Shape::Circle { radius },
+            density,
+            friction,
+            restitution,
+            sensor,
+        ));
+    }
+    let width = part.get::<_, Option<f32>>("width")?.unwrap_or(16.0);
+    let height = part.get::<_, Option<f32>>("height")?.unwrap_or(16.0);
+    Ok((
+        Shape::Rect { width, height },
+        density,
+        friction,
+        restitution,
+        sensor,
+    ))
+}
+
+fn body_from_spine_shape(
+    x: f32,
+    y: f32,
+    shape: Shape,
+    body_type: BodyType,
+) -> Result<Body, crate::physics::PhysicsError> {
+    match shape {
+        Shape::Rect { width, height } => Body::try_new(x, y, width, height, body_type),
+        Shape::Circle { radius } => Body::try_new_circle(x, y, radius, body_type),
+        Shape::Polygon { vertices } => Body::try_new_polygon(x, y, vertices, body_type),
+        Shape::Edge { v1, v2 } => Body::try_new_edge(x, y, v1, v2, body_type),
+        Shape::Chain { vertices, closed } => Body::try_new_chain(x, y, vertices, closed, body_type),
+    }
+}
+
+fn set_spine_body_material(
+    body: &mut Body,
+    shape: &Shape,
+    density: f32,
+    friction: f32,
+    restitution: f32,
+    explicit_mass: Option<f32>,
+) {
+    body.friction = friction;
+    body.restitution = restitution;
+    body.mass = explicit_mass.unwrap_or_else(|| (shape.area_estimate() * density).max(0.001));
 }
 /// Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
 pub struct LuaSkeleton {
@@ -313,6 +532,213 @@ impl LuaUserData for LuaSkeleton {
                 Ok(())
             },
         );
+        // -- buildAnimation --
+        /// Builds a full skeleton animation from bone tracks keyed by bone name or index.
+        /// @param | name | string | Animation name.
+        /// @param | duration | number | Duration in seconds.
+        /// @param | tracks | table | Array of `{bone=<name|index>, keys={...}}` track tables.
+        /// @return | LSkeletonAnimation | A new animation containing all requested bone timelines.
+        methods.add_method(
+            "buildAnimation",
+            |lua, this, (name, duration, tracks): (String, f32, LuaTable)| {
+                let duration = non_negative_f32("LSkeleton:buildAnimation", "duration", duration)?;
+                let mut anim = SkeletonAnimation::new(name, duration);
+                for track in tracks.sequence_values::<LuaTable>() {
+                    let track = track?;
+                    let bone_value = match track.get::<_, Option<LuaValue>>("bone")? {
+                        Some(value) if !matches!(value, LuaValue::Nil) => value,
+                        _ => track.get::<_, LuaValue>("bone_idx")?,
+                    };
+                    let bone_idx =
+                        parse_bone_ref("LSkeleton:buildAnimation", &this.inner, bone_value)?;
+                    let keys = track.get::<_, LuaTable>("keys")?;
+                    add_bone_track_to_animation(
+                        "LSkeleton:buildAnimation",
+                        &mut anim,
+                        bone_idx,
+                        keys,
+                    )?;
+                }
+                lua.create_userdata(LuaSkeletonAnimation { inner: anim })
+            },
+        );
+        // -- bindPhysics --
+        /// Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.
+        /// @param | world | LWorld | Physics world that will receive the generated bodies and joints.
+        /// @param | parts | table | Array of part specs keyed by bone name/index plus shape, image, width/height, or radius.
+        /// @param | opts | table? | Defaults such as `joint`, `bodyType`, alphaThreshold, and maxVertices.
+        /// @return | table | Binding result with bodies, bodyIds, joints, jointIds, and parts arrays.
+        methods.add_method_mut(
+            "bindPhysics",
+            |lua, this, (world_ud, parts, opts): (LuaAnyUserData, LuaTable, Option<LuaTable>)| {
+                let world = world_ud.borrow::<LuaWorld>()?;
+                let world_handle = world.world_handle();
+                let alpha_defaults = match &opts {
+                    Some(opts) => alpha_options_for_spine(opts, AlphaShapeOptions::default())?,
+                    None => AlphaShapeOptions::default(),
+                };
+                let default_joint = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<String>>("joint").ok().flatten())
+                    .unwrap_or_else(|| "revolute".to_string());
+                let default_body_type = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<String>>("bodyType").ok().flatten());
+
+                this.inner.update_world_transforms();
+                let mut body_by_bone = vec![None; this.inner.bone_count()];
+                let mut created: Vec<(usize, usize, f32, f32, String)> = Vec::new();
+                let bodies_tbl = lua.create_table()?;
+                let body_ids_tbl = lua.create_table()?;
+                let parts_tbl = lua.create_table()?;
+
+                let mut body_row = 1usize;
+                for part in parts.sequence_values::<LuaTable>() {
+                    let part = part?;
+                    let bone_value = match part.get::<_, Option<LuaValue>>("bone")? {
+                        Some(value) if !matches!(value, LuaValue::Nil) => value,
+                        _ => part.get::<_, LuaValue>("bone_idx")?,
+                    };
+                    let bone_idx =
+                        parse_bone_ref("LSkeleton:bindPhysics", &this.inner, bone_value)?;
+                    let (wx, wy, rot, _, _) =
+                        this.inner.bone_world_transform(bone_idx).ok_or_else(|| {
+                            LuaError::RuntimeError(format!(
+                                "LSkeleton:bindPhysics: bone index {} is not available",
+                                bone_idx
+                            ))
+                        })?;
+                    let x = wx + part.get::<_, Option<f32>>("offsetX")?.unwrap_or(0.0);
+                    let y = wy + part.get::<_, Option<f32>>("offsetY")?.unwrap_or(0.0);
+                    let (shape, density, friction, restitution, sensor) =
+                        shape_from_spine_part(lua, &part, alpha_defaults)?;
+                    let body_type = if sensor {
+                        BodyType::Sensor
+                    } else {
+                        parse_body_type_for_spine(
+                            "LSkeleton:bindPhysics",
+                            part.get::<_, Option<String>>("bodyType")?
+                                .or_else(|| default_body_type.clone()),
+                        )?
+                    };
+                    let mut body =
+                        body_from_spine_shape(x, y, shape.clone(), body_type).map_err(|err| {
+                            LuaError::RuntimeError(format!("LSkeleton:bindPhysics: {err}"))
+                        })?;
+                    body.angle = rot;
+                    set_spine_body_material(
+                        &mut body,
+                        &shape,
+                        density,
+                        friction,
+                        restitution,
+                        part.get::<_, Option<f32>>("mass")?,
+                    );
+                    let body_handle = lua_body_from_body(world_handle.clone(), body);
+                    let body_id = body_handle.body_id();
+                    body_by_bone[bone_idx] = Some(body_id);
+                    bodies_tbl.set(body_row, lua.create_userdata(body_handle)?)?;
+                    body_ids_tbl.set(body_row, body_id)?;
+
+                    let part_info = lua.create_table()?;
+                    part_info.set("bone", this.inner.bones[bone_idx].name.clone())?;
+                    part_info.set("bone_idx", bone_idx)?;
+                    part_info.set("bodyId", body_id)?;
+                    if let Some(slot) = part.get::<_, Option<String>>("slot")? {
+                        part_info.set("slot", slot)?;
+                    }
+                    if let Some(attachment) = part.get::<_, Option<String>>("attachment")? {
+                        part_info.set("attachment", attachment)?;
+                    }
+                    parts_tbl.set(body_row, part_info)?;
+
+                    let joint_type = part
+                        .get::<_, Option<String>>("joint")?
+                        .unwrap_or_else(|| default_joint.clone());
+                    created.push((bone_idx, body_id, wx, wy, joint_type));
+                    body_row += 1;
+                }
+
+                let joints_tbl = lua.create_table()?;
+                let joint_ids_tbl = lua.create_table()?;
+                let mut joint_row = 1usize;
+                for (bone_idx, body_id, wx, wy, joint_type) in created {
+                    if joint_type == "none" {
+                        continue;
+                    }
+                    let Some(parent_idx) = this.inner.bones[bone_idx].parent_index else {
+                        continue;
+                    };
+                    let Some(parent_body) = body_by_bone.get(parent_idx).copied().flatten() else {
+                        continue;
+                    };
+                    let jid = {
+                        let mut world = world_handle.borrow_mut();
+                        match joint_type.as_str() {
+                            "weld" | "rigid" => {
+                                world.try_add_weld_joint(parent_body, body_id, wx, wy)
+                            }
+                            "distance" => {
+                                let parent = &this.inner.bones[parent_idx];
+                                let length =
+                                    (wx - parent.world_x).hypot(wy - parent.world_y).max(0.001);
+                                world.try_add_distance_joint(
+                                    parent_body,
+                                    body_id,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    length,
+                                )
+                            }
+                            "rope" => {
+                                let parent = &this.inner.bones[parent_idx];
+                                let length =
+                                    (wx - parent.world_x).hypot(wy - parent.world_y).max(0.001);
+                                world.try_add_rope_joint(
+                                    parent_body,
+                                    body_id,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    length,
+                                )
+                            }
+                            "motor" | "spring" => {
+                                world.try_add_motor_joint(parent_body, body_id, 0.6)
+                            }
+                            "revolute" | "hinge" => {
+                                world.try_add_revolute_joint(parent_body, body_id, wx, wy)
+                            }
+                            other => {
+                                return Err(LuaError::RuntimeError(format!(
+                                    "LSkeleton:bindPhysics: unknown joint '{}'",
+                                    other
+                                )))
+                            }
+                        }
+                    }
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LSkeleton:bindPhysics: {err}"))
+                    })?;
+                    joints_tbl.set(joint_row, jid)?;
+                    joint_ids_tbl.set(joint_row, jid)?;
+                    joint_row += 1;
+                }
+
+                let result = lua.create_table()?;
+                result.set("bodies", bodies_tbl)?;
+                result.set("bodyIds", body_ids_tbl)?;
+                result.set("joints", joints_tbl)?;
+                result.set("jointIds", joint_ids_tbl)?;
+                result.set("parts", parts_tbl)?;
+                result.set("bodyCount", body_row - 1)?;
+                result.set("jointCount", joint_row - 1)?;
+                Ok(result)
+            },
+        );
         // -- type --
         /// Returns the type name of this userdata object.
         /// @return | string | Always "LSkeleton".
@@ -381,6 +807,21 @@ impl LuaUserData for LuaSkeletonAnimation {
                 this.inner
                     .add_keyframe(bone_idx, property, time, value, easing);
                 Ok(())
+            },
+        );
+        // -- addBoneTrack --
+        /// Adds many keyframes for one bone from an array of key tables.
+        /// @param | bone_idx | integer | Zero-based index of the target bone.
+        /// @param | keys | table | Array of key tables with `time` and any of x, y, rotation, scale_x, scale_y.
+        methods.add_method_mut(
+            "addBoneTrack",
+            |_, this, (bone_idx, keys): (usize, LuaTable)| {
+                add_bone_track_to_animation(
+                    "LSkeletonAnimation:addBoneTrack",
+                    &mut this.inner,
+                    bone_idx,
+                    keys,
+                )
             },
         );
         // -- getDuration --

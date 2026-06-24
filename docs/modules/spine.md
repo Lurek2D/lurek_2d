@@ -66,6 +66,8 @@ end
 - That matters because skeletal animation is more than playback: projects also need skin changes, attachment control, hierarchy updates, and pose solving that stay coherent across several animation clips.
 - Import support makes the module practical for authored content workflows, while runtime skeleton control keeps it useful for gameplay-driven animation changes after import.
 - Runtime events, attachment swaps, and skin changes are especially important because skeletal content often needs to react to equipment, status, or scripted actions without reauthoring the rig itself.
+- Table-driven track builders keep procedural animation authoring compact: scripts describe which bone moves at each key time, and the module expands that into normal timelines.
+- Physics binding lets a skeleton expose selected bones or attachments as rigid bodies connected through existing physics joints, which supports rigid ragdoll parts, hinged limbs, or spring-like linked parts without duplicating rig topology in gameplay scripts.
 - Constraint solving is a major part of the value, because believable skeletal motion often depends on live bone relationships rather than on clip playback alone.
 - That keeps imported rigs flexible at runtime.
 - Read `spine` as the owner of skeletal rig state and timeline evaluation.
@@ -707,6 +709,48 @@ end
 
 ---
 
+#### `LSkeleton:bindPhysics`
+
+Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.
+
+```lua
+LSkeleton:bindPhysics(world, parts, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `world` | [LWorld](physics.md#lworld) | Physics world that will receive the generated bodies and joints. |
+| `parts` | table | Array of part specs keyed by bone name/index plus shape, image, width/height, or radius. |
+| `opts?` | table | Defaults such as `joint`, `bodyType`, alphaThreshold, and maxVertices. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Binding result with bodies, bodyIds, joints, jointIds, and parts arrays. |
+
+**Example**
+
+```lua
+do
+    local skel = lurek.spine.newSkeleton("physics_example")
+    local root = skel:addBone("root", { x = 32, y = 48 })
+    local head = skel:addChildBone("head", root, { x = 0, y = -16 })
+    skel:updateWorldTransforms()
+    local world = lurek.physics.newWorld(0, 0)
+    local binding = skel:bindPhysics(world, {
+        { bone = root, width = 14, height = 20, joint = "none", density = 0.5 },
+        { bone = head, radius = 6, joint = "revolute", restitution = 0.4 },
+    }, { joint = "revolute" })
+    world:step(1 / 60)
+    lurek.log.info("[spine] bound bodies=" .. tostring(binding.bodyCount) .. " joints=" .. tostring(binding.jointCount))
+end
+```
+
+---
+
 #### `LSkeleton:blendAnimation`
 
 Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
@@ -815,6 +859,50 @@ do
     local arm = skel:findBone("arm")
     local root = skel:findBone("root")
     spine_log("boneCount bones=" .. tostring(bones) .. " root=" .. tostring(root) .. " arm=" .. tostring(arm))
+end
+```
+
+---
+
+#### `LSkeleton:buildAnimation`
+
+Builds a full skeleton animation from bone tracks keyed by bone name or index.
+
+```lua
+LSkeleton:buildAnimation(name, duration, tracks)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Animation name. |
+| `duration` | number | Duration in seconds. |
+| `tracks` | table|[LArray](compute.md#larray) | index>, keys={...}}` track tables. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSkeletonAnimation](#lskeletonanimation) | A new animation containing all requested bone timelines. |
+
+**Example**
+
+```lua
+do
+    local skel = lurek.spine.newSkeleton("builder_example")
+    local root = skel:addBone("root", { x = 0, y = 0 })
+    local hand = skel:addChildBone("hand", root, { x = 12, y = 0 })
+    local anim = skel:buildAnimation("wave", 1.0, {
+        { bone = "hand", keys = {
+            { time = 0.0, x = 12, y = 0, rotation = 0.0 },
+            { time = 0.5, x = 18, y = 4, rotation = 0.35, easing = "ease_in_out" },
+            { time = 1.0, x = 12, y = 0, rotation = 0.0 },
+        } },
+    })
+    skel:addAnimation(anim)
+    skel:playAnimation("wave", true)
+    lurek.log.info("[spine] buildAnimation bone=" .. tostring(hand) .. " timelines=" .. tostring(anim:getTimelineCount()))
 end
 ```
 
@@ -1781,6 +1869,39 @@ end
 *No documented fields for this handle.*
 
 ### Type Methods
+
+#### `LSkeletonAnimation:addBoneTrack`
+
+Adds many keyframes for one bone from an array of key tables.
+
+```lua
+LSkeletonAnimation:addBoneTrack(bone_idx, keys)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bone_idx` | number | Zero-based index of the target bone. |
+| `keys` | table | Array of key tables with `time` and any of x, y, rotation, scale_x, scale_y. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.spine.newSkeletonAnimation("track_example", 1.0)
+    anim:addBoneTrack(0, {
+        { time = 0.0, x = 0, y = 0, scale_x = 1.0 },
+        { time = 0.5, x = 8, y = -2, scale_x = 1.1, easing = "ease_out" },
+        { time = 1.0, x = 0, y = 0, scale_x = 1.0 },
+    })
+    local pose = anim:poseAt(0.5)
+    local duration = anim:getDuration()
+    lurek.log.info("[spine] addBoneTrack duration=" .. tostring(duration) .. " pose entries=" .. tostring(#pose))
+end
+```
+
+---
 
 #### `LSkeletonAnimation:addEventKey`
 

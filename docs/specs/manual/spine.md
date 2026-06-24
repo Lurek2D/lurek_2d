@@ -3,6 +3,7 @@
 ## TL;DR
 
 - Simulates skeletal rigs using bone hierarchies, slots, skin swaps, and target IK.
+- Builds multi-bone animation tracks from tables and can bind posed rig parts into physics bodies and joints.
 
 ## Summary
 
@@ -11,6 +12,8 @@
 - That matters because skeletal animation is more than playback: projects also need skin changes, attachment control, hierarchy updates, and pose solving that stay coherent across several animation clips.
 - Import support makes the module practical for authored content workflows, while runtime skeleton control keeps it useful for gameplay-driven animation changes after import.
 - Runtime events, attachment swaps, and skin changes are especially important because skeletal content often needs to react to equipment, status, or scripted actions without reauthoring the rig itself.
+- Table-driven track builders keep procedural animation authoring compact: scripts describe which bone moves at each key time, and the module expands that into normal timelines.
+- Physics binding lets a skeleton expose selected bones or attachments as rigid bodies connected through existing physics joints, which supports rigid ragdoll parts, hinged limbs, or spring-like linked parts without duplicating rig topology in gameplay scripts.
 - Constraint solving is a major part of the value, because believable skeletal motion often depends on live bone relationships rather than on clip playback alone.
 - That keeps imported rigs flexible at runtime.
 - Read `spine` as the owner of skeletal rig state and timeline evaluation.

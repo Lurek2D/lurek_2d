@@ -19880,6 +19880,30 @@
           "objectType": null
         },
         {
+          "name": "shapeFromImage",
+          "fullPath": "lurek.physics.shapeFromImage",
+          "signature": "(image_ud, [opts])",
+          "description": "Builds an approximate collision shape from an image alpha mask.",
+          "parameters": [
+            {
+              "name": "image",
+              "type": "LImageData",
+              "description": "Source image; pixels with alpha above threshold are treated as solid.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional keys: alphaThreshold, maxVertices, circleAspectTolerance, circleFillTolerance, rectangleFillThreshold.",
+              "optional": true
+            }
+          ],
+          "returns": "LPhysicsShape",
+          "returnType": "LPhysicsShape",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "attachShape",
           "fullPath": "lurek.physics.attachShape",
           "signature": "(body_ud, shape_ud)",
@@ -108657,6 +108681,28 @@
           "objectType": "LPhysicsShape"
         },
         {
+          "name": "getVertexCount",
+          "fullPath": "LPhysicsShape:getVertexCount",
+          "signature": "()",
+          "description": "Returns the number of local-space vertices for polygon, rectangle, edge, or chain shapes; circles return 0.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LPhysicsShape"
+        },
+        {
+          "name": "getVertices",
+          "fullPath": "LPhysicsShape:getVertices",
+          "signature": "()",
+          "description": "Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.",
+          "parameters": [],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": true,
+          "objectType": "LPhysicsShape"
+        },
+        {
           "name": "setDensity",
           "fullPath": "LPhysicsShape:setDensity",
           "signature": "(density)",
@@ -127659,6 +127705,66 @@
           "objectType": "LSkeleton"
         },
         {
+          "name": "buildAnimation",
+          "fullPath": "LSkeleton:buildAnimation",
+          "signature": "(name, duration, tracks)",
+          "description": "Builds a full skeleton animation from bone tracks keyed by bone name or index.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Animation name.",
+              "optional": false
+            },
+            {
+              "name": "duration",
+              "type": "number",
+              "description": "Duration in seconds.",
+              "optional": false
+            },
+            {
+              "name": "tracks",
+              "type": "table|Array of `{bone=<name",
+              "description": "index>, keys={...}}` track tables.",
+              "optional": false
+            }
+          ],
+          "returns": "LSkeletonAnimation",
+          "returnType": "LSkeletonAnimation",
+          "isMethod": true,
+          "objectType": "LSkeleton"
+        },
+        {
+          "name": "bindPhysics",
+          "fullPath": "LSkeleton:bindPhysics",
+          "signature": "(world_ud, parts, [opts])",
+          "description": "Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.",
+          "parameters": [
+            {
+              "name": "world",
+              "type": "LWorld",
+              "description": "Physics world that will receive the generated bodies and joints.",
+              "optional": false
+            },
+            {
+              "name": "parts",
+              "type": "table",
+              "description": "Array of part specs keyed by bone name/index plus shape, image, width/height, or radius.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Defaults such as `joint`, `bodyType`, alphaThreshold, and maxVertices.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSkeleton"
+        },
+        {
           "name": "type",
           "fullPath": "LSkeleton:type",
           "signature": "()",
@@ -127728,6 +127834,30 @@
               "type": "string",
               "description": "Easing type: \"linear\" (default), \"ease_in\", \"ease_out\", \"ease_in_out\", or \"step\".",
               "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSkeletonAnimation"
+        },
+        {
+          "name": "addBoneTrack",
+          "fullPath": "LSkeletonAnimation:addBoneTrack",
+          "signature": "(bone_idx, keys)",
+          "description": "Adds many keyframes for one bone from an array of key tables.",
+          "parameters": [
+            {
+              "name": "bone_idx",
+              "type": "integer",
+              "description": "Zero-based index of the target bone.",
+              "optional": false
+            },
+            {
+              "name": "keys",
+              "type": "table",
+              "description": "Array of key tables with `time` and any of x, y, rotation, scale_x, scale_y.",
+              "optional": false
             }
           ],
           "returns": "nil",

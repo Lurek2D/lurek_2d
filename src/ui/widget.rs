@@ -766,7 +766,7 @@ impl WidgetBase {
             is_visible: true,
             style_class: None,
             mouse_filter: widget_type.default_mouse_filter(),
-            text_align: "left".to_string(),
+            text_align: "center".to_string(),
             text_wrap: false,
             text_ellipsis: true,
             text_v_align: TextVAlign::Middle,

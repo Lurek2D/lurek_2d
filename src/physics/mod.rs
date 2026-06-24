@@ -34,7 +34,7 @@ pub use collision::CollisionInfo;
 pub use collision_helpers::{test_aabb, test_circle_aabb, test_circles, test_point_aabb};
 pub use error::PhysicsError;
 pub use limits::PhysicsLimits;
-pub use shape::{Shape, StandaloneShape};
+pub use shape::{AlphaShapeOptions, Shape, StandaloneShape};
 pub use terrain::TerrainMap;
 pub use world::BodyContact as CollisionEvent;
 pub use world::{

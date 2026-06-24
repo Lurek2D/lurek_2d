@@ -536,6 +536,7 @@ mod body_tests {
 
 mod shape_tests {
     use super::*;
+    use lurek2d::image::ImageData;
 
     #[test]
     fn from_parts_rectangle_parses_dimensions() {
@@ -606,6 +607,35 @@ mod shape_tests {
         assert!((min_y + 3.0).abs() < 1e-6);
         assert!((max_x - 4.0).abs() < 1e-6);
         assert!((max_y - 3.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn alpha_mask_inference_prefers_circle_then_polygon() {
+        let mut circle_img = ImageData::new(32, 32);
+        circle_img.draw_circle(16, 16, 8, 255, 255, 255, 255);
+        let circle = Shape::from_image_alpha(&circle_img, AlphaShapeOptions::default()).unwrap();
+        match circle {
+            Shape::Circle { radius } => assert!(radius > 6.0),
+            other => panic!("expected circle, got {other:?}"),
+        }
+
+        let mut plus_img = ImageData::new(32, 32);
+        plus_img.draw_rect(4, 16, 20, 4, 255, 255, 255, 255);
+        plus_img.draw_rect(16, 4, 4, 20, 255, 255, 255, 255);
+        let polygon = Shape::from_image_alpha(
+            &plus_img,
+            AlphaShapeOptions {
+                rectangle_fill_threshold: 1.0,
+                circle_fill_tolerance: 0.01,
+                max_vertices: 6,
+                ..AlphaShapeOptions::default()
+            },
+        )
+        .unwrap();
+        match polygon {
+            Shape::Polygon { vertices } => assert!(vertices.len() >= 3),
+            other => panic!("expected polygon, got {other:?}"),
+        }
     }
 
     #[test]

@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-06-24T16:42:00.060818+00:00",
+    "generated": "2026-06-24T17:21:31.276557+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3043,
+      "rust_items": 3044,
       "rust_modules": 727,
       "rust_tests": 492,
       "lua_tests": 277
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3043,
-      "documented": 3040,
+      "total_items": 3044,
+      "documented": 3041,
       "modules": 727
     },
     "modules": {
@@ -15219,18 +15219,25 @@
         "source_file": "src/physics/shape.rs",
         "items": [
           {
+            "name": "AlphaShapeOptions",
+            "kind": "struct",
+            "description": "Options for deriving a collision shape from an image alpha mask.",
+            "file": "src/physics/shape.rs",
+            "line": 18
+          },
+          {
             "name": "Shape",
             "kind": "enum",
             "description": "Physics primitive shape used in `Body` and `StandaloneShape`. # Variants - `Rect`: axis-aligned box with width and height. - `Circle`: circle with a radius. - `Polygon`: convex polygon vertex list. - `Edge`: single line segment. - `Chain`: open or closed polyline.",
             "file": "src/physics/shape.rs",
-            "line": 23
+            "line": 50
           },
           {
             "name": "StandaloneShape",
             "kind": "struct",
             "description": "A `Shape` combined with material properties for standalone collision testing. # Fields - `shape`: underlying geometry. - `density`: mass per area unit. - `friction`: friction coefficient. - `restitution`: bounce coefficient. - `sensor`: whether overlap-only sensor behavior is enabled.",
             "file": "src/physics/shape.rs",
-            "line": 286
+            "line": 489
           }
         ]
       },

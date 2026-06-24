@@ -5,6 +5,7 @@
 ## TL;DR
 
 - Simulates skeletal rigs using bone hierarchies, slots, skin swaps, and target IK.
+- Builds multi-bone animation tracks from tables and can bind posed rig parts into physics bodies and joints.
 
 ## General Info
 
@@ -12,7 +13,7 @@
 - Source path: `src/spine`
 - Binding: `src/lua_api/spine_api.rs`
 - Namespace: `lurek.spine`
-- Lua API surface: `4` functions, `5` types, `34` methods
+- Lua API surface: `4` functions, `5` types, `37` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -23,6 +24,8 @@
 - That matters because skeletal animation is more than playback: projects also need skin changes, attachment control, hierarchy updates, and pose solving that stay coherent across several animation clips.
 - Import support makes the module practical for authored content workflows, while runtime skeleton control keeps it useful for gameplay-driven animation changes after import.
 - Runtime events, attachment swaps, and skin changes are especially important because skeletal content often needs to react to equipment, status, or scripted actions without reauthoring the rig itself.
+- Table-driven track builders keep procedural animation authoring compact: scripts describe which bone moves at each key time, and the module expands that into normal timelines.
+- Physics binding lets a skeleton expose selected bones or attachments as rigid bodies connected through existing physics joints, which supports rigid ragdoll parts, hinged limbs, or spring-like linked parts without duplicating rig topology in gameplay scripts.
 - Constraint solving is a major part of the value, because believable skeletal motion often depends on live bone relationships rather than on clip playback alone.
 - That keeps imported rigs flexible at runtime.
 - Read `spine` as the owner of skeletal rig state and timeline evaluation.
@@ -150,8 +153,10 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LSkeleton:addIKConstraint(name, chain, bend_positive?) -> integer`: Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
 - `LSkeleton:addSkin(name) -> nil`: Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
 - `LSkeleton:addSlot(name, bone_idx, attachment?) -> integer`: Adds a slot attached to a specific bone, optionally assigning a default attachment name.
+- `LSkeleton:bindPhysics(world, parts, opts?) -> table`: Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.
 - `LSkeleton:blendAnimation(anim, time, blend_weight?) -> nil`: Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
 - `LSkeleton:boneCount() -> integer`: Returns the total number of bones in the skeleton.
+- `LSkeleton:buildAnimation(name, duration, tracks) -> LSkeletonAnimation`: Builds a full skeleton animation from bone tracks keyed by bone name or index.
 - `LSkeleton:drawToImage(w, h) -> LImageData`: Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
 - `LSkeleton:findBone(name) -> integer`: Searches for a bone by name and returns its zero-based index, or nil if not found.
 - `LSkeleton:findSlot(name) -> integer`: Searches for a slot by name and returns its zero-based index, or nil if not found.
@@ -180,6 +185,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ##### Methods
 
+- `LSkeletonAnimation:addBoneTrack(bone_idx, keys) -> nil`: Adds many keyframes for one bone from an array of key tables.
 - `LSkeletonAnimation:addEventKey(time, name, value?) -> nil`: Inserts an event trigger at a specific time within the animation timeline.
 - `LSkeletonAnimation:addKeyframe(bone_idx, property, time, value, easing?) -> nil`: Adds a keyframe to a bone's property timeline at a specific time with a value and easing curve.
 - `LSkeletonAnimation:getDuration() -> number`: Returns the total duration of this animation in seconds.

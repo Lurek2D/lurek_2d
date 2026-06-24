@@ -47,7 +47,7 @@ pub struct WidgetStyle {
     /// Text alignment string: `"left"`, `"center"`, or `"right"`.
     pub text_align: String,
 }
-/// Provide a dark-grey `WidgetStyle` with no shadow, left text alignment, and 14pt font.
+/// Provide a dark-grey `WidgetStyle` with no shadow, centered text alignment, and 14pt font.
 impl Default for WidgetStyle {
     fn default() -> Self {
         Self {
@@ -61,7 +61,7 @@ impl Default for WidgetStyle {
             shadow_offset: [0.0, 0.0],
             highlight_alpha: 0.0,
             gradient_end: None,
-            text_align: "left".to_string(),
+            text_align: "center".to_string(),
         }
     }
 }

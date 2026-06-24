@@ -6,6 +6,7 @@
 
 - Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors.
 - Supports shapes, continuous detection, and motorized mechanical joints.
+- Can infer approximate collision shapes from image alpha masks for asset-driven colliders.
 - Manages override zones, raycast queries, and destructible static terrain.
 - Provides post-step contact events and colorized visual debug overlays.
 
@@ -15,7 +16,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `22` functions, `17` types, `186` methods
+- Lua API surface: `23` functions, `17` types, `188` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -26,6 +27,7 @@
 - The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
 - Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
 - Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
+- Alpha-mask shape inference gives tools and scripts a pragmatic bridge from sprite or image assets to plausible collision geometry: circle-like masks become circles, filled masks become rectangles, and irregular masks become bounded convex polygons.
 - Contact data is one of the main user-facing outputs because systems often need normals, hit points, and begin or end state changes to react meaningfully.
 - That query surface is a major part of the module's identity. Many gameplay features care less about rigid-body theory than about dependable answers to questions such as where movement will stop, whether a region is occupied, what a sensor can currently detect, or which body pair produced a specific contact event.
 - The module therefore acts as both simulator and spatial authority. It advances bodies through time, but it also explains the world back to scripts in terms of overlaps, hits, filters, material response, joints, and collision-layer policy.
@@ -196,6 +198,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.physics.newWorld(gx, gy) -> LWorld`: Creates a new physics world with the given gravity vector.
 - `lurek.physics.setBodyVelocity(world, body, vx, vy) -> nil`: Sets a body's velocity (free-function variant).
 - `lurek.physics.setSleepingAllowed(world, body, allowed) -> nil`: Sets whether a body is allowed to sleep (free-function variant).
+- `lurek.physics.shapeFromImage(image, opts?) -> LPhysicsShape`: Builds an approximate collision shape from an image alpha mask.
 - `lurek.physics.step(world, dt) -> nil`: Steps a physics world forward by dt seconds (free-function variant).
 - `lurek.physics.testAABB(ax, ay, aw, ah, bx, by, bw, bh) -> boolean`: Tests whether two axis-aligned bounding boxes overlap. Lightweight collision check without physics world.
 - `lurek.physics.testCircleAABB(cx, cy, cr, ax, ay, aw, ah) -> boolean`: Tests whether a circle overlaps an AABB. Lightweight check without physics world.
@@ -300,6 +303,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LPhysicsShape:getBoundingBox() -> number`: Returns the axis-aligned bounding box of the shape in local coordinates.
 - `LPhysicsShape:getRadius() -> number`: Returns the radius of a circle shape. Errors if called on a non-circle shape.
 - `LPhysicsShape:getType() -> string`: Returns the shape kind as a string: "circle", "rectangle", "polygon", "edge", or "chain".
+- `LPhysicsShape:getVertexCount() -> integer`: Returns the number of local-space vertices for polygon, rectangle, edge, or chain shapes; circles return 0.
+- `LPhysicsShape:getVertices() -> table?`: Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.
 - `LPhysicsShape:setDensity(density) -> nil`: Sets the density used when this shape is attached to a body (affects mass calculation).
 - `LPhysicsShape:setFriction(friction) -> nil`: Sets the friction coefficient for this shape.
 - `LPhysicsShape:setRestitution(restitution) -> nil`: Sets the restitution (bounciness) for this shape.

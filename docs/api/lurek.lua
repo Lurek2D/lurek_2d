@@ -23307,6 +23307,14 @@ function LPhysicsShape:getRadius() end
 ---@return string Shape type name.
 function LPhysicsShape:getType() end
 
+--- Returns the number of local-space vertices for polygon, rectangle, edge, or chain shapes; circles return 0.
+---@return number Vertex count.
+function LPhysicsShape:getVertexCount() end
+
+--- Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.
+---@return table? Vertex table, or nil for circles.
+function LPhysicsShape:getVertices() end
+
 --- Sets the density used when this shape is attached to a body (affects mass calculation).
 ---@param density number Mass density.
 function LPhysicsShape:setDensity(density) end
@@ -24136,6 +24144,12 @@ lurek.physics.setBodyVelocity = function(world, body, vx, vy) end
 ---@param body LBody The body.
 ---@param allowed boolean True to allow sleeping.
 lurek.physics.setSleepingAllowed = function(world, body, allowed) end
+
+--- Builds an approximate collision shape from an image alpha mask.
+---@param image LImageData Source image; pixels with alpha above threshold are treated as solid.
+---@param opts? table Optional keys: alphaThreshold, maxVertices, circleAspectTolerance, circleFillTolerance, rectangleFillThreshold.
+---@return LPhysicsShape Circle, rectangle, or convex polygon approximating the opaque pixels.
+lurek.physics.shapeFromImage = function(image, opts) end
 
 --- Steps a physics world forward by dt seconds (free-function variant).
 ---@param world LWorld The world to step.
@@ -28015,6 +28029,13 @@ function LSkeleton:addSkin(name) end
 ---@return number Zero-based index of the newly added slot.
 function LSkeleton:addSlot(name, bone_idx, attachment) end
 
+--- Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.
+---@param world LWorld Physics world that will receive the generated bodies and joints.
+---@param parts table Array of part specs keyed by bone name/index plus shape, image, width/height, or radius.
+---@param opts? table Defaults such as `joint`, `bodyType`, alphaThreshold, and maxVertices.
+---@return table Binding result with bodies, bodyIds, joints, jointIds, and parts arrays.
+function LSkeleton:bindPhysics(world, parts, opts) end
+
 --- Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
 ---@param anim LSkeletonAnimation The animation to sample and blend from.
 ---@param time number The time position to sample within the animation.
@@ -28024,6 +28045,13 @@ function LSkeleton:blendAnimation(anim, time, blend_weight) end
 --- Returns the total number of bones in the skeleton.
 ---@return number Bone count.
 function LSkeleton:boneCount() end
+
+--- Builds a full skeleton animation from bone tracks keyed by bone name or index.
+---@param name string Animation name.
+---@param duration number Duration in seconds.
+---@param tracks table|LArray index>, keys={...}}` track tables.
+---@return LSkeletonAnimation A new animation containing all requested bone timelines.
+function LSkeleton:buildAnimation(name, duration, tracks) end
 
 --- Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
 ---@param w number Width of the output image in pixels.
@@ -28105,6 +28133,11 @@ function LSkeleton:updateAnimation(dt) end
 
 --- Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
 function LSkeleton:updateWorldTransforms() end
+
+--- Adds many keyframes for one bone from an array of key tables.
+---@param bone_idx number Zero-based index of the target bone.
+---@param keys table Array of key tables with `time` and any of x, y, rotation, scale_x, scale_y.
+function LSkeletonAnimation:addBoneTrack(bone_idx, keys) end
 
 --- Inserts an event trigger at a specific time within the animation timeline.
 ---@param time number Time position in seconds when the event fires.

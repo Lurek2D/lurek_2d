@@ -1347,3 +1347,47 @@ do
     anim:addEventKey(0.2, "step", 1)
     spine_log("LSkeletonAnimation:typeOf anim=" .. tostring(is_anim) .. " object=" .. tostring(is_object) .. " skeleton=" .. tostring(is_skeleton))
 end
+--@api: LSkeleton:buildAnimation
+do
+    local skel = lurek.spine.newSkeleton("builder_example")
+    local root = skel:addBone("root", { x = 0, y = 0 })
+    local hand = skel:addChildBone("hand", root, { x = 12, y = 0 })
+    local anim = skel:buildAnimation("wave", 1.0, {
+        { bone = "hand", keys = {
+            { time = 0.0, x = 12, y = 0, rotation = 0.0 },
+            { time = 0.5, x = 18, y = 4, rotation = 0.35, easing = "ease_in_out" },
+            { time = 1.0, x = 12, y = 0, rotation = 0.0 },
+        } },
+    })
+    skel:addAnimation(anim)
+    skel:playAnimation("wave", true)
+    lurek.log.info("[spine] buildAnimation bone=" .. tostring(hand) .. " timelines=" .. tostring(anim:getTimelineCount()))
+end
+
+--@api: LSkeleton:bindPhysics
+do
+    local skel = lurek.spine.newSkeleton("physics_example")
+    local root = skel:addBone("root", { x = 32, y = 48 })
+    local head = skel:addChildBone("head", root, { x = 0, y = -16 })
+    skel:updateWorldTransforms()
+    local world = lurek.physics.newWorld(0, 0)
+    local binding = skel:bindPhysics(world, {
+        { bone = root, width = 14, height = 20, joint = "none", density = 0.5 },
+        { bone = head, radius = 6, joint = "revolute", restitution = 0.4 },
+    }, { joint = "revolute" })
+    world:step(1 / 60)
+    lurek.log.info("[spine] bound bodies=" .. tostring(binding.bodyCount) .. " joints=" .. tostring(binding.jointCount))
+end
+
+--@api: LSkeletonAnimation:addBoneTrack
+do
+    local anim = lurek.spine.newSkeletonAnimation("track_example", 1.0)
+    anim:addBoneTrack(0, {
+        { time = 0.0, x = 0, y = 0, scale_x = 1.0 },
+        { time = 0.5, x = 8, y = -2, scale_x = 1.1, easing = "ease_out" },
+        { time = 1.0, x = 0, y = 0, scale_x = 1.0 },
+    })
+    local pose = anim:poseAt(0.5)
+    local duration = anim:getDuration()
+    lurek.log.info("[spine] addBoneTrack duration=" .. tostring(duration) .. " pose entries=" .. tostring(#pose))
+end

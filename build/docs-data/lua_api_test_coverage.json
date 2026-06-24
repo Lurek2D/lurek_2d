@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-24T16:42:53.832662+00:00",
+    "generated": "2026-06-24T17:22:27.835723+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6243,
-    "marker_covered": 6218,
+    "total_api_functions": 6249,
+    "marker_covered": 6224,
     "describe_covered": 152,
     "describe_coverage_pct": 2.4,
     "heuristic_covered": 0,
-    "total_covered": 6243,
+    "total_covered": 6249,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -37999,11 +37999,11 @@
       ]
     },
     "physics": {
-      "total": 208,
-      "marker_covered": 208,
+      "total": 211,
+      "marker_covered": 211,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 208,
+      "covered": 211,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -38124,6 +38124,15 @@
         },
         {
           "lua_name": "lurek.physics.newChainShape",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.physics.shapeFromImage",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -39816,6 +39825,24 @@
         },
         {
           "lua_name": "LPhysicsShape:getBoundingBox",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPhysicsShape:getVertexCount",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPhysicsShape:getVertices",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -46313,11 +46340,11 @@
       ]
     },
     "spine": {
-      "total": 38,
-      "marker_covered": 38,
+      "total": 41,
+      "marker_covered": 41,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 38,
+      "covered": 41,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -46571,6 +46598,24 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LSkeleton:buildAnimation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSkeleton:bindPhysics",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LSkeleton:type",
           "kind": "method",
           "marker_covered": true,
@@ -46590,6 +46635,15 @@
         },
         {
           "lua_name": "LSkeletonAnimation:addKeyframe",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSkeletonAnimation:addBoneTrack",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

@@ -580,4 +580,90 @@ end)
 end
 -- END test_spine_core_unit.lua
 
+-- BEGIN test_spine_physics_binding_unit.lua
+do
+-- Public coverage for track builders and skeleton-to-physics binding.
+
+-- @describe spine animation track builders
+describe("spine animation track builders", function()
+    -- @covers LSkeleton:buildAnimation
+    it("buildAnimation creates timelines from named bone tracks", function()
+        local sk = lurek.spine.newSkeleton("builder")
+        sk:addBone("root")
+        local hand = sk:addChildBone("hand", 0, { x = 12, y = 0 })
+        local anim = sk:buildAnimation("wave", 1.0, {
+            {
+                bone = "hand",
+                keys = {
+                    { time = 0.0, x = 12, y = 0, rotation = 0 },
+                    { time = 0.5, x = 18, y = 4, rotation = 0.3, easing = "ease_in_out" },
+                    { time = 1.0, x = 12, y = 0, rotation = 0 },
+                },
+            },
+        })
+
+        expect_type("userdata", anim)
+        expect_true(anim:getTimelineCount() >= 3)
+        sk:addAnimation(anim)
+        expect_true(sk:playAnimation("wave", false))
+        sk:updateAnimation(0.5)
+        sk:updateWorldTransforms()
+        local world = sk:getBoneWorld(hand)
+        expect_true(world.x > 12)
+    end)
+
+    -- @covers LSkeletonAnimation:addBoneTrack
+    it("addBoneTrack appends multiple properties to an existing clip", function()
+        local anim = lurek.spine.newSkeletonAnimation("track", 1.0)
+        anim:addBoneTrack(0, {
+            { time = 0.0, x = 0, y = 0 },
+            { time = 1.0, x = 10, y = 3, scale_x = 1.2 },
+        })
+
+        expect_true(anim:getTimelineCount() >= 3)
+        local pose = anim:poseAt(1.0)
+        expect_type("table", pose)
+    end)
+end)
+
+-- @describe spine physics binding
+describe("spine physics binding", function()
+    -- @covers LSkeleton:bindPhysics
+    it("bindPhysics creates bodies and parent-child joints for configured parts", function()
+        local sk = lurek.spine.newSkeleton("ragdoll")
+        local root = sk:addBone("root", { x = 20, y = 20 })
+        local head = sk:addChildBone("head", root, { x = 0, y = -12 })
+        sk:updateWorldTransforms()
+
+        local world = lurek.physics.newWorld(0, 0)
+        local binding = sk:bindPhysics(world, {
+            { bone = "root", width = 12, height = 18, joint = "none", bodyType = "dynamic", density = 0.5 },
+            { bone = head, radius = 5, joint = "revolute", restitution = 0.4 },
+        }, { joint = "revolute" })
+
+        expect_equal(2, binding.bodyCount)
+        expect_equal(1, binding.jointCount)
+        expect_equal(2, world:getBodyCount())
+        expect_equal(1, world:jointCount())
+        expect_type("userdata", binding.bodies[1])
+        expect_type("number", binding.bodyIds[1])
+        expect_type("number", binding.jointIds[1])
+
+        local img = lurek.image.newImageData(24, 24)
+        img:drawCircle(12, 12, 7, 255, 255, 255, 255)
+        local image_skel = lurek.spine.newSkeleton("image_parts")
+        image_skel:addBone("root", { x = 10, y = 10 })
+        local image_world = lurek.physics.newWorld(0, 0)
+        local image_binding = image_skel:bindPhysics(image_world, {
+            { bone = "root", image = img, joint = "none", density = 1.0 },
+        }, { alphaThreshold = 1 })
+
+        expect_equal(1, image_binding.bodyCount)
+        expect_equal(0, image_binding.jointCount)
+        expect_type("userdata", image_binding.bodies[1])
+    end)
+end)
+end
+-- END test_spine_physics_binding_unit.lua
+
 test_summary()

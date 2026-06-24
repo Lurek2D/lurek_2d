@@ -4545,3 +4545,35 @@ do
     physics_log("inside tile=" .. tostring(inside) .. " ui hover=" .. tostring(buttonHover))
     physics_log("outside tile=" .. tostring(outside) .. " hover miss=" .. tostring(missHover))
 end
+--@api: lurek.physics.shapeFromImage
+do
+    local img = lurek.image.newImageData(32, 32)
+    img:drawCircle(16, 16, 9, 255, 255, 255, 255)
+    local shape = lurek.physics.shapeFromImage(img, { alphaThreshold = 1, maxVertices = 8 })
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(20, 20, "dynamic")
+    lurek.physics.attachShape(body, shape)
+    lurek.log.info("[physics] alpha shape type=" .. shape:getType() .. " body=" .. tostring(body:getId()))
+end
+
+--@api: LPhysicsShape:getVertexCount
+do
+    local img = lurek.image.newImageData(32, 32)
+    img:drawRect(4, 16, 20, 4, 255, 255, 255, 255)
+    img:drawRect(16, 4, 4, 20, 255, 255, 255, 255)
+    local shape = lurek.physics.shapeFromImage(img, { alphaThreshold = 1, rectangleFillThreshold = 1.0 })
+    local count = shape:getVertexCount()
+    local x1, y1, x2, y2 = shape:getBoundingBox()
+    lurek.log.info("[physics] alpha vertices=" .. tostring(count) .. " bounds=" .. tostring(x1) .. "," .. tostring(y1) .. "," .. tostring(x2) .. "," .. tostring(y2))
+end
+
+--@api: LPhysicsShape:getVertices
+do
+    local shape = lurek.physics.newRectangleShape(18, 10)
+    local vertices = shape:getVertices()
+    local first = vertices and vertices[1] or { x = 0, y = 0 }
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(0, 0, "static")
+    lurek.physics.attachShape(body, shape)
+    lurek.log.info("[physics] first vertex=" .. tostring(first.x) .. "," .. tostring(first.y) .. " count=" .. tostring(#vertices))
+end

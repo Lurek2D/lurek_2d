@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-24T16:42:36.840482+00:00",
+  "generated_at": "2026-06-24T17:22:10.659589+00:00",
   "summary": {
     "rust": {
-      "total": 8698,
-      "covered": 8693,
+      "total": 8705,
+      "covered": 8700,
       "missing": 5,
       "pct": 99.9
     },
@@ -14,8 +14,8 @@
       "pct": 100.0
     },
     "total": {
-      "total": 8876,
-      "covered": 8871,
+      "total": 8883,
+      "covered": 8878,
       "missing": 5,
       "pct": 99.9
     }
@@ -34983,7 +34983,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 291,
+      "line": 333,
       "kind": "struct",
       "name": "LuaWorld",
       "has_doc": true
@@ -34992,7 +34992,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 299,
+      "line": 341,
       "kind": "fn",
       "name": "world_handle",
       "has_doc": true
@@ -35001,7 +35001,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 305,
+      "line": 347,
       "kind": "fn",
       "name": "lua_body_from_body",
       "has_doc": true
@@ -35010,7 +35010,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1545,
+      "line": 1587,
       "kind": "struct",
       "name": "LuaZone",
       "has_doc": true
@@ -35019,7 +35019,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1786,
+      "line": 1828,
       "kind": "struct",
       "name": "LuaTerrain",
       "has_doc": true
@@ -35028,7 +35028,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1965,
+      "line": 2007,
       "kind": "struct",
       "name": "LuaBody",
       "has_doc": true
@@ -35037,7 +35037,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1971,
+      "line": 2013,
       "kind": "fn",
       "name": "world_handle",
       "has_doc": true
@@ -35046,7 +35046,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1976,
+      "line": 2018,
       "kind": "fn",
       "name": "body_id",
       "has_doc": true
@@ -35055,7 +35055,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2364,
+      "line": 2393,
+      "kind": "struct",
+      "name": "LuaPhysicsShapeData",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2407,
       "kind": "struct",
       "name": "LuaPhysicsShape",
       "has_doc": true
@@ -35064,7 +35073,25 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2520,
+      "line": 2412,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2425,
+      "kind": "fn",
+      "name": "data",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2595,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35559,7 +35586,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/spine_api.rs",
-      "line": 55,
+      "line": 274,
       "kind": "struct",
       "name": "LuaSkeleton",
       "has_doc": true
@@ -35568,7 +35595,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/spine_api.rs",
-      "line": 330,
+      "line": 756,
       "kind": "struct",
       "name": "LuaSkeletonAnimation",
       "has_doc": true
@@ -35577,7 +35604,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/spine_api.rs",
-      "line": 485,
+      "line": 926,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -50958,7 +50985,16 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 23,
+      "line": 18,
+      "kind": "struct",
+      "name": "AlphaShapeOptions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/shape.rs",
+      "line": 50,
       "kind": "enum",
       "name": "Shape",
       "has_doc": true
@@ -50967,7 +51003,34 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 97,
+      "line": 227,
+      "kind": "fn",
+      "name": "from_image_alpha",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/shape.rs",
+      "line": 276,
+      "kind": "fn",
+      "name": "vertices",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/shape.rs",
+      "line": 286,
+      "kind": "fn",
+      "name": "area_estimate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "physics",
+      "file": "src/physics/shape.rs",
+      "line": 300,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -50976,7 +51039,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 159,
+      "line": 362,
       "kind": "fn",
       "name": "to_rapier_collider",
       "has_doc": true
@@ -50985,7 +51048,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 186,
+      "line": 389,
       "kind": "fn",
       "name": "from_parts",
       "has_doc": true
@@ -50994,7 +51057,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 259,
+      "line": 462,
       "kind": "fn",
       "name": "regular_polygon",
       "has_doc": true
@@ -51003,7 +51066,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 286,
+      "line": 489,
       "kind": "struct",
       "name": "StandaloneShape",
       "has_doc": true
@@ -51012,7 +51075,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 301,
+      "line": 504,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -51021,7 +51084,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 312,
+      "line": 515,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -51030,7 +51093,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 321,
+      "line": 524,
       "kind": "fn",
       "name": "get_type",
       "has_doc": true
@@ -51039,7 +51102,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 332,
+      "line": 535,
       "kind": "fn",
       "name": "get_radius",
       "has_doc": true
@@ -51048,7 +51111,7 @@
       "source": "rust",
       "module": "physics",
       "file": "src/physics/shape.rs",
-      "line": 341,
+      "line": 544,
       "kind": "fn",
       "name": "get_bounding_box",
       "has_doc": true
@@ -79218,7 +79281,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 139,
+      "line": 181,
       "kind": "fn",
       "name": "collidersRebuilt",
       "has_doc": true
@@ -79227,7 +79290,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 141,
+      "line": 183,
       "kind": "fn",
       "name": "zoneChecks",
       "has_doc": true
@@ -79236,7 +79299,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 143,
+      "line": 185,
       "kind": "fn",
       "name": "contacts",
       "has_doc": true
@@ -79245,7 +79308,7 @@
       "source": "lua_api",
       "module": "physics_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 145,
+      "line": 187,
       "kind": "fn",
       "name": "syncedBodies",
       "has_doc": true

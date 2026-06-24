@@ -2043,4 +2043,57 @@ end)
 end
 -- END test_physics_reset_policy_unit.lua
 
+-- BEGIN test_physics_alpha_shape_unit.lua
+do
+-- Public coverage for alpha-mask collision shape inference.
+
+-- @describe physics alpha shape inference
+describe("physics alpha shape inference", function()
+    -- @covers lurek.physics.shapeFromImage
+    it("shapeFromImage classifies circle-like alpha masks as circles", function()
+        local img = lurek.image.newImageData(32, 32)
+        img:drawCircle(16, 16, 8, 255, 255, 255, 255)
+        local shape = lurek.physics.shapeFromImage(img, { alphaThreshold = 1 })
+
+        expect_equal("circle", shape:getType())
+        expect_true(shape:getRadius() > 6)
+    end)
+
+    -- @covers LPhysicsShape:getVertexCount
+    it("shapeFromImage reports vertex count for irregular masks", function()
+        local img = lurek.image.newImageData(32, 32)
+        img:drawRect(4, 16, 20, 4, 255, 255, 255, 255)
+        img:drawRect(16, 4, 4, 20, 255, 255, 255, 255)
+        local shape = lurek.physics.shapeFromImage(img, {
+            alphaThreshold = 1,
+            rectangleFillThreshold = 1.0,
+            circleFillTolerance = 0.01,
+            maxVertices = 6,
+        })
+
+        expect_equal("polygon", shape:getType())
+        expect_true(shape:getVertexCount() >= 3)
+    end)
+
+    -- @covers LPhysicsShape:getVertices
+    it("shapeFromImage exposes polygon vertices for irregular masks", function()
+        local img = lurek.image.newImageData(32, 32)
+        img:drawRect(4, 16, 20, 4, 255, 255, 255, 255)
+        img:drawRect(16, 4, 4, 20, 255, 255, 255, 255)
+        local shape = lurek.physics.shapeFromImage(img, {
+            alphaThreshold = 1,
+            rectangleFillThreshold = 1.0,
+            circleFillTolerance = 0.01,
+            maxVertices = 6,
+        })
+        local vertices = shape:getVertices()
+
+        expect_type("table", vertices)
+        expect_type("number", vertices[1].x)
+        expect_type("number", vertices[1].y)
+    end)
+end)
+end
+-- END test_physics_alpha_shape_unit.lua
+
 test_summary()

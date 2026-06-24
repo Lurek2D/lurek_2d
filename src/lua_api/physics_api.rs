@@ -1,11 +1,12 @@
 //! Registers the `lurek.physics` Lua API for bodies, shapes, raycasts, queries, events, and debug settings.
 
 use super::SharedState;
+use crate::image::ImageData;
 use crate::math::Vec2;
 use crate::physics::world::BodyContact;
 use crate::physics::{
-    Body, BodyId, BodyType, PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone, RaycastHit, Shape,
-    TerrainMap, World,
+    AlphaShapeOptions, Body, BodyId, BodyType, PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone,
+    RaycastHit, Shape, TerrainMap, World,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -94,6 +95,47 @@ fn query_filter_from_lua(value: Option<LuaValue>) -> LuaResult<PhysicsQueryFilte
         filter.include_sensors = include_sensors;
     }
     Ok(filter)
+}
+
+fn alpha_shape_options_from_lua(opts: Option<LuaTable>) -> LuaResult<AlphaShapeOptions> {
+    let mut options = AlphaShapeOptions::default();
+    let Some(opts) = opts else {
+        return Ok(options);
+    };
+    if let Some(threshold) = opts.get::<_, Option<u8>>("alphaThreshold")? {
+        options.alpha_threshold = threshold;
+    }
+    if let Some(max_vertices) = opts.get::<_, Option<usize>>("maxVertices")? {
+        options.max_vertices = max_vertices;
+    }
+    if let Some(tolerance) = opts.get::<_, Option<f32>>("circleAspectTolerance")? {
+        if !tolerance.is_finite() || tolerance < 0.0 {
+            return Err(physics_runtime_error(
+                "shapeFromImage",
+                "circleAspectTolerance must be finite and >= 0",
+            ));
+        }
+        options.circle_aspect_tolerance = tolerance;
+    }
+    if let Some(tolerance) = opts.get::<_, Option<f32>>("circleFillTolerance")? {
+        if !tolerance.is_finite() || tolerance < 0.0 {
+            return Err(physics_runtime_error(
+                "shapeFromImage",
+                "circleFillTolerance must be finite and >= 0",
+            ));
+        }
+        options.circle_fill_tolerance = tolerance;
+    }
+    if let Some(threshold) = opts.get::<_, Option<f32>>("rectangleFillThreshold")? {
+        if !threshold.is_finite() || !(0.0..=1.0).contains(&threshold) {
+            return Err(physics_runtime_error(
+                "shapeFromImage",
+                "rectangleFillThreshold must be finite and in [0, 1]",
+            ));
+        }
+        options.rectangle_fill_threshold = threshold;
+    }
+    Ok(options)
 }
 
 /// Reads a required positional number from a Lua vararg list.
@@ -2347,17 +2389,18 @@ impl LuaUserData for LuaBody {
     }
 }
 /// Stores raw shape geometry and default fixture material properties for a Lua shape handle.
-struct LuaPhysicsShapeData {
+#[derive(Clone)]
+pub(crate) struct LuaPhysicsShapeData {
     /// Collision geometry attached to bodies created from this handle.
-    shape: Shape,
+    pub(crate) shape: Shape,
     /// Density applied to attached fixtures.
-    density: f32,
+    pub(crate) density: f32,
     /// Friction coefficient applied to attached fixtures.
-    friction: f32,
+    pub(crate) friction: f32,
     /// Restitution coefficient applied to attached fixtures.
-    restitution: f32,
+    pub(crate) restitution: f32,
     /// Whether attached fixtures should behave as sensors only.
-    sensor: bool,
+    pub(crate) sensor: bool,
 }
 /// A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
 #[derive(Clone)]
@@ -2366,7 +2409,7 @@ pub struct LuaPhysicsShape {
 }
 impl LuaPhysicsShape {
     /// Creates a Lua shape wrapper with default density, friction, restitution, and sensor settings.
-    fn new(shape: Shape) -> Self {
+    pub(crate) fn new(shape: Shape) -> Self {
         Self {
             inner: Rc::new(RefCell::new(LuaPhysicsShapeData {
                 shape,
@@ -2376,6 +2419,11 @@ impl LuaPhysicsShape {
                 sensor: false,
             })),
         }
+    }
+
+    /// Clone the current shape payload and material settings for internal module integrations.
+    pub(crate) fn data(&self) -> LuaPhysicsShapeData {
+        self.inner.borrow().clone()
     }
 }
 impl LuaUserData for LuaPhysicsShape {
@@ -2436,6 +2484,33 @@ impl LuaUserData for LuaPhysicsShape {
                 }
             };
             Ok((x1, y1, x2, y2))
+        });
+        // -- getVertexCount --
+        /// Returns the number of local-space vertices for polygon, rectangle, edge, or chain shapes; circles return 0.
+        /// @return | integer | Vertex count.
+        methods.add_method("getVertexCount", |_, this, ()| {
+            Ok(this
+                .inner
+                .borrow()
+                .shape
+                .vertices()
+                .map_or(0usize, |vertices| vertices.len()))
+        });
+        // -- getVertices --
+        /// Returns local-space vertices as an array of `{x, y}` tables, or nil for circles.
+        /// @return | table? | Vertex table, or nil for circles.
+        methods.add_method("getVertices", |lua, this, ()| {
+            let Some(vertices) = this.inner.borrow().shape.vertices() else {
+                return Ok(LuaValue::Nil);
+            };
+            let out = lua.create_table()?;
+            for (i, vertex) in vertices.iter().enumerate() {
+                let row = lua.create_table()?;
+                row.set("x", vertex.x)?;
+                row.set("y", vertex.y)?;
+                out.set(i + 1, row)?;
+            }
+            Ok(LuaValue::Table(out))
         });
         // -- setDensity --
         /// Sets the density used when this shape is attached to a body (affects mass calculation).
@@ -2699,6 +2774,21 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "newChainShape",
         lua.create_function(|_, (closed, coords): (bool, mlua::Variadic<f32>)| {
             chain_shape_from_coords(closed, coords)
+        })?,
+    )?;
+    // -- shapeFromImage --
+    /// Builds an approximate collision shape from an image alpha mask.
+    /// @param | image | LImageData | Source image; pixels with alpha above threshold are treated as solid.
+    /// @param | opts | table? | Optional keys: alphaThreshold, maxVertices, circleAspectTolerance, circleFillTolerance, rectangleFillThreshold.
+    /// @return | LPhysicsShape | Circle, rectangle, or convex polygon approximating the opaque pixels.
+    tbl.set(
+        "shapeFromImage",
+        lua.create_function(|_, (image_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+            let image = image_ud.borrow::<ImageData>()?;
+            let options = alpha_shape_options_from_lua(opts)?;
+            let shape = Shape::from_image_alpha(&image, options)
+                .map_err(|err| physics_runtime_error("shapeFromImage", err))?;
+            Ok(LuaPhysicsShape::new(shape))
         })?,
     )?;
     // -- attachShape --

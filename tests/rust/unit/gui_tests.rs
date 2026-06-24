@@ -40,8 +40,8 @@ fn widget_style_default_gradient_end_is_none() {
 }
 
 #[test]
-fn widget_style_default_text_align_is_left() {
-    assert_eq!(WidgetStyle::default().text_align, "left");
+fn widget_style_default_text_align_is_center() {
+    assert_eq!(WidgetStyle::default().text_align, "center");
 }
 
 #[test]
