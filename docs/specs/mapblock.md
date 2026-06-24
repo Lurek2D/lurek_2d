@@ -12,7 +12,7 @@
 - Source path: `src/mapblock`
 - Binding: `src/lua_api/mapblock_api.rs`
 - Namespace: `lurek.mapblock`
-- Lua API surface: `10` functions, `10` types, `67` methods
+- Lua API surface: `10` functions, `10` types, `69` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -300,6 +300,8 @@ This module primarily collaborates with `procgen`. Its responsibility should sta
 - `LMapBlockResult:getPlacements() -> table`: Get placement summaries from the last generation run.
 - `LMapBlockResult:getWidth() -> integer`: Get total width in tiles for this object.
 - `LMapBlockResult:isEmpty() -> boolean`: Check if result is empty for this object.
+- `LMapBlockResult:toTileField(opts?) -> LTileField`: Converts one mapblock result layer and slot into a shared tilefield ref layer.
+- `LMapBlockResult:writeTileField(field, opts?) -> nil`: Writes one mapblock result layer and slot into an existing tilefield ref layer.
 
 #### LMapGroup Type
 
@@ -425,4 +427,6 @@ This module primarily collaborates with `procgen`. Its responsibility should sta
 
 ## Notes
 
-- No additional module-specific notes.
+- `mapblock` produces assembled map data: placed blocks, tile slots, tileset references, and exported tile layers. It should not compute pathfinding, awareness, tile lighting, minimap presentation, or render commands.
+- A game that needs runtime systems should convert mapblock output into `tilemap` and/or a shared `tilefield` snapshot, then run `pathfind`, `tilelight`, `awareness`, and minimap adapters independently on that data.
+- Rust-level integration is justified only for concrete adapters such as exporting block slots into `TileField` refs or copying tile ids into a `TileMap`; policy decisions stay in Lua/game code.

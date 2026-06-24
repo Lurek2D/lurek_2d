@@ -5,10 +5,10 @@
 ## TL;DR
 
 - Supports orthogonal, isometric, and hex grids with sparse culling, LOD, and standard map imports.
-- Features autotiling, procedural generation, swept rect collisions, and pathfind navgrids.
-- Provides hex rings, polygon trigger zones, and event callbacks for entity transitions.
-- Safe constructors, bounded importers, and checked collision queries reject oversized or invalid inputs before allocation-heavy work.
-- Treats `rectOverlapsSolid`/`sweepRect` as tile-grid collision queries; physics bodies still require their own `lurek.physics` colliders and sync flow.
+- Owns runtime tilemap storage, layers, chunks, tile ids, coordinate conversion, autotiling, and render-command payload generation.
+- Provides hex/grid coordinate helpers and polygon/region utilities without owning gameplay legality.
+- Safe constructors, bounded importers, and bounded tile operations reject oversized input before allocation-heavy work.
+- Tile blockers, movement costs, visibility, fog, action legality, and tile lighting belong to `tilefield`, `pathfind`, `awareness`, and `tilelight`.
 
 ## General Info
 
@@ -16,32 +16,32 @@
 - Source path: `src/tilemap`
 - Binding: `src/lua_api/tilemap_api.rs`
 - Namespace: `lurek.tilemap`
-- Lua API surface: `30` functions, `23` types, `173` methods
+- Lua API surface: `13` functions, `14` types, `137` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
 ## Summary
 
-- The `tilemap` module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers.
+- The `tilemap` module is the engine's runtime tile-grid storage and presentation bridge for users who want tile-based spaces to be authored, generated, imported, indexed, and submitted to rendering through one reusable storage model.
 - Its value begins with representation. The module gives projects a stable way to describe tile space itself, including orthogonal, isometric, hex-based, layered, large, and chunked interpretations, so different grid styles can still live inside one conceptual family.
 - That multi-model support matters because grid worlds are not all alike. A tactics map, an isometric action world, a hex strategy board, and a layered platforming scene all have different adjacency, transform, and draw-order assumptions, yet they still need shared tooling.
-- Storage and indexing are only the foundation. Practical tile worlds also require import pipelines, coordinate conversion, tile queries, collision helpers, rendering rules, overlays, metadata, and traversal semantics, and this module keeps those concerns together.
+- Storage and indexing are only the foundation. Practical tile worlds also require import pipelines, coordinate conversion, tile queries, rendering rules, overlays, and metadata, while traversal semantics live in systems that consume shared data.
 - Import support for formats such as TMX or LDtk makes the module useful in authored-content workflows, while generation helpers and block-based assembly support keep it relevant for procedural or hybrid worlds built at runtime.
 - Autotiling is also a major user-facing capability because it lets projects derive coherent visual transitions from simpler authored data instead of manually placing every terrain variant.
 - Coordinate helpers are central because tile worlds constantly move between grid cells, world positions, screen projections, isometric transforms, hex neighbors, and chunk-local indices, and those conversions must stay consistent.
-- Collision and sweep-style queries are a major practical feature. A tile world should be directly searchable for blocked cells, traversable neighbors, hits, ranges, or occupancy questions without escalating every problem into full rigid-body simulation.
+- Movement blockers, line-of-sight blockers, tile-light blockers, ranges, action masks, and fog are not inferred by `tilemap`; projects materialize those semantics into `tilefield` and run `pathfind`, `awareness`, and `tilelight` independently.
 - Isometric and hex support deserve special emphasis because those spaces bring their own neighbor rules, movement assumptions, vertical ordering concerns, and projection logic that should not feel bolted onto a rectangular grid core.
 - Large-map and chunk-aware rendering support keep the system practical at scale, where naive whole-map processing would be too expensive or too inflexible.
-- Polygon overlays, named regions, and related metadata helpers extend the feature from geometry into gameplay space by letting designers describe areas, triggers, provinces, and semantic regions layered over the same map.
+- Polygon overlays, named regions, and related metadata helpers describe authored areas over the same map, but trigger/event policy stays in Lua or specialized gameplay systems.
 - The module is also a bridge between authored content and runtime systems. Maps loaded from external tools, generated chunks, and script-applied overlays can all resolve into one consistent tile-space authority.
-- That consistency matters because neighboring modules frequently depend on the exact same tile coordinates for different reasons: pathfinding needs traversability, render needs projection, and gameplay logic needs regions, triggers, or occupancy.
-- It also gives projects a stable place to express tile metadata, adjacency, and region semantics without scattering that meaning across several helper layers.
+- That consistency matters because neighboring modules frequently depend on the exact same tile coordinates for different reasons: `render` needs projection payloads, `pathfind` needs traversability from `tilefield`, and gameplay logic may need regions or author refs.
+- It also gives projects a stable place to express tile ids, tile metadata links, adjacency helpers, and region structure without mixing in per-system gameplay state.
 - Chunk-aware storage matters beyond performance, because streaming, tooling, and large-world editing all depend on a shared notion of how the map is partitioned.
-- That makes `tilemap` useful not only for drawing terrain, but also for organizing the world model that several other modules stand on.
-- The feature therefore serves as both storage and interpretation: it does not merely hold tile IDs, it defines what tile-space means well enough for the rest of the engine to build on top of it.
+- That makes `tilemap` useful for drawing terrain and organizing visual tile space, while shared gameplay interpretation is stored in `tilefield`.
+- The feature therefore serves as storage and presentation integration: it holds tile IDs and tile-space metadata well enough for the rest of the engine to build on top of it.
 - That authority lets authored maps, generated chunks, and runtime overlays remain compatible.
-- `pathfind`, `physics`, `raycaster`, and `render` all consume tile-space in specialized ways, but `tilemap` owns what the grid world fundamentally is.
-- Read `tilemap` as the engine's main authority for tile space and tile-world structure.
+- `pathfind`, `tilelight`, `awareness`, minimap helpers, physics scripts, raycaster, and `render` all consume tile-space in specialized ways, but `tilemap` owns the visual tile grid and coordinate model.
+- Read `tilemap` as the engine's authority for visual tilemap storage and tile-world coordinate structure.
 
 This module primarily collaborates with `color`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
@@ -51,12 +51,10 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Owning tier: `Feature Systems`
 - Plugin tier: `core_keep`
 - Lua binding owner: `src/lua_api/tilemap_api.rs`
-- Referenced engine modules: `color`, `image`, `math`, `render`, `runtime`
+- Referenced engine modules: `math`, `render`, `runtime`
 
 ## Imports
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
@@ -84,11 +82,11 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### coords.rs
 
-- Provides coordinate transforms for isometric and hex grids shared by map rendering, pathing, and range tools.
-- Converts between screen space, grid space, and directional labels so systems use one geometric language.
-- Supplies rotation, neighbor, line, ring, and spiral helpers needed by hex navigation and selection logic.
-- Keeps orientation-specific math out of map storage owners so projection changes stay locally auditable.
-- Open this file when iso or hex coordinate conversion, direction naming, or grid metric math is wrong.
+- Provides tilemap projection transforms for isometric and hex render layouts.
+- Converts between tile/grid coordinates and screen space for storage-to-render adapters.
+- Keeps orientation-specific projection math out of map storage while avoiding gameplay topology ownership.
+- Does not provide navigation, range, neighbor, line, ring, or visibility algorithms.
+- Open this file when tilemap projection between tile coordinates and screen coordinates is wrong.
 
 ### error.rs
 
@@ -134,44 +132,20 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
 - Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
-### mapgen.rs
-
-- Implements scripted procedural tilemap generation built from reusable blocks, groups, and step sequences.
-- Models block edges and matching rules so assembled regions connect with coherent boundaries and orientations.
-- Groups reusable content into named palettes that let projects target distinct world styles with one runtime.
-- Defines fill, place, scatter, flood, carve, and related generation steps under one deterministic script owner.
-- Uses seeded randomness so outputs remain repeatable for tests, content iteration, and offline batch generation.
-- Supports both single-map and multi-region production with independent seeds and layered write strategies.
-- Applies zone, side, and orientation metadata so downstream rendering and gameplay read generated maps correctly.
-- Controls how writes land on layers, allowing unified or split composition without duplicating generation logic.
-- Acts as the procedural-authoring boundary instead of pushing rule assembly into the base map storage type.
-- Open this file when generation scripts, edge matching, seeded outputs, or layered placement behave incorrectly.
-
-### mapgen_model.rs
-
-- Defines the core map-generation model types, especially cardinal edges used by block matching and adjacency rules.
-- Provides string conversion for edge values so config parsing and persistence share one canonical representation.
-- Open this file when procedural edge semantics or serialized edge naming stops matching generator expectations.
-
 ### mod.rs
 
-- Exports the tilemap subsystem surface that combines storage, import, generation, geometry, and render helpers.
+- Exports the tilemap subsystem surface that combines storage, import, geometry, and render helpers.
 - Acts as the ownership index for tile worlds so callers can see where chunks, tilesets, maps, and importers live.
 - Centralizes module visibility and re-exports instead of storing live map data or running generation itself.
-- Connects authored formats, autotiling, region maps, large-map helpers, and base tile storage into one stack.
+- Connects authored formats, autotiling, large-map helpers, and base tile storage into one stack.
 - Provides the first navigation point when tracing whether a tile concern belongs to import, storage, or rendering.
 - Keeps the public tilemap surface coherent while allowing specialized owners like isomap or TMX to stay narrow.
 - Open this file first when adding a tilemap owner or changing re-export policy for shared tilemap APIs.
 - Use it to map a tile feature to its concrete Rust owner before editing storage, import, or render behavior.
 
-### polygon_map.rs
+### orientation.rs
 
-- Owns named polygon regions that overlay tile worlds for provinces, triggers, capture zones, or selection areas.
-- Stores vertex lists, fill colors, labels, and shared outline styling so region presentation stays consistent.
-- Implements point-in-polygon queries used for selection, ownership checks, and trigger evaluation at runtime.
-- Computes centers and bounding boxes so cameras, UI, and spatial systems can reason about named regions.
-- Supports add, remove, and update flows so regions can change at runtime without reloading the whole tile map.
-- Open this file when region lookup, labeling, coloring, or polygon geometry behavior is incorrect.
+- Tilemap projection orientation shared by storage and render adapters.
 
 ### render.rs
 
@@ -182,36 +156,13 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Acts as the tilemap-to-render boundary rather than mixing draw emission into the base TileMap owner.
 - Open this file when tile draw order, culling, tint, or orientation-specific render output is incorrect.
 
-### tile_walker.rs
-
-- Defines a discrete grid walker with stable facing semantics for tile-based movement and interaction logic.
-- Supports forward, backward, and strafe motion as first-class primitives over one consistent facing model.
-- Tracks previous state so interpolation can smooth visual movement between simulation ticks or input steps.
-- Classifies neighboring cells relative to facing, which supports directional interaction and sensing flows.
-- Keeps movement and facing logic separate from collision backends so pathing integrations stay flexible.
-- Open this file when walker facing, step logic, interpolation, or directional neighbor math behaves incorrectly.
-
 ### tilemap.rs
 
-- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-- Centers the implementation around TileLayer, index, try_new, with helpers kept close to their invariants.
-- Defines how tilemap data is validated, transformed, or stored before neighboring systems use it.
-- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on tilemap behavior while Lua registration stays elsewhere.
-- Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
-- Use this file when changing tilemap defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the tilemap state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping tilemap calculations explicit at their owner boundary.
-- Provides the local adaptation layer that lets callers avoid duplicating tilemap rules while keeping call sites explicit.
-- Maintains small helper surfaces so broader engine modules can compose tilemap behavior safely.
-- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
-
-### tilemap_collision.rs
-
-- Implements narrow-phase tilemap collision using swept AABB tests so moving rectangles detect continuous impact.
-- Computes time of impact, contact point, tile coordinates, and hit normal for sliding and obstacle responses.
-- Keeps collision math separate from general map storage so movement fixes stay local and auditable.
-- Open this file when tile collision timing, normals, or contact metadata behaves incorrectly in movement code.
+- Owns the runtime tilemap storage object: layers, GIDs, tilesets, viewport, animation state, and indexes.
+- Validates tilemap dimensions and tile writes before importers, Lua bindings, or render adapters use the data.
+- Keeps gameplay semantics such as movement, visibility, lighting, physics collisions, and regions in tilefield or other systems.
+- Provides storage-side helpers used by tilemap render-command generation without owning the renderer.
+- Open this file when tile IDs, layer state, tileset attachment, animation resolution, or tilemap indexing is wrong.
 
 ### tilemap_index.rs
 
@@ -250,38 +201,19 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `lurek.tilemap.fromScreenHex(sx, sy, size) -> integer`: Converts screen-space pixel coordinates to axial hex coordinates.
 - `lurek.tilemap.fromScreenIso(sx, sy, tw, th) -> number`: Converts screen-space coordinates back to tile coordinates for isometric projection.
 - `lurek.tilemap.getAutoTileFormats() -> table`: Returns the supported auto-tile sheet layouts and their default matching modes.
-- `lurek.tilemap.hexArea(q, r, radius) -> table`: Returns all hex cells within a filled area of a given radius.
-- `lurek.tilemap.hexDistance(q1, r1, q2, r2) -> integer`: Computes the hex grid distance between two axial coordinates.
-- `lurek.tilemap.hexLine(q1, r1, q2, r2) -> table`: Returns all hex cells along a line between two axial coordinates.
-- `lurek.tilemap.hexNeighbors(q, r) -> table`: Returns the six neighboring hex cells of a given axial coordinate.
-- `lurek.tilemap.hexReflect(q, r, centerQ, centerR, axis) -> integer`: Reflects a hex cell across an axis through a center point.
-- `lurek.tilemap.hexRing(q, r, radius) -> table`: Returns all hex cells forming a ring at a given radius around a center.
-- `lurek.tilemap.hexRotate(q, r, centerQ, centerR, steps) -> integer`: Rotates a hex cell around a center point by a number of 60-degree steps.
-- `lurek.tilemap.hexRound(q, r) -> integer`: Rounds fractional axial hex coordinates to the nearest integer hex cell.
-- `lurek.tilemap.hexSpiral(q, r, radius) -> table`: Returns all hex cells in a spiral pattern out to a given radius.
-- `lurek.tilemap.isoDirectionFromAngle(angle) -> integer`: Converts an angle in degrees to the nearest isometric direction index.
-- `lurek.tilemap.isoDirectionName(direction) -> string`: Returns a human-readable name for an isometric direction index.
-- `lurek.tilemap.isoRotate(direction, steps) -> integer`: Rotates an isometric direction index by a number of 90-degree steps.
 - `lurek.tilemap.loadTMX(xml, opts?) -> table`: Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 - `lurek.tilemap.newAutoTileSheet(tileW, tileH, layout) -> LAutoTileSheet`: Creates an auto-tile sheet with a given tile size and layout.
 - `lurek.tilemap.newChunkMap(chunkSize?, opts?) -> LChunkMap`: Creates a new infinite chunk-based tile map.
 - `lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount?) -> LIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
 - `lurek.tilemap.newLargeMapRenderer(tileW, tileH) -> LLargeMapRenderer`: Creates a chunk-based large-map renderer for efficient rendering of very large maps.
-- `lurek.tilemap.newMapBlock(width, height, layers?, segmentSize?) -> LMapBlock`: Creates a new procedural map block with the given dimensions.
-- `lurek.tilemap.newMapGen(group, presetOrWidth, segmentSizeOrHeight, segmentSize?) -> LMapGen`: Creates a procedural map generator from a group and either a size preset or explicit dimensions.
-- `lurek.tilemap.newMapGroup(name) -> LMapGroup`: Creates a new map group to hold blocks and generation scripts.
-- `lurek.tilemap.newMapScript() -> LMapScript`: Creates a new empty map-generation script.
 - `lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize?, opts?) -> LTileMap`: Creates a new empty tilemap with the given tile dimensions.
 - `lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, spacing?, margin?) -> LTileSet`: Creates a new tileset from atlas parameters.
-- `lurek.tilemap.syncMinimap(map, layer, minimap, opts?) -> nil`: Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
 - `lurek.tilemap.toScreenHex(q, r, size) -> number`: Converts axial hex coordinates to screen-space pixel position.
 - `lurek.tilemap.toScreenIso(tx, ty, tw, th) -> number`: Converts tile coordinates to screen-space position for isometric projection.
 
 ### Callbacks
 
-- `LTileMap:onTileEnter` param `func` (`function`): Callback receiving `(wx, wy, tx, ty)`.
-- `LTileMap:onTileExit` param `func` (`function`): Callback receiving `(entity, tx, ty)`.
-- `LTileMap:onTileStep` param `func` (`function`): Callback receiving `(entity, tx, ty)`.
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -421,85 +353,9 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LLargeMapRenderer:type() -> string`: Returns the type name of this userdata.
 - `LLargeMapRenderer:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
-#### LMapBlock Type
-
-- Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LMapBlock:getDimensions() -> integer`: Returns both width and height of the block in tiles.
-- `LMapBlock:getHeight() -> integer`: Returns the block height in tiles. This method is available to Lua scripts.
-- `LMapBlock:getHeightInSegments() -> integer`: Returns the block height measured in segments.
-- `LMapBlock:getLayerCount() -> integer`: Returns the number of tile layers in this block.
-- `LMapBlock:getName() -> string`: Returns the block's name. This method is available to Lua scripts.
-- `LMapBlock:getSegmentSize() -> integer`: Returns the segment size used for edge matching.
-- `LMapBlock:getSide(edge, segment) -> integer`: Returns the side ID for an edge segment.
-- `LMapBlock:getTile(layer, x, y) -> integer`: Returns the tile GID at a position within the block.
-- `LMapBlock:getWeight() -> number`: Returns the current selection weight.
-- `LMapBlock:getWidth() -> integer`: Returns the block width in tiles. This method is available to Lua scripts.
-- `LMapBlock:getWidthInSegments() -> integer`: Returns the block width measured in segments.
-- `LMapBlock:setName(name) -> nil`: Sets the block's name for identification during map generation.
-- `LMapBlock:setSide(edge, segment, sideId) -> nil`: Sets the side ID for an edge segment, used for edge matching in map generation.
-- `LMapBlock:setTile(layer, x, y, gid) -> nil`: Sets a tile GID at a position within the block.
-- `LMapBlock:setWeight(weight) -> nil`: Sets the selection weight for this block during random placement.
-- `LMapBlock:type() -> string`: Returns the type name of this userdata.
-- `LMapBlock:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LMapGen Type
-
-- Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LMapGen:generate(scriptIdx?, seed?, layerName?) -> LTileMap`: Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
-- `LMapGen:type() -> string`: Returns the type name of this userdata.
-- `LMapGen:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LMapGroup Type
-
-- Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LMapGroup:addBlock(block) -> nil`: Adds a map block to this group for use in generation.
-- `LMapGroup:addScript(script) -> nil`: Attaches a map-generation script to this group.
-- `LMapGroup:getBlockCount() -> integer`: Returns how many blocks are in this group.
-- `LMapGroup:getName() -> string`: Returns the group name. This method is available to Lua scripts.
-- `LMapGroup:getScriptCount() -> integer`: Returns how many scripts are attached to this group.
-- `LMapGroup:removeBlock(idx) -> nil`: Removes a block from the group by index.
-- `LMapGroup:type() -> string`: Returns the type name of this userdata.
-- `LMapGroup:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LMapScript Type
-
-- Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LMapScript:addStep(stepDef) -> nil`: Appends a generation step. The step table must have a `type` field and optional parameters.
-- `LMapScript:getStepCount() -> integer`: Returns the number of generation steps in this script.
-- `LMapScript:type() -> string`: Returns the type name of this userdata.
-- `LMapScript:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
 #### LTileMap Type
 
-- Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
+- Lua-side handle wrapping a `TileMap` with layers, tile data, viewports, auto-tiling, and render command output.
 
 ##### Fields
 
@@ -515,13 +371,9 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:applyAutoTileAt(layer, x, y, typeName) -> nil`: Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
 - `LTileMap:applyAutoTileMode(layer, typeName) -> nil`: Runs auto-tiling on an entire layer using the mode configured on the matching tileset.
 - `LTileMap:applyAutoTileModeAt(layer, x, y, typeName) -> nil`: Runs configured-mode auto-tiling at a single tile position and updates it and its neighbors.
-- `LTileMap:checkEntities(layer, entities) -> nil`: Checks a list of entities against registered tile-enter callbacks on a layer.
 - `LTileMap:clearTile(layer, x, y) -> nil`: Removes the tile at a specific grid position, setting it to empty (GID 0).
-- `LTileMap:drawToImage(tileSize) -> LImage`: Rasterizes the map into an image using the given tile size, returning an image handle.
 - `LTileMap:fill(layer, gid) -> nil`: Fills every cell of a layer with the given GID.
 - `LTileMap:findTilesByGid(layer, gid) -> table`: Returns all positions on a layer that contain a specific GID.
-- `LTileMap:fireTileExit(gid, entity, tx, ty) -> nil`: Manually fires the tile-exit callback for a specific GID and entity at a tile position.
-- `LTileMap:fireTileStep(gid, entity, tx, ty) -> nil`: Manually fires the tile-step callback for a specific GID and entity at a tile position.
 - `LTileMap:getChunkSize() -> integer`: Returns the chunk size used for internal tile storage.
 - `LTileMap:getDiagnostics() -> nil`: Returns tilemap diagnostics counters for invalid calls, unknown gids, and lazy index rebuilds.
 - `LTileMap:getLayerColor(idx) -> number`: Returns the tint color of a layer as four RGBA components.
@@ -538,11 +390,6 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:getTileSetCount() -> integer`: Returns how many tilesets are attached to this map.
 - `LTileMap:getTileWidth() -> integer`: Returns the width of a single tile in pixels for this map.
 - `LTileMap:getViewport() -> number`: Returns the current viewport rectangle, or nils if none is set.
-- `LTileMap:isSolid(layer, x, y) -> boolean`: Checks whether the tile at a given position on a layer is solid.
-- `LTileMap:onTileEnter(gid, func) -> nil`: Registers a callback invoked when an entity enters a tile with the given GID.
-- `LTileMap:onTileExit(gid, func) -> nil`: Registers a callback invoked when an entity leaves a tile with the given GID.
-- `LTileMap:onTileStep(gid, func) -> nil`: Registers a callback invoked each frame an entity remains on a tile with the given GID.
-- `LTileMap:rectOverlapsSolid(layer, x, y, w, h) -> boolean`: Tests whether a world-space rectangle overlaps any solid tile on a layer.
 - `LTileMap:render(ox?, oy?) -> nil`: Submits render commands for all visible tiles, optionally offset by a scroll position.
 - `LTileMap:setLayerColor(idx, r, g, b, a) -> nil`: Sets the tint color for an entire layer.
 - `LTileMap:setLayerOffset(idx, ox, oy) -> nil`: Sets the pixel offset for a layer, shifting all tiles during rendering.
@@ -552,10 +399,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:setTile(layer, x, y, gid) -> nil`: Sets the tile GID at a specific grid position on a layer.
 - `LTileMap:setTileTint(layer, x, y, r, g, b, a) -> nil`: Overrides the color tint for a single tile at a given position.
 - `LTileMap:setViewport(x, y, w, h) -> nil`: Sets the visible area of the map for culling during rendering.
-- `LTileMap:sweepRect(layer, x, y, w, h, dx, dy) -> number`: Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
 - `LTileMap:tileToWorld(tx, ty) -> number`: Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
 - `LTileMap:tileTypeIndex(layer) -> table`: Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
-- `LTileMap:toNavGrid(layer, gids) -> boolean[]`: Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
 - `LTileMap:tryAddLayer(name, w, h) -> integer`: Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
 - `LTileMap:tryGetTile(layer, x, y) -> integer`: Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
 - `LTileMap:trySetTile(layer, x, y, gid) -> boolean`: Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.
@@ -594,7 +439,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 #### LTileSet Type
 
-- Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
+- Lua-side handle wrapping a `TileSet` for defining tile atlas metadata, animation, profiles, and auto-tile rules.
 
 ##### Fields
 
@@ -609,18 +454,25 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileSet:getColumns() -> integer`: Returns the number of columns in the tileset atlas image.
 - `LTileSet:getFirstGid() -> integer`: Returns the first global tile ID (GID) of this tileset.
 - `LTileSet:getMargin() -> integer`: Returns the margin around the edge of the atlas image, in pixels.
+- `LTileSet:getPhysicsShape(tileId) -> string`: Returns the physics shape name associated with this tile.
+- `LTileSet:getProfile(tileId) -> string`: Returns the tilefield profile name associated with this tile.
+- `LTileSet:getProperties(tileId) -> table`: Returns all gameplay properties associated with this tile.
+- `LTileSet:getProperty(tileId, name) -> string`: Returns an arbitrary gameplay property associated with this tile.
+- `LTileSet:getPropertyBool(tileId, name) -> boolean`: Returns an arbitrary gameplay property parsed as a boolean.
+- `LTileSet:getPropertyNumber(tileId, name) -> number`: Returns an arbitrary gameplay property parsed as a number.
 - `LTileSet:getQuad(tileId) -> table`: Returns the source rectangle (UV quad) for a tile in the atlas.
 - `LTileSet:getSpacing() -> integer`: Returns the spacing between tiles in the atlas image, in pixels.
 - `LTileSet:getTileCount() -> integer`: Returns the total number of tiles defined in this tileset.
 - `LTileSet:getTileDimensions() -> integer`: Returns both tile width and height in pixels.
 - `LTileSet:getTileHeight() -> integer`: Returns the height of a single tile in pixels.
 - `LTileSet:getTileWidth() -> integer`: Returns the width of a single tile in pixels.
-- `LTileSet:isSolid(tileId) -> boolean`: Checks whether a tile is marked as solid.
 - `LTileSet:setAnimation(tileId, frames) -> nil`: Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
 - `LTileSet:setAutoTileMode(typeName, mode) -> nil`: Sets the neighbor matching mode for a named auto-tile type.
 - `LTileSet:setAutoTileRule(typeName, bitmask, tileId) -> nil`: Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 - `LTileSet:setAutoTileRule8(typeName, bitmask, tileId) -> nil`: Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
-- `LTileSet:setSolid(tileId, solid) -> nil`: Marks a tile as solid or non-solid for collision queries.
+- `LTileSet:setPhysicsShape(tileId, shape?) -> nil`: Assigns or clears the physics shape name associated with this tile.
+- `LTileSet:setProfile(tileId, profile?) -> nil`: Assigns or clears the tilefield profile name associated with this tile.
+- `LTileSet:setProperty(tileId, name, value?) -> nil`: Assigns or clears an arbitrary gameplay property associated with this tile.
 - `LTileSet:type() -> string`: Returns the type name of this userdata.
 - `LTileSet:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
@@ -668,71 +520,6 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - No documented methods.
 
-#### LTilemapHexAreaResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `q` (`integer`): Q.
-- `r` (`number`): R.
-
-##### Methods
-
-- No documented methods.
-
-#### LTilemapHexLineResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `q` (`integer`): Q.
-- `r` (`number`): R.
-
-##### Methods
-
-- No documented methods.
-
-#### LTilemapHexNeighborsResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `q` (`integer`): Q.
-- `r` (`number`): R.
-
-##### Methods
-
-- No documented methods.
-
-#### LTilemapHexRingResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `q` (`integer`): Q.
-- `r` (`number`): R.
-
-##### Methods
-
-- No documented methods.
-
-#### LTilemapHexSpiralResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `q` (`integer`): Q.
-- `r` (`number`): R.
-
-##### Methods
-
-- No documented methods.
-
 #### LTilemapLoadTMXResult Type
 
 - Generated result shape from @field tags.
@@ -762,7 +549,6 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 ## Tests
 
 - Lua unit: `tests/lua/unit/test_tilemap_unit.lua` (present)
-- Rust: `src/tilemap/tilemap_collision.rs`
 - Rust: `src/tilemap/tilemap_index.rs`
 - Rust: `tests/rust/unit/tilemap_tests.rs`
 
@@ -809,11 +595,11 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - `tilemap` owns map storage, layers, chunks, tile ids, orientation/projection metadata, imports/exports, draw helpers, and tile-coordinate utilities.
 - Tile gameplay semantics such as movement blockers, vision/action blockers, and tile-light blockers belong in `tilefield` when a project needs one shared source of truth.
-- `lurek.tilefield.fromTileMap(tilemap, opts)` copies tilemap state into a field snapshot. Later tilemap edits are not automatically synchronized unless the adapter is called again.
-- Existing `tilemap:toNavGrid()` and `pathfind.newNavGridFromTileMap()` stay as compatibility/convenience flows for direct navigation grids.
-- `lurek.tilemap.newTileMap(...)` and `lurek.tilemap.newChunkMap(...)` accept an optional limits table with ceilings such as `maxLayers`, `maxTiles`, `maxImagePixels`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, and `maxCollisionTileChecks`.
+- `LTileSet` owns atlas-local tile metadata: visual source rectangles, animation, autotile rules, optional profile names, optional physics-shape names, and arbitrary author properties. Sprite atlases own image regions; tileset metadata explains what a tile id means.
+- Tileset profile names are lightweight links into `tilefield` profiles. They do not make `tilemap` depend on `tilefield`, and they do not duplicate full movement, vision, action, or light costs inside the atlas object.
+- `lurek.tilefield.fromTileMap(tilemap, opts)` copies tilemap state into a field snapshot. It only applies movement blockers from explicit `solidGids`; it does not infer solidity from the tileset. Later tilemap edits are not automatically synchronized unless the adapter is called again.
+- `lurek.tilemap.newTileMap(...)` and `lurek.tilemap.newChunkMap(...)` accept an optional limits table with ceilings such as `maxLayers`, `maxTiles`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, and `maxTileOperationCells`.
 - `lurek.tilemap.loadTMX(xml, opts)` supports strict/bounded import policy through `strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`, and the same byte/size limits used by safe constructors.
-- `LTileMap:worldToTile(...)` preserves legacy clamping semantics, while `LTileMap:tryWorldToTile(...)` returns `nil` for negative or non-finite world coordinates and should be preferred for picking/collision front-ends.
-- `LTileMap:rectOverlapsSolid(...)` and `LTileMap:sweepRect(...)` validate finite coordinates, positive rectangle size, and tile-check budgets before scanning the map.
+- `LTileMap:worldToTile(...)` preserves legacy clamping semantics, while `LTileMap:tryWorldToTile(...)` returns `nil` for negative or non-finite world coordinates and should be preferred for picking front-ends.
 - Reverse tile-position indexing is lazy after large writes such as `fill(...)`; callers that need dense reverse lookups should use `tileTypeIndex(...)` or `findTilesByGid(...)` and can inspect `getDiagnostics().lazyIndexRebuilds`.
-- Diagnostics counters are part of the public debugging contract: invalid layer access, invalid coordinates, invalid collision queries, unknown gids, and lazy reverse-index rebuilds are observable through `LTileMap:getDiagnostics()`.
+- Diagnostics counters are part of the public debugging contract: invalid layer access, invalid coordinates, invalid coordinate queries, unknown gids, and lazy reverse-index rebuilds are observable through `LTileMap:getDiagnostics()`.

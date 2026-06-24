@@ -49,6 +49,7 @@ The glossary collects terms that appear across module and API pages.
 - `LAssetHandle` ([lurek.asset](https://lurek2d.github.io/lurek_2d/modules/asset.html)) - Lua-side handle for a single cached asset entry.
 - `LAtlasPacker` ([lurek.sprite](https://lurek2d.github.io/lurek_2d/modules/sprite.html)) - Lua-visible wrapper around an in-memory atlas packer for dynamic sprite region allocation.
 - `LAutoTileSheet` ([lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html)) - Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
+- `LAwarenessGrid` ([lurek.awareness](https://lurek2d.github.io/lurek_2d/modules/awareness.html)) - Lua-side wrapper for a visibility grid instance.
 - `LBadge` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds badge-specific methods to a notification badge widget table.
 - `LBandit` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua handle for multi-armed bandit action selection.
 - `LBarChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a grouped bar chart with named series and category labels.
@@ -122,7 +123,7 @@ The glossary collects terms that appear across module and API pages.
 - `LFlowField` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a flow field over a navigation grid.
 - `LFont` ([lurek.font](https://lurek2d.github.io/lurek_2d/modules/font.html)) - Lua-visible font handle storing the slot key and cached metadata.
 - `LFont` ([lurek.render](https://lurek2d.github.io/lurek_2d/modules/render.html)) - Bitmap font handle for measuring and rendering text.
-- `LFov` ([lurek.visibility](https://lurek2d.github.io/lurek_2d/modules/visibility.html)) - Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
+- `LFov` ([lurek.awareness](https://lurek2d.github.io/lurek_2d/modules/awareness.html)) - Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
 - `LFrameStack` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua handle wrapping a frame-stacking ring buffer.
 - `LFunnel` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing batching funnel that collects events over a time window and flushes them together.
 - `LGeneticAlgorithm` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua handle for a floating-point genetic algorithm population.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LHeightMap` ([lurek.raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html)) - Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
 - `LHermite` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Hermite spline.
 - `LHexGrid` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a hexagonal grid.
-- `LHistogramChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a histogram chart that bins named numeric samples.

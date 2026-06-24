@@ -200,8 +200,8 @@ lurek.camera.newWalker(map, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `map` | [LTileMap](#ltilemap) | Tilemap for collision detection. |
-| `opts?` | table | Options table with keys: layer (default 1), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera). |
+| `map` | [LTileMap](#ltilemap) | Tilemap for tile/world coordinate conversion. |
+| `opts?` | table | Options table with keys: layer (retained for compatibility), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera). |
 
 **Returns**
 
@@ -4083,23 +4083,6 @@ LTileMap:applyAutoTileModeAt(layer, x, y, typeName)
 
 ---
 
-#### `LTileMap:checkEntities`
-
-Checks a list of entities against registered tile-enter callbacks on a layer.
-
-```lua
-LTileMap:checkEntities(layer, entities)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `entities` | table | Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields. |
-
----
-
 #### `LTileMap:clearTile`
 
 Removes the tile at a specific grid position, setting it to empty (GID 0).
@@ -4115,28 +4098,6 @@ LTileMap:clearTile(layer, x, y)
 | `layer` | number | Layer index (1-based). |
 | `x` | number | Column (1-based). |
 | `y` | number | Row (1-based). |
-
----
-
-#### `LTileMap:drawToImage`
-
-Rasterizes the map into an image using the given tile size, returning an image handle.
-
-```lua
-LTileMap:drawToImage(tileSize)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileSize` | number | Pixel size of each tile in the output image. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImage](render.md#limage) | Rasterized image of the map. |
 
 ---
 
@@ -4177,44 +4138,6 @@ LTileMap:findTilesByGid(layer, gid)
 | Type | Description |
 |------|-------------|
 | LTileMapFindTilesByGidResult | Array of `{x=number, y=number}` positions. |
-
----
-
-#### `LTileMap:fireTileExit`
-
-Manually fires the tile-exit callback for a specific GID and entity at a tile position.
-
-```lua
-LTileMap:fireTileExit(gid, entity, tx, ty)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID. |
-| `entity` | table | Entity table to pass to the callback. |
-| `tx` | number | Tile column. |
-| `ty` | number | Tile row. |
-
----
-
-#### `LTileMap:fireTileStep`
-
-Manually fires the tile-step callback for a specific GID and entity at a tile position.
-
-```lua
-LTileMap:fireTileStep(gid, entity, tx, ty)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID. |
-| `entity` | table | Entity table to pass to the callback. |
-| `tx` | number | Tile column. |
-| `ty` | number | Tile row. |
 
 ---
 
@@ -4521,107 +4444,6 @@ LTileMap:getViewport()
 
 ---
 
-#### `LTileMap:isSolid`
-
-Checks whether the tile at a given position on a layer is solid.
-
-```lua
-LTileMap:isSolid(layer, x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `x` | number | Column (1-based). |
-| `y` | number | Row (1-based). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the tile at that position is marked solid. |
-
----
-
-#### `LTileMap:onTileEnter`
-
-Registers a callback invoked when an entity enters a tile with the given GID.
-
-```lua
-LTileMap:onTileEnter(gid, func)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID to watch for. |
-| `func` | function | Callback receiving `(wx, wy, tx, ty)`. |
-
----
-
-#### `LTileMap:onTileExit`
-
-Registers a callback invoked when an entity leaves a tile with the given GID.
-
-```lua
-LTileMap:onTileExit(gid, func)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID to watch for. |
-| `func` | function | Callback receiving `(entity, tx, ty)`. |
-
----
-
-#### `LTileMap:onTileStep`
-
-Registers a callback invoked each frame an entity remains on a tile with the given GID.
-
-```lua
-LTileMap:onTileStep(gid, func)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID to watch for. |
-| `func` | function | Callback receiving `(entity, tx, ty)`. |
-
----
-
-#### `LTileMap:rectOverlapsSolid`
-
-Tests whether a world-space rectangle overlaps any solid tile on a layer.
-
-```lua
-LTileMap:rectOverlapsSolid(layer, x, y, w, h)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `x` | number | Rectangle left edge in world pixels. |
-| `y` | number | Rectangle top edge in world pixels. |
-| `w` | number | Rectangle width in pixels. |
-| `h` | number | Rectangle height in pixels. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if any solid tile is overlapped. |
-
----
-
 #### `LTileMap:render`
 
 Submits render commands for all visible tiles, optionally offset by a scroll position.
@@ -4788,39 +4610,6 @@ LTileMap:setViewport(x, y, w, h)
 
 ---
 
-#### `LTileMap:sweepRect`
-
-Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
-
-```lua
-LTileMap:sweepRect(layer, x, y, w, h, dx, dy)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `x` | number | Rectangle left edge in world pixels. |
-| `y` | number | Rectangle top edge in world pixels. |
-| `w` | number | Rectangle width in pixels. |
-| `h` | number | Rectangle height in pixels. |
-| `dx` | number | Horizontal movement delta. |
-| `dy` | number | Vertical movement delta. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Contact X position. |
-| number | Contact Y position. |
-| number | Normal X component. |
-| number | Normal Y component. |
-| number | Tile column hit (1-based; or 0 if no hit). |
-| number | Tile row hit (1-based; or 0 if no hit). |
-
----
-
 #### `LTileMap:tileToWorld`
 
 Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
@@ -4864,29 +4653,6 @@ LTileMap:tileTypeIndex(layer)
 | Type | Description |
 |------|-------------|
 | LTileMapTileTypeIndexResult | Table keyed by GID, each value an array of `{x=number, y=number}`. |
-
----
-
-#### `LTileMap:toNavGrid`
-
-Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
-
-```lua
-LTileMap:toNavGrid(layer, gids)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `gids` | table | Array of walkable GIDs. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean[] | Flat walkable grid (true = walkable), row-major order. |
 
 ---
 

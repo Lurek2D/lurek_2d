@@ -52,7 +52,7 @@ The engine automatically adds the correct search paths so `require("library.*")`
 | `library.patterns`     | **Deprecated 0.6.0** â€” proxy that forwards to `library.scheduler`             | Proxy   |
 | `library.province_map` | Province maps, Voronoi generation, map modes (wraps `lurek.image`)              | Full    |
 | `library.tilefield_minimap` | Syncs tilefield blocker, cost, and light exports into minimap raw layers    | Full    |
-| `library.visibility_minimap` | Syncs visibility masks into minimap fog and raw data layers                 | Full    |
+| `library.awareness_minimap` | Syncs visibility masks into minimap fog and raw data layers                 | Full    |
 | `library.quest`        | Quest tracking, objectives, and branching completion states                   | Stub    |
 | `library.rpc`          | Remote procedure calls over `lurek.network`                                   | Full    |
 | `library.scheduler`    | Pure-Lua coroutine scheduler driven by `:update(dt)` (was `library.patterns`) | Full    |

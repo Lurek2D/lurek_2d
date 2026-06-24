@@ -995,19 +995,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- newWalker --
     /// Creates a tile-grid walker with smooth camera following.
-    /// @param | map | LTileMap | Tilemap for collision detection.
-    /// @param | opts | table? | Options table with keys: layer (default 1), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera).
+    /// @param | map | LTileMap | Tilemap for tile/world coordinate conversion.
+    /// @param | opts | table? | Options table with keys: layer (retained for compatibility), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera).
     /// @return | LCameraWalker | New walker handle.
     let s = state.clone();
     tbl.set(
         "newWalker",
         lua.create_function(
             move |lua, (map_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
-                // Get LuaTileMap from userdata
                 let lua_tilemap = map_ud.borrow::<super::tilemap_api::LuaTileMap>()?;
                 let map_ref = Rc::clone(&lua_tilemap.inner);
 
-                // Parse options
                 let layer: usize = opts.as_ref().and_then(|t| t.get("layer").ok()).unwrap_or(1);
                 let tile_w: f32 = opts
                     .as_ref()
@@ -1038,7 +1036,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     .and_then(|t| t.get("y").ok())
                     .unwrap_or(tile_h * 0.5);
 
-                // Get or create camera
                 let camera = if let Some(opts_table) = opts.as_ref() {
                     if let Ok(cam_ud) = opts_table.get::<_, LuaAnyUserData>("camera") {
                         if let Ok(lua_cam) = cam_ud.borrow::<LuaCamera2D>() {
@@ -1053,10 +1050,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     Rc::new(RefCell::new(Camera2D::new(800.0, 600.0)))
                 };
 
-                // Create walker
                 let walker = CameraWalker::new(
                     map_ref,
-                    layer - 1, // Convert to 0-based
+                    layer - 1,
                     tile_w,
                     tile_h,
                     body_w,

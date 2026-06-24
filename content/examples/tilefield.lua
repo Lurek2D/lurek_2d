@@ -28,6 +28,97 @@ do
     tilefield_log("tilemap copied, blocked=" .. tostring(field:blocks(2, 2, 1, "move")))
 end
 
+--@api: lurek.tilefield.newFieldMap
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local map = lurek.tilefield.newFieldMap({ width = 2, height = 2, layers = 2, fieldWidth = 4, fieldHeight = 4, topology = "square4" })
+    local mw, mh, ml = map:getMapSize()
+    local fw, fh = map:getFieldSize()
+    local topology = map:getTopology()
+    tilefield_log("fieldmap " .. mw .. "x" .. mh .. "x" .. ml .. " field=" .. fw .. "x" .. fh .. " topology=" .. topology)
+end
+
+--@api: LTileFieldMap:getMapSize
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local map = lurek.tilefield.newFieldMap({ width = 3, height = 2, layers = 1, fieldWidth = 4, fieldHeight = 4 })
+    local width, height, layers = map:getMapSize()
+    local slots = width * height * layers
+    local valid = slots == 6
+    tilefield_log("map slots=" .. slots .. " valid=" .. tostring(valid))
+end
+
+--@api: LTileFieldMap:getFieldSize
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local map = lurek.tilefield.newFieldMap({ width = 1, height = 1, fieldWidth = 8, fieldHeight = 6, fieldLevels = 2 })
+    local width, height, levels = map:getFieldSize()
+    local cells = width * height * levels
+    local field = map:getField(1, 1, 1)
+    tilefield_log("field cells=" .. cells .. " type=" .. field:type())
+end
+
+--@api: LTileFieldMap:getTopology
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local map = lurek.tilefield.newFieldMap({ width = 1, height = 1, fieldWidth = 4, fieldHeight = 4, topology = "hex" })
+    local topology = map:getTopology()
+    local field = map:getField(1, 1, 1)
+    local same = field:getTopology() == topology
+    tilefield_log("fieldmap topology=" .. topology .. " same=" .. tostring(same))
+end
+
+--@api: LTileFieldMap:inBounds
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local map = lurek.tilefield.newFieldMap({ width = 2, height = 2, layers = 2, fieldWidth = 3, fieldHeight = 3 })
+    local inside = map:inBounds(2, 2, 2)
+    local outside = map:inBounds(3, 1, 1)
+    local default_layer = map:inBounds(1, 1)
+    tilefield_log("fieldmap bounds=" .. tostring(inside) .. "," .. tostring(outside) .. "," .. tostring(default_layer))
+end
+
+--@api: LTileFieldMap:getField
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local map = lurek.tilefield.newFieldMap({ width = 2, height = 2, layers = 2, fieldWidth = 3, fieldHeight = 3 })
+    local field = map:getField(2, 2, 2)
+    field:setRef(1, 1, 1, "floor", 12)
+    local shared = map:getField(2, 2, 2):getRef(1, 1, 1, "floor")
+    tilefield_log("shared field ref=" .. tostring(shared))
+end
+
+--@api: LTileFieldMap:setField
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local map = lurek.tilefield.newFieldMap({ width = 1, height = 1, layers = 1, fieldWidth = 3, fieldHeight = 3, topology = "square8" })
+    local field = lurek.tilefield.new({ width = 3, height = 3, topology = "square8" })
+    field:setRef(2, 2, 1, "object", 90)
+    map:setField(1, 1, 1, field)
+    tilefield_log("stored object=" .. tostring(map:getField(1, 1, 1):getRef(2, 2, 1, "object")))
+end
+
 --@api: LTileField:getSize
 do
     local function tilefield_log(message)
@@ -180,8 +271,6 @@ do
 
     local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
     field:setSunOcclusion(1, 1, 2, 0.5)
-    field:setGlobalLight({ intensity = 1 })
-    field:computeLight({ includeGlobalLight = true })
     tilefield_log("sun occlusion=" .. field:getSunOcclusion(1, 1, 2))
 end
 
@@ -250,6 +339,21 @@ do
     tilefield_log("profile removed=" .. tostring(missing))
 end
 
+--@api: LTileField:setRef
+--@api: LTileField:getRef
+--@api: LTileField:exportRefLayer
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local field = lurek.tilefield.new({ width = 4, height = 4, levels = 2 })
+    field:setRef(2, 2, 1, "floor", 101)
+    field:setRef(2, 2, 1, "wall_left", 210)
+    local layer = field:exportRefLayer("wall_left", 1)
+    tilefield_log("floor=" .. field:getRef(2, 2, 1, "floor") .. " wall_left=" .. tostring(layer[6]))
+end
+
 --@api: LTileField:line
 do
     local function tilefield_log(message)
@@ -289,72 +393,77 @@ do
     tilefield_log("first blocker x=" .. x)
 end
 
---@api: LTileField:addPointLight
+--@api: LTileLightMap:addPointLight
 do
     local function tilefield_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
     end
 
     local field = lurek.tilefield.new({ width = 5, height = 5 })
-    local id = field:addPointLight({ x = 2, y = 2, z = 1, radius = 4, intensity = 1 })
-    field:computeLight({ includePointLights = true })
-    local _, _, _, luma = field:getLight(2, 2, 1)
+    local light = lurek.tilelight.new(field)
+    local id = light:addPointLight({ x = 2, y = 2, z = 1, radius = 4, intensity = 1 })
+    light:compute({ includePointLights = true })
+    local _, _, _, luma = light:getLight(2, 2, 1)
     tilefield_log("light id=" .. id .. " luma=" .. luma)
 end
 
---@api: LTileField:updatePointLight
+--@api: LTileLightMap:updatePointLight
 do
     local function tilefield_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
     end
 
     local field = lurek.tilefield.new({ width = 5, height = 5 })
-    local id = field:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
-    field:updatePointLight(id, { x = 3, y = 3, radius = 4, intensity = 0.5 })
-    field:computeLight({ includePointLights = true })
+    local light = lurek.tilelight.new(field)
+    local id = light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
+    light:updatePointLight(id, { x = 3, y = 3, radius = 4, intensity = 0.5 })
+    light:compute({ includePointLights = true })
     tilefield_log("updated light at center")
 end
 
---@api: LTileField:removePointLight
+--@api: LTileLightMap:removePointLight
 do
     local function tilefield_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
     end
 
     local field = lurek.tilefield.new({ width = 5, height = 5 })
-    local id = field:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
-    local removed = field:removePointLight(id)
-    field:computeLight({ includePointLights = true })
+    local light = lurek.tilelight.new(field)
+    local id = light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
+    local removed = light:removePointLight(id)
+    light:compute({ includePointLights = true })
     tilefield_log("removed=" .. tostring(removed))
 end
 
---@api: LTileField:clearPointLights
+--@api: LTileLightMap:clearPointLights
 do
     local function tilefield_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
     end
 
     local field = lurek.tilefield.new({ width = 5, height = 5 })
-    field:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
-    field:clearPointLights()
-    field:computeLight({ includePointLights = true })
+    local light = lurek.tilelight.new(field)
+    light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
+    light:clearPointLights()
+    light:compute({ includePointLights = true })
     tilefield_log("point lights cleared")
 end
 
---@api: LTileField:setGlobalLight
+--@api: LTileLightMap:setGlobalLight
 do
     local function tilefield_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
     end
 
     local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
-    field:setGlobalLight({ intensity = 0.35, color = { r = 1, g = 0.95, b = 0.8 } })
-    field:computeLight({ includeGlobalLight = true })
-    local _, _, _, luma = field:getLight(1, 1, 2)
+    local light = lurek.tilelight.new(field)
+    light:setGlobalLight({ intensity = 0.35, color = { r = 1, g = 0.95, b = 0.8 } })
+    light:compute({ includeGlobalLight = true })
+    local _, _, _, luma = light:getLight(1, 1, 2)
     tilefield_log("global luma=" .. luma)
 end
 
---@api: LTileField:computeLight
+--@api: LTileLightMap:compute
 do
     local function tilefield_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
@@ -367,47 +476,51 @@ do
         sunOcclusion = 0.25,
     })
     field:applyProfile(4, 2, 1, "smoked_glass")
-    field:addPointLight({ x = 2, y = 2, z = 1, radius = 5, color = { r = 1, g = 0.35, b = 0.1 } })
-    field:computeLight({ includePointLights = true, ambient = { r = 0.02, g = 0.02, b = 0.02 } })
-    local r, g, b, luma = field:getLight(6, 2, 1)
+    local light = lurek.tilelight.new(field)
+    light:addPointLight({ x = 2, y = 2, z = 1, radius = 5, color = { r = 1, g = 0.35, b = 0.1 } })
+    light:compute({ includePointLights = true, ambient = { r = 0.02, g = 0.02, b = 0.02 } })
+    local r, g, b, luma = light:getLight(6, 2, 1)
     tilefield_log("filtered rgb=" .. (r + g + b) .. " luma=" .. luma)
 end
 
---@api: LTileField:getLight
+--@api: LTileLightMap:getLight
 do
     local function tilefield_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
     end
 
     local field = lurek.tilefield.new({ width = 4, height = 4 })
-    field:computeLight({ ambient = { r = 0.1, g = 0.1, b = 0.1 } })
-    local r, g, b, luma = field:getLight(1, 1, 1)
+    local light = lurek.tilelight.new(field)
+    light:compute({ ambient = { r = 0.1, g = 0.1, b = 0.1 } })
+    local r, g, b, luma = light:getLight(1, 1, 1)
     local rgb = r + g + b
     tilefield_log("light rgb=" .. rgb .. " luma=" .. luma)
 end
 
---@api: LTileField:exportLightLayer
+--@api: LTileLightMap:exportLayer
 do
     local function tilefield_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
     end
 
     local field = lurek.tilefield.new({ width = 3, height = 3 })
-    field:computeLight({ ambient = { r = 0.1, g = 0.1, b = 0.1 } })
-    local layer = field:exportLightLayer(1)
+    local light = lurek.tilelight.new(field)
+    light:compute({ ambient = { r = 0.1, g = 0.1, b = 0.1 } })
+    local layer = light:exportLayer(1)
     local count = #layer
     tilefield_log("light layer count=" .. count .. " first=" .. layer[1].luma)
 end
 
---@api: LTileField:exportLightVolume
+--@api: LTileLightMap:exportVolume
 do
     local function tilefield_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
     end
 
     local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
-    field:computeLight({ ambient = { r = 0.05, g = 0.05, b = 0.05 } })
-    local volume = field:exportLightVolume()
+    local light = lurek.tilelight.new(field)
+    light:compute({ ambient = { r = 0.05, g = 0.05, b = 0.05 } })
+    local volume = light:exportVolume()
     local levels = #volume
     tilefield_log("light volume levels=" .. levels .. " cells=" .. #volume[1])
 end

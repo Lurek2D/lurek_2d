@@ -7882,22 +7882,6 @@ end
 
 ### Type Methods
 
-#### `LTileField:addPointLight`
-
-Adds a point light and returns its stable id.
-
-```lua
-LTileField:addPointLight(opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `opts` | table | `{x, y, z?, radius, intensity?, color?}` light definition. |
-
----
-
 #### `LTileField:applyProfile`
 
 Applies a named profile to one cell.
@@ -7914,6 +7898,84 @@ LTileField:applyProfile(x, y, z, name)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `name` | string | Profile name to apply to the cell. |
+
+---
+
+#### `LTileField:applyTilesetProfile`
+
+Applies the tilefield profile named by a tileset tile referenced from one cell.
+
+```lua
+LTileField:applyTilesetProfile(x, y, z, slot, tileset, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `slot` | string | Reference slot name. |
+| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores profile metadata. |
+| `opts?` | table | Options: refIsGid. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a profile was found and applied. |
+
+---
+
+#### `LTileField:applyTilesetStats`
+
+Applies tileset gameplay properties for a tile referenced from one cell.
+
+```lua
+LTileField:applyTilesetStats(x, y, z, slot, tileset, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `slot` | string | Reference slot name. |
+| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `opts?` | table | Options: refIsGid. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when referenced tileset properties were found and applied. |
+
+---
+
+#### `LTileField:applyTilesetStatsLayer`
+
+Applies tileset gameplay properties for every referenced cell on one tilefield level.
+
+```lua
+LTileField:applyTilesetStatsLayer(slot, tileset, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Reference slot name. |
+| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `opts?` | table | Options: z, refIsGid. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of cells that received at least one stat. |
 
 ---
 
@@ -7944,7 +8006,7 @@ LTileField:blocks(x, y, z, channel)
 
 #### `LTileField:clear`
 
-Clears all cell gameplay state and computed light values.
+Clears all cell gameplay state.
 
 ```lua
 LTileField:clear()
@@ -7954,7 +8016,7 @@ LTileField:clear()
 
 #### `LTileField:clearCell`
 
-Clears gameplay state and light values for one addressed cell.
+Clears gameplay state for one addressed cell.
 
 ```lua
 LTileField:clearCell(x, y, z)
@@ -7995,29 +8057,22 @@ LTileField:clearLine(from_tbl, to_tbl, channel, opts)
 
 ---
 
-#### `LTileField:clearPointLights`
+#### `LTileField:clearRef`
 
-Removes all point lights currently stored on this tilefield.
-
-```lua
-LTileField:clearPointLights()
-```
-
----
-
-#### `LTileField:computeLight`
-
-Computes tile light from ambient, point lights, and global top light.
+Clears a named object/tile reference from one cell.
 
 ```lua
-LTileField:computeLight(opts)
+LTileField:clearRef(x, y, z, slot)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts?` | table | Optional includePointLights, includeGlobalLight, and ambient settings. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `slot` | string | Reference slot name. |
 
 ---
 
@@ -8067,44 +8122,6 @@ LTileField:exportCostLayer(channel, z)
 
 ---
 
-#### `LTileField:exportLightLayer`
-
-Exports one level of computed light as row-major `{r,g,b,luma}` tables.
-
-```lua
-LTileField:exportLightLayer(z)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `z?` | number | One-based level, default 1. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| table | Row-major array of light tables. |
-
----
-
-#### `LTileField:exportLightVolume`
-
-Exports all computed light levels as nested row-major tables.
-
-```lua
-LTileField:exportLightVolume()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| table | Array of per-level row-major light layers. |
-
----
-
 #### `LTileField:exportProfileLayer`
 
 Exports one level of profile names as a row-major array.
@@ -8117,6 +8134,23 @@ LTileField:exportProfileLayer(z)
 
 | Name | Type | Description |
 |------|------|-------------|
+| `z?` | number | One-based level, default 1. |
+
+---
+
+#### `LTileField:exportRefLayer`
+
+Exports one named object/tile reference slot and level as a row-major array.
+
+```lua
+LTileField:exportRefLayer(slot, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Reference slot name to export. |
 | `z?` | number | One-based level, default 1. |
 
 ---
@@ -8195,30 +8229,27 @@ LTileField:getCost(x, y, z, channel)
 
 ---
 
-#### `LTileField:getLight`
+#### `LTileField:getNeighbors`
 
-Returns r, g, b, and luma for one cell.
+Returns topology-aware same-level neighbours for one cell.
 
 ```lua
-LTileField:getLight(x, y, z)
+LTileField:getNeighbors(x, y, z)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | number | One-based cell x coordinate. |
-| `y` | number | One-based cell y coordinate. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| number | Red component in 0..1. |
-| number | Green component in 0..1. |
-| number | Blue component in 0..1. |
-| number | Luma value in 0..1. |
+| table | Array of one-based coordinate tables. |
 
 ---
 
@@ -8241,6 +8272,196 @@ LTileField:getProfile(name)
 | Type | Description |
 |------|-------------|
 | table | nil | Profile table with blockers, costs, and sunOcclusion, or nil. |
+
+---
+
+#### `LTileField:getRef`
+
+Returns a named object/tile reference from one cell, or nil.
+
+```lua
+LTileField:getRef(x, y, z, slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `slot` | string | Reference slot name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | nil | Stored reference id, or nil when unset. |
+
+---
+
+#### `LTileField:getRefProperties`
+
+Reads all tileset properties for a tile referenced from one cell.
+
+```lua
+LTileField:getRefProperties(x, y, z, slot, tileset, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `slot` | string | Reference slot name. |
+| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `opts?` | table | Options: refIsGid. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Property name/value table, or nil when the ref is missing/outside the tileset. |
+
+---
+
+#### `LTileField:getRefProperty`
+
+Reads a tileset property for a tile referenced from one cell.
+
+```lua
+LTileField:getRefProperty(x, y, z, slot, tileset, property, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `slot` | string | Reference slot name. |
+| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `property` | string | Property name to read. |
+| `opts?` | table | Options: refIsGid. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | nil | Property value, or nil when missing. |
+
+---
+
+#### `LTileField:getRefPropertyBool`
+
+Reads a tileset property for a tile referenced from one cell and parses it as a boolean.
+
+```lua
+LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `slot` | string | Reference slot name. |
+| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `property` | string | Property name to read. |
+| `opts?` | table | Options: refIsGid. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | nil | Boolean property value, or nil when missing/not boolean. |
+
+---
+
+#### `LTileField:getRefPropertyNumber`
+
+Reads a tileset property for a tile referenced from one cell and parses it as a number.
+
+```lua
+LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `slot` | string | Reference slot name. |
+| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `property` | string | Property name to read. |
+| `opts?` | table | Options: refIsGid. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | nil | Numeric property value, or nil when missing/not numeric. |
+
+---
+
+#### `LTileField:getRefSlots`
+
+Returns every named ref slot currently used by this field.
+
+```lua
+LTileField:getRefSlots()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Ref slot names. |
+
+---
+
+#### `LTileField:getRegionCells`
+
+Returns one-based cells for a named region, or nil when it does not exist.
+
+```lua
+LTileField:getRegionCells(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Region name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table? | Array of `{ x, y, z }` cells. |
+
+---
+
+#### `LTileField:getRegionNames`
+
+Returns all region names in stable order.
+
+```lua
+LTileField:getRegionNames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of region names. |
 
 ---
 
@@ -8298,7 +8519,7 @@ LTileField:getTopology()
 
 | Type | Description |
 |------|-------------|
-| string | `square`, `iso_square`, or `hex`. |
+| string | `square`, `square4`, `square8`, `iso_square`, or `hex`. |
 
 ---
 
@@ -8342,25 +8563,28 @@ LTileField:line(opts)
 
 ---
 
-#### `LTileField:removePointLight`
+#### `LTileField:regionContains`
 
-Removes a point light by id and returns whether it existed.
+Returns whether a named region contains a one-based tile cell.
 
 ```lua
-LTileField:removePointLight(id)
+LTileField:regionContains(name, x, y, z)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | number | Stable point light id returned by `addPointLight`. |
+| `name` | string | Region name. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| boolean | True when a point light was removed. |
+| boolean | True when the region contains the cell. |
 
 ---
 
@@ -8377,6 +8601,28 @@ LTileField:removeProfile(name)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Profile name to remove. |
+
+---
+
+#### `LTileField:removeRegion`
+
+Removes a named region.
+
+```lua
+LTileField:removeRegion(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Region name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the region existed. |
 
 ---
 
@@ -8439,22 +8685,6 @@ LTileField:setCost(x, y, z, channel, cost)
 
 ---
 
-#### `LTileField:setGlobalLight`
-
-Sets top-down global light parameters used during light computation.
-
-```lua
-LTileField:setGlobalLight(opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `opts` | table | `{intensity?, color?}` global top-light settings. |
-
----
-
 #### `LTileField:setProfile`
 
 Registers or replaces a named object profile.
@@ -8469,6 +8699,64 @@ LTileField:setProfile(name, profile_tbl)
 |------|------|-------------|
 | `name` | string | Profile name to create or replace. |
 | `profile_tbl` | table | Profile table with blockers, costs, and sunOcclusion fields. |
+
+---
+
+#### `LTileField:setRef`
+
+Sets a named object/tile reference on one cell.
+
+```lua
+LTileField:setRef(x, y, z, slot, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `slot` | string | Reference slot name defined by the Lua game. |
+| `value` | number | Object, tile, or tileset-local id stored for the slot. |
+
+---
+
+#### `LTileField:setRegionCells`
+
+Defines or replaces a named region from explicit one-based tile cells.
+
+```lua
+LTileField:setRegionCells(name, cells)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Region name. |
+| `cells` | table | Array of `{ x, y, z? }` cells. |
+
+---
+
+#### `LTileField:setRegionRect`
+
+Defines or replaces a named region from an inclusive one-based tile rectangle.
+
+```lua
+LTileField:setRegionRect(name, x1, y1, x2, y2, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Region name. |
+| `x1` | number | First one-based column. |
+| `y1` | number | First one-based row. |
+| `x2` | number | Second one-based column. |
+| `y2` | number | Second one-based row. |
+| `z?` | number | One-based level, default 1. |
 
 ---
 
@@ -8529,20 +8817,74 @@ LTileField:typeOf(name)
 
 ---
 
-#### `LTileField:updatePointLight`
+#### `LTileField:writeBlockLayer`
 
-Updates an existing point light by id.
+Writes one full blocker channel layer from a row-major boolean array.
 
 ```lua
-LTileField:updatePointLight(id, opts)
+LTileField:writeBlockLayer(channel, z, values)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | number | Stable point light id returned by `addPointLight`. |
-| `opts` | table | Partial light update table with x, y, z, radius, intensity, or color. |
+| `channel` | string | Blocker channel name to write. |
+| `z?` | number | One-based level, default 1. |
+| `values` | table | Row-major boolean array with width*height entries. |
+
+---
+
+#### `LTileField:writeCostLayer`
+
+Writes one full cost channel layer from a row-major number array.
+
+```lua
+LTileField:writeCostLayer(channel, z, values)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `channel` | string | Cost channel name to write. |
+| `z?` | number | One-based level, default 1. |
+| `values` | table | Row-major number array with width*height entries. |
+
+---
+
+#### `LTileField:writeProfileLayer`
+
+Writes one full profile-name layer from a row-major string-or-nil array.
+
+```lua
+LTileField:writeProfileLayer(z, values)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `z?` | number | One-based level, default 1. |
+| `values` | table | Row-major string-or-nil array with width*height entries. |
+
+---
+
+#### `LTileField:writeRefLayer`
+
+Writes one full named ref layer from a row-major integer-or-nil array.
+
+```lua
+LTileField:writeRefLayer(slot, z, values)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Reference slot name to write. |
+| `z?` | number | One-based level, default 1. |
+| `values` | table | Row-major integer-or-nil array with width*height entries. |
 
 ---
 
@@ -8702,23 +9044,6 @@ LTileMap:applyAutoTileModeAt(layer, x, y, typeName)
 
 ---
 
-#### `LTileMap:checkEntities`
-
-Checks a list of entities against registered tile-enter callbacks on a layer.
-
-```lua
-LTileMap:checkEntities(layer, entities)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `entities` | table | Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields. |
-
----
-
 #### `LTileMap:clearTile`
 
 Removes the tile at a specific grid position, setting it to empty (GID 0).
@@ -8734,28 +9059,6 @@ LTileMap:clearTile(layer, x, y)
 | `layer` | number | Layer index (1-based). |
 | `x` | number | Column (1-based). |
 | `y` | number | Row (1-based). |
-
----
-
-#### `LTileMap:drawToImage`
-
-Rasterizes the map into an image using the given tile size, returning an image handle.
-
-```lua
-LTileMap:drawToImage(tileSize)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileSize` | number | Pixel size of each tile in the output image. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImage](render.md#limage) | Rasterized image of the map. |
 
 ---
 
@@ -8796,44 +9099,6 @@ LTileMap:findTilesByGid(layer, gid)
 | Type | Description |
 |------|-------------|
 | LTileMapFindTilesByGidResult | Array of `{x=number, y=number}` positions. |
-
----
-
-#### `LTileMap:fireTileExit`
-
-Manually fires the tile-exit callback for a specific GID and entity at a tile position.
-
-```lua
-LTileMap:fireTileExit(gid, entity, tx, ty)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID. |
-| `entity` | table | Entity table to pass to the callback. |
-| `tx` | number | Tile column. |
-| `ty` | number | Tile row. |
-
----
-
-#### `LTileMap:fireTileStep`
-
-Manually fires the tile-step callback for a specific GID and entity at a tile position.
-
-```lua
-LTileMap:fireTileStep(gid, entity, tx, ty)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID. |
-| `entity` | table | Entity table to pass to the callback. |
-| `tx` | number | Tile column. |
-| `ty` | number | Tile row. |
 
 ---
 
@@ -9140,107 +9405,6 @@ LTileMap:getViewport()
 
 ---
 
-#### `LTileMap:isSolid`
-
-Checks whether the tile at a given position on a layer is solid.
-
-```lua
-LTileMap:isSolid(layer, x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `x` | number | Column (1-based). |
-| `y` | number | Row (1-based). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the tile at that position is marked solid. |
-
----
-
-#### `LTileMap:onTileEnter`
-
-Registers a callback invoked when an entity enters a tile with the given GID.
-
-```lua
-LTileMap:onTileEnter(gid, func)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID to watch for. |
-| `func` | function | Callback receiving `(wx, wy, tx, ty)`. |
-
----
-
-#### `LTileMap:onTileExit`
-
-Registers a callback invoked when an entity leaves a tile with the given GID.
-
-```lua
-LTileMap:onTileExit(gid, func)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID to watch for. |
-| `func` | function | Callback receiving `(entity, tx, ty)`. |
-
----
-
-#### `LTileMap:onTileStep`
-
-Registers a callback invoked each frame an entity remains on a tile with the given GID.
-
-```lua
-LTileMap:onTileStep(gid, func)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `gid` | number | Global tile ID to watch for. |
-| `func` | function | Callback receiving `(entity, tx, ty)`. |
-
----
-
-#### `LTileMap:rectOverlapsSolid`
-
-Tests whether a world-space rectangle overlaps any solid tile on a layer.
-
-```lua
-LTileMap:rectOverlapsSolid(layer, x, y, w, h)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `x` | number | Rectangle left edge in world pixels. |
-| `y` | number | Rectangle top edge in world pixels. |
-| `w` | number | Rectangle width in pixels. |
-| `h` | number | Rectangle height in pixels. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if any solid tile is overlapped. |
-
----
-
 #### `LTileMap:render`
 
 Submits render commands for all visible tiles, optionally offset by a scroll position.
@@ -9407,39 +9571,6 @@ LTileMap:setViewport(x, y, w, h)
 
 ---
 
-#### `LTileMap:sweepRect`
-
-Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
-
-```lua
-LTileMap:sweepRect(layer, x, y, w, h, dx, dy)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `x` | number | Rectangle left edge in world pixels. |
-| `y` | number | Rectangle top edge in world pixels. |
-| `w` | number | Rectangle width in pixels. |
-| `h` | number | Rectangle height in pixels. |
-| `dx` | number | Horizontal movement delta. |
-| `dy` | number | Vertical movement delta. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Contact X position. |
-| number | Contact Y position. |
-| number | Normal X component. |
-| number | Normal Y component. |
-| number | Tile column hit (1-based; or 0 if no hit). |
-| number | Tile row hit (1-based; or 0 if no hit). |
-
----
-
 #### `LTileMap:tileToWorld`
 
 Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
@@ -9483,29 +9614,6 @@ LTileMap:tileTypeIndex(layer)
 | Type | Description |
 |------|-------------|
 | LTileMapTileTypeIndexResult | Table keyed by GID, each value an array of `{x=number, y=number}`. |
-
----
-
-#### `LTileMap:toNavGrid`
-
-Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
-
-```lua
-LTileMap:toNavGrid(layer, gids)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `layer` | number | Layer index (1-based). |
-| `gids` | table | Array of walkable GIDs. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean[] | Flat walkable grid (true = walkable), row-major order. |
 
 ---
 

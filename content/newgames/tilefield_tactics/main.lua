@@ -8,7 +8,7 @@ local function load_system(name)
 end
 
 local FieldSystem = load_system("field")
-local VisibilitySystem = load_system("visibility")
+local AwarenessSystem = load_system("awareness")
 local MovementSystem = load_system("movement")
 local LightingSystem = load_system("lighting")
 local RenderSystem = load_system("render")
@@ -35,7 +35,7 @@ end
 local function rebuild()
     App.model = FieldSystem.create()
     LightingSystem.compute(App.model)
-    VisibilitySystem.compute(App.model)
+    AwarenessSystem.compute(App.model)
     MovementSystem.compute(App.model)
     RenderSystem.prepare(App.model)
     App.selected = "p1"
@@ -61,7 +61,7 @@ local function try_move(dx, dy)
     unit.x, unit.y = nx, ny
     App.message = App.selected .. " moved to " .. nx .. "," .. ny .. "," .. unit.z
     LightingSystem.compute(App.model)
-    VisibilitySystem.compute(App.model)
+    AwarenessSystem.compute(App.model)
     MovementSystem.compute(App.model)
     RenderSystem.prepare(App.model)
 end
@@ -73,7 +73,7 @@ local function change_level(delta)
         unit.z = nz
         App.model.active_level = nz
         App.message = App.selected .. " changed level to " .. nz
-        VisibilitySystem.compute(App.model)
+        AwarenessSystem.compute(App.model)
         MovementSystem.compute(App.model)
         RenderSystem.prepare(App.model)
     end
@@ -97,7 +97,7 @@ function lurek.process(dt)
     if lurek.input.wasActionPressed("door") then
         FieldSystem.toggle_door(App.model)
         LightingSystem.compute(App.model)
-        VisibilitySystem.compute(App.model)
+        AwarenessSystem.compute(App.model)
         MovementSystem.compute(App.model)
         RenderSystem.prepare(App.model)
         App.message = "Door toggled: " .. App.model.door_profile

@@ -1,8 +1,8 @@
-//! `src/camera/walker.rs` owns the tile-grid camera walker that couples collision-checked movement with a Camera2D.
-//! It defines `CameraWalker`, keeping walker position, body dimensions, speed, tile metrics, and camera linkage together.
-//! Tile-to-world placement, world-to-tile queries, directional movement, and solid-tile overlap checks all live here.
-//! This file bridges tilemap collision probing and camera follow updates for top-down traversal and guided movement flows.
-//! Read it when walker collision policy, movement stepping, or camera-follow coupling behavior needs to change.
+//! `src/camera/walker.rs` owns the tile-grid camera walker that couples movement with a Camera2D.
+//! It defines `CameraWalker`, keeping walker position, speed, tile metrics, and camera linkage together.
+//! Tile-to-world placement, world-to-tile queries, directional movement, and camera follow updates live here.
+//! Movement legality belongs to gameplay systems such as tilefield/pathfind, not to tilemap.
+//! Read it when walker movement stepping or camera-follow coupling behavior needs to change.
 
 use crate::camera::Camera2D;
 use crate::tilemap::tilemap::TileMap;
@@ -11,21 +11,15 @@ use std::rc::Rc;
 
 /// Walker combining tile-grid movement with camera following.
 ///
-/// Maintains a world-space center point, uses tile collision probing for movement validation,
-/// and tracks an associated camera that follows the walker position with smooth interpolation.
+/// Maintains a world-space center point and tracks an associated camera that follows the walker
+/// position with smooth interpolation.
 pub struct CameraWalker {
-    /// Reference to the tilemap used for collision detection.
+    /// Reference to the tilemap used for tile/world coordinate conversion.
     map: Rc<RefCell<TileMap>>,
-    /// Layer index (0-based) used for collision checks.
-    layer: usize,
     /// Tile width in pixels.
     tile_w: f32,
     /// Tile height in pixels.
     tile_h: f32,
-    /// Body width in pixels for collision bounds.
-    body_w: f32,
-    /// Body height in pixels for collision bounds.
-    body_h: f32,
     /// Movement speed in pixels per second.
     speed: f32,
     /// Current world-space X position (center).
@@ -37,7 +31,7 @@ pub struct CameraWalker {
 }
 
 impl CameraWalker {
-    /// Creates a new walker with tile collision and camera following.
+    /// Creates a new walker with tile placement and camera following.
     ///
     /// # Arguments
     /// * `map` — reference to the TileMap for collision probing
@@ -53,11 +47,11 @@ impl CameraWalker {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         map: Rc<RefCell<TileMap>>,
-        layer: usize,
+        _layer: usize,
         tile_w: f32,
         tile_h: f32,
-        body_w: f32,
-        body_h: f32,
+        _body_w: f32,
+        _body_h: f32,
         speed: f32,
         start_x: f32,
         start_y: f32,
@@ -68,11 +62,8 @@ impl CameraWalker {
 
         CameraWalker {
             map,
-            layer,
             tile_w,
             tile_h,
-            body_w,
-            body_h,
             speed,
             x: start_x,
             y: start_y,
@@ -108,18 +99,7 @@ impl CameraWalker {
         (tx + 1, ty + 1)
     }
 
-    /// Checks if movement would overlap solid tiles.
-    fn would_overlap(&self, next_x: f32, next_y: f32) -> bool {
-        let left = next_x - self.body_w * 0.5;
-        let top = next_y - self.body_h * 0.5;
-        let map_ref = self.map.borrow();
-        map_ref.rect_overlaps_solid(
-            self.layer,
-            crate::math::Rect::new(left, top, self.body_w, self.body_h),
-        )
-    }
-
-    /// Moves the walker in a given direction with collision checking.
+    /// Moves the walker in a given direction.
     ///
     /// # Arguments
     /// * `dx` — horizontal direction multiplier (-1, 0, or 1)
@@ -129,23 +109,14 @@ impl CameraWalker {
         let step_x = dx * self.speed * dt;
         let step_y = dy * self.speed * dt;
 
-        // Try X movement
         if step_x.abs() > 0.001 {
-            let nx = self.x + step_x;
-            if !self.would_overlap(nx, self.y) {
-                self.x = nx;
-            }
+            self.x += step_x;
         }
 
-        // Try Y movement
         if step_y.abs() > 0.001 {
-            let ny = self.y + step_y;
-            if !self.would_overlap(self.x, ny) {
-                self.y = ny;
-            }
+            self.y += step_y;
         }
 
-        // Update camera target
         self.camera.borrow_mut().set_position(self.x, self.y);
     }
 

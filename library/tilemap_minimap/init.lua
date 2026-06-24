@@ -1,6 +1,6 @@
 -- @module library.tilemap_minimap
 --- @status full
---- Helper for syncing tilemap solidity into a minimap terrain grid.
+--- Helper for syncing explicit tilemap terrain data into a minimap terrain grid.
 
 local tilemap_minimap = {}
 
@@ -89,6 +89,9 @@ function tilemap_minimap.new(opts)
     self.height = height
     self.solid_terrain = opts.solid_terrain or 2
     self.empty_terrain = opts.empty_terrain or 1
+    self.blocked_gids = opts.blocked_gids or opts.blockedGids
+    self.terrain_by_gid = opts.terrain_by_gid or opts.terrainByGid
+    self.terrain_at = opts.terrain_at or opts.terrainAt
     self.minimap = opts.minimap or create_minimap(width, height, opts.display_w, opts.display_h)
 
     if opts.auto_sync ~= false then
@@ -98,13 +101,23 @@ function tilemap_minimap.new(opts)
     return self
 end
 
---- Sync tile solidity from tilemap layer into minimap terrain.
+--- Sync explicit tilemap-derived terrain into minimap terrain.
 function TilemapMinimap:syncTerrain()
     for y = 1, self.height do
         for x = 1, self.width do
             local value = self.empty_terrain
-            if self.map:isSolid(self.layer, x, y) then
-                value = self.solid_terrain
+            if self.terrain_at then
+                value = self.terrain_at(self.map, self.layer, x, y)
+            else
+                local gid = self.map:getTile(self.layer, x, y)
+                if self.terrain_by_gid and self.terrain_by_gid[gid] then
+                    value = self.terrain_by_gid[gid]
+                elseif self.blocked_gids and self.blocked_gids[gid] then
+                    value = self.solid_terrain
+                end
+            end
+            if value == nil then
+                value = self.empty_terrain
             end
             self.minimap:setTerrain(x, y, value)
         end

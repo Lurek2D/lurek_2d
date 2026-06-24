@@ -1,21 +1,16 @@
--- Integration: tilemap solid tiles generating physics collision boundaries
--- @describe integration: tilemap solid tiles as physics boundaries
+-- Integration: tilemap gids generating physics collision boundaries through game-owned data
 
--- @describe integration: tilemap solid tiles as physics boundaries
-describe("integration: tilemap solid tiles as physics boundaries", function()
+-- @describe integration: tilemap gids as physics boundaries
+describe("integration: tilemap gids as physics boundaries", function()
     -- @integration LBody:getPosition
     -- @integration LTileMap:addLayer
-    -- @integration LTileMap:addTileSet
     -- @integration LTileMap:getTile
     -- @integration LTileMap:setTile
-    -- @integration LTileSet:isSolid
-    -- @integration LTileSet:setSolid
     -- @integration lurek.physics.destroyWorld
     -- @integration lurek.physics.newBody
     -- @integration lurek.physics.newWorld
     -- @integration lurek.physics.step
     -- @integration lurek.tilemap.newTileMap
-    -- @integration lurek.tilemap.newTileSet
     -- @integration lurek.pathfind.newNavGrid
     -- @integration lurek.pathfind.newPathfinder
     -- @integration lurek.physics.destroyWorld
@@ -23,13 +18,10 @@ describe("integration: tilemap solid tiles as physics boundaries", function()
     -- @integration lurek.physics.newWorld
     -- @integration lurek.physics.step
     -- @integration lurek.tilemap.newTileMap
-    -- @integration lurek.tilemap.newTileSet
-    it("creates physics bodies from solid tiles", function()
+    it("creates physics bodies from explicit blocked gids", function()
         -- Create a small tilemap with ground
         local map = lurek.tilemap.newTileMap(32, 32, 16)
-        local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
-        map:addTileSet(ts)
-        ts:setSolid(1, true)  -- GID 1 is solid (1-based)
+        local blocked_gids = { [1] = true }
 
         map:addLayer("ground", 10, 10)
 
@@ -38,9 +30,6 @@ describe("integration: tilemap solid tiles as physics boundaries", function()
             map:setTile(1, x, 10, 1) -- solid ground at bottom row
         end
 
-        -- Verify solid tiles
-        expect_true(ts:isSolid(1), "tile GID 1 is solid")
-
         -- Create physics world matching tilemap
         local world_id = lurek.physics.newWorld(0, 200)
 
@@ -48,7 +37,7 @@ describe("integration: tilemap solid tiles as physics boundaries", function()
         local solid_count = 0
         for x = 1, 10 do
             local gid = map:getTile(1, x, 10)
-            if gid > 0 and ts:isSolid(gid) then
+            if gid > 0 and blocked_gids[gid] then
                 lurek.physics.newBody(world_id, (x-1) * 32 + 16, 9 * 32 + 16, "static")
                 solid_count = solid_count + 1
             end
@@ -74,26 +63,20 @@ describe("integration: tilemap solid tiles as physics boundaries", function()
     end)
 end)
 
--- @describe integration: tilemap + pathfinding from solid tiles
-describe("integration: tilemap + pathfinding from solid tiles", function()
+-- @describe integration: tilemap + pathfinding from explicit gids
+describe("integration: tilemap + pathfinding from explicit gids", function()
     -- @integration LNavGrid:setBlocked
     -- @integration LTileMap:addLayer
-    -- @integration LTileMap:addTileSet
     -- @integration LTileMap:clearTile
     -- @integration LTileMap:getTile
     -- @integration LTileMap:setTile
-    -- @integration LTileSet:isSolid
-    -- @integration LTileSet:setSolid
     -- @integration LUnitPathfinder:findPath
     -- @integration lurek.pathfind.newNavGrid
     -- @integration lurek.pathfind.newPathfinder
     -- @integration lurek.tilemap.newTileMap
-    -- @integration lurek.tilemap.newTileSet
-    it("creates navgrid from tilemap solids", function()
+    it("creates navgrid from explicit blocked gids", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
-        local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
-        map:addTileSet(ts)
-        ts:setSolid(1, true)  -- GID 1 is solid (1-based)
+        local blocked_gids = { [1] = true }
 
         map:addLayer("ground", 20, 20)
 
@@ -118,7 +101,7 @@ describe("integration: tilemap + pathfinding from solid tiles", function()
         for y = 0, 19 do
             for x = 0, 19 do
                 local gid = map:getTile(1, x+1, y+1)
-                if gid > 0 and ts:isSolid(gid) then
+                if gid > 0 and blocked_gids[gid] then
                     grid:setBlocked(x+1, y+1, true)
                 end
             end

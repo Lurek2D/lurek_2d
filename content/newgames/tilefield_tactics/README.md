@@ -29,7 +29,7 @@ The board is `12x12x3`. Walls, windows, open/closed doors, and half-walls are pr
 
 - `lurek.tilefield` for profiles, blockers, costs, point lights, global light, exports, and multi-level field state.
 - `lurek.pathfind` for movement range from the field.
-- `lurek.visibility` for per-player visibility and action masks.
+- `lurek.awareness` for per-player visibility and action masks.
 - `lurek.minimap` for passive visualization of exported terrain, fog, and light data.
 - `lurek.raycaster` for field-derived scene input diagnostics.
 - `lurek.render`, `lurek.input`, `lurek.window`, and `lurek.event` for the playable shell.

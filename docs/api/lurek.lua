@@ -1357,31 +1357,6 @@ LTileSetGetQuadResult = {}
 ---@field message string Human-readable parser message.
 LTilemapFromLDtkResult = {}
 
----@class LTilemapHexAreaResult
----@field q number Q.
----@field r number R.
-LTilemapHexAreaResult = {}
-
----@class LTilemapHexLineResult
----@field q number Q.
----@field r number R.
-LTilemapHexLineResult = {}
-
----@class LTilemapHexNeighborsResult
----@field q number Q.
----@field r number R.
-LTilemapHexNeighborsResult = {}
-
----@class LTilemapHexRingResult
----@field q number Q.
----@field r number R.
-LTilemapHexRingResult = {}
-
----@class LTilemapHexSpiralResult
----@field q number Q.
----@field r number R.
-LTilemapHexSpiralResult = {}
-
 ---@class LTilemapLoadTMXResult
 ---@field code string Stable machine-readable error code.
 ---@field column number? 1-based source column when available.
@@ -1621,6 +1596,9 @@ lurek.audio.manager = {}
 ---@class lurek.automation
 lurek.automation = {}
 
+---@class lurek.awareness
+lurek.awareness = {}
+
 ---@class lurek.binary
 lurek.binary = {}
 
@@ -1807,6 +1785,9 @@ lurek.thread = {}
 ---@class lurek.tilefield
 lurek.tilefield = {}
 
+---@class lurek.tilelight
+lurek.tilelight = {}
+
 ---@class lurek.tilemap
 lurek.tilemap = {}
 
@@ -1821,9 +1802,6 @@ lurek.ui = {}
 
 ---@class lurek.validator
 lurek.validator = {}
-
----@class lurek.visibility
-lurek.visibility = {}
 
 ---@class lurek.window
 lurek.window = {}
@@ -1995,6 +1973,18 @@ LSoundPool = {}
 --- Lua-side wrapper around a loaded audio source (sound effect or music stream).
 ---@class LSource
 LSource = {}
+
+--- Lua-side wrapper for a visibility grid instance.
+---@class LAwarenessGrid
+LAwarenessGrid = {}
+
+--- Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
+---@class LFov
+LFov = {}
+
+--- Lua-side wrapper for per-player tile visibility/action masks.
+---@class LTileAwareness
+LTileAwareness = {}
 
 --- Exposes byte-buffer inspection and bit editing methods to Lua.
 ---@class LByteData
@@ -2725,6 +2715,14 @@ LCellular = {}
 ---@class LNoiseGenerator
 LNoiseGenerator = {}
 
+--- Lua-visible typed result for procgen functions that produce a 2D tile/value grid.
+---@class LProcgenGrid
+LProcgenGrid = {}
+
+--- Lua-visible typed result for procgen functions that produce a 2D scalar field.
+---@class LProcgenScalarGrid
+LProcgenScalarGrid = {}
+
 --- Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 ---@class LProvinceRegistry
 LProvinceRegistry = {}
@@ -2877,6 +2875,14 @@ LThreadPool = {}
 ---@class LTileField
 LTileField = {}
 
+--- Lua-side handle wrapping a grid of shared tilefields.
+---@class LTileFieldMap
+LTileFieldMap = {}
+
+--- Lua-side handle wrapping a tile light map tied to one shared tilefield.
+---@class LTileLightMap
+LTileLightMap = {}
+
 --- Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
 ---@class LAutoTileSheet
 LAutoTileSheet = {}
@@ -2893,27 +2899,11 @@ LIsoMap = {}
 ---@class LLargeMapRenderer
 LLargeMapRenderer = {}
 
---- Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
----@class LMapBlock
-LMapBlock = {}
-
---- Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
----@class LMapGen
-LMapGen = {}
-
---- Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
----@class LMapGroup
-LMapGroup = {}
-
---- Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
----@class LMapScript
-LMapScript = {}
-
---- Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
+--- Lua-side handle wrapping a `TileMap` with layers, tile data, viewports, auto-tiling, and render command output.
 ---@class LTileMap
 LTileMap = {}
 
---- Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
+--- Lua-side handle wrapping a `TileSet` for defining tile atlas metadata, animation, profiles, and auto-tile rules.
 ---@class LTileSet
 LTileSet = {}
 
@@ -3093,18 +3083,6 @@ LUiWidget = {}
 --- Lua userdata that runs schema and constraint validation on data tables and files.
 ---@class LValidationEngine
 LValidationEngine = {}
-
---- Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
----@class LFov
-LFov = {}
-
---- Lua-side wrapper for per-player tile visibility/action masks.
----@class LTileVisibility
-LTileVisibility = {}
-
---- Lua-side wrapper for a visibility grid instance.
----@class LVisibilityGrid
-LVisibilityGrid = {}
 
 --- Registers a named agent in the system.
 ---@param name string Unique agent name used for routing.
@@ -6351,6 +6329,229 @@ lurek.automation.update = function(dt) end
 ---@param timeout number Maximum wait duration in seconds.
 lurek.automation.waitUntil = function(predicate, timeout) end
 
+--- Drains and returns all pending visibility events.
+---@return table Array of event tables with `type`, `player_id`, and `region_id` fields.
+function LAwarenessGrid:drainEvents() end
+
+--- Gets the discovery cost for a region.
+---@param region_id number Region index (0-based).
+---@return number Discovery cost value.
+function LAwarenessGrid:getCost(region_id) end
+
+--- Gets the fog intensity for a region from a player's perspective.
+---@param player_id number Player index (0-based).
+---@param region_id number Region index (0-based).
+---@return number Fog intensity from 0.0 (clear) to 1.0 (fully fogged).
+function LAwarenessGrid:getFogIntensity(player_id, region_id) end
+
+--- Gets the visibility state for a player at a region.
+---@param player_id number Player index (0-based).
+---@param region_id number Region index (0-based).
+---@return string "hidden", "discovered", "visible", or a number for custom levels.
+function LAwarenessGrid:getState(player_id, region_id) end
+
+--- Checks if a visibility flag bit is set on a region.
+---@param region_id number Region index (0-based).
+---@param bit number Flag bit index (0-63).
+---@return boolean Whether the bit is set.
+function LAwarenessGrid:hasFlag(region_id, bit) end
+
+--- Hides a region for a player (moves from Visible to Discovered).
+---@param player_id number Player index (0-based).
+---@param region_id number Region index (0-based).
+function LAwarenessGrid:hide(player_id, region_id) end
+
+--- Returns the total number of players in the grid.
+---@return number Player count.
+function LAwarenessGrid:playerCount() end
+
+--- Returns the total number of regions in the grid.
+---@return number Region count.
+function LAwarenessGrid:regionCount() end
+
+--- Resets all visibility to Hidden for a player.
+---@param player_id number Player index (0-based).
+function LAwarenessGrid:reset(player_id) end
+
+--- Reveals a region for a player (and their allies). Optional flags argument.
+---@param player_id number Player index (0-based).
+---@param region_id number Region index (0-based).
+---@param flags? number Optional bitfield flags to set on the region.
+function LAwarenessGrid:reveal(player_id, region_id, flags) end
+
+--- Reveals all regions for a player (debug/cheat).
+---@param player_id number Player index (0-based).
+function LAwarenessGrid:revealAll(player_id) end
+
+--- Sets the discovery cost for a region.
+---@param region_id number Region index (0-based).
+---@param cost number Discovery cost value.
+function LAwarenessGrid:setCost(region_id, cost) end
+
+--- Sets a visibility flag bit on a region.
+---@param region_id number Region index (0-based).
+---@param bit number Flag bit index (0-63).
+---@param value boolean Whether to set or clear the bit.
+function LAwarenessGrid:setFlag(region_id, bit, value) end
+
+--- Sets an alliance group for a list of players (shared visibility).
+---@param players table Array of player IDs (0-based) to group together.
+---@return number The assigned group ID.
+function LAwarenessGrid:setGroup(players) end
+
+--- Checks if two players share visibility (same alliance group or same player).
+---@param player_a number First player index (0-based).
+---@param player_b number Second player index (0-based).
+---@return boolean Whether they share visibility.
+function LAwarenessGrid:sharesVisibility(player_a, player_b) end
+
+--- Runs recursive shadowcasting from the observer position.
+---@param ox number Observer column (one-based).
+---@param oy number Observer row (one-based).
+function LFov:compute(ox, oy) end
+
+--- Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
+---@param fn function Callback receiving column and row integers.
+function LFov:eachVisible(fn) end
+
+--- Serialises the visible and explored masks to a binary blob.
+---@return string Binary blob.
+function LFov:export() end
+
+--- Restores visible and explored masks from a blob produced by `export`.
+---@param blob string Binary blob.
+function LFov:import(blob) end
+
+--- Returns true if the cell has ever been visible.
+---@param x number Column (one-based).
+---@param y number Row (one-based).
+---@return boolean True when explored.
+function LFov:isExplored(x, y) end
+
+--- Returns true if the cell is visible in the current frame.
+---@param x number Column (one-based).
+---@param y number Row (one-based).
+---@return boolean True when visible.
+function LFov:isVisible(x, y) end
+
+--- Clears the explored mask so all cells appear unexplored.
+function LFov:resetExplored() end
+
+--- Sets the Lua predicate that determines which cells are opaque.
+---@param fn function `fn(x: integer, y: integer) -> boolean` (one-based).
+function LFov:setBlocker(fn) end
+
+--- Changes the visibility radius for subsequent compute calls.
+---@param range number Maximum sight radius in cells.
+function LFov:setRange(range) end
+
+--- Returns the Lua-visible type name for this FOV handle.
+---@return string The string `LFov`.
+function LFov:type() end
+
+--- Returns whether this FOV handle matches the given type name.
+---@param name string Type name to check.
+---@return boolean True when the name matches.
+function LFov:typeOf(name) end
+
+--- Returns an array of `{x, y}` tables for all currently visible cells (one-based).
+---@return table Array of cell position tables.
+function LFov:visibleCells() end
+
+--- Returns all currently actionable cells for a player, optionally filtered to a level.
+---@param player string Player identifier to query.
+---@param z? number Optional one-based level filter.
+---@return table Array of one-based actionable cell tables.
+function LTileAwareness:actionCells(player, z) end
+
+--- Returns whether a one-based cell is currently actionable for a player.
+---@param player string Player identifier to query.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the cell is currently actionable.
+function LTileAwareness:canActOn(player, x, y, z) end
+
+--- Clears current, explored, and action masks for all players.
+function LTileAwareness:clearAll() end
+
+--- Clears current, explored, and action masks for one player.
+---@param player string Player identifier whose visibility state should be cleared.
+function LTileAwareness:clearPlayer(player) end
+
+--- Computes one player's current action mask from a tilefield origin.
+---@param player string Player identifier whose action mask should be computed.
+---@param opts table Options table with origin, range, and optional action channel.
+function LTileAwareness:computeAction(player, opts) end
+
+--- Computes one player's current visible mask from a tilefield origin.
+---@param player string Player identifier whose visibility mask should be computed.
+---@param opts table Options table with origin, range, and optional vision channel.
+function LTileAwareness:computeVisible(player, opts) end
+
+--- Returns whether a one-based cell has been explored for a player.
+---@param player string Player identifier to query.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the cell has been explored.
+function LTileAwareness:isExplored(player, x, y, z) end
+
+--- Returns whether a one-based cell is currently visible for a player.
+---@param player string Player identifier to query.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the cell is currently visible.
+function LTileAwareness:isVisible(player, x, y, z) end
+
+--- Returns the Lua-visible type name for this tile visibility handle.
+---@return string The string `LTileAwareness`.
+function LTileAwareness:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare against this handle.
+---@return boolean True for `LTileAwareness` or `LObject`.
+function LTileAwareness:typeOf(name) end
+
+--- Returns all currently visible cells for a player, optionally filtered to a level.
+---@param player string Player identifier to query.
+---@param z? number Optional one-based level filter.
+---@return table Array of one-based visible cell tables.
+function LTileAwareness:visibleCells(player, z) end
+
+--- Returns whether two tilefield cells have a clear action line.
+---@param field LTileField Tilefield to query.
+---@param from table One-based `{x,y,z?}` start.
+---@param to table One-based `{x,y,z?}` target.
+---@param opts? table Optional `{channel="action"}`.
+---@return boolean True when clear.
+lurek.awareness.lineOfAction = function(field, from, to, opts) end
+
+--- Returns whether two tilefield cells have a clear sight line.
+---@param field LTileField Tilefield to query.
+---@param from table One-based `{x,y,z?}` start.
+---@param to table One-based `{x,y,z?}` target.
+---@param opts? table Optional `{channel="vision"}`.
+---@return boolean True when clear.
+lurek.awareness.lineOfSight = function(field, from, to, opts) end
+
+--- Create a new visibility grid for shadow-cast computation.
+---@param config table Configuration table with `regions` (integer) and `players` (integer) fields. Optional `fog` sub-table with `discovered` (number), `hidden` (number), `smooth` (boolean), `speed` (number).
+---@return LAwarenessGrid New visibility grid handle.
+lurek.awareness.new = function(config) end
+
+--- Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
+---@param opts table `{ range=integer, light_walls=boolean? }` (default light_walls=true).
+---@return LFov New FOV handle ready for blocker assignment and compute calls.
+lurek.awareness.newFov = function(opts) end
+
+--- Creates per-player tile visibility/action masks backed by a tilefield.
+---@param field LTileField Source tilefield.
+---@param opts table `{players={...}, rememberExplored=true?}`.
+---@return LTileAwareness New tile visibility handle.
+lurek.awareness.newTileAwareness = function(field, opts) end
+
 --- Returns a deep copy of the entire byte buffer.
 ---@return LByteData New LByteData userdata containing copied bytes.
 function LByteData:clone() end
@@ -7156,8 +7357,8 @@ lurek.camera.newCamera = function(vw, vh) end
 lurek.camera.newRig = function() end
 
 --- Creates a tile-grid walker with smooth camera following.
----@param map LTileMap Tilemap for collision detection.
----@param opts? table Options table with keys: layer (default 1), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera).
+---@param map LTileMap Tilemap for tile/world coordinate conversion.
+---@param opts? table Options table with keys: layer (retained for compatibility), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera).
 ---@return LCameraWalker New walker handle.
 lurek.camera.newWalker = function(map, opts) end
 
@@ -16658,6 +16859,16 @@ function LMapBlockResult:getWidth() end
 ---@return boolean True if no blocks placed.
 function LMapBlockResult:isEmpty() end
 
+--- Converts one mapblock result layer and slot into a shared tilefield ref layer.
+---@param opts? table Options: layer, slot, ref, tilesetRef, topology, skipZero.
+---@return LTileField Tilefield populated from this result.
+function LMapBlockResult:toTileField(opts) end
+
+--- Writes one mapblock result layer and slot into an existing tilefield ref layer.
+---@param field LTileField Target tilefield.
+---@param opts? table Options: layer, slot, ref, tilesetRef, skipZero.
+function LMapBlockResult:writeTileField(field, opts) end
+
 --- Add a block to this group for this object.
 ---@param block LMapBlock Block to add.
 function LMapGroup:addBlock(block) end
@@ -24345,6 +24556,20 @@ function LNoiseGenerator:generateMap(w, h, opts) end
 ---@return number[] Noise values.
 function LNoiseGenerator:generateMapCompute(w, h, opts) end
 
+--- Generates a compute-style noise map and returns it as a typed scalar grid.
+---@param w number Map width.
+---@param h number Map height.
+---@param opts? table Generation options.
+---@return LProcgenScalarGrid Typed scalar grid.
+function LNoiseGenerator:generateMapComputeGrid(w, h, opts) end
+
+--- Generates a noise map and returns it as a typed scalar grid.
+---@param w number Map width.
+---@param h number Map height.
+---@param opts? table Generation options.
+---@return LProcgenScalarGrid Typed scalar grid.
+function LNoiseGenerator:generateMapGrid(w, h, opts) end
+
 --- Returns this noise generator seed.
 ---@return number Seed value.
 function LNoiseGenerator:getSeed() end
@@ -24450,6 +24675,98 @@ function LNoiseGenerator:worley2d(x, y, dist_name, f2) end
 ---@return number Noise value.
 function LNoiseGenerator:worley3d(x, y, z, dist_name, f2) end
 
+--- Returns one cell value using one-based Lua coordinates.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Cell value.
+function LProcgenGrid:getCell(x, y) end
+
+--- Returns grid height.
+---@return number Height.
+function LProcgenGrid:getHeight() end
+
+--- Returns the generator kind label attached to this grid.
+---@return string Generator kind.
+function LProcgenGrid:getKind() end
+
+--- Returns grid width and height.
+---@return number Width.
+---@return number Height.
+function LProcgenGrid:getSize() end
+
+--- Returns grid width.
+---@return number Width.
+function LProcgenGrid:getWidth() end
+
+--- Serializes this grid to a plain Lua table.
+---@return table Table with kind, width, height, and cells.
+function LProcgenGrid:toTable() end
+
+--- Converts this generated grid into a tilefield by writing each value as a named ref.
+---@param opts? table Options: slot, topology, skipZero.
+---@return LTileField Tilefield populated with refs.
+function LProcgenGrid:toTileField(opts) end
+
+--- Returns the type name of this object.
+---@return string Always returns "LProcgenGrid".
+function LProcgenGrid:type() end
+
+--- Check whether this object matches a given type name.
+---@param name string Type name to test.
+---@return boolean True if the object is of the specified type.
+function LProcgenGrid:typeOf(name) end
+
+--- Writes this generated grid into an existing tilefield ref layer.
+---@param field LTileField Target tilefield.
+---@param opts? table Options: slot, z, skipZero.
+function LProcgenGrid:writeTileField(field, opts) end
+
+--- Returns one scalar cell value using one-based Lua coordinates.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Scalar cell value.
+function LProcgenScalarGrid:getCell(x, y) end
+
+--- Returns scalar grid height.
+---@return number Height.
+function LProcgenScalarGrid:getHeight() end
+
+--- Returns the generator kind label attached to this scalar grid.
+---@return string Generator kind.
+function LProcgenScalarGrid:getKind() end
+
+--- Returns scalar grid width and height.
+---@return number Width.
+---@return number Height.
+function LProcgenScalarGrid:getSize() end
+
+--- Returns scalar grid width.
+---@return number Width.
+function LProcgenScalarGrid:getWidth() end
+
+--- Serializes this scalar grid to a plain Lua table.
+---@return table Table with kind, width, height, and cells.
+function LProcgenScalarGrid:toTable() end
+
+--- Converts this scalar field into a new tilefield channel layer.
+---@param opts? table Options: topology, target, channel, scale, offset, threshold, invert.
+---@return LTileField Tilefield populated from scalar values.
+function LProcgenScalarGrid:toTileField(opts) end
+
+--- Returns the type name of this object.
+---@return string Always returns "LProcgenScalarGrid".
+function LProcgenScalarGrid:type() end
+
+--- Check whether this object matches a given type name.
+---@param name string Type name to test.
+---@return boolean True if the object is of the specified type.
+function LProcgenScalarGrid:typeOf(name) end
+
+--- Writes this scalar field into an existing tilefield channel layer.
+---@param field LTileField Target tilefield.
+---@param opts? table Options: z, target, channel, scale, offset, threshold, invert.
+function LProcgenScalarGrid:writeTileField(field, opts) end
+
 --- Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
 ---@param name string Biome name (e.g. "ocean", "desert", "taiga").
 ---@return number Red component (0â€“255).
@@ -24476,6 +24793,13 @@ lurek.procgen.bspDungeonWithPrefabs = function(opts, prefabs) end
 ---@param opts? table Options: fill (0.0â€“1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.
 ---@return number[] Flat array of cell values (0=empty, 1=wall) with length widthĂ—height.
 lurek.procgen.cellularAutomata = function(width, height, opts) end
+
+--- Generate a cave or organic map and return a typed grid result.
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@param opts? table Cellular automata options.
+---@return LProcgenGrid Typed cellular grid.
+lurek.procgen.cellularAutomataGrid = function(width, height, opts) end
 
 --- Samples stateless fractal Brownian motion noise.
 ---@param x number X coordinate.
@@ -24528,6 +24852,19 @@ lurek.procgen.heightmap = function(opts) end
 ---@return LProcgenHeightmapFromCellularResult Table with .cells (flat f32 array), .width, .height.
 lurek.procgen.heightmapFromCellular = function(width, height, cells, floorValue) end
 
+--- Convert a cellular automata grid into a typed heightmap scalar grid.
+---@param width number Grid width.
+---@param height number Grid height.
+---@param cells table Flat u8 array from cellularAutomata.
+---@param floorValue? number Cell value treated as open floor.
+---@return LProcgenScalarGrid Typed heightmap scalar grid.
+lurek.procgen.heightmapFromCellularGrid = function(width, height, cells, floorValue) end
+
+--- Generate a fractal heightmap and return a typed scalar grid result.
+---@param opts? table Heightmap options.
+---@return LProcgenScalarGrid Typed heightmap scalar grid.
+lurek.procgen.heightmapGrid = function(opts) end
+
 --- Expand an L-system grammar and return the resulting string. Useful for generating branching structures like trees, rivers, or cave networks.
 ---@param opts table Options: axiom (starting string), iterations (expansion count), rules (table mapping single-char keys to replacement strings).
 ---@return string The fully expanded L-system string.
@@ -24551,10 +24888,26 @@ lurek.procgen.newBiomeClassifier = function(opts) end
 ---@return LCellular The cellular simulation object.
 lurek.procgen.newCellular = function(width, height) end
 
+--- Wrap a flat grid table as a typed procgen grid result.
+---@param width number Grid width.
+---@param height number Grid height.
+---@param cells table Flat integer grid.
+---@param opts? table Options: kind.
+---@return LProcgenGrid Typed procgen grid.
+lurek.procgen.newGridResult = function(width, height, cells, opts) end
+
 --- Creates a procedural noise generator with an optional seed.
 ---@param seed? number Seed value (default 0).
 ---@return LNoiseGenerator New noise generator handle.
 lurek.procgen.newNoiseGenerator = function(seed) end
+
+--- Wrap a flat numeric table as a typed procgen scalar grid result.
+---@param width number Grid width.
+---@param height number Grid height.
+---@param cells table Flat numeric grid.
+---@param opts? table Options: kind.
+---@return LProcgenScalarGrid Typed procgen scalar grid.
+lurek.procgen.newScalarGridResult = function(width, height, cells, opts) end
 
 --- Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
 ---@param width number Map width in cells.
@@ -24563,6 +24916,13 @@ lurek.procgen.newNoiseGenerator = function(seed) end
 ---@return number[] F64 noise values (length = width*height).
 lurek.procgen.noiseMap = function(width, height, opts) end
 
+--- Generate a typed scalar noise grid using the optional seed in opts.
+---@param width number Map width in cells.
+---@param height number Map height in cells.
+---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
+---@return LProcgenScalarGrid Typed scalar grid.
+lurek.procgen.noiseMapGrid = function(width, height, opts) end
+
 --- Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
 ---@param width number Map width in cells.
 ---@param height number Map height in cells.
@@ -24570,12 +24930,26 @@ lurek.procgen.noiseMap = function(width, height, opts) end
 ---@return number[] F64 noise values (length = width*height).
 lurek.procgen.noiseMapParallel = function(width, height, opts) end
 
+--- Generate a typed scalar noise grid using the parallel backend and seed 0.
+---@param width number Map width in cells.
+---@param height number Map height in cells.
+---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y.
+---@return LProcgenScalarGrid Typed scalar grid.
+lurek.procgen.noiseMapParallelGrid = function(width, height, opts) end
+
 --- Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
 ---@param width number Map width in cells.
 ---@param height number Map height in cells.
 ---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
 ---@return number[] F64 noise values (length = width*height).
 lurek.procgen.noiseMapParallelSeeded = function(width, height, opts) end
+
+--- Generate a typed scalar noise grid using the parallel backend and explicit seed.
+---@param width number Map width in cells.
+---@param height number Map height in cells.
+---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
+---@return LProcgenScalarGrid Typed scalar grid.
+lurek.procgen.noiseMapParallelSeededGrid = function(width, height, opts) end
 
 --- Samples stateless 2D Perlin noise.
 ---@param x number X coordinate.
@@ -24623,6 +24997,11 @@ lurek.procgen.poissonDisk = function(width, height, minDist, maxAttempts, seed) 
 ---@return LProcgenRoomsDungeonResult Table with .rooms ({x,y,w,h}[]), .corridors ({x1,y1,x2,y2}[]), .grid (flat u8[]), .width, .height.
 lurek.procgen.roomsDungeon = function(opts) end
 
+--- Generate a rooms dungeon and return only its tile grid as a typed procgen result.
+---@param opts? table Room generation options.
+---@return LProcgenGrid Typed rooms-dungeon grid.
+lurek.procgen.roomsDungeonGrid = function(opts) end
+
 --- Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.
 ---@param opts? table Room generation options: width, height, max_rooms, min_room_size, max_room_size, seed.
 ---@param prefabs table Array of prefab definitions: {name, width, height, mask (optional flat u8[])}.
@@ -24630,6 +25009,13 @@ lurek.procgen.roomsDungeon = function(opts) end
 ---@return LProcgenRoomsDungeonWithPrefabsResult Dungeon table with .rooms; .corridors; .grid; .width; .height.
 ---@return LProcgenRoomsDungeonWithPrefabsResult Array of placed prefabs: {name; x; y; width; height}.
 lurek.procgen.roomsDungeonWithPrefabs = function(opts, prefabs, stampValue) end
+
+--- Generate a rooms dungeon with prefabs and return only its tile grid as a typed procgen result.
+---@param opts? table Room generation options.
+---@param prefabs table Prefab definitions.
+---@param stampValue? number Tile value written for prefab cells.
+---@return LProcgenGrid Typed rooms-dungeon grid.
+lurek.procgen.roomsDungeonWithPrefabsGrid = function(opts, prefabs, stampValue) end
 
 --- Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.
 ---@param prompt string Natural-language description of the desired tile adjacency rules.
@@ -24676,6 +25062,11 @@ lurek.procgen.wfcFromPrompt = function(prompt, config) end
 ---@param opts table Options: width, height, seed, max_attempts, tiles (array of {id, weight}), adjacencies (map of tile_id -> allowed neighbor IDs[]).
 ---@return LProcgenWfcGenerateResult Table with .cells (flat array of tile IDs, 0 if unsolved), .width, .height.
 lurek.procgen.wfcGenerate = function(opts) end
+
+--- Run WFC and return a typed procgen grid result.
+---@param opts table WFC options.
+---@return LProcgenGrid Typed WFC tile-id grid.
+lurek.procgen.wfcGenerateGrid = function(opts) end
 
 --- Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
 ---@param width number World area width.
@@ -28977,16 +29368,39 @@ lurek.thread.newPool = function(size, code) end
 ---@return LThread A thread handle that can be started, waited on, and inspected.
 lurek.thread.newThread = function(code) end
 
---- Adds a point light and returns its stable id.
----@param opts table `{x, y, z?, radius, intensity?, color?}` light definition.
-function LTileField:addPointLight(opts) end
-
 --- Applies a named profile to one cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
 ---@param name string Profile name to apply to the cell.
 function LTileField:applyProfile(x, y, z, name) end
+
+--- Applies the tilefield profile named by a tileset tile referenced from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores profile metadata.
+---@param opts? table Options: refIsGid.
+---@return boolean True when a profile was found and applied.
+function LTileField:applyTilesetProfile(x, y, z, slot, tileset, opts) end
+
+--- Applies tileset gameplay properties for a tile referenced from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param opts? table Options: refIsGid.
+---@return boolean True when referenced tileset properties were found and applied.
+function LTileField:applyTilesetStats(x, y, z, slot, tileset, opts) end
+
+--- Applies tileset gameplay properties for every referenced cell on one tilefield level.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param opts? table Options: z, refIsGid.
+---@return number Number of cells that received at least one stat.
+function LTileField:applyTilesetStatsLayer(slot, tileset, opts) end
 
 --- Returns whether a cell blocks a channel.
 ---@param x number One-based column.
@@ -28996,10 +29410,10 @@ function LTileField:applyProfile(x, y, z, name) end
 ---@return boolean True when the addressed cell blocks the channel.
 function LTileField:blocks(x, y, z, channel) end
 
---- Clears all cell gameplay state and computed light values.
+--- Clears all cell gameplay state.
 function LTileField:clear() end
 
---- Clears gameplay state and light values for one addressed cell.
+--- Clears gameplay state for one addressed cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
@@ -29013,12 +29427,12 @@ function LTileField:clearCell(x, y, z) end
 ---@return boolean True when no blocker exists between the two cells.
 function LTileField:clearLine(from_tbl, to_tbl, channel, opts) end
 
---- Removes all point lights currently stored on this tilefield.
-function LTileField:clearPointLights() end
-
---- Computes tile light from ambient, point lights, and global top light.
----@param opts? table Optional includePointLights, includeGlobalLight, and ambient settings.
-function LTileField:computeLight(opts) end
+--- Clears a named object/tile reference from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+function LTileField:clearRef(x, y, z, slot) end
 
 --- Exports one blocker channel and level as a row-major boolean array.
 ---@param channel string Blocker channel name to export.
@@ -29032,18 +29446,14 @@ function LTileField:exportBlockLayer(channel, z) end
 ---@return table Row-major number array for the requested channel and level.
 function LTileField:exportCostLayer(channel, z) end
 
---- Exports one level of computed light as row-major `{r,g,b,luma}` tables.
----@param z? number One-based level, default 1.
----@return table Row-major array of light tables.
-function LTileField:exportLightLayer(z) end
-
---- Exports all computed light levels as nested row-major tables.
----@return table Array of per-level row-major light layers.
-function LTileField:exportLightVolume() end
-
 --- Exports one level of profile names as a row-major array.
 ---@param z? number One-based level, default 1.
 function LTileField:exportProfileLayer(z) end
+
+--- Exports one named object/tile reference slot and level as a row-major array.
+---@param slot string Reference slot name to export.
+---@param z? number One-based level, default 1.
+function LTileField:exportRefLayer(slot, z) end
 
 --- Returns the first one-based blocking cell table between two cells, or nil.
 ---@param from_tbl table Start cell table with one-based x, y, and optional z fields.
@@ -29068,20 +29478,81 @@ function LTileField:getCell(x, y, z) end
 ---@return number Movement or traversal cost value.
 function LTileField:getCost(x, y, z, channel) end
 
---- Returns r, g, b, and luma for one cell.
----@param x number One-based cell x coordinate.
----@param y number One-based cell y coordinate.
+--- Returns topology-aware same-level neighbours for one cell.
+---@param x number One-based column.
+---@param y number One-based row.
 ---@param z? number One-based level, default 1.
----@return number Red component in 0..1.
----@return number Green component in 0..1.
----@return number Blue component in 0..1.
----@return number Luma value in 0..1.
-function LTileField:getLight(x, y, z) end
+---@return table Array of one-based coordinate tables.
+function LTileField:getNeighbors(x, y, z) end
 
 --- Returns a named object profile table, or nil when absent.
 ---@param name string Profile name to read.
 ---@return table nil | Profile table with blockers, costs, and sunOcclusion, or nil.
 function LTileField:getProfile(name) end
+
+--- Returns a named object/tile reference from one cell, or nil.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@return number nil | Stored reference id, or nil when unset.
+function LTileField:getRef(x, y, z, slot) end
+
+--- Reads all tileset properties for a tile referenced from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param opts? table Options: refIsGid.
+---@return table nil | Property name/value table, or nil when the ref is missing/outside the tileset.
+function LTileField:getRefProperties(x, y, z, slot, tileset, opts) end
+
+--- Reads a tileset property for a tile referenced from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param property string Property name to read.
+---@param opts? table Options: refIsGid.
+---@return string nil | Property value, or nil when missing.
+function LTileField:getRefProperty(x, y, z, slot, tileset, property, opts) end
+
+--- Reads a tileset property for a tile referenced from one cell and parses it as a boolean.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param property string Property name to read.
+---@param opts? table Options: refIsGid.
+---@return boolean nil | Boolean property value, or nil when missing/not boolean.
+function LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts) end
+
+--- Reads a tileset property for a tile referenced from one cell and parses it as a number.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset that stores object metadata.
+---@param property string Property name to read.
+---@param opts? table Options: refIsGid.
+---@return number nil | Numeric property value, or nil when missing/not numeric.
+function LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts) end
+
+--- Returns every named ref slot currently used by this field.
+---@return string[] Ref slot names.
+function LTileField:getRefSlots() end
+
+--- Returns one-based cells for a named region, or nil when it does not exist.
+---@param name string Region name.
+---@return table? Array of `{ x, y, z }` cells.
+function LTileField:getRegionCells(name) end
+
+--- Returns all region names in stable order.
+---@return table Array of region names.
+function LTileField:getRegionNames() end
 
 --- Returns field width, height, and level count.
 ---@return number Field width in cells.
@@ -29097,7 +29568,7 @@ function LTileField:getSize() end
 function LTileField:getSunOcclusion(x, y, z) end
 
 --- Returns the field topology name used for coordinate interpretation.
----@return string `square`, `iso_square`, or `hex`.
+---@return string `square`, `square4`, `square8`, `iso_square`, or `hex`.
 function LTileField:getTopology() end
 
 --- Returns whether one-based coordinates are inside the field.
@@ -29111,14 +29582,22 @@ function LTileField:inBounds(x, y, z) end
 ---@param opts table `{from={x,y,z?}, to={x,y,z?}, includeEndpoints?}`.
 function LTileField:line(opts) end
 
---- Removes a point light by id and returns whether it existed.
----@param id number Stable point light id returned by `addPointLight`.
----@return boolean True when a point light was removed.
-function LTileField:removePointLight(id) end
+--- Returns whether a named region contains a one-based tile cell.
+---@param name string Region name.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when the region contains the cell.
+function LTileField:regionContains(name, x, y, z) end
 
 --- Removes a named object profile from the tilefield profile registry.
 ---@param name string Profile name to remove.
 function LTileField:removeProfile(name) end
+
+--- Removes a named region.
+---@param name string Region name.
+---@return boolean True when the region existed.
+function LTileField:removeRegion(name) end
 
 --- Sets whether a cell blocks a channel.
 ---@param x number One-based column.
@@ -29143,14 +29622,32 @@ function LTileField:setCell(x, y, z, cell) end
 ---@param cost number Movement or traversal cost value.
 function LTileField:setCost(x, y, z, channel, cost) end
 
---- Sets top-down global light parameters used during light computation.
----@param opts table `{intensity?, color?}` global top-light settings.
-function LTileField:setGlobalLight(opts) end
-
 --- Registers or replaces a named object profile.
 ---@param name string Profile name to create or replace.
 ---@param profile_tbl table Profile table with blockers, costs, and sunOcclusion fields.
 function LTileField:setProfile(name, profile_tbl) end
+
+--- Sets a named object/tile reference on one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param slot string Reference slot name defined by the Lua game.
+---@param value number Object, tile, or tileset-local id stored for the slot.
+function LTileField:setRef(x, y, z, slot, value) end
+
+--- Defines or replaces a named region from explicit one-based tile cells.
+---@param name string Region name.
+---@param cells table Array of `{ x, y, z? }` cells.
+function LTileField:setRegionCells(name, cells) end
+
+--- Defines or replaces a named region from an inclusive one-based tile rectangle.
+---@param name string Region name.
+---@param x1 number First one-based column.
+---@param y1 number First one-based row.
+---@param x2 number Second one-based column.
+---@param y2 number Second one-based row.
+---@param z? number One-based level, default 1.
+function LTileField:setRegionRect(name, x1, y1, x2, y2, z) end
 
 --- Sets top-light occlusion in the inclusive range 0..1.
 ---@param x number One-based column.
@@ -29168,14 +29665,78 @@ function LTileField:type() end
 ---@return boolean True for `LTileField` or `LObject`.
 function LTileField:typeOf(name) end
 
---- Updates an existing point light by id.
----@param id number Stable point light id returned by `addPointLight`.
----@param opts table Partial light update table with x, y, z, radius, intensity, or color.
-function LTileField:updatePointLight(id, opts) end
+--- Writes one full blocker channel layer from a row-major boolean array.
+---@param channel string Blocker channel name to write.
+---@param z? number One-based level, default 1.
+---@param values table Row-major boolean array with width*height entries.
+function LTileField:writeBlockLayer(channel, z, values) end
 
---- Copies a tilemap layer into a tilefield using solid and empty profiles.
+--- Writes one full cost channel layer from a row-major number array.
+---@param channel string Cost channel name to write.
+---@param z? number One-based level, default 1.
+---@param values table Row-major number array with width*height entries.
+function LTileField:writeCostLayer(channel, z, values) end
+
+--- Writes one full profile-name layer from a row-major string-or-nil array.
+---@param z? number One-based level, default 1.
+---@param values table Row-major string-or-nil array with width*height entries.
+function LTileField:writeProfileLayer(z, values) end
+
+--- Writes one full named ref layer from a row-major integer-or-nil array.
+---@param slot string Reference slot name to write.
+---@param z? number One-based level, default 1.
+---@param values table Row-major integer-or-nil array with width*height entries.
+function LTileField:writeRefLayer(slot, z, values) end
+
+--- Returns the shared tilefield at one field-map coordinate.
+---@param mapX number One-based field-map column.
+---@param mapY number One-based field-map row.
+---@param mapZ? number One-based field-map layer, default 1.
+---@return LTileField Shared tilefield handle.
+function LTileFieldMap:getField(mapX, mapY, mapZ) end
+
+--- Returns contained field width, height, and level count.
+---@return number Contained field width in cells.
+---@return number Contained field height in cells.
+---@return number Contained field level count.
+function LTileFieldMap:getFieldSize() end
+
+--- Returns field-map width, height, and layer count.
+---@return number Field-map width in field slots.
+---@return number Field-map height in field slots.
+---@return number Field-map layer count.
+function LTileFieldMap:getMapSize() end
+
+--- Returns the topology shared by every contained field.
+---@return string `square`, `square4`, `square8`, `iso_square`, or `hex`.
+function LTileFieldMap:getTopology() end
+
+--- Returns whether one-based field-map coordinates are inside the field map.
+---@param mapX number One-based field-map column.
+---@param mapY number One-based field-map row.
+---@param mapZ? number One-based field-map layer, default 1.
+---@return boolean True when coordinates are in bounds.
+function LTileFieldMap:inBounds(mapX, mapY, mapZ) end
+
+--- Replaces one field-map slot with an existing compatible tilefield handle.
+---@param mapX number One-based field-map column.
+---@param mapY number One-based field-map row.
+---@param mapZ? number One-based field-map layer, default 1.
+---@param field LTileField Existing compatible tilefield handle.
+function LTileFieldMap:setField(mapX, mapY, mapZ, field) end
+
+--- Returns the Lua-visible type name for this tilefield map handle.
+---@return string The string `LTileFieldMap`.
+function LTileFieldMap:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True for `LTileFieldMap` or `LObject`.
+function LTileFieldMap:typeOf(name) end
+
+--- Copies a tilemap layer into a tilefield, optionally applying profiles and a ref slot.
 ---@param tilemap LTileMap Source tilemap.
----@param opts? table `{level?, topology?, solidProfile?, emptyProfile?, solidGids?}`.
+---@param opts? table `{level?, topology?, solidProfile?, emptyProfile?, solidGids?, refSlot?}`; `solidGids` is explicit and no tileset solidity is inferred.
 ---@return LTileField New tilefield copied from the tilemap layer.
 lurek.tilefield.fromTileMap = function(tilemap, opts) end
 
@@ -29183,6 +29744,96 @@ lurek.tilefield.fromTileMap = function(tilemap, opts) end
 ---@param opts table `{width, height, levels?, topology?}`.
 ---@return LTileField New tilefield handle.
 lurek.tilefield.new = function(opts) end
+
+--- Creates a 2D or layered map of shared tilefields.
+---@param opts table `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?}`.
+---@return LTileFieldMap New tilefield map handle.
+lurek.tilefield.newFieldMap = function(opts) end
+
+--- Adds a tile line light and returns its stable id.
+---@param opts table `{x1,y1,z1?,x2,y2,z2?,radius,intensity?,color?,flicker?,colorCycle?}`.
+function LTileLightMap:addLineLight(opts) end
+
+--- Adds a point light and returns its stable id.
+---@param opts table `{x, y, z?, radius, intensity?, color?, flicker?, colorCycle?}` light definition.
+function LTileLightMap:addPointLight(opts) end
+
+--- Removes all line lights currently stored on this tile light map.
+function LTileLightMap:clearLineLights() end
+
+--- Removes all point lights currently stored on this tile light map.
+function LTileLightMap:clearPointLights() end
+
+--- Computes tile light from ambient, point lights, line lights, and sun light.
+---@param opts? table Optional includePointLights, includeLineLights, includeSunLight/includeGlobalLight, ambient, and time settings.
+function LTileLightMap:compute(opts) end
+
+--- Exports one level of computed light as row-major `{r,g,b,luma}` tables.
+---@param z? number One-based level, default 1.
+function LTileLightMap:exportLayer(z) end
+
+--- Exports all computed light levels as nested row-major tables.
+function LTileLightMap:exportVolume() end
+
+--- Returns r, g, b, and luma for one cell.
+---@param x number One-based cell x coordinate.
+---@param y number One-based cell y coordinate.
+---@param z? number One-based level, default 1.
+function LTileLightMap:getLight(x, y, z) end
+
+--- Returns light-map width, height, and level count.
+function LTileLightMap:getSize() end
+
+--- Removes a line light by id and returns whether it existed.
+---@param id any
+function LTileLightMap:removeLineLight(id) end
+
+--- Removes a point light by id and returns whether it existed.
+---@param id number Stable point light id returned by `addPointLight`.
+---@return boolean True when a point light was removed.
+function LTileLightMap:removePointLight(id) end
+
+--- Sets ambient tile light stored on this light map.
+---@param color table `{r,g,b}` ambient color.
+function LTileLightMap:setAmbient(color) end
+
+--- Sets top-down global light parameters used during light computation.
+---@param opts table `{intensity?, color?}` global top-light settings.
+function LTileLightMap:setGlobalLight(opts) end
+
+--- Sets tile sun light parameters used during light computation.
+---@param opts table 'directional', intensity?, color?, direction?}`.
+function LTileLightMap:setSunLight(opts) end
+
+--- Returns the Lua-visible type name for this tile light map handle.
+---@return string The string `LTileLightMap`.
+function LTileLightMap:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True for `LTileLightMap` or `LObject`.
+function LTileLightMap:typeOf(name) end
+
+--- Updates an existing tile line light by id.
+---@param id number Stable line light id returned by `addLineLight`.
+---@param opts table Partial line light update.
+function LTileLightMap:updateLineLight(id, opts) end
+
+--- Updates an existing point light by id.
+---@param id number Stable point light id returned by `addPointLight`.
+---@param opts table Partial light update table with x, y, z, radius, intensity, or color.
+function LTileLightMap:updatePointLight(id, opts) end
+
+--- Creates and computes a tile light map for a shared tilefield.
+---@param field LTileField Source tilefield.
+---@param opts? table Optional includePointLights, includeLineLights, includeSunLight/includeGlobalLight, ambient, and time settings.
+---@return LTileLightMap Computed tile light map handle.
+lurek.tilelight.compute = function(field, opts) end
+
+--- Creates a tile light map attached to a shared tilefield.
+---@param field LTileField Source tilefield.
+---@return LTileLightMap New tile light map handle.
+lurek.tilelight.new = function(field) end
 
 --- Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
 ---@param tileSet LTileSet Target tileset to receive the rules.
@@ -29496,152 +30147,6 @@ function LLargeMapRenderer:type() end
 ---@return boolean True if `name` is `"LLargeMapRenderer"` or `"Object"`.
 function LLargeMapRenderer:typeOf(name) end
 
---- Returns both width and height of the block in tiles.
----@return number Width.
----@return number Height.
-function LMapBlock:getDimensions() end
-
---- Returns the block height in tiles. This method is available to Lua scripts.
----@return number Height.
-function LMapBlock:getHeight() end
-
---- Returns the block height measured in segments.
----@return number Height in segments.
-function LMapBlock:getHeightInSegments() end
-
---- Returns the number of tile layers in this block.
----@return number Layer count.
-function LMapBlock:getLayerCount() end
-
---- Returns the block's name. This method is available to Lua scripts.
----@return string Block name.
-function LMapBlock:getName() end
-
---- Returns the segment size used for edge matching.
----@return number Segment size in tiles.
-function LMapBlock:getSegmentSize() end
-
---- Returns the side ID for an edge segment.
----@param edge string Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
----@param segment number Segment index along the edge (1-based).
----@return number Side identifier.
-function LMapBlock:getSide(edge, segment) end
-
---- Returns the tile GID at a position within the block.
----@param layer number Layer index (1-based).
----@param x number Column (1-based).
----@param y number Row (1-based).
----@return number Global tile ID.
-function LMapBlock:getTile(layer, x, y) end
-
---- Returns the current selection weight.
----@return number Weight value.
-function LMapBlock:getWeight() end
-
---- Returns the block width in tiles. This method is available to Lua scripts.
----@return number Width.
-function LMapBlock:getWidth() end
-
---- Returns the block width measured in segments.
----@return number Width in segments.
-function LMapBlock:getWidthInSegments() end
-
---- Sets the block's name for identification during map generation.
----@param name string Block name.
-function LMapBlock:setName(name) end
-
---- Sets the side ID for an edge segment, used for edge matching in map generation.
----@param edge string Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
----@param segment number Segment index along the edge (1-based).
----@param sideId number Side identifier for matching.
-function LMapBlock:setSide(edge, segment, sideId) end
-
---- Sets a tile GID at a position within the block.
----@param layer number Layer index (1-based).
----@param x number Column (1-based).
----@param y number Row (1-based).
----@param gid number Global tile ID.
-function LMapBlock:setTile(layer, x, y, gid) end
-
---- Sets the selection weight for this block during random placement.
----@param weight number Relative weight (higher = more likely to be chosen).
-function LMapBlock:setWeight(weight) end
-
---- Returns the type name of this userdata.
----@return string Always `"LMapBlock"`.
-function LMapBlock:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LMapBlock"` or `"Object"`.
-function LMapBlock:typeOf(name) end
-
---- Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
----@param scriptIdx? number Script index in the group (1-based), or nil for default.
----@param seed? number Random seed, or nil for random.
----@param layerName? string Output layer name (default `"main"`).
----@return LTileMap Generated tilemap.
-function LMapGen:generate(scriptIdx, seed, layerName) end
-
---- Returns the type name of this userdata.
----@return string Always `"LMapGen"`.
-function LMapGen:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LMapGen"` or `"Object"`.
-function LMapGen:typeOf(name) end
-
---- Adds a map block to this group for use in generation.
----@param block LMapBlock Block to add.
-function LMapGroup:addBlock(block) end
-
---- Attaches a map-generation script to this group.
----@param script LMapScript Script to add.
-function LMapGroup:addScript(script) end
-
---- Returns how many blocks are in this group.
----@return number Block count.
-function LMapGroup:getBlockCount() end
-
---- Returns the group name. This method is available to Lua scripts.
----@return string Group name.
-function LMapGroup:getName() end
-
---- Returns how many scripts are attached to this group.
----@return number Script count.
-function LMapGroup:getScriptCount() end
-
---- Removes a block from the group by index.
----@param idx number Block index (1-based).
-function LMapGroup:removeBlock(idx) end
-
---- Returns the type name of this userdata.
----@return string Always `"LMapGroup"`.
-function LMapGroup:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LMapGroup"` or `"Object"`.
-function LMapGroup:typeOf(name) end
-
---- Appends a generation step. The step table must have a `type` field and optional parameters.
----@param stepDef table Step definition with `type` and parameters like `x`, `y`, `w`, `h`, `gid`, `chance`, etc.
-function LMapScript:addStep(stepDef) end
-
---- Returns the number of generation steps in this script.
----@return number Step count.
-function LMapScript:getStepCount() end
-
---- Returns the type name of this userdata.
----@return string Always `"LMapScript"`.
-function LMapScript:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LMapScript"` or `"Object"`.
-function LMapScript:typeOf(name) end
-
 --- Creates a new tile layer with the given name and dimensions.
 ---@param name string Layer name.
 ---@param w number Width in tiles.
@@ -29689,21 +30194,11 @@ function LTileMap:applyAutoTileMode(layer, typeName) end
 ---@param typeName string Tile type name whose configured mode and rules to apply.
 function LTileMap:applyAutoTileModeAt(layer, x, y, typeName) end
 
---- Checks a list of entities against registered tile-enter callbacks on a layer.
----@param layer number Layer index (1-based).
----@param entities table Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields.
-function LTileMap:checkEntities(layer, entities) end
-
 --- Removes the tile at a specific grid position, setting it to empty (GID 0).
 ---@param layer number Layer index (1-based).
 ---@param x number Column (1-based).
 ---@param y number Row (1-based).
 function LTileMap:clearTile(layer, x, y) end
-
---- Rasterizes the map into an image using the given tile size, returning an image handle.
----@param tileSize number Pixel size of each tile in the output image.
----@return LImage Rasterized image of the map.
-function LTileMap:drawToImage(tileSize) end
 
 --- Fills every cell of a layer with the given GID.
 ---@param layer number Layer index (1-based).
@@ -29715,20 +30210,6 @@ function LTileMap:fill(layer, gid) end
 ---@param gid number Global tile ID to search for.
 ---@return LTileMapFindTilesByGidResult Array of `{x=number, y=number}` positions.
 function LTileMap:findTilesByGid(layer, gid) end
-
---- Manually fires the tile-exit callback for a specific GID and entity at a tile position.
----@param gid number Global tile ID.
----@param entity table Entity table to pass to the callback.
----@param tx number Tile column.
----@param ty number Tile row.
-function LTileMap:fireTileExit(gid, entity, tx, ty) end
-
---- Manually fires the tile-step callback for a specific GID and entity at a tile position.
----@param gid number Global tile ID.
----@param entity table Entity table to pass to the callback.
----@param tx number Tile column.
----@param ty number Tile row.
-function LTileMap:fireTileStep(gid, entity, tx, ty) end
 
 --- Returns the chunk size used for internal tile storage.
 ---@return number Chunk size in tiles per side.
@@ -29811,37 +30292,6 @@ function LTileMap:getTileWidth() end
 ---@return number Height.
 function LTileMap:getViewport() end
 
---- Checks whether the tile at a given position on a layer is solid.
----@param layer number Layer index (1-based).
----@param x number Column (1-based).
----@param y number Row (1-based).
----@return boolean True if the tile at that position is marked solid.
-function LTileMap:isSolid(layer, x, y) end
-
---- Registers a callback invoked when an entity enters a tile with the given GID.
----@param gid number Global tile ID to watch for.
----@param func function Callback receiving `(wx, wy, tx, ty)`.
-function LTileMap:onTileEnter(gid, func) end
-
---- Registers a callback invoked when an entity leaves a tile with the given GID.
----@param gid number Global tile ID to watch for.
----@param func function Callback receiving `(entity, tx, ty)`.
-function LTileMap:onTileExit(gid, func) end
-
---- Registers a callback invoked each frame an entity remains on a tile with the given GID.
----@param gid number Global tile ID to watch for.
----@param func function Callback receiving `(entity, tx, ty)`.
-function LTileMap:onTileStep(gid, func) end
-
---- Tests whether a world-space rectangle overlaps any solid tile on a layer.
----@param layer number Layer index (1-based).
----@param x number Rectangle left edge in world pixels.
----@param y number Rectangle top edge in world pixels.
----@param w number Rectangle width in pixels.
----@param h number Rectangle height in pixels.
----@return boolean True if any solid tile is overlapped.
-function LTileMap:rectOverlapsSolid(layer, x, y, w, h) end
-
 --- Submits render commands for all visible tiles, optionally offset by a scroll position.
 ---@param ox? number Horizontal scroll offset (default 0).
 ---@param oy? number Vertical scroll offset (default 0).
@@ -29900,22 +30350,6 @@ function LTileMap:setTileTint(layer, x, y, r, g, b, a) end
 ---@param h number Viewport height in pixels.
 function LTileMap:setViewport(x, y, w, h) end
 
---- Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
----@param layer number Layer index (1-based).
----@param x number Rectangle left edge in world pixels.
----@param y number Rectangle top edge in world pixels.
----@param w number Rectangle width in pixels.
----@param h number Rectangle height in pixels.
----@param dx number Horizontal movement delta.
----@param dy number Vertical movement delta.
----@return number Contact X position.
----@return number Contact Y position.
----@return number Normal X component.
----@return number Normal Y component.
----@return number Tile column hit (1-based; or 0 if no hit).
----@return number Tile row hit (1-based; or 0 if no hit).
-function LTileMap:sweepRect(layer, x, y, w, h, dx, dy) end
-
 --- Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
 ---@param tx number Tile column (1-based).
 ---@param ty number Tile row (1-based).
@@ -29927,12 +30361,6 @@ function LTileMap:tileToWorld(tx, ty) end
 ---@param layer number Layer index (1-based).
 ---@return LTileMapTileTypeIndexResult Table keyed by GID, each value an array of `{x=number, y=number}`.
 function LTileMap:tileTypeIndex(layer) end
-
---- Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
----@param layer number Layer index (1-based).
----@param gids table Array of walkable GIDs.
----@return boolean[] Flat walkable grid (true = walkable), row-major order.
-function LTileMap:toNavGrid(layer, gids) end
 
 --- Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
 ---@param name string Layer name.
@@ -30032,6 +30460,39 @@ function LTileSet:getFirstGid() end
 ---@return number Margin in pixels.
 function LTileSet:getMargin() end
 
+--- Returns the physics shape name associated with this tile.
+---@param tileId number Tile ID to check (1-based).
+---@return string Shape name, or nil when unset.
+function LTileSet:getPhysicsShape(tileId) end
+
+--- Returns the tilefield profile name associated with this tile.
+---@param tileId number Tile ID to check (1-based).
+---@return string Profile name, or nil when unset.
+function LTileSet:getProfile(tileId) end
+
+--- Returns all gameplay properties associated with this tile.
+---@param tileId number Tile ID to check (1-based).
+---@return table Property name/value table.
+function LTileSet:getProperties(tileId) end
+
+--- Returns an arbitrary gameplay property associated with this tile.
+---@param tileId number Tile ID to check (1-based).
+---@param name string Property name.
+---@return string Property value, or nil when unset.
+function LTileSet:getProperty(tileId, name) end
+
+--- Returns an arbitrary gameplay property parsed as a boolean.
+---@param tileId number Tile ID to check (1-based).
+---@param name string Property name.
+---@return boolean Property bool, or nil when unset/not boolean.
+function LTileSet:getPropertyBool(tileId, name) end
+
+--- Returns an arbitrary gameplay property parsed as a number.
+---@param tileId number Tile ID to check (1-based).
+---@param name string Property name.
+---@return number Property number, or nil when unset/not numeric.
+function LTileSet:getPropertyNumber(tileId, name) end
+
 --- Returns the source rectangle (UV quad) for a tile in the atlas.
 ---@param tileId number Tile ID (1-based).
 ---@return LTileSetGetQuadResult Table with fields `x`, `y`, `width`, `height` in pixels.
@@ -30058,11 +30519,6 @@ function LTileSet:getTileHeight() end
 ---@return number Tile width in pixels.
 function LTileSet:getTileWidth() end
 
---- Checks whether a tile is marked as solid.
----@param tileId number Tile ID to check (1-based).
----@return boolean True if the tile is solid.
-function LTileSet:isSolid(tileId) end
-
 --- Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
 ---@param tileId number Tile ID to animate (1-based).
 ---@param frames table Array of `{tileid=number, duration=number}` frame definitions.
@@ -30085,10 +30541,21 @@ function LTileSet:setAutoTileRule(typeName, bitmask, tileId) end
 ---@param tileId number Tile ID to use for this bitmask (1-based).
 function LTileSet:setAutoTileRule8(typeName, bitmask, tileId) end
 
---- Marks a tile as solid or non-solid for collision queries.
+--- Assigns or clears the physics shape name associated with this tile.
 ---@param tileId number Tile ID to modify (1-based).
----@param solid boolean Whether the tile blocks movement.
-function LTileSet:setSolid(tileId, solid) end
+---@param shape? string Shape name such as `"none"`, `"rect"`, or `"slopeNE"`; nil/empty clears.
+function LTileSet:setPhysicsShape(tileId, shape) end
+
+--- Assigns or clears the tilefield profile name associated with this tile.
+---@param tileId number Tile ID to modify (1-based).
+---@param profile? string Profile name, or nil/empty string to clear.
+function LTileSet:setProfile(tileId, profile) end
+
+--- Assigns or clears an arbitrary gameplay property associated with this tile.
+---@param tileId number Tile ID to modify (1-based).
+---@param name string Property name.
+---@param value? string Property value, or nil to clear.
+function LTileSet:setProperty(tileId, name, value) end
 
 --- Returns the type name of this userdata.
 ---@return string Always `"LTileSet"`.
@@ -30128,92 +30595,6 @@ lurek.tilemap.fromScreenIso = function(sx, sy, tw, th) end
 ---@return table Array of `{ name, tileCount, mode }` entries.
 lurek.tilemap.getAutoTileFormats = function() end
 
---- Returns all hex cells within a filled area of a given radius.
----@param q number Center Q.
----@param r number Center R.
----@param radius number Area radius.
----@return LTilemapHexAreaResult Array of `{q, r}` pairs inside the area.
-lurek.tilemap.hexArea = function(q, r, radius) end
-
---- Computes the hex grid distance between two axial coordinates.
----@param q1 number First Q.
----@param r1 number First R.
----@param q2 number Second Q.
----@param r2 number Second R.
----@return number Distance in hex steps.
-lurek.tilemap.hexDistance = function(q1, r1, q2, r2) end
-
---- Returns all hex cells along a line between two axial coordinates.
----@param q1 number Start Q.
----@param r1 number Start R.
----@param q2 number End Q.
----@param r2 number End R.
----@return LTilemapHexLineResult Array of `{q, r}` pairs along the line.
-lurek.tilemap.hexLine = function(q1, r1, q2, r2) end
-
---- Returns the six neighboring hex cells of a given axial coordinate.
----@param q number Axial Q.
----@param r number Axial R.
----@return LTilemapHexNeighborsResult Array of `{q=number, r=number}` neighbor cells.
-lurek.tilemap.hexNeighbors = function(q, r) end
-
---- Reflects a hex cell across an axis through a center point.
----@param q number Cell Q.
----@param r number Cell R.
----@param centerQ number Pivot Q.
----@param centerR number Pivot R.
----@param axis string Reflection axis name.
----@return number Reflected Q.
----@return number Reflected R.
-lurek.tilemap.hexReflect = function(q, r, centerQ, centerR, axis) end
-
---- Returns all hex cells forming a ring at a given radius around a center.
----@param q number Center Q.
----@param r number Center R.
----@param radius number Ring radius in hex steps.
----@return LTilemapHexRingResult Array of `{q, r}` pairs on the ring.
-lurek.tilemap.hexRing = function(q, r, radius) end
-
---- Rotates a hex cell around a center point by a number of 60-degree steps.
----@param q number Cell Q.
----@param r number Cell R.
----@param centerQ number Pivot Q.
----@param centerR number Pivot R.
----@param steps number Number of 60-degree rotation steps (positive = clockwise).
----@return number Rotated Q.
----@return number Rotated R.
-lurek.tilemap.hexRotate = function(q, r, centerQ, centerR, steps) end
-
---- Rounds fractional axial hex coordinates to the nearest integer hex cell.
----@param q number Fractional Q.
----@param r number Fractional R.
----@return number Rounded Q.
----@return number Rounded R.
-lurek.tilemap.hexRound = function(q, r) end
-
---- Returns all hex cells in a spiral pattern out to a given radius.
----@param q number Center Q.
----@param r number Center R.
----@param radius number Maximum radius.
----@return LTilemapHexSpiralResult Array of `{q, r}` pairs in spiral order.
-lurek.tilemap.hexSpiral = function(q, r, radius) end
-
---- Converts an angle in degrees to the nearest isometric direction index.
----@param angle number Angle in degrees.
----@return number Direction index.
-lurek.tilemap.isoDirectionFromAngle = function(angle) end
-
---- Returns a human-readable name for an isometric direction index.
----@param direction number Direction index.
----@return string Direction name (e.g. `"north"`, `"east"`, `"south"`, `"west"`).
-lurek.tilemap.isoDirectionName = function(direction) end
-
---- Rotates an isometric direction index by a number of 90-degree steps.
----@param direction number Current direction (0..3).
----@param steps number Number of 90-degree steps.
----@return number Rotated direction.
-lurek.tilemap.isoRotate = function(direction, steps) end
-
 --- Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 ---@param xml string Raw TMX XML content.
 ---@param opts? any Optional import policy table (`strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`) plus byte/size limits.
@@ -30230,7 +30611,7 @@ lurek.tilemap.newAutoTileSheet = function(tileW, tileH, layout) end
 
 --- Creates a new infinite chunk-based tile map.
 ---@param chunkSize? number Tiles per chunk side (default 16).
----@param opts? any Optional limits table (`maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`, and related tilemap ceilings).
+---@param opts? any Optional limits table (`maxChunkCells`, `maxChunks`, `maxTileOperationCells`, and related tilemap ceilings).
 ---@return LChunkMap New chunk map.
 lurek.tilemap.newChunkMap = function(chunkSize, opts) end
 
@@ -30250,36 +30631,11 @@ lurek.tilemap.newIsoMap = function(width, height, tileW, tileH, levelHeight, par
 ---@return LLargeMapRenderer New large-map renderer.
 lurek.tilemap.newLargeMapRenderer = function(tileW, tileH) end
 
---- Creates a new procedural map block with the given dimensions.
----@param width number Block width in tiles.
----@param height number Block height in tiles.
----@param layers? number Number of tile layers (default 1).
----@param segmentSize? number Edge segment size in tiles (default 1).
----@return LMapBlock New map block.
-lurek.tilemap.newMapBlock = function(width, height, layers, segmentSize) end
-
---- Creates a procedural map generator from a group and either a size preset or explicit dimensions.
----@param group LMapGroup Block group to generate from.
----@param presetOrWidth string|number Size preset (`"small"`, `"medium"`, `"large"`) or width in tiles.
----@param segmentSizeOrHeight number Segment size (if preset) or height in tiles.
----@param segmentSize? number Segment size when using explicit dimensions.
----@return LMapGen New map generator.
-lurek.tilemap.newMapGen = function(group, presetOrWidth, segmentSizeOrHeight, segmentSize) end
-
---- Creates a new map group to hold blocks and generation scripts.
----@param name string Group name.
----@return LMapGroup New map group.
-lurek.tilemap.newMapGroup = function(name) end
-
---- Creates a new empty map-generation script.
----@return LMapScript New script.
-lurek.tilemap.newMapScript = function() end
-
 --- Creates a new empty tilemap with the given tile dimensions.
 ---@param tileWidth number Tile width in pixels.
 ---@param tileHeight number Tile height in pixels.
 ---@param chunkSize? number Internal chunk size in tiles (default 16).
----@param opts? any Optional limits table (`maxLayers`, `maxTiles`, `maxImagePixels`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`).
+---@param opts? any Optional limits table (`maxLayers`, `maxTiles`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, `maxTileOperationCells`).
 ---@return LTileMap New tilemap.
 lurek.tilemap.newTileMap = function(tileWidth, tileHeight, chunkSize, opts) end
 
@@ -30293,13 +30649,6 @@ lurek.tilemap.newTileMap = function(tileWidth, tileHeight, chunkSize, opts) end
 ---@param margin? number Pixel margin around the atlas edge (default 0).
 ---@return LTileSet New tileset.
 lurek.tilemap.newTileSet = function(firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin) end
-
---- Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
----@param map LTileMap Source tilemap.
----@param layer number Layer index (1-based).
----@param minimap LMinimap Target minimap.
----@param opts? table Options with keys: solid_terrain (default 2), empty_terrain (default 1).
-lurek.tilemap.syncMinimap = function(map, layer, minimap, opts) end
 
 --- Converts axial hex coordinates to screen-space pixel position.
 ---@param q number Axial Q coordinate.
@@ -32973,229 +33322,6 @@ lurek.validator.validate = function(path) end
 ---@param path string Absolute or relative path to the Lua file to validate.
 ---@return table Table with fields: errors (table), warnings (table), passed (boolean).
 lurek.validator.validateFile = function(path) end
-
---- Runs recursive shadowcasting from the observer position.
----@param ox number Observer column (one-based).
----@param oy number Observer row (one-based).
-function LFov:compute(ox, oy) end
-
---- Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
----@param fn function Callback receiving column and row integers.
-function LFov:eachVisible(fn) end
-
---- Serialises the visible and explored masks to a binary blob.
----@return string Binary blob.
-function LFov:export() end
-
---- Restores visible and explored masks from a blob produced by `export`.
----@param blob string Binary blob.
-function LFov:import(blob) end
-
---- Returns true if the cell has ever been visible.
----@param x number Column (one-based).
----@param y number Row (one-based).
----@return boolean True when explored.
-function LFov:isExplored(x, y) end
-
---- Returns true if the cell is visible in the current frame.
----@param x number Column (one-based).
----@param y number Row (one-based).
----@return boolean True when visible.
-function LFov:isVisible(x, y) end
-
---- Clears the explored mask so all cells appear unexplored.
-function LFov:resetExplored() end
-
---- Sets the Lua predicate that determines which cells are opaque.
----@param fn function `fn(x: integer, y: integer) -> boolean` (one-based).
-function LFov:setBlocker(fn) end
-
---- Changes the visibility radius for subsequent compute calls.
----@param range number Maximum sight radius in cells.
-function LFov:setRange(range) end
-
---- Returns the Lua-visible type name for this FOV handle.
----@return string The string `LFov`.
-function LFov:type() end
-
---- Returns whether this FOV handle matches the given type name.
----@param name string Type name to check.
----@return boolean True when the name matches.
-function LFov:typeOf(name) end
-
---- Returns an array of `{x, y}` tables for all currently visible cells (one-based).
----@return table Array of cell position tables.
-function LFov:visibleCells() end
-
---- Returns all currently actionable cells for a player, optionally filtered to a level.
----@param player string Player identifier to query.
----@param z? number Optional one-based level filter.
----@return table Array of one-based actionable cell tables.
-function LTileVisibility:actionCells(player, z) end
-
---- Returns whether a one-based cell is currently actionable for a player.
----@param player string Player identifier to query.
----@param x number One-based column.
----@param y number One-based row.
----@param z? number One-based level, default 1.
----@return boolean True when the cell is currently actionable.
-function LTileVisibility:canActOn(player, x, y, z) end
-
---- Clears current, explored, and action masks for all players.
-function LTileVisibility:clearAll() end
-
---- Clears current, explored, and action masks for one player.
----@param player string Player identifier whose visibility state should be cleared.
-function LTileVisibility:clearPlayer(player) end
-
---- Computes one player's current action mask from a tilefield origin.
----@param player string Player identifier whose action mask should be computed.
----@param opts table Options table with origin, range, and optional action channel.
-function LTileVisibility:computeAction(player, opts) end
-
---- Computes one player's current visible mask from a tilefield origin.
----@param player string Player identifier whose visibility mask should be computed.
----@param opts table Options table with origin, range, and optional vision channel.
-function LTileVisibility:computeVisible(player, opts) end
-
---- Returns whether a one-based cell has been explored for a player.
----@param player string Player identifier to query.
----@param x number One-based column.
----@param y number One-based row.
----@param z? number One-based level, default 1.
----@return boolean True when the cell has been explored.
-function LTileVisibility:isExplored(player, x, y, z) end
-
---- Returns whether a one-based cell is currently visible for a player.
----@param player string Player identifier to query.
----@param x number One-based column.
----@param y number One-based row.
----@param z? number One-based level, default 1.
----@return boolean True when the cell is currently visible.
-function LTileVisibility:isVisible(player, x, y, z) end
-
---- Returns the Lua-visible type name for this tile visibility handle.
----@return string The string `LTileVisibility`.
-function LTileVisibility:type() end
-
---- Returns whether this handle matches a supported type name.
----@param name string Type name to compare against this handle.
----@return boolean True for `LTileVisibility` or `LObject`.
-function LTileVisibility:typeOf(name) end
-
---- Returns all currently visible cells for a player, optionally filtered to a level.
----@param player string Player identifier to query.
----@param z? number Optional one-based level filter.
----@return table Array of one-based visible cell tables.
-function LTileVisibility:visibleCells(player, z) end
-
---- Drains and returns all pending visibility events.
----@return table Array of event tables with `type`, `player_id`, and `region_id` fields.
-function LVisibilityGrid:drainEvents() end
-
---- Gets the discovery cost for a region.
----@param region_id number Region index (0-based).
----@return number Discovery cost value.
-function LVisibilityGrid:getCost(region_id) end
-
---- Gets the fog intensity for a region from a player's perspective.
----@param player_id number Player index (0-based).
----@param region_id number Region index (0-based).
----@return number Fog intensity from 0.0 (clear) to 1.0 (fully fogged).
-function LVisibilityGrid:getFogIntensity(player_id, region_id) end
-
---- Gets the visibility state for a player at a region.
----@param player_id number Player index (0-based).
----@param region_id number Region index (0-based).
----@return string "hidden", "discovered", "visible", or a number for custom levels.
-function LVisibilityGrid:getState(player_id, region_id) end
-
---- Checks if a visibility flag bit is set on a region.
----@param region_id number Region index (0-based).
----@param bit number Flag bit index (0-63).
----@return boolean Whether the bit is set.
-function LVisibilityGrid:hasFlag(region_id, bit) end
-
---- Hides a region for a player (moves from Visible to Discovered).
----@param player_id number Player index (0-based).
----@param region_id number Region index (0-based).
-function LVisibilityGrid:hide(player_id, region_id) end
-
---- Returns the total number of players in the grid.
----@return number Player count.
-function LVisibilityGrid:playerCount() end
-
---- Returns the total number of regions in the grid.
----@return number Region count.
-function LVisibilityGrid:regionCount() end
-
---- Resets all visibility to Hidden for a player.
----@param player_id number Player index (0-based).
-function LVisibilityGrid:reset(player_id) end
-
---- Reveals a region for a player (and their allies). Optional flags argument.
----@param player_id number Player index (0-based).
----@param region_id number Region index (0-based).
----@param flags? number Optional bitfield flags to set on the region.
-function LVisibilityGrid:reveal(player_id, region_id, flags) end
-
---- Reveals all regions for a player (debug/cheat).
----@param player_id number Player index (0-based).
-function LVisibilityGrid:revealAll(player_id) end
-
---- Sets the discovery cost for a region.
----@param region_id number Region index (0-based).
----@param cost number Discovery cost value.
-function LVisibilityGrid:setCost(region_id, cost) end
-
---- Sets a visibility flag bit on a region.
----@param region_id number Region index (0-based).
----@param bit number Flag bit index (0-63).
----@param value boolean Whether to set or clear the bit.
-function LVisibilityGrid:setFlag(region_id, bit, value) end
-
---- Sets an alliance group for a list of players (shared visibility).
----@param players table Array of player IDs (0-based) to group together.
----@return number The assigned group ID.
-function LVisibilityGrid:setGroup(players) end
-
---- Checks if two players share visibility (same alliance group or same player).
----@param player_a number First player index (0-based).
----@param player_b number Second player index (0-based).
----@return boolean Whether they share visibility.
-function LVisibilityGrid:sharesVisibility(player_a, player_b) end
-
---- Returns whether two tilefield cells have a clear action line.
----@param field LTileField Tilefield to query.
----@param from table One-based `{x,y,z?}` start.
----@param to table One-based `{x,y,z?}` target.
----@param opts? table Optional `{channel="action"}`.
----@return boolean True when clear.
-lurek.visibility.lineOfAction = function(field, from, to, opts) end
-
---- Returns whether two tilefield cells have a clear sight line.
----@param field LTileField Tilefield to query.
----@param from table One-based `{x,y,z?}` start.
----@param to table One-based `{x,y,z?}` target.
----@param opts? table Optional `{channel="vision"}`.
----@return boolean True when clear.
-lurek.visibility.lineOfSight = function(field, from, to, opts) end
-
---- Create a new visibility grid for shadow-cast computation.
----@param config table Configuration table with `regions` (integer) and `players` (integer) fields. Optional `fog` sub-table with `discovered` (number), `hidden` (number), `smooth` (boolean), `speed` (number).
----@return LVisibilityGrid New visibility grid handle.
-lurek.visibility.new = function(config) end
-
---- Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
----@param opts table `{ range=integer, light_walls=boolean? }` (default light_walls=true).
----@return LFov New FOV handle ready for blocker assignment and compute calls.
-lurek.visibility.newFov = function(opts) end
-
---- Creates per-player tile visibility/action masks backed by a tilefield.
----@param field LTileField Source tilefield.
----@param opts table `{players={...}, rememberExplored=true?}`.
----@return LTileVisibility New tile visibility handle.
-lurek.visibility.newTileVisibility = function(field, opts) end
 
 --- Closes the window and signals the engine to shut down.
 lurek.window.close = function() end

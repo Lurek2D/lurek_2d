@@ -979,8 +979,8 @@ fn lua_integration_tilefield_pathfind_integration() {
 }
 
 #[test]
-fn lua_integration_tilefield_visibility_integration() {
-    run_lua_test("integration/test_tilefield_visibility_integration.lua");
+fn lua_integration_tilefield_awareness_integration() {
+    run_lua_test("integration/test_tilefield_awareness_integration.lua");
 }
 
 #[test]
@@ -1124,8 +1124,8 @@ fn lua_library_tilefield_minimap_library() {
 }
 
 #[test]
-fn lua_library_visibility_minimap_library() {
-    run_lua_test("library/test_visibility_minimap_library.lua");
+fn lua_library_awareness_minimap_library() {
+    run_lua_test("library/test_awareness_minimap_library.lua");
 }
 
 #[test]
@@ -1634,6 +1634,11 @@ fn lua_unit_tilefield_unit() {
 }
 
 #[test]
+fn lua_unit_tilelight_unit() {
+    run_lua_test("unit/test_tilelight_unit.lua");
+}
+
+#[test]
 fn lua_unit_timer_unit() {
     run_lua_test("unit/test_timer_unit.lua");
 }
@@ -1654,8 +1659,8 @@ fn lua_unit_validator_unit() {
 }
 
 #[test]
-fn lua_unit_visibility_unit() {
-    run_lua_test("unit/test_visibility_unit.lua");
+fn lua_unit_awareness_unit() {
+    run_lua_test("unit/test_awareness_unit.lua");
 }
 
 #[test]

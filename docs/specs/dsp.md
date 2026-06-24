@@ -105,6 +105,8 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 - It owns mono reduction, windowing, FFT magnitude sampling, and pixel-color mapping for offline visual inspection.
 - Waveform and spectrogram export live here so audio-image tooling stays separate from playback, synthesis, and effects.
 - This file is the visual diagnostics boundary for DSP assets; it does not own meters or generated sample output.
+- It reads decoded samples from supported audio sources and writes inspection images through image crate buffers.
+- Update this file when FFT bin mapping, waveform scaling, heatmap coloring, or diagnostic export limits change.
 - Read it when DSP image export, heatmap encoding, or waveform rendering rules for inspection tools need changes.
 
 

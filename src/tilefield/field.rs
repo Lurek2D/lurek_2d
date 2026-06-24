@@ -1,18 +1,28 @@
-//! Owns multi-level tilefield storage, channel blockers, channel costs, profiles, and lighting state.
-//! Implements bounds checks, cell mutation, profile application, layer exports, and light accumulation.
-//! Stores cells, named profiles, point lights, global light, and computed light values in one grid owner.
+//! Owns multi-level tilefield storage, channel blockers, channel costs, declared object slots, regions, and cell exports.
+//! Implements bounds checks, cell mutation, line queries, modifiers, and layer exports.
+//! Stores cells, slots, modifiers, and regions in one grid owner.
 //! Uses topology and line helpers locally so callers can query blockers without owning traversal logic.
-//! Provides renderer-independent input consumed by movement, visibility, minimap, and render adapters.
-//! Keeps action, vision, movement, point-light, and sun channels independent by never inferring one from another.
+//! Provides renderer-independent input consumed by movement, awareness, tilelight, minimap, and render adapters.
+//! Keeps action, vision, movement, light, and sun channels independent by never inferring one from another.
 //! Returns controlled string errors at the domain boundary so Lua bindings can attach lurek.tilefield names.
-//! Does not depend on pathfind, visibility, raycaster, minimap, tilemap rendering, or renderer state.
+//! Does not depend on pathfind, awareness, tilelight, raycaster, minimap, tilemap rendering, or renderer state.
 
 use crate::tilefield::cell::{TileCell, TileChannel};
-use crate::tilefield::light::{GlobalLight, LightColor, PointLight, PointLightUpdate};
-use crate::tilefield::line::{line_between, visit_line_cells, CellCoord};
-use crate::tilefield::profile::TileProfile;
+use crate::tilefield::emitter::{TileLightEmitter, TileLightSource};
+use crate::tilefield::line::{line_between, CellCoord};
+use crate::tilefield::modifier::TileModifier;
 use crate::tilefield::topology::TileTopology;
-use std::collections::HashMap;
+use std::collections::BTreeSet;
+use std::collections::{HashMap, HashSet};
+
+/// Named tile-level region stored as an explicit set of whole cells.
+#[derive(Debug, Clone)]
+pub struct TileRegion {
+    /// Region name.
+    pub name: String,
+    /// Whole tile cells owned by the region.
+    pub cells: Vec<CellCoord>,
+}
 
 /// Multi-level tile gameplay field.
 #[derive(Debug, Clone)]
@@ -22,15 +32,13 @@ pub struct TileField {
     levels: u32,
     topology: TileTopology,
     cells: Vec<TileCell>,
-    profiles: HashMap<String, TileProfile>,
-    point_lights: Vec<Option<PointLight>>,
-    next_light_id: u32,
-    global_light: GlobalLight,
-    light_values: Vec<LightColor>,
+    modifiers: HashMap<String, TileModifier>,
+    slots: BTreeSet<String>,
+    regions: HashMap<String, TileRegion>,
 }
 
 impl TileField {
-    /// Create a new field with all cells empty and built-in profiles registered.
+    /// Create a new field with all cells empty.
     pub fn new(
         width: u32,
         height: u32,
@@ -51,11 +59,9 @@ impl TileField {
             levels,
             topology,
             cells: vec![TileCell::default(); len],
-            profiles: TileProfile::builtins(),
-            point_lights: Vec::new(),
-            next_light_id: 1,
-            global_light: GlobalLight::default(),
-            light_values: vec![LightColor::BLACK; len],
+            modifiers: HashMap::new(),
+            slots: BTreeSet::new(),
+            regions: HashMap::new(),
         })
     }
 
@@ -67,6 +73,14 @@ impl TileField {
     /// Return field topology.
     pub fn topology(&self) -> TileTopology {
         self.topology
+    }
+
+    /// Return same-level neighbours for a coordinate using this field topology.
+    pub fn neighbors(&self, coord: CellCoord) -> Vec<CellCoord> {
+        if !self.in_bounds(coord) {
+            return Vec::new();
+        }
+        self.topology.neighbors(coord, self.width, self.height)
     }
 
     /// Return true when a zero-based coordinate is in bounds.
@@ -85,6 +99,86 @@ impl TileField {
             .and_then(|idx| usize::try_from(idx).ok())
     }
 
+    /// Define or replace a named rectangular tile region on one level using inclusive zero-based coordinates.
+    pub fn set_region_rect(
+        &mut self,
+        name: String,
+        x1: u32,
+        y1: u32,
+        x2: u32,
+        y2: u32,
+        z: u32,
+    ) -> Result<(), String> {
+        if name.trim().is_empty() {
+            return Err("tilefield region name must not be empty".to_string());
+        }
+        let min_x = x1.min(x2);
+        let max_x = x1.max(x2);
+        let min_y = y1.min(y2);
+        let max_y = y1.max(y2);
+        if max_x >= self.width || max_y >= self.height || z >= self.levels {
+            return Err("tilefield region rectangle is out of bounds".to_string());
+        }
+        let mut cells = Vec::new();
+        for y in min_y..=max_y {
+            for x in min_x..=max_x {
+                cells.push(CellCoord { x, y, z });
+            }
+        }
+        self.regions
+            .insert(name.clone(), TileRegion { name, cells });
+        Ok(())
+    }
+
+    /// Define or replace a named tile region from explicit whole cells.
+    pub fn set_region_cells(&mut self, name: String, cells: Vec<CellCoord>) -> Result<(), String> {
+        if name.trim().is_empty() {
+            return Err("tilefield region name must not be empty".to_string());
+        }
+        let mut seen = HashSet::new();
+        let mut unique = Vec::new();
+        for coord in cells {
+            if !self.in_bounds(coord) {
+                return Err("tilefield region cell is out of bounds".to_string());
+            }
+            if seen.insert(coord) {
+                unique.push(coord);
+            }
+        }
+        self.regions.insert(
+            name.clone(),
+            TileRegion {
+                name,
+                cells: unique,
+            },
+        );
+        Ok(())
+    }
+
+    /// Remove a named region. Returns true when it existed.
+    pub fn remove_region(&mut self, name: &str) -> bool {
+        self.regions.remove(name).is_some()
+    }
+
+    /// Return true when a region contains a zero-based coordinate.
+    pub fn region_contains(&self, name: &str, coord: CellCoord) -> bool {
+        self.regions
+            .get(name)
+            .is_some_and(|region| region.cells.contains(&coord))
+    }
+
+    /// Return copied cells for a named region.
+    pub fn region_cells(&self, name: &str) -> Option<Vec<CellCoord>> {
+        self.regions.get(name).map(|region| region.cells.clone())
+    }
+
+    /// Return region names in stable sorted order.
+    pub fn region_names(&self) -> Vec<String> {
+        let mut names: Vec<_> = self.regions.keys().cloned().collect();
+        names.sort();
+        names
+    }
+
     /// Return immutable cell reference.
     pub fn cell(&self, coord: CellCoord) -> Option<&TileCell> {
         self.index(coord).and_then(|idx| self.cells.get(idx))
@@ -95,12 +189,11 @@ impl TileField {
         self.index(coord).and_then(|idx| self.cells.get_mut(idx))
     }
 
-    /// Clear every cell and computed light value.
+    /// Clear every cell.
     pub fn clear(&mut self) {
         for cell in &mut self.cells {
             *cell = TileCell::default();
         }
-        self.light_values.fill(LightColor::BLACK);
     }
 
     /// Clear one cell.
@@ -128,7 +221,20 @@ impl TileField {
 
     /// Return channel blocker for one cell; out-of-bounds blocks line-style queries.
     pub fn blocks(&self, coord: CellCoord, channel: TileChannel) -> bool {
-        self.cell(coord).is_none_or(|cell| cell.blocks(channel))
+        let Some(cell) = self.cell(coord) else {
+            return true;
+        };
+        let mut blocked = cell.blocks(channel);
+        for modifier_name in cell.modifiers() {
+            if let Some(value) = self
+                .modifiers
+                .get(modifier_name)
+                .and_then(|modifier| modifier.blockers.get(&channel))
+            {
+                blocked = *value;
+            }
+        }
+        blocked
     }
 
     /// Set channel cost for one cell.
@@ -146,7 +252,22 @@ impl TileField {
 
     /// Return channel cost for one cell; out-of-bounds returns 0.
     pub fn cost(&self, coord: CellCoord, channel: TileChannel) -> f32 {
-        self.cell(coord).map_or(0.0, |cell| cell.cost(channel))
+        let Some(cell) = self.cell(coord) else {
+            return 0.0;
+        };
+        let mut cost = cell.cost(channel);
+        for modifier_name in cell.modifiers() {
+            let Some(modifier) = self.modifiers.get(modifier_name) else {
+                continue;
+            };
+            if let Some(multiplier) = modifier.cost_mul.get(&channel) {
+                cost *= *multiplier;
+            }
+            if let Some(add) = modifier.cost_add.get(&channel) {
+                cost += *add;
+            }
+        }
+        cost.max(0.0)
     }
 
     /// Set top-light occlusion for one cell.
@@ -159,46 +280,186 @@ impl TileField {
 
     /// Return top-light occlusion for one cell.
     pub fn sun_occlusion(&self, coord: CellCoord) -> f32 {
-        self.cell(coord).map_or(1.0, TileCell::sun_occlusion)
+        let Some(cell) = self.cell(coord) else {
+            return 1.0;
+        };
+        let mut occlusion = cell.sun_occlusion();
+        for modifier_name in cell.modifiers() {
+            if let Some(modifier) = self.modifiers.get(modifier_name) {
+                occlusion += modifier.sun_occlusion_add;
+            }
+        }
+        occlusion.clamp(0.0, 1.0)
     }
 
-    /// Register or replace a named profile.
-    pub fn set_profile(&mut self, name: String, profile: TileProfile) -> Result<(), String> {
-        if name.trim().is_empty() {
-            return Err("tilefield profile name must not be empty".to_string());
+    /// Register or replace a named tile modifier.
+    pub fn set_modifier(&mut self, name: String, mut modifier: TileModifier) -> Result<(), String> {
+        let name = name.trim();
+        if name.is_empty() {
+            return Err("tilefield modifier name must not be empty".to_string());
         }
-        self.profiles.insert(name, profile);
+        modifier.name = name.to_string();
+        self.modifiers.insert(name.to_string(), modifier);
         Ok(())
     }
 
-    /// Return a named profile.
-    pub fn profile(&self, name: &str) -> Option<&TileProfile> {
-        self.profiles.get(name)
+    /// Return a named tile modifier.
+    pub fn modifier(&self, name: &str) -> Option<&TileModifier> {
+        self.modifiers.get(name)
     }
 
-    /// Remove a named profile.
-    pub fn remove_profile(&mut self, name: &str) {
-        self.profiles.remove(name);
+    /// Remove a named modifier and clear it from all cells.
+    pub fn remove_modifier(&mut self, name: &str) -> bool {
+        let removed = self.modifiers.remove(name).is_some();
+        if removed {
+            for cell in &mut self.cells {
+                cell.remove_modifier(name);
+            }
+        }
+        removed
     }
 
-    /// Apply a named profile to one cell.
-    pub fn apply_profile(&mut self, coord: CellCoord, name: &str) -> Result<(), String> {
-        let profile = self
-            .profiles
-            .get(name)
-            .cloned()
-            .ok_or_else(|| format!("tilefield profile '{name}' does not exist"))?;
+    /// Apply a named modifier to one cell.
+    pub fn apply_modifier(&mut self, coord: CellCoord, name: &str) -> Result<(), String> {
+        if !self.modifiers.contains_key(name) {
+            return Err(format!("tilefield modifier '{name}' does not exist"));
+        }
         let cell = self
             .cell_mut(coord)
-            .ok_or_else(|| "tilefield applyProfile coordinate is out of bounds".to_string())?;
-        for (channel, blocked) in profile.blockers {
-            cell.set_block(channel, blocked);
+            .ok_or_else(|| "tilefield applyModifier coordinate is out of bounds".to_string())?;
+        cell.add_modifier(name.to_string());
+        Ok(())
+    }
+
+    /// Remove one modifier from one cell.
+    pub fn clear_modifier(&mut self, coord: CellCoord, name: &str) -> Result<bool, String> {
+        let cell = self
+            .cell_mut(coord)
+            .ok_or_else(|| "tilefield clearModifier coordinate is out of bounds".to_string())?;
+        Ok(cell.remove_modifier(name))
+    }
+
+    /// Return active modifier names for one cell.
+    pub fn active_modifiers(&self, coord: CellCoord) -> Vec<String> {
+        self.cell(coord)
+            .map(|cell| cell.modifiers().to_vec())
+            .unwrap_or_default()
+    }
+
+    /// Set, replace, or clear a named tilelight source on one cell.
+    pub fn set_light(
+        &mut self,
+        coord: CellCoord,
+        source: String,
+        light: Option<TileLightEmitter>,
+    ) -> Result<(), String> {
+        let cell = self
+            .cell_mut(coord)
+            .ok_or_else(|| "tilefield setLight coordinate is out of bounds".to_string())?;
+        cell.set_light(source, light)
+    }
+
+    /// Return tilelight sources contributed by base cell data and active modifiers.
+    pub fn tile_light_sources(&self) -> Vec<TileLightSource> {
+        let mut out = Vec::new();
+        for z in 0..self.levels {
+            for y in 0..self.height {
+                for x in 0..self.width {
+                    let coord = CellCoord { x, y, z };
+                    let Some(cell) = self.cell(coord) else {
+                        continue;
+                    };
+                    for light in cell.lights().values() {
+                        out.push(TileLightSource {
+                            x,
+                            y,
+                            z,
+                            radius: light.radius,
+                            intensity: light.intensity,
+                            color: light.color,
+                        });
+                    }
+                    for modifier_name in cell.modifiers() {
+                        let Some(light) = self
+                            .modifiers
+                            .get(modifier_name)
+                            .and_then(|modifier| modifier.light.as_ref())
+                        else {
+                            continue;
+                        };
+                        out.push(TileLightSource {
+                            x,
+                            y,
+                            z,
+                            radius: light.radius,
+                            intensity: light.intensity,
+                            color: light.color,
+                        });
+                    }
+                }
+            }
         }
-        for (channel, cost) in profile.costs {
-            cell.set_cost(channel, cost)?;
+        out
+    }
+
+    /// Set a named object/tile reference on one cell.
+    pub fn set_ref(&mut self, coord: CellCoord, slot: String, value: u32) -> Result<(), String> {
+        if !self.has_slot(&slot) {
+            return Err(format!("tilefield slot '{slot}' is not defined"));
         }
-        cell.set_sun_occlusion(profile.sun_occlusion)?;
-        cell.set_profile(Some(name.to_string()));
+        let cell = self
+            .cell_mut(coord)
+            .ok_or_else(|| "tilefield setRef coordinate is out of bounds".to_string())?;
+        cell.set_ref(slot, value)
+    }
+
+    /// Return a named object/tile reference for one cell.
+    pub fn get_ref(&self, coord: CellCoord, slot: &str) -> Option<u32> {
+        self.cell(coord).and_then(|cell| cell.get_ref(slot))
+    }
+
+    /// Define a game-owned object slot that cells may reference.
+    pub fn define_slot(&mut self, slot: String) -> Result<(), String> {
+        let slot = slot.trim();
+        if slot.is_empty() {
+            return Err("tilefield slot name must not be empty".to_string());
+        }
+        self.slots.insert(slot.to_string());
+        Ok(())
+    }
+
+    /// Remove a declared slot and clear its references from every cell.
+    pub fn remove_slot(&mut self, slot: &str) -> bool {
+        let removed = self.slots.remove(slot);
+        if removed {
+            for cell in &mut self.cells {
+                cell.clear_ref(slot);
+                let _ = cell.set_light(slot.to_string(), None);
+            }
+        }
+        removed
+    }
+
+    /// Return true when a slot has been declared on this field.
+    pub fn has_slot(&self, slot: &str) -> bool {
+        self.slots.contains(slot)
+    }
+
+    /// Return every declared ref slot name.
+    pub fn ref_slots(&self) -> Vec<String> {
+        self.slots.iter().cloned().collect()
+    }
+
+    /// Clear a named object/tile reference on one cell.
+    pub fn clear_ref(&mut self, coord: CellCoord, slot: &str) -> Result<(), String> {
+        if !self.has_slot(slot) {
+            return Err(format!("tilefield slot '{slot}' is not defined"));
+        }
+        let cell = self
+            .cell_mut(coord)
+            .ok_or_else(|| "tilefield clearRef coordinate is out of bounds".to_string())?;
+        cell.clear_ref(slot);
+        cell.set_light(slot.to_string(), None)?;
         Ok(())
     }
 
@@ -250,222 +511,6 @@ impl TileField {
         }
     }
 
-    /// Add a point light and return its stable id.
-    pub fn add_point_light(
-        &mut self,
-        x: u32,
-        y: u32,
-        z: u32,
-        radius: f32,
-        intensity: f32,
-        color: LightColor,
-    ) -> Result<u32, String> {
-        let coord = CellCoord { x, y, z };
-        if !self.in_bounds(coord) {
-            return Err("tilefield addPointLight coordinate is out of bounds".to_string());
-        }
-        if !radius.is_finite() || radius <= 0.0 {
-            return Err("tilefield point light radius must be finite and > 0".to_string());
-        }
-        if !intensity.is_finite() || intensity < 0.0 {
-            return Err("tilefield point light intensity must be finite and >= 0".to_string());
-        }
-        let id = self.next_light_id;
-        self.next_light_id = self.next_light_id.saturating_add(1).max(1);
-        self.point_lights.push(Some(PointLight {
-            id,
-            x,
-            y,
-            z,
-            radius,
-            intensity,
-            color: color.clamped(),
-        }));
-        Ok(id)
-    }
-
-    /// Update an existing point light.
-    pub fn update_point_light(&mut self, id: u32, patch: PointLightUpdate) -> Result<(), String> {
-        let light = self
-            .point_lights
-            .iter_mut()
-            .filter_map(Option::as_mut)
-            .find(|light| light.id == id)
-            .ok_or_else(|| format!("tilefield point light id {id} does not exist"))?;
-        let next_x = patch.x.unwrap_or(light.x);
-        let next_y = patch.y.unwrap_or(light.y);
-        let next_z = patch.z.unwrap_or(light.z);
-        if next_x >= self.width || next_y >= self.height || next_z >= self.levels {
-            return Err("tilefield updatePointLight coordinate is out of bounds".to_string());
-        }
-        if let Some(radius) = patch.radius {
-            if !radius.is_finite() || radius <= 0.0 {
-                return Err("tilefield point light radius must be finite and > 0".to_string());
-            }
-            light.radius = radius;
-        }
-        if let Some(intensity) = patch.intensity {
-            if !intensity.is_finite() || intensity < 0.0 {
-                return Err("tilefield point light intensity must be finite and >= 0".to_string());
-            }
-            light.intensity = intensity;
-        }
-        light.x = next_x;
-        light.y = next_y;
-        light.z = next_z;
-        if let Some(color) = patch.color {
-            light.color = color.clamped();
-        }
-        Ok(())
-    }
-
-    /// Remove a point light by id. Returns true when a light was removed.
-    pub fn remove_point_light(&mut self, id: u32) -> bool {
-        for slot in &mut self.point_lights {
-            if slot.as_ref().is_some_and(|light| light.id == id) {
-                *slot = None;
-                return true;
-            }
-        }
-        false
-    }
-
-    /// Remove all point lights.
-    pub fn clear_point_lights(&mut self) {
-        self.point_lights.clear();
-    }
-
-    /// Set global top light.
-    pub fn set_global_light(&mut self, global: GlobalLight) {
-        self.global_light = GlobalLight {
-            intensity: global.intensity.max(0.0),
-            color: global.color.clamped(),
-        };
-    }
-
-    /// Compute current light values from ambient, point lights, and top light.
-    pub fn compute_light(
-        &mut self,
-        include_point_lights: bool,
-        include_global_light: bool,
-        ambient: LightColor,
-    ) {
-        self.light_values.fill(ambient.clamped());
-        if include_global_light {
-            self.apply_global_light();
-        }
-        if include_point_lights {
-            self.apply_point_lights();
-        }
-    }
-
-    fn apply_global_light(&mut self) {
-        for y in 0..self.height {
-            for x in 0..self.width {
-                let mut transmission = 1.0;
-                for z in (0..self.levels).rev() {
-                    let coord = CellCoord { x, y, z };
-                    if let Some(idx) = self.index(coord) {
-                        self.light_values[idx].add_scaled(
-                            self.global_light.color,
-                            self.global_light.intensity * transmission,
-                        );
-                    }
-                    transmission *= 1.0 - self.sun_occlusion(coord).clamp(0.0, 1.0);
-                }
-            }
-        }
-    }
-
-    fn apply_point_lights(&mut self) {
-        let lights: Vec<_> = self.point_lights.iter().filter_map(Clone::clone).collect();
-        for light in lights {
-            let origin = CellCoord {
-                x: light.x,
-                y: light.y,
-                z: light.z,
-            };
-            let radius = light.radius.ceil() as i32;
-            for dy in -radius..=radius {
-                for dx in -radius..=radius {
-                    let x = light.x as i32 + dx;
-                    let y = light.y as i32 + dy;
-                    if x < 0 || y < 0 {
-                        continue;
-                    }
-                    let coord = CellCoord {
-                        x: x as u32,
-                        y: y as u32,
-                        z: light.z,
-                    };
-                    if !self.in_bounds(coord) {
-                        continue;
-                    }
-                    let dist = self.point_light_distance(origin, coord);
-                    if dist > light.radius {
-                        continue;
-                    }
-                    let transmission = self.light_transmission(origin, coord);
-                    if transmission <= f32::EPSILON {
-                        continue;
-                    }
-                    let falloff = 1.0 - (dist / light.radius);
-                    if let Some(idx) = self.index(coord) {
-                        self.light_values[idx].add_scaled(
-                            light.color,
-                            light.intensity * falloff.max(0.0) * transmission,
-                        );
-                    }
-                }
-            }
-        }
-    }
-
-    fn point_light_distance(&self, a: CellCoord, b: CellCoord) -> f32 {
-        if a.z != b.z {
-            return f32::INFINITY;
-        }
-        match self.topology {
-            TileTopology::Square | TileTopology::IsoSquare => {
-                let dx = a.x.abs_diff(b.x) as f32;
-                let dy = a.y.abs_diff(b.y) as f32;
-                (dx * dx + dy * dy).sqrt()
-            }
-            TileTopology::Hex => self.topology.distance(a, b) as f32,
-        }
-    }
-
-    fn light_transmission(&self, origin: CellCoord, target: CellCoord) -> f32 {
-        if origin == target {
-            return 1.0;
-        }
-        let mut transmission = 1.0;
-        let mut first = true;
-        let _ = visit_line_cells(self.topology, origin, target, |coord| {
-            if first {
-                first = false;
-                return true;
-            }
-            if coord == target {
-                return false;
-            }
-            if self.blocks(coord, TileChannel::Light) {
-                transmission = 0.0;
-                return false;
-            }
-            transmission *= self.cost(coord, TileChannel::Light).clamp(0.0, 1.0);
-            transmission > f32::EPSILON
-        });
-        transmission.clamp(0.0, 1.0)
-    }
-
-    /// Return computed light for a cell.
-    pub fn light_at(&self, coord: CellCoord) -> LightColor {
-        self.index(coord)
-            .and_then(|idx| self.light_values.get(idx).copied())
-            .unwrap_or(LightColor::BLACK)
-    }
-
     /// Export a blocker layer for one level in row-major order.
     pub fn export_block_layer(&self, channel: TileChannel, z: u32) -> Vec<bool> {
         let mut out = Vec::with_capacity((self.width * self.height) as usize);
@@ -488,17 +533,86 @@ impl TileField {
         out
     }
 
-    /// Export profile names for one level in row-major order.
-    pub fn export_profile_layer(&self, z: u32) -> Vec<Option<String>> {
+    /// Export one named object/tile reference slot for one level in row-major order.
+    pub fn export_ref_layer(&self, slot: &str, z: u32) -> Vec<Option<u32>> {
         let mut out = Vec::with_capacity((self.width * self.height) as usize);
         for y in 0..self.height {
             for x in 0..self.width {
-                out.push(
-                    self.cell(CellCoord { x, y, z })
-                        .and_then(|cell| cell.profile().map(ToOwned::to_owned)),
-                );
+                out.push(self.get_ref(CellCoord { x, y, z }, slot));
             }
         }
         out
+    }
+
+    fn validate_layer_values(&self, z: u32, len: usize, label: &str) -> Result<(), String> {
+        if z >= self.levels {
+            return Err(format!("tilefield {label} level is out of bounds"));
+        }
+        let expected = self
+            .width
+            .checked_mul(self.height)
+            .and_then(|value| usize::try_from(value).ok())
+            .ok_or_else(|| format!("tilefield {label} dimensions overflow"))?;
+        if len != expected {
+            return Err(format!(
+                "tilefield {label} expected {expected} values, got {len}"
+            ));
+        }
+        Ok(())
+    }
+
+    /// Write a full blocker layer for one channel and level in row-major order.
+    pub fn write_block_layer(
+        &mut self,
+        channel: TileChannel,
+        z: u32,
+        values: &[bool],
+    ) -> Result<(), String> {
+        self.validate_layer_values(z, values.len(), "writeBlockLayer")?;
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let idx = (y * self.width + x) as usize;
+                self.set_block(CellCoord { x, y, z }, channel, values[idx])?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Write a full cost layer for one channel and level in row-major order.
+    pub fn write_cost_layer(
+        &mut self,
+        channel: TileChannel,
+        z: u32,
+        values: &[f32],
+    ) -> Result<(), String> {
+        self.validate_layer_values(z, values.len(), "writeCostLayer")?;
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let idx = (y * self.width + x) as usize;
+                self.set_cost(CellCoord { x, y, z }, channel, values[idx])?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Write a full named ref layer for one level in row-major order.
+    pub fn write_ref_layer(
+        &mut self,
+        slot: &str,
+        z: u32,
+        values: &[Option<u32>],
+    ) -> Result<(), String> {
+        self.validate_layer_values(z, values.len(), "writeRefLayer")?;
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let idx = (y * self.width + x) as usize;
+                let coord = CellCoord { x, y, z };
+                match values[idx] {
+                    Some(value) => self.set_ref(coord, slot.to_string(), value)?,
+                    None => self.clear_ref(coord, slot)?,
+                }
+            }
+        }
+        Ok(())
     }
 }

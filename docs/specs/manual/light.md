@@ -25,7 +25,8 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 ## Notes
 
 - `lurek.light` is the 2D render-light and occluder module: point/spot/directional scene lights, render occluders, shadow masks, and visual light-world state.
-- `lurek.tilefield` owns tile-based gameplay lighting: grid point lights, per-tile `"light"` blockers, global top light, and multilevel sun occlusion.
+- `lurek.tilefield` owns the tile data consumed by tile lighting: per-tile `"light"` blockers, transmission costs, and multilevel sun occlusion.
+- `lurek.tilelight` owns tile-based environment lighting: grid point lights, ambient light, global top light, and computed RGB/luma layers.
 - Do not use `lurek.light` as the source of truth for tile movement, sight, action, or tile-light gameplay semantics.
 
 ## Architecture Links

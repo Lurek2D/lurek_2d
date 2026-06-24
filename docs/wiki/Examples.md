@@ -20,6 +20,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [asset.lua](../blob/main/content/examples/asset.lua) | `lurek.asset` | API example |
 | [audio.lua](../blob/main/content/examples/audio.lua) | `lurek.audio` | API example |
 | [automation.lua](../blob/main/content/examples/automation.lua) | `lurek.automation` | API example |
+| [awareness.lua](../blob/main/content/examples/awareness.lua) | `lurek.awareness` | API example |
 | [binary.lua](../blob/main/content/examples/binary.lua) | `lurek.binary` | API example |
 | [camera.lua](../blob/main/content/examples/camera.lua) | `lurek.camera` | API example |
 | [charts.lua](../blob/main/content/examples/charts.lua) | `lurek.charts` | API example |
@@ -49,6 +50,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [learning.lua](../blob/main/content/examples/learning.lua) | `lurek.learning` | API example |
 | [light.lua](../blob/main/content/examples/light.lua) | `lurek.light` | API example |
 | [log.lua](../blob/main/content/examples/log.lua) | `lurek.log` | API example |
+| [tilelight.lua](../blob/main/content/examples/tilelight.lua) | `lurek.log` | API example |
 | [mapblock.lua](../blob/main/content/examples/mapblock.lua) | `lurek.mapblock` | API example |
 | [math.lua](../blob/main/content/examples/math.lua) | `lurek.math` | API example |
 | [midi.lua](../blob/main/content/examples/midi.lua) | `lurek.midi` | API example |
@@ -82,5 +84,4 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [tween.lua](../blob/main/content/examples/tween.lua) | `lurek.tween` | API example |
 | [ui.lua](../blob/main/content/examples/ui.lua) | `lurek.ui` | API example |
 | [validator.lua](../blob/main/content/examples/validator.lua) | `lurek.validator` | API example |
-| [visibility.lua](../blob/main/content/examples/visibility.lua) | `lurek.visibility` | API example |
 | [window.lua](../blob/main/content/examples/window.lua) | `lurek.window` | API example |

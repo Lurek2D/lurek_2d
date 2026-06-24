@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-23T19:03:08.805806+00:00",
+    "generated": "2026-06-23T22:02:12.906643+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3029,
-      "rust_modules": 715,
-      "rust_tests": 488,
-      "lua_tests": 273
+      "rust_items": 3013,
+      "rust_modules": 716,
+      "rust_tests": 489,
+      "lua_tests": 274
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3029,
-      "documented": 3029,
-      "modules": 715
+      "total_items": 3013,
+      "documented": 3010,
+      "modules": 716
     },
     "modules": {
       "agent::chat": {
@@ -2290,6 +2290,219 @@
           }
         ]
       },
+      "awareness::adjacency": {
+        "module_doc": "This file owns adjacency contracts for visibility systems that need region-neighbor lookup without grid coupling. It defines `AdjacencyProvider` plus `SimpleAdjacency`, a small adjacency-list implementation for graph-like maps. Visibility and discovery code can query neighbors through this boundary without knowing how worlds store topology. Open this file when neighborhood semantics change; visibility state and fog progression live in sibling modules.",
+        "source_file": "src/awareness/adjacency.rs",
+        "items": [
+          {
+            "name": "AdjacencyProvider",
+            "kind": "trait",
+            "description": "Trait for providing neighbor information to the visibility system. Implementations can be grid-based, graph-based, or any custom topology.",
+            "file": "src/awareness/adjacency.rs",
+            "line": 8
+          },
+          {
+            "name": "SimpleAdjacency",
+            "kind": "struct",
+            "description": "Simple adjacency list implementation.",
+            "file": "src/awareness/adjacency.rs",
+            "line": 18
+          }
+        ]
+      },
+      "awareness::cost": {
+        "module_doc": "This file owns `DiscoveryCost`, the per-region metadata that controls how expensive or gated revelation should be. It stores a base reveal cost plus adjacency requirements so progression systems can tune map exploration pressure. Open this file when discovery gating changes; live visibility state and ownership sharing remain in sibling files.",
+        "source_file": "src/awareness/cost.rs",
+        "items": [
+          {
+            "name": "DiscoveryCost",
+            "kind": "struct",
+            "description": "Configuration for how expensive it is to discover a region.",
+            "file": "src/awareness/cost.rs",
+            "line": 7
+          }
+        ]
+      },
+      "awareness::events": {
+        "module_doc": "This file owns `AwarenessEvent`, the event payload emitted when regions are revealed, hidden, forgotten, or regrouped. It gives callers stable event variants for reacting to state changes without inspecting grid internals directly. Open this file when visibility notifications change; stored state and ownership logic live in sibling modules.",
+        "source_file": "src/awareness/events.rs",
+        "items": [
+          {
+            "name": "AwarenessEvent",
+            "kind": "enum",
+            "description": "Events emitted by the visibility system when regions change state.",
+            "file": "src/awareness/events.rs",
+            "line": 7
+          }
+        ]
+      },
+      "awareness::flags": {
+        "module_doc": "This file owns `AwarenessFlags`, the per-region bitfield used to mark which information layers are currently revealed. It supports custom terrain, unit, building, or game-specific reveal channels through a compact `u64` wrapper. Helpers set, test, merge, intersect, and count bits so reveal systems can evolve information without new enums. Open this file when reveal-flag semantics change; grid storage and fog state live in sibling modules.",
+        "source_file": "src/awareness/flags.rs",
+        "items": [
+          {
+            "name": "AwarenessFlags",
+            "kind": "struct",
+            "description": "Bitfield flags controlling what is visible per region. Games define their own flag semantics (e.g., bit 0 = terrain, bit 1 = units).",
+            "file": "src/awareness/flags.rs",
+            "line": 9
+          }
+        ]
+      },
+      "awareness::fog_render": {
+        "module_doc": "This file owns `FogConfig`, the render-facing fog settings that translate visibility state into screen intensity. It stores discovered and hidden opacity plus transition controls so presentation can follow one visibility policy. Open this file when fog presentation rules change; state transitions and region ownership live in sibling files.",
+        "source_file": "src/awareness/fog_render.rs",
+        "items": [
+          {
+            "name": "FogConfig",
+            "kind": "struct",
+            "description": "Configuration for how fog is rendered visually.",
+            "file": "src/awareness/fog_render.rs",
+            "line": 7
+          }
+        ]
+      },
+      "awareness::grid": {
+        "module_doc": "This file owns `AwarenessGrid`, the main per-player region store for hidden, discovered, visible, and flagged data. It tracks fog intensity, reveal costs, ownership sharing, and pending `AwarenessEvent` output in one state holder. Reveal and hide operations propagate through allied players, update fog and flags, and record transition events. Utility methods expose per-region state, costs, flags, player groups, global reveal, reset, and fog configuration. Open this file when multi-player visibility behavior changes; topology contracts and tile FOV live in siblings.",
+        "source_file": "src/awareness/grid.rs",
+        "items": [
+          {
+            "name": "AwarenessGrid",
+            "kind": "struct",
+            "description": "The main visibility grid that tracks state for all regions and players.",
+            "file": "src/awareness/grid.rs",
+            "line": 11
+          }
+        ]
+      },
+      "awareness": {
+        "module_doc": "This module re-exports the visibility subsystem surface for grids, FOV, ownership, fog rules, and events. It serves as the navigation map for region-state storage, adjacency contracts, reveal costs, and shadowcasting. `grid.rs` owns shared per-player region state, while `shadowcast.rs` covers tile-based field-of-view computation. `owner.rs`, `events.rs`, and `state.rs` define shared-vision groups, emitted transitions, and visibility levels. `flags.rs`, `cost.rs`, `adjacency.rs`, and `fog_render.rs` describe reveal metadata and presentation inputs. Change this file when the public visibility symbol map moves; change siblings when runtime behavior changes.",
+        "source_file": "src/awareness/mod.rs",
+        "items": [
+          {
+            "name": "adjacency",
+            "kind": "mod",
+            "description": "Adjacency provider trait defining region neighbor relationships.",
+            "file": "src/awareness/mod.rs",
+            "line": 9
+          },
+          {
+            "name": "cost",
+            "kind": "mod",
+            "description": "Per-region discovery cost and adjacency requirements for reveal logic.",
+            "file": "src/awareness/mod.rs",
+            "line": 11
+          },
+          {
+            "name": "events",
+            "kind": "mod",
+            "description": "Events emitted when region visibility state transitions occur.",
+            "file": "src/awareness/mod.rs",
+            "line": 13
+          },
+          {
+            "name": "flags",
+            "kind": "mod",
+            "description": "Per-region bitfield flags: terrain, units, buildings, and custom bits.",
+            "file": "src/awareness/mod.rs",
+            "line": 15
+          },
+          {
+            "name": "fog_render",
+            "kind": "mod",
+            "description": "Fog-of-war rendering configuration: intensity, color, and render hints.",
+            "file": "src/awareness/mod.rs",
+            "line": 17
+          },
+          {
+            "name": "grid",
+            "kind": "mod",
+            "description": "Visibility grid: per-region state storage for multiple simultaneous players.",
+            "file": "src/awareness/mod.rs",
+            "line": 19
+          },
+          {
+            "name": "owner",
+            "kind": "mod",
+            "description": "Player and group ownership of shared visibility and discovery state.",
+            "file": "src/awareness/mod.rs",
+            "line": 21
+          },
+          {
+            "name": "shadowcast",
+            "kind": "mod",
+            "description": "Tile-grid recursive shadowcasting FOV for roguelike and stealth games.",
+            "file": "src/awareness/mod.rs",
+            "line": 23
+          },
+          {
+            "name": "state",
+            "kind": "mod",
+            "description": "Visibility state enum: Hidden, Discovered, Visible, and custom levels.",
+            "file": "src/awareness/mod.rs",
+            "line": 25
+          },
+          {
+            "name": "tile_awareness",
+            "kind": "mod",
+            "description": "Per-player tile visibility and action masks backed by tilefield semantics.",
+            "file": "src/awareness/mod.rs",
+            "line": 27
+          }
+        ]
+      },
+      "awareness::owner": {
+        "module_doc": "This file owns `PlayerOwnership`, the shared-vision layer that decides which players inherit each other's sight. It stores player-to-group assignments and answers ally lookups so reveal propagation stays centralized and consistent. Group helpers add shared-visibility teams, remove members, and answer hot-path visibility-sharing checks by player id. Open this file when alliance semantics change; region state storage and transition events live in sibling files.",
+        "source_file": "src/awareness/owner.rs",
+        "items": [
+          {
+            "name": "PlayerOwnership",
+            "kind": "struct",
+            "description": "Manages which players share visibility (alliances/teams).",
+            "file": "src/awareness/owner.rs",
+            "line": 10
+          }
+        ]
+      },
+      "awareness::shadowcast": {
+        "module_doc": "This file owns `TileFov`, the tile-grid field-of-view runtime that computes current sight and remembered exploration. It stores dimensions, range, wall-lighting policy, and per-cell visible or explored masks for one observer context. `compute` runs deterministic recursive shadowcasting across eight octants using a caller-supplied blocker predicate. Helpers expose width, height, range, visible cells, explored state, and callback iteration over current sight. Save and restore logic serializes packed visibility masks so field-of-view memory can survive persistence boundaries. Internal bit-pack helpers keep the blob compact, while private casting code isolates slope math from public APIs. Open this file when tile FOV behavior changes; shared region-state visibility logic lives in sibling modules.",
+        "source_file": "src/awareness/shadowcast.rs",
+        "items": [
+          {
+            "name": "TileFov",
+            "kind": "struct",
+            "description": "Per-cell visibility state for a single observer on a tile grid.",
+            "file": "src/awareness/shadowcast.rs",
+            "line": 10
+          }
+        ]
+      },
+      "awareness::state": {
+        "module_doc": "This file owns `AwarenessState`, the ordered knowledge enum used to describe what one player knows about one region. It encodes hidden, discovered, visible, and custom levels so reveal logic and fog rendering share one progression model. Open this file when knowledge-level semantics change; event emission and grid storage live in sibling modules.",
+        "source_file": "src/awareness/state.rs",
+        "items": [
+          {
+            "name": "AwarenessState",
+            "kind": "enum",
+            "description": "Visibility state for a region from a specific player's perspective.",
+            "file": "src/awareness/state.rs",
+            "line": 7
+          }
+        ]
+      },
+      "awareness::tile_awareness": {
+        "module_doc": "Owns per-player tile visibility, explored, and action masks backed by one shared `TileField`. Computes visible and actionable cells by asking tilefield for channel-specific line clearance data. Stores independent masks per player so teams can have different current sight, memory, and action reach. Exposes stateless line-of-sight and line-of-action helpers without owning movement or lighting rules. Keeps tilefield as the source for blockers, costs, profiles, and bounds while visibility owns masks only. Change this file when sight/action mask behavior changes, not when pathfinding or tile-light math changes.",
+        "source_file": "src/awareness/tile_awareness.rs",
+        "items": [
+          {
+            "name": "TileAwareness",
+            "kind": "struct",
+            "description": "Multi-player tile visibility/action state.",
+            "file": "src/awareness/tile_awareness.rs",
+            "line": 38
+          }
+        ]
+      },
       "bin::lurek_headless": {
         "module_doc": "`src/bin/lurek_headless.rs` owns the non-interactive CLI used for validation, packaging, and screenshot batch workflows. It parses subcommands and dispatches offline operations without opening the normal interactive engine window. Validation command wiring, archive packing, recursive ZIP assembly, and batch screenshot orchestration all live here. This file is the entrypoint boundary for headless automation tasks, while engine runtime behavior remains elsewhere. Read it when CLI command set, archive layout, validator invocation, or screenshot-batch behavior needs to change.",
         "source_file": "src/bin/lurek_headless.rs",
@@ -2800,13 +3013,13 @@
         ]
       },
       "camera::walker": {
-        "module_doc": "`src/camera/walker.rs` owns the tile-grid camera walker that couples collision-checked movement with a Camera2D. It defines `CameraWalker`, keeping walker position, body dimensions, speed, tile metrics, and camera linkage together. Tile-to-world placement, world-to-tile queries, directional movement, and solid-tile overlap checks all live here. This file bridges tilemap collision probing and camera follow updates for top-down traversal and guided movement flows. Read it when walker collision policy, movement stepping, or camera-follow coupling behavior needs to change.",
+        "module_doc": "`src/camera/walker.rs` owns the tile-grid camera walker that couples movement with a Camera2D. It defines `CameraWalker`, keeping walker position, speed, tile metrics, and camera linkage together. Tile-to-world placement, world-to-tile queries, directional movement, and camera follow updates live here. Movement legality belongs to gameplay systems such as tilefield/pathfind, not to tilemap. Read it when walker movement stepping or camera-follow coupling behavior needs to change.",
         "source_file": "src/camera/walker.rs",
         "items": [
           {
             "name": "CameraWalker",
             "kind": "struct",
-            "description": "Walker combining tile-grid movement with camera following.  Maintains a world-space center point, uses tile collision probing for movement validation, and tracks an associated camera that follows the walker position with smooth interpolation.",
+            "description": "Walker combining tile-grid movement with camera following.  Maintains a world-space center point and tracks an associated camera that follows the walker position with smooth interpolation.",
             "file": "src/camera/walker.rs",
             "line": 16
           }
@@ -15495,6 +15708,26 @@
           }
         ]
       },
+      "procgen::grid_result": {
+        "module_doc": "Owns typed procgen grid result containers shared by Rust generators and Lua bindings. Integer grids represent tile/object ids, while scalar grids represent height/noise/cost fields.",
+        "source_file": "src/procgen/grid_result.rs",
+        "items": [
+          {
+            "name": "ProcgenGrid",
+            "kind": "struct",
+            "description": "Typed 2D integer grid result produced by procedural map generators.",
+            "file": "src/procgen/grid_result.rs",
+            "line": 6
+          },
+          {
+            "name": "ProcgenScalarGrid",
+            "kind": "struct",
+            "description": "Typed 2D scalar grid result produced by procedural height/noise generators.",
+            "file": "src/procgen/grid_result.rs",
+            "line": 45
+          }
+        ]
+      },
       "procgen::heightmap": {
         "module_doc": "Owns the heightmap owner for the procgen subsystem and keeps its rules local to this file. Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how heightmap data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on heightmap behavior while Lua registration stays elsewhere. Documents the boundary where procgen code accepts inputs, reports errors, or updates state. Use this file when changing heightmap defaults, lifecycle handling, validation, or data ownership.",
         "source_file": "src/procgen/heightmap.rs",
@@ -15629,102 +15862,109 @@
             "line": 23
           },
           {
+            "name": "grid_result",
+            "kind": "mod",
+            "description": "Typed 2D grid result containers shared by procgen APIs.",
+            "file": "src/procgen/mod.rs",
+            "line": 25
+          },
+          {
             "name": "heightmap",
             "kind": "mod",
             "description": "FBM noise-based heightmap with optional erosion.",
             "file": "src/procgen/mod.rs",
-            "line": 25
+            "line": 27
           },
           {
             "name": "lcg",
             "kind": "mod",
             "description": "Linear Congruential Generator for deterministic seeding.",
             "file": "src/procgen/mod.rs",
-            "line": 27
+            "line": 29
           },
           {
             "name": "limits",
             "kind": "mod",
             "description": "Shared procgen dimension, byte-budget, and iteration limits.",
             "file": "src/procgen/mod.rs",
-            "line": 29
+            "line": 31
           },
           {
             "name": "lsystem",
             "kind": "mod",
             "description": "L-system string rewriting and turtle geometry.",
             "file": "src/procgen/mod.rs",
-            "line": 31
+            "line": 33
           },
           {
             "name": "namegen",
             "kind": "mod",
             "description": "Markov-chain name generator.",
             "file": "src/procgen/mod.rs",
-            "line": 33
+            "line": 35
           },
           {
             "name": "noise",
             "kind": "mod",
             "description": "Perlin, Simplex, Worley, and fractal noise primitives.",
             "file": "src/procgen/mod.rs",
-            "line": 35
+            "line": 37
           },
           {
             "name": "poisson",
             "kind": "mod",
             "description": "Poisson disk point sampler. This module is publicly re-exported.",
             "file": "src/procgen/mod.rs",
-            "line": 37
+            "line": 39
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Tileable sampled noise-grid helpers.",
             "file": "src/procgen/mod.rs",
-            "line": 39
+            "line": 41
           },
           {
             "name": "report",
             "kind": "mod",
             "description": "Shared procgen report summaries.",
             "file": "src/procgen/mod.rs",
-            "line": 41
+            "line": 43
           },
           {
             "name": "rooms",
             "kind": "mod",
             "description": "Random-room scatter dungeon generator.",
             "file": "src/procgen/mod.rs",
-            "line": 43
+            "line": 45
           },
           {
             "name": "voronoi",
             "kind": "mod",
             "description": "Voronoi diagram with optional domain warp.",
             "file": "src/procgen/mod.rs",
-            "line": 45
+            "line": 47
           },
           {
             "name": "wfc",
             "kind": "mod",
             "description": "Wave Function Collapse tile map generator.",
             "file": "src/procgen/mod.rs",
-            "line": 47
+            "line": 49
           },
           {
             "name": "wfc_llm",
             "kind": "mod",
             "description": "LLM-assisted WFC constraint and tile-weight generation.",
             "file": "src/procgen/mod.rs",
-            "line": 49
+            "line": 51
           },
           {
             "name": "world_graph",
             "kind": "mod",
             "description": "World region graph with A*, Dijkstra, and Kruskal MST.",
             "file": "src/procgen/mod.rs",
-            "line": 51
+            "line": 53
           }
         ]
       },
@@ -18937,7 +19177,7 @@
             "kind": "struct",
             "description": "Performance-related runtime configuration. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 460
+            "line": 463
           }
         ]
       },
@@ -22809,7 +23049,7 @@
         ]
       },
       "tilefield::cell": {
-        "module_doc": "Owns per-cell gameplay channel data for blockers, traversal costs, and sun occlusion in tilefield maps. Defines the fixed semantic channels used by Lua, pathfind adapters, visibility checks, and tile lighting. Keeps movement, vision, action, point-light, and top-light values independent on every stored cell. Provides parsing and default-state helpers for field mutation without depending on higher-level systems. Does not know about topology, rendering, minimap presentation, player masks, or pathfinding algorithms.",
+        "module_doc": "Owns per-cell gameplay channel data for blockers, traversal costs, and sun occlusion in tilefield maps. Defines the fixed semantic channels used by Lua, pathfind adapters, visibility checks, and tile lighting. Keeps movement, vision, action, point-light, top-light, and author-defined object references independent. Provides parsing and default-state helpers for field mutation without depending on higher-level systems. Does not know about topology, rendering, minimap presentation, player masks, or pathfinding algorithms.",
         "source_file": "src/tilefield/cell.rs",
         "items": [
           {
@@ -22817,61 +23057,54 @@
             "kind": "enum",
             "description": "Gameplay channels tracked independently per cell.",
             "file": "src/tilefield/cell.rs",
-            "line": 9
+            "line": 11
           },
           {
             "name": "TileCell",
             "kind": "struct",
             "description": "Per-cell gameplay state with independent channel blockers, costs, and sun occlusion.",
             "file": "src/tilefield/cell.rs",
-            "line": 62
+            "line": 64
           }
         ]
       },
       "tilefield::field": {
-        "module_doc": "Owns multi-level tilefield storage, channel blockers, channel costs, profiles, and lighting state. Implements bounds checks, cell mutation, profile application, layer exports, and light accumulation. Stores cells, named profiles, point lights, global light, and computed light values in one grid owner. Uses topology and line helpers locally so callers can query blockers without owning traversal logic. Provides renderer-independent input consumed by movement, visibility, minimap, and render adapters. Keeps action, vision, movement, point-light, and sun channels independent by never inferring one from another. Returns controlled string errors at the domain boundary so Lua bindings can attach lurek.tilefield names. Does not depend on pathfind, visibility, raycaster, minimap, tilemap rendering, or renderer state.",
+        "module_doc": "Owns multi-level tilefield storage, channel blockers, channel costs, profiles, and cell exports. Implements bounds checks, cell mutation, profile application, line queries, and layer exports. Stores cells and named profiles in one grid owner. Uses topology and line helpers locally so callers can query blockers without owning traversal logic. Provides renderer-independent input consumed by movement, awareness, tilelight, minimap, and render adapters. Keeps action, vision, movement, light, and sun channels independent by never inferring one from another. Returns controlled string errors at the domain boundary so Lua bindings can attach lurek.tilefield names. Does not depend on pathfind, awareness, tilelight, raycaster, minimap, tilemap rendering, or renderer state.",
         "source_file": "src/tilefield/field.rs",
         "items": [
+          {
+            "name": "TileRegion",
+            "kind": "struct",
+            "description": "Named tile-level region stored as an explicit set of whole cells.",
+            "file": "src/tilefield/field.rs",
+            "line": 19
+          },
           {
             "name": "TileField",
             "kind": "struct",
             "description": "Multi-level tile gameplay field.",
             "file": "src/tilefield/field.rs",
-            "line": 19
+            "line": 28
           }
         ]
       },
-      "tilefield::light": {
-        "module_doc": "Owns tile-based light data records shared by `TileField` and Lua conversion code at the API boundary. Defines RGB colors, point-light definitions, point-light patch updates, and global top-light values. Keeps these structs data-only so the field solver can query blockers without cyclic module ownership. Provides clamp and construction helpers while leaving occlusion, falloff, and accumulation to `field.rs`. Does not render light, manage GPU state, infer visibility, or alter movement/action channel semantics.",
-        "source_file": "src/tilefield/light.rs",
+      "tilefield::field_map": {
+        "module_doc": "Owns a grid of shared `TileField` handles for chunked and stacked tilefield worlds. Stores map-level dimensions separately from each contained field's cell dimensions. Provides the bridge between a single field, a 2D field map, and layered field maps. Keeps the map container data-oriented and independent from pathfinding, awareness, tilelight, minimap, and render.",
+        "source_file": "src/tilefield/field_map.rs",
         "items": [
           {
-            "name": "LightColor",
-            "kind": "struct",
-            "description": "RGB light color in linear 0..1 components.",
-            "file": "src/tilefield/light.rs",
-            "line": 9
+            "name": "SharedTileField",
+            "kind": "type",
+            "description": "Shared handle type for a `TileField` stored inside a `TileFieldMap`.",
+            "file": "src/tilefield/field_map.rs",
+            "line": 12
           },
           {
-            "name": "PointLight",
+            "name": "TileFieldMap",
             "kind": "struct",
-            "description": "Tile point light definition.",
-            "file": "src/tilefield/light.rs",
-            "line": 57
-          },
-          {
-            "name": "PointLightUpdate",
-            "kind": "struct",
-            "description": "Optional patch for updating an existing point light.",
-            "file": "src/tilefield/light.rs",
-            "line": 76
-          },
-          {
-            "name": "GlobalLight",
-            "kind": "struct",
-            "description": "Global top light settings.",
-            "file": "src/tilefield/light.rs",
-            "line": 93
+            "description": "A 2D or layered map of tilefields.",
+            "file": "src/tilefield/field_map.rs",
+            "line": 16
           }
         ]
       },
@@ -22903,7 +23136,7 @@
         ]
       },
       "tilefield": {
-        "module_doc": "Indexes the tilefield gameplay-semantics subsystem and keeps its public Rust surface explicit. Exports cell, field, light, line, profile, and topology owners used by Lua bindings and tests. Re-exports compact data types so callers can build field inputs without depending on file layout. Keeps tilefield independent from renderers, minimaps, raycasters, pathfinding, and visibility state. Agents start here to trace which file owns blockers, costs, topology math, profiles, and lighting. Neighbor modules may consume exported data, but they do not become owners of tilefield semantics.",
+        "module_doc": "Indexes the tilefield gameplay-semantics subsystem and keeps its public Rust surface explicit. Exports cell, field, field-map, line, profile, and topology owners used by Lua bindings and tests. Re-exports compact data types so callers can build field inputs without depending on file layout. Keeps tilefield independent from renderers, minimaps, raycasters, pathfinding, awareness, and tilelight state. Agents start here to trace which file owns blockers, costs, topology math, and profiles. Neighbor modules may consume exported data, but they do not become owners of tilefield semantics.",
         "source_file": "src/tilefield/mod.rs",
         "items": [
           {
@@ -22916,14 +23149,14 @@
           {
             "name": "field",
             "kind": "mod",
-            "description": "Tile field dimensions, profiles, channels, exports, and lighting state.",
+            "description": "Tile field dimensions, profiles, channels, and exports.",
             "file": "src/tilefield/mod.rs",
             "line": 11
           },
           {
-            "name": "light",
+            "name": "field_map",
             "kind": "mod",
-            "description": "Tile-light accumulation primitives.",
+            "description": "Field-map storage for 2D and layered grids of tilefields.",
             "file": "src/tilefield/mod.rs",
             "line": 13
           },
@@ -22973,6 +23206,121 @@
             "description": "Logical tile topology for line and distance queries.",
             "file": "src/tilefield/topology.rs",
             "line": 10
+          }
+        ]
+      },
+      "tilelight::color": {
+        "module_doc": "Owns tile-light color math in linear 0..1 RGB space. Keeps color accumulation independent from tilefield data and light-source storage.",
+        "source_file": "src/tilelight/color.rs",
+        "items": [
+          {
+            "name": "LightColor",
+            "kind": "struct",
+            "description": "RGB light color in linear 0..1 components.",
+            "file": "src/tilelight/color.rs",
+            "line": 6
+          }
+        ]
+      },
+      "tilelight::map": {
+        "module_doc": "Owns tile-based light-map storage and accumulation over a shared `TileField`. Consumes tilefield blockers, light costs, sun occlusion, dimensions, and topology. Keeps computed light separate from render lighting, player awareness, movement, and minimap display.",
+        "source_file": "src/tilelight/map.rs",
+        "items": [
+          {
+            "name": "TileLightMap",
+            "kind": "struct",
+            "description": "Computed tile light values and source-light state for one tilefield-sized volume.",
+            "file": "src/tilelight/map.rs",
+            "line": 14
+          }
+        ]
+      },
+      "tilelight": {
+        "module_doc": "Exports the tile-based lighting subsystem surface. The module computes light maps over `TileField` data without owning render submission or player awareness.",
+        "source_file": "src/tilelight/mod.rs",
+        "items": [
+          {
+            "name": "color",
+            "kind": "mod",
+            "description": "",
+            "file": "src/tilelight/mod.rs",
+            "line": 4
+          },
+          {
+            "name": "map",
+            "kind": "mod",
+            "description": "",
+            "file": "src/tilelight/mod.rs",
+            "line": 5
+          },
+          {
+            "name": "source",
+            "kind": "mod",
+            "description": "",
+            "file": "src/tilelight/mod.rs",
+            "line": 6
+          }
+        ]
+      },
+      "tilelight::source": {
+        "module_doc": "Owns tile-light source data: point lights, line lights, temporal modulation, and sun settings. Does not compute light maps or read tilefield state.",
+        "source_file": "src/tilelight/source.rs",
+        "items": [
+          {
+            "name": "LightModulation",
+            "kind": "struct",
+            "description": "Time-varying modulation applied to a tile light source.",
+            "file": "src/tilelight/source.rs",
+            "line": 8
+          },
+          {
+            "name": "PointLight",
+            "kind": "struct",
+            "description": "Tile point light definition.",
+            "file": "src/tilelight/source.rs",
+            "line": 60
+          },
+          {
+            "name": "PointLightUpdate",
+            "kind": "struct",
+            "description": "Optional patch for updating an existing point light.",
+            "file": "src/tilelight/source.rs",
+            "line": 81
+          },
+          {
+            "name": "LineLight",
+            "kind": "struct",
+            "description": "Tile line light definition.",
+            "file": "src/tilelight/source.rs",
+            "line": 100
+          },
+          {
+            "name": "LineLightUpdate",
+            "kind": "struct",
+            "description": "Optional patch for updating an existing line light.",
+            "file": "src/tilelight/source.rs",
+            "line": 127
+          },
+          {
+            "name": "SunLightMode",
+            "kind": "enum",
+            "description": "Sun propagation mode.",
+            "file": "src/tilelight/source.rs",
+            "line": 152
+          },
+          {
+            "name": "SunLight",
+            "kind": "struct",
+            "description": "Global sun light settings.",
+            "file": "src/tilelight/source.rs",
+            "line": 166
+          },
+          {
+            "name": "GlobalLight",
+            "kind": "type",
+            "description": "Backwards-compatible alias for the previous top-light type name.",
+            "file": "src/tilelight/source.rs",
+            "line": 186
           }
         ]
       },
@@ -23031,120 +23379,36 @@
         ]
       },
       "tilemap::coords": {
-        "module_doc": "Provides coordinate transforms for isometric and hex grids shared by map rendering, pathing, and range tools. Converts between screen space, grid space, and directional labels so systems use one geometric language. Supplies rotation, neighbor, line, ring, and spiral helpers needed by hex navigation and selection logic. Keeps orientation-specific math out of map storage owners so projection changes stay locally auditable. Open this file when iso or hex coordinate conversion, direction naming, or grid metric math is wrong.",
+        "module_doc": "Provides tilemap projection transforms for isometric and hex render layouts. Converts between tile/grid coordinates and screen space for storage-to-render adapters. Keeps orientation-specific projection math out of map storage while avoiding gameplay topology ownership. Does not provide navigation, range, neighbor, line, ring, or visibility algorithms. Open this file when tilemap projection between tile coordinates and screen coordinates is wrong.",
         "source_file": "src/tilemap/coords.rs",
         "items": [
           {
             "name": "to_screen_iso",
             "kind": "fn",
-            "description": "Convert tile coordinates `(tx, ty)` to isometric screen position for a tile of `tile_w`×`tile_h`.",
+            "description": "Convert tile coordinates `(tx, ty)` to isometric screen position for a tile of `tile_w` by `tile_h` pixels.",
             "file": "src/tilemap/coords.rs",
-            "line": 11
+            "line": 10
           },
           {
             "name": "from_screen_iso",
             "kind": "fn",
-            "description": "Convert isometric screen position `(sx, sy)` back to tile coordinates for a tile of `tile_w`×`tile_h`.",
+            "description": "Convert isometric screen position `(sx, sy)` back to tile coordinates for a tile of `tile_w` by `tile_h` pixels.",
             "file": "src/tilemap/coords.rs",
             "line": 15
-          },
-          {
-            "name": "iso_rotate",
-            "kind": "fn",
-            "description": "Rotate `direction` (1–4, cardinal) by `steps` clockwise; wraps within the 4-direction cycle.",
-            "file": "src/tilemap/coords.rs",
-            "line": 21
-          },
-          {
-            "name": "iso_direction_name",
-            "kind": "fn",
-            "description": "Return the name string for `direction` (1=south, 2=west, 3=north, 4=east); returns `\"unknown\"` for any other value.",
-            "file": "src/tilemap/coords.rs",
-            "line": 25
-          },
-          {
-            "name": "iso_direction_from_angle",
-            "kind": "fn",
-            "description": "Convert a radian `angle` to the nearest of the 4 isometric cardinal directions (1–4).",
-            "file": "src/tilemap/coords.rs",
-            "line": 35
           },
           {
             "name": "to_screen_hex",
             "kind": "fn",
             "description": "Convert hex axial coordinates `(q, r)` to flat-top screen position for a hex of the given `size`.",
             "file": "src/tilemap/coords.rs",
-            "line": 48
+            "line": 22
           },
           {
             "name": "from_screen_hex",
             "kind": "fn",
-            "description": "Convert screen position `(sx, sy)` to hex axial coordinates for a hex of the given `size`.",
+            "description": "Convert screen position `(sx, sy)` to flat-top hex axial coordinates for a hex of the given `size`.",
             "file": "src/tilemap/coords.rs",
-            "line": 54
-          },
-          {
-            "name": "hex_neighbors",
-            "kind": "fn",
-            "description": "Return the 6 axial-coordinate neighbors of hex `(q, r)` in ring order.",
-            "file": "src/tilemap/coords.rs",
-            "line": 60
-          },
-          {
-            "name": "hex_distance",
-            "kind": "fn",
-            "description": "Return the hex-grid Chebyshev distance between `(q1,r1)` and `(q2,r2)`.",
-            "file": "src/tilemap/coords.rs",
-            "line": 71
-          },
-          {
-            "name": "hex_round",
-            "kind": "fn",
-            "description": "Round fractional axial coordinates `(q, r)` to the nearest integer hex.",
-            "file": "src/tilemap/coords.rs",
-            "line": 80
-          },
-          {
-            "name": "hex_line",
-            "kind": "fn",
-            "description": "Return all hex cells on a straight line from `(q1,r1)` to `(q2,r2)` inclusive.",
-            "file": "src/tilemap/coords.rs",
-            "line": 96
-          },
-          {
-            "name": "hex_ring",
-            "kind": "fn",
-            "description": "Return all cells on the ring of the given `radius` around `(q, r)`.",
-            "file": "src/tilemap/coords.rs",
-            "line": 115
-          },
-          {
-            "name": "hex_spiral",
-            "kind": "fn",
-            "description": "Return all cells in expanding rings from `(q, r)` out to `radius`, center first.",
-            "file": "src/tilemap/coords.rs",
-            "line": 133
-          },
-          {
-            "name": "hex_area",
-            "kind": "fn",
-            "description": "Return all hex cells within `radius` steps of `(q, r)`, including the center.",
-            "file": "src/tilemap/coords.rs",
-            "line": 141
-          },
-          {
-            "name": "hex_rotate",
-            "kind": "fn",
-            "description": "Rotate hex `(q, r)` around `(center_q, center_r)` by `steps` of 60° clockwise.",
-            "file": "src/tilemap/coords.rs",
-            "line": 153
-          },
-          {
-            "name": "hex_reflect",
-            "kind": "fn",
-            "description": "Reflect hex `(q, r)` through `(center_q, center_r)` across the named cube axis (`\"q\"`, `\"r\"`, or `\"s\"`).",
-            "file": "src/tilemap/coords.rs",
-            "line": 170
+            "line": 29
           }
         ]
       },
@@ -23256,103 +23520,14 @@
           {
             "name": "TileMapLimits",
             "kind": "struct",
-            "description": "Shared safety limits for tilemap storage, importers, rendering helpers, and collision queries.",
+            "description": "Shared safety limits for tilemap storage, importers, rendering helpers, and bounded tile operations.",
             "file": "src/tilemap/limits.rs",
             "line": 11
           }
         ]
       },
-      "tilemap::mapgen": {
-        "module_doc": "Implements scripted procedural tilemap generation built from reusable blocks, groups, and step sequences. Models block edges and matching rules so assembled regions connect with coherent boundaries and orientations. Groups reusable content into named palettes that let projects target distinct world styles with one runtime. Defines fill, place, scatter, flood, carve, and related generation steps under one deterministic script owner. Uses seeded randomness so outputs remain repeatable for tests, content iteration, and offline batch generation. Supports both single-map and multi-region production with independent seeds and layered write strategies. Applies zone, side, and orientation metadata so downstream rendering and gameplay read generated maps correctly. Controls how writes land on layers, allowing unified or split composition without duplicating generation logic. Acts as the procedural-authoring boundary instead of pushing rule assembly into the base map storage type. Open this file when generation scripts, edge matching, seeded outputs, or layered placement behave incorrectly.",
-        "source_file": "src/tilemap/mapgen.rs",
-        "items": [
-          {
-            "name": "MapBlock",
-            "kind": "struct",
-            "description": "A reusable tile stamp: a rectangular grid of tile GIDs with edge side-IDs for matching.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 20
-          },
-          {
-            "name": "MapGroup",
-            "kind": "struct",
-            "description": "A named collection of `MapBlock`s and `MapScript`s that the generator pulls from.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 149
-          },
-          {
-            "name": "StepType",
-            "kind": "enum",
-            "description": "Generation operation type applied by a `ScriptStep`.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 221
-          },
-          {
-            "name": "ScriptStep",
-            "kind": "struct",
-            "description": "A single parameterised step in a `MapScript`.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 271
-          },
-          {
-            "name": "MapScript",
-            "kind": "struct",
-            "description": "An ordered sequence of `ScriptStep`s that drives one generation pass.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 363
-          },
-          {
-            "name": "MapOrientation",
-            "kind": "enum",
-            "description": "Projection / rendering orientation for the generated map.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 416
-          },
-          {
-            "name": "LayerMode",
-            "kind": "enum",
-            "description": "How layers are assigned when generating multi-layer maps.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 429
-          },
-          {
-            "name": "MapSize",
-            "kind": "enum",
-            "description": "Named grid size preset or explicit tile dimensions.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 437
-          },
-          {
-            "name": "MapZone",
-            "kind": "struct",
-            "description": "A horizontal zone band used to constrain generation to a row range.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 460
-          },
-          {
-            "name": "MapGen",
-            "kind": "struct",
-            "description": "Procedural map generator: combines `MapGroup` blocks and scripts with seeded `Lcg` RNG.",
-            "file": "src/tilemap/mapgen.rs",
-            "line": 497
-          }
-        ]
-      },
-      "tilemap::mapgen_model": {
-        "module_doc": "Defines the core map-generation model types, especially cardinal edges used by block matching and adjacency rules. Provides string conversion for edge values so config parsing and persistence share one canonical representation. Open this file when procedural edge semantics or serialized edge naming stops matching generator expectations.",
-        "source_file": "src/tilemap/mapgen_model.rs",
-        "items": [
-          {
-            "name": "Edge",
-            "kind": "enum",
-            "description": "Cardinal edge of a map block, used as a side-matching key.",
-            "file": "src/tilemap/mapgen_model.rs",
-            "line": 7
-          }
-        ]
-      },
       "tilemap": {
-        "module_doc": "Exports the tilemap subsystem surface that combines storage, import, generation, geometry, and render helpers. Acts as the ownership index for tile worlds so callers can see where chunks, tilesets, maps, and importers live. Centralizes module visibility and re-exports instead of storing live map data or running generation itself. Connects authored formats, autotiling, region maps, large-map helpers, and base tile storage into one stack. Provides the first navigation point when tracing whether a tile concern belongs to import, storage, or rendering. Keeps the public tilemap surface coherent while allowing specialized owners like isomap or TMX to stay narrow. Open this file first when adding a tilemap owner or changing re-export policy for shared tilemap APIs. Use it to map a tile feature to its concrete Rust owner before editing storage, import, or render behavior.",
+        "module_doc": "Exports the tilemap subsystem surface that combines storage, import, geometry, and render helpers. Acts as the ownership index for tile worlds so callers can see where chunks, tilesets, maps, and importers live. Centralizes module visibility and re-exports instead of storing live map data or running generation itself. Connects authored formats, autotiling, large-map helpers, and base tile storage into one stack. Provides the first navigation point when tracing whether a tile concern belongs to import, storage, or rendering. Keeps the public tilemap surface coherent while allowing specialized owners like isomap or TMX to stay narrow. Open this file first when adding a tilemap owner or changing re-export policy for shared tilemap APIs. Use it to map a tile feature to its concrete Rust owner before editing storage, import, or render behavior.",
         "source_file": "src/tilemap/mod.rs",
         "items": [
           {
@@ -23412,94 +23587,59 @@
             "line": 25
           },
           {
-            "name": "mapgen",
+            "name": "orientation",
             "kind": "mod",
-            "description": "Procedural map generator using zones, groups, and scripted steps.",
+            "description": "Tilemap projection orientation.",
             "file": "src/tilemap/mod.rs",
             "line": 27
-          },
-          {
-            "name": "mapgen_model",
-            "kind": "mod",
-            "description": "Shared map-generation model types extracted from `mapgen.rs`.",
-            "file": "src/tilemap/mod.rs",
-            "line": 29
-          },
-          {
-            "name": "polygon_map",
-            "kind": "mod",
-            "description": "Polygon-region map for zone-based game maps.",
-            "file": "src/tilemap/mod.rs",
-            "line": 31
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Render helpers converting tilemap data to `RenderCommand` sequences.",
             "file": "src/tilemap/mod.rs",
-            "line": 33
-          },
-          {
-            "name": "tile_walker",
-            "kind": "mod",
-            "description": "Tile-space walker/iterator over connected cells.",
-            "file": "src/tilemap/mod.rs",
-            "line": 35
+            "line": 29
           },
           {
             "name": "tilemap",
             "kind": "mod",
             "description": "Core `TileMap` and `TileLayer` types.",
             "file": "src/tilemap/mod.rs",
-            "line": 38
-          },
-          {
-            "name": "tilemap_collision",
-            "kind": "mod",
-            "description": "Tilemap collision helpers extracted from `tilemap.rs`.",
-            "file": "src/tilemap/mod.rs",
-            "line": 40
+            "line": 32
           },
           {
             "name": "tilemap_index",
             "kind": "mod",
             "description": "Tilemap reverse-index cache helpers extracted from `tilemap.rs`.",
             "file": "src/tilemap/mod.rs",
-            "line": 42
+            "line": 34
           },
           {
             "name": "tileset",
             "kind": "mod",
             "description": "Tileset metadata and animation frame types.",
             "file": "src/tilemap/mod.rs",
-            "line": 44
+            "line": 36
           },
           {
             "name": "tmx",
             "kind": "mod",
             "description": "Tiled TMX XML format import. This module is publicly re-exported.",
             "file": "src/tilemap/mod.rs",
-            "line": 46
+            "line": 38
           }
         ]
       },
-      "tilemap::polygon_map": {
-        "module_doc": "Owns named polygon regions that overlay tile worlds for provinces, triggers, capture zones, or selection areas. Stores vertex lists, fill colors, labels, and shared outline styling so region presentation stays consistent. Implements point-in-polygon queries used for selection, ownership checks, and trigger evaluation at runtime. Computes centers and bounding boxes so cameras, UI, and spatial systems can reason about named regions. Supports add, remove, and update flows so regions can change at runtime without reloading the whole tile map. Open this file when region lookup, labeling, coloring, or polygon geometry behavior is incorrect.",
-        "source_file": "src/tilemap/polygon_map.rs",
+      "tilemap::orientation": {
+        "module_doc": "Tilemap projection orientation shared by storage and render adapters.",
+        "source_file": "src/tilemap/orientation.rs",
         "items": [
           {
-            "name": "PolygonRegion",
-            "kind": "struct",
-            "description": "A named convex or concave polygon zone with a fill color and optional text label.",
-            "file": "src/tilemap/polygon_map.rs",
-            "line": 12
-          },
-          {
-            "name": "PolygonMap",
-            "kind": "struct",
-            "description": "A collection of named polygon regions with shared outline and highlight state.",
-            "file": "src/tilemap/polygon_map.rs",
-            "line": 26
+            "name": "MapOrientation",
+            "kind": "enum",
+            "description": "Projection / rendering orientation for a tilemap.",
+            "file": "src/tilemap/orientation.rs",
+            "line": 5
           }
         ]
       },
@@ -23508,28 +23648,8 @@
         "source_file": "src/tilemap/render.rs",
         "items": []
       },
-      "tilemap::tile_walker": {
-        "module_doc": "Defines a discrete grid walker with stable facing semantics for tile-based movement and interaction logic. Supports forward, backward, and strafe motion as first-class primitives over one consistent facing model. Tracks previous state so interpolation can smooth visual movement between simulation ticks or input steps. Classifies neighboring cells relative to facing, which supports directional interaction and sensing flows. Keeps movement and facing logic separate from collision backends so pathing integrations stay flexible. Open this file when walker facing, step logic, interpolation, or directional neighbor math behaves incorrectly.",
-        "source_file": "src/tilemap/tile_walker.rs",
-        "items": [
-          {
-            "name": "Facing",
-            "kind": "enum",
-            "description": "Cardinal facing direction for a grid-aligned entity.",
-            "file": "src/tilemap/tile_walker.rs",
-            "line": 12
-          },
-          {
-            "name": "TileWalker",
-            "kind": "struct",
-            "description": "A discrete grid walker that records its previous state for smooth frame interpolation.",
-            "file": "src/tilemap/tile_walker.rs",
-            "line": 97
-          }
-        ]
-      },
       "tilemap::tilemap": {
-        "module_doc": "Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around TileLayer, index, try_new, with helpers kept close to their invariants. Defines how tilemap data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on tilemap behavior while Lua registration stays elsewhere. Documents the boundary where tilemap code accepts inputs, reports errors, or updates state. Use this file when changing tilemap defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the tilemap state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping tilemap calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating tilemap rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose tilemap behavior safely. Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.",
+        "module_doc": "Owns the runtime tilemap storage object: layers, GIDs, tilesets, viewport, animation state, and indexes. Validates tilemap dimensions and tile writes before importers, Lua bindings, or render adapters use the data. Keeps gameplay semantics such as movement, visibility, lighting, physics collisions, and regions in tilefield or other systems. Provides storage-side helpers used by tilemap render-command generation without owning the renderer. Open this file when tile IDs, layer state, tileset attachment, animation resolution, or tilemap indexing is wrong.",
         "source_file": "src/tilemap/tilemap.rs",
         "items": [
           {
@@ -23537,42 +23657,30 @@
             "kind": "struct",
             "description": "A single tile layer with per-tile GID and optional per-tile tint data.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 32
+            "line": 21
           },
           {
             "name": "TileIndexPolicy",
             "kind": "enum",
             "description": "Policy controlling when the reverse GID index is materialized.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 87
+            "line": 76
           },
           {
             "name": "TileMapDiagnosticsSnapshot",
             "kind": "struct",
             "description": "Snapshot of tilemap diagnostics counters used to surface silent fallbacks and guarded queries.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 96
-          },
-          {
-            "name": "SweepResult",
-            "kind": "struct",
-            "description": "Result of a continuous sweep-cast between a moving AABB and a tile AABB.",
-            "file": "src/tilemap/tilemap.rs",
-            "line": 136
+            "line": 85
           },
           {
             "name": "TileMap",
             "kind": "struct",
-            "description": "Multi-layer tile map with tileset attachment, collision, autotile, animation, and debug rendering.",
+            "description": "Multi-layer tile map with tileset attachment, tile storage, autotile, animation, and render-command output.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 150
+            "line": 125
           }
         ]
-      },
-      "tilemap::tilemap_collision": {
-        "module_doc": "Implements narrow-phase tilemap collision using swept AABB tests so moving rectangles detect continuous impact. Computes time of impact, contact point, tile coordinates, and hit normal for sliding and obstacle responses. Keeps collision math separate from general map storage so movement fixes stay local and auditable. Open this file when tile collision timing, normals, or contact metadata behaves incorrectly in movement code.",
-        "source_file": "src/tilemap/tilemap_collision.rs",
-        "items": []
       },
       "tilemap::tilemap_index": {
         "module_doc": "This file owns the reverse-index maintenance helper that maps tile GIDs back to their grid positions. The function removes one coordinate from a GID bucket and deletes empty buckets to keep index state compact. Open this file when tile lookup bookkeeping changes; map storage and generation logic belong to siblings.",
@@ -23593,7 +23701,7 @@
           {
             "name": "TileSet",
             "kind": "struct",
-            "description": "A tileset slice of a sprite-sheet texture with collision, animation, and autotile data.",
+            "description": "A tileset slice of a sprite-sheet texture with lightweight per-tile author metadata.",
             "file": "src/tilemap/tileset.rs",
             "line": 25
           }
@@ -23643,49 +23751,49 @@
             "kind": "struct",
             "description": "Parsed `<layer>` (tile layer) element.",
             "file": "src/tilemap/tmx.rs",
-            "line": 159
+            "line": 157
           },
           {
             "name": "TmxObjectLayer",
             "kind": "struct",
             "description": "Parsed `<objectgroup>` element.",
             "file": "src/tilemap/tmx.rs",
-            "line": 179
+            "line": 177
           },
           {
             "name": "TmxObject",
             "kind": "struct",
             "description": "Parsed `<object>` element inside an objectgroup.",
             "file": "src/tilemap/tmx.rs",
-            "line": 189
+            "line": 187
           },
           {
             "name": "TmxLayer",
             "kind": "enum",
             "description": "A single map layer, either tile data or objects.",
             "file": "src/tilemap/tmx.rs",
-            "line": 209
+            "line": 207
           },
           {
             "name": "TmxMap",
             "kind": "struct",
             "description": "Top-level parsed TMX map. This item is part of the public API.",
             "file": "src/tilemap/tmx.rs",
-            "line": 217
+            "line": 215
           },
           {
             "name": "load_tmx",
             "kind": "fn",
             "description": "Parse an XML-encoded TMX map string; returns a `TmxMap` or a structured parse error.",
             "file": "src/tilemap/tmx.rs",
-            "line": 256
+            "line": 254
           },
           {
             "name": "load_tmx_with_options",
             "kind": "fn",
             "description": "Parse an XML-encoded TMX map string using explicit strictness, path policy, and byte limits.",
             "file": "src/tilemap/tmx.rs",
-            "line": 261
+            "line": 259
           }
         ]
       },
@@ -24821,219 +24929,6 @@
             "description": "Load rules from a TOML file on disk.",
             "file": "src/validator/rules_toml.rs",
             "line": 89
-          }
-        ]
-      },
-      "visibility::adjacency": {
-        "module_doc": "This file owns adjacency contracts for visibility systems that need region-neighbor lookup without grid coupling. It defines `AdjacencyProvider` plus `SimpleAdjacency`, a small adjacency-list implementation for graph-like maps. Visibility and discovery code can query neighbors through this boundary without knowing how worlds store topology. Open this file when neighborhood semantics change; visibility state and fog progression live in sibling modules.",
-        "source_file": "src/visibility/adjacency.rs",
-        "items": [
-          {
-            "name": "AdjacencyProvider",
-            "kind": "trait",
-            "description": "Trait for providing neighbor information to the visibility system. Implementations can be grid-based, graph-based, or any custom topology.",
-            "file": "src/visibility/adjacency.rs",
-            "line": 8
-          },
-          {
-            "name": "SimpleAdjacency",
-            "kind": "struct",
-            "description": "Simple adjacency list implementation.",
-            "file": "src/visibility/adjacency.rs",
-            "line": 18
-          }
-        ]
-      },
-      "visibility::cost": {
-        "module_doc": "This file owns `DiscoveryCost`, the per-region metadata that controls how expensive or gated revelation should be. It stores a base reveal cost plus adjacency requirements so progression systems can tune map exploration pressure. Open this file when discovery gating changes; live visibility state and ownership sharing remain in sibling files.",
-        "source_file": "src/visibility/cost.rs",
-        "items": [
-          {
-            "name": "DiscoveryCost",
-            "kind": "struct",
-            "description": "Configuration for how expensive it is to discover a region.",
-            "file": "src/visibility/cost.rs",
-            "line": 7
-          }
-        ]
-      },
-      "visibility::events": {
-        "module_doc": "This file owns `VisibilityEvent`, the event payload emitted when regions are revealed, hidden, forgotten, or regrouped. It gives callers stable event variants for reacting to state changes without inspecting grid internals directly. Open this file when visibility notifications change; stored state and ownership logic live in sibling modules.",
-        "source_file": "src/visibility/events.rs",
-        "items": [
-          {
-            "name": "VisibilityEvent",
-            "kind": "enum",
-            "description": "Events emitted by the visibility system when regions change state.",
-            "file": "src/visibility/events.rs",
-            "line": 7
-          }
-        ]
-      },
-      "visibility::flags": {
-        "module_doc": "This file owns `VisibilityFlags`, the per-region bitfield used to mark which information layers are currently revealed. It supports custom terrain, unit, building, or game-specific reveal channels through a compact `u64` wrapper. Helpers set, test, merge, intersect, and count bits so reveal systems can evolve information without new enums. Open this file when reveal-flag semantics change; grid storage and fog state live in sibling modules.",
-        "source_file": "src/visibility/flags.rs",
-        "items": [
-          {
-            "name": "VisibilityFlags",
-            "kind": "struct",
-            "description": "Bitfield flags controlling what is visible per region. Games define their own flag semantics (e.g., bit 0 = terrain, bit 1 = units).",
-            "file": "src/visibility/flags.rs",
-            "line": 9
-          }
-        ]
-      },
-      "visibility::fog_render": {
-        "module_doc": "This file owns `FogConfig`, the render-facing fog settings that translate visibility state into screen intensity. It stores discovered and hidden opacity plus transition controls so presentation can follow one visibility policy. Open this file when fog presentation rules change; state transitions and region ownership live in sibling files.",
-        "source_file": "src/visibility/fog_render.rs",
-        "items": [
-          {
-            "name": "FogConfig",
-            "kind": "struct",
-            "description": "Configuration for how fog is rendered visually.",
-            "file": "src/visibility/fog_render.rs",
-            "line": 7
-          }
-        ]
-      },
-      "visibility::grid": {
-        "module_doc": "This file owns `VisibilityGrid`, the main per-player region store for hidden, discovered, visible, and flagged data. It tracks fog intensity, reveal costs, ownership sharing, and pending `VisibilityEvent` output in one state holder. Reveal and hide operations propagate through allied players, update fog and flags, and record transition events. Utility methods expose per-region state, costs, flags, player groups, global reveal, reset, and fog configuration. Open this file when multi-player visibility behavior changes; topology contracts and tile FOV live in siblings.",
-        "source_file": "src/visibility/grid.rs",
-        "items": [
-          {
-            "name": "VisibilityGrid",
-            "kind": "struct",
-            "description": "The main visibility grid that tracks state for all regions and players.",
-            "file": "src/visibility/grid.rs",
-            "line": 11
-          }
-        ]
-      },
-      "visibility": {
-        "module_doc": "This module re-exports the visibility subsystem surface for grids, FOV, ownership, fog rules, and events. It serves as the navigation map for region-state storage, adjacency contracts, reveal costs, and shadowcasting. `grid.rs` owns shared per-player region state, while `shadowcast.rs` covers tile-based field-of-view computation. `owner.rs`, `events.rs`, and `state.rs` define shared-vision groups, emitted transitions, and visibility levels. `flags.rs`, `cost.rs`, `adjacency.rs`, and `fog_render.rs` describe reveal metadata and presentation inputs. Change this file when the public visibility symbol map moves; change siblings when runtime behavior changes.",
-        "source_file": "src/visibility/mod.rs",
-        "items": [
-          {
-            "name": "adjacency",
-            "kind": "mod",
-            "description": "Adjacency provider trait defining region neighbor relationships.",
-            "file": "src/visibility/mod.rs",
-            "line": 9
-          },
-          {
-            "name": "cost",
-            "kind": "mod",
-            "description": "Per-region discovery cost and adjacency requirements for reveal logic.",
-            "file": "src/visibility/mod.rs",
-            "line": 11
-          },
-          {
-            "name": "events",
-            "kind": "mod",
-            "description": "Events emitted when region visibility state transitions occur.",
-            "file": "src/visibility/mod.rs",
-            "line": 13
-          },
-          {
-            "name": "flags",
-            "kind": "mod",
-            "description": "Per-region bitfield flags: terrain, units, buildings, and custom bits.",
-            "file": "src/visibility/mod.rs",
-            "line": 15
-          },
-          {
-            "name": "fog_render",
-            "kind": "mod",
-            "description": "Fog-of-war rendering configuration: intensity, color, and render hints.",
-            "file": "src/visibility/mod.rs",
-            "line": 17
-          },
-          {
-            "name": "grid",
-            "kind": "mod",
-            "description": "Visibility grid: per-region state storage for multiple simultaneous players.",
-            "file": "src/visibility/mod.rs",
-            "line": 19
-          },
-          {
-            "name": "owner",
-            "kind": "mod",
-            "description": "Player and group ownership of shared visibility and discovery state.",
-            "file": "src/visibility/mod.rs",
-            "line": 21
-          },
-          {
-            "name": "shadowcast",
-            "kind": "mod",
-            "description": "Tile-grid recursive shadowcasting FOV for roguelike and stealth games.",
-            "file": "src/visibility/mod.rs",
-            "line": 23
-          },
-          {
-            "name": "state",
-            "kind": "mod",
-            "description": "Visibility state enum: Hidden, Discovered, Visible, and custom levels.",
-            "file": "src/visibility/mod.rs",
-            "line": 25
-          },
-          {
-            "name": "tile_visibility",
-            "kind": "mod",
-            "description": "Per-player tile visibility and action masks backed by tilefield semantics.",
-            "file": "src/visibility/mod.rs",
-            "line": 27
-          }
-        ]
-      },
-      "visibility::owner": {
-        "module_doc": "This file owns `PlayerOwnership`, the shared-vision layer that decides which players inherit each other's sight. It stores player-to-group assignments and answers ally lookups so reveal propagation stays centralized and consistent. Group helpers add shared-visibility teams, remove members, and answer hot-path visibility-sharing checks by player id. Open this file when alliance semantics change; region state storage and transition events live in sibling files.",
-        "source_file": "src/visibility/owner.rs",
-        "items": [
-          {
-            "name": "PlayerOwnership",
-            "kind": "struct",
-            "description": "Manages which players share visibility (alliances/teams).",
-            "file": "src/visibility/owner.rs",
-            "line": 10
-          }
-        ]
-      },
-      "visibility::shadowcast": {
-        "module_doc": "This file owns `TileFov`, the tile-grid field-of-view runtime that computes current sight and remembered exploration. It stores dimensions, range, wall-lighting policy, and per-cell visible or explored masks for one observer context. `compute` runs deterministic recursive shadowcasting across eight octants using a caller-supplied blocker predicate. Helpers expose width, height, range, visible cells, explored state, and callback iteration over current sight. Save and restore logic serializes packed visibility masks so field-of-view memory can survive persistence boundaries. Internal bit-pack helpers keep the blob compact, while private casting code isolates slope math from public APIs. Open this file when tile FOV behavior changes; shared region-state visibility logic lives in sibling modules.",
-        "source_file": "src/visibility/shadowcast.rs",
-        "items": [
-          {
-            "name": "TileFov",
-            "kind": "struct",
-            "description": "Per-cell visibility state for a single observer on a tile grid.",
-            "file": "src/visibility/shadowcast.rs",
-            "line": 10
-          }
-        ]
-      },
-      "visibility::state": {
-        "module_doc": "This file owns `VisibilityState`, the ordered knowledge enum used to describe what one player knows about one region. It encodes hidden, discovered, visible, and custom levels so reveal logic and fog rendering share one progression model. Open this file when knowledge-level semantics change; event emission and grid storage live in sibling modules.",
-        "source_file": "src/visibility/state.rs",
-        "items": [
-          {
-            "name": "VisibilityState",
-            "kind": "enum",
-            "description": "Visibility state for a region from a specific player's perspective.",
-            "file": "src/visibility/state.rs",
-            "line": 7
-          }
-        ]
-      },
-      "visibility::tile_visibility": {
-        "module_doc": "Owns per-player tile visibility, explored, and action masks backed by one shared `TileField`. Computes visible and actionable cells by asking tilefield for channel-specific line clearance data. Stores independent masks per player so teams can have different current sight, memory, and action reach. Exposes stateless line-of-sight and line-of-action helpers without owning movement or lighting rules. Keeps tilefield as the source for blockers, costs, profiles, and bounds while visibility owns masks only. Change this file when sight/action mask behavior changes, not when pathfinding or tile-light math changes.",
-        "source_file": "src/visibility/tile_visibility.rs",
-        "items": [
-          {
-            "name": "TileVisibility",
-            "kind": "struct",
-            "description": "Multi-player tile visibility/action state.",
-            "file": "src/visibility/tile_visibility.rs",
-            "line": 38
           }
         ]
       },
@@ -27924,7 +27819,7 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tilefield_visibility_integration",
+        "name": "lua_integration_tilefield_awareness_integration",
         "description": "",
         "line": 982
       },
@@ -28127,7 +28022,7 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_visibility_minimap_library",
+        "name": "lua_library_awareness_minimap_library",
         "description": "",
         "line": 1127
       },
@@ -28841,51 +28736,58 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_timer_unit",
+        "name": "lua_unit_tilelight_unit",
         "description": "",
         "line": 1637
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tween_unit",
+        "name": "lua_unit_timer_unit",
         "description": "",
         "line": 1642
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ui_unit",
+        "name": "lua_unit_tween_unit",
         "description": "",
         "line": 1647
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_validator_unit",
+        "name": "lua_unit_ui_unit",
         "description": "",
         "line": 1652
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_visibility_unit",
+        "name": "lua_unit_validator_unit",
         "description": "",
         "line": 1657
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_window_unit",
+        "name": "lua_unit_awareness_unit",
         "description": "",
         "line": 1662
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_demo_colocated_games",
+        "name": "lua_unit_window_unit",
         "description": "",
         "line": 1667
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_demo_colocated_games",
+        "description": "",
+        "line": 1672
       }
     ],
     "lua": [
@@ -29828,10 +29730,17 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_tilefield_awareness_integration.lua",
+        "module": "test_tilefield_awareness_integration",
+        "name": "test_tilefield_awareness_integration",
+        "description": "Integration: tilefield channel semantics feed visibility and action masks.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_tilefield_minimap_integration.lua",
         "module": "test_tilefield_minimap_integration",
         "name": "test_tilefield_minimap_integration",
-        "description": "Integration: tilefield and visibility export passive data consumed by minimap.",
+        "description": "Integration: tilefield, awareness, and tilelight export passive data consumed by minimap.",
         "kind": "lua"
       },
       {
@@ -29852,14 +29761,7 @@
         "file": "tests/lua/integration/test_tilefield_systems_integration.lua",
         "module": "test_tilefield_systems_integration",
         "name": "test_tilefield_systems_integration",
-        "description": "Integration: tilefield is the shared source for movement, visibility, lighting, minimap, and raycaster input.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/integration/test_tilefield_visibility_integration.lua",
-        "module": "test_tilefield_visibility_integration",
-        "name": "test_tilefield_visibility_integration",
-        "description": "Integration: tilefield channel semantics feed visibility and action masks.",
+        "description": "Integration: tilefield is the shared source for movement, awareness, tile lighting, minimap, and raycaster input.",
         "kind": "lua"
       },
       {
@@ -29880,7 +29782,7 @@
         "file": "tests/lua/integration/test_tilemap_physics_integration.lua",
         "module": "test_tilemap_physics_integration",
         "name": "test_tilemap_physics_integration",
-        "description": "Integration: tilemap solid tiles generating physics collision boundaries",
+        "description": "Integration: tilemap gids generating physics collision boundaries through game-owned data",
         "kind": "lua"
       },
       {
@@ -29916,6 +29818,13 @@
         "module": "test_ui_localization_data_integration",
         "name": "test_ui_localization_data_integration",
         "description": "Integration: i18n text source serialized with data and consumed by UI layout.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/library/test_awareness_minimap_library.lua",
+        "module": "test_awareness_minimap_library",
+        "name": "test_awareness_minimap_library",
+        "description": "Lurek2D Library Visibility Minimap Tests",
         "kind": "lua"
       },
       {
@@ -30042,13 +29951,6 @@
         "module": "test_tilemap_minimap_library",
         "name": "test_tilemap_minimap_library",
         "description": "Lurek2D Library Tilemap Minimap Tests",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/library/test_visibility_minimap_library.lua",
-        "module": "test_visibility_minimap_library",
-        "name": "test_visibility_minimap_library",
-        "description": "Lurek2D Library Visibility Minimap Tests",
         "kind": "lua"
       },
       {
@@ -30251,7 +30153,7 @@
         "file": "tests/lua/stress/test_tilefield_stress.lua",
         "module": "test_tilefield_stress",
         "name": "test_tilefield_stress",
-        "description": "Stress coverage for tilefield large multi-level fields.",
+        "description": "Stress coverage for tilefield data plus tilelight over large multi-level fields.",
         "kind": "lua"
       },
       {
@@ -30314,6 +30216,13 @@
         "file": "tests/lua/unit/test_automation_unit.lua",
         "module": "test_automation_unit",
         "name": "test_automation_unit",
+        "description": "Reorganized unit test file.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/unit/test_awareness_unit.lua",
+        "module": "test_awareness_unit",
+        "name": "test_awareness_unit",
         "description": "Reorganized unit test file.",
         "kind": "lua"
       },
@@ -30752,6 +30661,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/unit/test_tilelight_unit.lua",
+        "module": "test_tilelight_unit",
+        "name": "test_tilelight_unit",
+        "description": "Canonical unit coverage for lurek.tilelight.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/unit/test_tilemap_unit.lua",
         "module": "test_tilemap_unit",
         "name": "test_tilemap_unit",
@@ -30784,13 +30700,6 @@
         "module": "test_validator_unit",
         "name": "test_validator_unit",
         "description": "Canonical unit coverage for lurek.validator.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_visibility_unit.lua",
-        "module": "test_visibility_unit",
-        "name": "test_visibility_unit",
-        "description": "Reorganized unit test file.",
         "kind": "lua"
       },
       {

@@ -118,11 +118,11 @@ This module primarily collaborates with `math`, `render`, `tilemap`. Its respons
 
 ### walker.rs
 
-- `src/camera/walker.rs` owns the tile-grid camera walker that couples collision-checked movement with a Camera2D.
-- It defines `CameraWalker`, keeping walker position, body dimensions, speed, tile metrics, and camera linkage together.
-- Tile-to-world placement, world-to-tile queries, directional movement, and solid-tile overlap checks all live here.
-- This file bridges tilemap collision probing and camera follow updates for top-down traversal and guided movement flows.
-- Read it when walker collision policy, movement stepping, or camera-follow coupling behavior needs to change.
+- `src/camera/walker.rs` owns the tile-grid camera walker that couples movement with a Camera2D.
+- It defines `CameraWalker`, keeping walker position, speed, tile metrics, and camera linkage together.
+- Tile-to-world placement, world-to-tile queries, directional movement, and camera follow updates live here.
+- Movement legality belongs to gameplay systems such as tilefield/pathfind, not to tilemap.
+- Read it when walker movement stepping or camera-follow coupling behavior needs to change.
 
 
 

@@ -14,7 +14,7 @@
 - Source path: `src/procgen`
 - Binding: `src/lua_api/procgen_api.rs`
 - Namespace: `lurek.procgen`
-- Lua API surface: `33` functions, `15` types, `37` methods
+- Lua API surface: `44` functions, `17` types, `59` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -111,6 +111,11 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - Seed validation, 4-neighbor expansion, and threshold matching stay here because they define reachable-mask output.
 - It returns a byte mask rather than world objects, keeping the file focused on grid-region extraction only.
 - Open it when connectivity rules change; caves, rooms, and cellular worlds live in sibling procgen modules.
+
+### grid_result.rs
+
+- Owns typed procgen grid result containers shared by Rust generators and Lua bindings.
+- Integer grids represent tile/object ids, while scalar grids represent height/noise/cost fields.
 
 ### heightmap.rs
 
@@ -250,27 +255,37 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `lurek.procgen.bspDungeon(opts?) -> table`: Generate a dungeon layout using Binary Space Partitioning. Produces non-overlapping rooms connected by corridors.
 - `lurek.procgen.bspDungeonWithPrefabs(opts?, prefabs) -> table`: Generate a BSP dungeon and stamp named prefab rooms into suitable leaves. Returns dungeon layout plus prefab placement info.
 - `lurek.procgen.cellularAutomata(width, height, opts?) -> integer[]`: Generate a cave or organic map using cellular automata rules.
+- `lurek.procgen.cellularAutomataGrid(width, height, opts?) -> LProcgenGrid`: Generate a cave or organic map and return a typed grid result.
 - `lurek.procgen.fbm(x, y, seed?, octaves?, lac?, gain?) -> number`: Samples stateless fractal Brownian motion noise.
 - `lurek.procgen.floodFill(data, width, height, startX, startY, threshold?, above?) -> integer[]`: Flood-fill a grid from a starting cell, marking all connected cells that pass a threshold test.
 - `lurek.procgen.generateName(samples, minLen?, maxLen?, seed?) -> string`: Generate a single random name based on a Markov chain trained from sample names. Great for NPC names, place names, or item names.
 - `lurek.procgen.generateNames(samples, count, minLen?, maxLen?, seed?) -> string[]`: Generate multiple random names in one call using Markov chains trained from sample data.
 - `lurek.procgen.heightmap(opts?) -> table`: Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.
 - `lurek.procgen.heightmapFromCellular(width, height, cells, floorValue?) -> table`: Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.
+- `lurek.procgen.heightmapFromCellularGrid(width, height, cells, floorValue?) -> LProcgenScalarGrid`: Convert a cellular automata grid into a typed heightmap scalar grid.
+- `lurek.procgen.heightmapGrid(opts?) -> LProcgenScalarGrid`: Generate a fractal heightmap and return a typed scalar grid result.
 - `lurek.procgen.lsystem(opts) -> string`: Expand an L-system grammar and return the resulting string. Useful for generating branching structures like trees, rivers, or cave networks.
 - `lurek.procgen.lsystemSegments(opts, angle?, step?) -> table`: Expand an L-system and interpret the result as turtle-graphics commands, returning line segments.
 - `lurek.procgen.newBiomeClassifier(opts?) -> LBiomeClassifier`: Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
 - `lurek.procgen.newCellular(width, height) -> LCellular`: Performs the 'procgen' operation.
+- `lurek.procgen.newGridResult(width, height, cells, opts?) -> LProcgenGrid`: Wrap a flat grid table as a typed procgen grid result.
 - `lurek.procgen.newNoiseGenerator(seed?) -> LNoiseGenerator`: Creates a procedural noise generator with an optional seed.
+- `lurek.procgen.newScalarGridResult(width, height, cells, opts?) -> LProcgenScalarGrid`: Wrap a flat numeric table as a typed procgen scalar grid result.
 - `lurek.procgen.noiseMap(width, height, opts?) -> number[]`: Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
+- `lurek.procgen.noiseMapGrid(width, height, opts?) -> LProcgenScalarGrid`: Generate a typed scalar noise grid using the optional seed in opts.
 - `lurek.procgen.noiseMapParallel(width, height, opts?) -> number[]`: Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
+- `lurek.procgen.noiseMapParallelGrid(width, height, opts?) -> LProcgenScalarGrid`: Generate a typed scalar noise grid using the parallel backend and seed 0.
 - `lurek.procgen.noiseMapParallelSeeded(width, height, opts?) -> number[]`: Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
+- `lurek.procgen.noiseMapParallelSeededGrid(width, height, opts?) -> LProcgenScalarGrid`: Generate a typed scalar noise grid using the parallel backend and explicit seed.
 - `lurek.procgen.perlin2d(x, y, seed?) -> number`: Samples stateless 2D Perlin noise.
 - `lurek.procgen.perlin3d(x, y, z, seed?) -> number`: Samples stateless 3D Perlin noise.
 - `lurek.procgen.perlin4d(x, y, z, w, seed?) -> number`: Samples stateless 4D Perlin noise.
 - `lurek.procgen.perlinNoise(x, y, periodX, periodY) -> number`: Sample periodic 2D Perlin noise at a given coordinate.
 - `lurek.procgen.poissonDisk(width, height, minDist, maxAttempts?, seed?) -> table`: Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot without clustering.
 - `lurek.procgen.roomsDungeon(opts?) -> table`: Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors. Also returns a full tile grid.
+- `lurek.procgen.roomsDungeonGrid(opts?) -> LProcgenGrid`: Generate a rooms dungeon and return only its tile grid as a typed procgen result.
 - `lurek.procgen.roomsDungeonWithPrefabs(opts?, prefabs, stampValue?) -> table`: Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.
+- `lurek.procgen.roomsDungeonWithPrefabsGrid(opts?, prefabs, stampValue?) -> LProcgenGrid`: Generate a rooms dungeon with prefabs and return only its tile grid as a typed procgen result.
 - `lurek.procgen.setConstraintsFromLLM(prompt) -> table`: Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.
 - `lurek.procgen.simplex2d(x, y) -> number`: Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].
 - `lurek.procgen.simplex3d(x, y, z) -> number`: Sample 3D simplex noise at a point. The third axis can be used for animation or layering.
@@ -278,6 +293,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `lurek.procgen.voronoi(width, height, points, opts?) -> integer[]`: Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and distance-to-second-nearest for each cell.
 - `lurek.procgen.wfcFromPrompt(prompt, config) -> table`: Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.
 - `lurek.procgen.wfcGenerate(opts) -> table`: Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints.
+- `lurek.procgen.wfcGenerateGrid(opts) -> LProcgenGrid`: Run WFC and return a typed procgen grid result.
 - `lurek.procgen.worldGraph(width, height, regionCount, seed?) -> table`: Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
 
 ### Callbacks
@@ -356,6 +372,8 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LNoiseGenerator:fbm(x, y, octaves?, lac?, pers?, kind?) -> number`: Samples fractal Brownian motion noise.
 - `LNoiseGenerator:generateMap(w, h, opts?) -> number[]`: Generates a noise map and returns it as a flat array table.
 - `LNoiseGenerator:generateMapCompute(w, h, opts?) -> number[]`: Generates a noise map through the compute backend and returns it as a flat array table.
+- `LNoiseGenerator:generateMapComputeGrid(w, h, opts?) -> LProcgenScalarGrid`: Generates a compute-style noise map and returns it as a typed scalar grid.
+- `LNoiseGenerator:generateMapGrid(w, h, opts?) -> LProcgenScalarGrid`: Generates a noise map and returns it as a typed scalar grid.
 - `LNoiseGenerator:getSeed() -> integer`: Returns this noise generator seed.
 - `LNoiseGenerator:perlin1d(x) -> number`: Samples 1D Perlin noise. This method is available to Lua scripts.
 - `LNoiseGenerator:perlin2d(x, y) -> number`: Samples 2D Perlin noise. This method is available to Lua scripts.
@@ -401,6 +419,27 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 ##### Methods
 
 - No documented methods.
+
+#### LProcgenGrid Type
+
+- Lua-visible typed result for procgen functions that produce a 2D tile/value grid.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LProcgenGrid:getCell(x, y) -> integer`: Returns one cell value using one-based Lua coordinates.
+- `LProcgenGrid:getHeight() -> integer`: Returns grid height.
+- `LProcgenGrid:getKind() -> string`: Returns the generator kind label attached to this grid.
+- `LProcgenGrid:getSize() -> integer`: Returns grid width and height.
+- `LProcgenGrid:getWidth() -> integer`: Returns grid width.
+- `LProcgenGrid:toTable() -> table`: Serializes this grid to a plain Lua table.
+- `LProcgenGrid:toTileField(opts?) -> LTileField`: Converts this generated grid into a tilefield by writing each value as a named ref.
+- `LProcgenGrid:type() -> string`: Returns the type name of this object.
+- `LProcgenGrid:typeOf(name) -> boolean`: Check whether this object matches a given type name.
+- `LProcgenGrid:writeTileField(field, opts?) -> nil`: Writes this generated grid into an existing tilefield ref layer.
 
 #### LProcgenHeightmapFromCellularResult Type
 
@@ -489,6 +528,27 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 ##### Methods
 
 - No documented methods.
+
+#### LProcgenScalarGrid Type
+
+- Lua-visible typed result for procgen functions that produce a 2D scalar field.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LProcgenScalarGrid:getCell(x, y) -> number`: Returns one scalar cell value using one-based Lua coordinates.
+- `LProcgenScalarGrid:getHeight() -> integer`: Returns scalar grid height.
+- `LProcgenScalarGrid:getKind() -> string`: Returns the generator kind label attached to this scalar grid.
+- `LProcgenScalarGrid:getSize() -> integer`: Returns scalar grid width and height.
+- `LProcgenScalarGrid:getWidth() -> integer`: Returns scalar grid width.
+- `LProcgenScalarGrid:toTable() -> table`: Serializes this scalar grid to a plain Lua table.
+- `LProcgenScalarGrid:toTileField(opts?) -> LTileField`: Converts this scalar field into a new tilefield channel layer.
+- `LProcgenScalarGrid:type() -> string`: Returns the type name of this object.
+- `LProcgenScalarGrid:typeOf(name) -> boolean`: Check whether this object matches a given type name.
+- `LProcgenScalarGrid:writeTileField(field, opts?) -> nil`: Writes this scalar field into an existing tilefield channel layer.
 
 #### LProcgenWfcFromPromptResult Type
 
@@ -602,6 +662,8 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 ## Notes
 
 - Safe procgen paths now reject zero-sized grids, overflowing `width * height` allocations, invalid finite/range parameters, and oversized WFC retry budgets through `ProcgenLimits`/`ProcgenError`.
+- `procgen` produces generated data such as tile ids, region ids, biome labels, height/noise grids, rooms, graphs, candidate placements, and WFC outputs. It should not own rendering, per-player awareness, tile-light state, or pathfinding results.
+- Generated tile content should be materialized as `tilemap`, `tilefield` profiles/refs, or plain Lua tables. The game developer composes those outputs with `pathfind`, `tilelight`, `awareness`, `minimap`, and `render` in Lua unless a narrow Rust adapter is needed for conversion performance or data safety.
 - `Heightmap::try_generate`, `try_from_noise_map`, `try_from_cellular`, and `try_get` define the non-panicking heightmap contract; legacy constructors still route callers through the same validation layer.
 - `Heightmap` now exposes explicit `ErosionMode` semantics: `InPlace` is scan-order dependent and fast, while `Buffered` uses a frozen source snapshot per pass for order-independent updates; erosion helpers return `HeightmapErosionReport` with pass and change counts.
 - `MapGenOptions` now owns bounded parallel-generation controls (`parallel_enabled`, `parallel_chunk_size`), so safe noise generation can fall back to sequential execution or constrain Rayon chunk granularity without changing output determinism.

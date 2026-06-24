@@ -53,18 +53,16 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 ### save_manager.rs
 
-- Owns the save manager owner for the save subsystem and keeps its rules local to this file.
-- Keeps save data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-- Defines how save manager data is validated, transformed, or stored before neighboring systems use it.
-- Owns save behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on save manager behavior while Lua registration stays elsewhere.
-- Documents where save callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
-- Use this file when changing save manager defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the save state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping save manager calculations explicit at their owner boundary.
-- Provides the local adaptation layer that lets callers avoid duplicating save rules while keeping call sites explicit.
-- Maintains small helper surfaces so broader engine modules can compose save manager behavior safely.
-- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
+- Owns save-slot lifecycle policy: slot names, metadata, autosave timing, migrations, backups, and restore flow.
+- Delegates payload encoding to `serialize` and byte compression or checksum helpers to `binary` boundaries.
+- Stores manager configuration such as format, compression, root path, current slot metadata, and migration hooks.
+- Validates slot paths, migration ordering, content limits, compression envelopes, and checksum corruption cases.
+- Exposes crate-local helpers used by Lua bindings without owning Lua table parsing or generic file codecs.
+- Keeps save-game state semantics separate from static mod definitions, assets, and renderer-owned runtime data.
+- Provides deterministic metadata and content conversion so tests can verify save behavior across formats.
+- Handles legacy compressed markers and the current save envelope while keeping payload data opaque to save.
+- Update this file when save lifecycle rules, version handling, compression policy, or slot safety changes.
+- Leave format-specific parsing in serialization modules and keep filesystem-facing policy visible at this owner.
 
 
 

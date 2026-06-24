@@ -46,6 +46,72 @@ describe("lurek.procgen", function()
         end
     end)
 
+    -- @covers lurek.procgen.cellularAutomataGrid
+    -- @covers LProcgenGrid:getSize
+    -- @covers LProcgenGrid:getKind
+    -- @covers LProcgenGrid:getCell
+    -- @covers LProcgenGrid:toTable
+    -- @covers LProcgenGrid:toTileField
+    -- @covers LProcgenGrid:type
+    -- @covers LProcgenGrid:typeOf
+    it("returns typed cellular grids that convert to tilefield refs", function()
+        local grid = procgen.cellularAutomataGrid(4, 3, { fill = 1.0, iterations = 0, seed = 7 })
+        expect_equal("userdata", type(grid))
+        expect_equal("LProcgenGrid", grid:type())
+        expect_true(grid:typeOf("LProcgenGrid"))
+        expect_true(grid:typeOf("LObject"))
+        expect_equal("cellular_automata", grid:getKind())
+        local width, height = grid:getSize()
+        expect_equal(4, width)
+        expect_equal(3, height)
+        expect_true(grid:getCell(1, 1) == 0 or grid:getCell(1, 1) == 1)
+        local table_result = grid:toTable()
+        expect_equal(12, #table_result.cells)
+        local field = grid:toTileField({ slot = "terrain", topology = "square4" })
+        expect_equal(grid:getCell(1, 1), field:getRef(1, 1, nil, "terrain"))
+        expect_equal("square4", field:getTopology())
+    end)
+
+    -- @covers lurek.procgen.newGridResult
+    it("wraps flat tables as typed procgen grid results", function()
+        local grid = procgen.newGridResult(2, 2, { 4, 5, 6, 7 }, { kind = "manual" })
+        expect_equal("manual", grid:getKind())
+        expect_equal(6, grid:getCell(1, 2))
+    end)
+
+    -- @covers lurek.procgen.newScalarGridResult
+    -- @covers LProcgenScalarGrid:getSize
+    -- @covers LProcgenScalarGrid:getKind
+    -- @covers LProcgenScalarGrid:getCell
+    -- @covers LProcgenScalarGrid:toTable
+    -- @covers LProcgenScalarGrid:toTileField
+    -- @covers LProcgenScalarGrid:writeTileField
+    -- @covers LProcgenScalarGrid:type
+    -- @covers LProcgenScalarGrid:typeOf
+    it("wraps scalar fields and writes them into tilefield channels", function()
+        local grid = procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+        expect_equal("userdata", type(grid))
+        expect_equal("LProcgenScalarGrid", grid:type())
+        expect_true(grid:typeOf("LProcgenScalarGrid"))
+        expect_true(grid:typeOf("LObject"))
+        expect_equal("manual_scalar", grid:getKind())
+        local width, height = grid:getSize()
+        expect_equal(2, width)
+        expect_equal(2, height)
+        expect_near(0.2, grid:getCell(1, 2), 0.00001)
+        local table_result = grid:toTable()
+        expect_equal(4, #table_result.cells)
+
+        local field = grid:toTileField({ target = "block", channel = "vision", threshold = 0.5 })
+        expect_false(field:blocks(1, 1, nil, "vision"))
+        expect_true(field:blocks(2, 1, nil, "vision"))
+
+        local target = lurek.tilefield.new({ width = 2, height = 2 })
+        grid:writeTileField(target, { target = "cost", channel = "move", scale = 10.0 })
+        expect_near(1.0, target:getCost(1, 1, nil, "move"), 0.00001)
+        expect_near(9.0, target:getCost(2, 2, nil, "move"), 0.00001)
+    end)
+
     -- @covers lurek.procgen.floodFill
     it("fills only the connected cells that satisfy the threshold rule", function()
         local data = {
@@ -132,6 +198,19 @@ describe("lurek.procgen", function()
         expect_equal(24, dungeon.width)
         expect_equal(16, dungeon.height)
         expect_equal(24 * 16, #dungeon.grid)
+    end)
+
+    -- @covers lurek.procgen.roomsDungeonGrid
+    -- @covers LProcgenGrid:writeTileField
+    it("writes typed room dungeon grids into an existing tilefield", function()
+        local grid = procgen.roomsDungeonGrid({ width = 12, height = 10, max_rooms = 3, seed = 11 })
+        expect_equal("rooms_dungeon", grid:getKind())
+        local width, height = grid:getSize()
+        expect_equal(12, width)
+        expect_equal(10, height)
+        local field = lurek.tilefield.new({ width = 12, height = 10 })
+        grid:writeTileField(field, { slot = "terrain" })
+        expect_equal(grid:getCell(1, 1), field:getRef(1, 1, nil, "terrain"))
     end)
 
     -- @covers lurek.procgen.heightmap
@@ -243,6 +322,26 @@ describe("lurek.procgen", function()
         for _, cell in ipairs(grid.cells) do
             expect_equal(1, cell)
         end
+    end)
+
+    -- @covers lurek.procgen.wfcGenerateGrid
+    it("fully collapses a trivial single-tile ruleset into a typed grid", function()
+        local grid = procgen.wfcGenerateGrid({
+            width = 2,
+            height = 2,
+            seed = 7,
+            tiles = {
+                { id = 9, weight = 1.0 },
+            },
+            adjacencies = {
+                [9] = { 9 },
+            },
+        })
+        expect_equal("userdata", type(grid))
+        expect_equal("wfc", grid:getKind())
+        expect_equal(9, grid:getCell(1, 1))
+        local field = grid:toTileField({ slot = "floor" })
+        expect_equal(9, field:getRef(1, 1, nil, "floor"))
     end)
 
     -- @covers lurek.procgen.simplex2d

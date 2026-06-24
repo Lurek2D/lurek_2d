@@ -24,7 +24,9 @@ This module primarily collaborates with `procgen`. Its responsibility should sta
 
 ## Notes
 
-- No additional module-specific notes.
+- `mapblock` produces assembled map data: placed blocks, tile slots, tileset references, and exported tile layers. It should not compute pathfinding, awareness, tile lighting, minimap presentation, or render commands.
+- A game that needs runtime systems should convert mapblock output into `tilemap` and/or a shared `tilefield` snapshot, then run `pathfind`, `tilelight`, `awareness`, and minimap adapters independently on that data.
+- Rust-level integration is justified only for concrete adapters such as exporting block slots into `TileField` refs or copying tile ids into a `TileMap`; policy decisions stay in Lua/game code.
 
 ## Architecture Links
 

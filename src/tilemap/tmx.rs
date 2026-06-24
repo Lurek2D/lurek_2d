@@ -151,8 +151,6 @@ pub struct TmxTileset {
     pub image_width: u32,
     /// Image height in pixels.
     pub image_height: u32,
-    /// Local tile IDs marked as solid via objectgroup or `solid=true` property.
-    pub solid_tiles: Vec<u32>,
 }
 /// Parsed `<layer>` (tile layer) element.
 #[derive(Debug, Clone)]
@@ -356,7 +354,6 @@ fn parse_tileset(node: &roxmltree::Node, options: &TmxLoadOptions) -> Result<Tmx
             image_source: None,
             image_width: 0,
             image_height: 0,
-            solid_tiles: Vec::new(),
         });
     }
     let name = node.attribute("name").unwrap_or("").to_string();
@@ -398,32 +395,6 @@ fn parse_tileset(node: &roxmltree::Node, options: &TmxLoadOptions) -> Result<Tmx
             break;
         }
     }
-    let mut solid_tiles = Vec::new();
-    for child in node.children() {
-        if child.has_tag_name("tile") {
-            let tid: u32 = child
-                .attribute("id")
-                .and_then(|s| s.parse().ok())
-                .unwrap_or(0);
-            for sub in child.children() {
-                if sub.has_tag_name("objectgroup") {
-                    solid_tiles.push(tid);
-                    break;
-                }
-                if sub.has_tag_name("properties") {
-                    for prop in sub.children() {
-                        if prop.has_tag_name("property") {
-                            let pname = prop.attribute("name").unwrap_or("");
-                            let pval = prop.attribute("value").unwrap_or("");
-                            if pname.eq_ignore_ascii_case("solid") && pval == "true" {
-                                solid_tiles.push(tid);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
     Ok(TmxTileset {
         first_gid,
         source: None,
@@ -437,7 +408,6 @@ fn parse_tileset(node: &roxmltree::Node, options: &TmxLoadOptions) -> Result<Tmx
         image_source,
         image_width,
         image_height,
-        solid_tiles,
     })
 }
 /// Parse a `<layer>` XML node into a `TmxTileLayer`, decoding CSV, base64, or XML tile data.

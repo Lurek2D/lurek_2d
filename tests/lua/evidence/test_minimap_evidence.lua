@@ -246,7 +246,7 @@ describe("Evidence: lurek.minimap render output", function()
         save_png(mm:drawToImage(CELL), path)
     end)
 
-    -- Does: Uses `library.tilefield_minimap` to copy blocker, movement-cost, and computed-light exports into raw minimap layers.
+    -- Does: Uses `library.tilefield_minimap` to copy blocker, movement-cost, and tilelight exports into raw minimap layers.
     -- Shows: The PNG should show tilefield gameplay data rendered by minimap layer styling.
     -- Artifact: tests/artifacts/current/minimap/minimap_tilefield_layers.png
     -- Why: This proves tilefield remains the data owner while minimap owns compact layer rendering.
@@ -264,12 +264,13 @@ describe("Evidence: lurek.minimap render output", function()
         field:setBlock(6, 4, 1, "move", false)
         field:setCost(8, 6, 1, "move", 4)
         field:setCost(9, 6, 1, "move", 5)
-        field:addPointLight({ x = 3, y = 7, z = 1, radius = 4, intensity = 1.0, color = { r = 1, g = 0.8, b = 0.2 } })
-        field:computeLight({ includePointLights = true, includeGlobalLight = false })
+        local light = lurek.tilelight.new(field)
+        light:addPointLight({ x = 3, y = 7, z = 1, radius = 4, intensity = 1.0, color = { r = 1, g = 0.8, b = 0.2 } })
+        light:compute({ includePointLights = true, includeGlobalLight = false })
 
         local mm = base_minimap(W, H, CELL)
         fill_terrain(mm, W, H, function() return 1 end)
-        local helper = TilefieldMinimap.new({ field = field, width = W, height = H, minimap = mm })
+        local helper = TilefieldMinimap.new({ field = field, lightMap = light, width = W, height = H, minimap = mm })
         helper:syncBlockLayer("move", 1, {
             blocked_value = 9,
             style = {
@@ -299,7 +300,7 @@ describe("Evidence: lurek.minimap render output", function()
         save_png(mm:drawToImage(CELL), path)
     end)
 
-    -- Does: Uses `library.visibility_minimap` to copy LTileVisibility visible/action masks into fog and raw minimap layers.
+    -- Does: Uses `library.awareness_minimap` to copy LTileAwareness visible/action masks into fog and raw minimap layers.
     -- Shows: The PNG should show fog-of-war plus an actionable overlay produced from visibility data.
     -- Artifact: tests/artifacts/current/minimap/minimap_visibility_fog_action.png
     -- Why: This proves visibility remains the mask authority while minimap owns fog and layer presentation.
@@ -307,7 +308,7 @@ describe("Evidence: lurek.minimap render output", function()
     it("PNG: visibility fog action", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_visibility_fog_action.png"
-        local VisibilityMinimap = require("library.visibility_minimap")
+        local AwarenessMinimap = require("library.awareness_minimap")
 
         local W, H, CELL = 14, 10, 9
         local field = lurek.tilefield.new({ width = W, height = H, levels = 1 })
@@ -317,13 +318,13 @@ describe("Evidence: lurek.minimap render output", function()
         field:setBlock(8, 5, 1, "vision", false)
         field:setBlock(9, 6, 1, "action", true)
 
-        local visibility = lurek.visibility.newTileVisibility(field, { players = { "scout" }, rememberExplored = true })
-        visibility:computeVisible("scout", {
+        local awareness = lurek.awareness.newTileAwareness(field, { players = { "scout" }, rememberExplored = true })
+        awareness:computeVisible("scout", {
             origin = { x = 4, y = 5, z = 1 },
             range = 6,
             channel = "vision",
         })
-        visibility:computeAction("scout", {
+        awareness:computeAction("scout", {
             origin = { x = 4, y = 5, z = 1 },
             range = 4,
             channel = "action",
@@ -334,7 +335,7 @@ describe("Evidence: lurek.minimap render output", function()
             return (x == 8 or y == 5) and 3 or 1
         end)
         mm:setFogColor(0.0, 0.0, 0.0, 0.78)
-        local helper = VisibilityMinimap.new({ visibility = visibility, width = W, height = H, minimap = mm })
+        local helper = AwarenessMinimap.new({ visibility = awareness, width = W, height = H, minimap = mm })
         helper:syncFog("scout")
         helper:syncActionLayer("scout", 1, {
             action_value = 8,
@@ -363,7 +364,7 @@ describe("Evidence: lurek.minimap render output", function()
         for i = 1, math.min(#ids, 6) do
             local id = ids[i]
             reg:setTerrainType(id, i)
-            reg:setVisibilityState(id, i <= 2 and 96 or 255)
+            reg:setAwarenessState(id, i <= 2 and 96 or 255)
             reg:setPoliticalColor(id, 0.10 + 0.12 * i, 0.25 + 0.08 * i, 0.82 - 0.06 * i, 1.0)
         end
 

@@ -1,25 +1,26 @@
--- Integration: tilefield is the shared source for movement, visibility, lighting, minimap, and raycaster input.
+-- Integration: tilefield is the shared source for movement, awareness, tile lighting, minimap, and raycaster input.
 
 -- @describe integration: tilefield coordinates gameplay systems without raycaster ownership
 describe("integration: tilefield coordinates gameplay systems without raycaster ownership", function()
     -- @integration lurek.tilefield.new
     -- @integration LTileField:applyProfile
-    -- @integration LTileField:addPointLight
-    -- @integration LTileField:computeLight
-    -- @integration LTileField:getLight
+    -- @integration lurek.tilelight.new
+    -- @integration LTileLightMap:addPointLight
+    -- @integration LTileLightMap:compute
+    -- @integration LTileLightMap:getLight
     -- @integration LTileField:exportBlockLayer
     -- @integration lurek.pathfind.newNavGridFromField
     -- @integration lurek.pathfind.newPathfinder
     -- @integration lurek.pathfind.rangeMapFromField
     -- @integration LUnitPathfinder:findPath
-    -- @integration lurek.visibility.lineOfSight
-    -- @integration lurek.visibility.lineOfAction
-    -- @integration lurek.visibility.newTileVisibility
-    -- @integration LTileVisibility:computeVisible
-    -- @integration LTileVisibility:computeAction
-    -- @integration LTileVisibility:isVisible
-    -- @integration LTileVisibility:canActOn
-    -- @integration LTileVisibility:visibleCells
+    -- @integration lurek.awareness.lineOfSight
+    -- @integration lurek.awareness.lineOfAction
+    -- @integration lurek.awareness.newTileAwareness
+    -- @integration LTileAwareness:computeVisible
+    -- @integration LTileAwareness:computeAction
+    -- @integration LTileAwareness:isVisible
+    -- @integration LTileAwareness:canActOn
+    -- @integration LTileAwareness:visibleCells
     -- @integration lurek.minimap.newMinimap
     -- @integration LMinimap:setTerrainData
     -- @integration LMinimap:setFogData
@@ -34,13 +35,14 @@ describe("integration: tilefield coordinates gameplay systems without raycaster 
         field:applyProfile(3, 2, 1, "window")
         field:applyProfile(4, 4, 1, "wall")
         field:applyProfile(5, 3, 2, "half_wall")
-        field:addPointLight({ x = 1, y = 2, z = 1, radius = 6, intensity = 1.0 })
-        field:computeLight({ includePointLights = true, includeGlobalLight = false })
+        local light = lurek.tilelight.new(field)
+        light:addPointLight({ x = 1, y = 2, z = 1, radius = 6, intensity = 1.0 })
+        light:compute({ includePointLights = true, includeGlobalLight = false })
 
         local from = { x = 1, y = 2, z = 1 }
         local target = { x = 6, y = 2, z = 1 }
-        expect_true(lurek.visibility.lineOfSight(field, from, target), "window must not block vision")
-        expect_true(not lurek.visibility.lineOfAction(field, from, target), "window must block action")
+        expect_true(lurek.awareness.lineOfSight(field, from, target), "window must not block vision")
+        expect_true(not lurek.awareness.lineOfAction(field, from, target), "window must block action")
 
         local nav = lurek.pathfind.newNavGridFromField(field, { level = 1, channel = "move" })
         local pathfinder = lurek.pathfind.newPathfinder(nav)
@@ -58,15 +60,15 @@ describe("integration: tilefield coordinates gameplay systems without raycaster 
         expect_equal(width, range.width)
         expect_true(#range.cells > 1)
 
-        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1", "p2" }, rememberExplored = true })
+        local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" }, rememberExplored = true })
         vis:computeVisible("p1", { origin = from, range = 6, channel = "vision" })
         vis:computeAction("p1", { origin = from, range = 6, channel = "action" })
         expect_true(vis:isVisible("p1", target.x, target.y, target.z))
         expect_true(not vis:canActOn("p1", target.x, target.y, target.z))
         expect_true(not vis:isVisible("p2", target.x, target.y, target.z), "players keep independent masks")
 
-        local _, _, _, luma = field:getLight(4, 2, 1)
-        expect_true(luma > 0, "tile lighting is computed by tilefield and remains independent of visibility")
+        local _, _, _, luma = light:getLight(4, 2, 1)
+        expect_true(luma > 0, "tile lighting is computed by tilelight and remains independent of awareness")
 
         local terrain = {}
         local blockers = field:exportBlockLayer("move", 1)
@@ -81,7 +83,7 @@ describe("integration: tilefield coordinates gameplay systems without raycaster 
         local light_overlay = {}
         for y = 1, height do
             for x = 1, width do
-                local _, _, _, cell_luma = field:getLight(x, y, 1)
+                local _, _, _, cell_luma = light:getLight(x, y, 1)
                 light_overlay[(y - 1) * width + x] = math.floor(cell_luma * 9 + 0.5)
             end
         end

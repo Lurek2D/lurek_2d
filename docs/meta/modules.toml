@@ -698,6 +698,16 @@ lua_unit_test = "tests/lua/unit/test_tilefield_unit.lua"
 user_facing = true
 plugin_tier = "core_keep"
 
+[tilelight]
+tier = "feature_systems"
+source = "src/tilelight"
+lua_binding = "src/lua_api/tilelight_api.rs"
+namespace = "lurek.tilelight"
+example_file = "content/examples/tilelight.lua"
+lua_unit_test = "tests/lua/unit/test_tilelight_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
 [timer]
 tier = "core_runtime"
 source = "src/timer"
@@ -748,13 +758,13 @@ lua_unit_test = "tests/lua/unit/test_svg_unit.lua"
 user_facing = true
 plugin_tier = "not_evaluated"
 
-[visibility]
+[awareness]
 tier = "platform_services"
-source = "src/visibility"
-lua_binding = "src/lua_api/visibility_api.rs"
-namespace = "lurek.visibility"
-example_file = "content/examples/visibility.lua"
-lua_unit_test = "tests/lua/unit/test_visibility_unit.lua"
+source = "src/awareness"
+lua_binding = "src/lua_api/awareness_api.rs"
+namespace = "lurek.awareness"
+example_file = "content/examples/awareness.lua"
+lua_unit_test = "tests/lua/unit/test_awareness_unit.lua"
 user_facing = true
 plugin_tier = "core_keep"
 

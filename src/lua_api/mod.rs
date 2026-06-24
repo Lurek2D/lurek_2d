@@ -15,6 +15,8 @@ pub mod audio_api;
 /// Exposes the `lurek.automation` binding module.
 #[cfg(feature = "automation-plugin")]
 pub mod automation_api;
+/// Exposes the `lurek.awareness` binding module.
+pub mod awareness_api;
 /// Exposes the `lurek.binary` binding module.
 pub mod binary_api;
 /// Exposes shared callback registry helpers for Lua bindings.
@@ -145,8 +147,12 @@ pub mod terminal_api;
 pub mod thread_api;
 /// Exposes the `lurek.tilefield` binding module.
 pub mod tilefield_api;
+/// Exposes the `lurek.tilelight` binding module.
+pub mod tilelight_api;
 /// Exposes the `lurek.tilemap` binding module.
 pub mod tilemap_api;
+/// Exposes the `lurek.tileset` binding module.
+pub mod tileset_api;
 /// Exposes the `lurek.timer` binding module.
 pub mod timer_api;
 /// Exposes the `lurek.tween` binding module.
@@ -155,8 +161,6 @@ pub mod tween_api;
 pub mod ui_api;
 /// Exposes the `lurek.validator` binding module.
 pub mod validator_api;
-/// Exposes the `lurek.visibility` binding module.
-pub mod visibility_api;
 /// Exposes the `lurek.window` binding module.
 pub mod window_api;
 pub use register::{create_headless_vm, create_lua_vm, create_test_vm};

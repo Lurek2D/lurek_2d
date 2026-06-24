@@ -1,16 +1,17 @@
--- Integration: tilefield and visibility export passive data consumed by minimap.
+-- Integration: tilefield, awareness, and tilelight export passive data consumed by minimap.
 
 -- @describe integration: tilefield feeds minimap
 describe("integration: tilefield feeds minimap", function()
     -- @integration lurek.tilefield.new
     -- @integration LTileField:applyProfile
-    -- @integration LTileField:addPointLight
-    -- @integration LTileField:computeLight
     -- @integration LTileField:exportBlockLayer
-    -- @integration LTileField:exportLightLayer
-    -- @integration lurek.visibility.newTileVisibility
-    -- @integration LTileVisibility:computeVisible
-    -- @integration LTileVisibility:visibleCells
+    -- @integration lurek.tilelight.new
+    -- @integration LTileLightMap:addPointLight
+    -- @integration LTileLightMap:compute
+    -- @integration LTileLightMap:exportLayer
+    -- @integration lurek.awareness.newTileAwareness
+    -- @integration LTileAwareness:computeVisible
+    -- @integration LTileAwareness:visibleCells
     -- @integration lurek.minimap.newMinimap
     -- @integration LMinimap:setTerrainData
     -- @integration LMinimap:setFogData
@@ -23,10 +24,11 @@ describe("integration: tilefield feeds minimap", function()
         local field = lurek.tilefield.new({ width = width, height = height, levels = 2 })
         field:applyProfile(3, 2, 1, "wall")
         field:applyProfile(4, 2, 1, "window")
-        field:addPointLight({ x = 2, y = 2, z = 1, radius = 5, intensity = 1 })
-        field:computeLight({ includePointLights = true, includeGlobalLight = false })
+        local light_map = lurek.tilelight.new(field)
+        light_map:addPointLight({ x = 2, y = 2, z = 1, radius = 5, intensity = 1 })
+        light_map:compute({ includePointLights = true, includeGlobalLight = false })
 
-        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+        local vis = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
         vis:computeVisible("p1", { origin = { x = 1, y = 1, z = 1 }, range = 4 })
 
         local terrain = {}
@@ -42,7 +44,7 @@ describe("integration: tilefield feeds minimap", function()
         end
 
         local light_layer = {}
-        for i, light in ipairs(field:exportLightLayer(1)) do
+        for i, light in ipairs(light_map:exportLayer(1)) do
             light_layer[i] = math.floor((light.luma or 0) * 9 + 0.5)
         end
 

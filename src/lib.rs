@@ -144,13 +144,19 @@ pub mod spine;
 pub mod sprite;
 /// Exposes the terminal subsystem module.
 pub mod terminal;
+/// Exposes reusable tile/object archetypes and atlas tilesets.
+pub mod tileset;
 /// Exposes the threading subsystem module.
 pub mod thread;
 
+/// Exposes the awareness subsystem module.
+pub mod awareness;
 /// Exposes the SVG vector graphics subsystem module.
 pub mod svg;
 /// Exposes tile-based gameplay semantics for movement, visibility, action, and lighting.
 pub mod tilefield;
+/// Exposes tile-based light sources and computed light maps over tilefields.
+pub mod tilelight;
 /// Exposes the tilemap subsystem module.
 pub mod tilemap;
 /// Exposes the timer subsystem module.
@@ -161,8 +167,6 @@ pub mod tween;
 pub mod ui;
 /// Exposes the content validation subsystem module.
 pub mod validator;
-/// Exposes the visibility subsystem module.
-pub mod visibility;
 /// Exposes the window subsystem module.
 pub mod window;
 

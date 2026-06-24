@@ -25,18 +25,6 @@ local function new_isomap()
     return lurek.tilemap.newIsoMap(5, 5, 64, 32, 24)
 end
 
-local function new_mapblock()
-    return lurek.tilemap.newMapBlock(4, 4, 1, 4)
-end
-
-local function new_mapgroup()
-    return lurek.tilemap.newMapGroup("world")
-end
-
-local function new_mapscript()
-    return lurek.tilemap.newMapScript()
-end
-
 local function new_large_map_renderer()
     return lurek.tilemap.newLargeMapRenderer(16, 16)
 end
@@ -49,8 +37,8 @@ end
 
 local function new_ready_tileset()
     local ts = new_tileset()
-    ts:setSolid(1, true)
-    ts:setSolid(2, false)
+    ts:setProfile(1, "blocked")
+    ts:setProfile(2, "open")
     return ts
 end
 
@@ -170,27 +158,6 @@ describe("lurek.tilemap module", function()
         expect_equal("LIsoMap", new_isomap():type())
     end)
 
-    -- @covers lurek.tilemap.newMapBlock
-    it("newMapBlock constructs a map block", function()
-        expect_equal("LMapBlock", new_mapblock():type())
-    end)
-
-    -- @covers lurek.tilemap.newMapGroup
-    it("newMapGroup constructs a map group", function()
-        expect_equal("LMapGroup", new_mapgroup():type())
-    end)
-
-    -- @covers lurek.tilemap.newMapScript
-    it("newMapScript constructs a map script", function()
-        expect_equal("LMapScript", new_mapscript():type())
-    end)
-
-    -- @covers lurek.tilemap.newMapGen
-    it("newMapGen constructs a generator from a group", function()
-        local gen = lurek.tilemap.newMapGen(new_mapgroup(), "small", 4)
-        expect_equal("LMapGen", gen:type())
-    end)
-
     -- @covers lurek.tilemap.loadTMX
     it("loadTMX parses valid TMX and reports strict or policy failures", function()
         local result, err = lurek.tilemap.loadTMX(MINIMAL_TMX)
@@ -244,21 +211,8 @@ describe("tilemap coordinate helpers", function()
         expect_near(5, ty, 0.01)
     end)
 
-    -- @covers lurek.tilemap.isoRotate
-    it("isoRotate wraps around four directions", function()
-        expect_equal(1, lurek.tilemap.isoRotate(4, 1))
-    end)
 
-    -- @covers lurek.tilemap.isoDirectionName
-    it("isoDirectionName returns a direction label", function()
-        expect_equal("north", lurek.tilemap.isoDirectionName(3))
-    end)
 
-    -- @covers lurek.tilemap.isoDirectionFromAngle
-    it("isoDirectionFromAngle snaps to a valid direction", function()
-        local dir = lurek.tilemap.isoDirectionFromAngle(0)
-        expect_in_range(dir, 1, 4)
-    end)
 
     -- @covers lurek.tilemap.toScreenHex
     it("toScreenHex returns numeric coordinates", function()
@@ -275,56 +229,14 @@ describe("tilemap coordinate helpers", function()
         expect_near(3, r, 0.5)
     end)
 
-    -- @covers lurek.tilemap.hexDistance
-    it("hexDistance is zero for the same cell", function()
-        expect_equal(0, lurek.tilemap.hexDistance(2, 3, 2, 3))
-    end)
 
-    -- @covers lurek.tilemap.hexNeighbors
-    it("hexNeighbors returns six neighbors", function()
-        expect_equal(6, #lurek.tilemap.hexNeighbors(0, 0))
-    end)
 
-    -- @covers lurek.tilemap.hexLine
-    it("hexLine includes both endpoints", function()
-        expect_equal(3, #lurek.tilemap.hexLine(0, 0, 2, 0))
-    end)
 
-    -- @covers lurek.tilemap.hexRing
-    it("hexRing of radius two has twelve cells", function()
-        expect_equal(12, #lurek.tilemap.hexRing(0, 0, 2))
-    end)
 
-    -- @covers lurek.tilemap.hexSpiral
-    it("hexSpiral at radius zero returns the center cell", function()
-        expect_equal(1, #lurek.tilemap.hexSpiral(0, 0, 0))
-    end)
 
-    -- @covers lurek.tilemap.hexRound
-    it("hexRound snaps fractional axial coordinates to integers", function()
-        local q, r = lurek.tilemap.hexRound(2.3, 1.7)
-        expect_equal(2, q)
-        expect_equal(2, r)
-    end)
 
-    -- @covers lurek.tilemap.hexArea
-    it("hexArea returns all cells within the requested radius", function()
-        expect_equal(7, #lurek.tilemap.hexArea(0, 0, 1))
-    end)
 
-    -- @covers lurek.tilemap.hexRotate
-    it("hexRotate rotates a point around a center", function()
-        local q, r = lurek.tilemap.hexRotate(2, 0, 0, 0, 3)
-        expect_equal(-2, q)
-        expect_equal(0, r)
-    end)
 
-    -- @covers lurek.tilemap.hexReflect
-    it("hexReflect mirrors a point across the requested axis", function()
-        local q, r = lurek.tilemap.hexReflect(3, 1, 0, 0, "q")
-        expect_equal(3, q)
-        expect_equal(-4, r)
-    end)
 end)
 
 -- @describe LTileSet methods
@@ -382,18 +294,24 @@ describe("LTileSet methods", function()
         expect_equal(32, quad.height)
     end)
 
-    -- @covers LTileSet:setSolid
-    it("setSolid marks a tile as solid", function()
+    -- @covers LTileSet:setProfile
+    -- @covers LTileSet:getProfile
+    it("stores profile names for tilefield transfer", function()
         local ts = new_tileset()
-        ts:setSolid(3, true)
-        expect_true(ts:isSolid(3))
+        ts:setProfile(3, "stone_floor")
+        expect_equal("stone_floor", ts:getProfile(3))
+        ts:setProfile(3, nil)
+        expect_nil(ts:getProfile(3))
     end)
 
-    -- @covers LTileSet:isSolid
-    it("isSolid reports whether a tile blocks movement", function()
-        local ts = new_ready_tileset()
-        expect_true(ts:isSolid(1))
-        expect_false(ts:isSolid(2))
+    -- @covers LTileSet:setPhysicsShape
+    -- @covers LTileSet:getPhysicsShape
+    it("stores physics shape names independently of solidity", function()
+        local ts = new_tileset()
+        ts:setPhysicsShape(4, "rect")
+        expect_equal("rect", ts:getPhysicsShape(4))
+        ts:setPhysicsShape(4, "")
+        expect_nil(ts:getPhysicsShape(4))
     end)
 
     -- @covers LTileSet:setAnimation
@@ -747,16 +665,6 @@ describe("LTileMap methods", function()
         expect_equal(8, new_tilemap():getChunkSize())
     end)
 
-    -- @covers LTileMap:isSolid
-    it("isSolid consults attached tilesets for collision flags", function()
-        local tm = new_ready_tilemap()
-        tm:addTileSet(new_ready_tileset())
-        tm:setTile(1, 3, 3, 1)
-        tm:setTile(1, 5, 5, 2)
-        expect_true(tm:isSolid(1, 3, 3))
-        expect_false(tm:isSolid(1, 5, 5))
-    end)
-
     -- @covers LTileMap:applyAutoTile
     it("applyAutoTile does not error with a configured tileset", function()
         local tm = new_tilemap()
@@ -851,26 +759,6 @@ describe("LTileMap methods", function()
         expect_true(after.lazyIndexRebuilds >= before.lazyIndexRebuilds + 1)
     end)
 
-    -- @covers LTileMap:rectOverlapsSolid
-    it("rectOverlapsSolid reports overlap with solid tiles", function()
-        local tm = new_ready_tilemap()
-        tm:addTileSet(new_ready_tileset())
-        tm:setTile(1, 3, 3, 1)
-        expect_true(tm:rectOverlapsSolid(1, 64, 64, 16, 16))
-    end)
-
-    -- @covers LTileMap:sweepRect
-    it("sweepRect returns collision information against solid tiles", function()
-        local tm = new_ready_tilemap()
-        tm:addTileSet(new_ready_tileset())
-        tm:setTile(1, 3, 3, 1)
-        local cx, cy, nx, ny, tx, ty = tm:sweepRect(1, 32, 64, 16, 16, 64, 0)
-        expect_type("number", cx)
-        expect_type("number", nx)
-        expect_true(tx >= 0)
-        expect_true(ty >= 0)
-    end)
-
     -- @covers LTileMap:getOrientation
     it("getOrientation returns the current map orientation", function()
         local tm = new_tilemap()
@@ -892,81 +780,6 @@ describe("LTileMap methods", function()
         local ok, err = tm:trySetTileTint(1, 99, 99, 1.0, 0.0, 0.0, 1.0)
         expect_equal(false, ok)
         expect_type("string", err)
-    end)
-
-    -- @covers LTileMap:toNavGrid
-    it("toNavGrid marks requested gids as walkable", function()
-        local tm = new_ready_tilemap()
-        tm:setTile(1, 1, 1, 1)
-        tm:setTile(1, 2, 1, 2)
-        local grid = tm:toNavGrid(0, {1})
-        expect_true(grid[1][1])
-        expect_false(grid[1][2])
-    end)
-
-    -- @covers LTileMap:onTileEnter
-    it("onTileEnter registers a callback used by entity checks", function()
-        local tm = new_ready_tilemap()
-        tm:setTile(1, 3, 3, 5)
-        local hits = 0
-        tm:onTileEnter(5, function()
-            hits = hits + 1
-        end)
-        tm:checkEntities(0, {{ x = 64, y = 64 }})
-        expect_equal(1, hits)
-    end)
-
-    -- @covers LTileMap:checkEntities
-    it("checkEntities invokes enter callbacks for matching tile gids", function()
-        local tm = new_ready_tilemap()
-        tm:setTile(1, 3, 3, 5)
-        local tx_seen, ty_seen = nil, nil
-        tm:onTileEnter(5, function(_, _, tx, ty)
-            tx_seen = tx
-            ty_seen = ty
-        end)
-        tm:checkEntities(0, {{ x = 64, y = 64 }})
-        expect_equal(2, tx_seen)
-        expect_equal(2, ty_seen)
-    end)
-
-    -- @covers LTileMap:onTileStep
-    it("onTileStep accepts a callback", function()
-        local tm = new_tilemap()
-        expect_no_error(function()
-            tm:onTileStep(5, function() end)
-        end)
-    end)
-
-    -- @covers LTileMap:fireTileStep
-    it("fireTileStep invokes the registered callback", function()
-        local tm = new_tilemap()
-        local fired = false
-        tm:onTileStep(5, function() fired = true end)
-        tm:fireTileStep(5, { id = 1 }, 2, 3)
-        expect_true(fired)
-    end)
-
-    -- @covers LTileMap:onTileExit
-    it("onTileExit registers a callback for manual exit firing", function()
-        local tm = new_tilemap()
-        local fired = false
-        tm:onTileExit(5, function()
-            fired = true
-        end)
-        tm:fireTileExit(5, { id = 1 }, 2, 3)
-        expect_true(fired)
-    end)
-
-    -- @covers LTileMap:fireTileExit
-    it("fireTileExit invokes the registered exit callback", function()
-        local tm = new_tilemap()
-        local entity_id = nil
-        tm:onTileExit(5, function(entity)
-            entity_id = entity.id
-        end)
-        tm:fireTileExit(5, { id = 99 }, 2, 3)
-        expect_equal(99, entity_id)
     end)
 
     -- @covers LTileMap:type
@@ -1163,8 +976,9 @@ describe("LIsoMap methods", function()
     it("setTilePart stores a tile part value", function()
         local iso = new_isomap()
         iso:addLevel()
-        iso:setTilePart(1, 2, 3, lurek.tilemap.FLOOR, 11)
-        expect_equal(11, iso:getTilePart(1, 2, 3, lurek.tilemap.FLOOR))
+        local floor_part = 1
+        iso:setTilePart(1, 2, 3, floor_part, 11)
+        expect_equal(11, iso:getTilePart(1, 2, 3, floor_part))
     end)
 
     -- @covers LIsoMap:getTilePart
@@ -1179,8 +993,9 @@ describe("LIsoMap methods", function()
     it("fillLevel writes one gid across a whole level part", function()
         local iso = new_isomap()
         iso:addLevel()
-        iso:fillLevel(1, lurek.tilemap.FLOOR, 9)
-        expect_equal(9, iso:getTilePart(1, 2, 2, lurek.tilemap.FLOOR))
+        local floor_part = 1
+        iso:fillLevel(1, floor_part, 9)
+        expect_equal(9, iso:getTilePart(1, 2, 2, floor_part))
     end)
 
     -- @covers LIsoMap:setLevelVisible
@@ -1279,138 +1094,6 @@ describe("LIsoMap methods", function()
         local iso = new_isomap()
         expect_true(iso:typeOf("LIsoMap"))
         expect_true(iso:typeOf("LObject"))
-    end)
-end)
-
--- @describe map generation helpers
-describe("map generation helpers", function()
-    -- @covers LMapBlock:setSide
-    it("LMapBlock:setSide stores a side id for an edge segment", function()
-        local block = new_mapblock()
-        block:setSide("north", 1, 9)
-        expect_equal(9, block:getSide("north", 1))
-    end)
-
-    -- @covers LMapBlock:getSide
-    it("LMapBlock:getSide returns a previously stored edge segment id", function()
-        local block = new_mapblock()
-        block:setSide("west", 1, 7)
-        expect_equal(7, block:getSide("west", 1))
-    end)
-
-    -- @covers LMapBlock:getDimensions
-    it("LMapBlock:getDimensions returns block width and height", function()
-        local w, h = new_mapblock():getDimensions()
-        expect_equal(4, w)
-        expect_equal(4, h)
-    end)
-
-    -- @covers LMapBlock:getSegmentSize
-    it("LMapBlock:getSegmentSize returns the configured segment size", function()
-        expect_equal(4, new_mapblock():getSegmentSize())
-    end)
-
-    -- @covers LMapBlock:getWidthInSegments
-    it("LMapBlock:getWidthInSegments returns width measured in segments", function()
-        expect_equal(1, new_mapblock():getWidthInSegments())
-    end)
-
-    -- @covers LMapBlock:getHeightInSegments
-    it("LMapBlock:getHeightInSegments returns height measured in segments", function()
-        expect_equal(1, new_mapblock():getHeightInSegments())
-    end)
-
-    -- @covers LMapBlock:type
-    it("LMapBlock:type returns LMapBlock", function()
-        expect_equal("LMapBlock", new_mapblock():type())
-    end)
-
-    -- @covers LMapBlock:typeOf
-    it("LMapBlock:typeOf recognizes LMapBlock", function()
-        local block = new_mapblock()
-        expect_true(block:typeOf("LMapBlock"))
-        expect_true(block:typeOf("LObject"))
-    end)
-
-    -- @covers LMapGroup:addBlock
-    it("LMapGroup:addBlock increments the block count", function()
-        local group = new_mapgroup()
-        group:addBlock(new_mapblock())
-        expect_equal(1, group:getBlockCount())
-    end)
-
-    -- @covers LMapGroup:removeBlock
-    it("LMapGroup:removeBlock removes a block by index", function()
-        local group = new_mapgroup()
-        group:addBlock(new_mapblock())
-        group:removeBlock(1)
-        expect_equal(0, group:getBlockCount())
-    end)
-
-    -- @covers LMapGroup:getScriptCount
-    it("LMapGroup:getScriptCount returns the number of attached scripts", function()
-        local group = new_mapgroup()
-        group:addScript(new_mapscript())
-        expect_equal(1, group:getScriptCount())
-    end)
-
-    -- @covers LMapGroup:type
-    it("LMapGroup:type returns LMapGroup", function()
-        expect_equal("LMapGroup", new_mapgroup():type())
-    end)
-
-    -- @covers LMapGroup:typeOf
-    it("LMapGroup:typeOf recognizes LMapGroup", function()
-        local group = new_mapgroup()
-        expect_true(group:typeOf("LMapGroup"))
-        expect_true(group:typeOf("LObject"))
-    end)
-
-    -- @covers LMapScript:addStep
-    it("LMapScript:addStep records a generation step", function()
-        local script = new_mapscript()
-        script:addStep({ type = "fillRect", layer = 1, x = 1, y = 1, w = 2, h = 2, gid = 1 })
-        expect_equal(1, script:getStepCount())
-    end)
-
-    -- @covers LMapScript:type
-    it("LMapScript:type returns LMapScript", function()
-        expect_equal("LMapScript", new_mapscript():type())
-    end)
-
-    -- @covers LMapScript:typeOf
-    it("LMapScript:typeOf recognizes LMapScript", function()
-        local script = new_mapscript()
-        expect_true(script:typeOf("LMapScript"))
-        expect_true(script:typeOf("LObject"))
-    end)
-
-    -- @covers LMapGen:generate
-    it("LMapGen:generate returns a tilemap", function()
-        local group = new_mapgroup()
-        local block = new_mapblock()
-        for y = 1, 4 do
-            for x = 1, 4 do
-                block:setTile(1, x, y, 1)
-            end
-        end
-        group:addBlock(block)
-        local gen = lurek.tilemap.newMapGen(group, "small", 4)
-        local tm = gen:generate(nil, 42)
-        expect_type("userdata", tm)
-    end)
-
-    -- @covers LMapGen:type
-    it("LMapGen:type returns LMapGen", function()
-        local gen = lurek.tilemap.newMapGen(new_mapgroup(), "small", 4)
-        expect_equal("LMapGen", gen:type())
-    end)
-
-    -- @covers LMapGen:typeOf
-    it("LMapGen:typeOf recognizes LMapGen", function()
-        local gen = lurek.tilemap.newMapGen(new_mapgroup(), "small", 4)
-        expect_true(gen:typeOf("LMapGen"))
-        expect_true(gen:typeOf("LObject"))
     end)
 end)
 
@@ -1550,23 +1233,6 @@ describe("LLargeMapRenderer methods", function()
     end)
 end)
 
--- @describe tilemap minimap bridge
-describe("tilemap minimap bridge", function()
-    -- @covers lurek.tilemap.syncMinimap
-    it("syncMinimap copies tile solidity into minimap terrain", function()
-        local tm = new_ready_tilemap()
-        tm:addTileSet(new_ready_tileset())
-        tm:setTile(1, 1, 1, 1)
-        tm:setTile(1, 2, 1, 2)
-        local minimap = lurek.minimap.newMinimap(10, 10)
-        lurek.tilemap.syncMinimap(tm, 1, minimap, {
-            solid_terrain = 2,
-            empty_terrain = 1,
-        })
-        expect_equal(2, minimap:getTerrain(1, 1))
-        expect_equal(1, minimap:getTerrain(2, 1))
-    end)
-end)
 end
 -- END test_tilemap_core_unit.lua
 

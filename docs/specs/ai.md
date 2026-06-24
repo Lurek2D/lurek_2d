@@ -243,8 +243,11 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### validation.rs
 
-- Owns validation limits and numeric guards for AI decision, planning, and callback-heavy evaluators.
-- Keeps reasoning-side safety ceilings near the AI systems that enforce them.
+- Owns shared validation limits for AI worlds, behavior trees, GOAP, utility AI, MCTS, and sensors.
+- Centralizes numeric guards so planners, registries, and Lua-facing helpers reject the same bad shapes.
+- Provides finite, count, and dimension checks with structured `AiError` output instead of panics.
+- Keeps safety ceilings near AI domain code while avoiding ownership of any planner or evaluator state.
+- Update this file when AI modules need new limits, validation helpers, or cross-module guard policy.
 
 ### world.rs
 

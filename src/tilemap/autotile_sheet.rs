@@ -6,8 +6,8 @@
 //! Bridges tileset geometry with adjacency rules instead of mixing autotile policy into general map storage.
 //! Open this file when terrain transitions, mask lookup, or autotile atlas mapping behaves incorrectly.
 
-use super::tileset::TileSet;
 use crate::math::Rect;
+use crate::tileset::{AutoTileMode, TileSet};
 use std::collections::{HashMap, HashSet};
 
 /// Sprite-sheet packing variant that determines tile count and bitmask encoding.
@@ -21,28 +21,6 @@ pub enum AutoTileLayout {
     RpgMaker48,
     /// 16-tile minimal layout using only the 4 cardinal neighbor bits.
     Minimal16,
-}
-
-/// Terrain-neighbour matching strategy used when applying autotile rules.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AutoTileMode {
-    /// Match only north, east, south, and west sides.
-    MatchSides,
-    /// Match only corner/diagonal occupancy.
-    MatchCorners,
-    /// Match sides and valid corners together.
-    MatchCornersAndSides,
-}
-
-impl AutoTileMode {
-    /// Return the stable Lua/API name for this matching strategy.
-    pub fn as_str(self) -> &'static str {
-        match self {
-            AutoTileMode::MatchSides => "matchSides",
-            AutoTileMode::MatchCorners => "matchCorners",
-            AutoTileMode::MatchCornersAndSides => "matchCornersAndSides",
-        }
-    }
 }
 
 /// Autotile sprite sheet: holds bitmask tables for fast neighbor-to-tile lookup.

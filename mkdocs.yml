@@ -103,6 +103,7 @@ nav:
     - Asset: modules/asset.md
     - Audio: modules/audio.md
     - Automation: modules/automation.md
+    - Awareness: modules/awareness.md
     - Binary: modules/binary.md
     - Camera: modules/camera.md
     - Charts: modules/charts.md
@@ -159,12 +160,12 @@ nav:
     - SVG: modules/svg.md
     - Terminal: modules/terminal.md
     - Thread: modules/thread.md
-    - Tilemap: modules/tilemap.md
     - Tilefield: modules/tilefield.md
+    - Tilelight: modules/tilelight.md
+    - Tilemap: modules/tilemap.md
     - Timer: modules/timer.md
     - Tween: modules/tween.md
     - UI: modules/ui.md
     - Validator: modules/validator.md
-    - Visibility: modules/visibility.md
     - Window: modules/window.md
   - Callbacks: api/callbacks.md

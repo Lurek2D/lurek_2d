@@ -80,7 +80,7 @@ local function build_minimap(model, selected)
     local fog = {}
     local light = {}
     local profiles = model.field:exportProfileLayer(model.active_level)
-    local light_layer = model.field:exportLightLayer(model.active_level)
+    local light_layer = model.light or {}
     for i = 1, model.width * model.height do
         local profile = profiles[i] or "empty"
         terrain[i] = profile == "wall" and 1 or profile == "window" and 2 or profile:find("door") and 3 or 0

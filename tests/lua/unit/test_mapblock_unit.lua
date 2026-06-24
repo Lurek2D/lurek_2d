@@ -657,6 +657,30 @@ describe("mapblock generator and result methods", function()
         expect_equal("seed", placements[1].block_name)
         expect_equal(1, #placements[1].cells)
     end)
+
+    -- @covers LMapBlockResult:toTileField
+    it("converts generated tile output into tilefield refs", function()
+        local field = generate_single_placement_result():toTileField({
+            layer = 0,
+            slot = 0,
+            ref = "floor",
+            tilesetRef = "tileset",
+        })
+        expect_equal("userdata", type(field))
+        expect_equal(9, field:getRef(1, 1, nil, "floor"))
+        expect_equal(1, field:getRef(1, 1, nil, "tileset"))
+    end)
+
+    -- @covers LMapBlockResult:writeTileField
+    it("writes generated tile output into an existing tilefield", function()
+        local field = lurek.tilefield.new({ width = 8, height = 8 })
+        generate_single_placement_result():writeTileField(field, {
+            layer = 0,
+            slot = 0,
+            ref = "floor",
+        })
+        expect_equal(9, field:getRef(1, 1, nil, "floor"))
+    end)
 end)
 
 -- @describe mapblock diagnostics report methods

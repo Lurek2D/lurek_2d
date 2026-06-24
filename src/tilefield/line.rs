@@ -56,7 +56,7 @@ pub fn visit_line_cells(
         visit_vertical_line(from, to, &mut visitor);
     } else {
         match topology {
-            TileTopology::Square | TileTopology::IsoSquare => {
+            TileTopology::Square4 | TileTopology::Square | TileTopology::IsoSquare => {
                 visit_square_line(from, to, &mut visitor);
             }
             TileTopology::Hex => visit_hex_line(from, to, &mut visitor),

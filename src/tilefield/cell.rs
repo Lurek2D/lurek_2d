@@ -1,8 +1,11 @@
 //! Owns per-cell gameplay channel data for blockers, traversal costs, and sun occlusion in tilefield maps.
 //! Defines the fixed semantic channels used by Lua, pathfind adapters, visibility checks, and tile lighting.
-//! Keeps movement, vision, action, point-light, and top-light values independent on every stored cell.
+//! Keeps movement, vision, action, point-light, top-light, and author-defined object references independent.
 //! Provides parsing and default-state helpers for field mutation without depending on higher-level systems.
 //! Does not know about topology, rendering, minimap presentation, player masks, or pathfinding algorithms.
+
+use crate::tilefield::TileLightEmitter;
+use std::collections::HashMap;
 
 /// Gameplay channels tracked independently per cell.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -63,7 +66,9 @@ pub struct TileCell {
     blockers: [bool; 5],
     costs: [f32; 5],
     sun_occlusion: f32,
-    profile: Option<String>,
+    refs: HashMap<String, u32>,
+    lights: HashMap<String, TileLightEmitter>,
+    modifiers: Vec<String>,
 }
 
 impl Default for TileCell {
@@ -72,7 +77,9 @@ impl Default for TileCell {
             blockers: [false; 5],
             costs: [1.0; 5],
             sun_occlusion: 0.0,
-            profile: None,
+            refs: HashMap::new(),
+            lights: HashMap::new(),
+            modifiers: Vec::new(),
         }
     }
 }
@@ -116,13 +123,76 @@ impl TileCell {
         Ok(())
     }
 
-    /// Return the optional applied profile name.
-    pub fn profile(&self) -> Option<&str> {
-        self.profile.as_deref()
+    /// Return a named object/tile reference stored on this cell.
+    pub fn get_ref(&self, slot: &str) -> Option<u32> {
+        self.refs.get(slot).copied()
     }
 
-    /// Set the optional applied profile name.
-    pub fn set_profile(&mut self, profile: Option<String>) {
-        self.profile = profile;
+    /// Set or replace a named object/tile reference on this cell.
+    pub fn set_ref(&mut self, slot: String, value: u32) -> Result<(), String> {
+        let slot = slot.trim();
+        if slot.is_empty() {
+            return Err("tilefield ref slot must not be empty".to_string());
+        }
+        self.refs.insert(slot.to_string(), value);
+        Ok(())
+    }
+
+    /// Remove a named object/tile reference from this cell.
+    pub fn clear_ref(&mut self, slot: &str) {
+        self.refs.remove(slot);
+    }
+
+    /// Return all named object/tile references stored on this cell.
+    pub fn refs(&self) -> &HashMap<String, u32> {
+        &self.refs
+    }
+
+    /// Set, replace, or clear a named tile light emitter on this cell.
+    pub fn set_light(
+        &mut self,
+        source: String,
+        light: Option<TileLightEmitter>,
+    ) -> Result<(), String> {
+        let source = source.trim();
+        if source.is_empty() {
+            return Err("tilefield light source name must not be empty".to_string());
+        }
+        match light {
+            Some(light) => {
+                self.lights.insert(source.to_string(), light);
+            }
+            None => {
+                self.lights.remove(source);
+            }
+        }
+        Ok(())
+    }
+
+    /// Return all named tile light emitters stored on this cell.
+    pub fn lights(&self) -> &HashMap<String, TileLightEmitter> {
+        &self.lights
+    }
+
+    /// Add an active modifier name to this cell.
+    pub fn add_modifier(&mut self, name: String) {
+        if !self.modifiers.iter().any(|existing| existing == &name) {
+            self.modifiers.push(name);
+        }
+    }
+
+    /// Remove an active modifier name from this cell.
+    pub fn remove_modifier(&mut self, name: &str) -> bool {
+        if let Some(index) = self.modifiers.iter().position(|existing| existing == name) {
+            self.modifiers.remove(index);
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Return active modifier names in application order.
+    pub fn modifiers(&self) -> &[String] {
+        &self.modifiers
     }
 }

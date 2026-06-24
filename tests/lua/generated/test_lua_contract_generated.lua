@@ -1023,6 +1023,31 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.automation.waitUntil)
     end)
 
+    -- @covers lurek.awareness.lineOfAction
+    it("lurek.awareness.lineOfAction exists", function()
+        expect_type("function", lurek.awareness.lineOfAction)
+    end)
+
+    -- @covers lurek.awareness.lineOfSight
+    it("lurek.awareness.lineOfSight exists", function()
+        expect_type("function", lurek.awareness.lineOfSight)
+    end)
+
+    -- @covers lurek.awareness.new
+    it("lurek.awareness.new exists", function()
+        expect_type("function", lurek.awareness.new)
+    end)
+
+    -- @covers lurek.awareness.newFov
+    it("lurek.awareness.newFov exists", function()
+        expect_type("function", lurek.awareness.newFov)
+    end)
+
+    -- @covers lurek.awareness.newTileAwareness
+    it("lurek.awareness.newTileAwareness exists", function()
+        expect_type("function", lurek.awareness.newTileAwareness)
+    end)
+
     -- @covers lurek.binary.compress
     it("lurek.binary.compress exists", function()
         expect_type("function", lurek.binary.compress)
@@ -5538,11 +5563,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.render.newMesh)
     end)
 
-    -- @covers lurek.sprite.newNineSlice
-    it("lurek.sprite.newNineSlice exists", function()
-        expect_type("function", lurek.sprite.newNineSlice)
-    end)
-
     -- @covers lurek.render.newQuad
     it("lurek.render.newQuad exists", function()
         expect_type("function", lurek.render.newQuad)
@@ -5936,6 +5956,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.runtime.setLogLevel
     it("lurek.runtime.setLogLevel exists", function()
         expect_type("function", lurek.runtime.setLogLevel)
+    end)
+
+    -- @covers lurek.save.newManager
+    it("lurek.save.newManager exists", function()
+        expect_type("function", lurek.save.newManager)
     end)
 
     -- @covers lurek.save.newSaveManager
@@ -6353,6 +6378,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.sprite.newAtlasSheet)
     end)
 
+    -- @covers lurek.sprite.newNineSlice
+    it("lurek.sprite.newNineSlice exists", function()
+        expect_type("function", lurek.sprite.newNineSlice)
+    end)
+
     -- @covers lurek.sprite.newRPGMakerSheet
     it("lurek.sprite.newRPGMakerSheet exists", function()
         expect_type("function", lurek.sprite.newRPGMakerSheet)
@@ -6583,6 +6613,21 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.tilefield.new)
     end)
 
+    -- @covers lurek.tilefield.newFieldMap
+    it("lurek.tilefield.newFieldMap exists", function()
+        expect_type("function", lurek.tilefield.newFieldMap)
+    end)
+
+    -- @covers lurek.tilelight.compute
+    it("lurek.tilelight.compute exists", function()
+        expect_type("function", lurek.tilelight.compute)
+    end)
+
+    -- @covers lurek.tilelight.new
+    it("lurek.tilelight.new exists", function()
+        expect_type("function", lurek.tilelight.new)
+    end)
+
     -- @covers lurek.tilemap.fromLDtk
     it("lurek.tilemap.fromLDtk exists", function()
         expect_type("function", lurek.tilemap.fromLDtk)
@@ -6603,65 +6648,17 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.tilemap.getAutoTileFormats)
     end)
 
-    -- @covers lurek.tilemap.hexArea
-    it("lurek.tilemap.hexArea exists", function()
-        expect_type("function", lurek.tilemap.hexArea)
-    end)
 
-    -- @covers lurek.tilemap.hexDistance
-    it("lurek.tilemap.hexDistance exists", function()
-        expect_type("function", lurek.tilemap.hexDistance)
-    end)
 
-    -- @covers lurek.tilemap.hexLine
-    it("lurek.tilemap.hexLine exists", function()
-        expect_type("function", lurek.tilemap.hexLine)
-    end)
 
-    -- @covers lurek.tilemap.hexNeighbors
-    it("lurek.tilemap.hexNeighbors exists", function()
-        expect_type("function", lurek.tilemap.hexNeighbors)
-    end)
 
-    -- @covers lurek.tilemap.hexReflect
-    it("lurek.tilemap.hexReflect exists", function()
-        expect_type("function", lurek.tilemap.hexReflect)
-    end)
 
-    -- @covers lurek.tilemap.hexRing
-    it("lurek.tilemap.hexRing exists", function()
-        expect_type("function", lurek.tilemap.hexRing)
-    end)
 
-    -- @covers lurek.tilemap.hexRotate
-    it("lurek.tilemap.hexRotate exists", function()
-        expect_type("function", lurek.tilemap.hexRotate)
-    end)
 
-    -- @covers lurek.tilemap.hexRound
-    it("lurek.tilemap.hexRound exists", function()
-        expect_type("function", lurek.tilemap.hexRound)
-    end)
 
-    -- @covers lurek.tilemap.hexSpiral
-    it("lurek.tilemap.hexSpiral exists", function()
-        expect_type("function", lurek.tilemap.hexSpiral)
-    end)
 
-    -- @covers lurek.tilemap.isoDirectionFromAngle
-    it("lurek.tilemap.isoDirectionFromAngle exists", function()
-        expect_type("function", lurek.tilemap.isoDirectionFromAngle)
-    end)
 
-    -- @covers lurek.tilemap.isoDirectionName
-    it("lurek.tilemap.isoDirectionName exists", function()
-        expect_type("function", lurek.tilemap.isoDirectionName)
-    end)
 
-    -- @covers lurek.tilemap.isoRotate
-    it("lurek.tilemap.isoRotate exists", function()
-        expect_type("function", lurek.tilemap.isoRotate)
-    end)
 
     -- @covers lurek.tilemap.loadTMX
     it("lurek.tilemap.loadTMX exists", function()
@@ -6688,26 +6685,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.tilemap.newLargeMapRenderer)
     end)
 
-    -- @covers lurek.tilemap.newMapBlock
-    it("lurek.tilemap.newMapBlock exists", function()
-        expect_type("function", lurek.tilemap.newMapBlock)
-    end)
-
-    -- @covers lurek.tilemap.newMapGen
-    it("lurek.tilemap.newMapGen exists", function()
-        expect_type("function", lurek.tilemap.newMapGen)
-    end)
-
-    -- @covers lurek.tilemap.newMapGroup
-    it("lurek.tilemap.newMapGroup exists", function()
-        expect_type("function", lurek.tilemap.newMapGroup)
-    end)
-
-    -- @covers lurek.tilemap.newMapScript
-    it("lurek.tilemap.newMapScript exists", function()
-        expect_type("function", lurek.tilemap.newMapScript)
-    end)
-
     -- @covers lurek.tilemap.newTileMap
     it("lurek.tilemap.newTileMap exists", function()
         expect_type("function", lurek.tilemap.newTileMap)
@@ -6716,11 +6693,6 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.tilemap.newTileSet
     it("lurek.tilemap.newTileSet exists", function()
         expect_type("function", lurek.tilemap.newTileSet)
-    end)
-
-    -- @covers lurek.tilemap.syncMinimap
-    it("lurek.tilemap.syncMinimap exists", function()
-        expect_type("function", lurek.tilemap.syncMinimap)
     end)
 
     -- @covers lurek.tilemap.toScreenHex
@@ -7386,31 +7358,6 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.validator.validateFile
     it("lurek.validator.validateFile exists", function()
         expect_type("function", lurek.validator.validateFile)
-    end)
-
-    -- @covers lurek.visibility.lineOfAction
-    it("lurek.visibility.lineOfAction exists", function()
-        expect_type("function", lurek.visibility.lineOfAction)
-    end)
-
-    -- @covers lurek.visibility.lineOfSight
-    it("lurek.visibility.lineOfSight exists", function()
-        expect_type("function", lurek.visibility.lineOfSight)
-    end)
-
-    -- @covers lurek.visibility.new
-    it("lurek.visibility.new exists", function()
-        expect_type("function", lurek.visibility.new)
-    end)
-
-    -- @covers lurek.visibility.newFov
-    it("lurek.visibility.newFov exists", function()
-        expect_type("function", lurek.visibility.newFov)
-    end)
-
-    -- @covers lurek.visibility.newTileVisibility
-    it("lurek.visibility.newTileVisibility exists", function()
-        expect_type("function", lurek.visibility.newTileVisibility)
     end)
 
     -- @covers lurek.window.close

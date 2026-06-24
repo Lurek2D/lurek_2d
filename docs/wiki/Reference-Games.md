@@ -38,7 +38,7 @@ _Dowodź oddziałem żołnierzy w niebezpiecznej dżungli — kieruj ruchem, pro
 
 _Eksploruj trójwymiarowe korytarze lochów z perspektywy pierwszej osoby (FPP) — przemierzaj labirynt przy świetle pochodni, odkrywaj mgłę wojny na minimapie i zbieraj mistyczne kule._
 
-**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [tilefield](https://lurek2d.github.io/lurek_2d/modules/tilefield.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), +2
+**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [awareness](https://lurek2d.github.io/lurek_2d/modules/awareness.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [tilefield](https://lurek2d.github.io/lurek_2d/modules/tilefield.html), [tilelight](https://lurek2d.github.io/lurek_2d/modules/tilelight.html), +3
 
 ### [Europa Universalis 2 Lite](../tree/main/content/games/eu2)
 

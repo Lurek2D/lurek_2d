@@ -102,17 +102,16 @@ impl ChunkMap {
     ) -> Result<(), TileMapError> {
         let width = i64::from(x1).saturating_sub(i64::from(x0)).max(0) as u64;
         let height = i64::from(y1).saturating_sub(i64::from(y0)).max(0) as u64;
-        let checks =
-            width
-                .checked_mul(height)
-                .ok_or(TileMapError::CollisionQueryLimitExceeded {
-                    checks: u64::MAX,
-                    max_checks: limits.max_collision_tile_checks,
-                })?;
-        if checks > limits.max_collision_tile_checks {
-            return Err(TileMapError::CollisionQueryLimitExceeded {
-                checks,
-                max_checks: limits.max_collision_tile_checks,
+        let checks = width
+            .checked_mul(height)
+            .ok_or(TileMapError::TileOperationLimitExceeded {
+                cells: u64::MAX,
+                max_cells: limits.max_tile_operation_cells,
+            })?;
+        if checks > limits.max_tile_operation_cells {
+            return Err(TileMapError::TileOperationLimitExceeded {
+                cells: checks,
+                max_cells: limits.max_tile_operation_cells,
             });
         }
         for y in y0..y1 {

@@ -1,5 +1,6 @@
 //! Registers the `lurek.procgen` Lua API for generators, noise settings, option parsing, and procgen userdata.
 
+use super::tilefield_api::LuaTileField;
 use super::SharedState;
 use crate::agent::chat::{ollama_generate_json, read_global_config};
 use crate::procgen::biome::{BiomeClassifier, BiomeRules, BiomeType};
@@ -19,12 +20,511 @@ use crate::procgen::{
     try_parse_llm_constraints, try_parse_llm_wfc_response, try_poisson_disk, try_rooms_dungeon,
     try_voronoi_diagram, try_wfc_generate, BspOpts, BspPrefabStamp, CellType, CellularOpts,
     CellularWorld, DistType, ErosionMode, FractalType, HeightmapOpts, MapGenOptions,
-    NoiseGenerator, NoiseKind, ProcgenLimits, RoomPrefabStamp, RoomsOpts, VoronoiOpts, WfcOpts,
-    WfcRules, WfcTile,
+    NoiseGenerator, NoiseKind, ProcgenGrid, ProcgenLimits, ProcgenScalarGrid, RoomPrefabStamp,
+    RoomsOpts, VoronoiOpts, WfcOpts, WfcRules, WfcTile,
 };
+use crate::tilefield::{CellCoord, TileChannel, TileField, TileTopology};
 use mlua::prelude::*;
 use std::cell::RefCell;
+use std::ops::Deref;
 use std::rc::Rc;
+
+/// Lua-visible typed result for procgen functions that produce a 2D tile/value grid.
+#[derive(Clone)]
+pub struct LuaProcgenGrid {
+    inner: ProcgenGrid,
+}
+
+/// Lua-visible typed result for procgen functions that produce a 2D scalar field.
+#[derive(Clone)]
+pub struct LuaProcgenScalarGrid {
+    inner: ProcgenScalarGrid,
+}
+
+impl LuaProcgenGrid {
+    fn new(kind: impl Into<String>, width: u32, height: u32, cells: Vec<u32>) -> LuaResult<Self> {
+        Ok(Self {
+            inner: ProcgenGrid::new(kind, width, height, cells)
+                .map_err(|err| LuaError::RuntimeError(format!("lurek.procgen: {err}")))?,
+        })
+    }
+}
+
+impl Deref for LuaProcgenGrid {
+    type Target = ProcgenGrid;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl LuaProcgenScalarGrid {
+    fn new(kind: impl Into<String>, width: u32, height: u32, cells: Vec<f32>) -> LuaResult<Self> {
+        Ok(Self {
+            inner: ProcgenScalarGrid::new(kind, width, height, cells)
+                .map_err(|err| LuaError::RuntimeError(format!("lurek.procgen: {err}")))?,
+        })
+    }
+}
+
+impl Deref for LuaProcgenScalarGrid {
+    type Target = ProcgenScalarGrid;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+fn procgen_grid_len(width: u32, height: u32) -> LuaResult<usize> {
+    width
+        .checked_mul(height)
+        .and_then(|v| usize::try_from(v).ok())
+        .ok_or_else(|| LuaError::RuntimeError("lurek.procgen grid dimensions overflow".to_string()))
+}
+
+fn procgen_grid_from_table(
+    width: u32,
+    height: u32,
+    cells_tbl: LuaTable,
+    kind: String,
+) -> LuaResult<LuaProcgenGrid> {
+    let expected = procgen_grid_len(width, height)?;
+    let mut cells = Vec::with_capacity(expected);
+    for value in cells_tbl.sequence_values::<u32>() {
+        cells.push(value?);
+    }
+    if cells.len() != expected {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.procgen grid expected {expected} cells, got {}",
+            cells.len()
+        )));
+    }
+    LuaProcgenGrid::new(kind, width, height, cells)
+}
+
+fn procgen_scalar_grid_from_table(
+    width: u32,
+    height: u32,
+    cells_tbl: LuaTable,
+    kind: String,
+) -> LuaResult<LuaProcgenScalarGrid> {
+    let expected = procgen_grid_len(width, height)?;
+    let mut cells = Vec::with_capacity(expected);
+    for value in cells_tbl.sequence_values::<f32>() {
+        cells.push(value?);
+    }
+    if cells.len() != expected {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.procgen scalar grid expected {expected} cells, got {}",
+            cells.len()
+        )));
+    }
+    LuaProcgenScalarGrid::new(kind, width, height, cells)
+}
+
+fn procgen_topology_from_opts(opts: Option<&LuaTable>) -> LuaResult<TileTopology> {
+    let topology = opts
+        .and_then(|t| t.get::<_, Option<String>>("topology").ok().flatten())
+        .unwrap_or_else(|| "square".to_string());
+    TileTopology::parse(&topology)
+        .map_err(|err| LuaError::RuntimeError(format!("lurek.procgen.toTileField: {err}")))
+}
+
+fn procgen_required_string_opt(opts: Option<&LuaTable>, key: &str, api: &str) -> LuaResult<String> {
+    opts.and_then(|t| t.get::<_, Option<String>>(key).ok().flatten())
+        .filter(|value| !value.trim().is_empty())
+        .ok_or_else(|| LuaError::RuntimeError(format!("{api}: opts.{key} is required")))
+}
+
+fn procgen_cells_to_table<'lua>(lua: &'lua Lua, cells: &[u32]) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    for (index, value) in cells.iter().enumerate() {
+        table.set(index + 1, *value)?;
+    }
+    Ok(table)
+}
+
+fn procgen_scalar_cells_to_table<'lua>(lua: &'lua Lua, cells: &[f32]) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    for (index, value) in cells.iter().enumerate() {
+        table.set(index + 1, *value)?;
+    }
+    Ok(table)
+}
+
+fn procgen_channel_from_name(name: &str, api: &str) -> LuaResult<TileChannel> {
+    TileChannel::parse(name).map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))
+}
+
+fn write_procgen_grid_to_field(
+    field: &mut TileField,
+    width: u32,
+    height: u32,
+    cells: &[u32],
+    slot: &str,
+    z: u32,
+    skip_zero: bool,
+    api: &str,
+) -> LuaResult<()> {
+    let (field_width, field_height, field_levels) = field.size();
+    if width > field_width || height > field_height || z >= field_levels {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: target tilefield is too small or level is out of bounds"
+        )));
+    }
+    if !field.has_slot(slot) {
+        field
+            .define_slot(slot.to_string())
+            .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+    }
+    for y in 0..height {
+        for x in 0..width {
+            let value = cells[(y * width + x) as usize];
+            if skip_zero && value == 0 {
+                continue;
+            }
+            field
+                .set_ref(CellCoord { x, y, z }, slot.to_string(), value)
+                .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+        }
+    }
+    Ok(())
+}
+
+fn write_procgen_scalar_grid_to_field(
+    field: &mut TileField,
+    width: u32,
+    height: u32,
+    cells: &[f32],
+    z: u32,
+    opts: Option<&LuaTable>,
+    api: &str,
+) -> LuaResult<()> {
+    let (field_width, field_height, field_levels) = field.size();
+    if width > field_width || height > field_height || z >= field_levels {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: target tilefield is too small or level is out of bounds"
+        )));
+    }
+
+    let target = procgen_required_string_opt(opts, "target", api)?;
+    let channel_name = opts.and_then(|t| t.get::<_, Option<String>>("channel").ok().flatten());
+    let scale = opts
+        .and_then(|t| t.get::<_, Option<f32>>("scale").ok().flatten())
+        .unwrap_or(1.0);
+    let offset = opts
+        .and_then(|t| t.get::<_, Option<f32>>("offset").ok().flatten())
+        .unwrap_or(0.0);
+    let threshold = opts
+        .and_then(|t| t.get::<_, Option<f32>>("threshold").ok().flatten())
+        .unwrap_or(0.5);
+    let invert = opts
+        .and_then(|t| t.get::<_, Option<bool>>("invert").ok().flatten())
+        .unwrap_or(false);
+
+    let channel = if target == "cost" || target == "block" {
+        let channel_name = channel_name
+            .as_deref()
+            .filter(|value| !value.trim().is_empty())
+            .ok_or_else(|| LuaError::RuntimeError(format!("{api}: opts.channel is required")))?;
+        Some(procgen_channel_from_name(channel_name, api)?)
+    } else {
+        None
+    };
+
+    for y in 0..height {
+        for x in 0..width {
+            let value = cells[(y * width + x) as usize] * scale + offset;
+            let coord = CellCoord { x, y, z };
+            match target.as_str() {
+                "sunOcclusion" | "sun_occlusion" => {
+                    field
+                        .set_sun_occlusion(coord, value)
+                        .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                }
+                "cost" => {
+                    field
+                        .set_cost(coord, channel.unwrap(), value)
+                        .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                }
+                "block" => {
+                    let blocked = if invert {
+                        value < threshold
+                    } else {
+                        value >= threshold
+                    };
+                    field
+                        .set_block(coord, channel.unwrap(), blocked)
+                        .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                }
+                other => {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{api}: invalid target '{other}' (expected sunOcclusion, cost, or block)"
+                    )));
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+impl LuaUserData for LuaProcgenGrid {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getSize --
+        /// Returns grid width and height.
+        /// @return | integer | Width.
+        /// @return | integer | Height.
+        methods.add_method("getSize", |_, this, ()| Ok((this.width, this.height)));
+
+        // -- getWidth --
+        /// Returns grid width.
+        /// @return | integer | Width.
+        methods.add_method("getWidth", |_, this, ()| Ok(this.width));
+
+        // -- getHeight --
+        /// Returns grid height.
+        /// @return | integer | Height.
+        methods.add_method("getHeight", |_, this, ()| Ok(this.height));
+
+        // -- getKind --
+        /// Returns the generator kind label attached to this grid.
+        /// @return | string | Generator kind.
+        methods.add_method("getKind", |_, this, ()| Ok(this.kind.clone()));
+
+        // -- getCell --
+        /// Returns one cell value using one-based Lua coordinates.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @return | integer | Cell value.
+        methods.add_method("getCell", |_, this, (x, y): (u32, u32)| {
+            if x == 0 || y == 0 || x > this.width || y > this.height {
+                return Err(LuaError::RuntimeError(
+                    "lurek.procgen.LProcgenGrid:getCell coordinate is out of bounds".to_string(),
+                ));
+            }
+            let index = ((y - 1) * this.width + (x - 1)) as usize;
+            Ok(this.cells[index])
+        });
+
+        // -- toTable --
+        /// Serializes this grid to a plain Lua table.
+        /// @return | table | Table with kind, width, height, and cells.
+        methods.add_method("toTable", |lua, this, ()| {
+            let table = lua.create_table()?;
+            table.set("kind", this.kind.clone())?;
+            table.set("width", this.width)?;
+            table.set("height", this.height)?;
+            table.set("cells", procgen_cells_to_table(lua, &this.cells)?)?;
+            Ok(table)
+        });
+
+        // -- toTileField --
+        /// Converts this generated grid into a tilefield by writing each value as a named ref.
+        /// @param | opts | table | Options: slot, topology, skipZero.
+        /// @return | LTileField | Tilefield populated with refs.
+        methods.add_method("toTileField", |_, this, opts: Option<LuaTable>| {
+            let topology = procgen_topology_from_opts(opts.as_ref())?;
+            let slot =
+                procgen_required_string_opt(opts.as_ref(), "slot", "lurek.procgen.toTileField")?;
+            let skip_zero = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<bool>>("skipZero").ok().flatten())
+                .unwrap_or(false);
+            let mut field =
+                TileField::new(this.width, this.height, 1, topology).map_err(|err| {
+                    LuaError::RuntimeError(format!("lurek.procgen.toTileField: {err}"))
+                })?;
+            write_procgen_grid_to_field(
+                &mut field,
+                this.width,
+                this.height,
+                &this.cells,
+                &slot,
+                0,
+                skip_zero,
+                "lurek.procgen.toTileField",
+            )?;
+            Ok(LuaTileField {
+                inner: Rc::new(RefCell::new(field)),
+            })
+        });
+
+        // -- writeTileField --
+        /// Writes this generated grid into an existing tilefield ref layer.
+        /// @param | field | LTileField | Target tilefield.
+        /// @param | opts | table | Options: slot, z, skipZero.
+        methods.add_method(
+            "writeTileField",
+            |_, this, (field_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let slot = procgen_required_string_opt(
+                    opts.as_ref(),
+                    "slot",
+                    "lurek.procgen.writeTileField",
+                )?;
+                let z = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("z").ok().flatten())
+                    .unwrap_or(1)
+                    .checked_sub(1)
+                    .ok_or_else(|| {
+                        LuaError::RuntimeError(
+                            "lurek.procgen.writeTileField: z must be >= 1".to_string(),
+                        )
+                    })?;
+                let skip_zero = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<bool>>("skipZero").ok().flatten())
+                    .unwrap_or(false);
+                let field_ud = field_ud.borrow::<LuaTileField>()?;
+                let mut field = field_ud.inner.borrow_mut();
+                write_procgen_grid_to_field(
+                    &mut field,
+                    this.width,
+                    this.height,
+                    &this.cells,
+                    &slot,
+                    z,
+                    skip_zero,
+                    "lurek.procgen.writeTileField",
+                )
+            },
+        );
+
+        // -- type --
+        /// Returns the type name of this object.
+        /// @return | string | Always returns "LProcgenGrid".
+        methods.add_method("type", |_, _, ()| Ok("LProcgenGrid"));
+
+        // -- typeOf --
+        /// Check whether this object matches a given type name.
+        /// @param | name | string | Type name to test.
+        /// @return | boolean | True if the object is of the specified type.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LProcgenGrid" || name == "LObject")
+        });
+    }
+}
+
+impl LuaUserData for LuaProcgenScalarGrid {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getSize --
+        /// Returns scalar grid width and height.
+        /// @return | integer | Width.
+        /// @return | integer | Height.
+        methods.add_method("getSize", |_, this, ()| Ok((this.width, this.height)));
+
+        // -- getWidth --
+        /// Returns scalar grid width.
+        /// @return | integer | Width.
+        methods.add_method("getWidth", |_, this, ()| Ok(this.width));
+
+        // -- getHeight --
+        /// Returns scalar grid height.
+        /// @return | integer | Height.
+        methods.add_method("getHeight", |_, this, ()| Ok(this.height));
+
+        // -- getKind --
+        /// Returns the generator kind label attached to this scalar grid.
+        /// @return | string | Generator kind.
+        methods.add_method("getKind", |_, this, ()| Ok(this.kind.clone()));
+
+        // -- getCell --
+        /// Returns one scalar cell value using one-based Lua coordinates.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @return | number | Scalar cell value.
+        methods.add_method("getCell", |_, this, (x, y): (u32, u32)| {
+            if x == 0 || y == 0 || x > this.width || y > this.height {
+                return Err(LuaError::RuntimeError(
+                    "lurek.procgen.LProcgenScalarGrid:getCell coordinate is out of bounds"
+                        .to_string(),
+                ));
+            }
+            let index = ((y - 1) * this.width + (x - 1)) as usize;
+            Ok(this.cells[index])
+        });
+
+        // -- toTable --
+        /// Serializes this scalar grid to a plain Lua table.
+        /// @return | table | Table with kind, width, height, and cells.
+        methods.add_method("toTable", |lua, this, ()| {
+            let table = lua.create_table()?;
+            table.set("kind", this.kind.clone())?;
+            table.set("width", this.width)?;
+            table.set("height", this.height)?;
+            table.set("cells", procgen_scalar_cells_to_table(lua, &this.cells)?)?;
+            Ok(table)
+        });
+
+        // -- toTileField --
+        /// Converts this scalar field into a new tilefield channel layer.
+        /// @param | opts | table | Options: topology, target, channel, scale, offset, threshold, invert.
+        /// @return | LTileField | Tilefield populated from scalar values.
+        methods.add_method("toTileField", |_, this, opts: Option<LuaTable>| {
+            let topology = procgen_topology_from_opts(opts.as_ref())?;
+            let mut field =
+                TileField::new(this.width, this.height, 1, topology).map_err(|err| {
+                    LuaError::RuntimeError(format!("lurek.procgen.scalarToTileField: {err}"))
+                })?;
+            write_procgen_scalar_grid_to_field(
+                &mut field,
+                this.width,
+                this.height,
+                &this.cells,
+                0,
+                opts.as_ref(),
+                "lurek.procgen.scalarToTileField",
+            )?;
+            Ok(LuaTileField {
+                inner: Rc::new(RefCell::new(field)),
+            })
+        });
+
+        // -- writeTileField --
+        /// Writes this scalar field into an existing tilefield channel layer.
+        /// @param | field | LTileField | Target tilefield.
+        /// @param | opts | table | Options: z, target, channel, scale, offset, threshold, invert.
+        methods.add_method(
+            "writeTileField",
+            |_, this, (field_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let z = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("z").ok().flatten())
+                    .unwrap_or(1)
+                    .checked_sub(1)
+                    .ok_or_else(|| {
+                        LuaError::RuntimeError(
+                            "lurek.procgen.scalarWriteTileField: z must be >= 1".to_string(),
+                        )
+                    })?;
+                let field_ud = field_ud.borrow::<LuaTileField>()?;
+                let mut field = field_ud.inner.borrow_mut();
+                write_procgen_scalar_grid_to_field(
+                    &mut field,
+                    this.width,
+                    this.height,
+                    &this.cells,
+                    z,
+                    opts.as_ref(),
+                    "lurek.procgen.scalarWriteTileField",
+                )
+            },
+        );
+
+        // -- type --
+        /// Returns the type name of this object.
+        /// @return | string | Always returns "LProcgenScalarGrid".
+        methods.add_method("type", |_, _, ()| Ok("LProcgenScalarGrid"));
+
+        // -- typeOf --
+        /// Check whether this object matches a given type name.
+        /// @param | name | string | Type name to test.
+        /// @return | boolean | True if the object is of the specified type.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LProcgenScalarGrid" || name == "LObject")
+        });
+    }
+}
 
 /// Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
 pub struct LuaBiomeClassifier(BiomeClassifier);
@@ -163,6 +663,44 @@ fn resolve_fractal_type(name: &str) -> FractalType {
 
 fn procgen_limits() -> ProcgenLimits {
     ProcgenLimits::default()
+}
+
+fn map_gen_options_from_snake_table(opts: Option<&LuaTable>) -> LuaResult<(MapGenOptions, u64)> {
+    let mut cfg = MapGenOptions::default();
+    let mut seed = 0_u64;
+    if let Some(t) = opts {
+        if let Ok(v) = t.get::<_, f64>("scale_x") {
+            cfg.scale_x = v;
+        }
+        if let Ok(v) = t.get::<_, f64>("scale_y") {
+            cfg.scale_y = v;
+        }
+        if let Ok(v) = t.get::<_, u32>("octaves") {
+            cfg.octaves = v;
+        }
+        if let Ok(v) = t.get::<_, f64>("lacunarity") {
+            cfg.lacunarity = v;
+        }
+        if let Ok(v) = t.get::<_, f64>("persistence") {
+            cfg.persistence = v;
+        }
+        if let Ok(v) = t.get::<_, f64>("offset_x") {
+            cfg.offset_x = v;
+        }
+        if let Ok(v) = t.get::<_, f64>("offset_y") {
+            cfg.offset_y = v;
+        }
+        if let Ok(v) = t.get::<_, bool>("parallel") {
+            cfg.parallel_enabled = v;
+        }
+        if let Ok(v) = t.get::<_, usize>("parallel_chunk_size") {
+            cfg.parallel_chunk_size = Some(v);
+        }
+        if let Ok(v) = t.get::<_, u64>("seed") {
+            seed = v;
+        }
+    }
+    Ok((cfg, seed))
 }
 
 fn lua_procgen_error(err: crate::procgen::ProcgenError) -> LuaError {
@@ -471,6 +1009,100 @@ impl LuaUserData for LuaNoiseGenerator {
                 Ok(result)
             },
         );
+        // -- generateMapGrid --
+        /// Generates a noise map and returns it as a typed scalar grid.
+        /// @param | w | integer | Map width.
+        /// @param | h | integer | Map height.
+        /// @param | opts | table? | Generation options.
+        /// @return | LProcgenScalarGrid | Typed scalar grid.
+        methods.add_method(
+            "generateMapGrid",
+            |_, this, (w, h, opts): (u32, u32, Option<LuaTable>)| {
+                let map_opts = if let Some(t) = opts.as_ref() {
+                    MapGenOptions {
+                        scale_x: t.get::<_, Option<f64>>("scaleX")?.unwrap_or(1.0),
+                        scale_y: t.get::<_, Option<f64>>("scaleY")?.unwrap_or(1.0),
+                        octaves: t.get::<_, Option<u32>>("octaves")?.unwrap_or(4),
+                        lacunarity: t.get::<_, Option<f64>>("lacunarity")?.unwrap_or(2.0),
+                        persistence: t.get::<_, Option<f64>>("persistence")?.unwrap_or(0.5),
+                        kind: t
+                            .get::<_, Option<String>>("kind")?
+                            .as_deref()
+                            .map(resolve_noise_kind)
+                            .unwrap_or(NoiseKind::Perlin),
+                        fractal: t
+                            .get::<_, Option<String>>("fractal")?
+                            .as_deref()
+                            .map(resolve_fractal_type)
+                            .unwrap_or(FractalType::Fbm),
+                        offset_x: t.get::<_, Option<f64>>("offsetX")?.unwrap_or(0.0),
+                        offset_y: t.get::<_, Option<f64>>("offsetY")?.unwrap_or(0.0),
+                        parallel_enabled: t.get::<_, Option<bool>>("parallel")?.unwrap_or(true),
+                        parallel_chunk_size: t.get::<_, Option<usize>>("parallelChunkSize")?,
+                    }
+                } else {
+                    MapGenOptions::default()
+                };
+                let data = this
+                    .inner
+                    .try_generate_map_parallel(w, h, &map_opts, &procgen_limits())
+                    .map_err(lua_procgen_error)?;
+                LuaProcgenScalarGrid::new(
+                    "noise_map",
+                    w,
+                    h,
+                    data.into_iter().map(|value| value as f32).collect(),
+                )
+            },
+        );
+
+        // -- generateMapComputeGrid --
+        /// Generates a compute-style noise map and returns it as a typed scalar grid.
+        /// @param | w | integer | Map width.
+        /// @param | h | integer | Map height.
+        /// @param | opts | table? | Generation options.
+        /// @return | LProcgenScalarGrid | Typed scalar grid.
+        methods.add_method(
+            "generateMapComputeGrid",
+            |_, this, (w, h, opts): (u32, u32, Option<LuaTable>)| {
+                let map_opts = if let Some(t) = opts {
+                    MapGenOptions {
+                        scale_x: t.get::<_, Option<f64>>("scaleX")?.unwrap_or(1.0),
+                        scale_y: t.get::<_, Option<f64>>("scaleY")?.unwrap_or(1.0),
+                        octaves: t.get::<_, Option<u32>>("octaves")?.unwrap_or(4),
+                        lacunarity: t.get::<_, Option<f64>>("lacunarity")?.unwrap_or(2.0),
+                        persistence: t.get::<_, Option<f64>>("persistence")?.unwrap_or(0.5),
+                        kind: t
+                            .get::<_, Option<String>>("kind")?
+                            .as_deref()
+                            .map(resolve_noise_kind)
+                            .unwrap_or(NoiseKind::Perlin),
+                        fractal: t
+                            .get::<_, Option<String>>("fractal")?
+                            .as_deref()
+                            .map(resolve_fractal_type)
+                            .unwrap_or(FractalType::Fbm),
+                        offset_x: t.get::<_, Option<f64>>("offsetX")?.unwrap_or(0.0),
+                        offset_y: t.get::<_, Option<f64>>("offsetY")?.unwrap_or(0.0),
+                        parallel_enabled: t.get::<_, Option<bool>>("parallel")?.unwrap_or(true),
+                        parallel_chunk_size: t.get::<_, Option<usize>>("parallelChunkSize")?,
+                    }
+                } else {
+                    MapGenOptions::default()
+                };
+                let data = this
+                    .inner
+                    .try_generate_map_parallel(w, h, &map_opts, &procgen_limits())
+                    .map_err(lua_procgen_error)?;
+                LuaProcgenScalarGrid::new(
+                    "noise_map",
+                    w,
+                    h,
+                    data.into_iter().map(|value| value as f32).collect(),
+                )
+            },
+        );
+
         // -- getSeed --
         /// Returns this noise generator seed.
         /// @return | integer | Seed value.
@@ -658,6 +1290,44 @@ impl LuaUserData for LuaCellular {
 /// Registers the `lurek.procgen` module and all its functions on the given Lua table.
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // -- newGridResult --
+    /// Wrap a flat grid table as a typed procgen grid result.
+    /// @param | width | integer | Grid width.
+    /// @param | height | integer | Grid height.
+    /// @param | cells | table | Flat integer grid.
+    /// @param | opts | table? | Options: kind.
+    /// @return | LProcgenGrid | Typed procgen grid.
+    tbl.set(
+        "newGridResult",
+        lua.create_function(
+            |_, (width, height, cells_tbl, opts): (u32, u32, LuaTable, Option<LuaTable>)| {
+                let kind = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<String>>("kind").ok().flatten())
+                    .unwrap_or_else(|| "grid".to_string());
+                procgen_grid_from_table(width, height, cells_tbl, kind)
+            },
+        )?,
+    )?;
+    // -- newScalarGridResult --
+    /// Wrap a flat numeric table as a typed procgen scalar grid result.
+    /// @param | width | integer | Grid width.
+    /// @param | height | integer | Grid height.
+    /// @param | cells | table | Flat numeric grid.
+    /// @param | opts | table? | Options: kind.
+    /// @return | LProcgenScalarGrid | Typed procgen scalar grid.
+    tbl.set(
+        "newScalarGridResult",
+        lua.create_function(
+            |_, (width, height, cells_tbl, opts): (u32, u32, LuaTable, Option<LuaTable>)| {
+                let kind = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<String>>("kind").ok().flatten())
+                    .unwrap_or_else(|| "scalar".to_string());
+                procgen_scalar_grid_from_table(width, height, cells_tbl, kind)
+            },
+        )?,
+    )?;
     // -- cellularAutomata --
     /// Generate a cave or organic map using cellular automata rules.
     /// @param | width | integer | Grid width in cells.
@@ -678,6 +1348,29 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 out.set(i + 1, *v)?;
             }
             Ok(out)
+        })?,
+    )?;
+    // -- cellularAutomataGrid --
+    /// Generate a cave or organic map and return a typed grid result.
+    /// @param | width | integer | Grid width in cells.
+    /// @param | height | integer | Grid height in cells.
+    /// @param | opts | table? | Cellular automata options.
+    /// @return | LProcgenGrid | Typed cellular grid.
+    tbl.set(
+        "cellularAutomataGrid",
+        lua.create_function(|_, (w, h, opts): (u32, u32, Option<LuaTable>)| {
+            let cfg = opts
+                .map(|t| CellularOpts::from_lua_table(&t))
+                .transpose()?
+                .unwrap_or_default();
+            let cells =
+                try_cellular_automata(w, h, &cfg, &procgen_limits()).map_err(lua_procgen_error)?;
+            LuaProcgenGrid::new(
+                "cellular_automata",
+                w,
+                h,
+                cells.into_iter().map(u32::from).collect(),
+            )
         })?,
     )?;
     // -- floodFill --
@@ -1055,6 +1748,43 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             Ok(out)
         })?,
     )?;
+    // -- roomsDungeonGrid --
+    /// Generate a rooms dungeon and return only its tile grid as a typed procgen result.
+    /// @param | opts | table? | Room generation options.
+    /// @return | LProcgenGrid | Typed rooms-dungeon grid.
+    tbl.set(
+        "roomsDungeonGrid",
+        lua.create_function(|_, opts: Option<LuaTable>| {
+            let mut cfg = RoomsOpts::default();
+            if let Some(t) = opts {
+                if let Ok(v) = t.get::<_, u32>("width") {
+                    cfg.width = v;
+                }
+                if let Ok(v) = t.get::<_, u32>("height") {
+                    cfg.height = v;
+                }
+                if let Ok(v) = t.get::<_, u32>("max_rooms") {
+                    cfg.max_rooms = v;
+                }
+                if let Ok(v) = t.get::<_, u32>("min_room_size") {
+                    cfg.min_room_size = v;
+                }
+                if let Ok(v) = t.get::<_, u32>("max_room_size") {
+                    cfg.max_room_size = v;
+                }
+                if let Ok(v) = t.get::<_, u64>("seed") {
+                    cfg.seed = v;
+                }
+            }
+            let dungeon = try_rooms_dungeon(&cfg, &procgen_limits()).map_err(lua_procgen_error)?;
+            LuaProcgenGrid::new(
+                "rooms_dungeon",
+                cfg.width,
+                cfg.height,
+                dungeon.grid.into_iter().map(u32::from).collect(),
+            )
+        })?,
+    )?;
     // -- roomsDungeonWithPrefabs --
     /// Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.
     /// @param | opts | table? | Room generation options: width, height, max_rooms, min_room_size, max_room_size, seed.
@@ -1173,6 +1903,69 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             },
         )?,
     )?;
+    // -- roomsDungeonWithPrefabsGrid --
+    /// Generate a rooms dungeon with prefabs and return only its tile grid as a typed procgen result.
+    /// @param | opts | table? | Room generation options.
+    /// @param | prefabs | table | Prefab definitions.
+    /// @param | stampValue | number? | Tile value written for prefab cells.
+    /// @return | LProcgenGrid | Typed rooms-dungeon grid.
+    tbl.set(
+        "roomsDungeonWithPrefabsGrid",
+        lua.create_function(
+            |_, (opts, prefabs_tbl, stamp_value): (Option<LuaTable>, LuaTable, Option<u8>)| {
+                let mut cfg = RoomsOpts::default();
+                if let Some(t) = opts {
+                    if let Ok(v) = t.get::<_, u32>("width") {
+                        cfg.width = v;
+                    }
+                    if let Ok(v) = t.get::<_, u32>("height") {
+                        cfg.height = v;
+                    }
+                    if let Ok(v) = t.get::<_, u32>("max_rooms") {
+                        cfg.max_rooms = v;
+                    }
+                    if let Ok(v) = t.get::<_, u32>("min_room_size") {
+                        cfg.min_room_size = v;
+                    }
+                    if let Ok(v) = t.get::<_, u32>("max_room_size") {
+                        cfg.max_room_size = v;
+                    }
+                    if let Ok(v) = t.get::<_, u64>("seed") {
+                        cfg.seed = v;
+                    }
+                }
+                let mut prefabs = Vec::new();
+                for value in prefabs_tbl.sequence_values::<LuaTable>() {
+                    let prefab = value?;
+                    let name: String = prefab
+                        .get("name")
+                        .unwrap_or_else(|_| String::from("prefab"));
+                    let width: u32 = prefab.get("width").unwrap_or(1);
+                    let height: u32 = prefab.get("height").unwrap_or(1);
+                    let mut mask = Vec::new();
+                    if let Ok(mask_tbl) = prefab.get::<_, LuaTable>("mask") {
+                        for mask_value in mask_tbl.sequence_values::<u8>() {
+                            mask.push(mask_value?);
+                        }
+                    }
+                    prefabs.push(RoomPrefabStamp {
+                        name,
+                        width,
+                        height,
+                        mask,
+                    });
+                }
+                let (dungeon, _) =
+                    rooms_dungeon_with_prefabs(&cfg, &prefabs, stamp_value.unwrap_or(3));
+                LuaProcgenGrid::new(
+                    "rooms_dungeon_prefabs",
+                    cfg.width,
+                    cfg.height,
+                    dungeon.grid.into_iter().map(u32::from).collect(),
+                )
+            },
+        )?,
+    )?;
     // -- heightmap --
     /// Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.
     /// @param | opts | table? | Options: width, height, scale, octaves, lacunarity, persistence, seed, erosion_passes.
@@ -1232,6 +2025,51 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             Ok(res)
         })?,
     )?;
+    // -- heightmapGrid --
+    /// Generate a fractal heightmap and return a typed scalar grid result.
+    /// @param | opts | table? | Heightmap options.
+    /// @return | LProcgenScalarGrid | Typed heightmap scalar grid.
+    tbl.set(
+        "heightmapGrid",
+        lua.create_function(|_, opts: Option<LuaTable>| {
+            let mut cfg = HeightmapOpts::default();
+            if let Some(t) = opts {
+                if let Ok(v) = t.get::<_, u32>("width") {
+                    cfg.width = v;
+                }
+                if let Ok(v) = t.get::<_, u32>("height") {
+                    cfg.height = v;
+                }
+                if let Ok(v) = t.get::<_, f64>("scale") {
+                    cfg.scale = v;
+                }
+                if let Ok(v) = t.get::<_, u32>("octaves") {
+                    cfg.octaves = v;
+                }
+                if let Ok(v) = t.get::<_, f64>("lacunarity") {
+                    cfg.lacunarity = v;
+                }
+                if let Ok(v) = t.get::<_, f64>("persistence") {
+                    cfg.persistence = v;
+                }
+                if let Ok(v) = t.get::<_, u64>("seed") {
+                    cfg.seed = v;
+                }
+                if let Ok(v) = t.get::<_, u32>("erosion_passes") {
+                    cfg.erosion_passes = v;
+                }
+                if let Ok(mode) = t.get::<_, String>("erosion_mode") {
+                    cfg.erosion_mode = if mode.eq_ignore_ascii_case("buffered") {
+                        ErosionMode::Buffered
+                    } else {
+                        ErosionMode::InPlace
+                    };
+                }
+            }
+            let hm = Heightmap::try_generate(&cfg, &procgen_limits()).map_err(lua_procgen_error)?;
+            LuaProcgenScalarGrid::new("heightmap", hm.width, hm.height, hm.cells)
+        })?,
+    )?;
     // -- heightmapFromCellular --
     /// Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.
     /// @param | width | integer | Grid width.
@@ -1270,6 +2108,33 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 /// Performs the 'height' operation.
                 res.set("height", hm.height)?;
                 Ok(res)
+            },
+        )?,
+    )?;
+    // -- heightmapFromCellularGrid --
+    /// Convert a cellular automata grid into a typed heightmap scalar grid.
+    /// @param | width | integer | Grid width.
+    /// @param | height | integer | Grid height.
+    /// @param | cells | table | Flat u8 array from cellularAutomata.
+    /// @param | floorValue | number? | Cell value treated as open floor.
+    /// @return | LProcgenScalarGrid | Typed heightmap scalar grid.
+    tbl.set(
+        "heightmapFromCellularGrid",
+        lua.create_function(
+            |_, (width, height, cells_tbl, floor_value): (u32, u32, LuaTable, Option<u8>)| {
+                let mut cells = Vec::with_capacity((width * height) as usize);
+                for v in cells_tbl.sequence_values::<u8>() {
+                    cells.push(v?);
+                }
+                let hm = Heightmap::try_from_cellular(
+                    width,
+                    height,
+                    &cells,
+                    floor_value.unwrap_or(0),
+                    &procgen_limits(),
+                )
+                .map_err(lua_procgen_error)?;
+                LuaProcgenScalarGrid::new("heightmap_from_cellular", hm.width, hm.height, hm.cells)
             },
         )?,
     )?;
@@ -1334,6 +2199,63 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             /// Performs the 'height' operation.
             res.set("height", grid.height)?;
             Ok(res)
+        })?,
+    )?;
+    // -- wfcGenerateGrid --
+    /// Run WFC and return a typed procgen grid result.
+    /// @param | opts | table | WFC options.
+    /// @return | LProcgenGrid | Typed WFC tile-id grid.
+    tbl.set(
+        "wfcGenerateGrid",
+        lua.create_function(|_, opts: LuaTable| {
+            let width: u32 = opts.get("width").unwrap_or(16);
+            let height: u32 = opts.get("height").unwrap_or(16);
+            let seed: u64 = opts.get("seed").unwrap_or(0);
+            let max_attempts: u32 = opts.get("max_attempts").unwrap_or(10);
+            let mut tiles: Vec<WfcTile> = Vec::new();
+            if let Ok(tt) = opts.get::<_, LuaTable>("tiles") {
+                for v in tt.sequence_values::<LuaTable>() {
+                    let t = v?;
+                    let id: u32 = t.get("id").unwrap_or(0);
+                    let weight: f32 = t.get("weight").unwrap_or(1.0);
+                    tiles.push(WfcTile { id, weight });
+                }
+            }
+            let mut adj_map = std::collections::HashMap::new();
+            if let Ok(at) = opts.get::<_, LuaTable>("adjacencies") {
+                for pair in at.pairs::<LuaValue, LuaTable>() {
+                    let (k, v) = pair?;
+                    let tile_id: u32 = match k {
+                        LuaValue::Integer(n) => n as u32,
+                        _ => continue,
+                    };
+                    let mut neighbours: Vec<u32> = Vec::new();
+                    for nv in v.sequence_values::<u32>() {
+                        neighbours.push(nv?);
+                    }
+                    adj_map.insert(tile_id, neighbours);
+                }
+            }
+            let wfc_opts = WfcOpts {
+                width,
+                height,
+                tiles,
+                rules: WfcRules {
+                    adjacencies: adj_map,
+                },
+                seed,
+                max_attempts,
+            };
+            let grid = try_wfc_generate(&wfc_opts, &procgen_limits()).map_err(lua_procgen_error)?;
+            LuaProcgenGrid::new(
+                "wfc",
+                grid.width,
+                grid.height,
+                grid.cells
+                    .into_iter()
+                    .map(|cell| cell.unwrap_or(0))
+                    .collect(),
+            )
         })?,
     )?;
     // -- lsystem --
@@ -1687,6 +2609,64 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 out.set(i + 1, val)?;
             }
             Ok(out)
+        })?,
+    )?;
+    // -- noiseMapGrid --
+    /// Generate a typed scalar noise grid using the optional seed in opts.
+    /// @param | width | integer | Map width in cells.
+    /// @param | height | integer | Map height in cells.
+    /// @param | opts | table? | Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
+    /// @return | LProcgenScalarGrid | Typed scalar grid.
+    tbl.set(
+        "noiseMapGrid",
+        lua.create_function(|_, (width, height, opts): (u32, u32, Option<LuaTable>)| {
+            let (cfg, seed) = map_gen_options_from_snake_table(opts.as_ref())?;
+            let generator = NoiseGenerator::new(seed);
+            let cells = generator
+                .try_generate_map(width, height, &cfg, &procgen_limits())
+                .map_err(lua_procgen_error)?
+                .into_iter()
+                .map(|value| value as f32)
+                .collect();
+            LuaProcgenScalarGrid::new("noise_map", width, height, cells)
+        })?,
+    )?;
+    // -- noiseMapParallelGrid --
+    /// Generate a typed scalar noise grid using the parallel backend and seed 0.
+    /// @param | width | integer | Map width in cells.
+    /// @param | height | integer | Map height in cells.
+    /// @param | opts | table? | Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y.
+    /// @return | LProcgenScalarGrid | Typed scalar grid.
+    tbl.set(
+        "noiseMapParallelGrid",
+        lua.create_function(|_, (width, height, opts): (u32, u32, Option<LuaTable>)| {
+            let (cfg, _) = map_gen_options_from_snake_table(opts.as_ref())?;
+            let cells = try_generate_noise_map_parallel(width, height, &cfg, &procgen_limits())
+                .map_err(lua_procgen_error)?
+                .into_iter()
+                .map(|value| value as f32)
+                .collect();
+            LuaProcgenScalarGrid::new("noise_map_parallel", width, height, cells)
+        })?,
+    )?;
+    // -- noiseMapParallelSeededGrid --
+    /// Generate a typed scalar noise grid using the parallel backend and explicit seed.
+    /// @param | width | integer | Map width in cells.
+    /// @param | height | integer | Map height in cells.
+    /// @param | opts | table? | Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
+    /// @return | LProcgenScalarGrid | Typed scalar grid.
+    tbl.set(
+        "noiseMapParallelSeededGrid",
+        lua.create_function(|_, (width, height, opts): (u32, u32, Option<LuaTable>)| {
+            let (cfg, seed) = map_gen_options_from_snake_table(opts.as_ref())?;
+            let generator = NoiseGenerator::new(seed);
+            let cells = generator
+                .try_generate_map_parallel(width, height, &cfg, &procgen_limits())
+                .map_err(lua_procgen_error)?
+                .into_iter()
+                .map(|value| value as f32)
+                .collect();
+            LuaProcgenScalarGrid::new("noise_map_parallel_seeded", width, height, cells)
         })?,
     )?;
     // -- simplex2d --

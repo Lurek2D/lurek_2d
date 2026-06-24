@@ -42,7 +42,7 @@ end
 - Start with `lurek.procgen.bspDungeon` when exploring this module.
 - Start with `lurek.procgen.bspDungeonWithPrefabs` when exploring this module.
 - Start with `lurek.procgen.cellularAutomata` when exploring this module.
-- Start with `lurek.procgen.fbm` when exploring this module.
+- Start with `lurek.procgen.cellularAutomataGrid` when exploring this module.
 
 ## API Reference
 
@@ -273,6 +273,30 @@ do
     example_print_log("cellularAutomata first=" .. tostring(cave[1]))
 end
 ```
+
+---
+
+### `lurek.procgen.cellularAutomataGrid`
+
+Generate a cave or organic map and return a typed grid result.
+
+```lua
+lurek.procgen.cellularAutomataGrid(width, height, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Grid width in cells. |
+| `height` | number | Grid height in cells. |
+| `opts?` | table | Cellular automata options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenGrid](#lprocgengrid) | Typed cellular grid. |
 
 ---
 
@@ -587,6 +611,53 @@ end
 
 ---
 
+### `lurek.procgen.heightmapFromCellularGrid`
+
+Convert a cellular automata grid into a typed heightmap scalar grid.
+
+```lua
+lurek.procgen.heightmapFromCellularGrid(width, height, cells, floorValue)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Grid width. |
+| `height` | number | Grid height. |
+| `cells` | table | Flat u8 array from cellularAutomata. |
+| `floorValue?` | number | Cell value treated as open floor. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenScalarGrid](#lprocgenscalargrid) | Typed heightmap scalar grid. |
+
+---
+
+### `lurek.procgen.heightmapGrid`
+
+Generate a fractal heightmap and return a typed scalar grid result.
+
+```lua
+lurek.procgen.heightmapGrid(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Heightmap options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenScalarGrid](#lprocgenscalargrid) | Typed heightmap scalar grid. |
+
+---
+
 ### `lurek.procgen.lsystem`
 
 Expand an L-system grammar and return the resulting string. Useful for generating branching structures like trees, rivers, or cave networks.
@@ -782,6 +853,31 @@ end
 
 ---
 
+### `lurek.procgen.newGridResult`
+
+Wrap a flat grid table as a typed procgen grid result.
+
+```lua
+lurek.procgen.newGridResult(width, height, cells, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Grid width. |
+| `height` | number | Grid height. |
+| `cells` | table | Flat integer grid. |
+| `opts?` | table | Options: kind. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenGrid](#lprocgengrid) | Typed procgen grid. |
+
+---
+
 ### `lurek.procgen.newNoiseGenerator`
 
 Creates a procedural noise generator with an optional seed.
@@ -824,6 +920,31 @@ do
     procgen_log(string.format("lurek.procgen.newNoiseGenerator sample=%.4f", sample))
 end
 ```
+
+---
+
+### `lurek.procgen.newScalarGridResult`
+
+Wrap a flat numeric table as a typed procgen scalar grid result.
+
+```lua
+lurek.procgen.newScalarGridResult(width, height, cells, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Grid width. |
+| `height` | number | Grid height. |
+| `cells` | table | Flat numeric grid. |
+| `opts?` | table | Options: kind. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenScalarGrid](#lprocgenscalargrid) | Typed procgen scalar grid. |
 
 ---
 
@@ -880,6 +1001,30 @@ end
 
 ---
 
+### `lurek.procgen.noiseMapGrid`
+
+Generate a typed scalar noise grid using the optional seed in opts.
+
+```lua
+lurek.procgen.noiseMapGrid(width, height, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Map width in cells. |
+| `height` | number | Map height in cells. |
+| `opts?` | table | Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenScalarGrid](#lprocgenscalargrid) | Typed scalar grid. |
+
+---
+
 ### `lurek.procgen.noiseMapParallel`
 
 Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
@@ -932,6 +1077,30 @@ end
 
 ---
 
+### `lurek.procgen.noiseMapParallelGrid`
+
+Generate a typed scalar noise grid using the parallel backend and seed 0.
+
+```lua
+lurek.procgen.noiseMapParallelGrid(width, height, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Map width in cells. |
+| `height` | number | Map height in cells. |
+| `opts?` | table | Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenScalarGrid](#lprocgenscalargrid) | Typed scalar grid. |
+
+---
+
 ### `lurek.procgen.noiseMapParallelSeeded`
 
 Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
@@ -980,6 +1149,30 @@ do
     example_print_log(string.format("noiseMapParallelSeeded first=%.4f", map[1]))
 end
 ```
+
+---
+
+### `lurek.procgen.noiseMapParallelSeededGrid`
+
+Generate a typed scalar noise grid using the parallel backend and explicit seed.
+
+```lua
+lurek.procgen.noiseMapParallelSeededGrid(width, height, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Map width in cells. |
+| `height` | number | Map height in cells. |
+| `opts?` | table | Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenScalarGrid](#lprocgenscalargrid) | Typed scalar grid. |
 
 ---
 
@@ -1280,6 +1473,28 @@ end
 
 ---
 
+### `lurek.procgen.roomsDungeonGrid`
+
+Generate a rooms dungeon and return only its tile grid as a typed procgen result.
+
+```lua
+lurek.procgen.roomsDungeonGrid(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Room generation options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenGrid](#lprocgengrid) | Typed rooms-dungeon grid. |
+
+---
+
 ### `lurek.procgen.roomsDungeonWithPrefabs`
 
 Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.
@@ -1332,6 +1547,30 @@ do
     example_print_log("roomsDungeonWithPrefabs placed=" .. #placed)
 end
 ```
+
+---
+
+### `lurek.procgen.roomsDungeonWithPrefabsGrid`
+
+Generate a rooms dungeon with prefabs and return only its tile grid as a typed procgen result.
+
+```lua
+lurek.procgen.roomsDungeonWithPrefabsGrid(opts, prefabs, stampValue)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Room generation options. |
+| `prefabs` | table | Prefab definitions. |
+| `stampValue?` | number | Tile value written for prefab cells. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenGrid](#lprocgengrid) | Typed rooms-dungeon grid. |
 
 ---
 
@@ -1684,6 +1923,28 @@ end
 
 ---
 
+### `lurek.procgen.wfcGenerateGrid`
+
+Run WFC and return a typed procgen grid result.
+
+```lua
+lurek.procgen.wfcGenerateGrid(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | WFC options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenGrid](#lprocgengrid) | Typed WFC tile-id grid. |
+
+---
+
 ### `lurek.procgen.worldGraph`
 
 Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
@@ -1746,6 +2007,8 @@ end
 - [LBiomeClassifier](#lbiomeclassifier)
 - [LCellular](#lcellular)
 - [LNoiseGenerator](#lnoisegenerator)
+- [LProcgenGrid](#lprocgengrid)
+- [LProcgenScalarGrid](#lprocgenscalargrid)
 
 ## LBiomeClassifier
 
@@ -2740,6 +3003,54 @@ end
 
 ---
 
+#### `LNoiseGenerator:generateMapComputeGrid`
+
+Generates a compute-style noise map and returns it as a typed scalar grid.
+
+```lua
+LNoiseGenerator:generateMapComputeGrid(w, h, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `w` | number | Map width. |
+| `h` | number | Map height. |
+| `opts?` | table | Generation options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenScalarGrid](#lprocgenscalargrid) | Typed scalar grid. |
+
+---
+
+#### `LNoiseGenerator:generateMapGrid`
+
+Generates a noise map and returns it as a typed scalar grid.
+
+```lua
+LNoiseGenerator:generateMapGrid(w, h, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `w` | number | Map width. |
+| `h` | number | Map height. |
+| `opts?` | table | Generation options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProcgenScalarGrid](#lprocgenscalargrid) | Typed scalar grid. |
+
+---
+
 #### `LNoiseGenerator:getSeed`
 
 Returns this noise generator seed.
@@ -3487,5 +3798,383 @@ do
     procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 ```
+
+---
+
+## LProcgenGrid
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LProcgenGrid:getCell`
+
+Returns one cell value using one-based Lua coordinates.
+
+```lua
+LProcgenGrid:getCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Cell value. |
+
+---
+
+#### `LProcgenGrid:getHeight`
+
+Returns grid height.
+
+```lua
+LProcgenGrid:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Height. |
+
+---
+
+#### `LProcgenGrid:getKind`
+
+Returns the generator kind label attached to this grid.
+
+```lua
+LProcgenGrid:getKind()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Generator kind. |
+
+---
+
+#### `LProcgenGrid:getSize`
+
+Returns grid width and height.
+
+```lua
+LProcgenGrid:getSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width. |
+| number | Height. |
+
+---
+
+#### `LProcgenGrid:getWidth`
+
+Returns grid width.
+
+```lua
+LProcgenGrid:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width. |
+
+---
+
+#### `LProcgenGrid:toTable`
+
+Serializes this grid to a plain Lua table.
+
+```lua
+LProcgenGrid:toTable()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with kind, width, height, and cells. |
+
+---
+
+#### `LProcgenGrid:toTileField`
+
+Converts this generated grid into a tilefield by writing each value as a named ref.
+
+```lua
+LProcgenGrid:toTileField(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Options: slot, topology, skipZero. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTileField](tilefield.md#ltilefield) | Tilefield populated with refs. |
+
+---
+
+#### `LProcgenGrid:type`
+
+Returns the type name of this object.
+
+```lua
+LProcgenGrid:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always returns "[LProcgenGrid](#lprocgengrid)". |
+
+---
+
+#### `LProcgenGrid:typeOf`
+
+Check whether this object matches a given type name.
+
+```lua
+LProcgenGrid:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to test. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the object is of the specified type. |
+
+---
+
+#### `LProcgenGrid:writeTileField`
+
+Writes this generated grid into an existing tilefield ref layer.
+
+```lua
+LProcgenGrid:writeTileField(field, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](tilefield.md#ltilefield) | Target tilefield. |
+| `opts?` | table | Options: slot, z, skipZero. |
+
+---
+
+## LProcgenScalarGrid
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LProcgenScalarGrid:getCell`
+
+Returns one scalar cell value using one-based Lua coordinates.
+
+```lua
+LProcgenScalarGrid:getCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Scalar cell value. |
+
+---
+
+#### `LProcgenScalarGrid:getHeight`
+
+Returns scalar grid height.
+
+```lua
+LProcgenScalarGrid:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Height. |
+
+---
+
+#### `LProcgenScalarGrid:getKind`
+
+Returns the generator kind label attached to this scalar grid.
+
+```lua
+LProcgenScalarGrid:getKind()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Generator kind. |
+
+---
+
+#### `LProcgenScalarGrid:getSize`
+
+Returns scalar grid width and height.
+
+```lua
+LProcgenScalarGrid:getSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width. |
+| number | Height. |
+
+---
+
+#### `LProcgenScalarGrid:getWidth`
+
+Returns scalar grid width.
+
+```lua
+LProcgenScalarGrid:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width. |
+
+---
+
+#### `LProcgenScalarGrid:toTable`
+
+Serializes this scalar grid to a plain Lua table.
+
+```lua
+LProcgenScalarGrid:toTable()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with kind, width, height, and cells. |
+
+---
+
+#### `LProcgenScalarGrid:toTileField`
+
+Converts this scalar field into a new tilefield channel layer.
+
+```lua
+LProcgenScalarGrid:toTileField(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Options: topology, target, channel, scale, offset, threshold, invert. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTileField](tilefield.md#ltilefield) | Tilefield populated from scalar values. |
+
+---
+
+#### `LProcgenScalarGrid:type`
+
+Returns the type name of this object.
+
+```lua
+LProcgenScalarGrid:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always returns "[LProcgenScalarGrid](#lprocgenscalargrid)". |
+
+---
+
+#### `LProcgenScalarGrid:typeOf`
+
+Check whether this object matches a given type name.
+
+```lua
+LProcgenScalarGrid:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to test. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the object is of the specified type. |
+
+---
+
+#### `LProcgenScalarGrid:writeTileField`
+
+Writes this scalar field into an existing tilefield channel layer.
+
+```lua
+LProcgenScalarGrid:writeTileField(field, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](tilefield.md#ltilefield) | Target tilefield. |
+| `opts?` | table | Options: z, target, channel, scale, offset, threshold, invert. |
 
 ---

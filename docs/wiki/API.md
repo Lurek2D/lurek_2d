@@ -16,16 +16,16 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 
 ## Official API Sources
 
-- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9273 lines)
-- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33419 lines)
+- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9310 lines)
+- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33559 lines)
 - Runtime callbacks: [docs/api/callbacks.md](../blob/main/docs/api/callbacks.md)
 - Lureksome library API: [docs/api/lureksome.md](../blob/main/docs/api/lureksome.md)
 - Machine-readable Lua API data: [build/docs-data/lua_api.json](../blob/main/build/docs-data/lua_api.json)
 
 ## Coverage
 
-- 70 modules
-- 6156 functions and methods
+- 71 modules
+- 6181 functions and methods
 - 100.0% documented
 
 ## Module Map
@@ -40,6 +40,7 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.asset](https://lurek2d.github.io/lurek_2d/modules/asset.html) | The asset module is the shared runtime catalog for loaded resources, so users can work with stable handles instead of repeatedly reopening raw file paths. |
 | [lurek.audio](https://lurek2d.github.io/lurek_2d/modules/audio.html) | The audio module is the engine's main runtime sound system for users who need playback, routing, source state, timing, and mix control to live under one API. |
 | [lurek.automation](https://lurek2d.github.io/lurek_2d/modules/automation.html) | The automation module is the scripted replay layer for users who want deterministic QA, repeatable demos, or regression-oriented gameplay checks. |
+| [lurek.awareness](https://lurek2d.github.io/lurek_2d/modules/awareness.html) | The awareness module is the shared answer to fog-of-war, line-of-sight, action reachability, and remembered exploration for users building map-aware gameplay. |
 | [lurek.binary](https://lurek2d.github.io/lurek_2d/modules/binary.html) | The binary module is the byte-oriented data surface for users who need exact control over compact formats, protocol payloads, and structured runtime interchange. |
 | [lurek.camera](https://lurek2d.github.io/lurek_2d/modules/camera.html) | The camera module is the engine's shared view-control surface for users who need world motion to become readable player-facing framing. |
 | [lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html) | The charts module is the engine's in-runtime data-visualization surface for users who want tables, counters, time series, and distributions to become readable graphics. |
@@ -97,10 +98,10 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.terminal](https://lurek2d.github.io/lurek_2d/modules/terminal.html) | The terminal module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation. |
 | [lurek.thread](https://lurek2d.github.io/lurek_2d/modules/thread.html) | The thread module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules. |
 | [lurek.tilefield](https://lurek2d.github.io/lurek_2d/modules/tilefield.html) | Coordinates exposed to Lua are one-based x, y, z; Rust storage is zero-based. |
-| [lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html) | The tilemap module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers. |
+| [lurek.tilelight](https://lurek2d.github.io/lurek_2d/modules/tilelight.html) | The tilelight module owns light propagation over tile cells. |
+| [lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html) | The tilemap module is the engine's runtime tile-grid storage and presentation bridge for users who want tile-based spaces to be authored, generated, imported, indexed, and submitted to rendering through one reusable storage model. |
 | [lurek.timer](https://lurek2d.github.io/lurek_2d/modules/timer.html) | The timer module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently. |
 | [lurek.tween](https://lurek2d.github.io/lurek_2d/modules/tween.html) | The tween module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops. |
 | [lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html) | The ui module is the engine's retained-interface system for users who want menus, HUDs, editors, overlays, and tool panels to behave like one persistent application layer instead of a loose pile of draw calls and ad hoc click tests. |
 | [lurek.validator](https://lurek2d.github.io/lurek_2d/modules/validator.html) | The validator module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review. |
-| [lurek.visibility](https://lurek2d.github.io/lurek_2d/modules/visibility.html) | The visibility module is the shared answer to fog-of-war, line-of-sight, and remembered exploration for users building map-aware gameplay. |
 | [lurek.window](https://lurek2d.github.io/lurek_2d/modules/window.html) | The window module is the desktop-window control surface for users who need display selection, viewport scaling, mode changes, and OS-facing window behavior under one runtime API. |

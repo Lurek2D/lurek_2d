@@ -5,11 +5,13 @@ local TilefieldMinimap = require("library.tilefield_minimap")
 local field = lurek.tilefield.new({ width = 4, height = 3, levels = 1 })
 field:setBlock(2, 1, 1, "move", true)
 field:setCost(3, 2, 1, "move", 4)
-field:addPointLight({ x = 2, y = 2, z = 1, radius = 2, intensity = 1.0 })
-field:computeLight({ includePointLights = true, includeGlobalLight = false })
+local light = lurek.tilelight.new(field)
+light:addPointLight({ x = 2, y = 2, z = 1, radius = 2, intensity = 1.0 })
+light:compute({ includePointLights = true, includeGlobalLight = false })
 
 local helper = TilefieldMinimap.new({
     field = field,
+    lightMap = light,
     width = 4,
     height = 3,
 })

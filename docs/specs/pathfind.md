@@ -98,13 +98,13 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### context_steering.rs
 
-- Implements slot-based context steering that scores angular interest and danger before picking a movement lane.
+- Implements slot-based context steering that scores angular interest and danger before choosing a movement lane.
 - Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot.
 - Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler.
 - Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly.
-- Provides the pathfind-owned local movement boundary between authored context behaviors and the final chosen travel heading.
-- This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion.
-- Open this owner before generic steering when the bug is in lane choice rather than force combination policy.
+- Provides the pathfind-owned boundary between authored context behaviors and final travel heading selection.
+- Use this owner when directional slot math or danger suppression yields jittery or unsafe movement choices.
+- Open generic steering only when the bug is force combination policy rather than lane selection semantics.
 
 ### flow_field.rs
 
@@ -201,14 +201,14 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### mod.rs
 
-- Exports the pathfinding subsystem surface for routing, spatial fields, steering, local avoidance, and debug views.
-- Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, steering, ORCA, and province graph helpers.
-- Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, movement, or draw.
-- Open this file when adding or retiring pathfinding owners or when re-export policy for runtime helpers needs changes.
-- The exports here connect generic tile grids, hex and iso variants, navmeshes, and province graph traversal utilities.
-- Agents should start here when tracing navigation behavior because it reveals the authoritative file split by feature.
-- This index owns visibility and re-export contracts rather than live state, queues, caches, or search data itself.
-- Neighboring work usually spans NavGrid, async request handling, path solvers, movement helpers, and debug rendering adapters below.
+- Exports the pathfinding surface for routing, spatial fields, steering, local avoidance, and debug views.
+- Acts as the navigation index for A*, HPA, flow fields, influence maps, ORCA, and province graphs.
+- Keeps boundaries explicit so callers can locate data, search, movement, validation, or debug ownership.
+- Re-exports grid, hex, iso, navmesh, steering, tactical, and graph helpers without storing live state.
+- This index owns visibility contracts, not queues, caches, solver internals, or renderer submission data.
+- Start here when tracing navigation behavior because it reveals the authoritative file split by feature.
+- Neighboring changes usually span `NavGrid`, async requests, solvers, steering helpers, and debug adapters.
+- Update this file when adding, retiring, or renaming pathfinding owners or public re-export policy.
 
 ### nav_grid.rs
 
@@ -263,16 +263,16 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### steering.rs
 
-- Owns steering behavior stacks for pathfinding-adjacent local movement.
-- Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants.
-- Defines how steering data is validated, transformed, or stored before neighboring systems use it.
-- Keeps path following, flocking, pursuit, evasion, and custom movement forces under the navigation owner.
-- Keeps public crate helpers focused on movement behavior while Lua registration stays elsewhere.
-- Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
-- Use this file when changing steering defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary.
-- Provides the local movement layer that lets callers avoid duplicating path and avoidance rules.
+- Owns steering behavior stacks for pathfinding-adjacent local movement and force-based navigation.
+- Centers implementation around `Force`, `SteeringEntity`, manager state, and flock parameter invariants.
+- Validates entity counts, finite vectors, weights, radii, speeds, and target inputs before calculations run.
+- Keeps path following, flocking, pursuit, evasion, wander, arrival, separation, and custom forces here.
+- Produces deterministic movement forces that callers can compose without duplicating path avoidance rules.
+- Stores named entities and behavior lists while route search, grid ownership, and rendering live elsewhere.
+- Keeps crate helpers focused on movement behavior while Lua registration and table conversion stay elsewhere.
+- Reports structured pathfind errors for invalid movement data instead of leaking panics into callers.
+- Update this file when steering defaults, lifecycle handling, validation, or force calculation semantics change.
+- Leave context-slot steering, ORCA, tactical fields, and raw path solvers in their own navigation owners.
 
 ### unit_pathfinder.rs
 
@@ -285,8 +285,9 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### validation.rs
 
-- Validation helpers for pathfinding, tactical fields, steering, and local avoidance.
-- Keeps movement-facing limits near the pathfind owners that enforce them.
+- Owns shared validation helpers for pathfinding, tactical fields, steering, and local avoidance modules.
+- Keeps finite number, count, and positive-value checks close to the navigation owners that enforce them.
+- Update this file when movement-facing modules need common limits or structured `PathfindError` guards.
 
 
 

@@ -67,12 +67,12 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 ### mod.rs
 
-- This module gathers the sprite subsystem surface for single sprites, sheets, atlases, panels, and batches.
-- It keeps navigation explicit by pointing readers to the file that owns clip playback, lookup, scaling, or batching.
-- Re-exports here make `Sprite`, `SpriteSheet`, `SpriteAtlas`, `TextureAtlas`, `NineSlice`, and `SpriteBatch` easy to reach.
-- `animator.rs` owns frame-timed clip playback, while atlas files and `sprite_sheet.rs` own region lookup models.
-- `sprite.rs` stays the minimal per-instance draw state owner, and `sprite_batch.rs` holds grouped submission data.
-- Change this file when the public sprite symbol map moves, not when rendering or animation rules change.
+- Exports the sprite surface for single sprites, sheets, atlases, nine-slice panels, texture packs, and batches.
+- Keeps navigation explicit by pointing readers to owners for clip playback, region lookup, scaling, and batching.
+- Re-exports `Sprite`, `SpriteSheet`, `SpriteAtlas`, `TextureAtlas`, `NineSlice`, and `SpriteBatch` symbols.
+- `animator.rs` owns timed playback, atlas files own regions, and `sprite_sheet.rs` owns grid frame lookup.
+- `sprite.rs` stays the per-instance draw state owner, while `sprite_batch.rs` holds grouped submission data.
+- Change this index when the public sprite symbol map moves, not when rendering or animation rules change.
 
 ### nine_slice.rs
 

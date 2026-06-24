@@ -14,15 +14,15 @@ use super::pipeline_api;
 #[cfg(feature = "spine")]
 use super::spine_api;
 use super::{
-    agent_api, ai_api, animation_api, asset_api, audio_api, binary_api, camera_api, cinematic_api,
-    color_api, compute_api, cursor_api, dataframe_api, debugbridge_api, dialog_api, docs_api,
-    dsp_api, ecs_api, effect_api, engine_api, event_api, filesystem_api, font_api, globe_api,
-    grep_api, i18n_api, image_api, input_api, layout_api, learning_api, light_api, log_api,
-    mapblock_api, math_api, midi_api, minimap_api, mods_api, network_api, overlay_api,
+    agent_api, ai_api, animation_api, asset_api, audio_api, awareness_api, binary_api, camera_api,
+    cinematic_api, color_api, compute_api, cursor_api, dataframe_api, debugbridge_api, dialog_api,
+    docs_api, dsp_api, ecs_api, effect_api, engine_api, event_api, filesystem_api, font_api,
+    globe_api, grep_api, i18n_api, image_api, input_api, layout_api, learning_api, light_api,
+    log_api, mapblock_api, math_api, midi_api, minimap_api, mods_api, network_api, overlay_api,
     parallax_api, particle_api, pathfind_api, patterns_api, physics_api, procgen_api, province_api,
     raycaster_api, render_api, repl_api, save_api, scene_api, serialize_api, sprite_api, svg_api,
-    system_api, terminal_api, thread_api, tilefield_api, tilemap_api, timer_api, tween_api, ui_api,
-    validator_api, visibility_api, window_api,
+    system_api, terminal_api, thread_api, tilefield_api, tilelight_api, tilemap_api, tileset_api,
+    timer_api, tween_api, ui_api, validator_api, window_api,
 };
 use crate::runtime::config::ModulesConfig;
 use crate::runtime::SharedState;
@@ -109,6 +109,8 @@ static MODULES: &[ModuleEntry] = &[
     gated!(minimap_api, minimap),
     gated!(province_api, province),
     gated!(tilefield_api, tilefield),
+    gated!(tilelight_api, tilelight),
+    gated!(tileset_api, tileset),
     gated!(pathfind_api, pathfind),
     gated!(layout_api, layout),
     gated!(terminal_api, terminal),
@@ -125,7 +127,7 @@ static MODULES: &[ModuleEntry] = &[
     gated!(particle_api, particle),
     gated!(parallax_api, parallax),
     gated!(ui_api, ui),
-    gated!(visibility_api, visibility),
+    gated!(awareness_api, awareness),
     gated!(tilemap_api, tilemap),
     gated!(physics_api, physics),
     gated!(cursor_api, cursor),

@@ -21,6 +21,8 @@ pub mod color;
 pub mod error;
 /// 4-connected flood fill mask generator.
 pub mod flood_fill;
+/// Typed 2D grid result containers shared by procgen APIs.
+pub mod grid_result;
 /// FBM noise-based heightmap with optional erosion.
 pub mod heightmap;
 /// Linear Congruential Generator for deterministic seeding.
@@ -62,6 +64,7 @@ pub use cellular_world::{
 pub use color::scalar_map_to_rgba_bytes;
 pub use error::ProcgenError;
 pub use flood_fill::flood_fill;
+pub use grid_result::{ProcgenGrid, ProcgenScalarGrid};
 pub use heightmap::{ErosionMode, Heightmap, HeightmapErosionReport, HeightmapOpts};
 pub use limits::ProcgenLimits;
 pub use lsystem::LSystem;

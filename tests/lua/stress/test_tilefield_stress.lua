@@ -1,8 +1,9 @@
--- Stress coverage for tilefield large multi-level fields.
+-- Stress coverage for tilefield data plus tilelight over large multi-level fields.
 
 -- @describe tilefield stress
 describe("tilefield stress", function()
     -- @stress lurek.tilefield.new
+    -- @stress lurek.tilelight.new
     it("computes colored lighting and exports on 100x100x4 field under budget", function()
         local field = lurek.tilefield.new({ width = 100, height = 100, levels = 4 })
         field:setProfile("light_filter", {
@@ -24,8 +25,9 @@ describe("tilefield stress", function()
             end
         end
 
+        local light_map = lurek.tilelight.new(field)
         for i = 1, 40 do
-            field:addPointLight({
+            light_map:addPointLight({
                 x = (i * 11) % 100 + 1,
                 y = (i * 19) % 100 + 1,
                 z = i % 4 + 1,
@@ -39,16 +41,16 @@ describe("tilefield stress", function()
             })
         end
 
-        field:setGlobalLight({ intensity = 0.25, color = { r = 1, g = 0.72, b = 0.38 } })
+        light_map:setGlobalLight({ intensity = 0.25, color = { r = 1, g = 0.72, b = 0.38 } })
         local started = os.clock()
-        field:computeLight({ includePointLights = true, includeGlobalLight = true })
+        light_map:compute({ includePointLights = true, includeGlobalLight = true })
         local elapsed = os.clock() - started
 
         local move = field:exportBlockLayer("move", 1)
-        local light = field:exportLightLayer(1)
+        local light = light_map:exportLayer(1)
         expect_equal(10000, #move)
         expect_equal(10000, #light)
-        expect_true(elapsed < 0.75, "computeLight stress budget exceeded: " .. tostring(elapsed))
+        expect_true(elapsed < 0.75, "tilelight compute stress budget exceeded: " .. tostring(elapsed))
     end)
 end)
 

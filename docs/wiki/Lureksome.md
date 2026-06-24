@@ -19,6 +19,7 @@ LuaCATS stub: [docs/api/lureksome.lua](../blob/main/docs/api/lureksome.lua)
 
 | Library | Scope |
 |---|---|
+| [library.awareness_minimap](../blob/main/docs/api/lureksome.lua) | — 5 fn, 1 classes |
 | [library.battle](../blob/main/docs/api/lureksome.lua) | — 96 fn, 4 classes |
 | [library.cardgame](../blob/main/docs/api/lureksome.lua) | — 171 fn, 8 classes |
 | [library.combat](../blob/main/docs/api/lureksome.lua) | — 97 fn, 7 classes |
@@ -37,4 +38,3 @@ LuaCATS stub: [docs/api/lureksome.lua](../blob/main/docs/api/lureksome.lua)
 | [library.stats](../blob/main/docs/api/lureksome.lua) | — 83 fn, 3 classes |
 | [library.tilefield_minimap](../blob/main/docs/api/lureksome.lua) | — 5 fn, 1 classes |
 | [library.tilemap_minimap](../blob/main/docs/api/lureksome.lua) | — 6 fn, 1 classes |
-| [library.visibility_minimap](../blob/main/docs/api/lureksome.lua) | — 5 fn, 1 classes |

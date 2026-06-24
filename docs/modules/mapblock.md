@@ -546,46 +546,6 @@ end
 
 ### Type Methods
 
-#### `LMapBlock:getDimensions`
-
-Returns both width and height of the block in tiles.
-
-```lua
-LMapBlock:getDimensions()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width. |
-| number | Height. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local block = lurek.tilemap.newMapBlock(6, 4, 1, 1)
-    local width, height = block:getDimensions()
-    mapblock_log("getDimensions=" .. tostring(width) .. "x" .. tostring(height))
-    mapblock_log("getDimensions widthSegments=" .. tostring(block:getWidthInSegments()))
-    mapblock_log("getDimensions heightSegments=" .. tostring(block:getHeightInSegments()))
-end
-```
-
----
-
 #### `LMapBlock:getFootprintCellCount`
 
 Get the number of occupied footprint cells.
@@ -660,45 +620,6 @@ do
     mapblock_log("getHeight=" .. block:getHeight())
     mapblock_log("getHeight width=" .. block:getWidth())
     mapblock_log("getHeight name=" .. block:getName())
-end
-```
-
----
-
-#### `LMapBlock:getHeightInSegments`
-
-Returns the block height measured in segments.
-
-```lua
-LMapBlock:getHeightInSegments()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Height in segments. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
-    mapblock_log("getHeightInSegments=" .. tostring(block:getHeightInSegments()))
-    mapblock_log("getHeightInSegments dims=" .. tostring(block:getWidth()) .. "x" .. tostring(block:getHeight()))
-    mapblock_log("getHeightInSegments segmentSize=" .. tostring(block:getSegmentSize()))
-    mapblock_log("getHeightInSegments type=" .. tostring(block:type()))
 end
 ```
 
@@ -780,92 +701,6 @@ do
     mapblock_log("getName=" .. block:getName())
     mapblock_log("getName weight=" .. tostring(block:getWeight()))
     mapblock_log("getName dims=" .. tostring(block:getWidth()) .. "x" .. tostring(block:getHeight()))
-end
-```
-
----
-
-#### `LMapBlock:getSegmentSize`
-
-Returns the segment size used for edge matching.
-
-```lua
-LMapBlock:getSegmentSize()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Segment size in tiles. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
-    mapblock_log("getSegmentSize=" .. tostring(block:getSegmentSize()))
-    mapblock_log("getSegmentSize widthSegments=" .. tostring(block:getWidthInSegments()))
-    mapblock_log("getSegmentSize heightSegments=" .. tostring(block:getHeightInSegments()))
-    mapblock_log("getSegmentSize dims=" .. tostring(block:getWidth()) .. "x" .. tostring(block:getHeight()))
-end
-```
-
----
-
-#### `LMapBlock:getSide`
-
-Returns the side ID for an edge segment.
-
-```lua
-LMapBlock:getSide(edge, segment)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `edge` | string | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
-| `segment` | number | Segment index along the edge (1-based). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Side identifier. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
-    block:setSide("east", 1, 11)
-    block:setSide("west", 1, 5)
-    mapblock_log("getSide east1=" .. tostring(block:getSide("east", 1)))
-    mapblock_log("getSide west1=" .. tostring(block:getSide("west", 1)))
-    mapblock_log("getSide type=" .. tostring(block:type()))
 end
 ```
 
@@ -1044,45 +879,6 @@ do
     mapblock_log("getWidth=" .. block:getWidth())
     mapblock_log("getWidth height=" .. block:getHeight())
     mapblock_log("getWidth name=" .. block:getName())
-end
-```
-
----
-
-#### `LMapBlock:getWidthInSegments`
-
-Returns the block width measured in segments.
-
-```lua
-LMapBlock:getWidthInSegments()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width in segments. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
-    mapblock_log("getWidthInSegments=" .. tostring(block:getWidthInSegments()))
-    mapblock_log("getWidthInSegments dims=" .. tostring(block:getWidth()) .. "x" .. tostring(block:getHeight()))
-    mapblock_log("getWidthInSegments segmentSize=" .. tostring(block:getSegmentSize()))
-    mapblock_log("getWidthInSegments type=" .. tostring(block:type()))
 end
 ```
 
@@ -1378,48 +1174,6 @@ end
 
 ---
 
-#### `LMapBlock:setSide`
-
-Sets the side ID for an edge segment, used for edge matching in map generation.
-
-```lua
-LMapBlock:setSide(edge, segment, sideId)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `edge` | string | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
-| `segment` | number | Segment index along the edge (1-based). |
-| `sideId` | number | Side identifier for matching. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
-    block:setSide("north", 1, 7)
-    block:setSide("south", 1, 9)
-    mapblock_log("setSide north1=" .. tostring(block:getSide("north", 1)))
-    mapblock_log("setSide south1=" .. tostring(block:getSide("south", 1)))
-    mapblock_log("setSide type=" .. tostring(block:type()))
-end
-```
-
----
-
 #### `LMapBlock:setSocket`
 
 Set a per-cell socket type for one edge of the footprint.
@@ -1543,90 +1297,6 @@ do
     mapblock_log("setWeight ok")
     mapblock_log("setWeight value=" .. tostring(block:getWeight()))
     mapblock_log("setWeight block=" .. block:getName())
-end
-```
-
----
-
-#### `LMapBlock:type`
-
-Returns the type name of this userdata.
-
-```lua
-LMapBlock:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always `"[LMapBlock](#lmapblock)"`. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local block = lurek.tilemap.newMapBlock(2, 2, 1, 1)
-    block:setSide("north", 1, 3)
-    mapblock_log("LMapBlock:type=" .. tostring(block:type()))
-    mapblock_log("LMapBlock:type north1=" .. tostring(block:getSide("north", 1)))
-    mapblock_log("LMapBlock:type dims=" .. tostring(block:getWidth()) .. "x" .. tostring(block:getHeight()))
-end
-```
-
----
-
-#### `LMapBlock:typeOf`
-
-Checks whether this object matches the given type name.
-
-```lua
-LMapBlock:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to check against. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if `name` is `"[LMapBlock](#lmapblock)"` or `"Object"`. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local block = lurek.tilemap.newMapBlock(2, 2, 1, 1)
-    block:setSide("east", 1, 4)
-    mapblock_log("LMapBlock:typeOf self=" .. tostring(block:typeOf("LMapBlock")))
-    mapblock_log("LMapBlock:typeOf object=" .. tostring(block:typeOf("LObject")))
-    mapblock_log("LMapBlock:typeOf east1=" .. tostring(block:getSide("east", 1)))
 end
 ```
 
@@ -2864,6 +2534,45 @@ end
 
 ---
 
+#### `LMapBlockResult:toTileField`
+
+Converts one mapblock result layer and slot into a shared tilefield ref layer.
+
+```lua
+LMapBlockResult:toTileField(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Options: layer, slot, ref, tilesetRef, topology, skipZero. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTileField](tilefield.md#ltilefield) | Tilefield populated from this result. |
+
+---
+
+#### `LMapBlockResult:writeTileField`
+
+Writes one mapblock result layer and slot into an existing tilefield ref layer.
+
+```lua
+LMapBlockResult:writeTileField(field, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](tilefield.md#ltilefield) | Target tilefield. |
+| `opts?` | table | Options: layer, slot, ref, tilesetRef, skipZero. |
+
+---
+
 ## LMapGroup
 
 ### Type Fields
@@ -3029,172 +2738,6 @@ end
 
 ---
 
-#### `LMapGroup:getScriptCount`
-
-Returns how many scripts are attached to this group.
-
-```lua
-LMapGroup:getScriptCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Script count. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local script = lurek.tilemap.newMapScript()
-    script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 1, h = 1 })
-    local group = lurek.tilemap.newMapGroup("rooms")
-    group:addScript(script)
-    example_print_log("getScriptCount=" .. tostring(group:getScriptCount()))
-end
-```
-
----
-
-#### `LMapGroup:removeBlock`
-
-Removes a block from the group by index.
-
-```lua
-LMapGroup:removeBlock(idx)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `idx` | number | Block index (1-based). |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local block_a = lurek.tilemap.newMapBlock(2, 2, 1, 1)
-    local block_b = lurek.tilemap.newMapBlock(3, 3, 1, 1)
-    local group = lurek.tilemap.newMapGroup("rooms")
-    group:addBlock(block_a)
-    group:addBlock(block_b)
-    group:removeBlock(1)
-    example_print_log("removeBlock count=" .. tostring(group:getBlockCount()))
-end
-```
-
----
-
-#### `LMapGroup:type`
-
-Returns the type name of this userdata.
-
-```lua
-LMapGroup:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always `"[LMapGroup](#lmapgroup)"`. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local group = lurek.tilemap.newMapGroup("rooms")
-    local script = lurek.tilemap.newMapScript()
-    group:addScript(script)
-    mapblock_log("LMapGroup:type=" .. tostring(group:type()))
-    mapblock_log("LMapGroup:type scripts=" .. tostring(group:getScriptCount()))
-    mapblock_log("LMapGroup:type name=" .. tostring(group:getName()))
-end
-```
-
----
-
-#### `LMapGroup:typeOf`
-
-Checks whether this object matches the given type name.
-
-```lua
-LMapGroup:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to check against. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if `name` is `"[LMapGroup](#lmapgroup)"` or `"Object"`. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local group = lurek.tilemap.newMapGroup("rooms")
-    local script = lurek.tilemap.newMapScript()
-    group:addScript(script)
-    mapblock_log("LMapGroup:typeOf self=" .. tostring(group:typeOf("LMapGroup")))
-    mapblock_log("LMapGroup:typeOf object=" .. tostring(group:typeOf("LObject")))
-    mapblock_log("LMapGroup:typeOf scripts=" .. tostring(group:getScriptCount()))
-end
-```
-
----
-
 ## LMapScript
 
 ### Type Fields
@@ -3351,90 +2894,6 @@ do
     mapblock_log("getStepCount=" .. script:getStepCount())
     mapblock_log("getStepCount script=" .. script:getName())
     mapblock_log("getStepCount multi-pass setup ready")
-end
-```
-
----
-
-#### `LMapScript:type`
-
-Returns the type name of this userdata.
-
-```lua
-LMapScript:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always `"[LMapScript](#lmapscript)"`. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local script = lurek.tilemap.newMapScript()
-    script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 1, h = 1 })
-    mapblock_log("LMapScript:type=" .. tostring(script:type()))
-    mapblock_log("LMapScript:type steps=" .. tostring(script:getStepCount()))
-    mapblock_log("LMapScript:type ready for tilemap authoring")
-end
-```
-
----
-
-#### `LMapScript:typeOf`
-
-Checks whether this object matches the given type name.
-
-```lua
-LMapScript:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to check against. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if `name` is `"[LMapScript](#lmapscript)"` or `"Object"`. |
-
-**Example**
-
-```lua
-do
-    local function mapblock_log(message)
-        lurek.log.info("[mapblock.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local script = lurek.tilemap.newMapScript()
-    script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 1, h = 1 })
-    mapblock_log("LMapScript:typeOf self=" .. tostring(script:typeOf("LMapScript")))
-    mapblock_log("LMapScript:typeOf object=" .. tostring(script:typeOf("LObject")))
-    mapblock_log("LMapScript:typeOf steps=" .. tostring(script:getStepCount()))
 end
 ```
 

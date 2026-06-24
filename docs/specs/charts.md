@@ -74,7 +74,8 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - It stores named sample series, computes quartiles on render, and draws whiskers, boxes, medians, and outliers.
 - Shared chart helpers provide axes, ticks, category labels, legends, and background styling for consistency.
 - The renderer sorts only per-series samples and otherwise draws O(series + samples) primitives for fast refreshes.
-- Open it when distribution statistics, outlier policy, or boxplot geometry need to change.
+- The output is CPU `ImageData`, so chart statistics stay here while render modules only consume prepared pixels.
+- Open it when distribution statistics, outlier policy, boxplot geometry, or sample limits need to change.
 
 ### bubble.rs
 
@@ -82,14 +83,16 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - It stores named `(x, y, size)` samples, maps size values to radius bounds, and draws one circle per finite sample.
 - Shared chart helpers provide cartesian axes, ticks, grids, labels, and legends while this file owns radius scaling.
 - Streaming append and max-point trimming keep live dashboards bounded for repeated 10 FPS redraws.
+- The output is CPU `ImageData`, so render modules consume pixels without owning weighted scatter semantics.
 - Open it when bubble-size semantics, weighted scatter ingestion, or radius defaults need to change.
 
 ### candlestick.rs
 
-- This file owns candlestick chart rendering for OHLC financial or telemetry interval data.
+- This file owns candlestick chart rendering for OHLC financial or telemetry interval data streams.
 - It stores labeled candles, supports incremental appends, and draws wicks plus open-close bodies in one CPU pass.
 - Axis scaling is derived from high/low values, while shared chart helpers provide grid, ticks, title, and captions.
 - Positive and negative candles use configurable colors so streaming market views remain readable at 10 FPS.
+- The output is `ImageData`, keeping market-style chart semantics separate from render submission ownership.
 - Open it when OHLC ingestion, candle body geometry, or finance-style chart semantics need to change.
 
 ### config.rs
@@ -149,11 +152,12 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ### radar.rs
 
-- This file owns radar/spider chart rendering for multivariate series over shared axes.
+- This file owns radar/spider chart rendering for multivariate series over shared axes and dashboards.
 - It stores ordered axis labels and named series values, then draws radial grid rings and closed polygons.
-- The chart can use an explicit maximum value or auto-scale from finite series samples.
+- The chart can use an explicit maximum value or auto-scale from finite series samples for stable output.
 - Rendering is O(axes * series) and avoids per-pixel polygon fills so live dashboards can refresh quickly.
-- Open it when radar axis semantics, scaling, or polygon stroke behavior need to change.
+- Shared chart configuration owns common colors and labels while this file owns radial geometry semantics.
+- Open it when radar axis semantics, scaling, polygon stroke behavior, or series limits need to change.
 
 ### render_utils.rs
 
@@ -180,6 +184,8 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - It stores weighted labeled items, applies deterministic squarified rows, and draws colored rectangles with labels.
 - The API accepts flat items because runtime Lua callers commonly aggregate hierarchy before visualization.
 - Rendering is O(n log n) from value sorting plus rectangle fills, keeping repeated refreshes practical.
+- Shared chart configuration provides title, legend, and background while this file owns rectangle packing.
+- The output is CPU `ImageData`, so render modules consume pixels instead of owning treemap layout semantics.
 - Open it when treemap item ingestion, squarified row packing, or label rendering need to change.
 
 

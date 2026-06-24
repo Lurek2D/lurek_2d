@@ -109,12 +109,12 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 ### mod.rs
 
-- Exports the image subsystem surface that groups buffers, effects, formats, layers, and visuals.
-- Acts as the navigation index for CPU image ownership, showing where loading, edits, and specs live.
-- Re-exports ImageData, compressed assets, palette LUTs, layered images, and GIF helpers.
-- Keeps compatibility exports such as ProvinceGrid local to the module boundary instead of scattered in users.
-- Open this file first when tracing which image feature belongs to storage, processing, serialization, or UI.
-- This owner defines image-module visibility and composition, not the pixel algorithms implemented below it.
+- Exports the image subsystem surface for CPU bitmaps, effects, formats, layers, palettes, and visual helpers.
+- Acts as the navigation index for single-bitmap ownership, showing where loading, editing, and specs live.
+- Re-exports `ImageData`, compressed assets, palette LUTs, layered images, GIF helpers, and compatibility types.
+- Keeps atlas, nine-slice, and sprite-sheet concepts outside image so sprite remains the texture-region owner.
+- Open this file when tracing which image feature belongs to storage, processing, serialization, or UI support.
+- This index owns image visibility and composition, not the pixel algorithms implemented in child modules.
 
 ### palette_lut.rs
 

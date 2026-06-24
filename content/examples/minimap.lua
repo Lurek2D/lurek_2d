@@ -2,7 +2,7 @@
 -- Auto-generated from content/examples2/minimap_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/minimap.lua
 -- Tilefield-driven games should feed minimap terrain/fog/layer data from
--- lurek.tilefield exports and lurek.visibility masks. The minimap remains a
+-- lurek.tilefield exports and lurek.awareness masks. The minimap remains a
 -- passive visualization surface and does not compute LOS, action range, or light.
 
 

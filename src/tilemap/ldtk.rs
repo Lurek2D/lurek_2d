@@ -6,7 +6,7 @@
 
 use super::limits::TileMapLimits;
 use super::tilemap::TileMap;
-use super::tileset::TileSet;
+use crate::tileset::TileSet;
 use std::fmt;
 
 /// Structured LDtk import error used by Rust callers and Lua bindings.

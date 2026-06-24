@@ -12,6 +12,14 @@ library = {}
 ---@class userdata
 ---@class nil
 
+---@class AwarenessMinimap
+---@field public visibility any
+---@field public width any
+---@field public height any
+---@field public z any
+---@field public minimap any
+AwarenessMinimap = {}
+
 ---@class StatusEffect
 ---@field public name any
 ---@field public duration any
@@ -303,6 +311,7 @@ Sheet = {}
 
 ---@class TilefieldMinimap
 ---@field public field any
+---@field public lightMap any
 ---@field public width any
 ---@field public height any
 ---@field public z any
@@ -316,16 +325,11 @@ TilefieldMinimap = {}
 ---@field public height any
 ---@field public solid_terrain any
 ---@field public empty_terrain any
+---@field public blocked_gids any
+---@field public terrain_by_gid any
+---@field public terrain_at any
 ---@field public minimap any
 TilemapMinimap = {}
-
----@class VisibilityMinimap
----@field public visibility any
----@field public width any
----@field public height any
----@field public z any
----@field public minimap any
-VisibilityMinimap = {}
 
 ---@class ActionPoints
 ActionPoints = {}
@@ -353,6 +357,38 @@ RecipeOutput = {}
 
 ---@class Skill
 Skill = {}
+
+---@class library.awareness_minimap
+library.awareness_minimap = {}
+
+--- Create a visibility->minimap sync helper.
+---@param opts table
+---@return any
+function library.awareness_minimap.new(opts) end
+
+--- Copy visible and explored tile visibility state into minimap fog data.
+---@param player string
+---@param opts table|nil
+---@return any
+function AwarenessMinimap:syncFog(player, opts) end
+
+--- Copy current visible cells into a minimap raw data layer.
+---@param player string
+---@param layer integer
+---@param opts table|nil
+---@return any
+function AwarenessMinimap:syncVisibleLayer(player, layer, opts) end
+
+--- Copy current actionable cells into a minimap raw data layer.
+---@param player string
+---@param layer integer
+---@param opts table|nil
+---@return any
+function AwarenessMinimap:syncActionLayer(player, layer, opts) end
+
+--- Expose the underlying minimap handle.
+---@return any
+function AwarenessMinimap:getMinimap() end
 
 ---@class library.battle
 library.battle = {}
@@ -6622,7 +6658,7 @@ function TilefieldMinimap:syncBlockLayer(channel, layer, opts) end
 ---@return any
 function TilefieldMinimap:syncCostLayer(channel, layer, opts) end
 
---- Convert a tilefield computed light layer into a minimap raw data layer.
+--- Convert a tilelight computed layer into a minimap raw data layer.
 ---@param layer integer
 ---@param opts table|nil
 ---@return any
@@ -6640,7 +6676,7 @@ library.tilemap_minimap = {}
 ---@return any
 function library.tilemap_minimap.new(opts) end
 
---- Sync tile solidity from tilemap layer into minimap terrain.
+--- Sync explicit tilemap-derived terrain into minimap terrain.
 ---@return nil
 function TilemapMinimap:syncTerrain() end
 
@@ -6665,35 +6701,3 @@ function TilemapMinimap:clearViewport() end
 --- Expose underlying minimap handle.
 ---@return any
 function TilemapMinimap:getMinimap() end
-
----@class library.visibility_minimap
-library.visibility_minimap = {}
-
---- Create a visibility->minimap sync helper.
----@param opts table
----@return any
-function library.visibility_minimap.new(opts) end
-
---- Copy visible and explored tile visibility state into minimap fog data.
----@param player string
----@param opts table|nil
----@return any
-function VisibilityMinimap:syncFog(player, opts) end
-
---- Copy current visible cells into a minimap raw data layer.
----@param player string
----@param layer integer
----@param opts table|nil
----@return any
-function VisibilityMinimap:syncVisibleLayer(player, layer, opts) end
-
---- Copy current actionable cells into a minimap raw data layer.
----@param player string
----@param layer integer
----@param opts table|nil
----@return any
-function VisibilityMinimap:syncActionLayer(player, layer, opts) end
-
---- Expose the underlying minimap handle.
----@return any
-function VisibilityMinimap:getMinimap() end

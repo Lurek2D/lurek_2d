@@ -51,10 +51,6 @@ function M.create()
     field:setCost(4, 6, 1, "move", 3.0)
     field:setCost(7, 8, 1, "move", 2.0)
 
-    field:addPointLight({ x = 3, y = 3, z = 1, radius = 6, intensity = 0.9, color = { r = 1, g = 0.75, b = 0.42 } })
-    field:addPointLight({ x = 9, y = 9, z = 1, radius = 5, intensity = 0.7, color = { r = 0.35, g = 0.55, b = 1 } })
-    field:setGlobalLight({ intensity = 0.32, color = { r = 1, g = 0.96, b = 0.86 } })
-
     return model
 end
 

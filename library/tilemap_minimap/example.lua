@@ -12,8 +12,8 @@ local map = {
     },
 }
 
-function map:isSolid(_, x, y)
-    return self.solids[x .. ":" .. y] == true
+function map:getTile(_, x, y)
+    return self.solids[x .. ":" .. y] and 2 or 0
 end
 
 function map:worldToTile(wx, wy)
@@ -25,6 +25,7 @@ local helper = TilemapMinimap.new({
     layer = 1,
     width = 6,
     height = 4,
+    blocked_gids = { [2] = true },
     solid_terrain = 9,
     empty_terrain = 1,
 })

@@ -281,9 +281,15 @@ pub struct ModulesConfig {
     pub overlay: bool,
     /// Enable tilemap module.
     pub tilemap: bool,
+    /// Enable tileset module.
+    #[serde(default = "default_true")]
+    pub tileset: bool,
     /// Enable tilefield module.
     #[serde(default = "default_true")]
     pub tilefield: bool,
+    /// Enable tile-based lighting module.
+    #[serde(default = "default_true")]
+    pub tilelight: bool,
     /// Enable scene module.
     pub scene: bool,
     /// Enable save module.
@@ -345,8 +351,8 @@ pub struct ModulesConfig {
     pub parallax: bool,
     /// Enable globe module.
     pub globe: bool,
-    /// Enable visibility module.
-    pub visibility: bool,
+    /// Enable awareness module.
+    pub awareness: bool,
     /// Enable cursor module.
     #[serde(default)]
     pub cursor: bool,
@@ -522,7 +528,9 @@ impl Default for Config {
                 effect: true,
                 overlay: true,
                 tilemap: true,
+                tileset: true,
                 tilefield: true,
+                tilelight: true,
                 scene: true,
                 save: true,
                 ecs: true,
@@ -552,7 +560,7 @@ impl Default for Config {
                 terminal: true,
                 parallax: true,
                 globe: true,
-                visibility: true,
+                awareness: true,
                 cursor: true,
                 grep: true,
                 mapblock: true,

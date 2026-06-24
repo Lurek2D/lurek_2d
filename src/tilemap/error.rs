@@ -33,14 +33,6 @@ pub enum TileMapError {
         cells: u64,
         max_cells: u64,
     },
-    /// A computed image pixel count overflowed.
-    ImagePixelOverflow {
-        width_tiles: u32,
-        height_tiles: u32,
-        tile_size: u32,
-    },
-    /// A computed image pixel count exceeded the configured image limit.
-    ImagePixelLimitExceeded { pixels: u64, max_pixels: u64 },
     /// The requested layer index is outside the current layer list.
     InvalidLayerIndex { layer: usize, layer_count: usize },
     /// The requested tile coordinate is outside the layer bounds.
@@ -51,12 +43,8 @@ pub enum TileMapError {
         width: u32,
         height: u32,
     },
-    /// A world-space input must be finite.
-    InvalidFloat { field: &'static str, value: f64 },
-    /// A world-space rectangle size must be strictly positive.
-    NonPositiveRect { field: &'static str, value: f64 },
-    /// A collision query would scan more tiles than allowed by the configured limit.
-    CollisionQueryLimitExceeded { checks: u64, max_checks: u64 },
+    /// A bounded tile operation would touch more cells than allowed by the configured limit.
+    TileOperationLimitExceeded { cells: u64, max_cells: u64 },
     /// A raw importer input exceeded the configured byte budget before parsing.
     OversizedInput {
         context: &'static str,
@@ -132,20 +120,6 @@ impl fmt::Display for TileMapError {
                 "tilemap chunk size {} requires {} cells, exceeding limit {}",
                 chunk_size, cells, max_cells
             ),
-            Self::ImagePixelOverflow {
-                width_tiles,
-                height_tiles,
-                tile_size,
-            } => write!(
-                f,
-                "tilemap image size {}x{} tiles at tile size {} overflows pixel count",
-                width_tiles, height_tiles, tile_size
-            ),
-            Self::ImagePixelLimitExceeded { pixels, max_pixels } => write!(
-                f,
-                "tilemap image requires {} pixels, exceeding limit {}",
-                pixels, max_pixels
-            ),
             Self::InvalidLayerIndex { layer, layer_count } => write!(
                 f,
                 "tilemap layer index {} is out of range for {} layer(s)",
@@ -162,20 +136,10 @@ impl fmt::Display for TileMapError {
                 "tilemap coord ({}, {}) is out of bounds for layer {} sized {}x{}",
                 x, y, layer, width, height
             ),
-            Self::InvalidFloat { field, value } => {
-                write!(f, "tilemap field '{}' must be finite, got {}", field, value)
-            }
-            Self::NonPositiveRect { field, value } => {
-                write!(
-                    f,
-                    "tilemap rect field '{}' must be > 0, got {}",
-                    field, value
-                )
-            }
-            Self::CollisionQueryLimitExceeded { checks, max_checks } => write!(
+            Self::TileOperationLimitExceeded { cells, max_cells } => write!(
                 f,
-                "tilemap collision query would inspect {} tiles, exceeding limit {}",
-                checks, max_checks
+                "tilemap operation would touch {} cells, exceeding limit {}",
+                cells, max_cells
             ),
             Self::OversizedInput {
                 context,

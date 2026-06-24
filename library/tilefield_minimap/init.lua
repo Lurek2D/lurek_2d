@@ -141,6 +141,7 @@ function tilefield_minimap.new(opts)
 
     local self = setmetatable({}, TilefieldMinimap)
     self.field = field
+    self.lightMap = opts.lightMap
     self.width = width
     self.height = height
     self.z = opts.z or 1
@@ -186,7 +187,7 @@ function TilefieldMinimap:syncCostLayer(channel, layer, opts)
     return data
 end
 
---- Convert a tilefield computed light layer into a minimap raw data layer.
+--- Convert a tilelight computed layer into a minimap raw data layer.
 --- @param layer integer
 --- @param opts table?
 --- @return table
@@ -194,7 +195,11 @@ function TilefieldMinimap:syncLightLayer(layer, opts)
     opts = opts or {}
     local channel = opts.channel or "luma"
     local scale = opts.scale or 9
-    local source = self.field:exportLightLayer(opts.z or self.z)
+    local light_map = opts.lightMap or self.lightMap
+    if not light_map then
+        error("TilefieldMinimap:syncLightLayer requires opts.lightMap or constructor opts.lightMap")
+    end
+    local source = light_map:exportLayer(opts.z or self.z)
     local data = {}
     for i = 1, #source do
         data[i] = clamp_byte((source[i][channel] or 0) * scale)

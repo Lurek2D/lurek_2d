@@ -87,6 +87,7 @@ local world_models = {}
 local sectoid_model = nil
 local raycaster = nil
 local field = nil
+local field_light_map = nil
 local tile_visibility = nil
 local field_light_dirty = true
 local field_light_key = ""
@@ -288,6 +289,7 @@ end
 
 local function apply_map_to_tilefield()
     field = lurek.tilefield.new({ width = MAP_W, height = MAP_H, levels = 1 })
+    field_light_map = lurek.tilelight.new(field)
     for y = 1, MAP_H do
         for x = 1, MAP_W do
             if dungeon[y][x] > 0 then
@@ -299,7 +301,7 @@ local function apply_map_to_tilefield()
             end
         end
     end
-    tile_visibility = lurek.visibility.newTileVisibility(field, {
+    tile_visibility = lurek.awareness.newTileAwareness(field, {
         players = { "player" },
         rememberExplored = true,
     })
@@ -483,10 +485,10 @@ local function current_field_light_key()
 end
 
 local function compute_field_light()
-    if not field then return end
-    field:clearPointLights()
+    if not field or not field_light_map then return end
+    field_light_map:clearPointLights()
     local sr, sg, sb = mode_sky_color()
-    field:setGlobalLight({
+    field_light_map:setGlobalLight({
         intensity = mode_ambient(),
         color = { r = sr, g = sg, b = sb },
     })
@@ -494,7 +496,7 @@ local function compute_field_light()
         local lx = math.floor(light.x) + 1
         local ly = math.floor(light.y) + 1
         if field:inBounds(lx, ly, 1) then
-            field:addPointLight({
+            field_light_map:addPointLight({
                 x = lx,
                 y = ly,
                 z = 1,
@@ -508,7 +510,7 @@ local function compute_field_light()
             })
         end
     end
-    field:computeLight({
+    field_light_map:compute({
         includePointLights = true,
         includeGlobalLight = true,
         ambient = { r = 0.02, g = 0.02, b = 0.025 },
@@ -877,8 +879,8 @@ draw_minimap = function()
             if gx>=1 and gy>=1 and gx<=MAP_W and gy<=MAP_H then
                 local v=dungeon[gy][gx]
                 local ll = ambient
-                if field then
-                    local _, _, _, luma = field:getLight(gx, gy, 1)
+                if field_light_map then
+                    local _, _, _, luma = field_light_map:getLight(gx, gy, 1)
                     ll = luma
                 end
                 ll = math.max(0.05, math.min(1.0, ll))

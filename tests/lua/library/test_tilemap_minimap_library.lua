@@ -13,8 +13,8 @@ local function build_map()
         },
     }
 
-    function map:isSolid(_, x, y)
-        return self.solids[x .. ":" .. y] == true
+    function map:getTile(_, x, y)
+        return self.solids[x .. ":" .. y] and 2 or 0
     end
 
     function map:worldToTile(wx, wy)
@@ -34,6 +34,7 @@ describe("tilemap_minimap library", function()
             layer = 1,
             width = 4,
             height = 3,
+            blocked_gids = { [2] = true },
             solid_terrain = 9,
             empty_terrain = 1,
         })
@@ -46,7 +47,7 @@ describe("tilemap_minimap library", function()
     -- @library lurek.library_tilemap_minimap
     it("centers minimap from world coordinates", function()
         local map = build_map()
-        local helper = TilemapMinimap.new({ map = map, layer = 1, width = 4, height = 3 })
+        local helper = TilemapMinimap.new({ map = map, layer = 1, width = 4, height = 3, blocked_gids = { [2] = true } })
 
         local tx, ty = helper:setCenterFromWorld(48, 16)
         expect_equal(tx, 2, "world x should map to tile x")
@@ -60,7 +61,7 @@ describe("tilemap_minimap library", function()
     -- @library lurek.library_tilemap_minimap
     it("applies and clears viewport overlay without error", function()
         local map = build_map()
-        local helper = TilemapMinimap.new({ map = map, layer = 1, width = 4, height = 3 })
+        local helper = TilemapMinimap.new({ map = map, layer = 1, width = 4, height = 3, blocked_gids = { [2] = true } })
 
         local ok_set = pcall(function()
             helper:setViewportFromWorld(0, 0, 64, 64)

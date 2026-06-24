@@ -29,6 +29,8 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 ## Notes
 
 - Safe procgen paths now reject zero-sized grids, overflowing `width * height` allocations, invalid finite/range parameters, and oversized WFC retry budgets through `ProcgenLimits`/`ProcgenError`.
+- `procgen` produces generated data such as tile ids, region ids, biome labels, height/noise grids, rooms, graphs, candidate placements, and WFC outputs. It should not own rendering, per-player awareness, tile-light state, or pathfinding results.
+- Generated tile content should be materialized as `tilemap`, `tilefield` profiles/refs, or plain Lua tables. The game developer composes those outputs with `pathfind`, `tilelight`, `awareness`, `minimap`, and `render` in Lua unless a narrow Rust adapter is needed for conversion performance or data safety.
 - `Heightmap::try_generate`, `try_from_noise_map`, `try_from_cellular`, and `try_get` define the non-panicking heightmap contract; legacy constructors still route callers through the same validation layer.
 - `Heightmap` now exposes explicit `ErosionMode` semantics: `InPlace` is scan-order dependent and fast, while `Buffered` uses a frozen source snapshot per pass for order-independent updates; erosion helpers return `HeightmapErosionReport` with pass and change counts.
 - `MapGenOptions` now owns bounded parallel-generation controls (`parallel_enabled`, `parallel_chunk_size`), so safe noise generation can fall back to sequential execution or constrain Rayon chunk granularity without changing output determinism.

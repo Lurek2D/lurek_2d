@@ -1,10 +1,12 @@
 //! Registers the `lurek.mapblock` Lua API for map blocks, edge parsing, cell lists, and block userdata.
 
+use super::tilefield_api::LuaTileField;
 use super::SharedState;
 use crate::mapblock::{
     Edge, MapBlock, MapBlockConfig, MapBlockGenerator, MapBlockReport, MapGroup, MapOrientation,
     MapScript, NeighborRules, PlacementGrid, ScriptStep, SolveFailureReason, StepType, TilesetRef,
 };
+use crate::tilefield::{CellCoord, TileField, TileTopology};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -77,6 +79,24 @@ fn solve_failure_reason_name(reason: SolveFailureReason) -> &'static str {
         SolveFailureReason::NoCandidates => "no_candidates",
         SolveFailureReason::Contradiction => "contradiction",
     }
+}
+
+fn mapblock_topology_from_opts(opts: Option<&LuaTable>) -> LuaResult<TileTopology> {
+    let topology = opts
+        .and_then(|t| t.get::<_, Option<String>>("topology").ok().flatten())
+        .unwrap_or_else(|| "square".to_string());
+    TileTopology::parse(&topology)
+        .map_err(|err| LuaError::RuntimeError(format!("lurek.mapblock.toTileField: {err}")))
+}
+
+fn mapblock_required_string_opt(
+    opts: Option<&LuaTable>,
+    key: &str,
+    api: &str,
+) -> LuaResult<String> {
+    opts.and_then(|t| t.get::<_, Option<String>>(key).ok().flatten())
+        .filter(|value| !value.trim().is_empty())
+        .ok_or_else(|| LuaError::RuntimeError(format!("{api}: opts.{key} is required")))
 }
 
 fn read_cell_list(table: LuaTable) -> LuaResult<Vec<(i32, i32)>> {
@@ -826,6 +846,151 @@ impl LuaUserData for LuaMapBlockResult {
             }
             Ok(placements)
         });
+
+        // -- toTileField --
+        /// Converts one mapblock result layer and slot into a shared tilefield ref layer.
+        /// @param | opts | table | Options: layer, slot, ref, tilesetRef, topology, skipZero.
+        /// @return | LTileField | Tilefield populated from this result.
+        methods.add_method("toTileField", |_, this, opts: Option<LuaTable>| {
+            let topology = mapblock_topology_from_opts(opts.as_ref())?;
+            let layer = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<u32>>("layer").ok().flatten())
+                .unwrap_or(0);
+            let slot_index = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<usize>>("slot").ok().flatten())
+                .unwrap_or(0);
+            let ref_slot =
+                mapblock_required_string_opt(opts.as_ref(), "ref", "lurek.mapblock.toTileField")?;
+            let tileset_ref_slot = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<String>>("tilesetRef").ok().flatten());
+            let skip_zero = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<bool>>("skipZero").ok().flatten())
+                .unwrap_or(true);
+            let levels = this.inner.level_count.max(1);
+            let mut field = TileField::new(this.inner.width, this.inner.height, levels, topology)
+                .map_err(|err| {
+                LuaError::RuntimeError(format!("lurek.mapblock.toTileField: {err}"))
+            })?;
+            field.define_slot(ref_slot.clone()).map_err(|err| {
+                LuaError::RuntimeError(format!("lurek.mapblock.toTileField: {err}"))
+            })?;
+            if let Some(slot) = tileset_ref_slot.as_ref() {
+                field.define_slot(slot.clone()).map_err(|err| {
+                    LuaError::RuntimeError(format!("lurek.mapblock.toTileField: {err}"))
+                })?;
+            }
+            for z in 0..levels {
+                for y in 0..this.inner.height {
+                    for x in 0..this.inner.width {
+                        let (tileset_id, gid) = this.inner.get_tile(z, layer, x, y, slot_index);
+                        if skip_zero && gid == 0 && tileset_id == 0 {
+                            continue;
+                        }
+                        let coord = CellCoord { x, y, z };
+                        field.set_ref(coord, ref_slot.clone(), gid).map_err(|err| {
+                            LuaError::RuntimeError(format!("lurek.mapblock.toTileField: {err}"))
+                        })?;
+                        if let Some(slot) = tileset_ref_slot.as_ref() {
+                            field
+                                .set_ref(coord, slot.clone(), tileset_id)
+                                .map_err(|err| {
+                                    LuaError::RuntimeError(format!(
+                                        "lurek.mapblock.toTileField: {err}"
+                                    ))
+                                })?;
+                        }
+                    }
+                }
+            }
+            Ok(LuaTileField {
+                inner: Rc::new(RefCell::new(field)),
+            })
+        });
+
+        // -- writeTileField --
+        /// Writes one mapblock result layer and slot into an existing tilefield ref layer.
+        /// @param | field | LTileField | Target tilefield.
+        /// @param | opts | table | Options: layer, slot, ref, tilesetRef, skipZero.
+        methods.add_method(
+            "writeTileField",
+            |_, this, (field_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let layer = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<u32>>("layer").ok().flatten())
+                    .unwrap_or(0);
+                let slot_index = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<usize>>("slot").ok().flatten())
+                    .unwrap_or(0);
+                let ref_slot = mapblock_required_string_opt(
+                    opts.as_ref(),
+                    "ref",
+                    "lurek.mapblock.writeTileField",
+                )?;
+                let tileset_ref_slot = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<String>>("tilesetRef").ok().flatten());
+                let skip_zero = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<bool>>("skipZero").ok().flatten())
+                    .unwrap_or(true);
+                let field_ud = field_ud.borrow::<LuaTileField>()?;
+                let mut field = field_ud.inner.borrow_mut();
+                if !field.has_slot(&ref_slot) {
+                    field.define_slot(ref_slot.clone()).map_err(|err| {
+                        LuaError::RuntimeError(format!("lurek.mapblock.writeTileField: {err}"))
+                    })?;
+                }
+                if let Some(slot) = tileset_ref_slot.as_ref() {
+                    if !field.has_slot(slot) {
+                        field.define_slot(slot.clone()).map_err(|err| {
+                            LuaError::RuntimeError(format!(
+                                "lurek.mapblock.writeTileField: {err}"
+                            ))
+                        })?;
+                    }
+                }
+                let (field_width, field_height, field_levels) = field.size();
+                if this.inner.width > field_width
+                    || this.inner.height > field_height
+                    || this.inner.level_count > field_levels
+                {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.mapblock.writeTileField: target tilefield is too small".to_string(),
+                    ));
+                }
+                for z in 0..this.inner.level_count {
+                    for y in 0..this.inner.height {
+                        for x in 0..this.inner.width {
+                            let (tileset_id, gid) = this.inner.get_tile(z, layer, x, y, slot_index);
+                            if skip_zero && gid == 0 && tileset_id == 0 {
+                                continue;
+                            }
+                            let coord = CellCoord { x, y, z };
+                            field.set_ref(coord, ref_slot.clone(), gid).map_err(|err| {
+                                LuaError::RuntimeError(format!(
+                                    "lurek.mapblock.writeTileField: {err}"
+                                ))
+                            })?;
+                            if let Some(slot) = tileset_ref_slot.as_ref() {
+                                field
+                                    .set_ref(coord, slot.clone(), tileset_id)
+                                    .map_err(|err| {
+                                        LuaError::RuntimeError(format!(
+                                            "lurek.mapblock.writeTileField: {err}"
+                                        ))
+                                    })?;
+                            }
+                        }
+                    }
+                }
+                Ok(())
+            },
+        );
     }
 }
 

@@ -159,16 +159,19 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Meter conversion helpers keep pixel-authored content aligned with simulation units without spreading scale math.
 - Debug extraction exposes shape snapshots and image drawing support so tools can inspect runtime geometry easily.
 - Open this file when runtime ownership or physics behavior changes; pure shape and zone definitions live nearby.
+- Keep Lua conversion, renderer submission, asset parsing, and editor UI policy outside this simulation owner.
 
 ### zone.rs
 
-- Owns the zone owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit.
-- Centers the implementation around ZoneId, ZonePriority, ZoneGravityMode, with helpers kept close to their invariants.
-- Defines how zone data is validated, transformed, or stored before neighboring systems use it.
-- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on zone behavior while Lua registration stays elsewhere.
-- Documents the boundary where physics code accepts inputs, reports errors, or updates state.
-- Use this file when changing zone defaults, lifecycle handling, validation, or data ownership.
+- Owns physics zone definitions, priorities, gravity modes, falloffs, boundaries, and membership tracking events.
+- Keeps zone validation near the data that needs it so invalid radii, damping, and polygon bounds fail early.
+- Provides pure zone containment helpers plus tracker bookkeeping used by `World` during simulation steps.
+- Stores no Rapier sets itself; the world applies zone effects after ordering and filtering these definitions.
+- Separates authored gravity areas from body, fixture, joint, and collision ownership in nearby physics files.
+- Emits enter and leave events through `ZoneTracker` so gameplay reads stable membership changes after stepping.
+- Keeps crate-local helpers focused on physics data while Lua binding translation remains in `lua_api`.
+- Update this file when zone shapes, priority rules, gravity overrides, or membership event semantics change.
+- Keep renderer debug extraction and solver integration outside this file so the zone concept stays reusable.
 
 
 
