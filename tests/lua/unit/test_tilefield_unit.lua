@@ -20,6 +20,95 @@ describe("lurek.tilefield module functions", function()
         expect_true(not field:blocks(1, 1, 1, "move"))
     end)
 
+    -- @covers lurek.tilefield.createPhysicsFromTileset
+    it("creates physics bodies from tileset object physics", function()
+        local tileset = lurek.tileset.fromProvider({
+            firstGid = 10,
+            tileCount = 4,
+            columns = 2,
+            tileWidth = 16,
+            tileHeight = 16,
+            objects = {
+                wall = {
+                    physics = {
+                        shape = "diamond",
+                        bodyType = "static",
+                        density = 2.0,
+                        friction = 0.2,
+                        restitution = 0.85,
+                        layer = 2,
+                        mask = 3,
+                    },
+                },
+            },
+            tileObjects = { [2] = "wall" },
+        })
+        local field = lurek.tilefield.new({ width = 3, height = 3 })
+        field:setRef(2, 2, 1, "tiles", 11)
+        local world = lurek.physics.newWorld(0, 0)
+
+        local bodies = lurek.tilefield.createPhysicsFromTileset(field, "tiles", tileset, world, { refIsGid = true })
+
+        expect_equal(1, #bodies)
+        expect_equal(1, world:getBodyCount())
+        expect_equal("LBody", bodies[1]:type())
+        local x, y = bodies[1]:getPosition()
+        expect_near(24.0, x, 0.001)
+        expect_near(24.0, y, 0.001)
+        expect_near(0.85, bodies[1]:getRestitution(), 0.001)
+        expect_equal(2, bodies[1]:getLayer())
+        expect_equal(3, bodies[1]:getMask())
+    end)
+
+    -- @covers lurek.tilefield.createLightsFromTileset
+    it("creates normal lights and occluders from tileset objects", function()
+        lurek.light.clear()
+        local tileset = lurek.tileset.fromProvider({
+            firstGid = 20,
+            tileCount = 4,
+            columns = 2,
+            tileWidth = 16,
+            tileHeight = 16,
+            objects = {
+                torch_wall = {
+                    renderLight = {
+                        shape = "square",
+                        radius = 80,
+                        intensity = 1.25,
+                        color = { 1.0, 0.7, 0.3, 1.0 },
+                        shadowEnabled = true,
+                    },
+                    occluder = {
+                        shape = "hex",
+                        opacity = 0.75,
+                        lightMask = 5,
+                    },
+                },
+            },
+            tileObjects = { [1] = "torch_wall" },
+        })
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        field:setRef(1, 2, 1, "tiles", 20)
+
+        local spawned = lurek.tilefield.createLightsFromTileset(field, "tiles", tileset, { refIsGid = true })
+
+        expect_equal(1, #spawned.lights)
+        expect_equal(1, #spawned.occluders)
+        expect_equal(1, lurek.light.getLightCount())
+        expect_equal(1, lurek.light.getOccluderCount())
+        local lx, ly = spawned.lights[1]:getPosition()
+        expect_near(8.0, lx, 0.001)
+        expect_near(24.0, ly, 0.001)
+        expect_near(80.0, spawned.lights[1]:getRadius(), 0.001)
+        expect_near(1.25, spawned.lights[1]:getIntensity(), 0.001)
+        local ox, oy = spawned.occluders[1]:getPosition()
+        expect_near(8.0, ox, 0.001)
+        expect_near(24.0, oy, 0.001)
+        expect_equal(12, #spawned.occluders[1]:getVertices())
+        expect_near(0.75, spawned.occluders[1]:getOpacity(), 0.001)
+        expect_equal(5, spawned.occluders[1]:getLightMask())
+    end)
+
     -- @covers lurek.tilefield.newFieldMap
     it("creates a layered map of shared fields", function()
         local map = lurek.tilefield.newFieldMap({

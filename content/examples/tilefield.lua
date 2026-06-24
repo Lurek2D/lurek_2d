@@ -28,6 +28,50 @@ do
     tilefield_log("tilemap copied, blocked=" .. tostring(field:blocks(2, 2, 1, "move")))
 end
 
+--@api: lurek.tilefield.createPhysicsFromTileset
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local tileset = lurek.tileset.fromProvider({
+        firstGid = 1,
+        tileCount = 2,
+        columns = 2,
+        tileWidth = 16,
+        tileHeight = 16,
+        objects = { wall = { physics = { shape = "rect", bodyType = "static", restitution = 0.8 } } },
+        tileObjects = { [1] = "wall" },
+    })
+    local field = lurek.tilefield.new({ width = 3, height = 3 })
+    field:setRef(2, 2, 1, "tiles", 1)
+    local world = lurek.physics.newWorld(0, 0)
+    local bodies = lurek.tilefield.createPhysicsFromTileset(field, "tiles", tileset, world, { refIsGid = true })
+    tilefield_log("tileset physics bodies=" .. #bodies .. " world=" .. world:getBodyCount())
+end
+
+--@api: lurek.tilefield.createLightsFromTileset
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    lurek.light.clear()
+    local tileset = lurek.tileset.fromProvider({
+        firstGid = 1,
+        tileCount = 1,
+        columns = 1,
+        tileWidth = 16,
+        tileHeight = 16,
+        objects = { torch_wall = { renderLight = { radius = 64, intensity = 1.2, color = { 1, 0.8, 0.4, 1 } }, occluder = { shape = "diamond" } } },
+        tileObjects = { [1] = "torch_wall" },
+    })
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    field:setRef(1, 1, 1, "tiles", 1)
+    local spawned = lurek.tilefield.createLightsFromTileset(field, "tiles", tileset, { refIsGid = true })
+    tilefield_log("tileset lights=" .. #spawned.lights .. " occluders=" .. #spawned.occluders)
+end
+
 --@api: lurek.tilefield.newFieldMap
 do
     local function tilefield_log(message)

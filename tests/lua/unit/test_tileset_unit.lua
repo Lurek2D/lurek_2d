@@ -19,6 +19,28 @@ local function sample_tileset()
                 transmission = { light = 0.25 },
                 filters = { light = { 0.5, 0.75, 1.0 } },
                 footprint = { w = 2, h = 3 },
+                physics = {
+                    shape = "diamond",
+                    bodyType = "static",
+                    density = 2.0,
+                    friction = 0.4,
+                    restitution = 0.8,
+                    layer = 2,
+                    mask = 7,
+                },
+                renderLight = {
+                    shape = "square",
+                    radius = 96,
+                    intensity = 1.5,
+                    color = { 1.0, 0.8, 0.4, 1.0 },
+                    shadowEnabled = true,
+                    falloff = "smooth",
+                },
+                occluder = {
+                    shape = "hex",
+                    opacity = 0.9,
+                    lightMask = 3,
+                },
                 properties = { material = "wood" },
             },
         },
@@ -205,6 +227,14 @@ describe("lurek.tileset v2 catalog", function()
         expect_near(0.75, object.filters.light[2], 0.001)
         expect_equal(2, object.footprint.w)
         expect_equal(3, object.footprint.h)
+        expect_equal("diamond", object.physics.shape)
+        expect_equal("static", object.physics.bodyType)
+        expect_near(0.8, object.physics.restitution, 0.001)
+        expect_equal("square", object.renderLight.shape)
+        expect_near(96.0, object.renderLight.radius, 0.001)
+        expect_equal("smooth", object.renderLight.falloff)
+        expect_equal("hex", object.occluder.shape)
+        expect_near(0.9, object.occluder.opacity, 0.001)
         expect_equal("wood", object.properties.material)
     end)
 

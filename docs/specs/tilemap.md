@@ -504,6 +504,15 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_hex_neighbors.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_hex_operations_frontier.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_hex_route.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_iso_xcom_final_maptile_render.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_iso_xcom_higher_layers_mask_lower.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_iso_xcom_level_2_cutaway.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_iso_xcom_level_3_cutaway.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_iso_xcom_level_4_cutaway.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_iso_xcom_levels_2_4_occlusion_stack.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_iso_xcom_part_slots.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_iso_xcom_part_slots.txt` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_iso_xcom_render_order_trace.txt` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_isometric.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_isometric_stacked_settlement.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_layers.png` |

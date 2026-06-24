@@ -1,6 +1,6 @@
 {
-  "total_apis": 6216,
-  "covered": 6216,
+  "total_apis": 6218,
+  "covered": 6218,
   "missing": 0,
   "missing_apis": [],
   "duplicate": 0,
@@ -6425,6 +6425,8 @@
     "lurek.thread.newChannel": 1,
     "lurek.thread.newPool": 1,
     "lurek.thread.newThread": 1,
+    "lurek.tilefield.createLightsFromTileset": 1,
+    "lurek.tilefield.createPhysicsFromTileset": 1,
     "lurek.tilefield.fromProvider": 1,
     "lurek.tilefield.fromTileMap": 1,
     "lurek.tilefield.new": 1,

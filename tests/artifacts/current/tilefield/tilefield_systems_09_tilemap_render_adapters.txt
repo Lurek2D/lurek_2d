@@ -1,0 +1,5 @@
+map=50x50
+catalog_adapter=ok
+single_tileset_adapter=ok
+typed_ref=props:crate
+gid_ref=1

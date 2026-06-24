@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-24T11:27:17.895224+00:00",
+  "generated_at": "2026-06-24T16:42:36.840482+00:00",
   "summary": {
     "rust": {
-      "total": 8687,
-      "covered": 8682,
+      "total": 8698,
+      "covered": 8693,
       "missing": 5,
       "pct": 99.9
     },
@@ -14,8 +14,8 @@
       "pct": 100.0
     },
     "total": {
-      "total": 8865,
-      "covered": 8860,
+      "total": 8876,
+      "covered": 8871,
       "missing": 5,
       "pct": 99.9
     }
@@ -25,7 +25,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 416,
+      "line": 429,
       "kind": "fn",
       "name": "field_from_provider",
       "has_doc": false
@@ -34,7 +34,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 273,
+      "line": 439,
       "kind": "fn",
       "name": "tileset_from_provider",
       "has_doc": false
@@ -43,7 +43,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 351,
+      "line": 517,
       "kind": "struct",
       "name": "LuaTileSet",
       "has_doc": false
@@ -52,7 +52,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 356,
+      "line": 522,
       "kind": "struct",
       "name": "LuaTileCatalog",
       "has_doc": false
@@ -61,7 +61,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 1078,
+      "line": 1295,
       "kind": "fn",
       "name": "register",
       "has_doc": false
@@ -34452,7 +34452,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/light_api.rs",
-      "line": 1293,
+      "line": 419,
+      "kind": "fn",
+      "name": "lua_light_from_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/light_api.rs",
+      "line": 1308,
       "kind": "struct",
       "name": "LuaOccluder",
       "has_doc": true
@@ -34461,7 +34470,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/light_api.rs",
-      "line": 1468,
+      "line": 1316,
+      "kind": "fn",
+      "name": "lua_occluder_from_occluder",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/light_api.rs",
+      "line": 1493,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -34983,7 +35001,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1538,
+      "line": 305,
+      "kind": "fn",
+      "name": "lua_body_from_body",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 1545,
       "kind": "struct",
       "name": "LuaZone",
       "has_doc": true
@@ -34992,7 +35019,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1779,
+      "line": 1786,
       "kind": "struct",
       "name": "LuaTerrain",
       "has_doc": true
@@ -35001,7 +35028,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1958,
+      "line": 1965,
       "kind": "struct",
       "name": "LuaBody",
       "has_doc": true
@@ -35010,7 +35037,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1964,
+      "line": 1971,
       "kind": "fn",
       "name": "world_handle",
       "has_doc": true
@@ -35019,7 +35046,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 1969,
+      "line": 1976,
       "kind": "fn",
       "name": "body_id",
       "has_doc": true
@@ -35028,7 +35055,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2357,
+      "line": 2364,
       "kind": "struct",
       "name": "LuaPhysicsShape",
       "has_doc": true
@@ -35037,7 +35064,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/physics_api.rs",
-      "line": 2513,
+      "line": 2520,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35685,7 +35712,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 18,
+      "line": 27,
       "kind": "struct",
       "name": "LuaTileField",
       "has_doc": true
@@ -35694,7 +35721,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 24,
+      "line": 33,
       "kind": "struct",
       "name": "LuaTileFieldMap",
       "has_doc": true
@@ -35703,7 +35730,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 416,
+      "line": 429,
       "kind": "fn",
       "name": "field_from_provider",
       "has_doc": false
@@ -35712,7 +35739,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 2347,
+      "line": 2636,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35784,7 +35811,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 273,
+      "line": 439,
       "kind": "fn",
       "name": "tileset_from_provider",
       "has_doc": false
@@ -35793,7 +35820,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 351,
+      "line": 517,
       "kind": "struct",
       "name": "LuaTileSet",
       "has_doc": false
@@ -35802,7 +35829,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 356,
+      "line": 522,
       "kind": "struct",
       "name": "LuaTileCatalog",
       "has_doc": false
@@ -35811,7 +35838,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 1078,
+      "line": 1295,
       "kind": "fn",
       "name": "register",
       "has_doc": false
@@ -70445,6 +70472,15 @@
       "file": "src/tilefield/field.rs",
       "line": 858,
       "kind": "fn",
+      "name": "range_distance",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 870,
+      "kind": "fn",
       "name": "export_block_layer",
       "has_doc": true
     },
@@ -70452,7 +70488,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 869,
+      "line": 881,
       "kind": "fn",
       "name": "export_cost_layer",
       "has_doc": true
@@ -70461,7 +70497,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 880,
+      "line": 892,
       "kind": "fn",
       "name": "export_ref_layer",
       "has_doc": true
@@ -70470,7 +70506,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 908,
+      "line": 920,
       "kind": "fn",
       "name": "write_block_layer",
       "has_doc": true
@@ -70479,7 +70515,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 925,
+      "line": 937,
       "kind": "fn",
       "name": "write_cost_layer",
       "has_doc": true
@@ -70488,7 +70524,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 942,
+      "line": 954,
       "kind": "fn",
       "name": "write_ref_layer",
       "has_doc": true
@@ -70768,6 +70804,15 @@
       "module": "tilefield",
       "file": "src/tilefield/topology.rs",
       "line": 61,
+      "kind": "fn",
+      "name": "range_distance",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/topology.rs",
+      "line": 72,
       "kind": "fn",
       "name": "neighbors",
       "has_doc": true
@@ -72793,6 +72838,33 @@
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
       "line": 12,
+      "kind": "enum",
+      "name": "TileObjectShapeKind",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 27,
+      "kind": "fn",
+      "name": "parse",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 41,
+      "kind": "fn",
+      "name": "as_str",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 54,
       "kind": "struct",
       "name": "TileObjectLight",
       "has_doc": true
@@ -72801,7 +72873,34 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 33,
+      "line": 75,
+      "kind": "struct",
+      "name": "TileObjectPhysics",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 114,
+      "kind": "struct",
+      "name": "TileObjectRenderLight",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 159,
+      "kind": "struct",
+      "name": "TileObjectOccluder",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 183,
       "kind": "struct",
       "name": "TileObjectArchetype",
       "has_doc": true
@@ -72810,7 +72909,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 64,
+      "line": 220,
       "kind": "fn",
       "name": "new",
       "has_doc": true

@@ -12,7 +12,7 @@
 - Source path: `src/tilefield`
 - Binding: `src/lua_api/tilefield_api.rs`
 - Namespace: `lurek.tilefield`
-- Lua API surface: `4` functions, `2` types, `75` methods
+- Lua API surface: `6` functions, `2` types, `75` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -21,7 +21,7 @@
 - Coordinates exposed to Lua are one-based `x, y, z`; Rust storage is zero-based.
 - `LTileField` is a single field with width, height, and one or more levels. This is the default one-level map model.
 - `LTileFieldMap` is a 2D or layered map of shared `LTileField` handles. Use it when a world is chunked into fields or stacked as layers of fields.
-- Supported topologies are `square`, `square4`, `square8`, `iso_square`, and `hex`. `square` keeps the existing eight-way distance behavior, `square4` uses Manhattan distance, and `iso_square` uses square gameplay math because projection belongs to tilemap/rendering.
+- Supported topologies are `square`, `square4`, `square8`, `iso_square`, and `hex`. `square`/`square8` use eight neighbors, but radial range budgets use Euclidean square distance so a diagonal is `sqrt(2)`; `square4` uses Manhattan distance, and `iso_square` uses square gameplay math because projection belongs to tilemap/rendering.
 - Channels are intentionally independent: seeing through a cell does not imply acting, moving, or lighting through it.
 - Built-in profiles include `empty`, `wall`, `window`, `door_closed`, `door_open`, and `half_wall`.
 - The `light` channel and `sunOcclusion` are environment inputs consumed by `lurek.tilelight`; `tilefield` does not store point lights or computed light values.
@@ -142,6 +142,8 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 
 ### Functions
 
+- `lurek.tilefield.createLightsFromTileset(field, slot, tileset, opts?) -> table`: Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
+- `lurek.tilefield.createPhysicsFromTileset(field, slot, tileset, world, opts?) -> LBody[]`: Creates physics bodies from tilefield refs whose tileset objects define `physics`.
 - `lurek.tilefield.fromProvider(provider) -> LTileField`: Builds a native tilefield from a Lua provider table with width, height, optional levels/topology, slots, modifiers, regions, and optional getCell(x,y,z).
 - `lurek.tilefield.fromTileMap(tilemap, opts?) -> LTileField`: Copies a tilemap layer into a tilefield, optionally applying tileset object defaults and a ref slot.
 - `lurek.tilefield.new(opts) -> LTileField`: Creates a multi-level tilefield with explicit dimensions and topology.
@@ -270,9 +272,61 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 | Evidence test | `tests/lua/evidence/test_tilefield_evidence.lua` |
 | Golden test | `tests/lua/golden/test_tilefield_golden.lua` |
 | Current artifact | `tests/artifacts/current/tilefield/tilefield_channels.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_01_procgen_refs.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_02_procgen_move_costs.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_03_mapblock_to_refs.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_04_mapblock_write_report.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_05_tileset_object_semantics.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_06_tileset_catalog_refs.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_07_sprite_atlas_manifest.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_08_tilemap_from_refs.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_09_tilemap_render_adapters.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_10_pathfind_route.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_11_pathfind_range.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_12_pathfind_fov.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_13_awareness_players.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_14_awareness_team.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_15_awareness_cone.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_16_awareness_line_channels.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_17_tilelight_point_blockers.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_18_tilelight_many_sources.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_19_tilelight_line_area.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_20_tilelight_global_multilevel.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_21_tilelight_source_lifecycle.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_22_fog_light_minimap.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_23_fieldmap_chunks.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_24_procgen_mapblock_overlay.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_hex_systems_25_final_maptile_render.png` |
 | Current artifact | `tests/artifacts/current/tilefield/tilefield_lighting_multilevel.png` |
 | Current artifact | `tests/artifacts/current/tilefield/tilefield_lighting_values.txt` |
 | Current artifact | `tests/artifacts/current/tilefield/tilefield_raycaster_input.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_01_procgen_refs.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_02_procgen_move_costs.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_03_mapblock_to_refs.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_04_mapblock_write_report.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_05_tileset_object_semantics.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_06_tileset_catalog_refs.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_07_sprite_atlas_manifest.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_08_tilemap_from_refs.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_09_tilemap_render_adapters.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_10_pathfind_route.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_11_pathfind_range.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_12_pathfind_flow.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_13_awareness_players.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_14_awareness_team.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_15_awareness_cone.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_16_awareness_line_channels.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_17_tilelight_point_blockers.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_18_tilelight_many_sources.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_19_tilelight_line_area.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_20_tilelight_global_multilevel.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_21_tilelight_source_lifecycle.txt` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_22_fog_light_minimap.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_23_fieldmap_chunks.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_24_procgen_mapblock_overlay.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_25_final_maptile_render.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_26_iso_xcom_slot_logic.png` |
+| Current artifact | `tests/artifacts/current/tilefield/tilefield_systems_26_iso_xcom_slot_logic.txt` |
 | Current artifact | `tests/artifacts/current/tilefield/tilefield_visibility_action_players.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilefield/tilefield_channels.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilefield/tilefield_lighting_multilevel.png` |

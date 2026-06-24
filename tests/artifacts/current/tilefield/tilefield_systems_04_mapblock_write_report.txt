@@ -1,0 +1,8 @@
+result_width=6
+result_height=5
+result_levels=2
+field_width=50
+field_height=50
+field_slots=terrain,tileset
+sample_terrain=0
+sample_tileset=0

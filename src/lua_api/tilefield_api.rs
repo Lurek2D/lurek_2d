@@ -3,12 +3,21 @@
 use super::tilemap_api::LuaTileMap;
 use super::tileset_api::LuaTileSet;
 use super::SharedState;
+use crate::color::Color;
+use crate::light::{FalloffMode, Light2D, LightBlendMode, LightType, Occluder};
+use crate::lua_api::light_api::{lua_light_from_light, lua_occluder_from_occluder};
+use crate::lua_api::physics_api::{lua_body_from_body, LuaWorld};
+use crate::math::Vec2;
+use crate::physics::{Body, BodyType};
 use crate::tilefield::{
     CellCoord, TileCategory, TileCategoryKind, TileChannel, TileField, TileFieldMap,
     TileLightEmitter, TileModifier, TileRef, TileTopology,
 };
 use crate::tilemap::tilemap::TileMap;
-use crate::tileset::TileSet;
+use crate::tileset::{
+    TileObjectArchetype, TileObjectOccluder, TileObjectPhysics, TileObjectRenderLight,
+    TileObjectShapeKind, TileSet,
+};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashSet;
@@ -232,7 +241,11 @@ fn modifier_from_table(name: String, table: LuaTable, api: &str) -> LuaResult<Ti
     Ok(modifier)
 }
 
-fn profile_modifier_from_table(name: String, table: LuaTable, api: &str) -> LuaResult<TileModifier> {
+fn profile_modifier_from_table(
+    name: String,
+    table: LuaTable,
+    api: &str,
+) -> LuaResult<TileModifier> {
     let mut modifier = modifier_from_table(name, table.clone(), api)?;
     if let Ok(costs) = table.get::<_, LuaTable>("costs") {
         for pair in costs.pairs::<String, f32>() {
@@ -709,6 +722,282 @@ fn apply_tileset_object_to_field(
         }
     }
     Ok(applied)
+}
+
+struct TileMaterializeOptions {
+    z: u32,
+    ref_is_gid: bool,
+    origin_x: f32,
+    origin_y: f32,
+    tile_width: f32,
+    tile_height: f32,
+}
+
+fn materialize_options(
+    opts: Option<&LuaTable>,
+    tileset: &TileSet,
+    api: &str,
+) -> LuaResult<TileMaterializeOptions> {
+    let z = opts
+        .and_then(|table| table.get::<_, Option<u32>>("z").ok().flatten())
+        .or_else(|| opts.and_then(|table| table.get::<_, Option<u32>>("level").ok().flatten()))
+        .unwrap_or(1)
+        .checked_sub(1)
+        .ok_or_else(|| lua_err(api, "z must be >= 1"))?;
+    let ref_is_gid = opts
+        .and_then(|table| table.get::<_, Option<bool>>("refIsGid").ok().flatten())
+        .unwrap_or(false);
+    let origin_x = opts
+        .and_then(|table| table.get::<_, Option<f32>>("originX").ok().flatten())
+        .unwrap_or(0.0);
+    let origin_y = opts
+        .and_then(|table| table.get::<_, Option<f32>>("originY").ok().flatten())
+        .unwrap_or(0.0);
+    let tile_width = opts
+        .and_then(|table| table.get::<_, Option<f32>>("tileWidth").ok().flatten())
+        .unwrap_or_else(|| tileset.get_tile_width() as f32);
+    let tile_height = opts
+        .and_then(|table| table.get::<_, Option<f32>>("tileHeight").ok().flatten())
+        .unwrap_or_else(|| tileset.get_tile_height() as f32);
+    if !origin_x.is_finite()
+        || !origin_y.is_finite()
+        || !tile_width.is_finite()
+        || !tile_height.is_finite()
+        || tile_width <= 0.0
+        || tile_height <= 0.0
+    {
+        return Err(lua_err(
+            api,
+            "originX/originY must be finite and tileWidth/tileHeight must be finite > 0",
+        ));
+    }
+    Ok(TileMaterializeOptions {
+        z,
+        ref_is_gid,
+        origin_x,
+        origin_y,
+        tile_width,
+        tile_height,
+    })
+}
+
+fn tile_center(coord: CellCoord, opts: &TileMaterializeOptions) -> (f32, f32) {
+    (
+        opts.origin_x + (coord.x as f32 + 0.5) * opts.tile_width,
+        opts.origin_y + (coord.y as f32 + 0.5) * opts.tile_height,
+    )
+}
+
+fn tile_polygon(shape: TileObjectShapeKind, width: f32, height: f32) -> Vec<Vec2> {
+    let hw = width * 0.5;
+    let hh = height * 0.5;
+    match shape {
+        TileObjectShapeKind::Rect => vec![
+            Vec2::new(-hw, -hh),
+            Vec2::new(hw, -hh),
+            Vec2::new(hw, hh),
+            Vec2::new(-hw, hh),
+        ],
+        TileObjectShapeKind::Square => {
+            let hs = width.min(height) * 0.5;
+            vec![
+                Vec2::new(-hs, -hs),
+                Vec2::new(hs, -hs),
+                Vec2::new(hs, hs),
+                Vec2::new(-hs, hs),
+            ]
+        }
+        TileObjectShapeKind::Diamond => vec![
+            Vec2::new(0.0, -hh),
+            Vec2::new(hw, 0.0),
+            Vec2::new(0.0, hh),
+            Vec2::new(-hw, 0.0),
+        ],
+        TileObjectShapeKind::Triangle => {
+            vec![Vec2::new(0.0, -hh), Vec2::new(hw, hh), Vec2::new(-hw, hh)]
+        }
+        TileObjectShapeKind::Hex => {
+            let qx = hw * 0.5;
+            vec![
+                Vec2::new(-qx, -hh),
+                Vec2::new(qx, -hh),
+                Vec2::new(hw, 0.0),
+                Vec2::new(qx, hh),
+                Vec2::new(-qx, hh),
+                Vec2::new(-hw, 0.0),
+            ]
+        }
+    }
+}
+
+fn polygon_area(vertices: &[Vec2]) -> f32 {
+    let mut area = 0.0;
+    for i in 0..vertices.len() {
+        let a = vertices[i];
+        let b = vertices[(i + 1) % vertices.len()];
+        area += a.x * b.y - b.x * a.y;
+    }
+    area.abs() * 0.5
+}
+
+fn body_type_from_tileset(value: &str, api: &str) -> LuaResult<BodyType> {
+    match value {
+        "static" => Ok(BodyType::Static),
+        "dynamic" => Ok(BodyType::Dynamic),
+        "kinematic" => Ok(BodyType::Kinematic),
+        "sensor" => Ok(BodyType::Sensor),
+        other => Err(lua_err(
+            api,
+            format!("physics.bodyType '{other}' must be static, dynamic, kinematic, or sensor"),
+        )),
+    }
+}
+
+fn physics_body_from_tile(
+    physics: &TileObjectPhysics,
+    coord: CellCoord,
+    opts: &TileMaterializeOptions,
+    api: &str,
+) -> LuaResult<Body> {
+    let (x, y) = tile_center(coord, opts);
+    let body_type = if physics.sensor {
+        BodyType::Sensor
+    } else {
+        body_type_from_tileset(&physics.body_type, api)?
+    };
+    let mut body = match physics.shape {
+        TileObjectShapeKind::Rect => {
+            Body::try_new(x, y, opts.tile_width, opts.tile_height, body_type)
+        }
+        TileObjectShapeKind::Square => {
+            let size = opts.tile_width.min(opts.tile_height);
+            Body::try_new(x, y, size, size, body_type)
+        }
+        shape => Body::try_new_polygon(
+            x,
+            y,
+            tile_polygon(shape, opts.tile_width, opts.tile_height),
+            body_type,
+        ),
+    }
+    .map_err(|err| lua_err(api, err))?;
+    let area = match physics.shape {
+        TileObjectShapeKind::Rect => opts.tile_width * opts.tile_height,
+        TileObjectShapeKind::Square => {
+            let size = opts.tile_width.min(opts.tile_height);
+            size * size
+        }
+        shape => polygon_area(&tile_polygon(shape, opts.tile_width, opts.tile_height)),
+    };
+    body.mass = physics.mass.unwrap_or((area * physics.density).max(0.0001));
+    body.friction = physics.friction;
+    body.restitution = physics.restitution;
+    body.layer = physics.layer;
+    body.mask = physics.mask;
+    Ok(body)
+}
+
+fn blend_mode_from_tileset(value: &str, api: &str) -> LuaResult<LightBlendMode> {
+    match value {
+        "add" => Ok(LightBlendMode::Add),
+        "sub" => Ok(LightBlendMode::Sub),
+        "mix" => Ok(LightBlendMode::Mix),
+        other => Err(lua_err(
+            api,
+            format!("renderLight.blendMode '{other}' must be add, sub, or mix"),
+        )),
+    }
+}
+
+fn falloff_from_tileset(value: &str, api: &str) -> LuaResult<FalloffMode> {
+    match value {
+        "linear" => Ok(FalloffMode::Linear),
+        "smooth" => Ok(FalloffMode::Smooth),
+        "constant" => Ok(FalloffMode::Constant),
+        other => Err(lua_err(
+            api,
+            format!("renderLight.falloff '{other}' must be linear, smooth, or constant"),
+        )),
+    }
+}
+
+fn light_type_from_tileset(value: &str, api: &str) -> LuaResult<LightType> {
+    match value {
+        "point" => Ok(LightType::Point),
+        "directional" => Ok(LightType::Directional),
+        "spot" => Ok(LightType::Spot),
+        other => Err(lua_err(
+            api,
+            format!("renderLight.lightType '{other}' must be point, directional, or spot"),
+        )),
+    }
+}
+
+fn render_light_from_tile(
+    render_light: &TileObjectRenderLight,
+    coord: CellCoord,
+    opts: &TileMaterializeOptions,
+    api: &str,
+) -> LuaResult<Light2D> {
+    let (x, y) = tile_center(coord, opts);
+    let mut light = Light2D::new(x, y, render_light.radius);
+    light.color = Color::new(
+        render_light.color[0],
+        render_light.color[1],
+        render_light.color[2],
+        render_light.color[3],
+    );
+    light.intensity = render_light.intensity;
+    light.enabled = render_light.enabled;
+    light.shadow_enabled = render_light.shadow_enabled;
+    light.light_mask = render_light.light_mask;
+    light.shadow_mask = render_light.shadow_mask;
+    if let Some(value) = &render_light.blend_mode {
+        light.blend_mode = blend_mode_from_tileset(value, api)?;
+    }
+    if let Some(value) = &render_light.falloff {
+        light.falloff = falloff_from_tileset(value, api)?;
+    }
+    if let Some(value) = &render_light.light_type {
+        light.light_type = light_type_from_tileset(value, api)?;
+    }
+    Ok(light)
+}
+
+fn occluder_from_tile(
+    occluder: &TileObjectOccluder,
+    coord: CellCoord,
+    opts: &TileMaterializeOptions,
+) -> Occluder {
+    let (x, y) = tile_center(coord, opts);
+    let mut occ = Occluder::new(tile_polygon(
+        occluder.shape,
+        opts.tile_width,
+        opts.tile_height,
+    ));
+    occ.set_position(Vec2::new(x, y));
+    occ.set_opacity(occluder.opacity);
+    occ.set_light_mask(occluder.light_mask);
+    occ.set_enabled(occluder.enabled);
+    occ
+}
+
+fn archetype_for_ref(
+    field: &TileField,
+    coord: CellCoord,
+    slot: &str,
+    tileset: &TileSet,
+    ref_is_gid: bool,
+    api: &str,
+) -> LuaResult<Option<TileObjectArchetype>> {
+    let Some(ref_value) = field.get_ref(coord, slot) else {
+        return Ok(None);
+    };
+    let Some(local_tile_id) = tileset_local_id_from_ref(tileset, ref_value, ref_is_gid, api)?
+    else {
+        return Ok(None);
+    };
+    Ok(tileset.archetype_for_tile(local_tile_id).cloned())
 }
 
 fn tileset_property_for_tile(
@@ -2344,7 +2633,7 @@ impl LuaUserData for LuaTileFieldMap {
 }
 
 /// Registers `lurek.tilefield`.
-pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- new --
@@ -2554,6 +2843,150 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 inner: Rc::new(RefCell::new(field)),
             })
         })?,
+    )?;
+
+    // -- createPhysicsFromTileset --
+    /// Creates physics bodies from tilefield refs whose tileset objects define `physics`.
+    /// @param | field | LTileField | Source field containing refs.
+    /// @param | slot | string | Reference slot name.
+    /// @param | tileset | LTileSet | Tileset with tile object metadata.
+    /// @param | world | LWorld | Physics world that receives the bodies.
+    /// @param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+    /// @return | LBody[] | Created physics body handles in row-major order.
+    tbl.set(
+        "createPhysicsFromTileset",
+        lua.create_function(
+            |lua,
+             (field_ud, slot, tileset_ud, world_ud, opts): (
+                LuaAnyUserData,
+                String,
+                LuaAnyUserData,
+                LuaAnyUserData,
+                Option<LuaTable>,
+            )| {
+                let field_ud = field_ud.borrow::<LuaTileField>()?;
+                let tileset_ud = tileset_ud.borrow::<LuaTileSet>()?;
+                let world_ud = world_ud.borrow::<LuaWorld>()?;
+                let tileset = tileset_ud.inner.borrow();
+                let options =
+                    materialize_options(opts.as_ref(), &tileset, "createPhysicsFromTileset")?;
+                let field = field_ud.inner.borrow();
+                let (width, height, levels) = field.size();
+                if options.z >= levels {
+                    return Err(lua_err("createPhysicsFromTileset", "z is out of bounds"));
+                }
+                let bodies = lua.create_table()?;
+                let mut index = 1;
+                let world = world_ud.world_handle();
+                for y in 0..height {
+                    for x in 0..width {
+                        let coord = CellCoord { x, y, z: options.z };
+                        let Some(archetype) = archetype_for_ref(
+                            &field,
+                            coord,
+                            &slot,
+                            &tileset,
+                            options.ref_is_gid,
+                            "createPhysicsFromTileset",
+                        )?
+                        else {
+                            continue;
+                        };
+                        let Some(physics) = archetype.physics.as_ref() else {
+                            continue;
+                        };
+                        let body = physics_body_from_tile(
+                            physics,
+                            coord,
+                            &options,
+                            "createPhysicsFromTileset",
+                        )?;
+                        bodies.set(index, lua_body_from_body(world.clone(), body))?;
+                        index += 1;
+                    }
+                }
+                Ok(bodies)
+            },
+        )?,
+    )?;
+
+    let light_state = state.clone();
+    // -- createLightsFromTileset --
+    /// Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
+    /// @param | field | LTileField | Source field containing refs.
+    /// @param | slot | string | Reference slot name.
+    /// @param | tileset | LTileSet | Tileset with tile object metadata.
+    /// @param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+    /// @return | table | `{lights=Llight[], occluders=LOccluder[]}`.
+    tbl.set(
+        "createLightsFromTileset",
+        lua.create_function(
+            move |lua,
+                  (field_ud, slot, tileset_ud, opts): (
+                LuaAnyUserData,
+                String,
+                LuaAnyUserData,
+                Option<LuaTable>,
+            )| {
+                let field_ud = field_ud.borrow::<LuaTileField>()?;
+                let tileset_ud = tileset_ud.borrow::<LuaTileSet>()?;
+                let tileset = tileset_ud.inner.borrow();
+                let options =
+                    materialize_options(opts.as_ref(), &tileset, "createLightsFromTileset")?;
+                let field = field_ud.inner.borrow();
+                let (width, height, levels) = field.size();
+                if options.z >= levels {
+                    return Err(lua_err("createLightsFromTileset", "z is out of bounds"));
+                }
+                let lights = lua.create_table()?;
+                let occluders = lua.create_table()?;
+                let mut light_index = 1;
+                let mut occluder_index = 1;
+                for y in 0..height {
+                    for x in 0..width {
+                        let coord = CellCoord { x, y, z: options.z };
+                        let Some(archetype) = archetype_for_ref(
+                            &field,
+                            coord,
+                            &slot,
+                            &tileset,
+                            options.ref_is_gid,
+                            "createLightsFromTileset",
+                        )?
+                        else {
+                            continue;
+                        };
+                        if let Some(render_light) = archetype.render_light.as_ref() {
+                            let light = render_light_from_tile(
+                                render_light,
+                                coord,
+                                &options,
+                                "createLightsFromTileset",
+                            )?;
+                            lights.set(
+                                light_index,
+                                lua_light_from_light(light_state.clone(), light),
+                            )?;
+                            light_index += 1;
+                        }
+                        if let Some(occluder) = archetype.occluder.as_ref() {
+                            occluders.set(
+                                occluder_index,
+                                lua_occluder_from_occluder(
+                                    light_state.clone(),
+                                    occluder_from_tile(occluder, coord, &options),
+                                ),
+                            )?;
+                            occluder_index += 1;
+                        }
+                    }
+                }
+                let result = lua.create_table()?;
+                result.set("lights", lights)?;
+                result.set("occluders", occluders)?;
+                Ok(result)
+            },
+        )?,
     )?;
 
     lurek.set("tilefield", tbl)?;

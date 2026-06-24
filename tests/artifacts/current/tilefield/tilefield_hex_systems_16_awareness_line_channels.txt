@@ -1,0 +1,4 @@
+map=50x50
+field_topology=hex
+line_of_sight=true
+line_of_action=false

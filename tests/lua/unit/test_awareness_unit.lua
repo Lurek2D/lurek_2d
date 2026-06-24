@@ -253,6 +253,7 @@ describe("visibility tilefield helpers", function()
         local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
         vis:computeVisible("p1", { origin = { x = 1, y = 1, z = 1 }, range = 2 })
         expect_true(vis:isVisible("p1", 2, 1, 1))
+        expect_true(not vis:isVisible("p1", 3, 3, 1))
         expect_true(not vis:isVisible("p2", 2, 1, 1))
     end)
 

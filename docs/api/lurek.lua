@@ -29896,6 +29896,23 @@ function LTileFieldMap:type() end
 ---@return boolean True for `LTileFieldMap` or `LObject`.
 function LTileFieldMap:typeOf(name) end
 
+--- Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
+---@param field LTileField Source field containing refs.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset with tile object metadata.
+---@param opts? table `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+---@return table `{lights=Llight[], occluders=LOccluder[]}`.
+lurek.tilefield.createLightsFromTileset = function(field, slot, tileset, opts) end
+
+--- Creates physics bodies from tilefield refs whose tileset objects define `physics`.
+---@param field LTileField Source field containing refs.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset with tile object metadata.
+---@param world LWorld Physics world that receives the bodies.
+---@param opts? table `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+---@return LBody[] Created physics body handles in row-major order.
+lurek.tilefield.createPhysicsFromTileset = function(field, slot, tileset, world, opts) end
+
 --- Builds a native tilefield from a Lua provider table with width, height, optional levels/topology, slots, modifiers, regions, and optional getCell(x,y,z).
 ---@param provider table Lua-authored tilefield provider.
 ---@return LTileField New tilefield copied from the provider.

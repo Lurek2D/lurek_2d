@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-24T11:27:48.917071+00:00",
+    "generated": "2026-06-24T16:42:53.832662+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6241,
-    "marker_covered": 6216,
+    "total_api_functions": 6243,
+    "marker_covered": 6218,
     "describe_covered": 152,
     "describe_coverage_pct": 2.4,
     "heuristic_covered": 0,
-    "total_covered": 6241,
+    "total_covered": 6243,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -49040,11 +49040,11 @@
       ]
     },
     "tilefield": {
-      "total": 79,
-      "marker_covered": 79,
+      "total": 81,
+      "marker_covered": 81,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 79,
+      "covered": 81,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -49084,6 +49084,24 @@
         },
         {
           "lua_name": "lurek.tilefield.fromTileMap",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.tilefield.createPhysicsFromTileset",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.tilefield.createLightsFromTileset",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,

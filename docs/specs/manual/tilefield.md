@@ -9,7 +9,7 @@
 - Coordinates exposed to Lua are one-based `x, y, z`; Rust storage is zero-based.
 - `LTileField` is a single field with width, height, and one or more levels. This is the default one-level map model.
 - `LTileFieldMap` is a 2D or layered map of shared `LTileField` handles. Use it when a world is chunked into fields or stacked as layers of fields.
-- Supported topologies are `square`, `square4`, `square8`, `iso_square`, and `hex`. `square` keeps the existing eight-way distance behavior, `square4` uses Manhattan distance, and `iso_square` uses square gameplay math because projection belongs to tilemap/rendering.
+- Supported topologies are `square`, `square4`, `square8`, `iso_square`, and `hex`. `square`/`square8` use eight neighbors, but radial range budgets use Euclidean square distance so a diagonal is `sqrt(2)`; `square4` uses Manhattan distance, and `iso_square` uses square gameplay math because projection belongs to tilemap/rendering.
 - Channels are intentionally independent: seeing through a cell does not imply acting, moving, or lighting through it.
 - Built-in profiles include `empty`, `wall`, `window`, `door_closed`, `door_open`, and `half_wall`.
 - The `light` channel and `sunOcclusion` are environment inputs consumed by `lurek.tilelight`; `tilefield` does not store point lights or computed light values.

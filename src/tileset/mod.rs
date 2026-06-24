@@ -21,7 +21,10 @@ pub mod tileset;
 pub mod visual;
 
 pub use animation::TileAnimFrame;
-pub use archetype::{TileObjectArchetype, TileObjectLight};
+pub use archetype::{
+    TileObjectArchetype, TileObjectLight, TileObjectOccluder, TileObjectPhysics,
+    TileObjectRenderLight, TileObjectShapeKind,
+};
 pub use autotile::AutoTileMode;
 pub use catalog::TileCatalog;
 pub use tileset::TileSet;

@@ -414,6 +414,21 @@ pub struct LuaLight {
     /// Optional cookie texture path associated with this light.
     cookie_path: RefCell<Option<String>>,
 }
+
+/// Create a Lua light handle by inserting a prepared light into the shared light world.
+pub(crate) fn lua_light_from_light(state: Rc<RefCell<SharedState>>, light: Light2D) -> LuaLight {
+    let mut st = state.borrow_mut();
+    let key = st.light_world.add_light(light);
+    st.light_world.reindex_flickers();
+    drop(st);
+    LuaLight {
+        state,
+        key,
+        transition: RefCell::new(None),
+        cookie_path: RefCell::new(None),
+    }
+}
+
 /// Provides Lua methods for editing, animating, and inspecting one light.
 impl LuaUserData for LuaLight {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1296,6 +1311,16 @@ pub struct LuaOccluder {
     /// Slot-map key identifying the occluder inside the light world.
     key: OccluderKey,
 }
+
+/// Create a Lua occluder handle by inserting a prepared occluder into the shared light world.
+pub(crate) fn lua_occluder_from_occluder(
+    state: Rc<RefCell<SharedState>>,
+    occluder: Occluder,
+) -> LuaOccluder {
+    let key = state.borrow_mut().light_world.add_occluder(occluder);
+    LuaOccluder { state, key }
+}
+
 /// Provides Lua methods for editing and inspecting one light occluder.
 impl LuaUserData for LuaOccluder {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {

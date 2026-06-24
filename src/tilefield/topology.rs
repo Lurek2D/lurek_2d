@@ -57,6 +57,17 @@ impl TileTopology {
         }
     }
 
+    /// Return a range metric suitable for radial budgets on one same-level field.
+    pub fn range_distance(self, a: CellCoord, b: CellCoord) -> f32 {
+        let dx = a.x.abs_diff(b.x) as f32;
+        let dy = a.y.abs_diff(b.y) as f32;
+        match self {
+            Self::Square4 => dx + dy,
+            Self::Square | Self::IsoSquare => (dx * dx + dy * dy).sqrt(),
+            Self::Hex => self.distance(a, b) as f32,
+        }
+    }
+
     /// Return same-level neighbour cells inside the supplied bounds.
     pub fn neighbors(self, coord: CellCoord, width: u32, height: u32) -> Vec<CellCoord> {
         let offsets: &[(i32, i32)] = match self {

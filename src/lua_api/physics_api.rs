@@ -300,6 +300,13 @@ impl LuaWorld {
         self.world.clone()
     }
 }
+
+/// Create a Lua body handle by inserting an authored body into an existing world.
+pub(crate) fn lua_body_from_body(world: Rc<RefCell<World>>, body: Body) -> LuaBody {
+    let id = world.borrow_mut().add_body(body);
+    LuaBody { world, id }
+}
+
 impl LuaUserData for LuaWorld {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- drawDebug --

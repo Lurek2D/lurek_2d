@@ -3,7 +3,8 @@
 use super::SharedState;
 use crate::tilefield::{TileObjectCatalog, TileRef};
 use crate::tileset::{
-    AutoTileMode, TileAnimFrame, TileCatalog, TileObjectArchetype, TileObjectLight, TileSet,
+    AutoTileMode, TileAnimFrame, TileCatalog, TileObjectArchetype, TileObjectLight,
+    TileObjectOccluder, TileObjectPhysics, TileObjectRenderLight, TileObjectShapeKind, TileSet,
     TileVisual,
 };
 use mlua::prelude::*;
@@ -48,6 +49,54 @@ fn property_string_to_bool(value: &str) -> Option<bool> {
     }
 }
 
+fn finite_f32(value: f32, api: &str, field: &str) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {field} must be finite"
+        )))
+    }
+}
+
+fn non_negative_f32(value: f32, api: &str, field: &str) -> LuaResult<f32> {
+    let value = finite_f32(value, api, field)?;
+    if value >= 0.0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {field} must be >= 0"
+        )))
+    }
+}
+
+fn positive_f32(value: f32, api: &str, field: &str) -> LuaResult<f32> {
+    let value = finite_f32(value, api, field)?;
+    if value > 0.0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {field} must be > 0"
+        )))
+    }
+}
+
+fn unit_f32(value: f32, api: &str, field: &str) -> LuaResult<f32> {
+    Ok(finite_f32(value, api, field)?.clamp(0.0, 1.0))
+}
+
+fn shape_kind_from_table(
+    table: &LuaTable,
+    api: &str,
+    default: TileObjectShapeKind,
+) -> LuaResult<TileObjectShapeKind> {
+    match table.get::<_, Option<String>>("shape")? {
+        Some(shape) => TileObjectShapeKind::parse(&shape)
+            .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}"))),
+        None => Ok(default),
+    }
+}
+
 fn optional_table_number(
     table: &LuaTable,
     string_key: &str,
@@ -74,6 +123,114 @@ fn visual_quad_from_table(table: &LuaTable, field: &str) -> LuaResult<Option<[f3
             .or_else(|| quad.get::<_, Option<f32>>("height").ok().flatten())
             .unwrap_or(0.0),
     ]))
+}
+
+fn color4_from_table(table: &LuaTable, api: &str, field: &str) -> LuaResult<[f32; 4]> {
+    Ok([
+        unit_f32(table.get::<_, Option<f32>>(1)?.unwrap_or(1.0), api, field)?,
+        unit_f32(table.get::<_, Option<f32>>(2)?.unwrap_or(1.0), api, field)?,
+        unit_f32(table.get::<_, Option<f32>>(3)?.unwrap_or(1.0), api, field)?,
+        unit_f32(table.get::<_, Option<f32>>(4)?.unwrap_or(1.0), api, field)?,
+    ])
+}
+
+fn parse_physics_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectPhysics> {
+    let mut physics = TileObjectPhysics::default();
+    physics.shape = shape_kind_from_table(&table, api, physics.shape)?;
+    physics.body_type = table
+        .get::<_, Option<String>>("bodyType")?
+        .or_else(|| table.get::<_, Option<String>>("type").ok().flatten())
+        .unwrap_or(physics.body_type);
+    physics.mass = table
+        .get::<_, Option<f32>>("mass")?
+        .map(|value| positive_f32(value, api, "physics.mass"))
+        .transpose()?;
+    physics.density = positive_f32(
+        table
+            .get::<_, Option<f32>>("density")?
+            .unwrap_or(physics.density),
+        api,
+        "physics.density",
+    )?;
+    physics.friction = unit_f32(
+        table
+            .get::<_, Option<f32>>("friction")?
+            .unwrap_or(physics.friction),
+        api,
+        "physics.friction",
+    )?;
+    physics.restitution = unit_f32(
+        table
+            .get::<_, Option<f32>>("restitution")?
+            .unwrap_or(physics.restitution),
+        api,
+        "physics.restitution",
+    )?;
+    physics.sensor = table
+        .get::<_, Option<bool>>("sensor")?
+        .unwrap_or(physics.sensor);
+    physics.layer = table
+        .get::<_, Option<u32>>("layer")?
+        .unwrap_or(physics.layer);
+    physics.mask = table.get::<_, Option<u32>>("mask")?.unwrap_or(physics.mask);
+    Ok(physics)
+}
+
+fn parse_render_light_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectRenderLight> {
+    let mut light = TileObjectRenderLight::default();
+    light.shape = shape_kind_from_table(&table, api, light.shape)?;
+    light.radius = positive_f32(
+        table
+            .get::<_, Option<f32>>("radius")?
+            .unwrap_or(light.radius),
+        api,
+        "renderLight.radius",
+    )?;
+    light.intensity = non_negative_f32(
+        table
+            .get::<_, Option<f32>>("intensity")?
+            .unwrap_or(light.intensity),
+        api,
+        "renderLight.intensity",
+    )?;
+    if let Some(color_tbl) = table.get::<_, Option<LuaTable>>("color")? {
+        light.color = color4_from_table(&color_tbl, api, "renderLight.color")?;
+    }
+    light.enabled = table
+        .get::<_, Option<bool>>("enabled")?
+        .unwrap_or(light.enabled);
+    light.shadow_enabled = table
+        .get::<_, Option<bool>>("shadowEnabled")?
+        .unwrap_or(light.shadow_enabled);
+    light.light_mask = table
+        .get::<_, Option<u16>>("lightMask")?
+        .unwrap_or(light.light_mask);
+    light.shadow_mask = table
+        .get::<_, Option<u16>>("shadowMask")?
+        .unwrap_or(light.shadow_mask);
+    light.blend_mode = table.get::<_, Option<String>>("blendMode")?;
+    light.falloff = table.get::<_, Option<String>>("falloff")?;
+    light.light_type = table.get::<_, Option<String>>("lightType")?;
+    Ok(light)
+}
+
+fn parse_occluder_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectOccluder> {
+    let mut occluder = TileObjectOccluder::default();
+    occluder.shape = shape_kind_from_table(&table, api, occluder.shape)?;
+    occluder.opacity = unit_f32(
+        table
+            .get::<_, Option<f32>>("opacity")?
+            .unwrap_or(occluder.opacity),
+        api,
+        "occluder.opacity",
+    )?;
+    occluder.light_mask = table
+        .get::<_, Option<u16>>("lightMask")?
+        .unwrap_or(occluder.light_mask);
+    occluder.enabled = table
+        .get::<_, Option<bool>>("enabled")?
+        .unwrap_or(occluder.enabled);
+    Ok(occluder)
 }
 
 fn visual_texture_size_from_table(table: &LuaTable) -> LuaResult<Option<[f32; 2]>> {
@@ -258,6 +415,15 @@ fn archetype_from_table(
             intensity: light_tbl.get::<_, Option<f32>>("intensity")?.unwrap_or(1.0),
             color,
         });
+    }
+    if let Ok(physics_tbl) = object.get::<_, LuaTable>("physics") {
+        archetype.physics = Some(parse_physics_defaults(physics_tbl, api)?);
+    }
+    if let Ok(light_tbl) = object.get::<_, LuaTable>("renderLight") {
+        archetype.render_light = Some(parse_render_light_defaults(light_tbl, api)?);
+    }
+    if let Ok(occluder_tbl) = object.get::<_, LuaTable>("occluder") {
+        archetype.occluder = Some(parse_occluder_defaults(occluder_tbl, api)?);
     }
     if let Ok(properties) = object.get::<_, LuaTable>("properties") {
         for pair in properties.pairs::<String, LuaValue>() {
@@ -560,7 +726,7 @@ impl LuaUserData for LuaTileSet {
                 .inner
                 .borrow()
                 .get_property(tile_id - 1, "profile")
-            .map(str::to_string))
+                .map(str::to_string))
         });
         /// Sets or clears the physics shape label for one tile.
         /// @param | tile_id | integer | Tile id (1-based).
@@ -593,7 +759,7 @@ impl LuaUserData for LuaTileSet {
                 .inner
                 .borrow()
                 .get_property(tile_id - 1, "physicsShape")
-            .map(str::to_string))
+                .map(str::to_string))
         });
 
         /// Replaces the animation frames for one tile.
@@ -732,6 +898,16 @@ impl LuaUserData for LuaTileSet {
                         color,
                     });
                 }
+                if let Ok(physics_tbl) = object.get::<_, LuaTable>("physics") {
+                    archetype.physics = Some(parse_physics_defaults(physics_tbl, "setObject")?);
+                }
+                if let Ok(light_tbl) = object.get::<_, LuaTable>("renderLight") {
+                    archetype.render_light =
+                        Some(parse_render_light_defaults(light_tbl, "setObject")?);
+                }
+                if let Ok(occluder_tbl) = object.get::<_, LuaTable>("occluder") {
+                    archetype.occluder = Some(parse_occluder_defaults(occluder_tbl, "setObject")?);
+                }
                 if let Ok(properties) = object.get::<_, LuaTable>("properties") {
                     for pair in properties.pairs::<String, LuaValue>() {
                         let (name, value) = pair?;
@@ -833,6 +1009,47 @@ impl LuaUserData for LuaTileSet {
                 light_tbl.set("color", color)?;
                 table.set("light", light_tbl)?;
             }
+            if let Some(physics) = &object.physics {
+                let physics_tbl = lua.create_table()?;
+                physics_tbl.set("shape", physics.shape.as_str())?;
+                physics_tbl.set("bodyType", physics.body_type.as_str())?;
+                physics_tbl.set("mass", physics.mass)?;
+                physics_tbl.set("density", physics.density)?;
+                physics_tbl.set("friction", physics.friction)?;
+                physics_tbl.set("restitution", physics.restitution)?;
+                physics_tbl.set("sensor", physics.sensor)?;
+                physics_tbl.set("layer", physics.layer)?;
+                physics_tbl.set("mask", physics.mask)?;
+                table.set("physics", physics_tbl)?;
+            }
+            if let Some(light) = &object.render_light {
+                let light_tbl = lua.create_table()?;
+                light_tbl.set("shape", light.shape.as_str())?;
+                light_tbl.set("radius", light.radius)?;
+                light_tbl.set("intensity", light.intensity)?;
+                let color = lua.create_table()?;
+                color.set(1, light.color[0])?;
+                color.set(2, light.color[1])?;
+                color.set(3, light.color[2])?;
+                color.set(4, light.color[3])?;
+                light_tbl.set("color", color)?;
+                light_tbl.set("enabled", light.enabled)?;
+                light_tbl.set("shadowEnabled", light.shadow_enabled)?;
+                light_tbl.set("lightMask", light.light_mask)?;
+                light_tbl.set("shadowMask", light.shadow_mask)?;
+                light_tbl.set("blendMode", light.blend_mode.clone())?;
+                light_tbl.set("falloff", light.falloff.clone())?;
+                light_tbl.set("lightType", light.light_type.clone())?;
+                table.set("renderLight", light_tbl)?;
+            }
+            if let Some(occluder) = &object.occluder {
+                let occluder_tbl = lua.create_table()?;
+                occluder_tbl.set("shape", occluder.shape.as_str())?;
+                occluder_tbl.set("opacity", occluder.opacity)?;
+                occluder_tbl.set("lightMask", occluder.light_mask)?;
+                occluder_tbl.set("enabled", occluder.enabled)?;
+                table.set("occluder", occluder_tbl)?;
+            }
             let properties = lua.create_table()?;
             for (name, value) in &object.properties {
                 properties.set(name.as_str(), value.as_str())?;
@@ -887,7 +1104,7 @@ impl LuaUserData for LuaTileSet {
                 .inner
                 .borrow()
                 .get_tile_archetype(tile_id - 1)
-            .map(str::to_string))
+                .map(str::to_string))
         });
 
         /// Sets or clears a custom string-convertible tile property.
@@ -924,7 +1141,7 @@ impl LuaUserData for LuaTileSet {
                 .inner
                 .borrow()
                 .get_property(tile_id - 1, &name)
-            .map(str::to_string))
+                .map(str::to_string))
         });
         /// Returns a custom tile property parsed as a number.
         /// @param | tile_id | integer | Tile id (1-based).

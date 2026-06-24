@@ -231,6 +231,500 @@ local function hex_rotate(q, r, turns)
     return cq, cr
 end
 
+local ISO_XCOM = {
+    map_w = 50,
+    map_h = 50,
+    tile_base = 16,
+    tile_w = 32,
+    tile_h = 16,
+    level_h = 24,
+    floor = 0,
+    right_wall = 1,
+    left_wall = 2,
+    object = 3,
+    part_order = { 0, 2, 1, 3 },
+}
+
+local function iso_xcom_field_slots()
+    return {
+        floor = "floor",
+        left_wall = "left_top_wall",
+        right_wall = "right_top_wall",
+        object = "object",
+    }
+end
+
+local function clamp_color(v)
+    return math.max(0, math.min(255, math.floor(v)))
+end
+
+local function shade_color(color, factor)
+    return {
+        clamp_color(color[1] * factor),
+        clamp_color(color[2] * factor),
+        clamp_color(color[3] * factor),
+    }
+end
+
+local function tint_color(color, light)
+    if not light then
+        return color
+    end
+    local lr = math.max(0.18, math.min(1.4, light.r or 0))
+    local lg = math.max(0.18, math.min(1.4, light.g or 0))
+    local lb = math.max(0.18, math.min(1.4, light.b or 0))
+    return {
+        clamp_color(color[1] * lr),
+        clamp_color(color[2] * lg),
+        clamp_color(color[3] * lb),
+    }
+end
+
+local function draw_iso_diamond(img, sx, sy, tw, th, color, outline)
+    local half_w = tw / 2
+    local half_h = th / 2
+    for dy = 0, th do
+        local t = dy <= half_h and dy / half_h or (th - dy) / half_h
+        local row_half = half_w * t
+        img:drawLine(sx - row_half, sy + dy, sx + row_half, sy + dy, color[1], color[2], color[3], 255)
+    end
+    if outline then
+        img:drawLine(sx, sy, sx + half_w, sy + half_h, outline[1], outline[2], outline[3], 255)
+        img:drawLine(sx + half_w, sy + half_h, sx, sy + th, outline[1], outline[2], outline[3], 255)
+        img:drawLine(sx, sy + th, sx - half_w, sy + half_h, outline[1], outline[2], outline[3], 255)
+        img:drawLine(sx - half_w, sy + half_h, sx, sy, outline[1], outline[2], outline[3], 255)
+    end
+end
+
+local function point_in_polygon(px, py, points)
+    local inside = false
+    local j = #points
+    for i = 1, #points do
+        local pi = points[i]
+        local pj = points[j]
+        local crosses = ((pi.y > py) ~= (pj.y > py)) and
+            (px < (pj.x - pi.x) * (py - pi.y) / ((pj.y - pi.y) + 0.0001) + pi.x)
+        if crosses then
+            inside = not inside
+        end
+        j = i
+    end
+    return inside
+end
+
+local function draw_polygon(img, points, color, outline)
+    local min_x, min_y = points[1].x, points[1].y
+    local max_x, max_y = points[1].x, points[1].y
+    for _, point in ipairs(points) do
+        min_x = math.min(min_x, point.x)
+        min_y = math.min(min_y, point.y)
+        max_x = math.max(max_x, point.x)
+        max_y = math.max(max_y, point.y)
+    end
+    for py = math.floor(min_y), math.ceil(max_y) do
+        for px = math.floor(min_x), math.ceil(max_x) do
+            if point_in_polygon(px + 0.5, py + 0.5, points) then
+                img:drawRect(px, py, 1, 1, color[1], color[2], color[3], 255)
+            end
+        end
+    end
+    if outline then
+        for i = 1, #points do
+            local a = points[i]
+            local b = points[(i % #points) + 1]
+            img:drawLine(a.x, a.y, b.x, b.y, outline[1], outline[2], outline[3], 255)
+        end
+    end
+end
+
+local function draw_iso_left_wall(img, sx, sy, tw, th, wall_h, color)
+    local half_w = tw / 2
+    local half_h = th / 2
+    local top = { x = sx, y = sy }
+    local left = { x = sx - half_w, y = sy + half_h }
+    draw_polygon(img, {
+        { x = top.x, y = top.y - wall_h },
+        { x = left.x, y = left.y - wall_h },
+        left,
+        top,
+    }, color, shade_color(color, 1.35))
+end
+
+local function draw_iso_right_wall(img, sx, sy, tw, th, wall_h, color)
+    local half_w = tw / 2
+    local half_h = th / 2
+    local top = { x = sx, y = sy }
+    local right = { x = sx + half_w, y = sy + half_h }
+    draw_polygon(img, {
+        { x = top.x, y = top.y - wall_h },
+        { x = right.x, y = right.y - wall_h },
+        right,
+        top,
+    }, color, shade_color(color, 1.28))
+end
+
+local function draw_iso_object(img, sx, sy, th, gid, light)
+    local cx = sx
+    local cy = sy + th / 2
+    local colors = {
+        [41] = { 222, 172, 68 },
+        [42] = { 112, 178, 112 },
+        [43] = { 184, 108, 198 },
+        [44] = { 228, 92, 72 },
+        [45] = { 118, 164, 230 },
+    }
+    local color = tint_color(colors[gid] or { 238, 238, 178 }, light)
+    if gid == 44 then
+        img:drawLine(cx, cy - 20, cx - 7, cy + 1, color[1], color[2], color[3], 255)
+        img:drawLine(cx, cy - 20, cx + 7, cy + 1, color[1], color[2], color[3], 255)
+        img:drawLine(cx - 7, cy + 1, cx + 7, cy + 1, color[1], color[2], color[3], 255)
+        img:drawCircle(cx, cy - 22, 3, 255, 226, 126, 255)
+        return
+    end
+    img:drawRect(cx - 5, cy - 15, 10, 15, color[1], color[2], color[3], 255)
+    img:drawRect(cx - 4, cy - 21, 8, 6, math.min(255, color[1] + 28), math.min(255, color[2] + 28), math.min(255, color[3] + 28), 255)
+    img:drawLine(cx - 6, cy, cx + 6, cy, 28, 30, 38, 255)
+end
+
+local function iso_xcom_floor_color(level, gid)
+    if gid == 0 then return nil end
+    local palette = {
+        [2] = {
+            [11] = { 73, 77, 86 },
+            [12] = { 83, 88, 98 },
+            [13] = { 95, 92, 82 },
+        },
+        [3] = {
+            [21] = { 112, 118, 134 },
+            [22] = { 126, 130, 148 },
+            [23] = { 105, 116, 138 },
+        },
+        [4] = {
+            [31] = { 156, 68, 56 },
+            [32] = { 181, 88, 64 },
+            [33] = { 112, 124, 142 },
+        },
+    }
+    return (palette[level] and palette[level][gid]) or { 92, 96, 108 }
+end
+
+local function iso_xcom_has_floor(iso, z, x, y)
+    if x < 1 or x > ISO_XCOM.map_w or y < 1 or y > ISO_XCOM.map_h then
+        return false
+    end
+    return iso:getTilePart(z, x, y, ISO_XCOM.floor) ~= 0
+end
+
+local function iso_xcom_build_scene()
+    local spec = ISO_XCOM
+    local slots = iso_xcom_field_slots()
+    local iso = lurek.tilemap.newIsoMap(spec.map_w, spec.map_h, spec.tile_w, spec.tile_h, spec.level_h, 4)
+    local field = lurek.tilefield.new({ width = spec.map_w, height = spec.map_h, levels = 4, topology = "iso_square" })
+    for _ = 1, 4 do
+        iso:addLevel()
+    end
+    iso:setPartOrder(spec.part_order)
+
+    local footprints = {
+        [2] = { min_x = 16, max_x = 36, min_y = 16, max_y = 36 },
+        [3] = { min_x = 21, max_x = 32, min_y = 19, max_y = 30 },
+        [4] = { min_x = 24, max_x = 29, min_y = 21, max_y = 26 },
+    }
+
+    for y = 1, spec.map_h do
+        for x = 1, spec.map_w do
+            local gid = 11 + ((x + y) % 3)
+            iso:setTilePart(2, x, y, spec.floor, gid)
+            field:setRef(x, y, 2, slots.floor, gid)
+        end
+    end
+
+    for z = 2, 4 do
+        local fp = footprints[z]
+        for y = fp.min_y, fp.max_y do
+            for x = fp.min_x, fp.max_x do
+                local gid = z == 2 and (11 + ((x + y) % 3)) or z == 3 and (21 + ((x + y) % 3)) or (31 + ((x + y) % 3))
+                local inner_gap = z == 3 and x >= 26 and x <= 28 and y >= 23 and y <= 25
+                if not inner_gap then
+                    iso:setTilePart(z, x, y, spec.floor, gid)
+                    field:setRef(x, y, z, slots.floor, gid)
+                    if z >= 3 then
+                        field:setSunOcclusion(x, y, z, 0.86)
+                    end
+                end
+                if x == fp.min_x or (z == 2 and x == 27 and y >= 18 and y <= 24) then
+                    iso:setTilePart(z, x, y, spec.left_wall, 61 + z)
+                    field:setRef(x, y, z, slots.left_wall, 61 + z)
+                    field:setSunOcclusion(x, y, z, math.max(field:getSunOcclusion(x, y, z), 0.35))
+                end
+                if y == fp.min_y or (z == 3 and y == 28 and x >= 23 and x <= 31) then
+                    iso:setTilePart(z, x, y, spec.right_wall, 71 + z)
+                    field:setRef(x, y, z, slots.right_wall, 71 + z)
+                    field:setSunOcclusion(x, y, z, math.max(field:getSunOcclusion(x, y, z), 0.35))
+                end
+            end
+        end
+    end
+
+    for z = 3, 4 do
+        local fp = footprints[z]
+        local support_z = z - 1
+        for y = fp.min_y, fp.max_y do
+            for x = fp.min_x, fp.max_x do
+                if iso_xcom_has_floor(iso, z, x, y) and not iso_xcom_has_floor(iso, z, x, y + 1) and y < spec.map_h then
+                    local sy = y + 1
+                    local gid = 92 + z
+                    iso:setTilePart(support_z, x, sy, spec.right_wall, gid)
+                    field:setRef(x, sy, support_z, slots.right_wall, gid)
+                    field:setSunOcclusion(x, sy, support_z, math.max(field:getSunOcclusion(x, sy, support_z), 0.55))
+                end
+                if iso_xcom_has_floor(iso, z, x, y) and not iso_xcom_has_floor(iso, z, x + 1, y) and x < spec.map_w then
+                    local sx = x + 1
+                    local gid = 82 + z
+                    iso:setTilePart(support_z, sx, y, spec.left_wall, gid)
+                    field:setRef(sx, y, support_z, slots.left_wall, gid)
+                    field:setSunOcclusion(sx, y, support_z, math.max(field:getSunOcclusion(sx, y, support_z), 0.55))
+                end
+                local column_x = x == fp.min_x or x == fp.max_x
+                local column_y = y == fp.min_y or y == fp.max_y
+                if column_x and column_y then
+                    local cx = x == fp.max_x and math.min(spec.map_w, x + 1) or x
+                    local cy = y == fp.max_y and math.min(spec.map_h, y + 1) or y
+                    iso:setTilePart(support_z, cx, cy, spec.object, 45)
+                    field:setRef(cx, cy, support_z, slots.object, 45)
+                end
+            end
+        end
+    end
+
+    local objects = {
+        { z = 2, x = 22, y = 22, gid = 41 },
+        { z = 2, x = 28, y = 24, gid = 44 },
+        { z = 2, x = 31, y = 31, gid = 42 },
+        { z = 2, x = 25, y = 28, gid = 43 },
+        { z = 3, x = 23, y = 21, gid = 45 },
+        { z = 3, x = 30, y = 24, gid = 41 },
+        { z = 3, x = 24, y = 29, gid = 44 },
+        { z = 4, x = 26, y = 23, gid = 44 },
+        { z = 4, x = 28, y = 25, gid = 45 },
+    }
+    for _, object in ipairs(objects) do
+        iso:setTilePart(object.z, object.x, object.y, spec.object, object.gid)
+        field:setRef(object.x, object.y, object.z, slots.object, object.gid)
+    end
+
+    local light = lurek.tilelight.new(field)
+    light:setAmbient({ r = 0.18, g = 0.18, b = 0.2 })
+    light:setGlobalLight({ intensity = 0.82, color = { r = 1.0, g = 0.92, b = 0.72 } })
+    light:addPointLight({ x = 28, y = 24, z = 2, radius = 8, intensity = 0.9, color = { r = 1.0, g = 0.42, b = 0.18 } })
+    light:addPointLight({ x = 26, y = 23, z = 4, radius = 7, intensity = 0.75, color = { r = 0.55, g = 0.75, b = 1.0 } })
+    light:compute({ includePointLights = true, includeSunLight = true })
+
+    return {
+        iso = iso,
+        field = field,
+        light = light,
+        slots = slots,
+        footprints = footprints,
+        objects = objects,
+    }
+end
+
+local function iso_xcom_part_name(part)
+    if part == ISO_XCOM.floor then return "FLOOR" end
+    if part == ISO_XCOM.left_wall then return "LEFT_TOP_WALL" end
+    if part == ISO_XCOM.right_wall then return "RIGHT_TOP_WALL" end
+    if part == ISO_XCOM.object then return "OBJECT" end
+    return "PART_" .. tostring(part)
+end
+
+local function iso_xcom_commands(scene, z_min, z_max, x_min, x_max, y_min, y_max, origin_x, origin_y)
+    local spec = ISO_XCOM
+    local iso = scene.iso
+    iso:setOrigin(origin_x, origin_y)
+    local commands = {}
+    for d = 0, (spec.map_w + spec.map_h - 2) do
+        local tx_min = math.max(1, d - spec.map_h + 2)
+        local tx_max = math.min(spec.map_w, d + 1)
+        for x = tx_min, tx_max do
+            local y = d - (x - 1) + 1
+            if x >= x_min and x <= x_max and y >= y_min and y <= y_max then
+                for z = z_min, z_max do
+                    for _, part in ipairs(spec.part_order) do
+                        local gid = iso:getTilePart(z, x, y, part)
+                        if gid ~= 0 then
+                            local sx, sy = iso:tileToScreen(x - 1, y - 1, z - 1)
+                            local light_sample = nil
+                            if scene.light then
+                                local lr, lg, lb, ll = scene.light:getLight(x, y, z)
+                                light_sample = { r = lr, g = lg, b = lb, luma = ll }
+                            end
+                            commands[#commands + 1] = {
+                                z = z,
+                                x = x,
+                                y = y,
+                                part = part,
+                                gid = gid,
+                                sx = sx,
+                                sy = sy,
+                                light = light_sample,
+                            }
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return commands
+end
+
+local function draw_iso_xcom_command(img, command, options)
+    local spec = ISO_XCOM
+    if command.part == spec.floor then
+        local color = iso_xcom_floor_color(command.z, command.gid)
+        if color then
+            color = tint_color(color, command.light)
+            if options and options.dim_level and command.z < options.dim_level then
+                color = shade_color(color, 0.36)
+            end
+            draw_iso_diamond(img, command.sx, command.sy, spec.tile_w, spec.tile_h, color, shade_color(color, 1.45))
+        end
+    elseif command.part == spec.left_wall then
+        local color = command.gid >= 80 and { 116, 110, 118 } or command.z == 2 and { 128, 58, 44 } or command.z == 3 and { 154, 160, 184 } or { 182, 86, 64 }
+        color = tint_color(color, command.light)
+        if options and options.dim_level and command.z < options.dim_level then
+            color = shade_color(color, 0.38)
+        end
+        draw_iso_left_wall(img, command.sx, command.sy, spec.tile_w, spec.tile_h, 22, color)
+    elseif command.part == spec.right_wall then
+        local color = command.gid >= 90 and { 136, 132, 144 } or command.z == 2 and { 166, 74, 54 } or command.z == 3 and { 184, 190, 212 } or { 206, 104, 72 }
+        color = tint_color(color, command.light)
+        if options and options.dim_level and command.z < options.dim_level then
+            color = shade_color(color, 0.38)
+        end
+        draw_iso_right_wall(img, command.sx, command.sy, spec.tile_w, spec.tile_h, 22, color)
+    elseif command.part == spec.object then
+        if not options or not options.dim_level or command.z >= options.dim_level then
+            draw_iso_object(img, command.sx, command.sy, spec.tile_h, command.gid, command.light)
+        end
+    end
+end
+
+local function render_iso_xcom(scene, width, height, origin_x, origin_y, z_min, z_max, x_min, x_max, y_min, y_max, options)
+    local img = lurek.image.newImageData(width, height)
+    img:fill(8, 9, 13, 255)
+    local commands = iso_xcom_commands(scene, z_min, z_max, x_min, x_max, y_min, y_max, origin_x, origin_y)
+    for _, command in ipairs(commands) do
+        draw_iso_xcom_command(img, command, options)
+    end
+    return img, commands
+end
+
+local function iso_xcom_manifest(scene, commands)
+    local iso = scene.iso
+    local order = iso:getPartOrder()
+    local lines = {
+        "X-COM style isometric square LIsoMap evidence",
+        "logical map: 50x50 cells",
+        "tile geometry: square 16px -> isometric diamond 32x16px",
+        "levels: 1..4 allocated; evidence focuses on z=2..4",
+        "parts stored in LIsoMap slots:",
+        "  0 = FLOOR",
+        "  2 = LEFT_TOP_WALL",
+        "  1 = RIGHT_TOP_WALL",
+        "  3 = OBJECT",
+        "tilefield ref slots:",
+        "  floor, left_top_wall, right_top_wall, object",
+        "support mapping:",
+        "  RIGHT_TOP support for upper floor south/front edge (x,y,z) is written at lower cell (x,y+1,z-1)",
+        "  LEFT_TOP support for upper floor east/right edge (x,y,z) is written at lower cell (x+1,y,z-1)",
+        "configured render part order: " .. table.concat({ order[1], order[2], order[3], order[4] }, ", "),
+        "lighting source: LTileField sunOcclusion + LTileLightMap top sun + point lights",
+        "tilemap renderer role: consume LIsoMap draw order and tint every part from LTileLightMap:getLight",
+        "",
+        "sample tile reads from LIsoMap:",
+    }
+    for _, sample in ipairs({
+        { z = 2, x = 22, y = 22 },
+        { z = 3, x = 23, y = 21 },
+        { z = 4, x = 26, y = 23 },
+    }) do
+        table.insert(lines, string.format(
+            "  z=%d x=%d y=%d floor=%d left=%d right=%d object=%d",
+            sample.z,
+            sample.x,
+            sample.y,
+            iso:getTilePart(sample.z, sample.x, sample.y, ISO_XCOM.floor),
+            iso:getTilePart(sample.z, sample.x, sample.y, ISO_XCOM.left_wall),
+            iso:getTilePart(sample.z, sample.x, sample.y, ISO_XCOM.right_wall),
+            iso:getTilePart(sample.z, sample.x, sample.y, ISO_XCOM.object)
+        ))
+    end
+    local _, _, _, open_luma = scene.light:getLight(5, 5, 2)
+    local _, _, _, covered_luma = scene.light:getLight(21, 30, 2)
+    local _, _, _, roof_luma = scene.light:getLight(25, 22, 4)
+    table.insert(lines, "")
+    table.insert(lines, "tilefield light probes:")
+    table.insert(lines, string.format("  open z=2 x=5 y=5 luma=%.3f", open_luma))
+    table.insert(lines, string.format("  under z=3 floor at z=2 x=21 y=30 luma=%.3f", covered_luma))
+    table.insert(lines, string.format("  roof z=4 x=25 y=22 luma=%.3f", roof_luma))
+    if commands then
+        table.insert(lines, "")
+        table.insert(lines, "first draw commands in engine-style diagonal order:")
+        for i = 1, math.min(28, #commands) do
+            local c = commands[i]
+            table.insert(lines, string.format(
+                "  %03d z=%d x=%d y=%d part=%s gid=%d screen=(%.1f,%.1f) luma=%.3f",
+                i,
+                c.z,
+                c.x,
+                c.y,
+                iso_xcom_part_name(c.part),
+                c.gid,
+                c.sx,
+                c.sy,
+                c.light and c.light.luma or 0
+            ))
+        end
+        table.insert(lines, "")
+        table.insert(lines, "same-cell stack at x=25 y=22; z=4 entries are later than z=2/z=3 entries for that cell:")
+        for i, c in ipairs(commands) do
+            if c.x == 25 and c.y == 22 then
+                table.insert(lines, string.format(
+                    "  %03d z=%d x=%d y=%d part=%s gid=%d screen=(%.1f,%.1f) luma=%.3f",
+                    i,
+                    c.z,
+                    c.x,
+                    c.y,
+                    iso_xcom_part_name(c.part),
+                    c.gid,
+                    c.sx,
+                    c.sy,
+                    c.light and c.light.luma or 0
+                ))
+            end
+        end
+        table.insert(lines, "")
+        table.insert(lines, "last draw commands in the requested viewport:")
+        for i = math.max(1, #commands - 27), #commands do
+            local c = commands[i]
+            table.insert(lines, string.format(
+                "  %03d z=%d x=%d y=%d part=%s gid=%d screen=(%.1f,%.1f) luma=%.3f",
+                i,
+                c.z,
+                c.x,
+                c.y,
+                iso_xcom_part_name(c.part),
+                c.gid,
+                c.sx,
+                c.sy,
+                c.light and c.light.luma or 0
+            ))
+        end
+    end
+    return table.concat(lines, "\n") .. "\n"
+end
+
 -- @describe Evidence: lurek.tilemap scenarios
 describe("Evidence: lurek.tilemap scenarios", function()
     -- Does: Runs "tilemap layers (ground + decoration overlay)" and turns the owner-module result into an inspectable artifact.
@@ -849,6 +1343,136 @@ describe("Evidence: lurek.tilemap scenarios", function()
         end
 
         save_png(img, path)
+    end)
+    -- Does: Builds a 50x50 LIsoMap with four tile parts per cell, assigns X-COM style floor, left wall, right wall, and object slots, then exports an anatomy PNG plus a manifest.
+    -- Shows: The artifacts should make the slot contract legible: floor diamond first, west/left wall, north/right wall, and center object in the same isometric cell.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_iso_xcom_part_slots.png, tests/artifacts/current/tilemap/tilemap_iso_xcom_part_slots.txt
+    -- Why: This is meaningful because the GIDs are read back through LIsoMap:getTilePart after being written by LIsoMap:setTilePart with the configured LIsoMap:setPartOrder.
+
+    it("PNG+TXT: tilemap isometric XCOM part slots", function()
+        ensure_evidence_dir("tilemap")
+        local scene = iso_xcom_build_scene()
+        local iso = scene.iso
+        local order = iso:getPartOrder()
+        expect_equal(50, iso:getWidth())
+        expect_equal(50, iso:getHeight())
+        expect_equal(4, iso:getLevelCount())
+        expect_equal(4, iso:getPartCount())
+        expect_equal(0, order[1])
+        expect_equal(2, order[2])
+        expect_equal(1, order[3])
+        expect_equal(3, order[4])
+        expect_true(iso:getTilePart(2, 21, 31, ISO_XCOM.right_wall) > 0)
+        expect_true(iso:getTilePart(2, 33, 19, ISO_XCOM.left_wall) > 0)
+        expect_true(scene.field:getRef(21, 31, 2, "right_top_wall") ~= nil)
+        expect_true(scene.field:getRef(33, 19, 2, "left_top_wall") ~= nil)
+        local _, _, _, open_luma = scene.light:getLight(5, 5, 2)
+        local _, _, _, covered_luma = scene.light:getLight(21, 30, 2)
+        expect_true(open_luma > covered_luma)
+
+        local img = lurek.image.newImageData(520, 280)
+        img:fill(10, 10, 14, 255)
+        local sx, sy = 260, 130
+        draw_iso_diamond(img, sx, sy, ISO_XCOM.tile_w, ISO_XCOM.tile_h, { 96, 102, 116 }, { 210, 214, 222 })
+        draw_iso_left_wall(img, sx, sy, ISO_XCOM.tile_w, ISO_XCOM.tile_h, 30, { 146, 64, 46 })
+        draw_iso_right_wall(img, sx, sy, ISO_XCOM.tile_w, ISO_XCOM.tile_h, 30, { 190, 88, 62 })
+        draw_iso_object(img, sx, sy, ISO_XCOM.tile_h, 44)
+
+        local mini_scene_img = render_iso_xcom(scene, 520, 280, 260, -170, 2, 4, 20, 31, 20, 31)
+        for y = 0, 279 do
+            for x = 0, 239 do
+                local r, g, b, a = mini_scene_img:getPixel(x, y)
+                if a > 0 and (r > 12 or g > 12 or b > 16) then
+                    img:setPixel(x, y, r, g, b, a)
+                end
+            end
+        end
+
+        save_png(img, OUT .. "tilemap_iso_xcom_part_slots.png")
+        save_text(OUT .. "tilemap_iso_xcom_part_slots.txt", iso_xcom_manifest(scene))
+    end)
+    -- Does: Renders only level 2 of the 50x50 LIsoMap X-COM scene using the floor, wall, and object parts stored on that elevation.
+    -- Shows: The cutaway should show the lower tactical floor with left/west walls, right/north walls, and objects before upper levels cover it.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_iso_xcom_level_2_cutaway.png
+    -- Why: This is meaningful because the image is generated from LIsoMap tile parts at z=2, proving the lower level exists independently of later occlusion.
+
+    it("PNG: tilemap isometric XCOM level 2 cutaway", function()
+        ensure_evidence_dir("tilemap")
+        local scene = iso_xcom_build_scene()
+        local img = render_iso_xcom(scene, 760, 460, 380, -150, 2, 2, 15, 37, 15, 37)
+        expect_true(scene.iso:getTilePart(2, 22, 22, ISO_XCOM.object) > 0)
+        save_png(img, OUT .. "tilemap_iso_xcom_level_2_cutaway.png")
+    end)
+    -- Does: Renders only level 3 of the 50x50 LIsoMap X-COM scene using its own stored floor, wall, and object parts.
+    -- Shows: The cutaway should show an upper platform with a deliberate opening and its own wall/object composition.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_iso_xcom_level_3_cutaway.png
+    -- Why: This is meaningful because LIsoMap:getTilePart confirms level 3 has independent parts and a gap that is not copied from level 2.
+
+    it("PNG: tilemap isometric XCOM level 3 cutaway", function()
+        ensure_evidence_dir("tilemap")
+        local scene = iso_xcom_build_scene()
+        local img = render_iso_xcom(scene, 760, 460, 380, -135, 3, 3, 19, 33, 18, 31)
+        expect_true(scene.iso:getTilePart(3, 23, 21, ISO_XCOM.object) > 0)
+        expect_equal(0, scene.iso:getTilePart(3, 27, 24, ISO_XCOM.floor))
+        save_png(img, OUT .. "tilemap_iso_xcom_level_3_cutaway.png")
+    end)
+    -- Does: Renders only level 4 of the 50x50 LIsoMap X-COM scene as a roof/upper structure focused on the top elevation.
+    -- Shows: The cutaway should isolate the highest layer so a reviewer can see what later occludes lower layers.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_iso_xcom_level_4_cutaway.png
+    -- Why: This is meaningful because the same LIsoMap contains the z=4 data that must be drawn after the lower levels during the final render.
+
+    it("PNG: tilemap isometric XCOM level 4 cutaway", function()
+        ensure_evidence_dir("tilemap")
+        local scene = iso_xcom_build_scene()
+        local img = render_iso_xcom(scene, 760, 420, 380, -118, 4, 4, 23, 30, 20, 27)
+        expect_true(scene.iso:getTilePart(4, 26, 23, ISO_XCOM.object) > 0)
+        save_png(img, OUT .. "tilemap_iso_xcom_level_4_cutaway.png")
+    end)
+    -- Does: Renders levels 2-4 together in the same 50x50 LIsoMap viewport using the engine-style diagonal order and configured part order.
+    -- Shows: Higher floors, walls, and objects should visibly sit over lower tactical material instead of being drawn as a flat orthogonal grid.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_iso_xcom_levels_2_4_occlusion_stack.png
+    -- Why: This is meaningful because it exercises LIsoMap:tileToScreen, LIsoMap:setTilePart, and LIsoMap:setPartOrder together for the multilevel map composition.
+
+    it("PNG: tilemap isometric XCOM levels 2-4 occlusion stack", function()
+        ensure_evidence_dir("tilemap")
+        local scene = iso_xcom_build_scene()
+        local img = render_iso_xcom(scene, 900, 560, 450, -145, 2, 4, 15, 37, 15, 37)
+        expect_true(scene.iso:getTilePart(2, 28, 24, ISO_XCOM.object) > 0)
+        expect_true(scene.iso:getTilePart(4, 26, 23, ISO_XCOM.floor) > 0)
+        save_png(img, OUT .. "tilemap_iso_xcom_levels_2_4_occlusion_stack.png")
+    end)
+    -- Does: Renders the same 2-4 LIsoMap stack with lower elevations intentionally dimmed before the higher layers are painted.
+    -- Shows: The artifact should make occlusion easier to inspect: lower z=2 material remains visible only where z=3 and z=4 do not cover it.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_iso_xcom_higher_layers_mask_lower.png
+    -- Why: This is meaningful because it demonstrates the painter order consequence of higher LIsoMap levels being drawn after lower levels in the same viewport.
+
+    it("PNG: tilemap isometric XCOM higher layers mask lower", function()
+        ensure_evidence_dir("tilemap")
+        local scene = iso_xcom_build_scene()
+        local img = render_iso_xcom(scene, 900, 560, 450, -145, 2, 4, 15, 37, 15, 37, { dim_level = 3 })
+        save_png(img, OUT .. "tilemap_iso_xcom_higher_layers_mask_lower.png")
+    end)
+    -- Does: Exports the ordered draw command trace for the 50x50 LIsoMap X-COM viewport.
+    -- Shows: The text artifact should list map size, tile geometry, part IDs, configured part order, and representative diagonal painter-order commands.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_iso_xcom_render_order_trace.txt
+    -- Why: This is meaningful because the trace connects the final PNG to concrete LIsoMap tile reads and the render order used by the isometric evidence renderer.
+
+    it("TXT: tilemap isometric XCOM render order trace", function()
+        ensure_evidence_dir("tilemap")
+        local scene = iso_xcom_build_scene()
+        local _, commands = render_iso_xcom(scene, 900, 560, 450, -145, 2, 4, 15, 37, 15, 37)
+        save_text(OUT .. "tilemap_iso_xcom_render_order_trace.txt", iso_xcom_manifest(scene, commands))
+    end)
+    -- Does: Renders the full 50x50 LIsoMap isometric square map with levels 2-4 active and each cell using floor, left wall, right wall, and object slots.
+    -- Shows: The final maptile artifact should read as an X-COM style multilevel isometric map, with upper roof/platform layers drawn over lower tactical floors.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_iso_xcom_final_maptile_render.png
+    -- Why: This is meaningful because it is the end-to-end evidence artifact for LIsoMap projection, part composition, 50x50 map scale, and multilevel occlusion.
+
+    it("PNG: tilemap isometric XCOM final maptile render", function()
+        ensure_evidence_dir("tilemap")
+        local scene = iso_xcom_build_scene()
+        local img = render_iso_xcom(scene, 1640, 920, 820, 95, 2, 4, 1, 50, 1, 50)
+        save_png(img, OUT .. "tilemap_iso_xcom_final_maptile_render.png")
     end)
     -- Does: Runs "tilemap isometric stacked settlement" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.tilemap.newIsoMap, LIsoMap:addLevel, and related owner calls without needing a special evidence-only renderer.

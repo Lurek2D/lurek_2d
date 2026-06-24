@@ -299,7 +299,7 @@ impl TileAwareness {
             for y in 0..height {
                 for x in 0..width {
                     let coord = CellCoord { x, y, z };
-                    if field.distance(origin, coord) > range {
+                    if field.range_distance(origin, coord) > range as f32 {
                         continue;
                     }
                     if !Self::coord_in_arc(
@@ -365,7 +365,7 @@ impl TileAwareness {
             for y in 0..height {
                 for x in 0..width {
                     let coord = CellCoord { x, y, z };
-                    if field.distance(origin, coord) > range {
+                    if field.range_distance(origin, coord) > range as f32 {
                         continue;
                     }
                     if field.clear_line(origin, coord, channel)? {

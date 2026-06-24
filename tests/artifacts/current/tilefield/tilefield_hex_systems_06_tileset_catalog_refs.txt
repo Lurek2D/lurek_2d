@@ -1,0 +1,5 @@
+map=50x50
+field_topology=hex
+object_ref=2
+role=water
+blocks_move=true

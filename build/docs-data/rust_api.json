@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-06-24T11:26:37.117761+00:00",
+    "generated": "2026-06-24T16:42:00.060818+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3039,
+      "rust_items": 3043,
       "rust_modules": 727,
       "rust_tests": 492,
       "lua_tests": 277
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3039,
-      "documented": 3036,
+      "total_items": 3043,
+      "documented": 3040,
       "modules": 727
     },
     "modules": {
@@ -23931,18 +23931,46 @@
         "source_file": "src/tileset/archetype.rs",
         "items": [
           {
+            "name": "TileObjectShapeKind",
+            "kind": "enum",
+            "description": "Tile-filling shape authored on a tileset object.",
+            "file": "src/tileset/archetype.rs",
+            "line": 12
+          },
+          {
             "name": "TileObjectLight",
             "kind": "struct",
             "description": "Tile-based light source defaults authored on a tileset object archetype.",
             "file": "src/tileset/archetype.rs",
-            "line": 12
+            "line": 54
+          },
+          {
+            "name": "TileObjectPhysics",
+            "kind": "struct",
+            "description": "Physics body defaults authored on a tileset object archetype.",
+            "file": "src/tileset/archetype.rs",
+            "line": 75
+          },
+          {
+            "name": "TileObjectRenderLight",
+            "kind": "struct",
+            "description": "Render-light defaults authored on a tileset object archetype.",
+            "file": "src/tileset/archetype.rs",
+            "line": 114
+          },
+          {
+            "name": "TileObjectOccluder",
+            "kind": "struct",
+            "description": "Render-light occluder defaults authored on a tileset object archetype.",
+            "file": "src/tileset/archetype.rs",
+            "line": 159
           },
           {
             "name": "TileObjectArchetype",
             "kind": "struct",
             "description": "Reusable object archetype that can be referenced by `tilefield` slots.",
             "file": "src/tileset/archetype.rs",
-            "line": 33
+            "line": 183
           }
         ]
       },

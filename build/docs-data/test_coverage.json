@@ -1,8 +1,8 @@
 {
   "rust": {
-    "total": 6739,
-    "covered": 3808,
-    "uncovered": 2931,
+    "total": 6746,
+    "covered": 3810,
+    "uncovered": 2936,
     "coverage_pct": 56.5,
     "covered_items": [
       {
@@ -10563,7 +10563,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/light_api.rs",
-        "line": 1468
+        "line": 1493
       },
       {
         "module": "lua_api",
@@ -10659,13 +10659,13 @@
         "module": "lua_api",
         "name": "LuaBody::body_id",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1969
+        "line": 1976
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2513
+        "line": 2520
       },
       {
         "module": "lua_api",
@@ -10803,7 +10803,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2347
+        "line": 2636
       },
       {
         "module": "lua_api",
@@ -10821,7 +10821,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1078
+        "line": 1295
       },
       {
         "module": "lua_api",
@@ -20655,7 +20655,7 @@
         "module": "tilefield",
         "name": "TileField::export_ref_layer",
         "file": "src/tilefield/field.rs",
-        "line": 880
+        "line": 892
       },
       {
         "module": "tilefield",
@@ -20775,7 +20775,7 @@
         "module": "tilefield",
         "name": "TileTopology::neighbors",
         "file": "src/tilefield/topology.rs",
-        "line": 61
+        "line": 72
       },
       {
         "module": "tilelight",
@@ -21331,9 +21331,21 @@
       },
       {
         "module": "tileset",
+        "name": "TileObjectShapeKind::parse",
+        "file": "src/tileset/archetype.rs",
+        "line": 27
+      },
+      {
+        "module": "tileset",
+        "name": "TileObjectShapeKind::as_str",
+        "file": "src/tileset/archetype.rs",
+        "line": 41
+      },
+      {
+        "module": "tileset",
         "name": "TileObjectArchetype::new",
         "file": "src/tileset/archetype.rs",
-        "line": 64
+        "line": 220
       },
       {
         "module": "tileset",
@@ -30897,6 +30909,18 @@
       },
       {
         "module": "lua_api",
+        "name": "lua_light_from_light",
+        "file": "src/lua_api/light_api.rs",
+        "line": 419
+      },
+      {
+        "module": "lua_api",
+        "name": "lua_occluder_from_occluder",
+        "file": "src/lua_api/light_api.rs",
+        "line": 1316
+      },
+      {
+        "module": "lua_api",
         "name": "add_type_methods",
         "file": "src/lua_api/lua_types.rs",
         "line": 10
@@ -30915,9 +30939,15 @@
       },
       {
         "module": "lua_api",
+        "name": "lua_body_from_body",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 305
+      },
+      {
+        "module": "lua_api",
         "name": "LuaBody::world_handle",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1964
+        "line": 1971
       },
       {
         "module": "lua_api",
@@ -30989,13 +31019,13 @@
         "module": "lua_api",
         "name": "field_from_provider",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 416
+        "line": 429
       },
       {
         "module": "lua_api",
         "name": "tileset_from_provider",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 273
+        "line": 439
       },
       {
         "module": "lua_api",
@@ -38391,33 +38421,39 @@
       },
       {
         "module": "tilefield",
-        "name": "TileField::export_block_layer",
+        "name": "TileField::range_distance",
         "file": "src/tilefield/field.rs",
         "line": 858
       },
       {
         "module": "tilefield",
+        "name": "TileField::export_block_layer",
+        "file": "src/tilefield/field.rs",
+        "line": 870
+      },
+      {
+        "module": "tilefield",
         "name": "TileField::export_cost_layer",
         "file": "src/tilefield/field.rs",
-        "line": 869
+        "line": 881
       },
       {
         "module": "tilefield",
         "name": "TileField::write_block_layer",
         "file": "src/tilefield/field.rs",
-        "line": 908
+        "line": 920
       },
       {
         "module": "tilefield",
         "name": "TileField::write_cost_layer",
         "file": "src/tilefield/field.rs",
-        "line": 925
+        "line": 937
       },
       {
         "module": "tilefield",
         "name": "TileField::write_ref_layer",
         "file": "src/tilefield/field.rs",
-        "line": 942
+        "line": 954
       },
       {
         "module": "tilefield",
@@ -38442,6 +38478,12 @@
         "name": "TileSemanticsView::footprint_passable",
         "file": "src/tilefield/semantics.rs",
         "line": 45
+      },
+      {
+        "module": "tilefield",
+        "name": "TileTopology::range_distance",
+        "file": "src/tilefield/topology.rs",
+        "line": 61
       },
       {
         "module": "tilelight",
@@ -40444,8 +40486,8 @@
     ]
   },
   "lua": {
-    "total": 6241,
-    "covered": 6241,
+    "total": 6243,
+    "covered": 6243,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -59529,693 +59571,693 @@
         "lua_name": "LLight:setPosition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 424
+        "line": 439
       },
       {
         "module": "light",
         "lua_name": "LLight:getPosition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 437
+        "line": 452
       },
       {
         "module": "light",
         "lua_name": "LLight:setRadius",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 448
+        "line": 463
       },
       {
         "module": "light",
         "lua_name": "LLight:getRadius",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 461
+        "line": 476
       },
       {
         "module": "light",
         "lua_name": "LLight:setColor",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 475
+        "line": 490
       },
       {
         "module": "light",
         "lua_name": "LLight:getColor",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 497
+        "line": 512
       },
       {
         "module": "light",
         "lua_name": "LLight:setIntensity",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 509
+        "line": 524
       },
       {
         "module": "light",
         "lua_name": "LLight:getIntensity",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 522
+        "line": 537
       },
       {
         "module": "light",
         "lua_name": "LLight:setEnergy",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 533
+        "line": 548
       },
       {
         "module": "light",
         "lua_name": "LLight:getEnergy",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 545
+        "line": 560
       },
       {
         "module": "light",
         "lua_name": "LLight:setBlendMode",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 556
+        "line": 571
       },
       {
         "module": "light",
         "lua_name": "LLight:getBlendMode",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 569
+        "line": 584
       },
       {
         "module": "light",
         "lua_name": "LLight:setFalloff",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 580
+        "line": 595
       },
       {
         "module": "light",
         "lua_name": "LLight:getFalloff",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 593
+        "line": 608
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 604
+        "line": 619
       },
       {
         "module": "light",
         "lua_name": "LLight:isShadowEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 616
+        "line": 631
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowColor",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 630
+        "line": 645
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowColor",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 648
+        "line": 663
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowFilter",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 660
+        "line": 675
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowFilter",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 673
+        "line": 688
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowSmooth",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 684
+        "line": 699
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowSmooth",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 696
+        "line": 711
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowSoftness",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 707
+        "line": 722
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowSoftness",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 720
+        "line": 735
       },
       {
         "module": "light",
         "lua_name": "LLight:setLightMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 731
+        "line": 746
       },
       {
         "module": "light",
         "lua_name": "LLight:getLightMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 743
+        "line": 758
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 754
+        "line": 769
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 766
+        "line": 781
       },
       {
         "module": "light",
         "lua_name": "LLight:setEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 777
+        "line": 792
       },
       {
         "module": "light",
         "lua_name": "LLight:isEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 789
+        "line": 804
       },
       {
         "module": "light",
         "lua_name": "LLight:setLightType",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 800
+        "line": 815
       },
       {
         "module": "light",
         "lua_name": "LLight:getLightType",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 813
+        "line": 828
       },
       {
         "module": "light",
         "lua_name": "LLight:setDirection",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 824
+        "line": 839
       },
       {
         "module": "light",
         "lua_name": "LLight:getDirection",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 836
+        "line": 851
       },
       {
         "module": "light",
         "lua_name": "LLight:setInnerAngle",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 847
+        "line": 862
       },
       {
         "module": "light",
         "lua_name": "LLight:getInnerAngle",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 859
+        "line": 874
       },
       {
         "module": "light",
         "lua_name": "LLight:setOuterAngle",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 870
+        "line": 885
       },
       {
         "module": "light",
         "lua_name": "LLight:getOuterAngle",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 882
+        "line": 897
       },
       {
         "module": "light",
         "lua_name": "LLight:setAttenuation",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 895
+        "line": 910
       },
       {
         "module": "light",
         "lua_name": "LLight:getAttenuation",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 909
+        "line": 924
       },
       {
         "module": "light",
         "lua_name": "LLight:setFlicker",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 922
+        "line": 937
       },
       {
         "module": "light",
         "lua_name": "LLight:getFlicker",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 940
+        "line": 955
       },
       {
         "module": "light",
         "lua_name": "LLight:setFlickerEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 952
+        "line": 967
       },
       {
         "module": "light",
         "lua_name": "LLight:isFlickerEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 967
+        "line": 982
       },
       {
         "module": "light",
         "lua_name": "LLight:setGroupId",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 978
+        "line": 993
       },
       {
         "module": "light",
         "lua_name": "LLight:getGroupId",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 990
+        "line": 1005
       },
       {
         "module": "light",
         "lua_name": "LLight:setVolumetric",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1001
+        "line": 1016
       },
       {
         "module": "light",
         "lua_name": "LLight:isVolumetric",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1013
+        "line": 1028
       },
       {
         "module": "light",
         "lua_name": "LLight:remove",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1023
+        "line": 1038
       },
       {
         "module": "light",
         "lua_name": "LLight:isValid",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1030
+        "line": 1045
       },
       {
         "module": "light",
         "lua_name": "LLight:addFlicker",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1050
+        "line": 1065
       },
       {
         "module": "light",
         "lua_name": "LLight:transitionTo",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1071
+        "line": 1086
       },
       {
         "module": "light",
         "lua_name": "LLight:updateTransition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1163
+        "line": 1178
       },
       {
         "module": "light",
         "lua_name": "LLight:stopTransition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1186
+        "line": 1201
       },
       {
         "module": "light",
         "lua_name": "LLight:transitionProgress",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1193
+        "line": 1208
       },
       {
         "module": "light",
         "lua_name": "LLight:setCookie",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1204
+        "line": 1219
       },
       {
         "module": "light",
         "lua_name": "LLight:getCookie",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1211
+        "line": 1226
       },
       {
         "module": "light",
         "lua_name": "LLight:clearCookie",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1216
+        "line": 1231
       },
       {
         "module": "light",
         "lua_name": "LLight:setNormalMap",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1223
+        "line": 1238
       },
       {
         "module": "light",
         "lua_name": "LLight:getNormalMap",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1235
+        "line": 1250
       },
       {
         "module": "light",
         "lua_name": "LLight:clearNormalMap",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1245
+        "line": 1260
       },
       {
         "module": "light",
         "lua_name": "LLight:setNormalStrength",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1257
+        "line": 1272
       },
       {
         "module": "light",
         "lua_name": "LLight:getNormalStrength",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1270
+        "line": 1285
       },
       {
         "module": "light",
         "lua_name": "LLight:type",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1281
+        "line": 1296
       },
       {
         "module": "light",
         "lua_name": "LLight:typeOf",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1286
+        "line": 1301
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setVertices",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1305
+        "line": 1330
       },
       {
         "module": "light",
         "lua_name": "LOccluder:getVertices",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1319
+        "line": 1344
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setPosition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1336
+        "line": 1361
       },
       {
         "module": "light",
         "lua_name": "LOccluder:getPosition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1349
+        "line": 1374
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setOpacity",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1361
+        "line": 1386
       },
       {
         "module": "light",
         "lua_name": "LOccluder:getOpacity",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1373
+        "line": 1398
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setLightMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1384
+        "line": 1409
       },
       {
         "module": "light",
         "lua_name": "LOccluder:getLightMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1396
+        "line": 1421
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1407
+        "line": 1432
       },
       {
         "module": "light",
         "lua_name": "LOccluder:isEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1419
+        "line": 1444
       },
       {
         "module": "light",
         "lua_name": "LOccluder:remove",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1429
+        "line": 1454
       },
       {
         "module": "light",
         "lua_name": "LOccluder:isValid",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1439
+        "line": 1464
       },
       {
         "module": "light",
         "lua_name": "LOccluder:type",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1457
+        "line": 1482
       },
       {
         "module": "light",
         "lua_name": "LOccluder:typeOf",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1462
+        "line": 1487
       },
       {
         "module": "light",
         "lua_name": "lurek.light.newLight",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1478
+        "line": 1503
       },
       {
         "module": "light",
         "lua_name": "lurek.light.newOccluder",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1507
+        "line": 1532
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setAmbient",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1529
+        "line": 1554
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getAmbient",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1548
+        "line": 1573
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setEnabled",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1559
+        "line": 1584
       },
       {
         "module": "light",
         "lua_name": "lurek.light.isEnabled",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1570
+        "line": 1595
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getLightCount",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1578
+        "line": 1603
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getOccluderCount",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1586
+        "line": 1611
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getMaxLights",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1594
+        "line": 1619
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setMaxLights",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1602
+        "line": 1627
       },
       {
         "module": "light",
         "lua_name": "lurek.light.clear",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1612
+        "line": 1637
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setGroupEnabled",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1624
+        "line": 1649
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setGroupIntensity",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1638
+        "line": 1663
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setGroupColor",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1657
+        "line": 1682
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getGroupCount",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1679
+        "line": 1704
       },
       {
         "module": "light",
         "lua_name": "lurek.light.advanceFlickers",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1689
+        "line": 1714
       },
       {
         "module": "light",
         "lua_name": "lurek.light.syncAmbient",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1704
+        "line": 1729
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getGodRayHints",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1718
+        "line": 1743
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getNormalMapHints",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1747
+        "line": 1772
       },
       {
         "module": "light",
         "lua_name": "lurek.light.drawToImage",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1779
+        "line": 1804
       },
       {
         "module": "log",
@@ -69343,1456 +69385,1456 @@
         "lua_name": "LWorld:drawDebug",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 312
+        "line": 319
       },
       {
         "module": "physics",
         "lua_name": "LWorld:step",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 337
+        "line": 344
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clear",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 359
+        "line": 366
       },
       {
         "module": "physics",
         "lua_name": "LWorld:resetWorld",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 366
+        "line": 373
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getGravity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 374
+        "line": 381
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setGravity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 381
+        "line": 388
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addGravityVector",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 391
+        "line": 398
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setGravityVector",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 408
+        "line": 415
       },
       {
         "module": "physics",
         "lua_name": "LWorld:removeGravityVector",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 422
+        "line": 429
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearGravityVectors",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 427
+        "line": 434
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getGravityVector",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 435
+        "line": 442
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setMeter",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 444
+        "line": 451
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getMeter",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 451
+        "line": 458
       },
       {
         "module": "physics",
         "lua_name": "LWorld:toPhysics",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 458
+        "line": 465
       },
       {
         "module": "physics",
         "lua_name": "LWorld:toPixels",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 465
+        "line": 472
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyCount",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 471
+        "line": 478
       },
       {
         "module": "physics",
         "lua_name": "LWorld:hasBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 478
+        "line": 485
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyIds",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 484
+        "line": 491
       },
       {
         "module": "physics",
         "lua_name": "LWorld:hasJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 491
+        "line": 498
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getStats",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 505
+        "line": 512
       },
       {
         "module": "physics",
         "lua_name": "LWorld:destroyBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 512
+        "line": 519
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 522
+        "line": 529
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newCircleBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 563
+        "line": 570
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newPolygonBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 583
+        "line": 590
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newEdgeBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 616
+        "line": 623
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newChainBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 638
+        "line": 645
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addFixture",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 670
+        "line": 677
       },
       {
         "module": "physics",
         "lua_name": "LWorld:fixtureCount",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 696
+        "line": 703
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setFixtureFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 704
+        "line": 711
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setFixtureRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 719
+        "line": 726
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setFixtureSensor",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 734
+        "line": 741
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addRevoluteJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 751
+        "line": 758
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addDistanceJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 771
+        "line": 778
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addPrismaticJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 789
+        "line": 796
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addWeldJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 805
+        "line": 812
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addRopeJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 825
+        "line": 832
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addWheelJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 843
+        "line": 850
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addFrictionJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 861
+        "line": 868
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addMotorJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 876
+        "line": 883
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addMouseJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 892
+        "line": 899
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addPulleyJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 908
+        "line": 915
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addGearJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 924
+        "line": 931
       },
       {
         "module": "physics",
         "lua_name": "LWorld:jointCount",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 936
+        "line": 943
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointIds",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 942
+        "line": 949
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointBodies",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 950
+        "line": 957
       },
       {
         "module": "physics",
         "lua_name": "LWorld:destroyJoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 959
+        "line": 966
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 967
+        "line": 974
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setJointMotorSpeed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 974
+        "line": 981
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointMotorSpeed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 992
+        "line": 999
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setJointLimitsEnabled",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 999
+        "line": 1006
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setJointLimits",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1018
+        "line": 1025
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointLimits",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1037
+        "line": 1044
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setMouseJointTarget",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1045
+        "line": 1052
       },
       {
         "module": "physics",
         "lua_name": "LWorld:raycast",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1073
+        "line": 1080
       },
       {
         "module": "physics",
         "lua_name": "LWorld:raycastClosest",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1100
+        "line": 1107
       },
       {
         "module": "physics",
         "lua_name": "LWorld:raycastAll",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1132
+        "line": 1139
       },
       {
         "module": "physics",
         "lua_name": "LWorld:queryAABB",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1158
+        "line": 1165
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyAtPoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1173
+        "line": 1180
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getCollisionEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1185
+        "line": 1192
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBeginContactEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1202
+        "line": 1209
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getEndContactEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1219
+        "line": 1226
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getContacts",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1239
+        "line": 1246
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyContacts",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1256
+        "line": 1263
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBodyType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1268
+        "line": 1275
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1277
+        "line": 1284
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBeginContact",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1283
+        "line": 1290
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearBeginContact",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1289
+        "line": 1296
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setEndContact",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1296
+        "line": 1303
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearEndContact",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1302
+        "line": 1309
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBodyData",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1310
+        "line": 1317
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyData",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1322
+        "line": 1329
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearBodyData",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1332
+        "line": 1339
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBodyCCD",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1343
+        "line": 1350
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyCCD",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1351
+        "line": 1358
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setBodyOneWay",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1359
+        "line": 1366
       },
       {
         "module": "physics",
         "lua_name": "LWorld:clearBodyOneWay",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1369
+        "line": 1376
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getBodyOneWay",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1378
+        "line": 1385
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setJointBreakForce",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1388
+        "line": 1395
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getJointBreakForce",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1396
+        "line": 1403
       },
       {
         "module": "physics",
         "lua_name": "LWorld:isBodySleeping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1403
+        "line": 1410
       },
       {
         "module": "physics",
         "lua_name": "LWorld:wakeUpBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1409
+        "line": 1416
       },
       {
         "module": "physics",
         "lua_name": "LWorld:sleepBody",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1416
+        "line": 1423
       },
       {
         "module": "physics",
         "lua_name": "LWorld:setSolverIterations",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1423
+        "line": 1430
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getSolverIterations",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1430
+        "line": 1437
       },
       {
         "module": "physics",
         "lua_name": "LWorld:newBodies",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1437
+        "line": 1444
       },
       {
         "module": "physics",
         "lua_name": "LWorld:stepFixed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1468
+        "line": 1475
       },
       {
         "module": "physics",
         "lua_name": "LWorld:addZone",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1485
+        "line": 1492
       },
       {
         "module": "physics",
         "lua_name": "LWorld:getZoneEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1504
+        "line": 1511
       },
       {
         "module": "physics",
         "lua_name": "LWorld:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1526
+        "line": 1533
       },
       {
         "module": "physics",
         "lua_name": "LWorld:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1531
+        "line": 1538
       },
       {
         "module": "physics",
         "lua_name": "LZone:getId",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1547
+        "line": 1554
       },
       {
         "module": "physics",
         "lua_name": "LZone:setEnabled",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1551
+        "line": 1558
       },
       {
         "module": "physics",
         "lua_name": "LZone:setPriority",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1561
+        "line": 1568
       },
       {
         "module": "physics",
         "lua_name": "LZone:setLayerMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1571
+        "line": 1578
       },
       {
         "module": "physics",
         "lua_name": "LZone:setCircle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1583
+        "line": 1590
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityDirectional",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1595
+        "line": 1602
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityPoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1608
+        "line": 1615
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityRepulsor",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1624
+        "line": 1631
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityZero",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1637
+        "line": 1644
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityAdditive",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1647
+        "line": 1654
       },
       {
         "module": "physics",
         "lua_name": "LZone:isGravityAdditive",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1657
+        "line": 1664
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityFalloff",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1664
+        "line": 1671
       },
       {
         "module": "physics",
         "lua_name": "LZone:getGravityFalloff",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1675
+        "line": 1682
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityRadius",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1685
+        "line": 1692
       },
       {
         "module": "physics",
         "lua_name": "LZone:setGravityLimits",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1700
+        "line": 1707
       },
       {
         "module": "physics",
         "lua_name": "LZone:setLinearDampingOverride",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1714
+        "line": 1721
       },
       {
         "module": "physics",
         "lua_name": "LZone:setAngularDampingOverride",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1725
+        "line": 1732
       },
       {
         "module": "physics",
         "lua_name": "LZone:setLinearDrag",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1739
+        "line": 1746
       },
       {
         "module": "physics",
         "lua_name": "LZone:setQuadraticDrag",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1750
+        "line": 1757
       },
       {
         "module": "physics",
         "lua_name": "LZone:destroy",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1760
+        "line": 1767
       },
       {
         "module": "physics",
         "lua_name": "LZone:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1767
+        "line": 1774
       },
       {
         "module": "physics",
         "lua_name": "LZone:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1772
+        "line": 1779
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:setCell",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1790
+        "line": 1797
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:getCell",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1799
+        "line": 1806
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:fillCircle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1808
+        "line": 1815
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:fillRect",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1825
+        "line": 1832
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:fillAll",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1838
+        "line": 1845
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:flush",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1844
+        "line": 1851
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:isDirty",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1853
+        "line": 1860
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:collapseColumns",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1859
+        "line": 1866
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:solidPositions",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1867
+        "line": 1874
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:spawnDebris",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1884
+        "line": 1891
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:toImageData",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1916
+        "line": 1923
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:toBytes",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1930
+        "line": 1937
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:loadFromBytes",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1937
+        "line": 1944
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1946
+        "line": 1953
       },
       {
         "module": "physics",
         "lua_name": "LTerrain:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1951
+        "line": 1958
       },
       {
         "module": "physics",
         "lua_name": "LBody:getId",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1978
+        "line": 1985
       },
       {
         "module": "physics",
         "lua_name": "LBody:isValid",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1982
+        "line": 1989
       },
       {
         "module": "physics",
         "lua_name": "LBody:getPosition",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1989
+        "line": 1996
       },
       {
         "module": "physics",
         "lua_name": "LBody:setPosition",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2000
+        "line": 2007
       },
       {
         "module": "physics",
         "lua_name": "LBody:getX",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2007
+        "line": 2014
       },
       {
         "module": "physics",
         "lua_name": "LBody:getY",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2014
+        "line": 2021
       },
       {
         "module": "physics",
         "lua_name": "LBody:getVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2022
+        "line": 2029
       },
       {
         "module": "physics",
         "lua_name": "LBody:setVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2033
+        "line": 2040
       },
       {
         "module": "physics",
         "lua_name": "LBody:getAngle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2040
+        "line": 2047
       },
       {
         "module": "physics",
         "lua_name": "LBody:setAngle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2046
+        "line": 2053
       },
       {
         "module": "physics",
         "lua_name": "LBody:getAngularVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2053
+        "line": 2060
       },
       {
         "module": "physics",
         "lua_name": "LBody:setAngularVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2059
+        "line": 2066
       },
       {
         "module": "physics",
         "lua_name": "LBody:getMass",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2068
+        "line": 2075
       },
       {
         "module": "physics",
         "lua_name": "LBody:setMass",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2074
+        "line": 2081
       },
       {
         "module": "physics",
         "lua_name": "LBody:getType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2081
+        "line": 2088
       },
       {
         "module": "physics",
         "lua_name": "LBody:setType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2087
+        "line": 2094
       },
       {
         "module": "physics",
         "lua_name": "LBody:getWidth",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2095
+        "line": 2102
       },
       {
         "module": "physics",
         "lua_name": "LBody:getHeight",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2102
+        "line": 2109
       },
       {
         "module": "physics",
         "lua_name": "LBody:getFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2109
+        "line": 2116
       },
       {
         "module": "physics",
         "lua_name": "LBody:setFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2116
+        "line": 2123
       },
       {
         "module": "physics",
         "lua_name": "LBody:getRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2126
+        "line": 2133
       },
       {
         "module": "physics",
         "lua_name": "LBody:setRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2133
+        "line": 2140
       },
       {
         "module": "physics",
         "lua_name": "LBody:getLayer",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2143
+        "line": 2150
       },
       {
         "module": "physics",
         "lua_name": "LBody:setLayer",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2150
+        "line": 2157
       },
       {
         "module": "physics",
         "lua_name": "LBody:getMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2160
+        "line": 2167
       },
       {
         "module": "physics",
         "lua_name": "LBody:setMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2167
+        "line": 2174
       },
       {
         "module": "physics",
         "lua_name": "LBody:applyImpulse",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2178
+        "line": 2185
       },
       {
         "module": "physics",
         "lua_name": "LBody:applyForce",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2186
+        "line": 2193
       },
       {
         "module": "physics",
         "lua_name": "LBody:applyTorque",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2193
+        "line": 2200
       },
       {
         "module": "physics",
         "lua_name": "LBody:applyForceAtPoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2203
+        "line": 2210
       },
       {
         "module": "physics",
         "lua_name": "LBody:applyAngularImpulse",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2215
+        "line": 2222
       },
       {
         "module": "physics",
         "lua_name": "LBody:getGravityScale",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2224
+        "line": 2231
       },
       {
         "module": "physics",
         "lua_name": "LBody:setGravityScale",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2230
+        "line": 2237
       },
       {
         "module": "physics",
         "lua_name": "LBody:isFixedRotation",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2237
+        "line": 2244
       },
       {
         "module": "physics",
         "lua_name": "LBody:setFixedRotation",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2243
+        "line": 2250
       },
       {
         "module": "physics",
         "lua_name": "LBody:getLinearDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2250
+        "line": 2257
       },
       {
         "module": "physics",
         "lua_name": "LBody:setLinearDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2256
+        "line": 2263
       },
       {
         "module": "physics",
         "lua_name": "LBody:getAngularDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2265
+        "line": 2272
       },
       {
         "module": "physics",
         "lua_name": "LBody:setAngularDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2271
+        "line": 2278
       },
       {
         "module": "physics",
         "lua_name": "LBody:isBullet",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2280
+        "line": 2287
       },
       {
         "module": "physics",
         "lua_name": "LBody:setBullet",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2286
+        "line": 2293
       },
       {
         "module": "physics",
         "lua_name": "LBody:isSleepingAllowed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2293
+        "line": 2300
       },
       {
         "module": "physics",
         "lua_name": "LBody:setSleepingAllowed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2299
+        "line": 2306
       },
       {
         "module": "physics",
         "lua_name": "LBody:destroy",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2307
+        "line": 2314
       },
       {
         "module": "physics",
         "lua_name": "LBody:isSleeping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2314
+        "line": 2321
       },
       {
         "module": "physics",
         "lua_name": "LBody:wakeUp",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2319
+        "line": 2326
       },
       {
         "module": "physics",
         "lua_name": "LBody:sleep",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2325
+        "line": 2332
       },
       {
         "module": "physics",
         "lua_name": "LBody:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2332
+        "line": 2339
       },
       {
         "module": "physics",
         "lua_name": "LBody:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2337
+        "line": 2344
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:getType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2379
+        "line": 2386
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:getRadius",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2392
+        "line": 2399
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:getBoundingBox",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2404
+        "line": 2411
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:setDensity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2436
+        "line": 2443
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:setFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2449
+        "line": 2456
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:setRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2462
+        "line": 2469
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:setSensor",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2475
+        "line": 2482
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:destroy",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2481
+        "line": 2488
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:type",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2485
+        "line": 2492
       },
       {
         "module": "physics",
         "lua_name": "LPhysicsShape:typeOf",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2490
+        "line": 2497
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newWorld",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2521
+        "line": 2528
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.step",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2539
+        "line": 2546
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.destroyWorld",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2553
+        "line": 2560
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newBody",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2564
+        "line": 2571
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.getBody",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2576
+        "line": 2583
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.setBodyVelocity",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2598
+        "line": 2605
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.isSleepingAllowed",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2611
+        "line": 2618
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.setSleepingAllowed",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2626
+        "line": 2633
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newRectangleShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2643
+        "line": 2650
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newCircleShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2655
+        "line": 2662
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newEdgeShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2670
+        "line": 2677
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newPolygonShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2682
+        "line": 2689
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newChainShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2691
+        "line": 2698
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.attachShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2701
+        "line": 2708
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.getCollisions",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2727
+        "line": 2734
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.debugDraw",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2739
+        "line": 2746
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.drawDebugGpu",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2751
+        "line": 2758
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newTerrain",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2768
+        "line": 2775
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.testAABB",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2793
+        "line": 2800
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.testCircles",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2812
+        "line": 2819
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.testPoint",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2831
+        "line": 2838
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.testCircleAABB",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2851
+        "line": 2858
       },
       {
         "module": "pipeline",
@@ -77701,553 +77743,567 @@
         "lua_name": "LTileField:getSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 904
+        "line": 1193
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 909
+        "line": 1198
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 919
+        "line": 1208
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 931
+        "line": 1220
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionRect",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 959
+        "line": 1248
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 981
+        "line": 1270
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeRegion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1002
+        "line": 1291
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:regionContains",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1013
+        "line": 1302
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1025
+        "line": 1314
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionNames",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1036
+        "line": 1325
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clear",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1046
+        "line": 1335
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1056
+        "line": 1345
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1073
+        "line": 1362
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1091
+        "line": 1380
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setBlock",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1209
+        "line": 1498
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:blocks",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1228
+        "line": 1517
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1244
+        "line": 1533
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1263
+        "line": 1552
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1276
+        "line": 1565
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1301
+        "line": 1590
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategories",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1316
+        "line": 1605
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryBlock",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1327
+        "line": 1616
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:blocksCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1340
+        "line": 1629
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1350
+        "line": 1639
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1363
+        "line": 1652
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryTransmission",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1373
+        "line": 1662
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryTransmission",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1386
+        "line": 1675
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryFilter",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1396
+        "line": 1685
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryFilter",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1414
+        "line": 1703
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:footprintPassable",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1429
+        "line": 1718
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getVersion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1443
+        "line": 1732
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1453
+        "line": 1742
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1470
+        "line": 1759
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1482
+        "line": 1771
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1497
+        "line": 1786
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1509
+        "line": 1798
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1524
+        "line": 1813
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1536
+        "line": 1825
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1544
+        "line": 1833
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1551
+        "line": 1840
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1562
+        "line": 1851
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:hasSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1570
+        "line": 1859
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1581
+        "line": 1870
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1621
+        "line": 1910
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1642
+        "line": 1931
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1659
+        "line": 1948
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1677
+        "line": 1966
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getModifiers",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1694
+        "line": 1983
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyTilesetObject",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1716
+        "line": 2005
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyTilesetObjectLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1764
+        "line": 2053
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefProperty",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1825
+        "line": 2114
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefPropertyNumber",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1876
+        "line": 2165
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefPropertyBool",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1926
+        "line": 2215
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefProperties",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1975
+        "line": 2264
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2028
+        "line": 2317
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefSlots",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2045
+        "line": 2334
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:line",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2057
+        "line": 2346
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearLine",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2078
+        "line": 2367
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:firstBlocker",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2098
+        "line": 2387
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2127
+        "line": 2416
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportCostLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2142
+        "line": 2431
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2157
+        "line": 2446
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeCostLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2179
+        "line": 2468
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportRefLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2200
+        "line": 2489
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeRefLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2214
+        "line": 2503
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2233
+        "line": 2522
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2239
+        "line": 2528
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getMapSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2252
+        "line": 2541
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getFieldSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2261
+        "line": 2550
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2268
+        "line": 2557
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2278
+        "line": 2567
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2297
+        "line": 2586
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:setField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2317
+        "line": 2606
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2334
+        "line": 2623
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2340
+        "line": 2629
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.new",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2354
+        "line": 2643
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.fromProvider",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2380
+        "line": 2669
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.newFieldMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2394
+        "line": 2683
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.fromTileMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2440
+        "line": 2729
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "lurek.tilefield.createPhysicsFromTileset",
+        "kind": "function",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 2856
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "lurek.tilefield.createLightsFromTileset",
+        "kind": "function",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 2921
       },
       {
         "module": "tilelight",
@@ -79325,308 +79381,308 @@
         "lua_name": "LTileCatalog:getIds",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 406
+        "line": 572
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:getTileset",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 417
+        "line": 583
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:getObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 431
+        "line": 597
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:getVisual",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 445
+        "line": 611
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:type",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 454
+        "line": 620
       },
       {
         "module": "tileset",
         "lua_name": "LTileCatalog:typeOf",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 458
+        "line": 624
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getFirstGid",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 468
+        "line": 634
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileCount",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 473
+        "line": 639
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getColumns",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 478
+        "line": 644
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileWidth",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 483
+        "line": 649
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileHeight",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 488
+        "line": 654
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileDimensions",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 494
+        "line": 660
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTextureDimensions",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 500
+        "line": 666
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getSpacing",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 506
+        "line": 672
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getMargin",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 511
+        "line": 677
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getQuad",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 517
+        "line": 683
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setProfile",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 535
+        "line": 701
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getProfile",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 553
+        "line": 719
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setPhysicsShape",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 568
+        "line": 734
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getPhysicsShape",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 586
+        "line": 752
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setAnimation",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 602
+        "line": 768
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getAnimation",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 634
+        "line": 800
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 659
+        "line": 825
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 751
+        "line": 927
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:removeObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 846
+        "line": 1063
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getObjectNames",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 851
+        "line": 1068
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setTileObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 862
+        "line": 1079
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getTileObject",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 880
+        "line": 1097
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setProperty",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 897
+        "line": 1114
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getProperty",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 917
+        "line": 1134
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getPropertyNumber",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 933
+        "line": 1150
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getPropertyBool",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 952
+        "line": 1169
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getProperties",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 970
+        "line": 1187
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setAutoTileRule",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 989
+        "line": 1206
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getAutoTileId",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1007
+        "line": 1224
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setAutoTileRule8",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1021
+        "line": 1238
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getAutoTileId8",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1039
+        "line": 1256
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:setAutoTileMode",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1052
+        "line": 1269
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:getAutoTileMode",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1063
+        "line": 1280
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:type",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1068
+        "line": 1285
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:typeOf",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1072
+        "line": 1289
       },
       {
         "module": "tileset",
         "lua_name": "lurek.tileset.newTileSet",
         "kind": "function",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1089
+        "line": 1306
       },
       {
         "module": "tileset",
         "lua_name": "lurek.tileset.newCatalog",
         "kind": "function",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1119
+        "line": 1336
       },
       {
         "module": "tileset",
         "lua_name": "lurek.tileset.fromProvider",
         "kind": "function",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1141
+        "line": 1358
       },
       {
         "module": "timer",

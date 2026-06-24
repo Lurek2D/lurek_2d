@@ -1,0 +1,5 @@
+map=50x50
+field_topology=hex
+block_width=6
+block_height=5
+sample_ref=0

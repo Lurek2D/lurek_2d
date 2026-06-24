@@ -854,6 +854,18 @@ impl TileField {
         }
     }
 
+    /// Return topology-aware radial range distance.
+    pub fn range_distance(&self, a: CellCoord, b: CellCoord) -> f32 {
+        if a.z != b.z {
+            a.z.abs_diff(b.z) as f32
+                + self
+                    .topology
+                    .range_distance(CellCoord { z: 0, ..a }, CellCoord { z: 0, ..b })
+        } else {
+            self.topology.range_distance(a, b)
+        }
+    }
+
     /// Export a blocker layer for one level in row-major order.
     pub fn export_block_layer(&self, channel: TileChannel, z: u32) -> Vec<bool> {
         let mut out = Vec::with_capacity((self.width * self.height) as usize);

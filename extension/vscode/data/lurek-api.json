@@ -28490,6 +28490,84 @@
           "returnType": "LTileField",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "createPhysicsFromTileset",
+          "fullPath": "lurek.tilefield.createPhysicsFromTileset",
+          "signature": "lurek.tilefield.createPhysicsFromTileset(field, slot, tileset, world, [opts])",
+          "description": "Creates physics bodies from tilefield refs whose tileset objects define `physics`.",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "LTileField",
+              "description": "Source field containing refs.",
+              "optional": false
+            },
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Reference slot name.",
+              "optional": false
+            },
+            {
+              "name": "tileset",
+              "type": "LTileSet",
+              "description": "Tileset with tile object metadata.",
+              "optional": false
+            },
+            {
+              "name": "world",
+              "type": "LWorld",
+              "description": "Physics world that receives the bodies.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.",
+              "optional": true
+            }
+          ],
+          "returns": "LBody[]",
+          "returnType": "LBody[]",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "createLightsFromTileset",
+          "fullPath": "lurek.tilefield.createLightsFromTileset",
+          "signature": "lurek.tilefield.createLightsFromTileset(field, slot, tileset, [opts])",
+          "description": "Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "LTileField",
+              "description": "Source field containing refs.",
+              "optional": false
+            },
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Reference slot name.",
+              "optional": false
+            },
+            {
+              "name": "tileset",
+              "type": "LTileSet",
+              "description": "Tileset with tile object metadata.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
