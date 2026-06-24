@@ -1,5 +1,6 @@
-//! Defines the catalog interface used to resolve typed tilefield references.
-//! The trait lives in tilefield so algorithms can depend on `TileRef` semantics without importing tileset.
+//! This file owns catalog behavior inside the tilefield subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate catalog state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 use crate::tilefield::TileRef;
 

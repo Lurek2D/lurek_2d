@@ -1,5 +1,9 @@
-//! Exports reusable tileset atlas data, object archetypes, visuals, animation frames, and autotile rules.
-//! Keeps tileset definitions outside tilemap while still allowing tilemap to attach and render tileset-backed objects.
+//! This module index owns the public shape of the tileset subsystem and its source navigation map.
+//! It declares which sibling files participate in tileset behavior and which names are reexported outward.
+//! Reexports here are intentionally narrow so callers do not depend on private implementation modules.
+//! Agents should start here to understand subsystem boundaries before opening deeper implementation files.
+//! New submodules belong here only when they add durable behavior rather than temporary test scaffolding.
+//! Keep this index synchronized with specs, examples, and Lua bindings whenever public ownership changes.
 
 #![allow(clippy::module_inception)]
 

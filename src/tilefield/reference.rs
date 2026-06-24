@@ -1,5 +1,6 @@
-//! Owns typed tilefield slot references that point from placed cells to tileset-local tiles or named objects.
-//! The reference is pure data so renderers and gameplay systems can resolve it through their own catalog handles.
+//! This file owns reference behavior inside the tilefield subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate reference state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 /// Typed reference stored in one tilefield slot.
 #[derive(Debug, Clone, PartialEq, Eq)]

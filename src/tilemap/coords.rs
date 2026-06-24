@@ -1,8 +1,6 @@
-//! Provides tilemap projection transforms for isometric and hex render layouts.
-//! Converts between tile/grid coordinates and screen space for storage-to-render adapters.
-//! Keeps orientation-specific projection math out of map storage while avoiding gameplay topology ownership.
-//! Does not provide navigation, range, neighbor, line, ring, or visibility algorithms.
-//! Open this file when tilemap projection between tile coordinates and screen coordinates is wrong.
+//! This file owns coords behavior inside the tilemap subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate coords state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 use crate::math::Vec2;
 

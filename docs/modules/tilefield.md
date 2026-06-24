@@ -30,6 +30,7 @@ end
 
 ## Common Patterns
 
+- Start with `lurek.tilefield.fromProvider` when exploring this module.
 - Start with `lurek.tilefield.fromTileMap` when exploring this module.
 - Start with `lurek.tilefield.new` when exploring this module.
 - Start with `lurek.tilefield.newFieldMap` when exploring this module.
@@ -53,9 +54,52 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 
 ## Functions
 
+### `lurek.tilefield.fromProvider`
+
+Builds a native tilefield from a Lua provider table with width, height, optional levels/topology, slots, modifiers, regions, and optional getCell(x,y,z).
+
+```lua
+lurek.tilefield.fromProvider(provider)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `provider` | table | Lua-authored tilefield provider. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTileField](#ltilefield) | New tilefield copied from the provider. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        local f = lurek.tilefield.fromProvider({ width = 3, height = 2, levels = 2, topology = "square4" })
+        return f:getTopology()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
 ### `lurek.tilefield.fromTileMap`
 
-Copies a tilemap layer into a tilefield, optionally applying profiles and a ref slot.
+Copies a tilemap layer into a tilefield, optionally applying tileset object defaults and a ref slot.
 
 ```lua
 lurek.tilefield.fromTileMap(tilemap, opts)
@@ -66,7 +110,7 @@ lurek.tilefield.fromTileMap(tilemap, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `tilemap` | [LTileMap](#ltilemap) | Source tilemap. |
-| `opts?` | table | `{level?, topology?, solidProfile?, emptyProfile?, solidGids?, refSlot?}`; `solidGids` is explicit and no tileset solidity is inferred. |
+| `opts?` | table | `{layer?, level?, levels?, topology?, solidGids?, refSlot?, applyTilesetObject?}`; `solidGids` and `applyTilesetObject` are explicit, no tileset solidity is inferred. |
 
 **Returns**
 
@@ -180,7 +224,6 @@ end
 
 - [LTileField](#ltilefield)
 - [LTileFieldMap](#ltilefieldmap)
-- [LTileLightMap](#ltilelightmap)
 - [LTileMap](#ltilemap)
 
 ## LTileField
@@ -191,12 +234,12 @@ end
 
 ### Type Methods
 
-#### `LTileField:applyProfile`
+#### `LTileField:applyModifier`
 
-Applies a named profile to one cell.
+Applies a named modifier to one cell.
 
 ```lua
-LTileField:applyProfile(x, y, z, name)
+LTileField:applyModifier(x, y, z, modifier)
 ```
 
 **Parameters**
@@ -206,7 +249,48 @@ LTileField:applyProfile(x, y, z, name)
 | `x` | number | One-based column. |
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
-| `name` | string | Profile name to apply to the cell. |
+| `modifier` | string | Modifier name. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setModifier("wall", { blocks = { move = true } })
+        field:applyModifier(2, 2, 1, "wall")
+        return field:blocks(2, 2, 1, "move")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:applyProfile`
+
+Applies a legacy profile to one cell.
+
+```lua
+LTileField:applyProfile(x, y, z, profile)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `profile` | string | Profile name. |
 
 **Example**
 
@@ -226,12 +310,12 @@ end
 
 ---
 
-#### `LTileField:applyTilesetProfile`
+#### `LTileField:applyTilesetObject`
 
-Applies the tilefield profile named by a tileset tile referenced from one cell.
+Applies the object archetype defaults for a tileset tile referenced from one cell.
 
 ```lua
-LTileField:applyTilesetProfile(x, y, z, slot, tileset, opts)
+LTileField:applyTilesetObject(x, y, z, slot, tileset, opts)
 ```
 
 **Parameters**
@@ -242,50 +326,44 @@ LTileField:applyTilesetProfile(x, y, z, slot, tileset, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores profile metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object archetype metadata. |
 | `opts?` | table | Options: refIsGid. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| boolean | True when a profile was found and applied. |
+| boolean | True when the tileset object was found and applied. |
 
----
-
-#### `LTileField:applyTilesetStats`
-
-Applies tileset gameplay properties for a tile referenced from one cell.
+**Example**
 
 ```lua
-LTileField:applyTilesetStats(x, y, z, slot, tileset, opts)
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRef(1, 1, 1, "object", 1)
+        return field:applyTilesetObject(1, 1, 1, "object", tileset)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
 ```
 
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | One-based column. |
-| `y` | number | One-based row. |
-| `z?` | number | One-based level, default 1. |
-| `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
-| `opts?` | table | Options: refIsGid. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when referenced tileset properties were found and applied. |
-
 ---
 
-#### `LTileField:applyTilesetStatsLayer`
+#### `LTileField:applyTilesetObjectLayer`
 
-Applies tileset gameplay properties for every referenced cell on one tilefield level.
+Applies tileset object defaults for every referenced cell on one tilefield level.
 
 ```lua
-LTileField:applyTilesetStatsLayer(slot, tileset, opts)
+LTileField:applyTilesetObjectLayer(slot, tileset, opts)
 ```
 
 **Parameters**
@@ -293,14 +371,36 @@ LTileField:applyTilesetStatsLayer(slot, tileset, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `opts?` | table | Options: z, refIsGid. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| number | Number of cells that received at least one stat. |
+| number | Number of cells that received object defaults. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRef(1, 1, 1, "object", 1)
+        field:setRef(2, 1, 1, "object", 1)
+        return field:applyTilesetObjectLayer("object", tileset, { z = 1 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -340,6 +440,46 @@ do
     local move = field:blocks(2, 2, 1, "move")
     local vision = field:blocks(2, 2, 1, "vision")
     tilefield_log("blocks move=" .. tostring(move) .. " vision=" .. tostring(vision))
+end
+```
+
+---
+
+#### `LTileField:blocksCategory`
+
+Returns whether one cell blocks a category.
+
+```lua
+LTileField:blocksCategory(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setCategoryBlock(2, 2, 1, "tank", true)
+        return field:blocksCategory(2, 2, 1, "tank")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 ```
 
@@ -446,6 +586,54 @@ end
 
 ---
 
+#### `LTileField:clearModifier`
+
+Removes one modifier from one cell.
+
+```lua
+LTileField:clearModifier(x, y, z, modifier)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `modifier` | string | Modifier name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the cell had the modifier. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setModifier("mud", { costs = { move = 4 } })
+        field:applyModifier(2, 2, 1, "mud")
+        field:clearModifier(2, 2, 1)
+        return #field:getModifiers(2, 2, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
 #### `LTileField:clearRef`
 
 Clears a named object/tile reference from one cell.
@@ -462,6 +650,103 @@ LTileField:clearRef(x, y, z, slot)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRef(2, 2, 1, "object", 1)
+        field:clearRef(2, 2, 1, "object")
+        return field:getRef(2, 2, 1, "object")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:defineCategory`
+
+Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
+
+```lua
+LTileField:defineCategory(name, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Stable category name. |
+| `opts?` | table?|Options | custom', active=true?. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:defineCategory("tank", { kind = "movement" })
+        return field:getCategory("tank").kind
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:defineSlot`
+
+Defines a named object slot that cells may reference.
+
+```lua
+LTileField:defineSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name chosen by the Lua game. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:defineSlot("object")
+        return field:hasSlot("object")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -543,38 +828,6 @@ end
 
 ---
 
-#### `LTileField:exportProfileLayer`
-
-Exports one level of profile names as a row-major array.
-
-```lua
-LTileField:exportProfileLayer(z)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `z?` | number | One-based level, default 1. |
-
-**Example**
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 3, height = 3 })
-    field:applyProfile(2, 2, 1, "window")
-    local layer = field:exportProfileLayer(1)
-    local center = layer[5]
-    tilefield_log("profile layer center=" .. tostring(center))
-end
-```
-
----
-
 #### `LTileField:exportRefLayer`
 
 Exports one named object/tile reference slot and level as a row-major array.
@@ -649,9 +902,251 @@ end
 
 ---
 
+#### `LTileField:footprintPassable`
+
+Returns whether a rectangular footprint can occupy a cell anchor for a category.
+
+```lua
+LTileField:footprintPassable(x, y, z, w, h, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `w` | any |  |
+| `h` | any |  |
+| `category` | any |  |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setCategoryBlock(3, 2, 1, "tank", true)
+        return field:footprintPassable(2, 2, 1, 2, 1, "tank")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:getCategories`
+
+Returns known category names.
+
+```lua
+LTileField:getCategories()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Sorted category names. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:defineCategory("tank", { kind = "movement" })
+        return field:getCategories()[1]
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:getCategory`
+
+Returns category metadata, or nil when the category is unknown.
+
+```lua
+LTileField:getCategory(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Category name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Category table with name, kind, and active. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:defineCategory("tank", { kind = "movement" })
+        return field:getCategory("tank").kind
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:getCategoryCost`
+
+Returns one effective category cost.
+
+```lua
+LTileField:getCategoryCost(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setCategoryCost(2, 2, 1, "tank", 6)
+        return field:getCategoryCost(2, 2, 1, "tank")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:getCategoryFilter`
+
+Returns one effective RGB category filter.
+
+```lua
+LTileField:getCategoryFilter(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setCategoryFilter(2, 2, 1, "light", { 0.25, 0.5, 1 })
+        return field:getCategoryFilter(2, 2, 1, "light")[3]
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:getCategoryTransmission`
+
+Returns one effective category transmission multiplier.
+
+```lua
+LTileField:getCategoryTransmission(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setCategoryTransmission(2, 2, 1, "light", 0.25)
+        return field:getCategoryTransmission(2, 2, 1, "light")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
 #### `LTileField:getCell`
 
-Returns a table with blockers, costs, sun occlusion, and optional profile name.
+Returns a table with blockers, costs, sun occlusion, refs, and modifiers.
 
 ```lua
 LTileField:getCell(x, y, z)
@@ -731,6 +1226,95 @@ end
 
 ---
 
+#### `LTileField:getModifier`
+
+Returns a named tile modifier table, or nil.
+
+```lua
+LTileField:getModifier(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Modifier name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Modifier table. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setModifier("mud", { costs = { move = 4 } })
+        return field:getModifier("mud").costs.move
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:getModifiers`
+
+Returns active modifier names on one cell.
+
+```lua
+LTileField:getModifiers(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Active modifier names. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setModifier("wall", { blocks = { move = true } })
+        field:applyModifier(2, 2, 1, "wall")
+        return field:getModifiers(2, 2, 1)[1]
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
 #### `LTileField:getNeighbors`
 
 Returns topology-aware same-level neighbours for one cell.
@@ -753,11 +1337,31 @@ LTileField:getNeighbors(x, y, z)
 |------|-------------|
 | table | Array of one-based coordinate tables. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        return #field:getNeighbors(2, 2, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileField:getProfile`
 
-Returns a named object profile table, or nil when absent.
+Returns a legacy profile table, or nil.
 
 ```lua
 LTileField:getProfile(name)
@@ -767,13 +1371,13 @@ LTileField:getProfile(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Profile name to read. |
+| `name` | string | Profile name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| table | nil | Profile table with blockers, costs, and sunOcclusion, or nil. |
+| table | nil | Profile table. |
 
 **Example**
 
@@ -814,7 +1418,22 @@ LTileField:getRef(x, y, z, slot)
 
 | Type | Description |
 |------|-------------|
-| number | nil | Stored reference id, or nil when unset. |
+| number | table|nil | Stored legacy id, typed ref table, or nil when unset. |
+
+**Example**
+
+```lua
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local field = lurek.tilefield.new({ width = 4, height = 4, levels = 2 })
+    field:setRef(2, 2, 1, "object", { tileset = "props", object = "crate" })
+    local value = field:getRef(2, 2, 1, "object")
+    tilefield_log("getRef object=" .. tostring(value.object))
+end
+```
 
 ---
 
@@ -834,7 +1453,7 @@ LTileField:getRefProperties(x, y, z, slot, tileset, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `opts?` | table | Options: refIsGid. |
 
 **Returns**
@@ -842,6 +1461,27 @@ LTileField:getRefProperties(x, y, z, slot, tileset, opts)
 | Type | Description |
 |------|-------------|
 | table | nil | Property name/value table, or nil when the ref is missing/outside the tileset. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRef(1, 1, 1, "object", 1)
+        return field:getRefProperties(1, 1, 1, "object", tileset).terrain
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -861,7 +1501,7 @@ LTileField:getRefProperty(x, y, z, slot, tileset, property, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `property` | string | Property name to read. |
 | `opts?` | table | Options: refIsGid. |
 
@@ -870,6 +1510,27 @@ LTileField:getRefProperty(x, y, z, slot, tileset, property, opts)
 | Type | Description |
 |------|-------------|
 | string | nil | Property value, or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRef(1, 1, 1, "object", 1)
+        return field:getRefProperty(1, 1, 1, "object", tileset, "material")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -889,7 +1550,7 @@ LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `property` | string | Property name to read. |
 | `opts?` | table | Options: refIsGid. |
 
@@ -898,6 +1559,27 @@ LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts)
 | Type | Description |
 |------|-------------|
 | boolean | nil | Boolean property value, or nil when missing/not boolean. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRef(1, 1, 1, "object", 1)
+        return field:getRefPropertyBool(1, 1, 1, "object", tileset, "solid")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -917,7 +1599,7 @@ LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `property` | string | Property name to read. |
 | `opts?` | table | Options: refIsGid. |
 
@@ -927,11 +1609,32 @@ LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts)
 |------|-------------|
 | number | nil | Numeric property value, or nil when missing/not numeric. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRef(1, 1, 1, "object", 1)
+        return field:getRefPropertyNumber(1, 1, 1, "object", tileset, "cost")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileField:getRefSlots`
 
-Returns every named ref slot currently used by this field.
+Returns every declared ref slot.
 
 ```lua
 LTileField:getRefSlots()
@@ -942,6 +1645,27 @@ LTileField:getRefSlots()
 | Type | Description |
 |------|-------------|
 | string[] | Ref slot names. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:defineSlot("object")
+        return field:getRefSlots()[1]
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -965,6 +1689,27 @@ LTileField:getRegionCells(name)
 |------|-------------|
 | table? | Array of `{ x, y, z }` cells. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRegionRect("room", 1, 1, 2, 2, 1)
+        return #field:getRegionCells("room")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileField:getRegionNames`
@@ -980,6 +1725,27 @@ LTileField:getRegionNames()
 | Type | Description |
 |------|-------------|
 | table | Array of region names. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRegionCells("stairs", { { x = 1, y = 1, z = 1 } })
+        return field:getRegionNames()[1]
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -1089,6 +1855,87 @@ end
 
 ---
 
+#### `LTileField:getVersion`
+
+Returns the current tilefield data version.
+
+```lua
+LTileField:getVersion()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Monotonic field version incremented by data mutations. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        local before = field:getVersion()
+        field:setBlock(1, 1, 1, "move", true)
+        return field:getVersion() - before
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:hasSlot`
+
+Returns true when a named object slot is declared.
+
+```lua
+LTileField:hasSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when declared. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:defineSlot("object")
+        return field:hasSlot("object")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
 #### `LTileField:inBounds`
 
 Returns whether one-based coordinates are inside the field.
@@ -1184,11 +2031,75 @@ LTileField:regionContains(name, x, y, z)
 |------|-------------|
 | boolean | True when the region contains the cell. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRegionCells("stairs", { { x = 2, y = 2, z = 1 } })
+        return field:regionContains("stairs", 2, 2, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:removeModifier`
+
+Removes a named modifier and clears it from all cells.
+
+```lua
+LTileField:removeModifier(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Modifier name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when removed. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setModifier("mud", { costs = { move = 4 } })
+        return field:removeModifier("mud")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileField:removeProfile`
 
-Removes a named object profile from the tilefield profile registry.
+Removes a legacy profile and clears it from all cells.
 
 ```lua
 LTileField:removeProfile(name)
@@ -1198,7 +2109,13 @@ LTileField:removeProfile(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Profile name to remove. |
+| `name` | string | Profile name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when removed. |
 
 **Example**
 
@@ -1238,6 +2155,70 @@ LTileField:removeRegion(name)
 |------|-------------|
 | boolean | True when the region existed. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRegionRect("room", 1, 1, 2, 2, 1)
+        return field:removeRegion("room")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:removeSlot`
+
+Removes a named object slot and clears its references from the field.
+
+```lua
+LTileField:removeSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the slot existed. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:defineSlot("object")
+        return field:removeSlot("object")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileField:setBlock`
@@ -1276,9 +2257,173 @@ end
 
 ---
 
+#### `LTileField:setCategoryBlock`
+
+Sets one category blocker on one cell.
+
+```lua
+LTileField:setCategoryBlock(x, y, z, category, blocked)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `blocked` | any |  |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setCategoryBlock(2, 2, 1, "tank", true)
+        return field:blocksCategory(2, 2, 1, "tank")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:setCategoryCost`
+
+Sets one category cost on one cell.
+
+```lua
+LTileField:setCategoryCost(x, y, z, category, cost)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `cost` | any |  |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setCategoryCost(2, 2, 1, "tank", 5)
+        return field:getCategoryCost(2, 2, 1, "tank")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:setCategoryFilter`
+
+Sets one RGB category filter on one cell.
+
+```lua
+LTileField:setCategoryFilter(x, y, z, category, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `filter` | any |  |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setCategoryFilter(2, 2, 1, "light", { 1, 0.5, 0.25 })
+        return field:getCategoryFilter(2, 2, 1, "light")[2]
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:setCategoryTransmission`
+
+Sets one category transmission multiplier on one cell.
+
+```lua
+LTileField:setCategoryTransmission(x, y, z, category, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `value` | any |  |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setCategoryTransmission(2, 2, 1, "light", 0.5)
+        return field:getCategoryTransmission(2, 2, 1, "light")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
 #### `LTileField:setCell`
 
-Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
 
 ```lua
 LTileField:setCell(x, y, z, cell)
@@ -1347,20 +2492,58 @@ end
 
 ---
 
-#### `LTileField:setProfile`
+#### `LTileField:setModifier`
 
-Registers or replaces a named object profile.
+Registers or replaces a named tile modifier.
 
 ```lua
-LTileField:setProfile(name, profile_tbl)
+LTileField:setModifier(name, modifier)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Profile name to create or replace. |
-| `profile_tbl` | table | Profile table with blockers, costs, and sunOcclusion fields. |
+| `name` | string | Modifier name. |
+| `modifier` | table | Modifier table with blocks, costAdd, costMul, sunOcclusionAdd, light, properties. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setModifier("mud", { costs = { move = 4 } })
+        return field:getModifier("mud").name
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileField:setProfile`
+
+Registers or replaces a legacy tilefield profile.
+
+```lua
+LTileField:setProfile(name, profile)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name. |
+| `profile` | table | Profile table with blocks, costs, sunOcclusion, light, or properties. |
 
 **Example**
 
@@ -1396,7 +2579,22 @@ LTileField:setRef(x, y, z, slot, value)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name defined by the Lua game. |
-| `value` | number | Object, tile, or tileset-local id stored for the slot. |
+| `value` | number|table | Legacy id or typed `{ tileset, tile?/object? }` ref stored for the slot. |
+
+**Example**
+
+```lua
+do
+    local function tilefield_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+
+    local field = lurek.tilefield.new({ width = 4, height = 4, levels = 2 })
+    field:setRef(2, 2, 1, "object", 101)
+    local value = field:getRef(2, 2, 1, "object")
+    tilefield_log("setRef object=" .. tostring(value))
+end
+```
 
 ---
 
@@ -1414,6 +2612,21 @@ LTileField:setRegionCells(name, cells)
 |------|------|-------------|
 | `name` | string | Region name. |
 | `cells` | table | Array of `{ x, y, z? }` cells. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local cells = { { x = 2, y = 2, z = 1 }, { x = 3, y = 2, z = 1 } }
+    field:setRegionCells("stairs", cells)
+    local ok = field:regionContains("stairs", 3, 2, 1)
+    example_log("setRegionCells contains=" .. tostring(ok))
+end
+```
 
 ---
 
@@ -1435,6 +2648,27 @@ LTileField:setRegionRect(name, x1, y1, x2, y2, z)
 | `x2` | number | Second one-based column. |
 | `y2` | number | Second one-based row. |
 | `z?` | number | One-based level, default 1. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:setRegionRect("room", 2, 2, 3, 2, 1)
+        return field:regionContains("room", 2, 2, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -1557,6 +2791,27 @@ LTileField:writeBlockLayer(channel, z, values)
 | `z?` | number | One-based level, default 1. |
 | `values` | table | Row-major boolean array with width*height entries. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:writeBlockLayer("move", 1, { true, false, false, true })
+        return field:blocks(1, 1, 1, "move")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileField:writeCostLayer`
@@ -1575,22 +2830,26 @@ LTileField:writeCostLayer(channel, z, values)
 | `z?` | number | One-based level, default 1. |
 | `values` | table | Row-major number array with width*height entries. |
 
----
-
-#### `LTileField:writeProfileLayer`
-
-Writes one full profile-name layer from a row-major string-or-nil array.
+**Example**
 
 ```lua
-LTileField:writeProfileLayer(z, values)
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:writeCostLayer("move", 1, { 1, 2, 3, 4 })
+        return field:getCost(2, 2, 1, "move")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
 ```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `z?` | number | One-based level, default 1. |
-| `values` | table | Row-major string-or-nil array with width*height entries. |
 
 ---
 
@@ -1609,6 +2868,27 @@ LTileField:writeRefLayer(slot, z, values)
 | `slot` | string | Reference slot name to write. |
 | `z?` | number | One-based level, default 1. |
 | `values` | table | Row-major integer-or-nil array with width*height entries. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        field:writeRefLayer("object", 1, { 1, nil, 3, 4 })
+        return field:getRef(1, 2, 1, "object")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -1849,6 +3129,27 @@ LTileFieldMap:type()
 |------|-------------|
 | string | The string `[LTileFieldMap](#ltilefieldmap)`. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilefield.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        local map = lurek.tilefield.newFieldMap({ width = 2, height = 3, layers = 2, fieldWidth = 4, fieldHeight = 5, fieldLevels = 2 })
+        return map:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileFieldMap:typeOf`
@@ -1871,450 +3172,24 @@ LTileFieldMap:typeOf(name)
 |------|-------------|
 | boolean | True for `[LTileFieldMap](#ltilefieldmap)` or `LObject`. |
 
----
-
-## LTileLightMap
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LTileLightMap:addLineLight`
-
-Adds a tile line light and returns its stable id.
-
-```lua
-LTileLightMap:addLineLight(opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `opts` | table | `{x1,y1,z1?,x2,y2,z2?,radius,intensity?,color?,flicker?,colorCycle?}`. |
-
----
-
-#### `LTileLightMap:addPointLight`
-
-Adds a point light and returns its stable id.
-
-```lua
-LTileLightMap:addPointLight(opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `opts` | table | `{x, y, z?, radius, intensity?, color?, flicker?, colorCycle?}` light definition. |
-
 **Example**
 
 ```lua
 do
-    local function tilefield_log(message)
+    local function example_log(message)
         lurek.log.info("[tilefield.example] " .. tostring(message))
     end
-
-    local field = lurek.tilefield.new({ width = 5, height = 5 })
-    local light = lurek.tilelight.new(field)
-    local id = light:addPointLight({ x = 2, y = 2, z = 1, radius = 4, intensity = 1 })
-    light:compute({ includePointLights = true })
-    local _, _, _, luma = light:getLight(2, 2, 1)
-    tilefield_log("light id=" .. id .. " luma=" .. luma)
-end
-```
-
----
-
-#### `LTileLightMap:clearLineLights`
-
-Removes all line lights currently stored on this tile light map.
-
-```lua
-LTileLightMap:clearLineLights()
-```
-
----
-
-#### `LTileLightMap:clearPointLights`
-
-Removes all point lights currently stored on this tile light map.
-
-```lua
-LTileLightMap:clearPointLights()
-```
-
-**Example**
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 5, height = 5 })
-    local light = lurek.tilelight.new(field)
-    light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
-    light:clearPointLights()
-    light:compute({ includePointLights = true })
-    tilefield_log("point lights cleared")
-end
-```
-
----
-
-#### `LTileLightMap:compute`
-
-Computes tile light from ambient, point lights, line lights, and sun light.
-
-```lua
-LTileLightMap:compute(opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `opts?` | table | Optional includePointLights, includeLineLights, includeSunLight/includeGlobalLight, ambient, and time settings. |
-
-**Example**
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 6, height = 4 })
-    field:setProfile("smoked_glass", {
-        blocks = { light = false, vision = false, move = true, action = true },
-        costs = { light = 0.5 },
-        sunOcclusion = 0.25,
-    })
-    field:applyProfile(4, 2, 1, "smoked_glass")
-    local light = lurek.tilelight.new(field)
-    light:addPointLight({ x = 2, y = 2, z = 1, radius = 5, color = { r = 1, g = 0.35, b = 0.1 } })
-    light:compute({ includePointLights = true, ambient = { r = 0.02, g = 0.02, b = 0.02 } })
-    local r, g, b, luma = light:getLight(6, 2, 1)
-    tilefield_log("filtered rgb=" .. (r + g + b) .. " luma=" .. luma)
-end
-```
-
----
-
-#### `LTileLightMap:exportLayer`
-
-Exports one level of computed light as row-major `{r,g,b,luma}` tables.
-
-```lua
-LTileLightMap:exportLayer(z)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `z?` | number | One-based level, default 1. |
-
-**Example**
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 3, height = 3 })
-    local light = lurek.tilelight.new(field)
-    light:compute({ ambient = { r = 0.1, g = 0.1, b = 0.1 } })
-    local layer = light:exportLayer(1)
-    local count = #layer
-    tilefield_log("light layer count=" .. count .. " first=" .. layer[1].luma)
-end
-```
-
----
-
-#### `LTileLightMap:exportVolume`
-
-Exports all computed light levels as nested row-major tables.
-
-```lua
-LTileLightMap:exportVolume()
-```
-
-**Example**
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
-    local light = lurek.tilelight.new(field)
-    light:compute({ ambient = { r = 0.05, g = 0.05, b = 0.05 } })
-    local volume = light:exportVolume()
-    local levels = #volume
-    tilefield_log("light volume levels=" .. levels .. " cells=" .. #volume[1])
-end
-```
-
----
-
-#### `LTileLightMap:getLight`
-
-Returns r, g, b, and luma for one cell.
-
-```lua
-LTileLightMap:getLight(x, y, z)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | One-based cell x coordinate. |
-| `y` | number | One-based cell y coordinate. |
-| `z?` | number | One-based level, default 1. |
-
-**Example**
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 4, height = 4 })
-    local light = lurek.tilelight.new(field)
-    light:compute({ ambient = { r = 0.1, g = 0.1, b = 0.1 } })
-    local r, g, b, luma = light:getLight(1, 1, 1)
-    local rgb = r + g + b
-    tilefield_log("light rgb=" .. rgb .. " luma=" .. luma)
-end
-```
-
----
-
-#### `LTileLightMap:getSize`
-
-Returns light-map width, height, and level count.
-
-```lua
-LTileLightMap:getSize()
-```
-
----
-
-#### `LTileLightMap:removeLineLight`
-
-Removes a line light by id and returns whether it existed.
-
-```lua
-LTileLightMap:removeLineLight(id)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `id` | any |  |
-
----
-
-#### `LTileLightMap:removePointLight`
-
-Removes a point light by id and returns whether it existed.
-
-```lua
-LTileLightMap:removePointLight(id)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `id` | number | Stable point light id returned by `addPointLight`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when a point light was removed. |
-
-**Example**
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 5, height = 5 })
-    local light = lurek.tilelight.new(field)
-    local id = light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
-    local removed = light:removePointLight(id)
-    light:compute({ includePointLights = true })
-    tilefield_log("removed=" .. tostring(removed))
-end
-```
-
----
-
-#### `LTileLightMap:setAmbient`
-
-Sets ambient tile light stored on this light map.
-
-```lua
-LTileLightMap:setAmbient(color)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `color` | table | `{r,g,b}` ambient color. |
-
----
-
-#### `LTileLightMap:setGlobalLight`
-
-Sets top-down global light parameters used during light computation.
-
-```lua
-LTileLightMap:setGlobalLight(opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `opts` | table | `{intensity?, color?}` global top-light settings. |
-
-**Example**
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
-    local light = lurek.tilelight.new(field)
-    light:setGlobalLight({ intensity = 0.35, color = { r = 1, g = 0.95, b = 0.8 } })
-    light:compute({ includeGlobalLight = true })
-    local _, _, _, luma = light:getLight(1, 1, 2)
-    tilefield_log("global luma=" .. luma)
-end
-```
-
----
-
-#### `LTileLightMap:setSunLight`
-
-Sets tile sun light parameters used during light computation.
-
-```lua
-LTileLightMap:setSunLight(opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `opts` | table | 'directional', intensity?, color?, direction?}`. |
-
----
-
-#### `LTileLightMap:type`
-
-Returns the Lua-visible type name for this tile light map handle.
-
-```lua
-LTileLightMap:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | The string `[LTileLightMap](#ltilelightmap)`. |
-
----
-
-#### `LTileLightMap:typeOf`
-
-Returns whether this handle matches a supported type name.
-
-```lua
-LTileLightMap:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to compare. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True for `[LTileLightMap](#ltilelightmap)` or `LObject`. |
-
----
-
-#### `LTileLightMap:updateLineLight`
-
-Updates an existing tile line light by id.
-
-```lua
-LTileLightMap:updateLineLight(id, opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `id` | number | Stable line light id returned by `addLineLight`. |
-| `opts` | table | Partial line light update. |
-
----
-
-#### `LTileLightMap:updatePointLight`
-
-Updates an existing point light by id.
-
-```lua
-LTileLightMap:updatePointLight(id, opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `id` | number | Stable point light id returned by `addPointLight`. |
-| `opts` | table | Partial light update table with x, y, z, radius, intensity, or color. |
-
-**Example**
-
-```lua
-do
-    local function tilefield_log(message)
-        lurek.log.info("[tilefield.example] " .. tostring(message))
-    end
-
-    local field = lurek.tilefield.new({ width = 5, height = 5 })
-    local light = lurek.tilelight.new(field)
-    local id = light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
-    light:updatePointLight(id, { x = 3, y = 3, radius = 4, intensity = 0.5 })
-    light:compute({ includePointLights = true })
-    tilefield_log("updated light at center")
+    local field = lurek.tilefield.new({ width = 5, height = 4, levels = 2 })
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    tileset:setObject("crate", { tileId = 1, blocks = { move = true }, costs = { move = 3 }, properties = { material = "wood", cost = 3, solid = true } })
+    tileset:setTileObject(1, "crate")
+    tileset:setProperty(1, "terrain", "floor")
+    local ok, value = pcall(function()
+        local map = lurek.tilefield.newFieldMap({ width = 2, height = 3, layers = 2, fieldWidth = 4, fieldHeight = 5, fieldLevels = 2 })
+        return map:typeOf("LTileFieldMap")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 ```
 
@@ -2364,7 +3239,7 @@ LTileMap:addTileSet(tileSet)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSet` | [LTileSet](tilemap.md#ltileset) | Tileset to add. |
+| `tileSet` | [LTileSet](tileset.md#ltileset) | Tileset to add. |
 
 ---
 
@@ -2782,7 +3657,7 @@ LTileMap:getTileSet(idx)
 
 | Type | Description |
 |------|-------------|
-| [LTileSet](tilemap.md#ltileset) | The tileset, or nil if index is out of range. |
+| [LTileSet](tileset.md#ltileset) | The tileset, or nil if index is out of range. |
 
 ---
 
@@ -2851,6 +3726,42 @@ LTileMap:render(ox, oy)
 |------|------|-------------|
 | `ox?` | number | Horizontal scroll offset (default 0). |
 | `oy?` | number | Vertical scroll offset (default 0). |
+
+---
+
+#### `LTileMap:renderFieldCatalogSlot`
+
+Renders typed refs from a tilefield slot through a tileset catalog.
+
+```lua
+LTileMap:renderFieldCatalogSlot(field, catalog, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](#ltilefield)|table | Source tilefield handle or provider table containing typed slot refs. |
+| `catalog` | [LTileCatalog](tileset.md#ltilecatalog) | Catalog resolving `{tileset,tile/object}` refs to visuals. |
+| `opts` | table | Options: slot, z, offsetX, offsetY. |
+
+---
+
+#### `LTileMap:renderFieldSlot`
+
+Renders objects referenced from a tilefield slot using tileset object visuals.
+
+```lua
+LTileMap:renderFieldSlot(field, tileset, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](#ltilefield)|table | Source tilefield handle or provider table containing slot refs. |
+| `tileset` | [LTileSet](tileset.md#ltileset)|table | Tileset handle or provider table with object archetype visuals. |
+| `opts` | table | Options: slot, z, offsetX, offsetY, refIsGid. |
 
 ---
 

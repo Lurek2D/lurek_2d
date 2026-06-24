@@ -1,9 +1,12 @@
-//! Owns per-player tile visibility, explored, and action masks backed by one shared `TileField`.
-//! Computes visible and actionable cells by asking tilefield for channel-specific line clearance data.
-//! Stores independent masks per player so teams can have different current sight, memory, and action reach.
-//! Exposes stateless line-of-sight and line-of-action helpers without owning movement or lighting rules.
-//! Keeps tilefield as the source for blockers, costs, modifiers, and bounds while awareness owns masks only.
-//! Change this file when sight/action mask behavior changes, not when pathfinding or tile-light math changes.
+//! This file owns tile awareness behavior inside the awareness subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate tile awareness state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for tile awareness work.
+//! Serialization, indexing, and boundary checks stay here when they depend on tile awareness internals.
+//! Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+//! Open this file when tile awareness ownership changes, but keep unrelated subsystem policy in sibling modules.
+//! The code favors small data transformations so examples, specs, and tests can assert behavior directly.
+//! Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.
 
 use crate::tilefield::{CellCoord, TileChannel, TileField};
 use std::collections::{HashMap, HashSet};

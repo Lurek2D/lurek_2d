@@ -1,5 +1,7 @@
-//! Owns read-only semantic queries over a `TileField`.
-//! Consumers use this view instead of duplicating blocker, cost, transmission, and footprint logic.
+//! This file owns semantics behavior inside the tilefield subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate semantics state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for semantics work.
 
 use crate::tilefield::{CellCoord, TileField, TileLightSource};
 

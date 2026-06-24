@@ -1,9 +1,11 @@
-//! Generates tilemap render commands with camera-aware culling across layers and supported map orientations.
-//! Maps tile ids to fallback debug colors so maps can still visualize without relying on atlas sampling.
-//! Applies per-layer visibility and tint while composing deterministic draw output for the shared renderer.
-//! Handles orthogonal, isometric, and hex layouts so debug and runtime visualization match map geometry.
-//! Acts as the tilemap-to-render boundary rather than mixing draw emission into the base TileMap owner.
-//! Open this file when tile draw order, culling, tint, or orientation-specific render output is incorrect.
+//! This file owns render behavior inside the tilemap subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate render state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for render work.
+//! Serialization, indexing, and boundary checks stay here when they depend on render internals.
+//! Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+//! Open this file when render ownership changes, but keep unrelated subsystem policy in sibling modules.
+//! The code favors small data transformations so examples, specs, and tests can assert behavior directly.
 
 use super::coords::{to_screen_hex, to_screen_iso};
 use super::orientation::MapOrientation;

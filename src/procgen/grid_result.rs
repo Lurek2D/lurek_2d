@@ -1,5 +1,7 @@
-//! Owns typed procgen grid result containers shared by Rust generators and Lua bindings.
-//! Integer grids represent tile/object ids, while scalar grids represent height/noise/cost fields.
+//! This file owns grid result behavior inside the procgen subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate grid result state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for grid result work.
 
 /// Typed 2D integer grid result produced by procedural map generators.
 #[derive(Debug, Clone)]

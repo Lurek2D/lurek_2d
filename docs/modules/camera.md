@@ -3971,7 +3971,7 @@ LTileMap:addTileSet(tileSet)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSet` | [LTileSet](tilemap.md#ltileset) | Tileset to add. |
+| `tileSet` | [LTileSet](tileset.md#ltileset) | Tileset to add. |
 
 ---
 
@@ -4389,7 +4389,7 @@ LTileMap:getTileSet(idx)
 
 | Type | Description |
 |------|-------------|
-| [LTileSet](tilemap.md#ltileset) | The tileset, or nil if index is out of range. |
+| [LTileSet](tileset.md#ltileset) | The tileset, or nil if index is out of range. |
 
 ---
 
@@ -4458,6 +4458,42 @@ LTileMap:render(ox, oy)
 |------|------|-------------|
 | `ox?` | number | Horizontal scroll offset (default 0). |
 | `oy?` | number | Vertical scroll offset (default 0). |
+
+---
+
+#### `LTileMap:renderFieldCatalogSlot`
+
+Renders typed refs from a tilefield slot through a tileset catalog.
+
+```lua
+LTileMap:renderFieldCatalogSlot(field, catalog, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](tilefield.md#ltilefield)|table | Source tilefield handle or provider table containing typed slot refs. |
+| `catalog` | [LTileCatalog](tileset.md#ltilecatalog) | Catalog resolving `{tileset,tile/object}` refs to visuals. |
+| `opts` | table | Options: slot, z, offsetX, offsetY. |
+
+---
+
+#### `LTileMap:renderFieldSlot`
+
+Renders objects referenced from a tilefield slot using tileset object visuals.
+
+```lua
+LTileMap:renderFieldSlot(field, tileset, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](tilefield.md#ltilefield)|table | Source tilefield handle or provider table containing slot refs. |
+| `tileset` | [LTileSet](tileset.md#ltileset)|table | Tileset handle or provider table with object archetype visuals. |
+| `opts` | table | Options: slot, z, offsetX, offsetY, refIsGid. |
 
 ---
 

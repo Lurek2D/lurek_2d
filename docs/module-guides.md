@@ -72,6 +72,7 @@ Callbacks: [Runtime callbacks](api/callbacks.md)
 | [Tilefield](modules/tilefield.md) | `lurek.tilefield` | Coordinates exposed to Lua are one-based x, y, z; Rust storage is zero-based. |
 | [Tilelight](modules/tilelight.md) | `lurek.tilelight` | The tilelight module owns light propagation over tile cells. It reads blockers, transmission costs, topology, and sun occlusion from tilefield, then produces computed RGB/luma layers. |
 | [Tilemap](modules/tilemap.md) | `lurek.tilemap` | The tilemap module is the engine's runtime tile-grid storage and presentation bridge for users who want tile-based spaces to be authored, generated, imported, indexed, and submitted to rendering through one reusable storage model. |
+| [Tileset](modules/tileset.md) | `lurek.tileset` | LTileSet describes what tile ids mean inside one atlas, independent of map storage and gameplay fields. |
 | [Timer](modules/timer.md) | `lurek.timer` | The timer module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently. |
 | [Tween](modules/tween.md) | `lurek.tween` | The tween module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops. |
 | [UI](modules/ui.md) | `lurek.ui` | The ui module is the engine's retained-interface system for users who want menus, HUDs, editors, overlays, and tool panels to behave like one persistent application layer instead of a loose pile of draw calls and ad hoc click tests. |

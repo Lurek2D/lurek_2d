@@ -551,8 +551,7 @@
       "tests/artifacts/baselines/image/image_transform_flip_horizontal.png",
       "tests/artifacts/baselines/image/image_transform_flip_vertical.png",
       "tests/artifacts/baselines/image/image_transform_original.png",
-      "tests/artifacts/baselines/image/image_transform_rotate90.png",
-      "tests/artifacts/baselines/image/tileset_128x128.png"
+      "tests/artifacts/baselines/image/image_transform_rotate90.png"
     ],
     "current_artifacts": [
       "tests/artifacts/current/image/gradient_horizontal.png",
@@ -587,8 +586,7 @@
       "tests/artifacts/current/image/image_transform_flip_horizontal.png",
       "tests/artifacts/current/image/image_transform_flip_vertical.png",
       "tests/artifacts/current/image/image_transform_original.png",
-      "tests/artifacts/current/image/image_transform_rotate90.png",
-      "tests/artifacts/current/image/tileset_128x128.png"
+      "tests/artifacts/current/image/image_transform_rotate90.png"
     ],
     "evidence_tests": [
       "tests/lua/evidence/test_image_evidence.lua"
@@ -1315,6 +1313,8 @@
   "tilemap": {
     "baseline_artifacts": [
       "tests/artifacts/baselines/tilemap/tilemap_autotile.png",
+      "tests/artifacts/baselines/tilemap/tilemap_autotile_format_showcase.png",
+      "tests/artifacts/baselines/tilemap/tilemap_autotile_format_showcase.txt",
       "tests/artifacts/baselines/tilemap/tilemap_chunk_streaming_window.png",
       "tests/artifacts/baselines/tilemap/tilemap_collision.png",
       "tests/artifacts/baselines/tilemap/tilemap_draw_to_image_ground.png",
@@ -1351,6 +1351,16 @@
     "golden_tests": [
       "tests/lua/golden/test_tilemap_golden.lua"
     ]
+  },
+  "tileset": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/image/tileset_128x128.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/image/tileset_128x128.png"
+    ],
+    "evidence_tests": [],
+    "golden_tests": []
   },
   "tween": {
     "baseline_artifacts": [

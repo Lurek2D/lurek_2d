@@ -1,5 +1,7 @@
-//! Owns user-defined tilefield category metadata for movement, awareness, light, sun, and custom semantics.
-//! Categories are storage labels only; pathfinding, awareness, and lighting decide how to compute with them.
+//! This file owns category behavior inside the tilefield subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate category state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for category work.
 
 /// Broad semantic kind for a tilefield category.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

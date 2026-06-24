@@ -121,6 +121,20 @@ describe("lurek.tilemap module", function()
         expect_true(string.find(tostring(err), "tilemap tile size", 1, true) ~= nil)
     end)
 
+    -- @covers lurek.tilemap.fromProvider
+    it("fromProvider imports tile layers from provider data", function()
+        local tm = lurek.tilemap.fromProvider({
+            tileWidth = 16,
+            tileHeight = 16,
+            layers = {
+                { name = "ground", width = 2, height = 2, tiles = { 1, 2, 3, 4 } },
+            },
+        })
+        expect_equal("LTileMap", tm:type())
+        expect_equal(1, tm:getLayerCount())
+        expect_equal(3, tm:getTile(1, 1, 2))
+    end)
+
     -- @covers lurek.tilemap.newAutoTileSheet
     it("newAutoTileSheet constructs an autotile sheet", function()
         expect_equal("LAutoTileSheet", new_autotile_sheet():type())
@@ -237,158 +251,6 @@ describe("tilemap coordinate helpers", function()
 
 
 
-end)
-
--- @describe LTileSet methods
-describe("LTileSet methods", function()
-    -- @covers LTileSet:getFirstGid
-    it("getFirstGid returns the configured base gid", function()
-        expect_equal(1, new_tileset():getFirstGid())
-    end)
-
-    -- @covers LTileSet:getTileCount
-    it("getTileCount returns the configured tile count", function()
-        expect_equal(16, new_tileset():getTileCount())
-    end)
-
-    -- @covers LTileSet:getColumns
-    it("getColumns returns the configured atlas column count", function()
-        expect_equal(4, new_tileset():getColumns())
-    end)
-
-    -- @covers LTileSet:getTileWidth
-    it("getTileWidth returns the configured tile width", function()
-        expect_equal(32, new_tileset():getTileWidth())
-    end)
-
-    -- @covers LTileSet:getTileHeight
-    it("getTileHeight returns the configured tile height", function()
-        expect_equal(32, new_tileset():getTileHeight())
-    end)
-
-    -- @covers LTileSet:getTileDimensions
-    it("getTileDimensions returns width and height", function()
-        local w, h = new_tileset():getTileDimensions()
-        expect_equal(32, w)
-        expect_equal(32, h)
-    end)
-
-    -- @covers LTileSet:getSpacing
-    it("getSpacing returns the configured tile spacing", function()
-        local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32, 2, 3)
-        expect_equal(2, ts:getSpacing())
-    end)
-
-    -- @covers LTileSet:getMargin
-    it("getMargin returns the configured tile margin", function()
-        local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32, 2, 3)
-        expect_equal(3, ts:getMargin())
-    end)
-
-    -- @covers LTileSet:getQuad
-    it("getQuad returns the atlas rectangle for a tile id", function()
-        local quad = new_tileset():getQuad(5)
-        expect_equal(0, quad.x)
-        expect_equal(32, quad.y)
-        expect_equal(32, quad.width)
-        expect_equal(32, quad.height)
-    end)
-
-    -- @covers LTileSet:setProfile
-    -- @covers LTileSet:getProfile
-    it("stores profile names for tilefield transfer", function()
-        local ts = new_tileset()
-        ts:setProfile(3, "stone_floor")
-        expect_equal("stone_floor", ts:getProfile(3))
-        ts:setProfile(3, nil)
-        expect_nil(ts:getProfile(3))
-    end)
-
-    -- @covers LTileSet:setPhysicsShape
-    -- @covers LTileSet:getPhysicsShape
-    it("stores physics shape names independently of solidity", function()
-        local ts = new_tileset()
-        ts:setPhysicsShape(4, "rect")
-        expect_equal("rect", ts:getPhysicsShape(4))
-        ts:setPhysicsShape(4, "")
-        expect_nil(ts:getPhysicsShape(4))
-    end)
-
-    -- @covers LTileSet:setAnimation
-    it("setAnimation stores per-frame tile animation data", function()
-        local ts = new_tileset()
-        ts:setAnimation(2, {
-            { tileid = 1, duration = 100 },
-            { tileid = 2, duration = 200 },
-        })
-        local anim = ts:getAnimation(2)
-        expect_equal(2, #anim)
-        expect_equal(1, anim[1].tileid)
-    end)
-
-    -- @covers LTileSet:getAnimation
-    it("getAnimation returns frames set by setAnimation", function()
-        local ts = new_tileset()
-        ts:setAnimation(2, {
-            { tileid = 1, duration = 100 },
-            { tileid = 2, duration = 200 },
-        })
-        local anim = ts:getAnimation(2)
-        expect_not_nil(anim)
-    end)
-
-    -- @covers LTileSet:setAutoTileRule
-    it("setAutoTileRule affects getAutoTileId", function()
-        local ts = new_tileset()
-        ts:setAutoTileRule("grass", 15, 3)
-        expect_equal(3, ts:getAutoTileId("grass", 15))
-    end)
-
-    -- @covers LTileSet:getAutoTileId
-    it("getAutoTileId resolves the registered 4-bit autotile rule", function()
-        local ts = new_tileset()
-        ts:setAutoTileRule("grass", 0, 4)
-        expect_equal(4, ts:getAutoTileId("grass", 0))
-    end)
-
-    -- @covers LTileSet:setAutoTileRule8
-    it("setAutoTileRule8 stores an 8-bit autotile mapping", function()
-        local ts = new_tileset()
-        ts:setAutoTileRule8("wall", 255, 5)
-        expect_equal(5, ts:getAutoTileId8("wall", 255))
-    end)
-
-    -- @covers LTileSet:getAutoTileId8
-    it("getAutoTileId8 resolves the registered 8-bit autotile rule", function()
-        local ts = new_tileset()
-        ts:setAutoTileRule8("wall", 0, 6)
-        expect_equal(6, ts:getAutoTileId8("wall", 0))
-    end)
-
-    -- @covers LTileSet:setAutoTileMode
-    it("setAutoTileMode stores the matching mode for a terrain type", function()
-        local ts = new_tileset()
-        ts:setAutoTileMode("wall", "matchCornersAndSides")
-        expect_equal("matchCornersAndSides", ts:getAutoTileMode("wall"))
-    end)
-
-    -- @covers LTileSet:getAutoTileMode
-    it("getAutoTileMode defaults to side matching", function()
-        local ts = new_tileset()
-        expect_equal("matchSides", ts:getAutoTileMode("grass"))
-    end)
-
-    -- @covers LTileSet:type
-    it("type returns LTileSet", function()
-        expect_equal("LTileSet", new_tileset():type())
-    end)
-
-    -- @covers LTileSet:typeOf
-    it("typeOf recognizes LTileSet", function()
-        local ts = new_tileset()
-        expect_true(ts:typeOf("LTileSet"))
-        expect_true(ts:typeOf("LObject"))
-    end)
 end)
 
 -- @describe LTileMap methods
@@ -802,6 +664,31 @@ describe("LTileMap methods", function()
         local tm = new_tilemap()
         expect_no_error(function()
             tm:renderFieldCatalogSlot(field, catalog, { slot = "object", z = 1 })
+        end)
+    end)
+
+    -- @covers LTileMap:renderFieldSlot
+    it("renders tilefield refs through a tileset", function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        field:setRef(1, 1, 1, "object", 1)
+        local tileset = lurek.tileset.fromProvider({
+            firstGid = 1,
+            tileCount = 2,
+            columns = 1,
+            tileWidth = 16,
+            tileHeight = 16,
+            objects = {
+                crate = {
+                    slot = "object",
+                    tileId = 1,
+                    visual = { order = 3 },
+                },
+            },
+            tileObjects = { [1] = "crate" },
+        })
+        local tm = new_tilemap()
+        expect_no_error(function()
+            tm:renderFieldSlot(field, tileset, { slot = "object", z = 1, refIsGid = true })
         end)
     end)
 

@@ -1,8 +1,8 @@
-//! `src/camera/walker.rs` owns the tile-grid camera walker that couples movement with a Camera2D.
-//! It defines `CameraWalker`, keeping walker position, speed, tile metrics, and camera linkage together.
-//! Tile-to-world placement, world-to-tile queries, directional movement, and camera follow updates live here.
-//! Movement legality belongs to gameplay systems such as tilefield/pathfind, not to tilemap.
-//! Read it when walker movement stepping or camera-follow coupling behavior needs to change.
+//! This file owns walker behavior inside the camera subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate walker state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for walker work.
+//! Serialization, indexing, and boundary checks stay here when they depend on walker internals.
 
 use crate::camera::Camera2D;
 use crate::tilemap::tilemap::TileMap;

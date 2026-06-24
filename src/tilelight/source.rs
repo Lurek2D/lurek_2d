@@ -1,5 +1,9 @@
-//! Owns tile-light source data: point lights, line lights, temporal modulation, and sun settings.
-//! Does not compute light maps or read tilefield state.
+//! This file owns source behavior inside the tilelight subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate source state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for source work.
+//! Serialization, indexing, and boundary checks stay here when they depend on source internals.
+//! Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
 
 use crate::tilelight::LightColor;
 

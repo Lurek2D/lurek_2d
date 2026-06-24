@@ -2554,6 +2554,33 @@ LMapBlockResult:toTileField(opts)
 |------|-------------|
 | [LTileField](tilefield.md#ltilefield) | Tilefield populated from this result. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(1, 1, 1, cfg)
+    block:setTile(0, 0, 0, 0, 0, 7)
+    local group = lurek.mapblock.newGroup("terrain")
+    group:addBlock(block)
+    local script = lurek.mapblock.newScript("place_once")
+    script:addStep("place_block", { group = "terrain", block_index = 0, x = 0, y = 0 })
+    local gen = lurek.mapblock.newGenerator(cfg)
+    gen:setRectShape(1, 1)
+    gen:addGroup(group)
+    local result = gen:generate(script)
+    local ok, value = pcall(function()
+        local field = result:toTileField({ ref = "terrain", layer = 0, level = 0 })
+        return field:getRef(1, 1, 1, "terrain")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LMapBlockResult:writeTileField`
@@ -2570,6 +2597,34 @@ LMapBlockResult:writeTileField(field, opts)
 |------|------|-------------|
 | `field` | [LTileField](tilefield.md#ltilefield) | Target tilefield. |
 | `opts?` | table | Options: layer, slot, ref, tilesetRef, skipZero. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[mapblock.example] " .. tostring(message))
+    end
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(1, 1, 1, cfg)
+    block:setTile(0, 0, 0, 0, 0, 7)
+    local group = lurek.mapblock.newGroup("terrain")
+    group:addBlock(block)
+    local script = lurek.mapblock.newScript("place_once")
+    script:addStep("place_block", { group = "terrain", block_index = 0, x = 0, y = 0 })
+    local gen = lurek.mapblock.newGenerator(cfg)
+    gen:setRectShape(1, 1)
+    gen:addGroup(group)
+    local result = gen:generate(script)
+    local ok, value = pcall(function()
+        local field = lurek.tilefield.new({ width = 1, height = 1 })
+        result:writeTileField(field, { ref = "terrain", layer = 0, level = 0 })
+        return field:getRef(1, 1, 1, "terrain")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 

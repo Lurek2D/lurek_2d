@@ -257,9 +257,6 @@ describe("visibility tilefield helpers", function()
     end)
 
     -- @covers LTileAwareness:defineCategory
-    -- @covers LTileAwareness:getCategory
-    -- @covers LTileAwareness:getCategories
-    -- @covers LTileAwareness:isAware
     it("computes a user-defined cone category", function()
         local field = lurek.tilefield.new({ width = 5, height = 5 })
         field:defineCategory("sight", { kind = "awareness" })
@@ -279,6 +276,41 @@ describe("visibility tilefield helpers", function()
         vis:computeVisible("p1", { origin = { x = 3, y = 3, z = 1 }, category = "sight" })
         expect_true(vis:isAware("p1", "sight", 4, 3, 1))
         expect_true(not vis:isAware("p1", "sight", 2, 3, 1))
+    end)
+
+    -- @covers LTileAwareness:getCategory
+    it("returns awareness category configuration", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        field:defineCategory("sight", { kind = "awareness" })
+        local vis = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
+        vis:defineCategory("sight", { active = true, range = 3, mode = "omni", blockerCategory = "sight" })
+        local config = vis:getCategory("sight")
+        expect_equal("omni", config.mode)
+        expect_equal("sight", config.blockerCategory)
+    end)
+
+    -- @covers LTileAwareness:getCategories
+    it("returns awareness category names", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        local vis = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
+        vis:defineCategory("sound", { active = true, range = 2 })
+        local found = false
+        for _, name in ipairs(vis:getCategories()) do
+            if name == "sound" then
+                found = true
+            end
+        end
+        expect_true(found, "sound category should be present")
+    end)
+
+    -- @covers LTileAwareness:isAware
+    it("reports category-aware cells", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        local vis = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
+        vis:defineCategory("sound", { active = true, range = 1 })
+        vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, category = "sound" })
+        expect_true(vis:isAware("p1", "sound", 2, 2, 1))
+        expect_true(not vis:isAware("p1", "sound", 5, 5, 1))
     end)
 
     -- @covers LTileAwareness:computeAction
@@ -325,8 +357,6 @@ describe("visibility tilefield helpers", function()
     end)
 
     -- @covers LTileAwareness:share
-    -- @covers LTileAwareness:visibleCells
-    -- @covers LTileAwareness:clearShares
     it("shares awareness category masks in one direction", function()
         local field = lurek.tilefield.new({ width = 5, height = 5 })
         field:defineCategory("sound", { kind = "awareness" })
@@ -338,6 +368,17 @@ describe("visibility tilefield helpers", function()
         expect_true(vis:isVisible("p2", 2, 1, 1))
         expect_true(not vis:isVisible("p1", 5, 5, 1))
         expect_true(#vis:visibleCells("p2", "sound", 1) > 0)
+        vis:clearShares()
+        expect_true(not vis:isVisible("p2", 2, 1, 1))
+    end)
+
+    -- @covers LTileAwareness:clearShares
+    it("clears all shared awareness masks", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
+        vis:computeVisible("p1", { origin = { x = 1, y = 1, z = 1 }, range = 1 })
+        vis:share("p1", "p2", "vision")
+        expect_true(vis:isVisible("p2", 2, 1, 1))
         vis:clearShares()
         expect_true(not vis:isVisible("p2", 2, 1, 1))
     end)

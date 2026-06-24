@@ -1,7 +1,8 @@
-//! Owns a grid of shared `TileField` handles for chunked and stacked tilefield worlds.
-//! Stores map-level dimensions separately from each contained field's cell dimensions.
-//! Provides the bridge between a single field, a 2D field map, and layered field maps.
-//! Keeps the map container data-oriented and independent from pathfinding, awareness, tilelight, minimap, and render.
+//! This file owns field map behavior inside the tilefield subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate field map state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for field map work.
+//! Serialization, indexing, and boundary checks stay here when they depend on field map internals.
 
 use crate::tilefield::field::TileField;
 use crate::tilefield::topology::TileTopology;

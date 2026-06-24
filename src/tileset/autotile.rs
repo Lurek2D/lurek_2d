@@ -1,4 +1,6 @@
-//! Owns tileset-level autotile matching policy shared by tilemap rendering and tileset metadata.
+//! This file owns autotile behavior inside the tileset subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate autotile state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 /// Terrain-neighbour matching strategy used when applying autotile rules.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

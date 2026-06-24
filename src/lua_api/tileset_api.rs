@@ -1,4 +1,4 @@
-//! Registers the `lurek.tileset` Lua API for atlas-backed tile object archetypes.
+//! Registers lurek.lua_api Lua API bindings for tileset api, including validation, conversions, and userdata.
 
 use super::SharedState;
 use crate::tilefield::{TileObjectCatalog, TileRef};
@@ -401,6 +401,8 @@ fn visual_to_lua<'lua>(lua: &'lua Lua, visual: TileVisual) -> LuaResult<LuaTable
 
 impl LuaUserData for LuaTileCatalog {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Returns the sorted catalog ids available for typed tile references.
+        /// @return | table | Array of catalog id strings.
         methods.add_method("getIds", |lua, this, ()| {
             let ids = this.inner.borrow().ids();
             let table = lua.create_table()?;
@@ -409,6 +411,9 @@ impl LuaUserData for LuaTileCatalog {
             }
             Ok(table)
         });
+        /// Returns the tileset stored under a catalog id.
+        /// @param | id | string | Catalog id to resolve.
+        /// @return | LTileSet|nil | Tileset for the id, or nil when missing.
         methods.add_method("getTileset", |lua, this, id: String| {
             let tileset = this.inner.borrow().tileset(&id).cloned();
             match tileset {
@@ -420,6 +425,9 @@ impl LuaUserData for LuaTileCatalog {
                 None => Ok(None),
             }
         });
+        /// Resolves object archetype metadata from a typed tile or object reference.
+        /// @param | reference | table | Reference table with `tileset` and either `tile` or `object`.
+        /// @return | table|nil | Object archetype table, or nil when the reference cannot resolve.
         methods.add_method("getObject", |lua, this, reference: LuaTable| {
             let reference = tile_ref_from_lua(reference, "catalog.getObject")?;
             let catalog = this.inner.borrow();
@@ -431,6 +439,9 @@ impl LuaUserData for LuaTileCatalog {
             table.set("slot", object.slot.clone())?;
             Ok(Some(table))
         });
+        /// Resolves render visual metadata from a typed tile or object reference.
+        /// @param | reference | table | Reference table with `tileset` and either `tile` or `object`.
+        /// @return | table|nil | Visual metadata table, or nil when the reference has no visual.
         methods.add_method("getVisual", |lua, this, reference: LuaTable| {
             let reference = tile_ref_from_lua(reference, "catalog.getVisual")?;
             match this.inner.borrow().visual_for_ref(&reference) {
@@ -438,7 +449,12 @@ impl LuaUserData for LuaTileCatalog {
                 None => Ok(None),
             }
         });
+        /// Returns the userdata type name.
+        /// @return | string | Always `LTileCatalog`.
         methods.add_method("type", |_, _, ()| Ok("LTileCatalog"));
+        /// Checks whether this catalog matches a type name.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | True for `LTileCatalog` or `LObject`.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LTileCatalog" || name == "LObject")
         });
@@ -447,34 +463,57 @@ impl LuaUserData for LuaTileCatalog {
 
 impl LuaUserData for LuaTileSet {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Returns the first global tile id assigned to this tileset.
+        /// @return | integer | First global tile id.
         methods.add_method("getFirstGid", |_, this, ()| {
             Ok(this.inner.borrow().get_first_gid())
         });
+        /// Returns the number of tile entries in this tileset.
+        /// @return | integer | Tile count.
         methods.add_method("getTileCount", |_, this, ()| {
             Ok(this.inner.borrow().get_tile_count())
         });
+        /// Returns the number of atlas columns.
+        /// @return | integer | Column count.
         methods.add_method("getColumns", |_, this, ()| {
             Ok(this.inner.borrow().get_columns())
         });
+        /// Returns the tile width in pixels.
+        /// @return | integer | Tile width.
         methods.add_method("getTileWidth", |_, this, ()| {
             Ok(this.inner.borrow().get_tile_width())
         });
+        /// Returns the tile height in pixels.
+        /// @return | integer | Tile height.
         methods.add_method("getTileHeight", |_, this, ()| {
             Ok(this.inner.borrow().get_tile_height())
         });
+        /// Returns the tile width and height in pixels.
+        /// @return | integer | Tile width.
+        /// @return | integer | Tile height.
         methods.add_method("getTileDimensions", |_, this, ()| {
             Ok(this.inner.borrow().get_tile_dimensions())
         });
+        /// Returns the computed texture width and height in pixels.
+        /// @return | integer | Texture width.
+        /// @return | integer | Texture height.
         methods.add_method("getTextureDimensions", |_, this, ()| {
             let inner = this.inner.borrow();
             Ok((inner.get_texture_width(), inner.get_texture_height()))
         });
+        /// Returns the spacing between atlas tiles in pixels.
+        /// @return | integer | Tile spacing.
         methods.add_method("getSpacing", |_, this, ()| {
             Ok(this.inner.borrow().get_spacing())
         });
+        /// Returns the atlas margin in pixels.
+        /// @return | integer | Atlas margin.
         methods.add_method("getMargin", |_, this, ()| {
             Ok(this.inner.borrow().get_margin())
         });
+        /// Returns the atlas rectangle for one tile id.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @return | table | Rectangle table with x, y, width, and height.
         methods.add_method("getQuad", |lua, this, tile_id: u32| {
             if tile_id == 0 {
                 return Err(LuaError::RuntimeError(
@@ -490,6 +529,9 @@ impl LuaUserData for LuaTileSet {
             Ok(tbl)
         });
 
+        /// Sets or clears the named gameplay profile for one tile.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @param | profile | string? | Profile name, or nil/empty to clear it.
         methods.add_method(
             "setProfile",
             |_, this, (tile_id, profile): (u32, Option<String>)| {
@@ -505,6 +547,9 @@ impl LuaUserData for LuaTileSet {
                     .map_err(|err| LuaError::RuntimeError(format!("setProfile: {err}")))
             },
         );
+        /// Returns the named gameplay profile for one tile.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @return | string|nil | Profile name, or nil when unset.
         methods.add_method("getProfile", |_, this, tile_id: u32| {
             if tile_id == 0 {
                 return Err(LuaError::RuntimeError(
@@ -515,8 +560,11 @@ impl LuaUserData for LuaTileSet {
                 .inner
                 .borrow()
                 .get_property(tile_id - 1, "profile")
-                .map(str::to_string))
+            .map(str::to_string))
         });
+        /// Sets or clears the physics shape label for one tile.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @param | shape | string? | Physics shape label, or nil/empty to clear it.
         methods.add_method(
             "setPhysicsShape",
             |_, this, (tile_id, shape): (u32, Option<String>)| {
@@ -532,6 +580,9 @@ impl LuaUserData for LuaTileSet {
                     .map_err(|err| LuaError::RuntimeError(format!("setPhysicsShape: {err}")))
             },
         );
+        /// Returns the physics shape label for one tile.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @return | string|nil | Physics shape label, or nil when unset.
         methods.add_method("getPhysicsShape", |_, this, tile_id: u32| {
             if tile_id == 0 {
                 return Err(LuaError::RuntimeError(
@@ -542,9 +593,12 @@ impl LuaUserData for LuaTileSet {
                 .inner
                 .borrow()
                 .get_property(tile_id - 1, "physicsShape")
-                .map(str::to_string))
+            .map(str::to_string))
         });
 
+        /// Replaces the animation frames for one tile.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @param | frames | table | Array of frame tables with `tileid` and `duration`.
         methods.add_method(
             "setAnimation",
             |_, this, (tile_id, frames): (u32, LuaTable)| {
@@ -574,6 +628,9 @@ impl LuaUserData for LuaTileSet {
                 Ok(())
             },
         );
+        /// Returns the animation frames for one tile.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @return | table|nil | Array of frame tables, or nil when no animation exists.
         methods.add_method("getAnimation", |lua, this, tile_id: u32| {
             if tile_id == 0 {
                 return Err(LuaError::RuntimeError(
@@ -596,6 +653,9 @@ impl LuaUserData for LuaTileSet {
             }
         });
 
+        /// Stores an object archetype and its visual, pathing, lighting, and custom metadata.
+        /// @param | name | string | Object archetype name.
+        /// @param | object | table | Object metadata table.
         methods.add_method(
             "setObject",
             |_, this, (name, object): (String, LuaTable)| {
@@ -685,6 +745,9 @@ impl LuaUserData for LuaTileSet {
             },
         );
 
+        /// Returns object archetype metadata by name.
+        /// @param | name | string | Object archetype name.
+        /// @return | table|nil | Object metadata table, or nil when missing.
         methods.add_method("getObject", |lua, this, name: String| {
             let inner = this.inner.borrow();
             let Some(object) = inner.archetype(&name) else {
@@ -777,9 +840,14 @@ impl LuaUserData for LuaTileSet {
             table.set("properties", properties)?;
             Ok(Some(table))
         });
+        /// Removes an object archetype by name.
+        /// @param | name | string | Object archetype name.
+        /// @return | boolean | True when an archetype was removed.
         methods.add_method("removeObject", |_, this, name: String| {
             Ok(this.inner.borrow_mut().remove_archetype(&name))
         });
+        /// Returns all object archetype names in this tileset.
+        /// @return | table | Array of object archetype names.
         methods.add_method("getObjectNames", |lua, this, ()| {
             let names = this.inner.borrow().archetype_names();
             let table = lua.create_table()?;
@@ -788,6 +856,9 @@ impl LuaUserData for LuaTileSet {
             }
             Ok(table)
         });
+        /// Assigns or clears the object archetype mapped to one tile.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @param | object_name | string? | Object archetype name, or nil to clear it.
         methods.add_method(
             "setTileObject",
             |_, this, (tile_id, object_name): (u32, Option<String>)| {
@@ -803,6 +874,9 @@ impl LuaUserData for LuaTileSet {
                 Ok(())
             },
         );
+        /// Returns the object archetype name mapped to one tile.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @return | string|nil | Object archetype name, or nil when unmapped.
         methods.add_method("getTileObject", |_, this, tile_id: u32| {
             if tile_id == 0 {
                 return Err(LuaError::RuntimeError(
@@ -813,9 +887,13 @@ impl LuaUserData for LuaTileSet {
                 .inner
                 .borrow()
                 .get_tile_archetype(tile_id - 1)
-                .map(str::to_string))
+            .map(str::to_string))
         });
 
+        /// Sets or clears a custom string-convertible tile property.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @param | name | string | Property name.
+        /// @param | value | any | String, number, boolean, or nil to clear the property.
         methods.add_method(
             "setProperty",
             |_, this, (tile_id, name, value): (u32, String, LuaValue)| {
@@ -832,6 +910,10 @@ impl LuaUserData for LuaTileSet {
                 Ok(())
             },
         );
+        /// Returns a custom tile property as a string.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @param | name | string | Property name.
+        /// @return | string|nil | Property value, or nil when unset.
         methods.add_method("getProperty", |_, this, (tile_id, name): (u32, String)| {
             if tile_id == 0 {
                 return Err(LuaError::RuntimeError(
@@ -842,8 +924,12 @@ impl LuaUserData for LuaTileSet {
                 .inner
                 .borrow()
                 .get_property(tile_id - 1, &name)
-                .map(str::to_string))
+            .map(str::to_string))
         });
+        /// Returns a custom tile property parsed as a number.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @param | name | string | Property name.
+        /// @return | number|nil | Numeric property value, or nil when unset or not numeric.
         methods.add_method(
             "getPropertyNumber",
             |_, this, (tile_id, name): (u32, String)| {
@@ -859,6 +945,10 @@ impl LuaUserData for LuaTileSet {
                     .and_then(|value| value.parse::<f64>().ok()))
             },
         );
+        /// Returns a custom tile property parsed as a boolean.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @param | name | string | Property name.
+        /// @return | boolean|nil | Boolean property value, or nil when unset or not boolean.
         methods.add_method(
             "getPropertyBool",
             |_, this, (tile_id, name): (u32, String)| {
@@ -874,6 +964,9 @@ impl LuaUserData for LuaTileSet {
                     .and_then(property_string_to_bool))
             },
         );
+        /// Returns all custom properties for one tile.
+        /// @param | tile_id | integer | Tile id (1-based).
+        /// @return | table | Property name/value table.
         methods.add_method("getProperties", |lua, this, tile_id: u32| {
             if tile_id == 0 {
                 return Err(LuaError::RuntimeError(
@@ -889,6 +982,10 @@ impl LuaUserData for LuaTileSet {
             Ok(table)
         });
 
+        /// Sets a four-neighbor autotile bitmask rule for a tile type.
+        /// @param | type_name | string | Logical tile type name.
+        /// @param | bitmask | integer | Four-neighbor bitmask.
+        /// @param | tile_id | integer | Tile id (1-based) to emit for the bitmask.
         methods.add_method(
             "setAutoTileRule",
             |_, this, (type_name, bitmask, tile_id): (String, u8, u32)| {
@@ -903,6 +1000,10 @@ impl LuaUserData for LuaTileSet {
                 Ok(())
             },
         );
+        /// Resolves a four-neighbor autotile bitmask to a tile id.
+        /// @param | type_name | string | Logical tile type name.
+        /// @param | bitmask | integer | Four-neighbor bitmask.
+        /// @return | integer|nil | Tile id (1-based), or nil when no rule exists.
         methods.add_method(
             "getAutoTileId",
             |_, this, (type_name, bitmask): (String, u8)| {
@@ -913,6 +1014,10 @@ impl LuaUserData for LuaTileSet {
                     .map(|id| id + 1))
             },
         );
+        /// Sets an eight-neighbor autotile bitmask rule for a tile type.
+        /// @param | type_name | string | Logical tile type name.
+        /// @param | bitmask | integer | Eight-neighbor bitmask.
+        /// @param | tile_id | integer | Tile id (1-based) to emit for the bitmask.
         methods.add_method(
             "setAutoTileRule8",
             |_, this, (type_name, bitmask, tile_id): (String, u16, u32)| {
@@ -927,6 +1032,10 @@ impl LuaUserData for LuaTileSet {
                 Ok(())
             },
         );
+        /// Resolves an eight-neighbor autotile bitmask to a tile id.
+        /// @param | type_name | string | Logical tile type name.
+        /// @param | bitmask | integer | Eight-neighbor bitmask.
+        /// @return | integer|nil | Tile id (1-based), or nil when no rule exists.
         methods.add_method(
             "getAutoTileId8",
             |_, this, (type_name, bitmask): (String, u16)| {
@@ -937,6 +1046,9 @@ impl LuaUserData for LuaTileSet {
                     .map(|id| id + 1))
             },
         );
+        /// Sets the autotile matching mode for a tile type.
+        /// @param | type_name | string | Logical tile type name.
+        /// @param | mode | string | One of `matchSides`, `matchCorners`, or `matchCornersAndSides`.
         methods.add_method(
             "setAutoTileMode",
             |_, this, (type_name, mode): (String, String)| {
@@ -945,10 +1057,18 @@ impl LuaUserData for LuaTileSet {
                 Ok(())
             },
         );
+        /// Returns the autotile matching mode for a tile type.
+        /// @param | type_name | string | Logical tile type name.
+        /// @return | string | Autotile matching mode.
         methods.add_method("getAutoTileMode", |_, this, type_name: String| {
             Ok(this.inner.borrow().get_auto_tile_mode(&type_name).as_str())
         });
+        /// Returns the userdata type name.
+        /// @return | string | Always `LTileSet`.
         methods.add_method("type", |_, _, ()| Ok("LTileSet"));
+        /// Checks whether this tileset matches a type name.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | True for `LTileSet` or `LObject`.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LTileSet" || name == "LObject")
         });
@@ -957,31 +1077,45 @@ impl LuaUserData for LuaTileSet {
 
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    let new_tileset = lua.create_function(
-        |lua,
-         (first_gid, tile_count, columns, tile_width, tile_height, spacing, margin): (
-            u32,
-            u32,
-            u32,
-            u32,
-            u32,
-            Option<u32>,
-            Option<u32>,
-        )| {
-            lua.create_userdata(LuaTileSet {
-                inner: Rc::new(RefCell::new(TileSet::new(
-                    first_gid,
-                    tile_count,
-                    columns,
-                    tile_width,
-                    tile_height,
-                    spacing.unwrap_or(0),
-                    margin.unwrap_or(0),
-                ))),
-            })
-        },
+    /// Creates a native tileset from atlas dimensions.
+    /// @param | first_gid | integer | First global tile id assigned to the tileset.
+    /// @param | tile_count | integer | Number of tiles in the atlas.
+    /// @param | columns | integer | Number of atlas columns.
+    /// @param | tile_width | integer | Tile width in pixels.
+    /// @param | tile_height | integer | Tile height in pixels.
+    /// @param | spacing | integer? | Optional pixel spacing between tiles.
+    /// @param | margin | integer? | Optional atlas margin in pixels.
+    /// @return | LTileSet | New tileset handle.
+    tbl.set(
+        "newTileSet",
+        lua.create_function(
+            |lua,
+             (first_gid, tile_count, columns, tile_width, tile_height, spacing, margin): (
+                u32,
+                u32,
+                u32,
+                u32,
+                u32,
+                Option<u32>,
+                Option<u32>,
+            )| {
+                lua.create_userdata(LuaTileSet {
+                    inner: Rc::new(RefCell::new(TileSet::new(
+                        first_gid,
+                        tile_count,
+                        columns,
+                        tile_width,
+                        tile_height,
+                        spacing.unwrap_or(0),
+                        margin.unwrap_or(0),
+                    ))),
+                })
+            },
+        )?,
     )?;
-    tbl.set("newTileSet", new_tileset)?;
+    /// Creates a catalog that resolves typed references across named tilesets.
+    /// @param | entries | table | Map of catalog id to `LTileSet`.
+    /// @return | LTileCatalog | New tile catalog handle.
     tbl.set(
         "newCatalog",
         lua.create_function(|lua, entries: LuaTable| {

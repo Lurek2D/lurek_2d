@@ -16,9 +16,17 @@ Example block: `lurek.tilelight.new`
 
 ```lua
 do
-    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 1 })
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
     local light = lurek.tilelight.new(field)
-    tilelight_log("tilelight type=" .. light:type())
+    local ok, value = pcall(function()
+        local made = lurek.tilelight.new(field)
+        return made:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 ```
 
@@ -44,7 +52,7 @@ This module primarily collaborates with `tilefield`. Its responsibility should s
 
 ### `lurek.tilelight.compute`
 
-Creates and computes a tile light map for a shared tilefield.
+Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.
 
 ```lua
 lurek.tilelight.compute(field, opts)
@@ -54,8 +62,8 @@ lurek.tilelight.compute(field, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `field` | [LTileField](#ltilefield) | Source tilefield. |
-| `opts?` | table | Optional includePointLights, includeLineLights, includeSunLight/includeGlobalLight, ambient, and time settings. |
+| `field` | [LTileField](#ltilefield)|table | Source tilefield handle or provider table. |
+| `opts?` | table | Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings. |
 
 **Returns**
 
@@ -67,10 +75,18 @@ lurek.tilelight.compute(field, opts)
 
 ```lua
 do
-    local field = lurek.tilefield.new({ width = 2, height = 2 })
-    local light = lurek.tilelight.compute(field, { ambient = { r = 0.1, g = 0.1, b = 0.12 } })
-    local _, _, _, luma = light:getLight(1, 1, 1)
-    tilelight_log("ambient luma=" .. luma)
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local made = lurek.tilelight.compute(field, { ambient = { r = 0.1, g = 0.1, b = 0.12 } })
+        local _, _, _, luma = made:getLight(1, 1, 1)
+        return luma
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 ```
 
@@ -78,7 +94,7 @@ end
 
 ### `lurek.tilelight.new`
 
-Creates a tile light map attached to a shared tilefield.
+Creates a tile light map attached to a shared tilefield or copied from a Lua tilefield provider table.
 
 ```lua
 lurek.tilelight.new(field)
@@ -88,7 +104,7 @@ lurek.tilelight.new(field)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `field` | [LTileField](#ltilefield) | Source tilefield. |
+| `field` | [LTileField](#ltilefield)|table | Source tilefield handle or provider table. |
 
 **Returns**
 
@@ -100,9 +116,17 @@ lurek.tilelight.new(field)
 
 ```lua
 do
-    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 1 })
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
     local light = lurek.tilelight.new(field)
-    tilelight_log("tilelight type=" .. light:type())
+    local ok, value = pcall(function()
+        local made = lurek.tilelight.new(field)
+        return made:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 ```
 
@@ -129,12 +153,31 @@ end
 
 ### Type Methods
 
+#### `LTileField:applyModifier`
+
+Applies a named modifier to one cell.
+
+```lua
+LTileField:applyModifier(x, y, z, modifier)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `modifier` | string | Modifier name. |
+
+---
+
 #### `LTileField:applyProfile`
 
-Applies a named profile to one cell.
+Applies a legacy profile to one cell.
 
 ```lua
-LTileField:applyProfile(x, y, z, name)
+LTileField:applyProfile(x, y, z, profile)
 ```
 
 **Parameters**
@@ -144,16 +187,16 @@ LTileField:applyProfile(x, y, z, name)
 | `x` | number | One-based column. |
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
-| `name` | string | Profile name to apply to the cell. |
+| `profile` | string | Profile name. |
 
 ---
 
-#### `LTileField:applyTilesetProfile`
+#### `LTileField:applyTilesetObject`
 
-Applies the tilefield profile named by a tileset tile referenced from one cell.
+Applies the object archetype defaults for a tileset tile referenced from one cell.
 
 ```lua
-LTileField:applyTilesetProfile(x, y, z, slot, tileset, opts)
+LTileField:applyTilesetObject(x, y, z, slot, tileset, opts)
 ```
 
 **Parameters**
@@ -164,50 +207,23 @@ LTileField:applyTilesetProfile(x, y, z, slot, tileset, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores profile metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object archetype metadata. |
 | `opts?` | table | Options: refIsGid. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| boolean | True when a profile was found and applied. |
+| boolean | True when the tileset object was found and applied. |
 
 ---
 
-#### `LTileField:applyTilesetStats`
+#### `LTileField:applyTilesetObjectLayer`
 
-Applies tileset gameplay properties for a tile referenced from one cell.
-
-```lua
-LTileField:applyTilesetStats(x, y, z, slot, tileset, opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | One-based column. |
-| `y` | number | One-based row. |
-| `z?` | number | One-based level, default 1. |
-| `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
-| `opts?` | table | Options: refIsGid. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when referenced tileset properties were found and applied. |
-
----
-
-#### `LTileField:applyTilesetStatsLayer`
-
-Applies tileset gameplay properties for every referenced cell on one tilefield level.
+Applies tileset object defaults for every referenced cell on one tilefield level.
 
 ```lua
-LTileField:applyTilesetStatsLayer(slot, tileset, opts)
+LTileField:applyTilesetObjectLayer(slot, tileset, opts)
 ```
 
 **Parameters**
@@ -215,14 +231,14 @@ LTileField:applyTilesetStatsLayer(slot, tileset, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `opts?` | table | Options: z, refIsGid. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| number | Number of cells that received at least one stat. |
+| number | Number of cells that received object defaults. |
 
 ---
 
@@ -248,6 +264,25 @@ LTileField:blocks(x, y, z, channel)
 | Type | Description |
 |------|-------------|
 | boolean | True when the addressed cell blocks the channel. |
+
+---
+
+#### `LTileField:blocksCategory`
+
+Returns whether one cell blocks a category.
+
+```lua
+LTileField:blocksCategory(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
 
 ---
 
@@ -304,6 +339,31 @@ LTileField:clearLine(from_tbl, to_tbl, channel, opts)
 
 ---
 
+#### `LTileField:clearModifier`
+
+Removes one modifier from one cell.
+
+```lua
+LTileField:clearModifier(x, y, z, modifier)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `modifier` | string | Modifier name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the cell had the modifier. |
+
+---
+
 #### `LTileField:clearRef`
 
 Clears a named object/tile reference from one cell.
@@ -320,6 +380,39 @@ LTileField:clearRef(x, y, z, slot)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
+
+---
+
+#### `LTileField:defineCategory`
+
+Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
+
+```lua
+LTileField:defineCategory(name, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Stable category name. |
+| `opts?` | table?|Options | custom', active=true?. |
+
+---
+
+#### `LTileField:defineSlot`
+
+Defines a named object slot that cells may reference.
+
+```lua
+LTileField:defineSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name chosen by the Lua game. |
 
 ---
 
@@ -369,22 +462,6 @@ LTileField:exportCostLayer(channel, z)
 
 ---
 
-#### `LTileField:exportProfileLayer`
-
-Exports one level of profile names as a row-major array.
-
-```lua
-LTileField:exportProfileLayer(z)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `z?` | number | One-based level, default 1. |
-
----
-
 #### `LTileField:exportRefLayer`
 
 Exports one named object/tile reference slot and level as a row-major array.
@@ -427,9 +504,125 @@ LTileField:firstBlocker(from_tbl, to_tbl, channel, opts)
 
 ---
 
+#### `LTileField:footprintPassable`
+
+Returns whether a rectangular footprint can occupy a cell anchor for a category.
+
+```lua
+LTileField:footprintPassable(x, y, z, w, h, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `w` | any |  |
+| `h` | any |  |
+| `category` | any |  |
+
+---
+
+#### `LTileField:getCategories`
+
+Returns known category names.
+
+```lua
+LTileField:getCategories()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Sorted category names. |
+
+---
+
+#### `LTileField:getCategory`
+
+Returns category metadata, or nil when the category is unknown.
+
+```lua
+LTileField:getCategory(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Category name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Category table with name, kind, and active. |
+
+---
+
+#### `LTileField:getCategoryCost`
+
+Returns one effective category cost.
+
+```lua
+LTileField:getCategoryCost(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+---
+
+#### `LTileField:getCategoryFilter`
+
+Returns one effective RGB category filter.
+
+```lua
+LTileField:getCategoryFilter(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+---
+
+#### `LTileField:getCategoryTransmission`
+
+Returns one effective category transmission multiplier.
+
+```lua
+LTileField:getCategoryTransmission(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+---
+
 #### `LTileField:getCell`
 
-Returns a table with blockers, costs, sun occlusion, and optional profile name.
+Returns a table with blockers, costs, sun occlusion, refs, and modifiers.
 
 ```lua
 LTileField:getCell(x, y, z)
@@ -476,6 +669,52 @@ LTileField:getCost(x, y, z, channel)
 
 ---
 
+#### `LTileField:getModifier`
+
+Returns a named tile modifier table, or nil.
+
+```lua
+LTileField:getModifier(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Modifier name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Modifier table. |
+
+---
+
+#### `LTileField:getModifiers`
+
+Returns active modifier names on one cell.
+
+```lua
+LTileField:getModifiers(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Active modifier names. |
+
+---
+
 #### `LTileField:getNeighbors`
 
 Returns topology-aware same-level neighbours for one cell.
@@ -502,7 +741,7 @@ LTileField:getNeighbors(x, y, z)
 
 #### `LTileField:getProfile`
 
-Returns a named object profile table, or nil when absent.
+Returns a legacy profile table, or nil.
 
 ```lua
 LTileField:getProfile(name)
@@ -512,13 +751,13 @@ LTileField:getProfile(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Profile name to read. |
+| `name` | string | Profile name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| table | nil | Profile table with blockers, costs, and sunOcclusion, or nil. |
+| table | nil | Profile table. |
 
 ---
 
@@ -543,7 +782,7 @@ LTileField:getRef(x, y, z, slot)
 
 | Type | Description |
 |------|-------------|
-| number | nil | Stored reference id, or nil when unset. |
+| number | table|nil | Stored legacy id, typed ref table, or nil when unset. |
 
 ---
 
@@ -563,7 +802,7 @@ LTileField:getRefProperties(x, y, z, slot, tileset, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `opts?` | table | Options: refIsGid. |
 
 **Returns**
@@ -590,7 +829,7 @@ LTileField:getRefProperty(x, y, z, slot, tileset, property, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `property` | string | Property name to read. |
 | `opts?` | table | Options: refIsGid. |
 
@@ -618,7 +857,7 @@ LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `property` | string | Property name to read. |
 | `opts?` | table | Options: refIsGid. |
 
@@ -646,7 +885,7 @@ LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `property` | string | Property name to read. |
 | `opts?` | table | Options: refIsGid. |
 
@@ -660,7 +899,7 @@ LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts)
 
 #### `LTileField:getRefSlots`
 
-Returns every named ref slot currently used by this field.
+Returns every declared ref slot.
 
 ```lua
 LTileField:getRefSlots()
@@ -770,6 +1009,44 @@ LTileField:getTopology()
 
 ---
 
+#### `LTileField:getVersion`
+
+Returns the current tilefield data version.
+
+```lua
+LTileField:getVersion()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Monotonic field version incremented by data mutations. |
+
+---
+
+#### `LTileField:hasSlot`
+
+Returns true when a named object slot is declared.
+
+```lua
+LTileField:hasSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when declared. |
+
+---
+
 #### `LTileField:inBounds`
 
 Returns whether one-based coordinates are inside the field.
@@ -835,9 +1112,31 @@ LTileField:regionContains(name, x, y, z)
 
 ---
 
+#### `LTileField:removeModifier`
+
+Removes a named modifier and clears it from all cells.
+
+```lua
+LTileField:removeModifier(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Modifier name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when removed. |
+
+---
+
 #### `LTileField:removeProfile`
 
-Removes a named object profile from the tilefield profile registry.
+Removes a legacy profile and clears it from all cells.
 
 ```lua
 LTileField:removeProfile(name)
@@ -847,7 +1146,13 @@ LTileField:removeProfile(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Profile name to remove. |
+| `name` | string | Profile name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when removed. |
 
 ---
 
@@ -873,6 +1178,28 @@ LTileField:removeRegion(name)
 
 ---
 
+#### `LTileField:removeSlot`
+
+Removes a named object slot and clears its references from the field.
+
+```lua
+LTileField:removeSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the slot existed. |
+
+---
+
 #### `LTileField:setBlock`
 
 Sets whether a cell blocks a channel.
@@ -893,9 +1220,89 @@ LTileField:setBlock(x, y, z, channel, blocked)
 
 ---
 
+#### `LTileField:setCategoryBlock`
+
+Sets one category blocker on one cell.
+
+```lua
+LTileField:setCategoryBlock(x, y, z, category, blocked)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `blocked` | any |  |
+
+---
+
+#### `LTileField:setCategoryCost`
+
+Sets one category cost on one cell.
+
+```lua
+LTileField:setCategoryCost(x, y, z, category, cost)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `cost` | any |  |
+
+---
+
+#### `LTileField:setCategoryFilter`
+
+Sets one RGB category filter on one cell.
+
+```lua
+LTileField:setCategoryFilter(x, y, z, category, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `filter` | any |  |
+
+---
+
+#### `LTileField:setCategoryTransmission`
+
+Sets one category transmission multiplier on one cell.
+
+```lua
+LTileField:setCategoryTransmission(x, y, z, category, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `value` | any |  |
+
+---
+
 #### `LTileField:setCell`
 
-Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
 
 ```lua
 LTileField:setCell(x, y, z, cell)
@@ -932,20 +1339,37 @@ LTileField:setCost(x, y, z, channel, cost)
 
 ---
 
-#### `LTileField:setProfile`
+#### `LTileField:setModifier`
 
-Registers or replaces a named object profile.
+Registers or replaces a named tile modifier.
 
 ```lua
-LTileField:setProfile(name, profile_tbl)
+LTileField:setModifier(name, modifier)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Profile name to create or replace. |
-| `profile_tbl` | table | Profile table with blockers, costs, and sunOcclusion fields. |
+| `name` | string | Modifier name. |
+| `modifier` | table | Modifier table with blocks, costAdd, costMul, sunOcclusionAdd, light, properties. |
+
+---
+
+#### `LTileField:setProfile`
+
+Registers or replaces a legacy tilefield profile.
+
+```lua
+LTileField:setProfile(name, profile)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name. |
+| `profile` | table | Profile table with blocks, costs, sunOcclusion, light, or properties. |
 
 ---
 
@@ -965,7 +1389,7 @@ LTileField:setRef(x, y, z, slot, value)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name defined by the Lua game. |
-| `value` | number | Object, tile, or tileset-local id stored for the slot. |
+| `value` | number|table | Legacy id or typed `{ tileset, tile?/object? }` ref stored for the slot. |
 
 ---
 
@@ -1100,23 +1524,6 @@ LTileField:writeCostLayer(channel, z, values)
 
 ---
 
-#### `LTileField:writeProfileLayer`
-
-Writes one full profile-name layer from a row-major string-or-nil array.
-
-```lua
-LTileField:writeProfileLayer(z, values)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `z?` | number | One-based level, default 1. |
-| `values` | table | Row-major string-or-nil array with width*height entries. |
-
----
-
 #### `LTileField:writeRefLayer`
 
 Writes one full named ref layer from a row-major integer-or-nil array.
@@ -1143,6 +1550,39 @@ LTileField:writeRefLayer(slot, z, values)
 
 ### Type Methods
 
+#### `LTileLightMap:addAreaLight`
+
+Adds a rectangular area light and returns its stable id.
+
+```lua
+LTileLightMap:addAreaLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | h,radius,intensity?,color?,flicker?,colorCycle?}`. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:addAreaLight({ x = 2, y = 2, z = 1, width = 2, height = 2, radius = 2 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
 #### `LTileLightMap:addLineLight`
 
 Adds a tile line light and returns its stable id.
@@ -1156,6 +1596,23 @@ LTileLightMap:addLineLight(opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `opts` | table | `{x1,y1,z1?,x2,y2,z2?,radius,intensity?,color?,flicker?,colorCycle?}`. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:addLineLight({ x1 = 1, y1 = 2, x2 = 6, y2 = 2, z1 = 1, z2 = 1, radius = 1.5 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -1173,6 +1630,91 @@ LTileLightMap:addPointLight(opts)
 |------|------|-------------|
 | `opts` | table | `{x, y, z?, radius, intensity?, color?, flicker?, colorCycle?}` light definition. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:addPointLight({ x = 2, y = 2, z = 1, radius = 3, intensity = 1 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileLightMap:addRectLight`
+
+Alias for `addAreaLight`.
+
+```lua
+LTileLightMap:addRectLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | h,radius,intensity?,color?,flicker?,colorCycle?}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable rectangular light id. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:addRectLight({ x = 2, y = 2, z = 1, w = 2, h = 2, radius = 2 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileLightMap:clearAreaLights`
+
+Removes all rectangular area lights currently stored on this tile light map.
+
+```lua
+LTileLightMap:clearAreaLights()
+```
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addAreaLight({ x = 2, y = 2, z = 1, width = 2, height = 2, radius = 2 })
+        light:clearAreaLights()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileLightMap:clearLineLights`
@@ -1183,6 +1725,25 @@ Removes all line lights currently stored on this tile light map.
 LTileLightMap:clearLineLights()
 ```
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addLineLight({ x1 = 1, y1 = 2, x2 = 6, y2 = 2, z1 = 1, z2 = 1, radius = 1.5 })
+        light:clearLineLights()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileLightMap:clearPointLights`
@@ -1191,6 +1752,54 @@ Removes all point lights currently stored on this tile light map.
 
 ```lua
 LTileLightMap:clearPointLights()
+```
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addPointLight({ x = 2, y = 2, z = 1, radius = 2 })
+        light:clearPointLights()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileLightMap:clearRectLights`
+
+Alias for `clearAreaLights`.
+
+```lua
+LTileLightMap:clearRectLights()
+```
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addRectLight({ x = 2, y = 2, z = 1, w = 2, h = 2, radius = 2 })
+        light:clearRectLights()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
 ```
 
 ---
@@ -1207,7 +1816,26 @@ LTileLightMap:compute(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts?` | table | Optional includePointLights, includeLineLights, includeSunLight/includeGlobalLight, ambient, and time settings. |
+| `opts?` | table | Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addPointLight({ x = 2, y = 2, z = 1, radius = 3, intensity = 1 })
+        light:compute({ includePointLights = true, includeSunLight = false })
+        return light:getLight(2, 2, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -1225,6 +1853,31 @@ LTileLightMap:exportLayer(z)
 |------|------|-------------|
 | `z?` | number | One-based level, default 1. |
 
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Row-major array of light color tables for the requested level. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setAmbient({ r = 0.1, g = 0.1, b = 0.1 })
+        light:compute({ includeSunLight = false })
+        return #light:exportLayer(1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileLightMap:exportVolume`
@@ -1235,18 +1888,28 @@ Exports all computed light levels as nested row-major tables.
 LTileLightMap:exportVolume()
 ```
 
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of exported light layers, one table per level. |
+
 **Example**
 
 ```lua
 do
-    local field = lurek.tilefield.new({ width = 3, height = 3, levels = 2 })
-    field:setSunOcclusion(2, 2, 2, 0.5)
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
     local light = lurek.tilelight.new(field)
-    light:setGlobalLight({ intensity = 0.4, color = { r = 1, g = 0.85, b = 0.55 } })
-    light:compute({ includePointLights = false, includeGlobalLight = true })
-    local layer = light:exportLayer(1)
-    local volume = light:exportVolume()
-    tilelight_log("layer cells=" .. #layer .. " levels=" .. #volume)
+    local ok, value = pcall(function()
+        light:setAmbient({ r = 0.1, g = 0.1, b = 0.1 })
+        light:compute({ includeSunLight = false })
+        return #light:exportVolume()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 ```
 
@@ -1268,18 +1931,31 @@ LTileLightMap:getLight(x, y, z)
 | `y` | number | One-based cell y coordinate. |
 | `z?` | number | One-based level, default 1. |
 
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red; green; blue; and luma values for the cell. (value 1). |
+| number | Red; green; blue; and luma values for the cell. (value 2). |
+| number | Red; green; blue; and luma values for the cell. (value 3). |
+| number | Red; green; blue; and luma values for the cell. (value 4). |
+
 **Example**
 
 ```lua
 do
-    local field = lurek.tilefield.new({ width = 6, height = 3 })
-    field:setBlock(4, 2, 1, "light", true)
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
     local light = lurek.tilelight.new(field)
-    light:addPointLight({ x = 2, y = 2, z = 1, radius = 5, intensity = 1, color = { r = 1, g = 0.6, b = 0.2 } })
-    light:compute({ includePointLights = true, includeGlobalLight = false })
-    local _, _, _, near = light:getLight(3, 2, 1)
-    local _, _, _, blocked = light:getLight(6, 2, 1)
-    tilelight_log("point light near=" .. near .. " blocked=" .. blocked)
+    local ok, value = pcall(function()
+        light:setAmbient({ r = 0.1, g = 0.1, b = 0.1 })
+        light:compute({ includeSunLight = false })
+        return light:getLight(1, 1, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 ```
 
@@ -1291,6 +1967,72 @@ Returns light-map width, height, and level count.
 
 ```lua
 LTileLightMap:getSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and level count. (value 1). |
+| number | Width; height; and level count. (value 2). |
+| number | Width; height; and level count. (value 3). |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local w, h, levels = light:getSize()
+        return w + h + levels
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileLightMap:removeAreaLight`
+
+Removes a rectangular area light by id and returns whether it existed.
+
+```lua
+LTileLightMap:removeAreaLight(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Stable area-light id returned by `addAreaLight`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when an area light was removed. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addAreaLight({ x = 2, y = 2, z = 1, width = 2, height = 2, radius = 2 })
+        return light:removeAreaLight(id)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
 ```
 
 ---
@@ -1307,7 +2049,31 @@ LTileLightMap:removeLineLight(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | any |  |
+| `id` | number | Stable line-light id returned by `addLineLight`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a line light was removed. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addLineLight({ x1 = 1, y1 = 2, x2 = 6, y2 = 2, z1 = 1, z2 = 1, radius = 1.5 })
+        return light:removeLineLight(id)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -1331,6 +2097,64 @@ LTileLightMap:removePointLight(id)
 |------|-------------|
 | boolean | True when a point light was removed. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
+        return light:removePointLight(id)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileLightMap:removeRectLight`
+
+Alias for `removeAreaLight`.
+
+```lua
+LTileLightMap:removeRectLight(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Stable rectangular light id returned by `addRectLight`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a rectangular light was removed. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addRectLight({ x = 2, y = 2, z = 1, w = 2, h = 2, radius = 2 })
+        return light:removeRectLight(id)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileLightMap:setAmbient`
@@ -1347,11 +2171,30 @@ LTileLightMap:setAmbient(color)
 |------|------|-------------|
 | `color` | table | `{r,g,b}` ambient color. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setAmbient({ r = 0.1, g = 0.2, b = 0.3 })
+        light:compute({ includeSunLight = false })
+        return light:getLight(1, 1, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileLightMap:setGlobalLight`
 
-Sets top-down global light parameters used during light computation.
+Compatibility alias for top sun light parameters used during light computation.
 
 ```lua
 LTileLightMap:setGlobalLight(opts)
@@ -1361,7 +2204,26 @@ LTileLightMap:setGlobalLight(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | table | `{intensity?, color?}` global top-light settings. |
+| `opts` | table | `{intensity?, color?}` top-light settings. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setGlobalLight({ intensity = 0.4, color = { r = 1, g = 0.85, b = 0.55 } })
+        light:compute({ includeGlobalLight = true })
+        return light:getLight(1, 1, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -1379,6 +2241,25 @@ LTileLightMap:setSunLight(opts)
 |------|------|-------------|
 | `opts` | table | 'directional', intensity?, color?, direction?}`. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setSunLight({ kind = "directional", intensity = 0.8, direction = { x = 1, y = 0 } })
+        light:compute({ includeSunLight = true })
+        return light:getLight(1, 1, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileLightMap:type`
@@ -1394,6 +2275,23 @@ LTileLightMap:type()
 | Type | Description |
 |------|-------------|
 | string | The string `[LTileLightMap](#ltilelightmap)`. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---
 
@@ -1417,6 +2315,59 @@ LTileLightMap:typeOf(name)
 |------|-------------|
 | boolean | True for `[LTileLightMap](#ltilelightmap)` or `LObject`. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:typeOf("LTileLightMap")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileLightMap:updateAreaLight`
+
+Updates an existing rectangular area light by id.
+
+```lua
+LTileLightMap:updateAreaLight(id, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Stable area-light id returned by `addAreaLight`. |
+| `opts` | table | Area-light fields to update. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addAreaLight({ x = 2, y = 2, z = 1, width = 2, height = 2, radius = 2 })
+        light:updateAreaLight(id, { x = 3, y = 3, w = 1, h = 1 })
+        return id
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileLightMap:updateLineLight`
@@ -1434,6 +2385,25 @@ LTileLightMap:updateLineLight(id, opts)
 | `id` | number | Stable line light id returned by `addLineLight`. |
 | `opts` | table | Partial line light update. |
 
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addLineLight({ x1 = 1, y1 = 2, x2 = 6, y2 = 2, z1 = 1, z2 = 1, radius = 1.5 })
+        light:updateLineLight(id, { x1 = 2, y1 = 2, x2 = 5, y2 = 2, radius = 2 })
+        return id
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
 ---
 
 #### `LTileLightMap:updatePointLight`
@@ -1450,5 +2420,60 @@ LTileLightMap:updatePointLight(id, opts)
 |------|------|-------------|
 | `id` | number | Stable point light id returned by `addPointLight`. |
 | `opts` | table | Partial light update table with x, y, z, radius, intensity, or color. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
+        light:updatePointLight(id, { x = 3, y = 3, radius = 3 })
+        return id
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileLightMap:updateRectLight`
+
+Alias for `updateAreaLight`.
+
+```lua
+LTileLightMap:updateRectLight(id, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Stable rectangular light id returned by `addRectLight`. |
+| `opts` | table | Rectangular-light fields to update. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addRectLight({ x = 2, y = 2, z = 1, w = 2, h = 2, radius = 2 })
+        light:updateRectLight(id, { x = 3, y = 3, w = 1, h = 1 })
+        return id
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
 
 ---

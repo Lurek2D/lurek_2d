@@ -16,7 +16,7 @@
 - Source path: `src/tilemap`
 - Binding: `src/lua_api/tilemap_api.rs`
 - Namespace: `lurek.tilemap`
-- Lua API surface: `13` functions, `14` types, `137` methods
+- Lua API surface: `14` functions, `11` types, `111` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -51,13 +51,15 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Owning tier: `Feature Systems`
 - Plugin tier: `core_keep`
 - Lua binding owner: `src/lua_api/tilemap_api.rs`
-- Referenced engine modules: `math`, `render`, `runtime`
+- Referenced engine modules: `math`, `render`, `runtime`, `tilefield`, `tileset`
 
 ## Imports
 
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
+- `tilefield`: Imports or references `src/tilefield/`. Dependency stays inside `Feature Systems` and should remain acyclic.
+- `tileset`: Imports or references `src/tileset/`. Dependency stays inside `Feature Systems` and should remain acyclic.
 
 ## Source Files
 
@@ -82,20 +84,17 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### coords.rs
 
-- Provides tilemap projection transforms for isometric and hex render layouts.
-- Converts between tile/grid coordinates and screen space for storage-to-render adapters.
-- Keeps orientation-specific projection math out of map storage while avoiding gameplay topology ownership.
-- Does not provide navigation, range, neighbor, line, ring, or visibility algorithms.
-- Open this file when tilemap projection between tile coordinates and screen coordinates is wrong.
+- This file owns coords behavior inside the tilemap subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate coords state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 ### error.rs
 
-- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-- Centers the implementation around TileMapError, fmt, with helpers kept close to their invariants.
-- Defines how error data is validated, transformed, or stored before neighboring systems use it.
-- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
-- Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
+- This file owns error behavior inside the tilemap subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate error state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for error work.
+- Serialization, indexing, and boundary checks stay here when they depend on error internals.
 
 ### isomap.rs
 
@@ -126,58 +125,58 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### limits.rs
 
-- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-- Defines how limits data is validated, transformed, or stored before neighboring systems use it.
-- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
+- This file owns limits behavior inside the tilemap subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate limits state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for limits work.
 
 ### mod.rs
 
-- Exports the tilemap subsystem surface that combines storage, import, geometry, and render helpers.
-- Acts as the ownership index for tile worlds so callers can see where chunks, tilesets, maps, and importers live.
-- Centralizes module visibility and re-exports instead of storing live map data or running generation itself.
-- Connects authored formats, autotiling, large-map helpers, and base tile storage into one stack.
-- Provides the first navigation point when tracing whether a tile concern belongs to import, storage, or rendering.
-- Keeps the public tilemap surface coherent while allowing specialized owners like isomap or TMX to stay narrow.
-- Open this file first when adding a tilemap owner or changing re-export policy for shared tilemap APIs.
-- Use it to map a tile feature to its concrete Rust owner before editing storage, import, or render behavior.
+- This module index owns the public shape of the tilemap subsystem and its source navigation map.
+- It declares which sibling files participate in tilemap behavior and which names are reexported outward.
+- Reexports here are intentionally narrow so callers do not depend on private implementation modules.
+- Agents should start here to understand subsystem boundaries before opening deeper implementation files.
+- New submodules belong here only when they add durable behavior rather than temporary test scaffolding.
+- Keep this index synchronized with specs, examples, and Lua bindings whenever public ownership changes.
+- The ordering groups core data, helpers, and rendering-facing pieces so code search stays predictable.
+- This file should explain where to navigate next, not repeat details owned by the implementation files.
 
 ### orientation.rs
 
-- Tilemap projection orientation shared by storage and render adapters.
+- This file owns orientation behavior inside the tilemap subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate orientation state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 ### render.rs
 
-- Generates tilemap render commands with camera-aware culling across layers and supported map orientations.
-- Maps tile ids to fallback debug colors so maps can still visualize without relying on atlas sampling.
-- Applies per-layer visibility and tint while composing deterministic draw output for the shared renderer.
-- Handles orthogonal, isometric, and hex layouts so debug and runtime visualization match map geometry.
-- Acts as the tilemap-to-render boundary rather than mixing draw emission into the base TileMap owner.
-- Open this file when tile draw order, culling, tint, or orientation-specific render output is incorrect.
+- This file owns render behavior inside the tilemap subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate render state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for render work.
+- Serialization, indexing, and boundary checks stay here when they depend on render internals.
+- Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+- Open this file when render ownership changes, but keep unrelated subsystem policy in sibling modules.
+- The code favors small data transformations so examples, specs, and tests can assert behavior directly.
 
 ### tilemap.rs
 
-- Owns the runtime tilemap storage object: layers, GIDs, tilesets, viewport, animation state, and indexes.
-- Validates tilemap dimensions and tile writes before importers, Lua bindings, or render adapters use the data.
-- Keeps gameplay semantics such as movement, visibility, lighting, physics collisions, and regions in tilefield or other systems.
-- Provides storage-side helpers used by tilemap render-command generation without owning the renderer.
-- Open this file when tile IDs, layer state, tileset attachment, animation resolution, or tilemap indexing is wrong.
+- This file owns tilemap behavior inside the tilemap subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate tilemap state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for tilemap work.
+- Serialization, indexing, and boundary checks stay here when they depend on tilemap internals.
+- Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+- Open this file when tilemap ownership changes, but keep unrelated subsystem policy in sibling modules.
+- The code favors small data transformations so examples, specs, and tests can assert behavior directly.
+- Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.
+- Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary.
+- This module documents where tilemap data becomes behavior and where surrounding systems take over.
 
 ### tilemap_index.rs
 
 - This file owns the reverse-index maintenance helper that maps tile GIDs back to their grid positions.
 - The function removes one coordinate from a GID bucket and deletes empty buckets to keep index state compact.
 - Open this file when tile lookup bookkeeping changes; map storage and generation logic belong to siblings.
-
-### tileset.rs
-
-- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-- Centers the implementation around TileAnimFrame, TileSet, new, with helpers kept close to their invariants.
-- Defines how tileset data is validated, transformed, or stored before neighboring systems use it.
-- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on tileset behavior while Lua registration stays elsewhere.
-- Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 ### tmx.rs
 
@@ -198,6 +197,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 ### Functions
 
 - `lurek.tilemap.fromLDtk(jsonStr, levelName?, opts?) -> LTileMap`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
+- `lurek.tilemap.fromProvider(provider, opts?) -> LTileMap`: Builds a native tilemap from a Lua provider table with tileWidth, tileHeight, layers, optional tilesets, and optional getTile(layer,x,y).
 - `lurek.tilemap.fromScreenHex(sx, sy, size) -> integer`: Converts screen-space pixel coordinates to axial hex coordinates.
 - `lurek.tilemap.fromScreenIso(sx, sy, tw, th) -> number`: Converts screen-space coordinates back to tile coordinates for isometric projection.
 - `lurek.tilemap.getAutoTileFormats() -> table`: Returns the supported auto-tile sheet layouts and their default matching modes.
@@ -207,7 +207,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount?) -> LIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
 - `lurek.tilemap.newLargeMapRenderer(tileW, tileH) -> LLargeMapRenderer`: Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 - `lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize?, opts?) -> LTileMap`: Creates a new empty tilemap with the given tile dimensions.
-- `lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, spacing?, margin?) -> LTileSet`: Creates a new tileset from atlas parameters.
+- `lurek.tilemap.newTileSet() -> nil`: Compatibility alias for `lurek.tileset.newTileSet`.
 - `lurek.tilemap.toScreenHex(q, r, size) -> number`: Converts axial hex coordinates to screen-space pixel position.
 - `lurek.tilemap.toScreenIso(tx, ty, tw, th) -> number`: Converts tile coordinates to screen-space position for isometric projection.
 
@@ -349,7 +349,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LLargeMapRenderer:setMapData(data, width, height) -> nil`: Replaces all tile data with a flat array of GIDs for the given dimensions.
 - `LLargeMapRenderer:setTile(x, y, tileId) -> nil`: Sets a single tile GID at a given position.
 - `LLargeMapRenderer:setTilesetColumns(cols) -> nil`: Sets the column count of the associated tileset atlas for UV calculation.
-- `LLargeMapRenderer:setViewport(w, h) -> nil`: Sets the viewport dimensions for visibility calculations.
+- `LLargeMapRenderer:setViewport(w, h) -> nil`: Sets the viewport rectangle used for render-command culling.
 - `LLargeMapRenderer:type() -> string`: Returns the type name of this userdata.
 - `LLargeMapRenderer:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
@@ -391,6 +391,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:getTileWidth() -> integer`: Returns the width of a single tile in pixels for this map.
 - `LTileMap:getViewport() -> number`: Returns the current viewport rectangle, or nils if none is set.
 - `LTileMap:render(ox?, oy?) -> nil`: Submits render commands for all visible tiles, optionally offset by a scroll position.
+- `LTileMap:renderFieldCatalogSlot(field, catalog, opts) -> nil`: Renders typed refs from a tilefield slot through a tileset catalog.
+- `LTileMap:renderFieldSlot(field, tileset, opts) -> nil`: Renders objects referenced from a tilefield slot using tileset object visuals.
 - `LTileMap:setLayerColor(idx, r, g, b, a) -> nil`: Sets the tint color for an entire layer.
 - `LTileMap:setLayerOffset(idx, ox, oy) -> nil`: Sets the pixel offset for a layer, shifting all tiles during rendering.
 - `LTileMap:setLayerParallax(idx, px, py) -> nil`: Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
@@ -430,73 +432,6 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ##### Fields
 
-- `x` (`number`): X.
-- `y` (`number`): Y.
-
-##### Methods
-
-- No documented methods.
-
-#### LTileSet Type
-
-- Lua-side handle wrapping a `TileSet` for defining tile atlas metadata, animation, profiles, and auto-tile rules.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LTileSet:getAnimation(tileId) -> table`: Returns the animation frames for a tile, or nil if none are set.
-- `LTileSet:getAutoTileId(typeName, bitmask) -> integer`: Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
-- `LTileSet:getAutoTileId8(typeName, bitmask) -> integer`: Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
-- `LTileSet:getAutoTileMode(typeName) -> string`: Returns the neighbor matching mode for a named auto-tile type.
-- `LTileSet:getColumns() -> integer`: Returns the number of columns in the tileset atlas image.
-- `LTileSet:getFirstGid() -> integer`: Returns the first global tile ID (GID) of this tileset.
-- `LTileSet:getMargin() -> integer`: Returns the margin around the edge of the atlas image, in pixels.
-- `LTileSet:getPhysicsShape(tileId) -> string`: Returns the physics shape name associated with this tile.
-- `LTileSet:getProfile(tileId) -> string`: Returns the tilefield profile name associated with this tile.
-- `LTileSet:getProperties(tileId) -> table`: Returns all gameplay properties associated with this tile.
-- `LTileSet:getProperty(tileId, name) -> string`: Returns an arbitrary gameplay property associated with this tile.
-- `LTileSet:getPropertyBool(tileId, name) -> boolean`: Returns an arbitrary gameplay property parsed as a boolean.
-- `LTileSet:getPropertyNumber(tileId, name) -> number`: Returns an arbitrary gameplay property parsed as a number.
-- `LTileSet:getQuad(tileId) -> table`: Returns the source rectangle (UV quad) for a tile in the atlas.
-- `LTileSet:getSpacing() -> integer`: Returns the spacing between tiles in the atlas image, in pixels.
-- `LTileSet:getTileCount() -> integer`: Returns the total number of tiles defined in this tileset.
-- `LTileSet:getTileDimensions() -> integer`: Returns both tile width and height in pixels.
-- `LTileSet:getTileHeight() -> integer`: Returns the height of a single tile in pixels.
-- `LTileSet:getTileWidth() -> integer`: Returns the width of a single tile in pixels.
-- `LTileSet:setAnimation(tileId, frames) -> nil`: Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
-- `LTileSet:setAutoTileMode(typeName, mode) -> nil`: Sets the neighbor matching mode for a named auto-tile type.
-- `LTileSet:setAutoTileRule(typeName, bitmask, tileId) -> nil`: Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
-- `LTileSet:setAutoTileRule8(typeName, bitmask, tileId) -> nil`: Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
-- `LTileSet:setPhysicsShape(tileId, shape?) -> nil`: Assigns or clears the physics shape name associated with this tile.
-- `LTileSet:setProfile(tileId, profile?) -> nil`: Assigns or clears the tilefield profile name associated with this tile.
-- `LTileSet:setProperty(tileId, name, value?) -> nil`: Assigns or clears an arbitrary gameplay property associated with this tile.
-- `LTileSet:type() -> string`: Returns the type name of this userdata.
-- `LTileSet:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LTileSetGetAnimationResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `duration` (`number`): Duration.
-- `tileid` (`integer`): Tileid.
-
-##### Methods
-
-- No documented methods.
-
-#### LTileSetGetQuadResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `height` (`number`): Height.
-- `width` (`number`): Width.
 - `x` (`number`): X.
 - `y` (`number`): Y.
 
@@ -574,6 +509,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_layers.png` |
 | Current artifact | `tests/artifacts/current/tilemap/tilemap_viewport.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_autotile.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_autotile_format_showcase.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_autotile_format_showcase.txt` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_chunk_streaming_window.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_collision.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_draw_to_image_ground.png` |

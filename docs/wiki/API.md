@@ -16,16 +16,16 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 
 ## Official API Sources
 
-- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9310 lines)
-- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33559 lines)
+- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9385 lines)
+- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33864 lines)
 - Runtime callbacks: [docs/api/callbacks.md](../blob/main/docs/api/callbacks.md)
 - Lureksome library API: [docs/api/lureksome.md](../blob/main/docs/api/lureksome.md)
 - Machine-readable Lua API data: [build/docs-data/lua_api.json](../blob/main/build/docs-data/lua_api.json)
 
 ## Coverage
 
-- 71 modules
-- 6181 functions and methods
+- 72 modules
+- 6237 functions and methods
 - 100.0% documented
 
 ## Module Map
@@ -100,6 +100,7 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.tilefield](https://lurek2d.github.io/lurek_2d/modules/tilefield.html) | Coordinates exposed to Lua are one-based x, y, z; Rust storage is zero-based. |
 | [lurek.tilelight](https://lurek2d.github.io/lurek_2d/modules/tilelight.html) | The tilelight module owns light propagation over tile cells. |
 | [lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html) | The tilemap module is the engine's runtime tile-grid storage and presentation bridge for users who want tile-based spaces to be authored, generated, imported, indexed, and submitted to rendering through one reusable storage model. |
+| [lurek.tileset](https://lurek2d.github.io/lurek_2d/modules/tileset.html) | LTileSet describes what tile ids mean inside one atlas, independent of map storage and gameplay fields. |
 | [lurek.timer](https://lurek2d.github.io/lurek_2d/modules/timer.html) | The timer module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently. |
 | [lurek.tween](https://lurek2d.github.io/lurek_2d/modules/tween.html) | The tween module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops. |
 | [lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html) | The ui module is the engine's retained-interface system for users who want menus, HUDs, editors, overlays, and tool panels to behave like one persistent application layer instead of a loose pile of draw calls and ad hoc click tests. |

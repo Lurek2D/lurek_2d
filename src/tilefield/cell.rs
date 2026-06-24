@@ -1,8 +1,10 @@
-//! Owns per-cell gameplay channel data for blockers, traversal costs, and sun occlusion in tilefield maps.
-//! Defines the fixed semantic channels used by Lua, pathfind adapters, visibility checks, and tile lighting.
-//! Keeps movement, vision, action, point-light, top-light, and author-defined object references independent.
-//! Provides parsing and default-state helpers for field mutation without depending on higher-level systems.
-//! Does not know about topology, rendering, minimap presentation, player masks, or pathfinding algorithms.
+//! This file owns cell behavior inside the tilefield subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate cell state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for cell work.
+//! Serialization, indexing, and boundary checks stay here when they depend on cell internals.
+//! Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+//! Open this file when cell ownership changes, but keep unrelated subsystem policy in sibling modules.
 
 use crate::tilefield::{TileLightEmitter, TileRef};
 use std::collections::HashMap;

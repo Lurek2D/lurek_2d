@@ -1554,6 +1554,11 @@ fn lua_unit_procgen_unit() {
 }
 
 #[test]
+fn lua_unit_procgen_gap_unit() {
+    run_lua_test("unit/test_procgen_gap_unit.lua");
+}
+
+#[test]
 fn lua_unit_province_unit() {
     run_lua_test("unit/test_province_unit.lua");
 }
@@ -1631,6 +1636,11 @@ fn lua_unit_tilemap_unit() {
 #[test]
 fn lua_unit_tilefield_unit() {
     run_lua_test("unit/test_tilefield_unit.lua");
+}
+
+#[test]
+fn lua_unit_tilefield_gap_unit() {
+    run_lua_test("unit/test_tilefield_gap_unit.lua");
 }
 
 #[test]

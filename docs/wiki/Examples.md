@@ -50,7 +50,6 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [learning.lua](../blob/main/content/examples/learning.lua) | `lurek.learning` | API example |
 | [light.lua](../blob/main/content/examples/light.lua) | `lurek.light` | API example |
 | [log.lua](../blob/main/content/examples/log.lua) | `lurek.log` | API example |
-| [tilelight.lua](../blob/main/content/examples/tilelight.lua) | `lurek.log` | API example |
 | [mapblock.lua](../blob/main/content/examples/mapblock.lua) | `lurek.mapblock` | API example |
 | [math.lua](../blob/main/content/examples/math.lua) | `lurek.math` | API example |
 | [midi.lua](../blob/main/content/examples/midi.lua) | `lurek.midi` | API example |
@@ -79,7 +78,9 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [thread.lua](../blob/main/content/examples/thread.lua) | `lurek.thread` | API example |
 | [minimap.lua](../blob/main/content/examples/minimap.lua) | `lurek.tilefield` | API example |
 | [tilefield.lua](../blob/main/content/examples/tilefield.lua) | `lurek.tilefield` | API example |
+| [tilelight.lua](../blob/main/content/examples/tilelight.lua) | `lurek.tilelight` | API example |
 | [tilemap.lua](../blob/main/content/examples/tilemap.lua) | `lurek.tilemap` | API example |
+| [tileset.lua](../blob/main/content/examples/tileset.lua) | `lurek.tileset` | API example |
 | [timer.lua](../blob/main/content/examples/timer.lua) | `lurek.timer` | API example |
 | [tween.lua](../blob/main/content/examples/tween.lua) | `lurek.tween` | API example |
 | [ui.lua](../blob/main/content/examples/ui.lua) | `lurek.ui` | API example |

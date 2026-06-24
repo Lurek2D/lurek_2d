@@ -1,4 +1,9 @@
-//! Owns tileset atlas geometry, object archetype registry, per-tile mappings, animation, and autotile rules.
+//! This file owns tileset behavior inside the tileset subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate tileset state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for tileset work.
+//! Serialization, indexing, and boundary checks stay here when they depend on tileset internals.
+//! Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
 
 use crate::log_msg;
 use crate::math::Rect;

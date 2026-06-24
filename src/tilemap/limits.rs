@@ -1,8 +1,7 @@
-//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-//! Defines how limits data is validated, transformed, or stored before neighboring systems use it.
-//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
+//! This file owns limits behavior inside the tilemap subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate limits state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for limits work.
 
 use super::error::TileMapError;
 

@@ -47,13 +47,6 @@ describe("lurek.procgen", function()
     end)
 
     -- @covers lurek.procgen.cellularAutomataGrid
-    -- @covers LProcgenGrid:getSize
-    -- @covers LProcgenGrid:getKind
-    -- @covers LProcgenGrid:getCell
-    -- @covers LProcgenGrid:toTable
-    -- @covers LProcgenGrid:toTileField
-    -- @covers LProcgenGrid:type
-    -- @covers LProcgenGrid:typeOf
     it("returns typed cellular grids that convert to tilefield refs", function()
         local grid = procgen.cellularAutomataGrid(4, 3, { fill = 1.0, iterations = 0, seed = 7 })
         expect_equal("userdata", type(grid))
@@ -80,14 +73,6 @@ describe("lurek.procgen", function()
     end)
 
     -- @covers lurek.procgen.newScalarGridResult
-    -- @covers LProcgenScalarGrid:getSize
-    -- @covers LProcgenScalarGrid:getKind
-    -- @covers LProcgenScalarGrid:getCell
-    -- @covers LProcgenScalarGrid:toTable
-    -- @covers LProcgenScalarGrid:toTileField
-    -- @covers LProcgenScalarGrid:writeTileField
-    -- @covers LProcgenScalarGrid:type
-    -- @covers LProcgenScalarGrid:typeOf
     it("wraps scalar fields and writes them into tilefield channels", function()
         local grid = procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
         expect_equal("userdata", type(grid))
@@ -201,7 +186,6 @@ describe("lurek.procgen", function()
     end)
 
     -- @covers lurek.procgen.roomsDungeonGrid
-    -- @covers LProcgenGrid:writeTileField
     it("writes typed room dungeon grids into an existing tilefield", function()
         local grid = procgen.roomsDungeonGrid({ width = 12, height = 10, max_rooms = 3, seed = 11 })
         expect_equal("rooms_dungeon", grid:getKind())

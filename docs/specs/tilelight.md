@@ -12,7 +12,7 @@
 - Source path: `src/tilelight`
 - Binding: `src/lua_api/tilelight_api.rs`
 - Namespace: `lurek.tilelight`
-- Lua API surface: `2` functions, `1` types, `18` methods
+- Lua API surface: `2` functions, `1` types, `26` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -41,24 +41,41 @@ This module primarily collaborates with `tilefield`. Its responsibility should s
 
 ### color.rs
 
-- Owns tile-light color math in linear 0..1 RGB space.
-- Keeps color accumulation independent from tilefield data and light-source storage.
+- This file owns color behavior inside the tilelight subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate color state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for color work.
 
 ### map.rs
 
-- Owns tile-based light-map storage and accumulation over a shared `TileField`.
-- Consumes tilefield blockers, light costs, sun occlusion, dimensions, and topology.
-- Keeps computed light separate from render lighting, player awareness, movement, and minimap display.
+- This file owns map behavior inside the tilelight subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate map state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for map work.
+- Serialization, indexing, and boundary checks stay here when they depend on map internals. It keeps maintenance boundari.
+- Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+- Open this file when map ownership changes, but keep unrelated subsystem policy in sibling modules.
+- The code favors small data transformations so examples, specs, and tests can assert behavior directly.
+- Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.
+- Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary.
 
 ### mod.rs
 
-- Exports the tile-based lighting subsystem surface.
-- The module computes light maps over `TileField` data without owning render submission or player awareness.
+- This module index owns the public shape of the tilelight subsystem and its source navigation map.
+- It declares which sibling files participate in tilelight behavior and which names are reexported outward.
+- Reexports here are intentionally narrow so callers do not depend on private implementation modules.
+- Agents should start here to understand subsystem boundaries before opening deeper implementation files.
+- New submodules belong here only when they add durable behavior rather than temporary test scaffolding.
+- Keep this index synchronized with specs, examples, and Lua bindings whenever public ownership changes.
 
 ### source.rs
 
-- Owns tile-light source data: point lights, line lights, temporal modulation, and sun settings.
-- Does not compute light maps or read tilefield state.
+- This file owns source behavior inside the tilelight subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate source state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for source work.
+- Serialization, indexing, and boundary checks stay here when they depend on source internals.
+- Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
 
 
 
@@ -66,8 +83,8 @@ This module primarily collaborates with `tilefield`. Its responsibility should s
 
 ### Functions
 
-- `lurek.tilelight.compute(field, opts?) -> LTileLightMap`: Creates and computes a tile light map for a shared tilefield.
-- `lurek.tilelight.new(field) -> LTileLightMap`: Creates a tile light map attached to a shared tilefield.
+- `lurek.tilelight.compute(field, opts?) -> LTileLightMap`: Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.
+- `lurek.tilelight.new(field) -> LTileLightMap`: Creates a tile light map attached to a shared tilefield or copied from a Lua tilefield provider table.
 
 ### Callbacks
 
@@ -89,24 +106,32 @@ This module primarily collaborates with `tilefield`. Its responsibility should s
 
 ##### Methods
 
+- `LTileLightMap:addAreaLight(opts) -> nil`: Adds a rectangular area light and returns its stable id.
 - `LTileLightMap:addLineLight(opts) -> nil`: Adds a tile line light and returns its stable id.
 - `LTileLightMap:addPointLight(opts) -> nil`: Adds a point light and returns its stable id.
+- `LTileLightMap:addRectLight(opts) -> integer`: Alias for `addAreaLight`.
+- `LTileLightMap:clearAreaLights() -> nil`: Removes all rectangular area lights currently stored on this tile light map.
 - `LTileLightMap:clearLineLights() -> nil`: Removes all line lights currently stored on this tile light map.
 - `LTileLightMap:clearPointLights() -> nil`: Removes all point lights currently stored on this tile light map.
+- `LTileLightMap:clearRectLights() -> nil`: Alias for `clearAreaLights`.
 - `LTileLightMap:compute(opts?) -> nil`: Computes tile light from ambient, point lights, line lights, and sun light.
-- `LTileLightMap:exportLayer(z?) -> nil`: Exports one level of computed light as row-major `{r,g,b,luma}` tables.
-- `LTileLightMap:exportVolume() -> nil`: Exports all computed light levels as nested row-major tables.
-- `LTileLightMap:getLight(x, y, z?) -> nil`: Returns r, g, b, and luma for one cell.
-- `LTileLightMap:getSize() -> nil`: Returns light-map width, height, and level count.
-- `LTileLightMap:removeLineLight(id) -> nil`: Removes a line light by id and returns whether it existed.
+- `LTileLightMap:exportLayer(z?) -> table`: Exports one level of computed light as row-major `{r,g,b,luma}` tables.
+- `LTileLightMap:exportVolume() -> table`: Exports all computed light levels as nested row-major tables.
+- `LTileLightMap:getLight(x, y, z?) -> number, number, number, number`: Returns r, g, b, and luma for one cell.
+- `LTileLightMap:getSize() -> integer, integer, integer`: Returns light-map width, height, and level count.
+- `LTileLightMap:removeAreaLight(id) -> boolean`: Removes a rectangular area light by id and returns whether it existed.
+- `LTileLightMap:removeLineLight(id) -> boolean`: Removes a line light by id and returns whether it existed.
 - `LTileLightMap:removePointLight(id) -> boolean`: Removes a point light by id and returns whether it existed.
+- `LTileLightMap:removeRectLight(id) -> boolean`: Alias for `removeAreaLight`.
 - `LTileLightMap:setAmbient(color) -> nil`: Sets ambient tile light stored on this light map.
-- `LTileLightMap:setGlobalLight(opts) -> nil`: Sets top-down global light parameters used during light computation.
+- `LTileLightMap:setGlobalLight(opts) -> nil`: Compatibility alias for top sun light parameters used during light computation.
 - `LTileLightMap:setSunLight(opts) -> nil`: Sets tile sun light parameters used during light computation.
 - `LTileLightMap:type() -> string`: Returns the Lua-visible type name for this tile light map handle.
 - `LTileLightMap:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
+- `LTileLightMap:updateAreaLight(id, opts) -> nil`: Updates an existing rectangular area light by id.
 - `LTileLightMap:updateLineLight(id, opts) -> nil`: Updates an existing tile line light by id.
 - `LTileLightMap:updatePointLight(id, opts) -> nil`: Updates an existing point light by id.
+- `LTileLightMap:updateRectLight(id, opts) -> nil`: Alias for `updateAreaLight`.
 
 ## Examples
 

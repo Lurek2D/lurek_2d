@@ -1,4 +1,6 @@
-//! Tilemap projection orientation shared by storage and render adapters.
+//! This file owns orientation behavior inside the tilemap subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate orientation state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 /// Projection / rendering orientation for a tilemap.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

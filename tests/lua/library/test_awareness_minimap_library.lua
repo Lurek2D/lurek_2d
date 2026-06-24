@@ -9,12 +9,12 @@ local function build_visibility()
     field:setBlock(4, 3, 1, "action", true)
 
     local visibility = lurek.awareness.newTileAwareness(field, { players = { "p1" }, rememberExplored = true })
-    awareness:computeVisible("p1", {
+    visibility:computeVisible("p1", {
         origin = { x = 2, y = 2, z = 1 },
         range = 1,
         channel = "vision",
     })
-    awareness:computeAction("p1", {
+    visibility:computeAction("p1", {
         origin = { x = 2, y = 2, z = 1 },
         range = 2,
         channel = "action",

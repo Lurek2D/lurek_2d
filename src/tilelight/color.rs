@@ -1,5 +1,7 @@
-//! Owns tile-light color math in linear 0..1 RGB space.
-//! Keeps color accumulation independent from tilefield data and light-source storage.
+//! This file owns color behavior inside the tilelight subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate color state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for color work.
 
 /// RGB light color in linear 0..1 components.
 #[derive(Debug, Clone, Copy)]

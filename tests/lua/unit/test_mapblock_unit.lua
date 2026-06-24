@@ -335,6 +335,14 @@ end)
 
 -- @describe group and script methods
 describe("mapblock group and script methods", function()
+    -- @covers LMapGroup:addBlock
+    it("addBlock appends a map block", function()
+        local group = new_group("terrain")
+        expect_equal(0, group:getBlockCount())
+        group:addBlock(new_block())
+        expect_equal(1, group:getBlockCount())
+    end)
+
     -- @covers LMapGroup:getBlockCount
     it("getBlockCount reflects added blocks", function()
         local group = new_group("terrain")
@@ -353,6 +361,14 @@ describe("mapblock group and script methods", function()
         expect_no_error(function()
             group:addScript(new_script("decorate"))
         end)
+    end)
+
+    -- @covers LMapScript:addStep
+    it("addStep appends a script step", function()
+        local script = new_script("steps")
+        expect_equal(0, script:getStepCount())
+        script:addStep("fill_rect", { tile_id = 3, x = 0, y = 0, width = 1, height = 1 })
+        expect_equal(1, script:getStepCount())
     end)
 
     -- @covers LMapScript:getStepCount

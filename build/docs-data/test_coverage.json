@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 6655,
-    "covered": 3782,
-    "uncovered": 2873,
-    "coverage_pct": 56.8,
+    "total": 6739,
+    "covered": 3808,
+    "uncovered": 2931,
+    "coverage_pct": 56.5,
     "covered_items": [
       {
         "module": "agent",
@@ -2095,27 +2095,45 @@
       },
       {
         "module": "awareness",
+        "name": "AwarenessCategoryConfig::new",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 42
+      },
+      {
+        "module": "awareness",
         "name": "TileAwareness::new",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 48
+        "line": 113
+      },
+      {
+        "module": "awareness",
+        "name": "TileAwareness::category",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 198
       },
       {
         "module": "awareness",
         "name": "TileAwareness::is_visible",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 151
+        "line": 382
       },
       {
         "module": "awareness",
         "name": "TileAwareness::visible_cells",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 172
+        "line": 427
       },
       {
         "module": "awareness",
         "name": "TileAwareness::clear_all",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 217
+        "line": 555
+      },
+      {
+        "module": "awareness",
+        "name": "TileAwareness::share",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 568
       },
       {
         "module": "binary",
@@ -10299,7 +10317,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 442
+        "line": 690
       },
       {
         "module": "lua_api",
@@ -10557,7 +10575,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1070
+        "line": 1090
       },
       {
         "module": "lua_api",
@@ -10629,7 +10647,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2170
+        "line": 2264
       },
       {
         "module": "lua_api",
@@ -10677,13 +10695,13 @@
         "module": "lua_api",
         "name": "BiomeType::from_name",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 610
+        "line": 616
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1286
+        "line": 1292
       },
       {
         "module": "lua_api",
@@ -10701,7 +10719,7 @@
         "module": "lua_api",
         "name": "create_lua_vm",
         "file": "src/lua_api/register.rs",
-        "line": 145
+        "line": 146
       },
       {
         "module": "lua_api",
@@ -10785,19 +10803,25 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1503
+        "line": 2347
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 548
+        "line": 755
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1719
+        "line": 1503
+      },
+      {
+        "module": "lua_api",
+        "name": "register",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1078
       },
       {
         "module": "lua_api",
@@ -16365,25 +16389,25 @@
         "module": "procgen",
         "name": "ProcgenGrid::new",
         "file": "src/procgen/grid_result.rs",
-        "line": 19
+        "line": 21
       },
       {
         "module": "procgen",
         "name": "ProcgenGrid::get",
         "file": "src/procgen/grid_result.rs",
-        "line": 35
+        "line": 37
       },
       {
         "module": "procgen",
         "name": "ProcgenScalarGrid::new",
         "file": "src/procgen/grid_result.rs",
-        "line": 58
+        "line": 60
       },
       {
         "module": "procgen",
         "name": "ProcgenScalarGrid::get",
         "file": "src/procgen/grid_result.rs",
-        "line": 74
+        "line": 76
       },
       {
         "module": "procgen",
@@ -18561,43 +18585,43 @@
         "module": "runtime",
         "name": "ConfigReport::has_errors",
         "file": "src/runtime/config.rs",
-        "line": 212
+        "line": 213
       },
       {
         "module": "runtime",
         "name": "ModulesConfig::apply_headless_profile",
         "file": "src/runtime/config.rs",
-        "line": 369
+        "line": 373
       },
       {
         "module": "runtime",
         "name": "ModulesConfig::validate_and_fix",
         "file": "src/runtime/config.rs",
-        "line": 391
+        "line": 395
       },
       {
         "module": "runtime",
         "name": "Config::load",
         "file": "src/runtime/config.rs",
-        "line": 602
+        "line": 607
       },
       {
         "module": "runtime",
         "name": "Config::load_from_conf_toml",
         "file": "src/runtime/config.rs",
-        "line": 611
+        "line": 616
       },
       {
         "module": "runtime",
         "name": "Config::load_from_conf_toml_with_options",
         "file": "src/runtime/config.rs",
-        "line": 625
+        "line": 630
       },
       {
         "module": "runtime",
         "name": "Config::validate",
         "file": "src/runtime/config.rs",
-        "line": 664
+        "line": 669
       },
       {
         "module": "runtime",
@@ -20365,261 +20389,369 @@
       },
       {
         "module": "tilefield",
+        "name": "TileCategoryKind::parse",
+        "file": "src/tilefield/category.rs",
+        "line": 23
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCategoryKind::as_str",
+        "file": "src/tilefield/category.rs",
+        "line": 37
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCategory::new",
+        "file": "src/tilefield/category.rs",
+        "line": 61
+      },
+      {
+        "module": "tilefield",
         "name": "TileChannel::parse",
         "file": "src/tilefield/cell.rs",
-        "line": 26
+        "line": 29
       },
       {
         "module": "tilefield",
         "name": "TileChannel::as_str",
         "file": "src/tilefield/cell.rs",
-        "line": 40
+        "line": 43
       },
       {
         "module": "tilefield",
         "name": "TileChannel::index",
         "file": "src/tilefield/cell.rs",
-        "line": 51
+        "line": 54
       },
       {
         "module": "tilefield",
         "name": "TileCell::blocks",
         "file": "src/tilefield/cell.rs",
-        "line": 86
+        "line": 101
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_block",
         "file": "src/tilefield/cell.rs",
-        "line": 91
+        "line": 106
       },
       {
         "module": "tilefield",
         "name": "TileCell::cost",
         "file": "src/tilefield/cell.rs",
-        "line": 96
+        "line": 111
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_cost",
         "file": "src/tilefield/cell.rs",
-        "line": 101
+        "line": 116
       },
       {
         "module": "tilefield",
         "name": "TileCell::sun_occlusion",
         "file": "src/tilefield/cell.rs",
-        "line": 110
+        "line": 259
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_sun_occlusion",
         "file": "src/tilefield/cell.rs",
-        "line": 115
-      },
-      {
-        "module": "tilefield",
-        "name": "TileCell::profile",
-        "file": "src/tilefield/cell.rs",
-        "line": 124
+        "line": 264
       },
       {
         "module": "tilefield",
         "name": "TileCell::get_ref",
         "file": "src/tilefield/cell.rs",
-        "line": 134
+        "line": 273
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_ref",
         "file": "src/tilefield/cell.rs",
-        "line": 139
+        "line": 278
       },
       {
         "module": "tilefield",
         "name": "TileCell::clear_ref",
         "file": "src/tilefield/cell.rs",
-        "line": 149
+        "line": 305
       },
       {
         "module": "tilefield",
         "name": "TileCell::refs",
         "file": "src/tilefield/cell.rs",
-        "line": 154
+        "line": 311
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::set_light",
+        "file": "src/tilefield/cell.rs",
+        "line": 321
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::lights",
+        "file": "src/tilefield/cell.rs",
+        "line": 342
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::modifiers",
+        "file": "src/tilefield/cell.rs",
+        "line": 364
       },
       {
         "module": "tilefield",
         "name": "TileField::new",
         "file": "src/tilefield/field.rs",
-        "line": 40
+        "line": 49
       },
       {
         "module": "tilefield",
         "name": "TileField::size",
         "file": "src/tilefield/field.rs",
-        "line": 66
+        "line": 94
       },
       {
         "module": "tilefield",
         "name": "TileField::topology",
         "file": "src/tilefield/field.rs",
-        "line": 71
+        "line": 99
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::version",
+        "file": "src/tilefield/field.rs",
+        "line": 104
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::category",
+        "file": "src/tilefield/field.rs",
+        "line": 119
       },
       {
         "module": "tilefield",
         "name": "TileField::neighbors",
         "file": "src/tilefield/field.rs",
-        "line": 76
+        "line": 175
       },
       {
         "module": "tilefield",
         "name": "TileField::in_bounds",
         "file": "src/tilefield/field.rs",
-        "line": 84
+        "line": 183
       },
       {
         "module": "tilefield",
         "name": "TileField::cell",
         "file": "src/tilefield/field.rs",
-        "line": 180
+        "line": 279
       },
       {
         "module": "tilefield",
         "name": "TileField::clear",
         "file": "src/tilefield/field.rs",
-        "line": 190
+        "line": 289
       },
       {
         "module": "tilefield",
         "name": "TileField::set_block",
         "file": "src/tilefield/field.rs",
-        "line": 206
+        "line": 306
       },
       {
         "module": "tilefield",
         "name": "TileField::blocks",
         "file": "src/tilefield/field.rs",
-        "line": 220
+        "line": 321
       },
       {
         "module": "tilefield",
         "name": "TileField::set_cost",
         "file": "src/tilefield/field.rs",
-        "line": 225
+        "line": 378
       },
       {
         "module": "tilefield",
         "name": "TileField::cost",
         "file": "src/tilefield/field.rs",
-        "line": 238
+        "line": 393
       },
       {
         "module": "tilefield",
         "name": "TileField::set_sun_occlusion",
         "file": "src/tilefield/field.rs",
-        "line": 243
+        "line": 533
       },
       {
         "module": "tilefield",
         "name": "TileField::sun_occlusion",
         "file": "src/tilefield/field.rs",
-        "line": 251
+        "line": 543
       },
       {
         "module": "tilefield",
-        "name": "TileField::profile",
+        "name": "TileField::set_modifier",
         "file": "src/tilefield/field.rs",
-        "line": 265
+        "line": 557
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::modifier",
+        "file": "src/tilefield/field.rs",
+        "line": 569
       },
       {
         "module": "tilefield",
         "name": "TileField::apply_profile",
         "file": "src/tilefield/field.rs",
-        "line": 275
+        "line": 599
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::set_light",
+        "file": "src/tilefield/field.rs",
+        "line": 623
       },
       {
         "module": "tilefield",
         "name": "TileField::set_ref",
         "file": "src/tilefield/field.rs",
-        "line": 296
+        "line": 681
       },
       {
         "module": "tilefield",
         "name": "TileField::get_ref",
         "file": "src/tilefield/field.rs",
-        "line": 304
+        "line": 692
       },
       {
         "module": "tilefield",
         "name": "TileField::clear_ref",
         "file": "src/tilefield/field.rs",
-        "line": 320
+        "line": 751
       },
       {
         "module": "tilefield",
         "name": "TileField::line",
         "file": "src/tilefield/field.rs",
-        "line": 329
+        "line": 810
       },
       {
         "module": "tilefield",
         "name": "TileField::clear_line",
         "file": "src/tilefield/field.rs",
-        "line": 355
+        "line": 836
       },
       {
         "module": "tilefield",
         "name": "TileField::distance",
         "file": "src/tilefield/field.rs",
-        "line": 365
+        "line": 846
       },
       {
         "module": "tilefield",
         "name": "TileField::export_ref_layer",
         "file": "src/tilefield/field.rs",
-        "line": 413
+        "line": 880
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::new",
         "file": "src/tilefield/field_map.rs",
-        "line": 29
+        "line": 30
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::map_size",
         "file": "src/tilefield/field_map.rs",
-        "line": 76
+        "line": 77
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::field_size",
         "file": "src/tilefield/field_map.rs",
-        "line": 81
+        "line": 82
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::topology",
         "file": "src/tilefield/field_map.rs",
-        "line": 86
+        "line": 87
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::in_bounds",
         "file": "src/tilefield/field_map.rs",
-        "line": 91
+        "line": 92
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::field",
         "file": "src/tilefield/field_map.rs",
-        "line": 106
+        "line": 107
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::set_field",
         "file": "src/tilefield/field_map.rs",
-        "line": 113
+        "line": 114
+      },
+      {
+        "module": "tilefield",
+        "name": "TileModifier::new",
+        "file": "src/tilefield/modifier.rs",
+        "line": 39
+      },
+      {
+        "module": "tilefield",
+        "name": "TileRef::tile",
+        "file": "src/tilefield/reference.rs",
+        "line": 18
+      },
+      {
+        "module": "tilefield",
+        "name": "TileRef::object",
+        "file": "src/tilefield/reference.rs",
+        "line": 23
+      },
+      {
+        "module": "tilefield",
+        "name": "TileRef::new",
+        "file": "src/tilefield/reference.rs",
+        "line": 28
+      },
+      {
+        "module": "tilefield",
+        "name": "TileSemanticsView::new",
+        "file": "src/tilefield/semantics.rs",
+        "line": 15
+      },
+      {
+        "module": "tilefield",
+        "name": "TileSemanticsView::blocks",
+        "file": "src/tilefield/semantics.rs",
+        "line": 20
+      },
+      {
+        "module": "tilefield",
+        "name": "TileSemanticsView::cost",
+        "file": "src/tilefield/semantics.rs",
+        "line": 25
+      },
+      {
+        "module": "tilefield",
+        "name": "TileSemanticsView::transmission",
+        "file": "src/tilefield/semantics.rs",
+        "line": 30
+      },
+      {
+        "module": "tilefield",
+        "name": "TileSemanticsView::filter",
+        "file": "src/tilefield/semantics.rs",
+        "line": 35
       },
       {
         "module": "tilefield",
@@ -20649,139 +20781,133 @@
         "module": "tilelight",
         "name": "LightColor::clamped",
         "file": "src/tilelight/color.rs",
-        "line": 31
+        "line": 33
       },
       {
         "module": "tilelight",
         "name": "LightColor::luma",
         "file": "src/tilelight/color.rs",
-        "line": 47
+        "line": 49
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::new",
         "file": "src/tilelight/map.rs",
-        "line": 29
+        "line": 37
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::from_field",
         "file": "src/tilelight/map.rs",
-        "line": 58
+        "line": 67
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::size",
         "file": "src/tilelight/map.rs",
-        "line": 64
+        "line": 73
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::add_point_light",
         "file": "src/tilelight/map.rs",
-        "line": 89
+        "line": 99
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::set_global_light",
         "file": "src/tilelight/map.rs",
-        "line": 321
+        "line": 435
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::compute",
         "file": "src/tilelight/map.rs",
-        "line": 326
+        "line": 441
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::light_at",
         "file": "src/tilelight/map.rs",
-        "line": 593
+        "line": 920
       },
       {
         "module": "tilelight",
         "name": "LightModulation::intensity_at",
         "file": "src/tilelight/source.rs",
-        "line": 27
-      },
-      {
-        "module": "tilemap",
-        "name": "AutoTileMode::as_str",
-        "file": "src/tilemap/autotile_sheet.rs",
-        "line": 39
+        "line": 31
       },
       {
         "module": "tilemap",
         "name": "layout_name",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 65
+        "line": 43
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::new",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 171
+        "line": 149
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_layout",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 200
+        "line": 178
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_layout_name",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 205
+        "line": 183
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_default_mode",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 210
+        "line": 188
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_tile_count",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 215
+        "line": 193
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_tile_width",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 220
+        "line": 198
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_tile_height",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 225
+        "line": 203
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::apply_to_tileset",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 229
+        "line": 207
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_bitmask_for_tile",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 253
+        "line": 231
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_tile_for_bitmask",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 257
+        "line": 235
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_quad",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 261
+        "line": 239
       },
       {
         "module": "tilemap",
@@ -20877,25 +21003,25 @@
         "module": "tilemap",
         "name": "to_screen_iso",
         "file": "src/tilemap/coords.rs",
-        "line": 10
+        "line": 8
       },
       {
         "module": "tilemap",
         "name": "from_screen_iso",
         "file": "src/tilemap/coords.rs",
-        "line": 15
+        "line": 13
       },
       {
         "module": "tilemap",
         "name": "to_screen_hex",
         "file": "src/tilemap/coords.rs",
-        "line": 22
+        "line": 20
       },
       {
         "module": "tilemap",
         "name": "from_screen_hex",
         "file": "src/tilemap/coords.rs",
-        "line": 29
+        "line": 27
       },
       {
         "module": "tilemap",
@@ -21021,241 +21147,175 @@
         "module": "tilemap",
         "name": "TileMap::build_render_commands",
         "file": "src/tilemap/render.rs",
-        "line": 102
+        "line": 342
       },
       {
         "module": "tilemap",
         "name": "TileMap::generate_render_commands",
         "file": "src/tilemap/render.rs",
-        "line": 145
+        "line": 385
       },
       {
         "module": "tilemap",
         "name": "TileMap::new",
         "file": "src/tilemap/tilemap.rs",
-        "line": 159
+        "line": 164
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_new",
         "file": "src/tilemap/tilemap.rs",
-        "line": 195
+        "line": 200
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_new_with_limits",
         "file": "src/tilemap/tilemap.rs",
-        "line": 209
+        "line": 214
       },
       {
         "module": "tilemap",
         "name": "TileMap::diagnostics_snapshot",
         "file": "src/tilemap/tilemap.rs",
-        "line": 293
+        "line": 298
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_limits",
         "file": "src/tilemap/tilemap.rs",
-        "line": 298
+        "line": 303
       },
       {
         "module": "tilemap",
         "name": "TileMap::limits",
         "file": "src/tilemap/tilemap.rs",
-        "line": 303
+        "line": 308
       },
       {
         "module": "tilemap",
         "name": "TileMap::index_policy",
         "file": "src/tilemap/tilemap.rs",
-        "line": 318
+        "line": 323
       },
       {
         "module": "tilemap",
         "name": "TileMap::add_tileset",
         "file": "src/tilemap/tilemap.rs",
-        "line": 323
+        "line": 328
       },
       {
         "module": "tilemap",
         "name": "TileMap::add_layer",
         "file": "src/tilemap/tilemap.rs",
-        "line": 337
+        "line": 342
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_add_layer",
         "file": "src/tilemap/tilemap.rs",
-        "line": 343
+        "line": 348
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_layer_color",
         "file": "src/tilemap/tilemap.rs",
-        "line": 380
+        "line": 385
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_tile",
         "file": "src/tilemap/tilemap.rs",
-        "line": 420
+        "line": 425
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_tile",
         "file": "src/tilemap/tilemap.rs",
-        "line": 424
+        "line": 429
       },
       {
         "module": "tilemap",
         "name": "TileMap::clear_tile",
         "file": "src/tilemap/tilemap.rs",
-        "line": 433
+        "line": 438
       },
       {
         "module": "tilemap",
         "name": "TileMap::fill",
         "file": "src/tilemap/tilemap.rs",
-        "line": 437
+        "line": 442
       },
       {
         "module": "tilemap",
         "name": "TileMap::find_tiles_by_gid",
         "file": "src/tilemap/tilemap.rs",
-        "line": 462
+        "line": 467
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_set_tile",
         "file": "src/tilemap/tilemap.rs",
-        "line": 531
+        "line": 536
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_viewport",
         "file": "src/tilemap/tilemap.rs",
-        "line": 600
+        "line": 605
       },
       {
         "module": "tilemap",
         "name": "TileMap::update",
         "file": "src/tilemap/tilemap.rs",
-        "line": 609
+        "line": 614
       },
       {
         "module": "tilemap",
         "name": "TileMap::world_to_tile",
         "file": "src/tilemap/tilemap.rs",
-        "line": 646
+        "line": 651
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_world_to_tile",
         "file": "src/tilemap/tilemap.rs",
-        "line": 651
+        "line": 656
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_tile_width",
         "file": "src/tilemap/tilemap.rs",
-        "line": 669
+        "line": 674
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_tile_height",
         "file": "src/tilemap/tilemap.rs",
-        "line": 673
+        "line": 678
       },
       {
         "module": "tilemap",
         "name": "TileMap::apply_autotile",
         "file": "src/tilemap/tilemap.rs",
-        "line": 795
+        "line": 805
       },
       {
         "module": "tilemap",
         "name": "TileMap::apply_autotile_at",
         "file": "src/tilemap/tilemap.rs",
-        "line": 817
+        "line": 827
       },
       {
         "module": "tilemap",
         "name": "TileMap::apply_autotile_8",
         "file": "src/tilemap/tilemap.rs",
-        "line": 846
+        "line": 856
       },
       {
         "module": "tilemap",
         "name": "TileMap::apply_autotile_8_at",
         "file": "src/tilemap/tilemap.rs",
-        "line": 868
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::new",
-        "file": "src/tilemap/tileset.rs",
-        "line": 59
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_tile_count",
-        "file": "src/tilemap/tileset.rs",
-        "line": 91
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_tile_width",
-        "file": "src/tilemap/tileset.rs",
-        "line": 99
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_tile_height",
-        "file": "src/tilemap/tileset.rs",
-        "line": 103
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_quad",
-        "file": "src/tilemap/tileset.rs",
-        "line": 119
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::set_animation",
-        "file": "src/tilemap/tileset.rs",
-        "line": 132
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_animation",
-        "file": "src/tilemap/tileset.rs",
-        "line": 143
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::properties",
-        "file": "src/tilemap/tileset.rs",
-        "line": 223
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_auto_tile_id",
-        "file": "src/tilemap/tileset.rs",
-        "line": 232
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_auto_tile_id_8",
-        "file": "src/tilemap/tileset.rs",
-        "line": 243
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_auto_tile_mode",
-        "file": "src/tilemap/tileset.rs",
-        "line": 255
+        "line": 878
       },
       {
         "module": "tilemap",
@@ -21268,6 +21328,102 @@
         "name": "load_tmx_with_options",
         "file": "src/tilemap/tmx.rs",
         "line": 259
+      },
+      {
+        "module": "tileset",
+        "name": "TileObjectArchetype::new",
+        "file": "src/tileset/archetype.rs",
+        "line": 64
+      },
+      {
+        "module": "tileset",
+        "name": "AutoTileMode::as_str",
+        "file": "src/tileset/autotile.rs",
+        "line": 18
+      },
+      {
+        "module": "tileset",
+        "name": "TileCatalog::new",
+        "file": "src/tileset/catalog.rs",
+        "line": 18
+      },
+      {
+        "module": "tileset",
+        "name": "TileCatalog::tileset",
+        "file": "src/tileset/catalog.rs",
+        "line": 33
+      },
+      {
+        "module": "tileset",
+        "name": "TileCatalog::ids",
+        "file": "src/tileset/catalog.rs",
+        "line": 38
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::new",
+        "file": "src/tileset/tileset.rs",
+        "line": 37
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_tile_count",
+        "file": "src/tileset/tileset.rs",
+        "line": 70
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_tile_width",
+        "file": "src/tileset/tileset.rs",
+        "line": 78
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_tile_height",
+        "file": "src/tileset/tileset.rs",
+        "line": 82
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_quad",
+        "file": "src/tileset/tileset.rs",
+        "line": 119
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::set_animation",
+        "file": "src/tileset/tileset.rs",
+        "line": 195
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_animation",
+        "file": "src/tileset/tileset.rs",
+        "line": 207
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::properties",
+        "file": "src/tileset/tileset.rs",
+        "line": 254
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_auto_tile_id",
+        "file": "src/tileset/tileset.rs",
+        "line": 264
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_auto_tile_id_8",
+        "file": "src/tileset/tileset.rs",
+        "line": 275
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_auto_tile_mode",
+        "file": "src/tileset/tileset.rs",
+        "line": 285
       },
       {
         "module": "timer",
@@ -25107,39 +25263,81 @@
       },
       {
         "module": "awareness",
+        "name": "TileAwareness::define_category",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 181
+      },
+      {
+        "module": "awareness",
+        "name": "TileAwareness::category_names",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 203
+      },
+      {
+        "module": "awareness",
         "name": "TileAwareness::compute_visible",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 87
+        "line": 210
+      },
+      {
+        "module": "awareness",
+        "name": "TileAwareness::compute_category_visible",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 237
       },
       {
         "module": "awareness",
         "name": "TileAwareness::compute_action",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 121
+        "line": 352
+      },
+      {
+        "module": "awareness",
+        "name": "TileAwareness::is_aware",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 390
       },
       {
         "module": "awareness",
         "name": "TileAwareness::is_explored",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 158
+        "line": 398
       },
       {
         "module": "awareness",
         "name": "TileAwareness::can_act_on",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 165
+        "line": 420
+      },
+      {
+        "module": "awareness",
+        "name": "TileAwareness::visible_cells_for_category",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 432
       },
       {
         "module": "awareness",
         "name": "TileAwareness::action_cells",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 177
+        "line": 457
       },
       {
         "module": "awareness",
         "name": "TileAwareness::clear_player",
         "file": "src/awareness/tile_awareness.rs",
-        "line": 208
+        "line": 542
+      },
+      {
+        "module": "awareness",
+        "name": "TileAwareness::clear_shares",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 583
+      },
+      {
+        "module": "awareness",
+        "name": "TileAwareness::set_team",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 588
       },
       {
         "module": "binary",
@@ -30089,25 +30287,25 @@
         "module": "root",
         "name": "is_lurek_archive_path",
         "file": "src/lib.rs",
-        "line": 172
+        "line": 174
       },
       {
         "module": "root",
         "name": "cli_startup_main_path",
         "file": "src/lib.rs",
-        "line": 179
+        "line": 181
       },
       {
         "module": "root",
         "name": "lurek_run",
         "file": "src/lib.rs",
-        "line": 195
+        "line": 197
       },
       {
         "module": "root",
         "name": "build_builtin_cli_script",
         "file": "src/lib.rs",
-        "line": 543
+        "line": 545
       },
       {
         "module": "light",
@@ -30755,19 +30953,19 @@
         "module": "lua_api",
         "name": "BiomeRules::from_lua_table",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 579
+        "line": 585
       },
       {
         "module": "lua_api",
         "name": "CellularOpts::from_lua_table",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2944
+        "line": 2950
       },
       {
         "module": "lua_api",
         "name": "VoronoiOpts::from_lua_table",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2966
+        "line": 2972
       },
       {
         "module": "lua_api",
@@ -30779,13 +30977,25 @@
         "module": "lua_api",
         "name": "create_headless_vm",
         "file": "src/lua_api/register.rs",
-        "line": 161
+        "line": 162
       },
       {
         "module": "lua_api",
         "name": "create_test_vm",
         "file": "src/lua_api/register.rs",
-        "line": 172
+        "line": 173
+      },
+      {
+        "module": "lua_api",
+        "name": "field_from_provider",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 416
+      },
+      {
+        "module": "lua_api",
+        "name": "tileset_from_provider",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 273
       },
       {
         "module": "lua_api",
@@ -36485,7 +36695,7 @@
         "module": "runtime",
         "name": "Config::validate_with_mode",
         "file": "src/runtime/config.rs",
-        "line": 669
+        "line": 674
       },
       {
         "module": "runtime",
@@ -37881,123 +38091,333 @@
       },
       {
         "module": "tilefield",
-        "name": "TileCell::set_profile",
+        "name": "TileCell::blocks_category",
         "file": "src/tilefield/cell.rs",
-        "line": 129
+        "line": 125
       },
       {
         "module": "tilefield",
-        "name": "TileField::set_region_rect",
+        "name": "TileCell::category_blockers",
+        "file": "src/tilefield/cell.rs",
+        "line": 130
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::set_category_block",
+        "file": "src/tilefield/cell.rs",
+        "line": 135
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::category_cost",
+        "file": "src/tilefield/cell.rs",
+        "line": 156
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::category_costs",
+        "file": "src/tilefield/cell.rs",
+        "line": 161
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::set_category_cost",
+        "file": "src/tilefield/cell.rs",
+        "line": 166
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::category_transmission",
+        "file": "src/tilefield/cell.rs",
+        "line": 186
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::category_transmissions",
+        "file": "src/tilefield/cell.rs",
+        "line": 191
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::set_category_transmission",
+        "file": "src/tilefield/cell.rs",
+        "line": 196
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::category_filter",
+        "file": "src/tilefield/cell.rs",
+        "line": 221
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::category_filters",
+        "file": "src/tilefield/cell.rs",
+        "line": 226
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::set_category_filter",
+        "file": "src/tilefield/cell.rs",
+        "line": 231
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::get_typed_ref",
+        "file": "src/tilefield/cell.rs",
+        "line": 289
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::set_typed_ref",
+        "file": "src/tilefield/cell.rs",
+        "line": 294
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::typed_refs",
+        "file": "src/tilefield/cell.rs",
+        "line": 316
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::add_modifier",
+        "file": "src/tilefield/cell.rs",
+        "line": 347
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::remove_modifier",
+        "file": "src/tilefield/cell.rs",
+        "line": 354
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::define_category",
         "file": "src/tilefield/field.rs",
-        "line": 100
+        "line": 109
       },
       {
         "module": "tilefield",
-        "name": "TileField::set_region_cells",
+        "name": "TileField::category_names",
+        "file": "src/tilefield/field.rs",
+        "line": 124
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::drain_dirty_rects",
         "file": "src/tilefield/field.rs",
         "line": 131
       },
       {
         "module": "tilefield",
+        "name": "TileField::set_region_rect",
+        "file": "src/tilefield/field.rs",
+        "line": 199
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::set_region_cells",
+        "file": "src/tilefield/field.rs",
+        "line": 230
+      },
+      {
+        "module": "tilefield",
         "name": "TileField::remove_region",
         "file": "src/tilefield/field.rs",
-        "line": 156
+        "line": 255
       },
       {
         "module": "tilefield",
         "name": "TileField::region_contains",
         "file": "src/tilefield/field.rs",
-        "line": 161
+        "line": 260
       },
       {
         "module": "tilefield",
         "name": "TileField::region_cells",
         "file": "src/tilefield/field.rs",
-        "line": 168
+        "line": 267
       },
       {
         "module": "tilefield",
         "name": "TileField::region_names",
         "file": "src/tilefield/field.rs",
-        "line": 173
+        "line": 272
       },
       {
         "module": "tilefield",
         "name": "TileField::cell_mut",
         "file": "src/tilefield/field.rs",
-        "line": 185
+        "line": 284
       },
       {
         "module": "tilefield",
         "name": "TileField::clear_cell",
         "file": "src/tilefield/field.rs",
-        "line": 197
+        "line": 296
       },
       {
         "module": "tilefield",
-        "name": "TileField::set_profile",
-        "file": "src/tilefield/field.rs",
-        "line": 256
-      },
-      {
-        "module": "tilefield",
-        "name": "TileField::remove_profile",
-        "file": "src/tilefield/field.rs",
-        "line": 270
-      },
-      {
-        "module": "tilefield",
-        "name": "TileField::ref_slots",
-        "file": "src/tilefield/field.rs",
-        "line": 309
-      },
-      {
-        "module": "tilefield",
-        "name": "TileField::first_blocker",
+        "name": "TileField::set_category_block",
         "file": "src/tilefield/field.rs",
         "line": 339
       },
       {
         "module": "tilefield",
+        "name": "TileField::blocks_category",
+        "file": "src/tilefield/field.rs",
+        "line": 354
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::set_category_cost",
+        "file": "src/tilefield/field.rs",
+        "line": 413
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::category_cost",
+        "file": "src/tilefield/field.rs",
+        "line": 428
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::set_category_transmission",
+        "file": "src/tilefield/field.rs",
+        "line": 459
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::category_transmission",
+        "file": "src/tilefield/field.rs",
+        "line": 474
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::set_category_filter",
+        "file": "src/tilefield/field.rs",
+        "line": 498
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::category_filter",
+        "file": "src/tilefield/field.rs",
+        "line": 513
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::remove_modifier",
+        "file": "src/tilefield/field.rs",
+        "line": 574
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::apply_modifier",
+        "file": "src/tilefield/field.rs",
+        "line": 586
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::clear_modifier",
+        "file": "src/tilefield/field.rs",
+        "line": 604
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::active_modifiers",
+        "file": "src/tilefield/field.rs",
+        "line": 616
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::tile_light_sources",
+        "file": "src/tilefield/field.rs",
+        "line": 638
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::set_typed_ref",
+        "file": "src/tilefield/field.rs",
+        "line": 697
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::get_typed_ref",
+        "file": "src/tilefield/field.rs",
+        "line": 713
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::define_slot",
+        "file": "src/tilefield/field.rs",
+        "line": 718
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::remove_slot",
+        "file": "src/tilefield/field.rs",
+        "line": 728
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::has_slot",
+        "file": "src/tilefield/field.rs",
+        "line": 741
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::ref_slots",
+        "file": "src/tilefield/field.rs",
+        "line": 746
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::footprint_passable",
+        "file": "src/tilefield/field.rs",
+        "line": 765
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::clear_line_category",
+        "file": "src/tilefield/field.rs",
+        "line": 794
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::first_blocker",
+        "file": "src/tilefield/field.rs",
+        "line": 820
+      },
+      {
+        "module": "tilefield",
         "name": "TileField::export_block_layer",
         "file": "src/tilefield/field.rs",
-        "line": 377
+        "line": 858
       },
       {
         "module": "tilefield",
         "name": "TileField::export_cost_layer",
         "file": "src/tilefield/field.rs",
-        "line": 388
-      },
-      {
-        "module": "tilefield",
-        "name": "TileField::export_profile_layer",
-        "file": "src/tilefield/field.rs",
-        "line": 399
+        "line": 869
       },
       {
         "module": "tilefield",
         "name": "TileField::write_block_layer",
         "file": "src/tilefield/field.rs",
-        "line": 441
+        "line": 908
       },
       {
         "module": "tilefield",
         "name": "TileField::write_cost_layer",
         "file": "src/tilefield/field.rs",
-        "line": 458
-      },
-      {
-        "module": "tilefield",
-        "name": "TileField::write_profile_layer",
-        "file": "src/tilefield/field.rs",
-        "line": 475
+        "line": 925
       },
       {
         "module": "tilefield",
         "name": "TileField::write_ref_layer",
         "file": "src/tilefield/field.rs",
-        "line": 496
+        "line": 942
       },
       {
         "module": "tilefield",
@@ -38013,129 +38433,153 @@
       },
       {
         "module": "tilefield",
-        "name": "TileProfile::with_blocks",
-        "file": "src/tilefield/profile.rs",
-        "line": 33
+        "name": "TileSemanticsView::light_sources",
+        "file": "src/tilefield/semantics.rs",
+        "line": 40
       },
       {
         "module": "tilefield",
-        "name": "TileProfile::builtins",
-        "file": "src/tilefield/profile.rs",
+        "name": "TileSemanticsView::footprint_passable",
+        "file": "src/tilefield/semantics.rs",
         "line": 45
       },
       {
         "module": "tilelight",
         "name": "LightColor::add_scaled",
         "file": "src/tilelight/color.rs",
-        "line": 40
+        "line": 42
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::matches_field",
         "file": "src/tilelight/map.rs",
-        "line": 69
+        "line": 78
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::update_point_light",
         "file": "src/tilelight/map.rs",
-        "line": 127
+        "line": 137
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::remove_point_light",
         "file": "src/tilelight/map.rs",
-        "line": 175
+        "line": 185
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::clear_point_lights",
         "file": "src/tilelight/map.rs",
-        "line": 186
+        "line": 196
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::add_line_light",
         "file": "src/tilelight/map.rs",
-        "line": 192
+        "line": 202
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::update_line_light",
         "file": "src/tilelight/map.rs",
-        "line": 234
+        "line": 244
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::remove_line_light",
         "file": "src/tilelight/map.rs",
-        "line": 291
+        "line": 301
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::clear_line_lights",
         "file": "src/tilelight/map.rs",
-        "line": 302
+        "line": 312
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::add_area_light",
+        "file": "src/tilelight/map.rs",
+        "line": 318
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::update_area_light",
+        "file": "src/tilelight/map.rs",
+        "line": 357
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::remove_area_light",
+        "file": "src/tilelight/map.rs",
+        "line": 405
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::clear_area_lights",
+        "file": "src/tilelight/map.rs",
+        "line": 416
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::set_ambient_light",
         "file": "src/tilelight/map.rs",
-        "line": 307
+        "line": 421
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::set_sun_light",
         "file": "src/tilelight/map.rs",
-        "line": 312
+        "line": 426
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::export_layer",
         "file": "src/tilelight/map.rs",
-        "line": 600
+        "line": 927
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::export_volume",
         "file": "src/tilelight/map.rs",
-        "line": 611
+        "line": 938
       },
       {
         "module": "tilelight",
         "name": "LightModulation::color_at",
         "file": "src/tilelight/source.rs",
-        "line": 38
+        "line": 42
       },
       {
         "module": "tilemap",
         "name": "default_mode_for_layout",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 75
+        "line": 53
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_grid_quad",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 274
+        "line": 252
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_composite48_grid_quad",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 288
+        "line": 266
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_quarter_rects",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 292
+        "line": 270
       },
       {
         "module": "tilemap",
         "name": "AutoTileSheet::get_quarter_dst_rects",
         "file": "src/tilemap/autotile_sheet.rs",
-        "line": 307
+        "line": 285
       },
       {
         "module": "tilemap",
@@ -38291,301 +38735,223 @@
         "module": "tilemap",
         "name": "checked_layer_cells",
         "file": "src/tilemap/limits.rs",
-        "line": 43
+        "line": 42
       },
       {
         "module": "tilemap",
         "name": "checked_chunk_cells",
         "file": "src/tilemap/limits.rs",
-        "line": 68
+        "line": 67
+      },
+      {
+        "module": "tilemap",
+        "name": "TileMap::build_field_slot_render_commands",
+        "file": "src/tilemap/render.rs",
+        "line": 122
+      },
+      {
+        "module": "tilemap",
+        "name": "TileMap::build_field_catalog_slot_render_commands",
+        "file": "src/tilemap/render.rs",
+        "line": 224
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_index_policy",
         "file": "src/tilemap/tilemap.rs",
-        "line": 308
+        "line": 313
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_tileset",
         "file": "src/tilemap/tilemap.rs",
-        "line": 329
+        "line": 334
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_tileset_count",
         "file": "src/tilemap/tilemap.rs",
-        "line": 333
+        "line": 338
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_layer_count",
         "file": "src/tilemap/tilemap.rs",
-        "line": 364
+        "line": 369
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_layer_name",
         "file": "src/tilemap/tilemap.rs",
-        "line": 368
+        "line": 373
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_layer_visible",
         "file": "src/tilemap/tilemap.rs",
-        "line": 372
+        "line": 377
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_layer_visible",
         "file": "src/tilemap/tilemap.rs",
-        "line": 376
+        "line": 381
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_layer_color",
         "file": "src/tilemap/tilemap.rs",
-        "line": 384
+        "line": 389
       },
       {
         "module": "tilemap",
         "name": "TileMap::effective_tile_tint",
         "file": "src/tilemap/tilemap.rs",
-        "line": 390
+        "line": 395
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_layer_offset",
         "file": "src/tilemap/tilemap.rs",
-        "line": 398
+        "line": 403
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_layer_offset",
         "file": "src/tilemap/tilemap.rs",
-        "line": 402
+        "line": 407
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_layer_parallax",
         "file": "src/tilemap/tilemap.rs",
-        "line": 406
+        "line": 411
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_layer_parallax",
         "file": "src/tilemap/tilemap.rs",
-        "line": 410
+        "line": 415
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_layer_dimensions",
         "file": "src/tilemap/tilemap.rs",
-        "line": 416
+        "line": 421
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_tile_tint",
         "file": "src/tilemap/tilemap.rs",
-        "line": 429
+        "line": 434
       },
       {
         "module": "tilemap",
         "name": "TileMap::tile_type_index",
         "file": "src/tilemap/tilemap.rs",
-        "line": 452
+        "line": 457
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_set_layer_visible",
         "file": "src/tilemap/tilemap.rs",
-        "line": 473
+        "line": 478
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_set_layer_color",
         "file": "src/tilemap/tilemap.rs",
-        "line": 484
+        "line": 489
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_set_layer_offset",
         "file": "src/tilemap/tilemap.rs",
-        "line": 501
+        "line": 506
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_set_layer_parallax",
         "file": "src/tilemap/tilemap.rs",
-        "line": 516
+        "line": 521
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_get_tile",
         "file": "src/tilemap/tilemap.rs",
-        "line": 565
+        "line": 570
       },
       {
         "module": "tilemap",
         "name": "TileMap::try_set_tile_tint",
         "file": "src/tilemap/tilemap.rs",
-        "line": 578
+        "line": 583
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_viewport",
         "file": "src/tilemap/tilemap.rs",
-        "line": 605
+        "line": 610
       },
       {
         "module": "tilemap",
         "name": "TileMap::tile_to_world",
         "file": "src/tilemap/tilemap.rs",
-        "line": 662
+        "line": 667
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_tile_dimensions",
         "file": "src/tilemap/tilemap.rs",
-        "line": 678
+        "line": 683
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_chunk_size",
         "file": "src/tilemap/tilemap.rs",
-        "line": 682
+        "line": 687
       },
       {
         "module": "tilemap",
         "name": "TileMap::get_orientation",
         "file": "src/tilemap/tilemap.rs",
-        "line": 686
+        "line": 691
       },
       {
         "module": "tilemap",
         "name": "TileMap::set_orientation",
         "file": "src/tilemap/tilemap.rs",
-        "line": 690
+        "line": 695
+      },
+      {
+        "module": "tilemap",
+        "name": "TileMap::tile_render_origin",
+        "file": "src/tilemap/tilemap.rs",
+        "line": 724
       },
       {
         "module": "tilemap",
         "name": "TileMap::render_gid",
         "file": "src/tilemap/tilemap.rs",
-        "line": 767
+        "line": 777
       },
       {
         "module": "tilemap",
         "name": "TileMap::apply_autotile_mode",
         "file": "src/tilemap/tilemap.rs",
-        "line": 897
+        "line": 907
       },
       {
         "module": "tilemap",
         "name": "TileMap::apply_autotile_mode_at",
         "file": "src/tilemap/tilemap.rs",
-        "line": 906
+        "line": 916
       },
       {
         "module": "tilemap",
         "name": "remove_pos_from_gid",
         "file": "src/tilemap/tilemap_index.rs",
         "line": 8
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_first_gid",
-        "file": "src/tilemap/tileset.rs",
-        "line": 87
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_columns",
-        "file": "src/tilemap/tileset.rs",
-        "line": 95
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_tile_dimensions",
-        "file": "src/tilemap/tileset.rs",
-        "line": 107
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_spacing",
-        "file": "src/tilemap/tileset.rs",
-        "line": 111
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_margin",
-        "file": "src/tilemap/tileset.rs",
-        "line": 115
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::iter_animated_local_ids",
-        "file": "src/tilemap/tileset.rs",
-        "line": 148
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::set_profile",
-        "file": "src/tilemap/tileset.rs",
-        "line": 152
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_profile",
-        "file": "src/tilemap/tileset.rs",
-        "line": 164
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::set_physics_shape",
-        "file": "src/tilemap/tileset.rs",
-        "line": 169
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_physics_shape",
-        "file": "src/tilemap/tileset.rs",
-        "line": 181
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::set_property",
-        "file": "src/tilemap/tileset.rs",
-        "line": 186
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::get_property",
-        "file": "src/tilemap/tileset.rs",
-        "line": 215
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::set_auto_tile_rule",
-        "file": "src/tilemap/tileset.rs",
-        "line": 227
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::set_auto_tile_rule_8",
-        "file": "src/tilemap/tileset.rs",
-        "line": 238
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::set_auto_tile_mode",
-        "file": "src/tilemap/tileset.rs",
-        "line": 250
-      },
-      {
-        "module": "tilemap",
-        "name": "TileSet::has_auto_tile_mode",
-        "file": "src/tilemap/tileset.rs",
-        "line": 263
       },
       {
         "module": "tilemap",
@@ -38598,6 +38964,144 @@
         "name": "TmxMap::object_layers",
         "file": "src/tilemap/tmx.rs",
         "line": 246
+      },
+      {
+        "module": "tileset",
+        "name": "TileCatalog::set_tileset",
+        "file": "src/tileset/catalog.rs",
+        "line": 23
+      },
+      {
+        "module": "tileset",
+        "name": "TileCatalog::visual_for_ref",
+        "file": "src/tileset/catalog.rs",
+        "line": 45
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_first_gid",
+        "file": "src/tileset/tileset.rs",
+        "line": 66
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_columns",
+        "file": "src/tileset/tileset.rs",
+        "line": 74
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_tile_dimensions",
+        "file": "src/tileset/tileset.rs",
+        "line": 86
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_spacing",
+        "file": "src/tileset/tileset.rs",
+        "line": 90
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_margin",
+        "file": "src/tileset/tileset.rs",
+        "line": 94
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_texture_width",
+        "file": "src/tileset/tileset.rs",
+        "line": 98
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_texture_height",
+        "file": "src/tileset/tileset.rs",
+        "line": 109
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::set_archetype",
+        "file": "src/tileset/tileset.rs",
+        "line": 134
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::archetype",
+        "file": "src/tileset/tileset.rs",
+        "line": 139
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::remove_archetype",
+        "file": "src/tileset/tileset.rs",
+        "line": 144
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::archetype_names",
+        "file": "src/tileset/tileset.rs",
+        "line": 154
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::set_tile_archetype",
+        "file": "src/tileset/tileset.rs",
+        "line": 161
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_tile_archetype",
+        "file": "src/tileset/tileset.rs",
+        "line": 184
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::archetype_for_tile",
+        "file": "src/tileset/tileset.rs",
+        "line": 189
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::iter_animated_local_ids",
+        "file": "src/tileset/tileset.rs",
+        "line": 212
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::set_property",
+        "file": "src/tileset/tileset.rs",
+        "line": 217
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_property",
+        "file": "src/tileset/tileset.rs",
+        "line": 246
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::set_auto_tile_rule",
+        "file": "src/tileset/tileset.rs",
+        "line": 259
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::set_auto_tile_rule_8",
+        "file": "src/tileset/tileset.rs",
+        "line": 270
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::set_auto_tile_mode",
+        "file": "src/tileset/tileset.rs",
+        "line": 281
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::has_auto_tile_mode",
+        "file": "src/tileset/tileset.rs",
+        "line": 292
       },
       {
         "module": "timer",
@@ -39940,10 +40444,10 @@
     ]
   },
   "lua": {
-    "total": 6185,
-    "covered": 6161,
-    "uncovered": 24,
-    "coverage_pct": 99.6,
+    "total": 6241,
+    "covered": 6241,
+    "uncovered": 0,
+    "coverage_pct": 100.0,
     "covered_items": [
       {
         "module": "agent",
@@ -44868,304 +45372,353 @@
       },
       {
         "module": "awareness",
-        "lua_name": "LTileAwareness:computeVisible",
+        "lua_name": "LTileAwareness:defineCategory",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 74
+        "line": 133
       },
       {
         "module": "awareness",
-        "lua_name": "LTileAwareness:computeAction",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 97
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LTileAwareness:isVisible",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 123
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LTileAwareness:isExplored",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 142
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LTileAwareness:canActOn",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 161
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LTileAwareness:visibleCells",
+        "lua_name": "LTileAwareness:getCategory",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
         "line": 178
       },
       {
         "module": "awareness",
-        "lua_name": "LTileAwareness:actionCells",
+        "lua_name": "LTileAwareness:getCategories",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 191
+        "line": 205
       },
       {
         "module": "awareness",
-        "lua_name": "LTileAwareness:clearPlayer",
+        "lua_name": "LTileAwareness:computeVisible",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 202
+        "line": 218
       },
       {
         "module": "awareness",
-        "lua_name": "LTileAwareness:clearAll",
+        "lua_name": "LTileAwareness:computeAction",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 211
+        "line": 258
       },
       {
         "module": "awareness",
-        "lua_name": "LTileAwareness:type",
+        "lua_name": "LTileAwareness:isVisible",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 219
+        "line": 284
       },
       {
         "module": "awareness",
-        "lua_name": "LTileAwareness:typeOf",
+        "lua_name": "LTileAwareness:isAware",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 225
+        "line": 298
       },
       {
         "module": "awareness",
-        "lua_name": "LAwarenessGrid:reveal",
+        "lua_name": "LTileAwareness:isExplored",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 238
+        "line": 317
       },
       {
         "module": "awareness",
-        "lua_name": "LAwarenessGrid:hide",
+        "lua_name": "LTileAwareness:canActOn",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 253
+        "line": 336
       },
       {
         "module": "awareness",
-        "lua_name": "LAwarenessGrid:getState",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 263
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LAwarenessGrid:getFogIntensity",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 279
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LAwarenessGrid:setCost",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 290
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LAwarenessGrid:getCost",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 299
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LAwarenessGrid:setFlag",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 308
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LAwarenessGrid:hasFlag",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 324
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LAwarenessGrid:setGroup",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 332
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LAwarenessGrid:sharesVisibility",
-        "kind": "method",
-        "file": "src/lua_api/awareness_api.rs",
-        "line": 346
-      },
-      {
-        "module": "awareness",
-        "lua_name": "LAwarenessGrid:revealAll",
+        "lua_name": "LTileAwareness:visibleCells",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
         "line": 353
       },
       {
         "module": "awareness",
-        "lua_name": "LAwarenessGrid:reset",
+        "lua_name": "LTileAwareness:actionCells",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 361
+        "line": 396
       },
       {
         "module": "awareness",
-        "lua_name": "LAwarenessGrid:drainEvents",
+        "lua_name": "LTileAwareness:clearPlayer",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 369
+        "line": 407
       },
       {
         "module": "awareness",
-        "lua_name": "LAwarenessGrid:regionCount",
+        "lua_name": "LTileAwareness:clearAll",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 428
+        "line": 416
       },
       {
         "module": "awareness",
-        "lua_name": "LAwarenessGrid:playerCount",
+        "lua_name": "LTileAwareness:share",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 423
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LTileAwareness:clearShares",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
         "line": 435
       },
       {
         "module": "awareness",
+        "lua_name": "LTileAwareness:setTeam",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 442
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LTileAwareness:type",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 467
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LTileAwareness:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 473
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:reveal",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 486
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:hide",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 501
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:getState",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 511
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:getFogIntensity",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 527
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:setCost",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 538
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:getCost",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 547
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:setFlag",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 556
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:hasFlag",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 572
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:setGroup",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 580
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:sharesVisibility",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 594
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:revealAll",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 601
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:reset",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 609
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:drainEvents",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 617
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:regionCount",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 676
+      },
+      {
+        "module": "awareness",
+        "lua_name": "LAwarenessGrid:playerCount",
+        "kind": "method",
+        "file": "src/lua_api/awareness_api.rs",
+        "line": 683
+      },
+      {
+        "module": "awareness",
         "lua_name": "lurek.awareness.new",
         "kind": "function",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 449
+        "line": 697
       },
       {
         "module": "awareness",
         "lua_name": "lurek.awareness.newFov",
         "kind": "function",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 480
+        "line": 728
       },
       {
         "module": "awareness",
         "lua_name": "lurek.awareness.newTileAwareness",
         "kind": "function",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 499
+        "line": 747
       },
       {
         "module": "awareness",
         "lua_name": "lurek.awareness.lineOfSight",
         "kind": "function",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 532
+        "line": 780
       },
       {
         "module": "awareness",
         "lua_name": "lurek.awareness.lineOfAction",
         "kind": "function",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 566
+        "line": 817
       },
       {
         "module": "awareness",
         "lua_name": "LFov:setBlocker",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 612
+        "line": 866
       },
       {
         "module": "awareness",
         "lua_name": "LFov:setRange",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 623
+        "line": 877
       },
       {
         "module": "awareness",
         "lua_name": "LFov:compute",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 633
+        "line": 887
       },
       {
         "module": "awareness",
         "lua_name": "LFov:isVisible",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 666
+        "line": 920
       },
       {
         "module": "awareness",
         "lua_name": "LFov:isExplored",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 678
+        "line": 932
       },
       {
         "module": "awareness",
         "lua_name": "LFov:resetExplored",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 687
+        "line": 941
       },
       {
         "module": "awareness",
         "lua_name": "LFov:eachVisible",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 695
+        "line": 949
       },
       {
         "module": "awareness",
         "lua_name": "LFov:visibleCells",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 706
+        "line": 960
       },
       {
         "module": "awareness",
         "lua_name": "LFov:export",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 723
+        "line": 977
       },
       {
         "module": "awareness",
         "lua_name": "LFov:import",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 730
+        "line": 984
       },
       {
         "module": "awareness",
         "lua_name": "LFov:type",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 740
+        "line": 994
       },
       {
         "module": "awareness",
         "lua_name": "LFov:typeOf",
         "kind": "method",
         "file": "src/lua_api/awareness_api.rs",
-        "line": 746
+        "line": 1000
       },
       {
         "module": "binary",
@@ -60243,105 +60796,105 @@
         "lua_name": "LMapBlockResult:writeTileField",
         "kind": "method",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 910
+        "line": 918
       },
       {
         "module": "mapblock",
         "lua_name": "LMapBlockReport:toTable",
         "kind": "method",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 980
+        "line": 1000
       },
       {
         "module": "mapblock",
         "lua_name": "LTilesetRef:getId",
         "kind": "method",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1048
+        "line": 1068
       },
       {
         "module": "mapblock",
         "lua_name": "LTilesetRef:getName",
         "kind": "method",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1053
+        "line": 1073
       },
       {
         "module": "mapblock",
         "lua_name": "LTilesetRef:setImagePath",
         "kind": "method",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1060
+        "line": 1080
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newConfig",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1077
+        "line": 1097
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newEmptyConfig",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1088
+        "line": 1108
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newBlock",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1103
+        "line": 1123
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newGroup",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1120
+        "line": 1140
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newScript",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1132
+        "line": 1152
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newRules",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1145
+        "line": 1165
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newGrid",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1158
+        "line": 1178
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newEmptyGrid",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1169
+        "line": 1189
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newGenerator",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1181
+        "line": 1201
       },
       {
         "module": "mapblock",
         "lua_name": "lurek.mapblock.newTilesetRef",
         "kind": "function",
         "file": "src/lua_api/mapblock_api.rs",
-        "line": 1200
+        "line": 1220
       },
       {
         "module": "math",
@@ -66816,266 +67369,280 @@
         "lua_name": "lurek.pathfind.newNavGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2177
+        "line": 2271
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "lurek.pathfind.newNavGridFromProvider",
+        "kind": "function",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2287
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathfinder",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2192
+        "line": 2303
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newFlowField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2205
+        "line": 2316
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2220
+        "line": 2331
+      },
+      {
+        "module": "pathfind",
+        "lua_name": "lurek.pathfind.newPathGridFromProvider",
+        "kind": "function",
+        "file": "src/lua_api/pathfind_api.rs",
+        "line": 2347
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathFlowField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2235
+        "line": 2362
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newSteeringManager",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2252
+        "line": 2379
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newInfluenceMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2267
+        "line": 2394
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newContextSteering",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2279
+        "line": 2406
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newORCASolver",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2292
+        "line": 2419
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.setThreadCount",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2303
+        "line": 2430
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.getThreadCount",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2318
+        "line": 2445
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.submitAsyncPath",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2334
+        "line": 2461
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.pollAsyncPaths",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2372
+        "line": 2499
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.cancelAsyncPath",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2387
+        "line": 2514
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.getAsyncPendingCount",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2397
+        "line": 2524
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.clearAsyncPaths",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2403
+        "line": 2530
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavGridFromTileMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2420
+        "line": 2547
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavGridFromField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2455
+        "line": 2582
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newHexGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2526
+        "line": 2670
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newJpsGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2545
+        "line": 2689
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavMesh",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2556
+        "line": 2700
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.rangeMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2571
+        "line": 2715
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.rangeMapFromField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2631
+        "line": 2775
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newGoalMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2704
+        "line": 2841
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:addSource",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2736
+        "line": 2873
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:setSources",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2751
+        "line": 2888
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:clearSources",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2770
+        "line": 2907
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:setBlocker",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2778
+        "line": 2915
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:bake",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2788
+        "line": 2925
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:isReady",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2815
+        "line": 2952
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:distanceAt",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2823
+        "line": 2960
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:gradientAt",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2835
+        "line": 2972
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:flee",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2848
+        "line": 2985
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:floodFill",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2860
+        "line": 2997
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:save",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2882
+        "line": 3019
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:restore",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2889
+        "line": 3026
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2899
+        "line": 3036
       },
       {
         "module": "pathfind",
         "lua_name": "LGoalMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 2905
+        "line": 3042
       },
       {
         "module": "patterns",
@@ -70694,665 +71261,721 @@
         "lua_name": "LProcgenGrid:getSize",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 272
+        "line": 278
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenGrid:getWidth",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 277
+        "line": 283
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenGrid:getHeight",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 282
+        "line": 288
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenGrid:getKind",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 287
+        "line": 293
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenGrid:getCell",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 294
+        "line": 300
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenGrid:toTable",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 307
+        "line": 313
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenGrid:toTileField",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 320
+        "line": 326
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenGrid:writeTileField",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 351
+        "line": 357
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenGrid:type",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 391
+        "line": 397
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 397
+        "line": 403
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:getSize",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 409
+        "line": 415
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:getWidth",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 414
+        "line": 420
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:getHeight",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 419
+        "line": 425
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:getKind",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 424
+        "line": 430
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:getCell",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 431
+        "line": 437
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:toTable",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 445
+        "line": 451
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:toTileField",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 458
+        "line": 464
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:writeTileField",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 482
+        "line": 488
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:type",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 512
+        "line": 518
       },
       {
         "module": "procgen",
         "lua_name": "LProcgenScalarGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 518
+        "line": 524
       },
       {
         "module": "procgen",
         "lua_name": "LBiomeClassifier:classify",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 534
+        "line": 540
       },
       {
         "module": "procgen",
         "lua_name": "LBiomeClassifier:classifyMap",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 545
+        "line": 551
       },
       {
         "module": "procgen",
         "lua_name": "LBiomeClassifier:type",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 567
+        "line": 573
       },
       {
         "module": "procgen",
         "lua_name": "LBiomeClassifier:typeOf",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 572
+        "line": 578
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:perlin1d",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 711
+        "line": 717
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:perlin2d",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 717
+        "line": 723
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:perlin3d",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 726
+        "line": 732
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:perlin4d",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 736
+        "line": 742
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:simplex1d",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 743
+        "line": 749
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:simplex2d",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 751
+        "line": 757
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:simplex3d",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 760
+        "line": 766
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:worley2d",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 770
+        "line": 776
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:worley3d",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 788
+        "line": 794
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:fbm",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 807
+        "line": 813
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:ridged",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 842
+        "line": 848
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:turbulence",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 877
+        "line": 883
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:warpDomain",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 909
+        "line": 915
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:generateMap",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 919
+        "line": 925
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:generateMapCompute",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 968
+        "line": 974
+      },
+      {
+        "module": "procgen",
+        "lua_name": "LNoiseGenerator:generateMapGrid",
+        "kind": "method",
+        "file": "src/lua_api/procgen_api.rs",
+        "line": 1019
+      },
+      {
+        "module": "procgen",
+        "lua_name": "LNoiseGenerator:generateMapComputeGrid",
+        "kind": "method",
+        "file": "src/lua_api/procgen_api.rs",
+        "line": 1066
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:getSeed",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1104
+        "line": 1110
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:setSeed",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1108
+        "line": 1114
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:type",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1115
+        "line": 1121
       },
       {
         "module": "procgen",
         "lua_name": "LNoiseGenerator:typeOf",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1120
+        "line": 1126
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:setCell",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1137
+        "line": 1143
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:getCell",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1146
+        "line": 1152
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:fillRect",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1156
+        "line": 1162
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:fillCircle",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1171
+        "line": 1177
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:step",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1182
+        "line": 1188
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:stepN",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1189
+        "line": 1195
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:toImageData",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1196
+        "line": 1202
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:toImageDataRegion",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1211
+        "line": 1217
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:countCells",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1233
+        "line": 1239
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:findCells",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1242
+        "line": 1248
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:toBytes",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1256
+        "line": 1262
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:loadFromBytes",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1263
+        "line": 1269
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:type",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1275
+        "line": 1281
       },
       {
         "module": "procgen",
         "lua_name": "LCellular:typeOf",
         "kind": "method",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1280
+        "line": 1286
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.newGridResult",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1295
+        "line": 1301
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.newScalarGridResult",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1314
+        "line": 1320
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.cellularAutomata",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1332
+        "line": 1338
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.cellularAutomataGrid",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1354
+        "line": 1360
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.floodFill",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1381
+        "line": 1387
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.perlinNoise",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1422
+        "line": 1428
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.poissonDisk",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1438
+        "line": 1444
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.voronoi",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1471
+        "line": 1477
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.bspDungeon",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1512
+        "line": 1518
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.bspDungeonWithPrefabs",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1582
+        "line": 1588
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.roomsDungeon",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1677
+        "line": 1683
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.roomsDungeonGrid",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1750
+        "line": 1756
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.roomsDungeonWithPrefabs",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1795
+        "line": 1801
+      },
+      {
+        "module": "procgen",
+        "lua_name": "lurek.procgen.roomsDungeonWithPrefabsGrid",
+        "kind": "function",
+        "file": "src/lua_api/procgen_api.rs",
+        "line": 1913
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.heightmap",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 1971
+        "line": 1977
+      },
+      {
+        "module": "procgen",
+        "lua_name": "lurek.procgen.heightmapGrid",
+        "kind": "function",
+        "file": "src/lua_api/procgen_api.rs",
+        "line": 2033
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.heightmapFromCellular",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2078
+        "line": 2084
+      },
+      {
+        "module": "procgen",
+        "lua_name": "lurek.procgen.heightmapFromCellularGrid",
+        "kind": "function",
+        "file": "src/lua_api/procgen_api.rs",
+        "line": 2122
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.wfcGenerate",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2143
+        "line": 2149
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.wfcGenerateGrid",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2203
+        "line": 2209
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.lsystem",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2260
+        "line": 2266
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.lsystemSegments",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2296
+        "line": 2302
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.generateName",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2343
+        "line": 2349
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.generateNames",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2371
+        "line": 2377
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.worldGraph",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2406
+        "line": 2412
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.noiseMap",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2458
+        "line": 2464
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.noiseMapParallel",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2519
+        "line": 2525
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.noiseMapParallelSeeded",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2567
+        "line": 2573
+      },
+      {
+        "module": "procgen",
+        "lua_name": "lurek.procgen.noiseMapGrid",
+        "kind": "function",
+        "file": "src/lua_api/procgen_api.rs",
+        "line": 2621
+      },
+      {
+        "module": "procgen",
+        "lua_name": "lurek.procgen.noiseMapParallelGrid",
+        "kind": "function",
+        "file": "src/lua_api/procgen_api.rs",
+        "line": 2641
+      },
+      {
+        "module": "procgen",
+        "lua_name": "lurek.procgen.noiseMapParallelSeededGrid",
+        "kind": "function",
+        "file": "src/lua_api/procgen_api.rs",
+        "line": 2659
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.simplex2d",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2672
+        "line": 2678
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.simplex3d",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2682
+        "line": 2688
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.newNoiseGenerator",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2690
+        "line": 2696
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.perlin2d",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2704
+        "line": 2710
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.perlin3d",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2717
+        "line": 2723
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.perlin4d",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2731
+        "line": 2737
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.fbm",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2746
+        "line": 2752
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.simplexNoise",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2775
+        "line": 2781
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.newBiomeClassifier",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2789
+        "line": 2795
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.biomeColor",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2806
+        "line": 2812
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.newCellular",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2820
+        "line": 2826
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.setConstraintsFromLLM",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2849
+        "line": 2855
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.wfcFromPrompt",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 2882
+        "line": 2888
       },
       {
         "module": "province",
@@ -77078,1491 +77701,1932 @@
         "lua_name": "LTileField:getSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 371
+        "line": 904
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 376
+        "line": 909
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 386
+        "line": 919
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 398
+        "line": 931
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionRect",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 426
+        "line": 959
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 448
+        "line": 981
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeRegion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 469
+        "line": 1002
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:regionContains",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 480
+        "line": 1013
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 492
+        "line": 1025
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionNames",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 503
+        "line": 1036
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clear",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 513
+        "line": 1046
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 523
+        "line": 1056
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 540
+        "line": 1073
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 558
+        "line": 1091
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setBlock",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 616
+        "line": 1209
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:blocks",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 635
+        "line": 1228
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 651
+        "line": 1244
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 670
+        "line": 1263
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:defineCategory",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1276
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getCategory",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1301
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getCategories",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1316
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:setCategoryBlock",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1327
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:blocksCategory",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1340
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:setCategoryCost",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1350
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getCategoryCost",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1363
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:setCategoryTransmission",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1373
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getCategoryTransmission",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1386
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:setCategoryFilter",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1396
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getCategoryFilter",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1414
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:footprintPassable",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1429
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getVersion",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1443
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 685
+        "line": 1453
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 702
+        "line": 1470
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:setModifier",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1482
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getModifier",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1497
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 714
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:applyProfile",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 731
+        "line": 1509
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 746
+        "line": 1524
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 757
+        "line": 1536
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:removeModifier",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1544
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:defineSlot",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1551
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:removeSlot",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1562
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:hasSlot",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1570
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 769
+        "line": 1581
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 787
+        "line": 1621
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:applyModifier",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1642
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:applyProfile",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1659
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:clearModifier",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1677
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getModifiers",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1694
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:applyTilesetObject",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1716
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:applyTilesetObjectLayer",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1764
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getRefProperty",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1825
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getRefPropertyNumber",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1876
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getRefPropertyBool",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1926
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getRefProperties",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1975
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1158
+        "line": 2028
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:getRefSlots",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 2045
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:line",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1184
+        "line": 2057
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearLine",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1205
+        "line": 2078
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:firstBlocker",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1225
+        "line": 2098
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1254
+        "line": 2127
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportCostLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1269
+        "line": 2142
       },
       {
         "module": "tilefield",
-        "lua_name": "LTileField:exportProfileLayer",
+        "lua_name": "LTileField:writeBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1326
+        "line": 2157
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:writeCostLayer",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 2179
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportRefLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1336
+        "line": 2200
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:writeRefLayer",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 2214
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1389
+        "line": 2233
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1395
+        "line": 2239
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getMapSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1408
+        "line": 2252
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getFieldSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1417
+        "line": 2261
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1424
+        "line": 2268
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1434
+        "line": 2278
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1453
+        "line": 2297
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:setField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1473
+        "line": 2317
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1490
+        "line": 2334
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1496
+        "line": 2340
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.new",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1510
+        "line": 2354
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "lurek.tilefield.fromProvider",
+        "kind": "function",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 2380
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.newFieldMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1536
+        "line": 2394
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.fromTileMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1582
+        "line": 2440
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:addPointLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 230
+        "line": 369
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:updatePointLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 260
+        "line": 399
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:removePointLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 321
+        "line": 460
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:clearPointLights",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 327
+        "line": 466
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:addLineLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 335
+        "line": 474
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:updateLineLight",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 519
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:removeLineLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 430
+        "line": 571
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:clearLineLights",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 436
+        "line": 577
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:addAreaLight",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 585
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:addRectLight",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 593
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:updateAreaLight",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 601
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:updateRectLight",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 609
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:removeAreaLight",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 617
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:removeRectLight",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 625
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:clearAreaLights",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 631
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:clearRectLights",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 638
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:setAmbient",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 444
-      },
-      {
-        "module": "tilelight",
-        "lua_name": "LTileLightMap:setGlobalLight",
-        "kind": "method",
-        "file": "src/lua_api/tilelight_api.rs",
-        "line": 454
+        "line": 646
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:setSunLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 463
+        "line": 656
+      },
+      {
+        "module": "tilelight",
+        "lua_name": "LTileLightMap:setGlobalLight",
+        "kind": "method",
+        "file": "src/lua_api/tilelight_api.rs",
+        "line": 665
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:compute",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 472
+        "line": 674
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:getLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 494
+        "line": 698
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:exportLayer",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 503
+        "line": 708
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:exportVolume",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 515
+        "line": 721
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:getSize",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 530
+        "line": 737
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:type",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 535
+        "line": 742
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 541
+        "line": 748
       },
       {
         "module": "tilelight",
         "lua_name": "lurek.tilelight.new",
         "kind": "function",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 555
+        "line": 762
       },
       {
         "module": "tilelight",
         "lua_name": "lurek.tilelight.compute",
         "kind": "function",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 573
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getFirstGid",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 142
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getTileCount",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 148
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getColumns",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 154
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getTileWidth",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 160
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getTileHeight",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 166
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getTileDimensions",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 173
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getSpacing",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 180
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getMargin",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 186
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getQuad",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 197
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:setAnimation",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 219
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getAnimation",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 254
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:setProfile",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 281
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getProfile",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 297
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:setPhysicsShape",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 313
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getPhysicsShape",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 331
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:setProperty",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 348
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getProperty",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 369
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:setAutoTileRule",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 444
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getAutoTileId",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 463
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:setAutoTileRule8",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 478
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getAutoTileId8",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 497
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:setAutoTileMode",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 511
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getAutoTileMode",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 523
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:type",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 529
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 534
+        "line": 781
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:addTileSet",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 549
+        "line": 243
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getTileSetCount",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 559
+        "line": 253
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getTileSet",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 566
+        "line": 260
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:addLayer",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 586
+        "line": 280
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:tryAddLayer",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 601
+        "line": 295
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getLayerCount",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 615
+        "line": 309
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getLayerName",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 622
+        "line": 316
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:setLayerVisible",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 633
+        "line": 327
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getLayerVisible",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 649
+        "line": 343
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:setLayerColor",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 659
+        "line": 353
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getLayerColor",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 678
+        "line": 372
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:setLayerOffset",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 687
+        "line": 381
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getLayerOffset",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 704
+        "line": 398
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:setLayerParallax",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 713
+        "line": 407
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getLayerParallax",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 730
+        "line": 424
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:setTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 740
+        "line": 434
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:trySetTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 758
+        "line": 452
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 775
+        "line": 469
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:tryGetTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 785
+        "line": 479
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:clearTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 801
+        "line": 495
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:fill",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 809
+        "line": 503
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:tileTypeIndex",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 819
+        "line": 513
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:findTilesByGid",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 846
+        "line": 540
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:setViewport",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 868
+        "line": 562
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getViewport",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 881
+        "line": 575
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:update",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 890
+        "line": 584
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:worldToTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 900
+        "line": 594
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:tryWorldToTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 910
+        "line": 604
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:tileToWorld",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 924
+        "line": 618
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getTileWidth",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 931
+        "line": 625
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getTileHeight",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 937
+        "line": 631
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getTileDimensions",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 944
+        "line": 638
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getChunkSize",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 951
+        "line": 645
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:applyAutoTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 958
+        "line": 652
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:applyAutoTileAt",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 973
+        "line": 667
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:applyAutoTile8",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 986
+        "line": 680
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:applyAutoTile8At",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1001
+        "line": 695
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:applyAutoTileMode",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1014
+        "line": 708
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:applyAutoTileModeAt",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1029
+        "line": 723
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getOrientation",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1041
+        "line": 735
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:setOrientation",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1053
+        "line": 747
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:setTileTint",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1078
+        "line": 772
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:trySetTileTint",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1101
+        "line": 795
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:render",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1116
+        "line": 810
+      },
+      {
+        "module": "tilemap",
+        "lua_name": "LTileMap:renderFieldSlot",
+        "kind": "method",
+        "file": "src/lua_api/tilemap_api.rs",
+        "line": 823
+      },
+      {
+        "module": "tilemap",
+        "lua_name": "LTileMap:renderFieldCatalogSlot",
+        "kind": "method",
+        "file": "src/lua_api/tilemap_api.rs",
+        "line": 866
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:getDiagnostics",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1125
+        "line": 909
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:type",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1131
+        "line": 915
       },
       {
         "module": "tilemap",
         "lua_name": "LTileMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1136
+        "line": 920
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:getLayout",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1151
+        "line": 935
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:getDefaultMode",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1157
+        "line": 941
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:getTileCount",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1163
+        "line": 947
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:getTileWidth",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1169
+        "line": 953
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:getTileHeight",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1175
+        "line": 959
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:applyToTileSet",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1183
+        "line": 967
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:getBitmaskForTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1199
+        "line": 983
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:getTileForBitmask",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1211
+        "line": 995
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:getQuad",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1225
+        "line": 1009
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:type",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1237
+        "line": 1021
       },
       {
         "module": "tilemap",
         "lua_name": "LAutoTileSheet:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1242
+        "line": 1026
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:getTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1259
+        "line": 1043
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:setTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1267
+        "line": 1051
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:clearTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1275
+        "line": 1059
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:fillRect",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1286
+        "line": 1070
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:loadChunk",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1301
+        "line": 1085
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:unloadChunk",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1309
+        "line": 1093
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:getChunkSize",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1316
+        "line": 1100
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:getLoadedChunks",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1324
+        "line": 1108
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:getChunksInView",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1348
+        "line": 1132
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:chunkTileRange",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1375
+        "line": 1159
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:type",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1382
+        "line": 1166
       },
       {
         "module": "tilemap",
         "lua_name": "LChunkMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1387
+        "line": 1171
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:setMapData",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1404
+        "line": 1188
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:setTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1420
+        "line": 1204
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:getTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1429
+        "line": 1213
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:getMapSize",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1436
+        "line": 1220
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:setChunkSize",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1443
+        "line": 1227
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:getChunkSize",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1450
+        "line": 1234
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:invalidateChunk",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1457
+        "line": 1241
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:invalidateAll",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1463
+        "line": 1247
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:getVisibleChunks",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1470
+        "line": 1254
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:getTotalChunks",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1476
+        "line": 1260
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:setCamera",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1484
+        "line": 1268
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:setViewport",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1492
+        "line": 1276
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:setLodEnabled",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1499
+        "line": 1283
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:isLodEnabled",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1506
+        "line": 1290
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:setLodThresholds",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1512
+        "line": 1296
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:setTilesetColumns",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1523
+        "line": 1307
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:getTilesetColumns",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1530
+        "line": 1314
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:type",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1536
+        "line": 1320
       },
       {
         "module": "tilemap",
         "lua_name": "LLargeMapRenderer:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1541
+        "line": 1325
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:addLevel",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1556
+        "line": 1340
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:getLevelCount",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1563
+        "line": 1347
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:setLevelVisible",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1570
+        "line": 1354
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:isLevelVisible",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1579
+        "line": 1363
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:setTilePart",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1590
+        "line": 1374
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:getTilePart",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1607
+        "line": 1391
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:fillLevel",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1621
+        "line": 1405
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:setOrigin",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1630
+        "line": 1414
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:getWidth",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1637
+        "line": 1421
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:getHeight",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1641
+        "line": 1425
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:getTileWidth",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1645
+        "line": 1429
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:getTileHeight",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1649
+        "line": 1433
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:getLevelHeight",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1655
+        "line": 1439
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:tileToScreen",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1665
+        "line": 1449
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:screenToTile",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1675
+        "line": 1459
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:getPartCount",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1682
+        "line": 1466
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:getPartOrder",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1688
+        "line": 1472
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:setPartOrder",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1699
+        "line": 1483
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:type",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1708
+        "line": 1492
       },
       {
         "module": "tilemap",
         "lua_name": "LIsoMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1713
+        "line": 1497
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.newTileSet",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1731
+        "line": 1507
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.newTileMap",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1766
+        "line": 1543
+      },
+      {
+        "module": "tilemap",
+        "lua_name": "lurek.tilemap.fromProvider",
+        "kind": "function",
+        "file": "src/lua_api/tilemap_api.rs",
+        "line": 1579
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.newAutoTileSheet",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1801
+        "line": 1598
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.getAutoTileFormats",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1824
+        "line": 1621
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.newChunkMap",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1852
+        "line": 1649
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.newIsoMap",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1874
+        "line": 1671
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.toScreenIso",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1907
+        "line": 1704
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.fromScreenIso",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1922
+        "line": 1719
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.toScreenHex",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1936
+        "line": 1733
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.fromScreenHex",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1950
+        "line": 1747
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.loadTMX",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 1974
+        "line": 1771
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.fromLDtk",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 2051
+        "line": 1848
       },
       {
         "module": "tilemap",
         "lua_name": "lurek.tilemap.newLargeMapRenderer",
         "kind": "function",
         "file": "src/lua_api/tilemap_api.rs",
-        "line": 2085
+        "line": 1882
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileCatalog:getIds",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 406
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileCatalog:getTileset",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 417
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileCatalog:getObject",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 431
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileCatalog:getVisual",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 445
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileCatalog:type",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 454
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileCatalog:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 458
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getFirstGid",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 468
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getTileCount",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 473
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getColumns",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 478
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getTileWidth",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 483
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getTileHeight",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 488
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getTileDimensions",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 494
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getTextureDimensions",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 500
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getSpacing",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 506
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getMargin",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 511
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getQuad",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 517
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:setProfile",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 535
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getProfile",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 553
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:setPhysicsShape",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 568
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getPhysicsShape",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 586
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:setAnimation",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 602
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getAnimation",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 634
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:setObject",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 659
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getObject",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 751
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:removeObject",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 846
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getObjectNames",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 851
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:setTileObject",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 862
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getTileObject",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 880
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:setProperty",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 897
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getProperty",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 917
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getPropertyNumber",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 933
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getPropertyBool",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 952
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getProperties",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 970
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:setAutoTileRule",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 989
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getAutoTileId",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1007
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:setAutoTileRule8",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1021
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getAutoTileId8",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1039
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:setAutoTileMode",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1052
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getAutoTileMode",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1063
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:type",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1068
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1072
+      },
+      {
+        "module": "tileset",
+        "lua_name": "lurek.tileset.newTileSet",
+        "kind": "function",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1089
+      },
+      {
+        "module": "tileset",
+        "lua_name": "lurek.tileset.newCatalog",
+        "kind": "function",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1119
+      },
+      {
+        "module": "tileset",
+        "lua_name": "lurek.tileset.fromProvider",
+        "kind": "function",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1141
       },
       {
         "module": "timer",
@@ -83073,175 +84137,6 @@
         "line": 881
       }
     ],
-    "uncovered_items": [
-      {
-        "module": "procgen",
-        "lua_name": "LNoiseGenerator:generateMapGrid",
-        "kind": "method",
-        "file": "src/lua_api/procgen_api.rs",
-        "line": 1013
-      },
-      {
-        "module": "procgen",
-        "lua_name": "LNoiseGenerator:generateMapComputeGrid",
-        "kind": "method",
-        "file": "src/lua_api/procgen_api.rs",
-        "line": 1060
-      },
-      {
-        "module": "procgen",
-        "lua_name": "lurek.procgen.roomsDungeonWithPrefabsGrid",
-        "kind": "function",
-        "file": "src/lua_api/procgen_api.rs",
-        "line": 1907
-      },
-      {
-        "module": "procgen",
-        "lua_name": "lurek.procgen.heightmapGrid",
-        "kind": "function",
-        "file": "src/lua_api/procgen_api.rs",
-        "line": 2027
-      },
-      {
-        "module": "procgen",
-        "lua_name": "lurek.procgen.heightmapFromCellularGrid",
-        "kind": "function",
-        "file": "src/lua_api/procgen_api.rs",
-        "line": 2116
-      },
-      {
-        "module": "procgen",
-        "lua_name": "lurek.procgen.noiseMapGrid",
-        "kind": "function",
-        "file": "src/lua_api/procgen_api.rs",
-        "line": 2615
-      },
-      {
-        "module": "procgen",
-        "lua_name": "lurek.procgen.noiseMapParallelGrid",
-        "kind": "function",
-        "file": "src/lua_api/procgen_api.rs",
-        "line": 2635
-      },
-      {
-        "module": "procgen",
-        "lua_name": "lurek.procgen.noiseMapParallelSeededGrid",
-        "kind": "function",
-        "file": "src/lua_api/procgen_api.rs",
-        "line": 2653
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:applyTilesetProfile",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 804
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:applyTilesetStats",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 855
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:applyTilesetStatsLayer",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 903
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:getRefProperty",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 964
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:getRefPropertyNumber",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 1013
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:getRefPropertyBool",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 1062
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:getRefProperties",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 1110
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:getRefSlots",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 1172
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:writeBlockLayer",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 1284
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:writeCostLayer",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 1306
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:writeProfileLayer",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 1349
-      },
-      {
-        "module": "tilefield",
-        "lua_name": "LTileField:writeRefLayer",
-        "kind": "method",
-        "file": "src/lua_api/tilefield_api.rs",
-        "line": 1370
-      },
-      {
-        "module": "tilelight",
-        "lua_name": "LTileLightMap:updateLineLight",
-        "kind": "method",
-        "file": "src/lua_api/tilelight_api.rs",
-        "line": 380
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getPropertyNumber",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 386
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getPropertyBool",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 406
-      },
-      {
-        "module": "tilemap",
-        "lua_name": "LTileSet:getProperties",
-        "kind": "method",
-        "file": "src/lua_api/tilemap_api.rs",
-        "line": 425
-      }
-    ]
+    "uncovered_items": []
   }
 }

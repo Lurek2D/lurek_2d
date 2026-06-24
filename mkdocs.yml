@@ -163,6 +163,7 @@ nav:
     - Tilefield: modules/tilefield.md
     - Tilelight: modules/tilelight.md
     - Tilemap: modules/tilemap.md
+    - Tileset: modules/tileset.md
     - Timer: modules/timer.md
     - Tween: modules/tween.md
     - UI: modules/ui.md

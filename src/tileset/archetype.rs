@@ -1,4 +1,7 @@
-//! Owns reusable tileset object archetypes and their engine-facing default parameters.
+//! This file owns archetype behavior inside the tileset subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate archetype state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for archetype work.
 
 use crate::tilefield::TileChannel;
 use crate::tileset::visual::TileVisual;

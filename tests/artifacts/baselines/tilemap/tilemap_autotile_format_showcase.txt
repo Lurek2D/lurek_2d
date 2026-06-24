@@ -1,0 +1,26 @@
+Lurek2D tilemap autotile format showcase
+
+Supported formats reported by lurek.tilemap.getAutoTileFormats():
+- minimal16: 16 tiles, default mode matchSides
+- blob47: 47 tiles, default mode matchCornersAndSides
+- composite48: 48 tiles, default mode matchCornersAndSides
+- rpgmaker48: 48 tiles, default mode matchCornersAndSides
+
+Build pattern used by each layout-backed case:
+1. local sheet = lurek.tilemap.newAutoTileSheet(14, 14, layout)
+2. local ts = lurek.tilemap.newTileSet(1, 128, 16, 14, 14)
+3. sheet:applyToTileSet(ts, typeName)
+4. map:addTileSet(ts)
+5. map:applyAutoTileMode(layer, typeName)
+
+Manual Godot-style mode pattern:
+1. ts:setAutoTileMode(typeName, "matchCorners")
+2. ts:setAutoTileRule(typeName, mask, tileId)
+3. map:applyAutoTileMode(layer, typeName)
+
+Panel order in tilemap_autotile_format_showcase.png:
+1. minimal16 -> type 'grass', mode matchSides, center gid 16. 4-bit side matching; use for simple NESW terrain joins.
+2. blob47 -> type 'stone', mode matchCornersAndSides, center gid 47. 47 reduced 8-bit blob masks; corners are valid only when adjacent sides connect.
+3. composite48 -> type 'cliff', mode matchCornersAndSides, center gid 48. 48-entry composite layout with an explicit empty variant at index 0.
+4. rpgmaker48 -> type 'shore', mode matchCornersAndSides, center gid 48. RPG Maker-style 48-entry autotile layout using corner+side terrain matching.
+5. manual matchCorners -> type 'corner', mode matchCorners, center gid 63. Godot-style corner-only terrain matching configured directly on the tileset.

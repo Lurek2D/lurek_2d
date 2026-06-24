@@ -1,11 +1,11 @@
-//! Exports the tilemap subsystem surface that combines storage, import, geometry, and render helpers.
-//! Acts as the ownership index for tile worlds so callers can see where chunks, attached tilesets, maps, and importers live.
-//! Centralizes module visibility and re-exports instead of storing live map data or running generation itself.
-//! Connects authored formats, autotiling, large-map helpers, and base tile storage into one stack.
-//! Provides the first navigation point when tracing whether a tile concern belongs to import, storage, or rendering.
-//! Keeps the public tilemap surface coherent while allowing specialized owners like isomap or TMX to stay narrow.
-//! Open this file first when adding a tilemap owner or changing re-export policy for shared tilemap APIs.
-//! Use it to map a tile feature to its concrete Rust owner before editing storage, import, or render behavior.
+//! This module index owns the public shape of the tilemap subsystem and its source navigation map.
+//! It declares which sibling files participate in tilemap behavior and which names are reexported outward.
+//! Reexports here are intentionally narrow so callers do not depend on private implementation modules.
+//! Agents should start here to understand subsystem boundaries before opening deeper implementation files.
+//! New submodules belong here only when they add durable behavior rather than temporary test scaffolding.
+//! Keep this index synchronized with specs, examples, and Lua bindings whenever public ownership changes.
+//! The ordering groups core data, helpers, and rendering-facing pieces so code search stays predictable.
+//! This file should explain where to navigate next, not repeat details owned by the implementation files.
 
 /// Autotile sprite-sheet layout and rule matching.
 pub mod autotile_sheet;

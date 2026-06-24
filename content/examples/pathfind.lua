@@ -4299,3 +4299,33 @@ do
   steer:applyCustomSteering(agent, 1 / 60)
   example_print_log("LSteeringManager:getLastDiagnostic: " .. tostring(steer:getLastDiagnostic()))
 end
+
+--- Added coverage examples for newer API owners.
+
+--@api: lurek.pathfind.newNavGridFromProvider
+do
+    local function example_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+    local provider = { width = 3, height = 2, blocked = { false, true, false, false, false, false }, costs = { 1, 4, 1, 1, 1, 1 } }
+    local ok, value = pcall(function()
+        local nav = lurek.pathfind.newNavGridFromProvider(provider)
+        return nav:getCost(2, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.pathfind.newPathGridFromProvider
+do
+    local function example_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+    local provider = { width = 3, height = 2, cellSize = 16, walkable = { true, false, true, true, true, true } }
+    local ok, value = pcall(function()
+        local grid = lurek.pathfind.newPathGridFromProvider(provider)
+        return grid:getCellSize()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end

@@ -2,6 +2,7 @@
 
 use lurek2d::render::RenderCommand;
 use lurek2d::tilemap::*;
+use lurek2d::tileset::{AutoTileMode, TileAnimFrame, TileSet};
 
 mod ldtk_tests {
     use super::*;
@@ -518,7 +519,7 @@ mod chunk_tests {
 
 mod autotile_sheet_tests {
     use super::*;
-    use lurek2d::tilemap::autotile_sheet::{AutoTileLayout, AutoTileMode, AutoTileSheet};
+    use lurek2d::tilemap::autotile_sheet::{AutoTileLayout, AutoTileSheet};
 
     #[test]
     fn creation_blob47() {

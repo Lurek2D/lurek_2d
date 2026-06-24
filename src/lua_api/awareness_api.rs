@@ -173,6 +173,8 @@ impl LuaUserData for LuaTileAwareness {
 
         // -- getCategory --
         /// Returns awareness category metadata.
+        /// @param | name | string | Category name to inspect.
+        /// @return | table? | Category metadata table, or nil when the category is unknown.
         methods.add_method("getCategory", |lua, this, name: String| {
             let inner = this.inner.borrow();
             let Some(config) = inner.category(&name) else {
@@ -199,6 +201,7 @@ impl LuaUserData for LuaTileAwareness {
 
         // -- getCategories --
         /// Returns known awareness category names.
+        /// @return | table | Array of registered awareness category names.
         methods.add_method("getCategories", |lua, this, ()| {
             let names = this.inner.borrow().category_names();
             let table = lua.create_table()?;

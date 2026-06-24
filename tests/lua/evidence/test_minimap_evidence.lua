@@ -364,7 +364,7 @@ describe("Evidence: lurek.minimap render output", function()
         for i = 1, math.min(#ids, 6) do
             local id = ids[i]
             reg:setTerrainType(id, i)
-            reg:setAwarenessState(id, i <= 2 and 96 or 255)
+            reg:setVisibilityState(id, i <= 2 and 96 or 255)
             reg:setPoliticalColor(id, 0.10 + 0.12 * i, 0.25 + 0.08 * i, 0.82 - 0.06 * i, 1.0)
         end
 

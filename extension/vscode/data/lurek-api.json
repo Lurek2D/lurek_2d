@@ -3743,7 +3743,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Optional `{channel=\"vision\"}`.",
+              "description": "Optional `{category=\"sight\"}` or legacy `{channel=\"vision\"}`.",
               "optional": true
             }
           ],
@@ -3779,7 +3779,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Optional `{channel=\"action\"}`.",
+              "description": "Optional `{category=\"action\"}` or legacy `{channel=\"action\"}`.",
               "optional": true
             }
           ],
@@ -18678,6 +18678,24 @@
           "objectType": null
         },
         {
+          "name": "newNavGridFromProvider",
+          "fullPath": "lurek.pathfind.newNavGridFromProvider",
+          "signature": "(provider)",
+          "description": "Builds a navigation grid from a Lua provider table with width, height, optional costs/blocked arrays, or getCost/isBlocked callbacks.",
+          "parameters": [
+            {
+              "name": "provider",
+              "type": "table",
+              "description": "Lua-authored navigation-grid provider.",
+              "optional": false
+            }
+          ],
+          "returns": "LNavGrid",
+          "returnType": "LNavGrid",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newPathfinder",
           "fullPath": "lurek.pathfind.newPathfinder",
           "signature": "(grid_ud)",
@@ -18735,6 +18753,24 @@
               "name": "cell_size",
               "type": "number",
               "description": "World-space size of each cell.",
+              "optional": false
+            }
+          ],
+          "returns": "LPathGrid",
+          "returnType": "LPathGrid",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newPathGridFromProvider",
+          "fullPath": "lurek.pathfind.newPathGridFromProvider",
+          "signature": "(provider)",
+          "description": "Builds a path grid from a Lua provider table with width, height, optional cellSize, costs/walkable arrays, or getCost/isWalkable callbacks.",
+          "parameters": [
+            {
+              "name": "provider",
+              "type": "table",
+              "description": "Lua-authored path-grid provider.",
               "optional": false
             }
           ],
@@ -18976,7 +19012,7 @@
           "name": "newNavGridFromField",
           "fullPath": "lurek.pathfind.newNavGridFromField",
           "signature": "(field_ud, [opts])",
-          "description": "Creates a navigation grid from a tilefield level and channel.",
+          "description": "Creates a navigation grid from a tilefield level and movement category.",
           "parameters": [
             {
               "name": "field_ud",
@@ -18987,7 +19023,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Options with `level`, `channel`, `costChannel`, and `diagonalMode`.",
+              "description": "Options with `level`, `category`, `costCategory`, `footprintWidth`, `footprintHeight`, and `diagonalMode`.",
               "optional": true
             }
           ],
@@ -19083,7 +19119,7 @@
           "name": "rangeMapFromField",
           "fullPath": "lurek.pathfind.rangeMapFromField",
           "signature": "(field_ud, opts)",
-          "description": "Computes reachable cells from a tilefield level and movement channel.",
+          "description": "Computes reachable cells from a tilefield level and movement category.",
           "parameters": [
             {
               "name": "field_ud",
@@ -19094,7 +19130,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Options with `origin`, `budget`, optional `level`, `channel`, `costChannel`, and `diagonal`.",
+              "description": "Options with `origin`, `budget`, optional `level`, `category`, `costCategory`, and `diagonal`.",
               "optional": false
             }
           ],
@@ -28396,6 +28432,24 @@
           "objectType": null
         },
         {
+          "name": "fromProvider",
+          "fullPath": "lurek.tilefield.fromProvider",
+          "signature": "(provider)",
+          "description": "Builds a native tilefield from a Lua provider table with width, height, optional levels/topology, slots, modifiers, regions, and optional getCell(x,y,z).",
+          "parameters": [
+            {
+              "name": "provider",
+              "type": "table",
+              "description": "Lua-authored tilefield provider.",
+              "optional": false
+            }
+          ],
+          "returns": "LTileField",
+          "returnType": "LTileField",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newFieldMap",
           "fullPath": "lurek.tilefield.newFieldMap",
           "signature": "(opts)",
@@ -28417,7 +28471,7 @@
           "name": "fromTileMap",
           "fullPath": "lurek.tilefield.fromTileMap",
           "signature": "(tm_ud, [opts])",
-          "description": "Copies a tilemap layer into a tilefield, optionally applying profiles and a ref slot.",
+          "description": "Copies a tilemap layer into a tilefield, optionally applying tileset object defaults and a ref slot.",
           "parameters": [
             {
               "name": "tilemap",
@@ -28428,7 +28482,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "`{level?, topology?, solidProfile?, emptyProfile?, solidGids?, refSlot?}`; `solidGids` is explicit and no tileset solidity is inferred.",
+              "description": "`{layer?, level?, levels?, topology?, solidGids?, refSlot?, applyTilesetObject?}`; `solidGids` and `applyTilesetObject` are explicit, no tileset solidity is inferred.",
               "optional": true
             }
           ],
@@ -28442,18 +28496,18 @@
     },
     {
       "name": "tilelight",
-      "description": "Registers `lurek.tilelight`, the tile-based lighting system that consumes `LTileField`.",
+      "description": "Registers lurek.lua_api Lua API bindings for tilelight api, including validation, conversions, and userdata.",
       "functions": [
         {
           "name": "new",
           "fullPath": "lurek.tilelight.new",
-          "signature": "(field_ud)",
-          "description": "Creates a tile light map attached to a shared tilefield.",
+          "signature": "(field_value)",
+          "description": "Creates a tile light map attached to a shared tilefield or copied from a Lua tilefield provider table.",
           "parameters": [
             {
               "name": "field",
-              "type": "LTileField",
-              "description": "Source tilefield.",
+              "type": "LTileField|table",
+              "description": "Source tilefield handle or provider table.",
               "optional": false
             }
           ],
@@ -28465,19 +28519,19 @@
         {
           "name": "compute",
           "fullPath": "lurek.tilelight.compute",
-          "signature": "(field_ud, [opts])",
-          "description": "Creates and computes a tile light map for a shared tilefield.",
+          "signature": "(field_value, [opts])",
+          "description": "Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.",
           "parameters": [
             {
               "name": "field",
-              "type": "LTileField",
-              "description": "Source tilefield.",
+              "type": "LTileField|table",
+              "description": "Source tilefield handle or provider table.",
               "optional": false
             },
             {
               "name": "opts",
               "type": "table",
-              "description": "Optional includePointLights, includeLineLights, includeSunLight/includeGlobalLight, ambient, and time settings.",
+              "description": "Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings.",
               "optional": true
             }
           ],
@@ -28496,54 +28550,11 @@
         {
           "name": "newTileSet",
           "fullPath": "lurek.tilemap.newTileSet",
-          "signature": "lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, [spacing], [margin])",
-          "description": "Creates a new tileset from atlas parameters.",
-          "parameters": [
-            {
-              "name": "firstGid",
-              "type": "integer",
-              "description": "First global tile ID.",
-              "optional": false
-            },
-            {
-              "name": "tileCount",
-              "type": "integer",
-              "description": "Total tiles in the set.",
-              "optional": false
-            },
-            {
-              "name": "columns",
-              "type": "integer",
-              "description": "Columns in the atlas image.",
-              "optional": false
-            },
-            {
-              "name": "tileWidth",
-              "type": "integer",
-              "description": "Tile width in pixels.",
-              "optional": false
-            },
-            {
-              "name": "tileHeight",
-              "type": "integer",
-              "description": "Tile height in pixels.",
-              "optional": false
-            },
-            {
-              "name": "spacing",
-              "type": "integer",
-              "description": "Pixel spacing between tiles (default 0).",
-              "optional": true
-            },
-            {
-              "name": "margin",
-              "type": "integer",
-              "description": "Pixel margin around the atlas edge (default 0).",
-              "optional": true
-            }
-          ],
-          "returns": "LTileSet",
-          "returnType": "LTileSet",
+          "signature": "lurek.tilemap.newTileSet()",
+          "description": "Compatibility alias for `lurek.tileset.newTileSet`.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -28575,6 +28586,30 @@
               "name": "opts",
               "type": "any",
               "description": "Optional limits table (`maxLayers`, `maxTiles`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, `maxTileOperationCells`).",
+              "optional": true
+            }
+          ],
+          "returns": "LTileMap",
+          "returnType": "LTileMap",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "fromProvider",
+          "fullPath": "lurek.tilemap.fromProvider",
+          "signature": "(provider, [opts])",
+          "description": "Builds a native tilemap from a Lua provider table with tileWidth, tileHeight, layers, optional tilesets, and optional getTile(layer,x,y).",
+          "parameters": [
+            {
+              "name": "provider",
+              "type": "table",
+              "description": "Lua-authored tilemap provider.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional limits table.",
               "optional": true
             }
           ],
@@ -28903,6 +28938,103 @@
           ],
           "returns": "LLargeMapRenderer",
           "returnType": "LLargeMapRenderer",
+          "isMethod": false,
+          "objectType": null
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "tileset",
+      "description": "Registers lurek.lua_api Lua API bindings for tileset api, including validation, conversions, and userdata.",
+      "functions": [
+        {
+          "name": "newTileSet",
+          "fullPath": "lurek.tileset.newTileSet",
+          "signature": "lurek.tileset.newTileSet(first_gid, tile_count, columns, tile_width, tile_height, [spacing], [margin])",
+          "description": "Creates a native tileset from atlas dimensions.",
+          "parameters": [
+            {
+              "name": "first_gid",
+              "type": "integer",
+              "description": "First global tile id assigned to the tileset.",
+              "optional": false
+            },
+            {
+              "name": "tile_count",
+              "type": "integer",
+              "description": "Number of tiles in the atlas.",
+              "optional": false
+            },
+            {
+              "name": "columns",
+              "type": "integer",
+              "description": "Number of atlas columns.",
+              "optional": false
+            },
+            {
+              "name": "tile_width",
+              "type": "integer",
+              "description": "Tile width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "tile_height",
+              "type": "integer",
+              "description": "Tile height in pixels.",
+              "optional": false
+            },
+            {
+              "name": "spacing",
+              "type": "integer",
+              "description": "Optional pixel spacing between tiles.",
+              "optional": true
+            },
+            {
+              "name": "margin",
+              "type": "integer",
+              "description": "Optional atlas margin in pixels.",
+              "optional": true
+            }
+          ],
+          "returns": "LTileSet",
+          "returnType": "LTileSet",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newCatalog",
+          "fullPath": "lurek.tileset.newCatalog",
+          "signature": "(entries)",
+          "description": "Creates a catalog that resolves typed references across named tilesets.",
+          "parameters": [
+            {
+              "name": "entries",
+              "type": "table",
+              "description": "Map of catalog id to `LTileSet`.",
+              "optional": false
+            }
+          ],
+          "returns": "LTileCatalog",
+          "returnType": "LTileCatalog",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "fromProvider",
+          "fullPath": "lurek.tileset.fromProvider",
+          "signature": "(provider)",
+          "description": "Builds a native tileset from a Lua provider table with atlas fields, objects, tileObjects, properties, and animations.",
+          "parameters": [
+            {
+              "name": "provider",
+              "type": "table",
+              "description": "Lua-authored tileset provider.",
+              "optional": false
+            }
+          ],
+          "returns": "LTileSet",
+          "returnType": "LTileSet",
           "isMethod": false,
           "objectType": null
         }
@@ -82781,7 +82913,7 @@
           "name": "setViewport",
           "fullPath": "LLargeMapRenderer:setViewport",
           "signature": "(w, h)",
-          "description": "Sets the viewport dimensions for visibility calculations.",
+          "description": "Sets the viewport rectangle used for render-command culling.",
           "parameters": [
             {
               "name": "w",
@@ -145118,6 +145250,59 @@
       "description": "Lua-side wrapper for per-player tile visibility/action masks.",
       "methods": [
         {
+          "name": "defineCategory",
+          "fullPath": "LTileAwareness:defineCategory",
+          "signature": "(name, [opts])",
+          "description": "Defines or replaces one awareness category.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileAwareness"
+        },
+        {
+          "name": "getCategory",
+          "fullPath": "LTileAwareness:getCategory",
+          "signature": "(name)",
+          "description": "Returns awareness category metadata.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Category name to inspect.",
+              "optional": false
+            }
+          ],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": true,
+          "objectType": "LTileAwareness"
+        },
+        {
+          "name": "getCategories",
+          "fullPath": "LTileAwareness:getCategories",
+          "signature": "()",
+          "description": "Returns known awareness category names.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileAwareness"
+        },
+        {
           "name": "computeVisible",
           "fullPath": "LTileAwareness:computeVisible",
           "signature": "(player, opts)",
@@ -145132,7 +145317,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Options table with origin, range, and optional vision channel.",
+              "description": "Options table with origin, range, category, mode, arc, facing, and blockerCategory.",
               "optional": false
             }
           ],
@@ -145198,6 +145383,48 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileAwareness"
+        },
+        {
+          "name": "isAware",
+          "fullPath": "LTileAwareness:isAware",
+          "signature": "(player, category, x, y, [z])",
+          "description": "Returns whether a one-based cell is visible for a specific awareness category.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LTileAwareness"
         },
@@ -145276,7 +145503,7 @@
         {
           "name": "visibleCells",
           "fullPath": "LTileAwareness:visibleCells",
-          "signature": "(player, [z])",
+          "signature": "(player, [category_or_z], [z])",
           "description": "Returns all currently visible cells for a player, optionally filtered to a level.",
           "parameters": [
             {
@@ -145289,6 +145516,12 @@
               "name": "z",
               "type": "integer",
               "description": "Optional one-based level filter.",
+              "optional": true
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
@@ -145351,6 +145584,77 @@
           "objectType": "LTileAwareness"
         },
         {
+          "name": "share",
+          "fullPath": "LTileAwareness:share",
+          "signature": "(from, to, category, [opts])",
+          "description": "Adds a directed awareness share edge for one category.",
+          "parameters": [
+            {
+              "name": "from",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "to",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileAwareness"
+        },
+        {
+          "name": "clearShares",
+          "fullPath": "LTileAwareness:clearShares",
+          "signature": "()",
+          "description": "Clears all directed awareness share edges.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileAwareness"
+        },
+        {
+          "name": "setTeam",
+          "fullPath": "LTileAwareness:setTeam",
+          "signature": "(players, [categories])",
+          "description": "Creates directed share edges between all listed players for selected categories.",
+          "parameters": [
+            {
+              "name": "players",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "categories",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileAwareness"
+        },
+        {
           "name": "type",
           "fullPath": "LTileAwareness:type",
           "signature": "()",
@@ -145378,6 +145682,106 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileAwareness"
+        }
+      ]
+    },
+    {
+      "name": "LTileCatalog",
+      "description": "Creates a catalog that resolves typed references across named tilesets.",
+      "methods": [
+        {
+          "name": "getIds",
+          "fullPath": "LTileCatalog:getIds",
+          "signature": "()",
+          "description": "Returns the sorted catalog ids available for typed tile references.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileCatalog"
+        },
+        {
+          "name": "getTileset",
+          "fullPath": "LTileCatalog:getTileset",
+          "signature": "(id)",
+          "description": "Returns the tileset stored under a catalog id.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "Catalog id to resolve.",
+              "optional": false
+            }
+          ],
+          "returns": "LTileSet|nil",
+          "returnType": "LTileSet|nil",
+          "isMethod": true,
+          "objectType": "LTileCatalog"
+        },
+        {
+          "name": "getObject",
+          "fullPath": "LTileCatalog:getObject",
+          "signature": "(reference)",
+          "description": "Resolves object archetype metadata from a typed tile or object reference.",
+          "parameters": [
+            {
+              "name": "reference",
+              "type": "table",
+              "description": "Reference table with `tileset` and either `tile` or `object`.",
+              "optional": false
+            }
+          ],
+          "returns": "table|nil",
+          "returnType": "table|nil",
+          "isMethod": true,
+          "objectType": "LTileCatalog"
+        },
+        {
+          "name": "getVisual",
+          "fullPath": "LTileCatalog:getVisual",
+          "signature": "(reference)",
+          "description": "Resolves render visual metadata from a typed tile or object reference.",
+          "parameters": [
+            {
+              "name": "reference",
+              "type": "table",
+              "description": "Reference table with `tileset` and either `tile` or `object`.",
+              "optional": false
+            }
+          ],
+          "returns": "table|nil",
+          "returnType": "table|nil",
+          "isMethod": true,
+          "objectType": "LTileCatalog"
+        },
+        {
+          "name": "type",
+          "fullPath": "LTileCatalog:type",
+          "signature": "()",
+          "description": "Returns the userdata type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTileCatalog"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LTileCatalog:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this catalog matches a type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileCatalog"
         }
       ]
     },
@@ -145667,7 +146071,7 @@
           "name": "getCell",
           "fullPath": "LTileField:getCell",
           "signature": "(x, y, [z])",
-          "description": "Returns a table with blockers, costs, sun occlusion, and optional profile name.",
+          "description": "Returns a table with blockers, costs, sun occlusion, refs, and modifiers.",
           "parameters": [
             {
               "name": "x",
@@ -145697,7 +146101,7 @@
           "name": "setCell",
           "fullPath": "LTileField:setCell",
           "signature": "(x, y, [z], cell_tbl)",
-          "description": "Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.",
+          "description": "Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.",
           "parameters": [
             {
               "name": "x",
@@ -145886,6 +146290,430 @@
           "objectType": "LTileField"
         },
         {
+          "name": "defineCategory",
+          "fullPath": "LTileField:defineCategory",
+          "signature": "(name, [opts])",
+          "description": "Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Stable category name.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table?|Options: kind='movement|awareness|light|sun",
+              "description": "custom', active=true?.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getCategory",
+          "fullPath": "LTileField:getCategory",
+          "signature": "(name)",
+          "description": "Returns category metadata, or nil when the category is unknown.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Category name.",
+              "optional": false
+            }
+          ],
+          "returns": "table|nil",
+          "returnType": "table|nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getCategories",
+          "fullPath": "LTileField:getCategories",
+          "signature": "()",
+          "description": "Returns known category names.",
+          "parameters": [],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setCategoryBlock",
+          "fullPath": "LTileField:setCategoryBlock",
+          "signature": "(x, y, [z], category, blocked)",
+          "description": "Sets one category blocker on one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "blocked",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "blocksCategory",
+          "fullPath": "LTileField:blocksCategory",
+          "signature": "(x, y, [z], category)",
+          "description": "Returns whether one cell blocks a category.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setCategoryCost",
+          "fullPath": "LTileField:setCategoryCost",
+          "signature": "(x, y, [z], category, cost)",
+          "description": "Sets one category cost on one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "cost",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getCategoryCost",
+          "fullPath": "LTileField:getCategoryCost",
+          "signature": "(x, y, [z], category)",
+          "description": "Returns one effective category cost.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setCategoryTransmission",
+          "fullPath": "LTileField:setCategoryTransmission",
+          "signature": "(x, y, [z], category, value)",
+          "description": "Sets one category transmission multiplier on one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getCategoryTransmission",
+          "fullPath": "LTileField:getCategoryTransmission",
+          "signature": "(x, y, [z], category)",
+          "description": "Returns one effective category transmission multiplier.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setCategoryFilter",
+          "fullPath": "LTileField:setCategoryFilter",
+          "signature": "(x, y, [z], category, filter)",
+          "description": "Sets one RGB category filter on one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getCategoryFilter",
+          "fullPath": "LTileField:getCategoryFilter",
+          "signature": "(x, y, [z], category)",
+          "description": "Returns one effective RGB category filter.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "footprintPassable",
+          "fullPath": "LTileField:footprintPassable",
+          "signature": "(x, y, [z], w, h, category)",
+          "description": "Returns whether a rectangular footprint can occupy a cell anchor for a category.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "w",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "category",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getVersion",
+          "fullPath": "LTileField:getVersion",
+          "signature": "()",
+          "description": "Returns the current tilefield data version.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
           "name": "setSunOcclusion",
           "fullPath": "LTileField:setSunOcclusion",
           "signature": "(x, y, [z], value)",
@@ -145952,21 +146780,21 @@
           "objectType": "LTileField"
         },
         {
-          "name": "setProfile",
-          "fullPath": "LTileField:setProfile",
-          "signature": "(name, profile_tbl)",
-          "description": "Registers or replaces a named object profile.",
+          "name": "setModifier",
+          "fullPath": "LTileField:setModifier",
+          "signature": "(name, table)",
+          "description": "Registers or replaces a named tile modifier.",
           "parameters": [
             {
               "name": "name",
               "type": "string",
-              "description": "Profile name to create or replace.",
+              "description": "Modifier name.",
               "optional": false
             },
             {
-              "name": "profile_tbl",
+              "name": "modifier",
               "type": "table",
-              "description": "Profile table with blockers, costs, and sunOcclusion fields.",
+              "description": "Modifier table with blocks, costAdd, costMul, sunOcclusionAdd, light, properties.",
               "optional": false
             }
           ],
@@ -145976,33 +146804,39 @@
           "objectType": "LTileField"
         },
         {
-          "name": "applyProfile",
-          "fullPath": "LTileField:applyProfile",
-          "signature": "(x, y, [z], name)",
-          "description": "Applies a named profile to one cell.",
+          "name": "getModifier",
+          "fullPath": "LTileField:getModifier",
+          "signature": "(name)",
+          "description": "Returns a named tile modifier table, or nil.",
           "parameters": [
-            {
-              "name": "x",
-              "type": "integer",
-              "description": "One-based column.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "integer",
-              "description": "One-based row.",
-              "optional": false
-            },
-            {
-              "name": "z",
-              "type": "integer",
-              "description": "One-based level, default 1.",
-              "optional": true
-            },
             {
               "name": "name",
               "type": "string",
-              "description": "Profile name to apply to the cell.",
+              "description": "Modifier name.",
+              "optional": false
+            }
+          ],
+          "returns": "table|nil",
+          "returnType": "table|nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setProfile",
+          "fullPath": "LTileField:setProfile",
+          "signature": "(name, table)",
+          "description": "Registers or replaces a legacy tilefield profile.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Profile name.",
+              "optional": false
+            },
+            {
+              "name": "profile",
+              "type": "table",
+              "description": "Profile table with blocks, costs, sunOcclusion, light, or properties.",
               "optional": false
             }
           ],
@@ -146015,12 +146849,12 @@
           "name": "getProfile",
           "fullPath": "LTileField:getProfile",
           "signature": "(name)",
-          "description": "Returns a named object profile table, or nil when absent.",
+          "description": "Returns a legacy profile table, or nil.",
           "parameters": [
             {
               "name": "name",
               "type": "string",
-              "description": "Profile name to read.",
+              "description": "Profile name.",
               "optional": false
             }
           ],
@@ -146033,17 +146867,89 @@
           "name": "removeProfile",
           "fullPath": "LTileField:removeProfile",
           "signature": "(name)",
-          "description": "Removes a named object profile from the tilefield profile registry.",
+          "description": "Removes a legacy profile and clears it from all cells.",
           "parameters": [
             {
               "name": "name",
               "type": "string",
-              "description": "Profile name to remove.",
+              "description": "Profile name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "removeModifier",
+          "fullPath": "LTileField:removeModifier",
+          "signature": "(name)",
+          "description": "Removes a named modifier and clears it from all cells.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Modifier name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "defineSlot",
+          "fullPath": "LTileField:defineSlot",
+          "signature": "(slot)",
+          "description": "Defines a named object slot that cells may reference.",
+          "parameters": [
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Slot name chosen by the Lua game.",
               "optional": false
             }
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "removeSlot",
+          "fullPath": "LTileField:removeSlot",
+          "signature": "(slot)",
+          "description": "Removes a named object slot and clears its references from the field.",
+          "parameters": [
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Slot name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "hasSlot",
+          "fullPath": "LTileField:hasSlot",
+          "signature": "(slot)",
+          "description": "Returns true when a named object slot is declared.",
+          "parameters": [
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Slot name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -146079,8 +146985,8 @@
             },
             {
               "name": "value",
-              "type": "integer",
-              "description": "Object, tile, or tileset-local id stored for the slot.",
+              "type": "integer|table",
+              "description": "Legacy id or typed `{ tileset, tile?/object? }` ref stored for the slot.",
               "optional": false
             }
           ],
@@ -146120,16 +147026,154 @@
               "optional": false
             }
           ],
-          "returns": "integer|nil",
-          "returnType": "integer|nil",
+          "returns": "integer|table|nil",
+          "returnType": "integer|table|nil",
           "isMethod": true,
           "objectType": "LTileField"
         },
         {
-          "name": "applyTilesetProfile",
-          "fullPath": "LTileField:applyTilesetProfile",
-          "signature": "LTileField:applyTilesetProfile(x, y, [z], slot, tileset, [opts])",
-          "description": "Applies the tilefield profile named by a tileset tile referenced from one cell.",
+          "name": "applyModifier",
+          "fullPath": "LTileField:applyModifier",
+          "signature": "(x, y, [z], modifier)",
+          "description": "Applies a named modifier to one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            },
+            {
+              "name": "modifier",
+              "type": "string",
+              "description": "Modifier name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "applyProfile",
+          "fullPath": "LTileField:applyProfile",
+          "signature": "(x, y, [z], profile)",
+          "description": "Applies a legacy profile to one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            },
+            {
+              "name": "profile",
+              "type": "string",
+              "description": "Profile name.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "clearModifier",
+          "fullPath": "LTileField:clearModifier",
+          "signature": "(x, y, [z], modifier)",
+          "description": "Removes one modifier from one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            },
+            {
+              "name": "modifier",
+              "type": "string",
+              "description": "Modifier name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getModifiers",
+          "fullPath": "LTileField:getModifiers",
+          "signature": "(x, y, [z])",
+          "description": "Returns active modifier names on one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "applyTilesetObject",
+          "fullPath": "LTileField:applyTilesetObject",
+          "signature": "LTileField:applyTilesetObject(x, y, [z], slot, tileset, [opts])",
+          "description": "Applies the object archetype defaults for a tileset tile referenced from one cell.",
           "parameters": [
             {
               "name": "x",
@@ -146158,7 +147202,7 @@
             {
               "name": "tileset",
               "type": "LTileSet",
-              "description": "Tileset that stores profile metadata.",
+              "description": "Tileset that stores object archetype metadata.",
               "optional": false
             },
             {
@@ -146174,58 +147218,10 @@
           "objectType": "LTileField"
         },
         {
-          "name": "applyTilesetStats",
-          "fullPath": "LTileField:applyTilesetStats",
-          "signature": "LTileField:applyTilesetStats(x, y, [z], slot, tileset, [opts])",
-          "description": "Applies tileset gameplay properties for a tile referenced from one cell.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "integer",
-              "description": "One-based column.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "integer",
-              "description": "One-based row.",
-              "optional": false
-            },
-            {
-              "name": "z",
-              "type": "integer",
-              "description": "One-based level, default 1.",
-              "optional": true
-            },
-            {
-              "name": "slot",
-              "type": "string",
-              "description": "Reference slot name.",
-              "optional": false
-            },
-            {
-              "name": "tileset",
-              "type": "LTileSet",
-              "description": "Tileset that stores object metadata.",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Options: refIsGid.",
-              "optional": true
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LTileField"
-        },
-        {
-          "name": "applyTilesetStatsLayer",
-          "fullPath": "LTileField:applyTilesetStatsLayer",
+          "name": "applyTilesetObjectLayer",
+          "fullPath": "LTileField:applyTilesetObjectLayer",
           "signature": "(slot, tileset_ud, [opts])",
-          "description": "Applies tileset gameplay properties for every referenced cell on one tilefield level.",
+          "description": "Applies tileset object defaults for every referenced cell on one tilefield level.",
           "parameters": [
             {
               "name": "slot",
@@ -146501,7 +147497,7 @@
           "name": "getRefSlots",
           "fullPath": "LTileField:getRefSlots",
           "signature": "()",
-          "description": "Returns every named ref slot currently used by this field.",
+          "description": "Returns every declared ref slot.",
           "parameters": [],
           "returns": "string[]",
           "returnType": "string[]",
@@ -146707,24 +147703,6 @@
           "objectType": "LTileField"
         },
         {
-          "name": "exportProfileLayer",
-          "fullPath": "LTileField:exportProfileLayer",
-          "signature": "([z])",
-          "description": "Exports one level of profile names as a row-major array.",
-          "parameters": [
-            {
-              "name": "z",
-              "type": "integer",
-              "description": "One-based level, default 1.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LTileField"
-        },
-        {
           "name": "exportRefLayer",
           "fullPath": "LTileField:exportRefLayer",
           "signature": "(slot, [z])",
@@ -146741,30 +147719,6 @@
               "type": "integer",
               "description": "One-based level, default 1.",
               "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LTileField"
-        },
-        {
-          "name": "writeProfileLayer",
-          "fullPath": "LTileField:writeProfileLayer",
-          "signature": "([z], values)",
-          "description": "Writes one full profile-name layer from a row-major string-or-nil array.",
-          "parameters": [
-            {
-              "name": "z",
-              "type": "integer",
-              "description": "One-based level, default 1.",
-              "optional": true
-            },
-            {
-              "name": "values",
-              "type": "table",
-              "description": "Row-major string-or-nil array with width*height entries.",
-              "optional": false
             }
           ],
           "returns": "nil",
@@ -147122,8 +148076,37 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Stable line-light id returned by `addLineLight`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileLightMap"
+        },
+        {
+          "name": "clearLineLights",
+          "fullPath": "LTileLightMap:clearLineLights",
+          "signature": "()",
+          "description": "Removes all line lights currently stored on this tile light map.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileLightMap"
+        },
+        {
+          "name": "addAreaLight",
+          "fullPath": "LTileLightMap:addAreaLight",
+          "signature": "(opts)",
+          "description": "Adds a rectangular area light and returns its stable id.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table|`{x,y,z?,width|w,height",
+              "description": "h,radius,intensity?,color?,flicker?,colorCycle?}`.",
               "optional": false
             }
           ],
@@ -147133,10 +148116,123 @@
           "objectType": "LTileLightMap"
         },
         {
-          "name": "clearLineLights",
-          "fullPath": "LTileLightMap:clearLineLights",
+          "name": "addRectLight",
+          "fullPath": "LTileLightMap:addRectLight",
+          "signature": "(opts)",
+          "description": "Alias for `addAreaLight`.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table|`{x,y,z?,width|w,height",
+              "description": "h,radius,intensity?,color?,flicker?,colorCycle?}`.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileLightMap"
+        },
+        {
+          "name": "updateAreaLight",
+          "fullPath": "LTileLightMap:updateAreaLight",
+          "signature": "(id, opts)",
+          "description": "Updates an existing rectangular area light by id.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Stable area-light id returned by `addAreaLight`.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Area-light fields to update.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileLightMap"
+        },
+        {
+          "name": "updateRectLight",
+          "fullPath": "LTileLightMap:updateRectLight",
+          "signature": "(id, opts)",
+          "description": "Alias for `updateAreaLight`.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Stable rectangular light id returned by `addRectLight`.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Rectangular-light fields to update.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileLightMap"
+        },
+        {
+          "name": "removeAreaLight",
+          "fullPath": "LTileLightMap:removeAreaLight",
+          "signature": "(id)",
+          "description": "Removes a rectangular area light by id and returns whether it existed.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Stable area-light id returned by `addAreaLight`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileLightMap"
+        },
+        {
+          "name": "removeRectLight",
+          "fullPath": "LTileLightMap:removeRectLight",
+          "signature": "(id)",
+          "description": "Alias for `removeAreaLight`.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Stable rectangular light id returned by `addRectLight`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileLightMap"
+        },
+        {
+          "name": "clearAreaLights",
+          "fullPath": "LTileLightMap:clearAreaLights",
           "signature": "()",
-          "description": "Removes all line lights currently stored on this tile light map.",
+          "description": "Removes all rectangular area lights currently stored on this tile light map.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileLightMap"
+        },
+        {
+          "name": "clearRectLights",
+          "fullPath": "LTileLightMap:clearRectLights",
+          "signature": "()",
+          "description": "Alias for `clearAreaLights`.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -147153,24 +148249,6 @@
               "name": "color",
               "type": "table",
               "description": "`{r,g,b}` ambient color.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LTileLightMap"
-        },
-        {
-          "name": "setGlobalLight",
-          "fullPath": "LTileLightMap:setGlobalLight",
-          "signature": "(opts)",
-          "description": "Sets top-down global light parameters used during light computation.",
-          "parameters": [
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "`{intensity?, color?}` global top-light settings.",
               "optional": false
             }
           ],
@@ -147198,6 +148276,24 @@
           "objectType": "LTileLightMap"
         },
         {
+          "name": "setGlobalLight",
+          "fullPath": "LTileLightMap:setGlobalLight",
+          "signature": "(opts)",
+          "description": "Compatibility alias for top sun light parameters used during light computation.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{intensity?, color?}` top-light settings.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileLightMap"
+        },
+        {
           "name": "compute",
           "fullPath": "LTileLightMap:compute",
           "signature": "([opts])",
@@ -147206,7 +148302,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Optional includePointLights, includeLineLights, includeSunLight/includeGlobalLight, ambient, and time settings.",
+              "description": "Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.",
               "optional": true
             }
           ],
@@ -147240,8 +148336,8 @@
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number, number, number, number",
+          "returnType": "number, number, number, number",
           "isMethod": true,
           "objectType": "LTileLightMap"
         },
@@ -147258,8 +148354,8 @@
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTileLightMap"
         },
@@ -147269,8 +148365,8 @@
           "signature": "()",
           "description": "Exports all computed light levels as nested row-major tables.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTileLightMap"
         },
@@ -147280,8 +148376,8 @@
           "signature": "()",
           "description": "Returns light-map width, height, and level count.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer, integer, integer",
+          "returnType": "integer, integer, integer",
           "isMethod": true,
           "objectType": "LTileLightMap"
         },
@@ -148405,6 +149501,66 @@
           "objectType": "LTileMap"
         },
         {
+          "name": "renderFieldSlot",
+          "fullPath": "LTileMap:renderFieldSlot",
+          "signature": "(field_value, tileset_value, opts)",
+          "description": "Renders objects referenced from a tilefield slot using tileset object visuals.",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "LTileField|table",
+              "description": "Source tilefield handle or provider table containing slot refs.",
+              "optional": false
+            },
+            {
+              "name": "tileset",
+              "type": "LTileSet|table",
+              "description": "Tileset handle or provider table with object archetype visuals.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options: slot, z, offsetX, offsetY, refIsGid.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
+          "name": "renderFieldCatalogSlot",
+          "fullPath": "LTileMap:renderFieldCatalogSlot",
+          "signature": "(field_value, catalog_value, opts)",
+          "description": "Renders typed refs from a tilefield slot through a tileset catalog.",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "LTileField|table",
+              "description": "Source tilefield handle or provider table containing typed slot refs.",
+              "optional": false
+            },
+            {
+              "name": "catalog",
+              "type": "LTileCatalog",
+              "description": "Catalog resolving `{tileset,tile/object}` refs to visuals.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options: slot, z, offsetX, offsetY.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
           "name": "getDiagnostics",
           "fullPath": "LTileMap:getDiagnostics",
           "signature": "()",
@@ -148448,13 +149604,13 @@
     },
     {
       "name": "LTileSet",
-      "description": "Lua-side handle wrapping a `TileSet` for defining tile atlas metadata, animation, profiles, and auto-tile rules.",
+      "description": "Creates a native tileset from atlas dimensions.",
       "methods": [
         {
           "name": "getFirstGid",
           "fullPath": "LTileSet:getFirstGid",
           "signature": "()",
-          "description": "Returns the first global tile ID (GID) of this tileset.",
+          "description": "Returns the first global tile id assigned to this tileset.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -148465,7 +149621,7 @@
           "name": "getTileCount",
           "fullPath": "LTileSet:getTileCount",
           "signature": "()",
-          "description": "Returns the total number of tiles defined in this tileset.",
+          "description": "Returns the number of tile entries in this tileset.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -148476,7 +149632,7 @@
           "name": "getColumns",
           "fullPath": "LTileSet:getColumns",
           "signature": "()",
-          "description": "Returns the number of columns in the tileset atlas image.",
+          "description": "Returns the number of atlas columns.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -148487,7 +149643,7 @@
           "name": "getTileWidth",
           "fullPath": "LTileSet:getTileWidth",
           "signature": "()",
-          "description": "Returns the width of a single tile in pixels.",
+          "description": "Returns the tile width in pixels.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -148498,7 +149654,7 @@
           "name": "getTileHeight",
           "fullPath": "LTileSet:getTileHeight",
           "signature": "()",
-          "description": "Returns the height of a single tile in pixels.",
+          "description": "Returns the tile height in pixels.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -148509,7 +149665,18 @@
           "name": "getTileDimensions",
           "fullPath": "LTileSet:getTileDimensions",
           "signature": "()",
-          "description": "Returns both tile width and height in pixels.",
+          "description": "Returns the tile width and height in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "getTextureDimensions",
+          "fullPath": "LTileSet:getTextureDimensions",
+          "signature": "()",
+          "description": "Returns the computed texture width and height in pixels.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -148520,7 +149687,7 @@
           "name": "getSpacing",
           "fullPath": "LTileSet:getSpacing",
           "signature": "()",
-          "description": "Returns the spacing between tiles in the atlas image, in pixels.",
+          "description": "Returns the spacing between atlas tiles in pixels.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -148531,7 +149698,7 @@
           "name": "getMargin",
           "fullPath": "LTileSet:getMargin",
           "signature": "()",
-          "description": "Returns the margin around the edge of the atlas image, in pixels.",
+          "description": "Returns the atlas margin in pixels.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -148542,54 +149709,12 @@
           "name": "getQuad",
           "fullPath": "LTileSet:getQuad",
           "signature": "(tile_id)",
-          "description": "Returns the source rectangle (UV quad) for a tile in the atlas.",
+          "description": "Returns the atlas rectangle for one tile id.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID (1-based).",
-              "optional": false
-            }
-          ],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LTileSet"
-        },
-        {
-          "name": "setAnimation",
-          "fullPath": "LTileSet:setAnimation",
-          "signature": "(tile_id, frames)",
-          "description": "Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.",
-          "parameters": [
-            {
-              "name": "tileId",
-              "type": "integer",
-              "description": "Tile ID to animate (1-based).",
-              "optional": false
-            },
-            {
-              "name": "frames",
-              "type": "table",
-              "description": "Array of `{tileid=number, duration=number}` frame definitions.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LTileSet"
-        },
-        {
-          "name": "getAnimation",
-          "fullPath": "LTileSet:getAnimation",
-          "signature": "(tile_id)",
-          "description": "Returns the animation frames for a tile, or nil if none are set.",
-          "parameters": [
-            {
-              "name": "tileId",
-              "type": "integer",
-              "description": "Tile ID to query (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             }
           ],
@@ -148602,18 +149727,18 @@
           "name": "setProfile",
           "fullPath": "LTileSet:setProfile",
           "signature": "(tile_id, [profile])",
-          "description": "Assigns or clears the tilefield profile name associated with this tile.",
+          "description": "Sets or clears the named gameplay profile for one tile.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to modify (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             },
             {
               "name": "profile",
               "type": "string",
-              "description": "Profile name, or nil/empty string to clear.",
+              "description": "Profile name, or nil/empty to clear it.",
               "optional": true
             }
           ],
@@ -148626,17 +149751,17 @@
           "name": "getProfile",
           "fullPath": "LTileSet:getProfile",
           "signature": "(tile_id)",
-          "description": "Returns the tilefield profile name associated with this tile.",
+          "description": "Returns the named gameplay profile for one tile.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to check (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             }
           ],
-          "returns": "string",
-          "returnType": "string",
+          "returns": "string|nil",
+          "returnType": "string|nil",
           "isMethod": true,
           "objectType": "LTileSet"
         },
@@ -148644,18 +149769,18 @@
           "name": "setPhysicsShape",
           "fullPath": "LTileSet:setPhysicsShape",
           "signature": "(tile_id, [shape])",
-          "description": "Assigns or clears the physics shape name associated with this tile.",
+          "description": "Sets or clears the physics shape label for one tile.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to modify (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             },
             {
               "name": "shape",
               "type": "string",
-              "description": "Shape name such as `\"none\"`, `\"rect\"`, or `\"slopeNE\"`; nil/empty clears.",
+              "description": "Physics shape label, or nil/empty to clear it.",
               "optional": true
             }
           ],
@@ -148668,17 +149793,172 @@
           "name": "getPhysicsShape",
           "fullPath": "LTileSet:getPhysicsShape",
           "signature": "(tile_id)",
-          "description": "Returns the physics shape name associated with this tile.",
+          "description": "Returns the physics shape label for one tile.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to check (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             }
           ],
-          "returns": "string",
-          "returnType": "string",
+          "returns": "string|nil",
+          "returnType": "string|nil",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "setAnimation",
+          "fullPath": "LTileSet:setAnimation",
+          "signature": "(tile_id, frames)",
+          "description": "Replaces the animation frames for one tile.",
+          "parameters": [
+            {
+              "name": "tile_id",
+              "type": "integer",
+              "description": "Tile id (1-based).",
+              "optional": false
+            },
+            {
+              "name": "frames",
+              "type": "table",
+              "description": "Array of frame tables with `tileid` and `duration`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "getAnimation",
+          "fullPath": "LTileSet:getAnimation",
+          "signature": "(tile_id)",
+          "description": "Returns the animation frames for one tile.",
+          "parameters": [
+            {
+              "name": "tile_id",
+              "type": "integer",
+              "description": "Tile id (1-based).",
+              "optional": false
+            }
+          ],
+          "returns": "table|nil",
+          "returnType": "table|nil",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "setObject",
+          "fullPath": "LTileSet:setObject",
+          "signature": "(name, object)",
+          "description": "Stores an object archetype and its visual, pathing, lighting, and custom metadata.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Object archetype name.",
+              "optional": false
+            },
+            {
+              "name": "object",
+              "type": "table",
+              "description": "Object metadata table.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "getObject",
+          "fullPath": "LTileSet:getObject",
+          "signature": "(name)",
+          "description": "Returns object archetype metadata by name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Object archetype name.",
+              "optional": false
+            }
+          ],
+          "returns": "table|nil",
+          "returnType": "table|nil",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "removeObject",
+          "fullPath": "LTileSet:removeObject",
+          "signature": "(name)",
+          "description": "Removes an object archetype by name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Object archetype name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "getObjectNames",
+          "fullPath": "LTileSet:getObjectNames",
+          "signature": "()",
+          "description": "Returns all object archetype names in this tileset.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "setTileObject",
+          "fullPath": "LTileSet:setTileObject",
+          "signature": "(tile_id, [object_name])",
+          "description": "Assigns or clears the object archetype mapped to one tile.",
+          "parameters": [
+            {
+              "name": "tile_id",
+              "type": "integer",
+              "description": "Tile id (1-based).",
+              "optional": false
+            },
+            {
+              "name": "object_name",
+              "type": "string",
+              "description": "Object archetype name, or nil to clear it.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "getTileObject",
+          "fullPath": "LTileSet:getTileObject",
+          "signature": "(tile_id)",
+          "description": "Returns the object archetype name mapped to one tile.",
+          "parameters": [
+            {
+              "name": "tile_id",
+              "type": "integer",
+              "description": "Tile id (1-based).",
+              "optional": false
+            }
+          ],
+          "returns": "string|nil",
+          "returnType": "string|nil",
           "isMethod": true,
           "objectType": "LTileSet"
         },
@@ -148686,12 +149966,12 @@
           "name": "setProperty",
           "fullPath": "LTileSet:setProperty",
           "signature": "(tile_id, name, value)",
-          "description": "Assigns or clears an arbitrary gameplay property associated with this tile.",
+          "description": "Sets or clears a custom string-convertible tile property.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to modify (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             },
             {
@@ -148702,9 +149982,9 @@
             },
             {
               "name": "value",
-              "type": "string",
-              "description": "Property value, or nil to clear.",
-              "optional": true
+              "type": "any",
+              "description": "String, number, boolean, or nil to clear the property.",
+              "optional": false
             }
           ],
           "returns": "nil",
@@ -148716,12 +149996,12 @@
           "name": "getProperty",
           "fullPath": "LTileSet:getProperty",
           "signature": "(tile_id, name)",
-          "description": "Returns an arbitrary gameplay property associated with this tile.",
+          "description": "Returns a custom tile property as a string.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to check (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             },
             {
@@ -148731,8 +150011,8 @@
               "optional": false
             }
           ],
-          "returns": "string",
-          "returnType": "string",
+          "returns": "string|nil",
+          "returnType": "string|nil",
           "isMethod": true,
           "objectType": "LTileSet"
         },
@@ -148740,12 +150020,12 @@
           "name": "getPropertyNumber",
           "fullPath": "LTileSet:getPropertyNumber",
           "signature": "(tile_id, name)",
-          "description": "Returns an arbitrary gameplay property parsed as a number.",
+          "description": "Returns a custom tile property parsed as a number.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to check (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             },
             {
@@ -148755,8 +150035,8 @@
               "optional": false
             }
           ],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "number|nil",
+          "returnType": "number|nil",
           "isMethod": true,
           "objectType": "LTileSet"
         },
@@ -148764,12 +150044,12 @@
           "name": "getPropertyBool",
           "fullPath": "LTileSet:getPropertyBool",
           "signature": "(tile_id, name)",
-          "description": "Returns an arbitrary gameplay property parsed as a boolean.",
+          "description": "Returns a custom tile property parsed as a boolean.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to check (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             },
             {
@@ -148779,8 +150059,8 @@
               "optional": false
             }
           ],
-          "returns": "boolean",
-          "returnType": "boolean",
+          "returns": "boolean|nil",
+          "returnType": "boolean|nil",
           "isMethod": true,
           "objectType": "LTileSet"
         },
@@ -148788,12 +150068,12 @@
           "name": "getProperties",
           "fullPath": "LTileSet:getProperties",
           "signature": "(tile_id)",
-          "description": "Returns all gameplay properties associated with this tile.",
+          "description": "Returns all custom properties for one tile.",
           "parameters": [
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to check (1-based).",
+              "description": "Tile id (1-based).",
               "optional": false
             }
           ],
@@ -148806,24 +150086,24 @@
           "name": "setAutoTileRule",
           "fullPath": "LTileSet:setAutoTileRule",
           "signature": "(type_name, bitmask, tile_id)",
-          "description": "Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.",
+          "description": "Sets a four-neighbor autotile bitmask rule for a tile type.",
           "parameters": [
             {
-              "name": "typeName",
+              "name": "type_name",
               "type": "string",
-              "description": "Logical tile type name (e.g. \"grass\").",
+              "description": "Logical tile type name.",
               "optional": false
             },
             {
               "name": "bitmask",
               "type": "integer",
-              "description": "4-bit neighbor bitmask (0..15).",
+              "description": "Four-neighbor bitmask.",
               "optional": false
             },
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to use for this bitmask (1-based).",
+              "description": "Tile id (1-based) to emit for the bitmask.",
               "optional": false
             }
           ],
@@ -148836,10 +150116,10 @@
           "name": "getAutoTileId",
           "fullPath": "LTileSet:getAutoTileId",
           "signature": "(type_name, bitmask)",
-          "description": "Looks up the tile ID for a 4-bit auto-tile bitmask and type name.",
+          "description": "Resolves a four-neighbor autotile bitmask to a tile id.",
           "parameters": [
             {
-              "name": "typeName",
+              "name": "type_name",
               "type": "string",
               "description": "Logical tile type name.",
               "optional": false
@@ -148847,12 +150127,12 @@
             {
               "name": "bitmask",
               "type": "integer",
-              "description": "4-bit neighbor bitmask (0..15).",
+              "description": "Four-neighbor bitmask.",
               "optional": false
             }
           ],
-          "returns": "integer",
-          "returnType": "integer",
+          "returns": "integer|nil",
+          "returnType": "integer|nil",
           "isMethod": true,
           "objectType": "LTileSet"
         },
@@ -148860,10 +150140,10 @@
           "name": "setAutoTileRule8",
           "fullPath": "LTileSet:setAutoTileRule8",
           "signature": "(type_name, bitmask, tile_id)",
-          "description": "Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.",
+          "description": "Sets an eight-neighbor autotile bitmask rule for a tile type.",
           "parameters": [
             {
-              "name": "typeName",
+              "name": "type_name",
               "type": "string",
               "description": "Logical tile type name.",
               "optional": false
@@ -148871,13 +150151,13 @@
             {
               "name": "bitmask",
               "type": "integer",
-              "description": "8-bit neighbor bitmask (0..255).",
+              "description": "Eight-neighbor bitmask.",
               "optional": false
             },
             {
-              "name": "tileId",
+              "name": "tile_id",
               "type": "integer",
-              "description": "Tile ID to use for this bitmask (1-based).",
+              "description": "Tile id (1-based) to emit for the bitmask.",
               "optional": false
             }
           ],
@@ -148890,10 +150170,10 @@
           "name": "getAutoTileId8",
           "fullPath": "LTileSet:getAutoTileId8",
           "signature": "(type_name, bitmask)",
-          "description": "Looks up the tile ID for an 8-bit auto-tile bitmask and type name.",
+          "description": "Resolves an eight-neighbor autotile bitmask to a tile id.",
           "parameters": [
             {
-              "name": "typeName",
+              "name": "type_name",
               "type": "string",
               "description": "Logical tile type name.",
               "optional": false
@@ -148901,12 +150181,12 @@
             {
               "name": "bitmask",
               "type": "integer",
-              "description": "8-bit neighbor bitmask (0..255).",
+              "description": "Eight-neighbor bitmask.",
               "optional": false
             }
           ],
-          "returns": "integer",
-          "returnType": "integer",
+          "returns": "integer|nil",
+          "returnType": "integer|nil",
           "isMethod": true,
           "objectType": "LTileSet"
         },
@@ -148914,10 +150194,10 @@
           "name": "setAutoTileMode",
           "fullPath": "LTileSet:setAutoTileMode",
           "signature": "(type_name, mode)",
-          "description": "Sets the neighbor matching mode for a named auto-tile type.",
+          "description": "Sets the autotile matching mode for a tile type.",
           "parameters": [
             {
-              "name": "typeName",
+              "name": "type_name",
               "type": "string",
               "description": "Logical tile type name.",
               "optional": false
@@ -148925,7 +150205,7 @@
             {
               "name": "mode",
               "type": "string",
-              "description": "One of `\"matchSides\"`, `\"matchCorners\"`, `\"matchCornersAndSides\"`.",
+              "description": "One of `matchSides`, `matchCorners`, or `matchCornersAndSides`.",
               "optional": false
             }
           ],
@@ -148938,10 +150218,10 @@
           "name": "getAutoTileMode",
           "fullPath": "LTileSet:getAutoTileMode",
           "signature": "(type_name)",
-          "description": "Returns the neighbor matching mode for a named auto-tile type.",
+          "description": "Returns the autotile matching mode for a tile type.",
           "parameters": [
             {
-              "name": "typeName",
+              "name": "type_name",
               "type": "string",
               "description": "Logical tile type name.",
               "optional": false
@@ -148956,7 +150236,7 @@
           "name": "type",
           "fullPath": "LTileSet:type",
           "signature": "()",
-          "description": "Returns the type name of this userdata.",
+          "description": "Returns the userdata type name.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -148967,12 +150247,12 @@
           "name": "typeOf",
           "fullPath": "LTileSet:typeOf",
           "signature": "(name)",
-          "description": "Checks whether this object matches the given type name.",
+          "description": "Checks whether this tileset matches a type name.",
           "parameters": [
             {
               "name": "name",
               "type": "string",
-              "description": "Type name to check against.",
+              "description": "Type name to compare.",
               "optional": false
             }
           ],

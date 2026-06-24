@@ -1,6 +1,13 @@
-//! Owns tile-based light-map storage and accumulation over a shared `TileField`.
-//! Consumes tilefield blockers, light costs, sun occlusion, dimensions, and topology.
-//! Keeps computed light separate from render lighting, player awareness, movement, and minimap display.
+//! This file owns map behavior inside the tilelight subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate map state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for map work.
+//! Serialization, indexing, and boundary checks stay here when they depend on map internals. It keeps maintenance boundari.
+//! Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+//! Open this file when map ownership changes, but keep unrelated subsystem policy in sibling modules.
+//! The code favors small data transformations so examples, specs, and tests can assert behavior directly.
+//! Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.
+//! Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary.
 
 use crate::tilefield::line::visit_line_cells;
 use crate::tilefield::{CellCoord, TileField, TileTopology};
@@ -422,6 +429,11 @@ impl TileLightMap {
             color: sun.color.clamped(),
             mode: sun.mode,
         };
+    }
+
+    /// Set global light aliasing the sun-light source.
+    pub fn set_global_light(&mut self, sun: SunLight) {
+        self.set_sun_light(sun);
     }
 
     /// Compute current light values from ambient, point lights, line lights, and sun light.

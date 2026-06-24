@@ -1,26 +1,72 @@
 {
-  "generated_at": "2026-06-23T22:03:04.279444+00:00",
+  "generated_at": "2026-06-24T11:27:17.895224+00:00",
   "summary": {
     "rust": {
-      "total": 8586,
-      "covered": 8586,
-      "missing": 0,
-      "pct": 100.0
+      "total": 8687,
+      "covered": 8682,
+      "missing": 5,
+      "pct": 99.9
     },
     "lua_api": {
-      "total": 182,
-      "covered": 182,
+      "total": 178,
+      "covered": 178,
       "missing": 0,
       "pct": 100.0
     },
     "total": {
-      "total": 8768,
-      "covered": 8768,
-      "missing": 0,
-      "pct": 100.0
+      "total": 8865,
+      "covered": 8860,
+      "missing": 5,
+      "pct": 99.9
     }
   },
-  "missing": [],
+  "missing": [
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tilefield_api.rs",
+      "line": 416,
+      "kind": "fn",
+      "name": "field_from_provider",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tileset_api.rs",
+      "line": 273,
+      "kind": "fn",
+      "name": "tileset_from_provider",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tileset_api.rs",
+      "line": 351,
+      "kind": "struct",
+      "name": "LuaTileSet",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tileset_api.rs",
+      "line": 356,
+      "kind": "struct",
+      "name": "LuaTileCatalog",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tileset_api.rs",
+      "line": 1078,
+      "kind": "fn",
+      "name": "register",
+      "has_doc": false
+    }
+  ],
   "items": [
     {
       "source": "rust",
@@ -8360,16 +8406,25 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 38,
-      "kind": "struct",
-      "name": "TileAwareness",
+      "line": 16,
+      "kind": "enum",
+      "name": "AwarenessMode",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 48,
+      "line": 25,
+      "kind": "struct",
+      "name": "AwarenessCategoryConfig",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 42,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -8378,7 +8433,52 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 87,
+      "line": 101,
+      "kind": "struct",
+      "name": "TileAwareness",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 113,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 181,
+      "kind": "fn",
+      "name": "define_category",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 198,
+      "kind": "fn",
+      "name": "category",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 203,
+      "kind": "fn",
+      "name": "category_names",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 210,
       "kind": "fn",
       "name": "compute_visible",
       "has_doc": true
@@ -8387,7 +8487,16 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 121,
+      "line": 237,
+      "kind": "fn",
+      "name": "compute_category_visible",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 352,
       "kind": "fn",
       "name": "compute_action",
       "has_doc": true
@@ -8396,7 +8505,7 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 151,
+      "line": 382,
       "kind": "fn",
       "name": "is_visible",
       "has_doc": true
@@ -8405,7 +8514,16 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 158,
+      "line": 390,
+      "kind": "fn",
+      "name": "is_aware",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 398,
       "kind": "fn",
       "name": "is_explored",
       "has_doc": true
@@ -8414,7 +8532,7 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 165,
+      "line": 420,
       "kind": "fn",
       "name": "can_act_on",
       "has_doc": true
@@ -8423,7 +8541,7 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 172,
+      "line": 427,
       "kind": "fn",
       "name": "visible_cells",
       "has_doc": true
@@ -8432,7 +8550,16 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 177,
+      "line": 432,
+      "kind": "fn",
+      "name": "visible_cells_for_category",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 457,
       "kind": "fn",
       "name": "action_cells",
       "has_doc": true
@@ -8441,7 +8568,7 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 208,
+      "line": 542,
       "kind": "fn",
       "name": "clear_player",
       "has_doc": true
@@ -8450,9 +8577,36 @@
       "source": "rust",
       "module": "awareness",
       "file": "src/awareness/tile_awareness.rs",
-      "line": 217,
+      "line": 555,
       "kind": "fn",
       "name": "clear_all",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 568,
+      "kind": "fn",
+      "name": "share",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 583,
+      "kind": "fn",
+      "name": "clear_shares",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "awareness",
+      "file": "src/awareness/tile_awareness.rs",
+      "line": 588,
+      "kind": "fn",
+      "name": "set_team",
       "has_doc": true
     },
     {
@@ -31220,7 +31374,7 @@
       "source": "rust",
       "module": "root",
       "file": "src/lib.rs",
-      "line": 172,
+      "line": 174,
       "kind": "fn",
       "name": "is_lurek_archive_path",
       "has_doc": true
@@ -31229,7 +31383,7 @@
       "source": "rust",
       "module": "root",
       "file": "src/lib.rs",
-      "line": 179,
+      "line": 181,
       "kind": "fn",
       "name": "cli_startup_main_path",
       "has_doc": true
@@ -31238,7 +31392,7 @@
       "source": "rust",
       "module": "root",
       "file": "src/lib.rs",
-      "line": 195,
+      "line": 197,
       "kind": "fn",
       "name": "lurek_run",
       "has_doc": true
@@ -31247,7 +31401,7 @@
       "source": "rust",
       "module": "root",
       "file": "src/lib.rs",
-      "line": 543,
+      "line": 545,
       "kind": "fn",
       "name": "build_builtin_cli_script",
       "has_doc": true
@@ -33398,7 +33552,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 442,
+      "line": 690,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -33407,7 +33561,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 598,
+      "line": 852,
       "kind": "struct",
       "name": "LuaTileFov",
       "has_doc": true
@@ -34361,7 +34515,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/mapblock_api.rs",
-      "line": 1070,
+      "line": 1090,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -34784,7 +34938,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 2170,
+      "line": 2264,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -34793,7 +34947,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 2721,
+      "line": 2858,
       "kind": "struct",
       "name": "LuaGoalMap",
       "has_doc": true
@@ -35009,7 +35163,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 525,
+      "line": 531,
       "kind": "struct",
       "name": "LuaBiomeClassifier",
       "has_doc": true
@@ -35018,7 +35172,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 579,
+      "line": 585,
       "kind": "fn",
       "name": "from_lua_table",
       "has_doc": true
@@ -35027,7 +35181,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 610,
+      "line": 616,
       "kind": "fn",
       "name": "from_name",
       "has_doc": true
@@ -35036,7 +35190,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 631,
+      "line": 637,
       "kind": "struct",
       "name": "LuaNoiseGenerator",
       "has_doc": true
@@ -35045,7 +35199,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 1127,
+      "line": 1133,
       "kind": "struct",
       "name": "LuaCellular",
       "has_doc": true
@@ -35054,7 +35208,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 1286,
+      "line": 1292,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35063,7 +35217,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 2944,
+      "line": 2950,
       "kind": "fn",
       "name": "from_lua_table",
       "has_doc": true
@@ -35072,7 +35226,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 2966,
+      "line": 2972,
       "kind": "fn",
       "name": "from_lua_table",
       "has_doc": true
@@ -35171,7 +35325,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/register.rs",
-      "line": 145,
+      "line": 146,
       "kind": "fn",
       "name": "create_lua_vm",
       "has_doc": true
@@ -35180,7 +35334,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/register.rs",
-      "line": 161,
+      "line": 162,
       "kind": "fn",
       "name": "create_headless_vm",
       "has_doc": true
@@ -35189,7 +35343,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/register.rs",
-      "line": 172,
+      "line": 173,
       "kind": "fn",
       "name": "create_test_vm",
       "has_doc": true
@@ -35531,7 +35685,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 15,
+      "line": 18,
       "kind": "struct",
       "name": "LuaTileField",
       "has_doc": true
@@ -35540,7 +35694,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 21,
+      "line": 24,
       "kind": "struct",
       "name": "LuaTileFieldMap",
       "has_doc": true
@@ -35549,7 +35703,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 1503,
+      "line": 416,
+      "kind": "fn",
+      "name": "field_from_provider",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tilefield_api.rs",
+      "line": 2347,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35558,7 +35721,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilelight_api.rs",
-      "line": 548,
+      "line": 755,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35567,16 +35730,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 134,
-      "kind": "struct",
-      "name": "LuaTileSet",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "lua_api",
-      "file": "src/lua_api/tilemap_api.rs",
-      "line": 540,
+      "line": 234,
       "kind": "struct",
       "name": "LuaTileMap",
       "has_doc": true
@@ -35585,7 +35739,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1143,
+      "line": 927,
       "kind": "struct",
       "name": "LuaAutoTileSheet",
       "has_doc": true
@@ -35594,7 +35748,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1249,
+      "line": 1033,
       "kind": "struct",
       "name": "LuaChunkMap",
       "has_doc": true
@@ -35603,7 +35757,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1394,
+      "line": 1178,
       "kind": "struct",
       "name": "LuaLargeMapRenderer",
       "has_doc": true
@@ -35612,7 +35766,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1548,
+      "line": 1332,
       "kind": "struct",
       "name": "LuaIsoMap",
       "has_doc": true
@@ -35621,10 +35775,46 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1719,
+      "line": 1503,
       "kind": "fn",
       "name": "register",
       "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tileset_api.rs",
+      "line": 273,
+      "kind": "fn",
+      "name": "tileset_from_provider",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tileset_api.rs",
+      "line": 351,
+      "kind": "struct",
+      "name": "LuaTileSet",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tileset_api.rs",
+      "line": 356,
+      "kind": "struct",
+      "name": "LuaTileCatalog",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tileset_api.rs",
+      "line": 1078,
+      "kind": "fn",
+      "name": "register",
+      "has_doc": false
     },
     {
       "source": "rust",
@@ -53540,7 +53730,7 @@
       "source": "rust",
       "module": "procgen",
       "file": "src/procgen/grid_result.rs",
-      "line": 6,
+      "line": 8,
       "kind": "struct",
       "name": "ProcgenGrid",
       "has_doc": true
@@ -53549,7 +53739,7 @@
       "source": "rust",
       "module": "procgen",
       "file": "src/procgen/grid_result.rs",
-      "line": 19,
+      "line": 21,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -53558,7 +53748,7 @@
       "source": "rust",
       "module": "procgen",
       "file": "src/procgen/grid_result.rs",
-      "line": 35,
+      "line": 37,
       "kind": "fn",
       "name": "get",
       "has_doc": true
@@ -53567,7 +53757,7 @@
       "source": "rust",
       "module": "procgen",
       "file": "src/procgen/grid_result.rs",
-      "line": 45,
+      "line": 47,
       "kind": "struct",
       "name": "ProcgenScalarGrid",
       "has_doc": true
@@ -53576,7 +53766,7 @@
       "source": "rust",
       "module": "procgen",
       "file": "src/procgen/grid_result.rs",
-      "line": 58,
+      "line": 60,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -53585,7 +53775,7 @@
       "source": "rust",
       "module": "procgen",
       "file": "src/procgen/grid_result.rs",
-      "line": 74,
+      "line": 76,
       "kind": "fn",
       "name": "get",
       "has_doc": true
@@ -60713,7 +60903,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 37,
+      "line": 38,
       "kind": "struct",
       "name": "Config",
       "has_doc": true
@@ -60722,7 +60912,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 68,
+      "line": 69,
       "kind": "struct",
       "name": "RuntimeConfig",
       "has_doc": true
@@ -60731,7 +60921,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 75,
+      "line": 76,
       "kind": "struct",
       "name": "RenderConfig",
       "has_doc": true
@@ -60740,7 +60930,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 88,
+      "line": 89,
       "kind": "struct",
       "name": "WindowConfig",
       "has_doc": true
@@ -60749,7 +60939,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 123,
+      "line": 124,
       "kind": "struct",
       "name": "TuiConfig",
       "has_doc": true
@@ -60758,7 +60948,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 140,
+      "line": 141,
       "kind": "struct",
       "name": "CliConfig",
       "has_doc": true
@@ -60767,7 +60957,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 155,
+      "line": 156,
       "kind": "struct",
       "name": "HeadlessConfig",
       "has_doc": true
@@ -60776,7 +60966,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 165,
+      "line": 166,
       "kind": "enum",
       "name": "ConfigValidationMode",
       "has_doc": true
@@ -60785,7 +60975,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 175,
+      "line": 176,
       "kind": "struct",
       "name": "ConfigLoadOptions",
       "has_doc": true
@@ -60794,7 +60984,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 199,
+      "line": 200,
       "kind": "struct",
       "name": "ConfigReport",
       "has_doc": true
@@ -60803,7 +60993,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 212,
+      "line": 213,
       "kind": "fn",
       "name": "has_errors",
       "has_doc": true
@@ -60812,7 +61002,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 255,
+      "line": 256,
       "kind": "struct",
       "name": "ModulesConfig",
       "has_doc": true
@@ -60821,7 +61011,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 369,
+      "line": 373,
       "kind": "fn",
       "name": "apply_headless_profile",
       "has_doc": true
@@ -60830,7 +61020,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 391,
+      "line": 395,
       "kind": "fn",
       "name": "validate_and_fix",
       "has_doc": true
@@ -60839,7 +61029,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 463,
+      "line": 467,
       "kind": "struct",
       "name": "PerformanceConfig",
       "has_doc": true
@@ -60848,7 +61038,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 602,
+      "line": 607,
       "kind": "fn",
       "name": "load",
       "has_doc": true
@@ -60857,7 +61047,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 611,
+      "line": 616,
       "kind": "fn",
       "name": "load_from_conf_toml",
       "has_doc": true
@@ -60866,7 +61056,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 625,
+      "line": 630,
       "kind": "fn",
       "name": "load_from_conf_toml_with_options",
       "has_doc": true
@@ -60875,7 +61065,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 664,
+      "line": 669,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -60884,7 +61074,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/config.rs",
-      "line": 669,
+      "line": 674,
       "kind": "fn",
       "name": "validate_with_mode",
       "has_doc": true
@@ -69325,8 +69515,62 @@
     {
       "source": "rust",
       "module": "tilefield",
+      "file": "src/tilefield/catalog.rs",
+      "line": 8,
+      "kind": "trait",
+      "name": "TileObjectCatalog",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/category.rs",
+      "line": 8,
+      "kind": "enum",
+      "name": "TileCategoryKind",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/category.rs",
+      "line": 23,
+      "kind": "fn",
+      "name": "parse",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/category.rs",
+      "line": 37,
+      "kind": "fn",
+      "name": "as_str",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/category.rs",
+      "line": 50,
+      "kind": "struct",
+      "name": "TileCategory",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/category.rs",
+      "line": 61,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 11,
+      "line": 14,
       "kind": "enum",
       "name": "TileChannel",
       "has_doc": true
@@ -69335,7 +69579,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 26,
+      "line": 29,
       "kind": "fn",
       "name": "parse",
       "has_doc": true
@@ -69344,7 +69588,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 40,
+      "line": 43,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -69353,7 +69597,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 51,
+      "line": 54,
       "kind": "fn",
       "name": "index",
       "has_doc": true
@@ -69362,7 +69606,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 64,
+      "line": 67,
       "kind": "struct",
       "name": "TileCell",
       "has_doc": true
@@ -69371,7 +69615,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 86,
+      "line": 101,
       "kind": "fn",
       "name": "blocks",
       "has_doc": true
@@ -69380,7 +69624,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 91,
+      "line": 106,
       "kind": "fn",
       "name": "set_block",
       "has_doc": true
@@ -69389,7 +69633,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 96,
+      "line": 111,
       "kind": "fn",
       "name": "cost",
       "has_doc": true
@@ -69398,7 +69642,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 101,
+      "line": 116,
       "kind": "fn",
       "name": "set_cost",
       "has_doc": true
@@ -69407,7 +69651,115 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 110,
+      "line": 125,
+      "kind": "fn",
+      "name": "blocks_category",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 130,
+      "kind": "fn",
+      "name": "category_blockers",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 135,
+      "kind": "fn",
+      "name": "set_category_block",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 156,
+      "kind": "fn",
+      "name": "category_cost",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 161,
+      "kind": "fn",
+      "name": "category_costs",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 166,
+      "kind": "fn",
+      "name": "set_category_cost",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 186,
+      "kind": "fn",
+      "name": "category_transmission",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 191,
+      "kind": "fn",
+      "name": "category_transmissions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 196,
+      "kind": "fn",
+      "name": "set_category_transmission",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 221,
+      "kind": "fn",
+      "name": "category_filter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 226,
+      "kind": "fn",
+      "name": "category_filters",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 231,
+      "kind": "fn",
+      "name": "set_category_filter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 259,
       "kind": "fn",
       "name": "sun_occlusion",
       "has_doc": true
@@ -69416,7 +69768,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 115,
+      "line": 264,
       "kind": "fn",
       "name": "set_sun_occlusion",
       "has_doc": true
@@ -69425,25 +69777,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 124,
-      "kind": "fn",
-      "name": "profile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilefield",
-      "file": "src/tilefield/cell.rs",
-      "line": 129,
-      "kind": "fn",
-      "name": "set_profile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilefield",
-      "file": "src/tilefield/cell.rs",
-      "line": 134,
+      "line": 273,
       "kind": "fn",
       "name": "get_ref",
       "has_doc": true
@@ -69452,7 +69786,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 139,
+      "line": 278,
       "kind": "fn",
       "name": "set_ref",
       "has_doc": true
@@ -69461,7 +69795,25 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 149,
+      "line": 289,
+      "kind": "fn",
+      "name": "get_typed_ref",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 294,
+      "kind": "fn",
+      "name": "set_typed_ref",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 305,
       "kind": "fn",
       "name": "clear_ref",
       "has_doc": true
@@ -69470,7 +69822,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/cell.rs",
-      "line": 154,
+      "line": 311,
       "kind": "fn",
       "name": "refs",
       "has_doc": true
@@ -69478,8 +69830,80 @@
     {
       "source": "rust",
       "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 316,
+      "kind": "fn",
+      "name": "typed_refs",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 321,
+      "kind": "fn",
+      "name": "set_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 342,
+      "kind": "fn",
+      "name": "lights",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 347,
+      "kind": "fn",
+      "name": "add_modifier",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 354,
+      "kind": "fn",
+      "name": "remove_modifier",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/cell.rs",
+      "line": 364,
+      "kind": "fn",
+      "name": "modifiers",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/emitter.rs",
+      "line": 7,
+      "kind": "struct",
+      "name": "TileLightEmitter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/emitter.rs",
+      "line": 18,
+      "kind": "struct",
+      "name": "TileLightSource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 19,
+      "line": 24,
       "kind": "struct",
       "name": "TileRegion",
       "has_doc": true
@@ -69488,7 +69912,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 28,
+      "line": 33,
       "kind": "struct",
       "name": "TileField",
       "has_doc": true
@@ -69497,7 +69921,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 40,
+      "line": 49,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -69506,7 +69930,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 66,
+      "line": 94,
       "kind": "fn",
       "name": "size",
       "has_doc": true
@@ -69515,7 +69939,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 71,
+      "line": 99,
       "kind": "fn",
       "name": "topology",
       "has_doc": true
@@ -69524,27 +69948,36 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 76,
+      "line": 104,
       "kind": "fn",
-      "name": "neighbors",
+      "name": "version",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 84,
+      "line": 109,
       "kind": "fn",
-      "name": "in_bounds",
+      "name": "define_category",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 100,
+      "line": 119,
       "kind": "fn",
-      "name": "set_region_rect",
+      "name": "category",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 124,
+      "kind": "fn",
+      "name": "category_names",
       "has_doc": true
     },
     {
@@ -69553,6 +69986,42 @@
       "file": "src/tilefield/field.rs",
       "line": 131,
       "kind": "fn",
+      "name": "drain_dirty_rects",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 175,
+      "kind": "fn",
+      "name": "neighbors",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 183,
+      "kind": "fn",
+      "name": "in_bounds",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 199,
+      "kind": "fn",
+      "name": "set_region_rect",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 230,
+      "kind": "fn",
       "name": "set_region_cells",
       "has_doc": true
     },
@@ -69560,7 +70029,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 156,
+      "line": 255,
       "kind": "fn",
       "name": "remove_region",
       "has_doc": true
@@ -69569,7 +70038,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 161,
+      "line": 260,
       "kind": "fn",
       "name": "region_contains",
       "has_doc": true
@@ -69578,7 +70047,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 168,
+      "line": 267,
       "kind": "fn",
       "name": "region_cells",
       "has_doc": true
@@ -69587,7 +70056,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 173,
+      "line": 272,
       "kind": "fn",
       "name": "region_names",
       "has_doc": true
@@ -69596,7 +70065,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 180,
+      "line": 279,
       "kind": "fn",
       "name": "cell",
       "has_doc": true
@@ -69605,7 +70074,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 185,
+      "line": 284,
       "kind": "fn",
       "name": "cell_mut",
       "has_doc": true
@@ -69614,7 +70083,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 190,
+      "line": 289,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -69623,7 +70092,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 197,
+      "line": 296,
       "kind": "fn",
       "name": "clear_cell",
       "has_doc": true
@@ -69632,7 +70101,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 206,
+      "line": 306,
       "kind": "fn",
       "name": "set_block",
       "has_doc": true
@@ -69641,7 +70110,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 220,
+      "line": 321,
       "kind": "fn",
       "name": "blocks",
       "has_doc": true
@@ -69650,7 +70119,25 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 225,
+      "line": 339,
+      "kind": "fn",
+      "name": "set_category_block",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 354,
+      "kind": "fn",
+      "name": "blocks_category",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 378,
       "kind": "fn",
       "name": "set_cost",
       "has_doc": true
@@ -69659,7 +70146,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 238,
+      "line": 393,
       "kind": "fn",
       "name": "cost",
       "has_doc": true
@@ -69668,7 +70155,61 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 243,
+      "line": 413,
+      "kind": "fn",
+      "name": "set_category_cost",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 428,
+      "kind": "fn",
+      "name": "category_cost",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 459,
+      "kind": "fn",
+      "name": "set_category_transmission",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 474,
+      "kind": "fn",
+      "name": "category_transmission",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 498,
+      "kind": "fn",
+      "name": "set_category_filter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 513,
+      "kind": "fn",
+      "name": "category_filter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 533,
       "kind": "fn",
       "name": "set_sun_occlusion",
       "has_doc": true
@@ -69677,7 +70218,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 251,
+      "line": 543,
       "kind": "fn",
       "name": "sun_occlusion",
       "has_doc": true
@@ -69686,34 +70227,43 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 256,
+      "line": 557,
       "kind": "fn",
-      "name": "set_profile",
+      "name": "set_modifier",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 265,
+      "line": 569,
       "kind": "fn",
-      "name": "profile",
+      "name": "modifier",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 270,
+      "line": 574,
       "kind": "fn",
-      "name": "remove_profile",
+      "name": "remove_modifier",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 275,
+      "line": 586,
+      "kind": "fn",
+      "name": "apply_modifier",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 599,
       "kind": "fn",
       "name": "apply_profile",
       "has_doc": true
@@ -69722,7 +70272,43 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 296,
+      "line": 604,
+      "kind": "fn",
+      "name": "clear_modifier",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 616,
+      "kind": "fn",
+      "name": "active_modifiers",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 623,
+      "kind": "fn",
+      "name": "set_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 638,
+      "kind": "fn",
+      "name": "tile_light_sources",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 681,
       "kind": "fn",
       "name": "set_ref",
       "has_doc": true
@@ -69731,7 +70317,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 304,
+      "line": 692,
       "kind": "fn",
       "name": "get_ref",
       "has_doc": true
@@ -69740,7 +70326,52 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 309,
+      "line": 697,
+      "kind": "fn",
+      "name": "set_typed_ref",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 713,
+      "kind": "fn",
+      "name": "get_typed_ref",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 718,
+      "kind": "fn",
+      "name": "define_slot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 728,
+      "kind": "fn",
+      "name": "remove_slot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 741,
+      "kind": "fn",
+      "name": "has_slot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 746,
       "kind": "fn",
       "name": "ref_slots",
       "has_doc": true
@@ -69749,7 +70380,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 320,
+      "line": 751,
       "kind": "fn",
       "name": "clear_ref",
       "has_doc": true
@@ -69758,7 +70389,25 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 329,
+      "line": 765,
+      "kind": "fn",
+      "name": "footprint_passable",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 794,
+      "kind": "fn",
+      "name": "clear_line_category",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/field.rs",
+      "line": 810,
       "kind": "fn",
       "name": "line",
       "has_doc": true
@@ -69767,7 +70416,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 339,
+      "line": 820,
       "kind": "fn",
       "name": "first_blocker",
       "has_doc": true
@@ -69776,7 +70425,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 355,
+      "line": 836,
       "kind": "fn",
       "name": "clear_line",
       "has_doc": true
@@ -69785,7 +70434,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 365,
+      "line": 846,
       "kind": "fn",
       "name": "distance",
       "has_doc": true
@@ -69794,7 +70443,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 377,
+      "line": 858,
       "kind": "fn",
       "name": "export_block_layer",
       "has_doc": true
@@ -69803,7 +70452,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 388,
+      "line": 869,
       "kind": "fn",
       "name": "export_cost_layer",
       "has_doc": true
@@ -69812,16 +70461,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 399,
-      "kind": "fn",
-      "name": "export_profile_layer",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilefield",
-      "file": "src/tilefield/field.rs",
-      "line": 413,
+      "line": 880,
       "kind": "fn",
       "name": "export_ref_layer",
       "has_doc": true
@@ -69830,7 +70470,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 441,
+      "line": 908,
       "kind": "fn",
       "name": "write_block_layer",
       "has_doc": true
@@ -69839,7 +70479,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 458,
+      "line": 925,
       "kind": "fn",
       "name": "write_cost_layer",
       "has_doc": true
@@ -69848,16 +70488,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field.rs",
-      "line": 475,
-      "kind": "fn",
-      "name": "write_profile_layer",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilefield",
-      "file": "src/tilefield/field.rs",
-      "line": 496,
+      "line": 942,
       "kind": "fn",
       "name": "write_ref_layer",
       "has_doc": true
@@ -69866,7 +70497,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field_map.rs",
-      "line": 12,
+      "line": 13,
       "kind": "type",
       "name": "SharedTileField",
       "has_doc": true
@@ -69875,7 +70506,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field_map.rs",
-      "line": 16,
+      "line": 17,
       "kind": "struct",
       "name": "TileFieldMap",
       "has_doc": true
@@ -69884,7 +70515,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field_map.rs",
-      "line": 29,
+      "line": 30,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -69893,7 +70524,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field_map.rs",
-      "line": 76,
+      "line": 77,
       "kind": "fn",
       "name": "map_size",
       "has_doc": true
@@ -69902,7 +70533,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field_map.rs",
-      "line": 81,
+      "line": 82,
       "kind": "fn",
       "name": "field_size",
       "has_doc": true
@@ -69911,7 +70542,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field_map.rs",
-      "line": 86,
+      "line": 87,
       "kind": "fn",
       "name": "topology",
       "has_doc": true
@@ -69920,7 +70551,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field_map.rs",
-      "line": 91,
+      "line": 92,
       "kind": "fn",
       "name": "in_bounds",
       "has_doc": true
@@ -69929,7 +70560,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field_map.rs",
-      "line": 106,
+      "line": 107,
       "kind": "fn",
       "name": "field",
       "has_doc": true
@@ -69938,7 +70569,7 @@
       "source": "rust",
       "module": "tilefield",
       "file": "src/tilefield/field_map.rs",
-      "line": 113,
+      "line": 114,
       "kind": "fn",
       "name": "set_field",
       "has_doc": true
@@ -69973,28 +70604,127 @@
     {
       "source": "rust",
       "module": "tilefield",
-      "file": "src/tilefield/profile.rs",
-      "line": 12,
+      "file": "src/tilefield/modifier.rs",
+      "line": 10,
       "kind": "struct",
-      "name": "TileProfile",
+      "name": "TileModifier",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "tilefield",
-      "file": "src/tilefield/profile.rs",
-      "line": 33,
+      "file": "src/tilefield/modifier.rs",
+      "line": 39,
       "kind": "fn",
-      "name": "with_blocks",
+      "name": "new",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "tilefield",
-      "file": "src/tilefield/profile.rs",
+      "file": "src/tilefield/reference.rs",
+      "line": 7,
+      "kind": "struct",
+      "name": "TileRef",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/reference.rs",
+      "line": 18,
+      "kind": "fn",
+      "name": "tile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/reference.rs",
+      "line": 23,
+      "kind": "fn",
+      "name": "object",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/reference.rs",
+      "line": 28,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/semantics.rs",
+      "line": 9,
+      "kind": "struct",
+      "name": "TileSemanticsView",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/semantics.rs",
+      "line": 15,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/semantics.rs",
+      "line": 20,
+      "kind": "fn",
+      "name": "blocks",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/semantics.rs",
+      "line": 25,
+      "kind": "fn",
+      "name": "cost",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/semantics.rs",
+      "line": 30,
+      "kind": "fn",
+      "name": "transmission",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/semantics.rs",
+      "line": 35,
+      "kind": "fn",
+      "name": "filter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/semantics.rs",
+      "line": 40,
+      "kind": "fn",
+      "name": "light_sources",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilefield",
+      "file": "src/tilefield/semantics.rs",
       "line": 45,
       "kind": "fn",
-      "name": "builtins",
+      "name": "footprint_passable",
       "has_doc": true
     },
     {
@@ -70046,7 +70776,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 6,
+      "line": 8,
       "kind": "struct",
       "name": "LightColor",
       "has_doc": true
@@ -70055,7 +70785,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 17,
+      "line": 19,
       "kind": "const",
       "name": "BLACK",
       "has_doc": true
@@ -70064,7 +70794,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 24,
+      "line": 26,
       "kind": "const",
       "name": "WHITE",
       "has_doc": true
@@ -70073,7 +70803,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 31,
+      "line": 33,
       "kind": "fn",
       "name": "clamped",
       "has_doc": true
@@ -70082,7 +70812,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 40,
+      "line": 42,
       "kind": "fn",
       "name": "add_scaled",
       "has_doc": true
@@ -70091,7 +70821,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 47,
+      "line": 49,
       "kind": "fn",
       "name": "luma",
       "has_doc": true
@@ -70100,7 +70830,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 14,
+      "line": 21,
       "kind": "struct",
       "name": "TileLightMap",
       "has_doc": true
@@ -70109,7 +70839,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 29,
+      "line": 37,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -70118,7 +70848,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 58,
+      "line": 67,
       "kind": "fn",
       "name": "from_field",
       "has_doc": true
@@ -70127,7 +70857,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 64,
+      "line": 73,
       "kind": "fn",
       "name": "size",
       "has_doc": true
@@ -70136,7 +70866,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 69,
+      "line": 78,
       "kind": "fn",
       "name": "matches_field",
       "has_doc": true
@@ -70145,7 +70875,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 89,
+      "line": 99,
       "kind": "fn",
       "name": "add_point_light",
       "has_doc": true
@@ -70154,7 +70884,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 127,
+      "line": 137,
       "kind": "fn",
       "name": "update_point_light",
       "has_doc": true
@@ -70163,7 +70893,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 175,
+      "line": 185,
       "kind": "fn",
       "name": "remove_point_light",
       "has_doc": true
@@ -70172,7 +70902,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 186,
+      "line": 196,
       "kind": "fn",
       "name": "clear_point_lights",
       "has_doc": true
@@ -70181,7 +70911,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 192,
+      "line": 202,
       "kind": "fn",
       "name": "add_line_light",
       "has_doc": true
@@ -70190,7 +70920,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 234,
+      "line": 244,
       "kind": "fn",
       "name": "update_line_light",
       "has_doc": true
@@ -70199,7 +70929,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 291,
+      "line": 301,
       "kind": "fn",
       "name": "remove_line_light",
       "has_doc": true
@@ -70208,7 +70938,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 302,
+      "line": 312,
       "kind": "fn",
       "name": "clear_line_lights",
       "has_doc": true
@@ -70217,7 +70947,43 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 307,
+      "line": 318,
+      "kind": "fn",
+      "name": "add_area_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 357,
+      "kind": "fn",
+      "name": "update_area_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 405,
+      "kind": "fn",
+      "name": "remove_area_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 416,
+      "kind": "fn",
+      "name": "clear_area_lights",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 421,
       "kind": "fn",
       "name": "set_ambient_light",
       "has_doc": true
@@ -70226,7 +70992,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 312,
+      "line": 426,
       "kind": "fn",
       "name": "set_sun_light",
       "has_doc": true
@@ -70235,7 +71001,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 321,
+      "line": 435,
       "kind": "fn",
       "name": "set_global_light",
       "has_doc": true
@@ -70244,7 +71010,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 326,
+      "line": 441,
       "kind": "fn",
       "name": "compute",
       "has_doc": true
@@ -70253,7 +71019,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 593,
+      "line": 920,
       "kind": "fn",
       "name": "light_at",
       "has_doc": true
@@ -70262,7 +71028,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 600,
+      "line": 927,
       "kind": "fn",
       "name": "export_layer",
       "has_doc": true
@@ -70271,7 +71037,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 611,
+      "line": 938,
       "kind": "fn",
       "name": "export_volume",
       "has_doc": true
@@ -70279,8 +71045,17 @@
     {
       "source": "rust",
       "module": "tilelight",
+      "file": "src/tilelight/mod.rs",
+      "line": 20,
+      "kind": "type",
+      "name": "GlobalLight",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 8,
+      "line": 12,
       "kind": "struct",
       "name": "LightModulation",
       "has_doc": true
@@ -70289,7 +71064,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 27,
+      "line": 31,
       "kind": "fn",
       "name": "intensity_at",
       "has_doc": true
@@ -70298,7 +71073,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 38,
+      "line": 42,
       "kind": "fn",
       "name": "color_at",
       "has_doc": true
@@ -70307,7 +71082,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 60,
+      "line": 64,
       "kind": "struct",
       "name": "PointLight",
       "has_doc": true
@@ -70316,7 +71091,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 81,
+      "line": 85,
       "kind": "struct",
       "name": "PointLightUpdate",
       "has_doc": true
@@ -70325,7 +71100,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 100,
+      "line": 104,
       "kind": "struct",
       "name": "LineLight",
       "has_doc": true
@@ -70334,7 +71109,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 127,
+      "line": 131,
       "kind": "struct",
       "name": "LineLightUpdate",
       "has_doc": true
@@ -70343,7 +71118,25 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 152,
+      "line": 156,
+      "kind": "struct",
+      "name": "AreaLight",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/source.rs",
+      "line": 181,
+      "kind": "struct",
+      "name": "AreaLightUpdate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/source.rs",
+      "line": 204,
       "kind": "enum",
       "name": "SunLightMode",
       "has_doc": true
@@ -70352,18 +71145,9 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 166,
+      "line": 218,
       "kind": "struct",
       "name": "SunLight",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilelight",
-      "file": "src/tilelight/source.rs",
-      "line": 186,
-      "kind": "type",
-      "name": "GlobalLight",
       "has_doc": true
     },
     {
@@ -70380,24 +71164,6 @@
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
       "line": 28,
-      "kind": "enum",
-      "name": "AutoTileMode",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/autotile_sheet.rs",
-      "line": 39,
-      "kind": "fn",
-      "name": "as_str",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/autotile_sheet.rs",
-      "line": 50,
       "kind": "struct",
       "name": "AutoTileSheet",
       "has_doc": true
@@ -70406,7 +71172,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 65,
+      "line": 43,
       "kind": "fn",
       "name": "layout_name",
       "has_doc": true
@@ -70415,7 +71181,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 75,
+      "line": 53,
       "kind": "fn",
       "name": "default_mode_for_layout",
       "has_doc": true
@@ -70424,7 +71190,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 171,
+      "line": 149,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -70433,7 +71199,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 200,
+      "line": 178,
       "kind": "fn",
       "name": "get_layout",
       "has_doc": true
@@ -70442,7 +71208,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 205,
+      "line": 183,
       "kind": "fn",
       "name": "get_layout_name",
       "has_doc": true
@@ -70451,7 +71217,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 210,
+      "line": 188,
       "kind": "fn",
       "name": "get_default_mode",
       "has_doc": true
@@ -70460,7 +71226,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 215,
+      "line": 193,
       "kind": "fn",
       "name": "get_tile_count",
       "has_doc": true
@@ -70469,7 +71235,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 220,
+      "line": 198,
       "kind": "fn",
       "name": "get_tile_width",
       "has_doc": true
@@ -70478,7 +71244,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 225,
+      "line": 203,
       "kind": "fn",
       "name": "get_tile_height",
       "has_doc": true
@@ -70487,7 +71253,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 229,
+      "line": 207,
       "kind": "fn",
       "name": "apply_to_tileset",
       "has_doc": true
@@ -70496,7 +71262,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 253,
+      "line": 231,
       "kind": "fn",
       "name": "get_bitmask_for_tile",
       "has_doc": true
@@ -70505,7 +71271,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 257,
+      "line": 235,
       "kind": "fn",
       "name": "get_tile_for_bitmask",
       "has_doc": true
@@ -70514,7 +71280,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 261,
+      "line": 239,
       "kind": "fn",
       "name": "get_quad",
       "has_doc": true
@@ -70523,7 +71289,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 274,
+      "line": 252,
       "kind": "fn",
       "name": "get_grid_quad",
       "has_doc": true
@@ -70532,7 +71298,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 288,
+      "line": 266,
       "kind": "fn",
       "name": "get_composite48_grid_quad",
       "has_doc": true
@@ -70541,7 +71307,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 292,
+      "line": 270,
       "kind": "fn",
       "name": "get_quarter_rects",
       "has_doc": true
@@ -70550,7 +71316,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 307,
+      "line": 285,
       "kind": "fn",
       "name": "get_quarter_dst_rects",
       "has_doc": true
@@ -70748,7 +71514,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/coords.rs",
-      "line": 10,
+      "line": 8,
       "kind": "fn",
       "name": "to_screen_iso",
       "has_doc": true
@@ -70757,7 +71523,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/coords.rs",
-      "line": 15,
+      "line": 13,
       "kind": "fn",
       "name": "from_screen_iso",
       "has_doc": true
@@ -70766,7 +71532,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/coords.rs",
-      "line": 22,
+      "line": 20,
       "kind": "fn",
       "name": "to_screen_hex",
       "has_doc": true
@@ -70775,7 +71541,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/coords.rs",
-      "line": 29,
+      "line": 27,
       "kind": "fn",
       "name": "from_screen_hex",
       "has_doc": true
@@ -70784,7 +71550,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/error.rs",
-      "line": 12,
+      "line": 11,
       "kind": "enum",
       "name": "TileMapError",
       "has_doc": true
@@ -71234,7 +72000,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/limits.rs",
-      "line": 11,
+      "line": 10,
       "kind": "struct",
       "name": "TileMapLimits",
       "has_doc": true
@@ -71243,7 +72009,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/limits.rs",
-      "line": 43,
+      "line": 42,
       "kind": "fn",
       "name": "checked_layer_cells",
       "has_doc": true
@@ -71252,7 +72018,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/limits.rs",
-      "line": 68,
+      "line": 67,
       "kind": "fn",
       "name": "checked_chunk_cells",
       "has_doc": true
@@ -71261,7 +72027,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/orientation.rs",
-      "line": 5,
+      "line": 7,
       "kind": "enum",
       "name": "MapOrientation",
       "has_doc": true
@@ -71270,7 +72036,34 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/render.rs",
-      "line": 102,
+      "line": 20,
+      "kind": "struct",
+      "name": "TileFieldSlotRenderOptions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/render.rs",
+      "line": 122,
+      "kind": "fn",
+      "name": "build_field_slot_render_commands",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/render.rs",
+      "line": 224,
+      "kind": "fn",
+      "name": "build_field_catalog_slot_render_commands",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/render.rs",
+      "line": 342,
       "kind": "fn",
       "name": "build_render_commands",
       "has_doc": true
@@ -71279,7 +72072,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/render.rs",
-      "line": 145,
+      "line": 385,
       "kind": "fn",
       "name": "generate_render_commands",
       "has_doc": true
@@ -71288,7 +72081,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 21,
+      "line": 26,
       "kind": "struct",
       "name": "TileLayer",
       "has_doc": true
@@ -71297,7 +72090,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 76,
+      "line": 81,
       "kind": "enum",
       "name": "TileIndexPolicy",
       "has_doc": true
@@ -71306,7 +72099,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 85,
+      "line": 90,
       "kind": "struct",
       "name": "TileMapDiagnosticsSnapshot",
       "has_doc": true
@@ -71315,7 +72108,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 125,
+      "line": 130,
       "kind": "struct",
       "name": "TileMap",
       "has_doc": true
@@ -71324,7 +72117,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 159,
+      "line": 164,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -71333,7 +72126,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 195,
+      "line": 200,
       "kind": "fn",
       "name": "try_new",
       "has_doc": true
@@ -71342,7 +72135,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 209,
+      "line": 214,
       "kind": "fn",
       "name": "try_new_with_limits",
       "has_doc": true
@@ -71351,7 +72144,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 293,
+      "line": 298,
       "kind": "fn",
       "name": "diagnostics_snapshot",
       "has_doc": true
@@ -71360,7 +72153,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 298,
+      "line": 303,
       "kind": "fn",
       "name": "set_limits",
       "has_doc": true
@@ -71369,7 +72162,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 303,
+      "line": 308,
       "kind": "fn",
       "name": "limits",
       "has_doc": true
@@ -71378,7 +72171,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 308,
+      "line": 313,
       "kind": "fn",
       "name": "set_index_policy",
       "has_doc": true
@@ -71387,7 +72180,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 318,
+      "line": 323,
       "kind": "fn",
       "name": "index_policy",
       "has_doc": true
@@ -71396,7 +72189,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 323,
+      "line": 328,
       "kind": "fn",
       "name": "add_tileset",
       "has_doc": true
@@ -71405,7 +72198,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 329,
+      "line": 334,
       "kind": "fn",
       "name": "get_tileset",
       "has_doc": true
@@ -71414,7 +72207,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 333,
+      "line": 338,
       "kind": "fn",
       "name": "get_tileset_count",
       "has_doc": true
@@ -71423,7 +72216,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 337,
+      "line": 342,
       "kind": "fn",
       "name": "add_layer",
       "has_doc": true
@@ -71432,7 +72225,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 343,
+      "line": 348,
       "kind": "fn",
       "name": "try_add_layer",
       "has_doc": true
@@ -71441,7 +72234,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 364,
+      "line": 369,
       "kind": "fn",
       "name": "get_layer_count",
       "has_doc": true
@@ -71450,7 +72243,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 368,
+      "line": 373,
       "kind": "fn",
       "name": "get_layer_name",
       "has_doc": true
@@ -71459,7 +72252,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 372,
+      "line": 377,
       "kind": "fn",
       "name": "set_layer_visible",
       "has_doc": true
@@ -71468,7 +72261,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 376,
+      "line": 381,
       "kind": "fn",
       "name": "get_layer_visible",
       "has_doc": true
@@ -71477,7 +72270,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 380,
+      "line": 385,
       "kind": "fn",
       "name": "set_layer_color",
       "has_doc": true
@@ -71486,7 +72279,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 384,
+      "line": 389,
       "kind": "fn",
       "name": "get_layer_color",
       "has_doc": true
@@ -71495,7 +72288,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 390,
+      "line": 395,
       "kind": "fn",
       "name": "effective_tile_tint",
       "has_doc": true
@@ -71504,7 +72297,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 398,
+      "line": 403,
       "kind": "fn",
       "name": "set_layer_offset",
       "has_doc": true
@@ -71513,7 +72306,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 402,
+      "line": 407,
       "kind": "fn",
       "name": "get_layer_offset",
       "has_doc": true
@@ -71522,7 +72315,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 406,
+      "line": 411,
       "kind": "fn",
       "name": "set_layer_parallax",
       "has_doc": true
@@ -71531,7 +72324,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 410,
+      "line": 415,
       "kind": "fn",
       "name": "get_layer_parallax",
       "has_doc": true
@@ -71540,7 +72333,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 416,
+      "line": 421,
       "kind": "fn",
       "name": "get_layer_dimensions",
       "has_doc": true
@@ -71549,7 +72342,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 420,
+      "line": 425,
       "kind": "fn",
       "name": "set_tile",
       "has_doc": true
@@ -71558,7 +72351,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 424,
+      "line": 429,
       "kind": "fn",
       "name": "get_tile",
       "has_doc": true
@@ -71567,7 +72360,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 429,
+      "line": 434,
       "kind": "fn",
       "name": "set_tile_tint",
       "has_doc": true
@@ -71576,7 +72369,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 433,
+      "line": 438,
       "kind": "fn",
       "name": "clear_tile",
       "has_doc": true
@@ -71585,7 +72378,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 437,
+      "line": 442,
       "kind": "fn",
       "name": "fill",
       "has_doc": true
@@ -71594,7 +72387,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 452,
+      "line": 457,
       "kind": "fn",
       "name": "tile_type_index",
       "has_doc": true
@@ -71603,7 +72396,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 462,
+      "line": 467,
       "kind": "fn",
       "name": "find_tiles_by_gid",
       "has_doc": true
@@ -71612,7 +72405,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 473,
+      "line": 478,
       "kind": "fn",
       "name": "try_set_layer_visible",
       "has_doc": true
@@ -71621,7 +72414,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 484,
+      "line": 489,
       "kind": "fn",
       "name": "try_set_layer_color",
       "has_doc": true
@@ -71630,7 +72423,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 501,
+      "line": 506,
       "kind": "fn",
       "name": "try_set_layer_offset",
       "has_doc": true
@@ -71639,7 +72432,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 516,
+      "line": 521,
       "kind": "fn",
       "name": "try_set_layer_parallax",
       "has_doc": true
@@ -71648,7 +72441,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 531,
+      "line": 536,
       "kind": "fn",
       "name": "try_set_tile",
       "has_doc": true
@@ -71657,7 +72450,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 565,
+      "line": 570,
       "kind": "fn",
       "name": "try_get_tile",
       "has_doc": true
@@ -71666,7 +72459,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 578,
+      "line": 583,
       "kind": "fn",
       "name": "try_set_tile_tint",
       "has_doc": true
@@ -71675,7 +72468,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 600,
+      "line": 605,
       "kind": "fn",
       "name": "set_viewport",
       "has_doc": true
@@ -71684,7 +72477,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 605,
+      "line": 610,
       "kind": "fn",
       "name": "get_viewport",
       "has_doc": true
@@ -71693,7 +72486,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 609,
+      "line": 614,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -71702,7 +72495,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 646,
+      "line": 651,
       "kind": "fn",
       "name": "world_to_tile",
       "has_doc": true
@@ -71711,7 +72504,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 651,
+      "line": 656,
       "kind": "fn",
       "name": "try_world_to_tile",
       "has_doc": true
@@ -71720,7 +72513,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 662,
+      "line": 667,
       "kind": "fn",
       "name": "tile_to_world",
       "has_doc": true
@@ -71729,7 +72522,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 669,
+      "line": 674,
       "kind": "fn",
       "name": "get_tile_width",
       "has_doc": true
@@ -71738,7 +72531,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 673,
+      "line": 678,
       "kind": "fn",
       "name": "get_tile_height",
       "has_doc": true
@@ -71747,7 +72540,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 678,
+      "line": 683,
       "kind": "fn",
       "name": "get_tile_dimensions",
       "has_doc": true
@@ -71756,7 +72549,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 682,
+      "line": 687,
       "kind": "fn",
       "name": "get_chunk_size",
       "has_doc": true
@@ -71765,7 +72558,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 686,
+      "line": 691,
       "kind": "fn",
       "name": "get_orientation",
       "has_doc": true
@@ -71774,7 +72567,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 690,
+      "line": 695,
       "kind": "fn",
       "name": "set_orientation",
       "has_doc": true
@@ -71783,7 +72576,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 767,
+      "line": 724,
+      "kind": "fn",
+      "name": "tile_render_origin",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/tilemap.rs",
+      "line": 777,
       "kind": "fn",
       "name": "render_gid",
       "has_doc": true
@@ -71792,7 +72594,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 795,
+      "line": 805,
       "kind": "fn",
       "name": "apply_autotile",
       "has_doc": true
@@ -71801,7 +72603,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 817,
+      "line": 827,
       "kind": "fn",
       "name": "apply_autotile_at",
       "has_doc": true
@@ -71810,7 +72612,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 846,
+      "line": 856,
       "kind": "fn",
       "name": "apply_autotile_8",
       "has_doc": true
@@ -71819,7 +72621,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 868,
+      "line": 878,
       "kind": "fn",
       "name": "apply_autotile_8_at",
       "has_doc": true
@@ -71828,7 +72630,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 897,
+      "line": 907,
       "kind": "fn",
       "name": "apply_autotile_mode",
       "has_doc": true
@@ -71837,7 +72639,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 906,
+      "line": 916,
       "kind": "fn",
       "name": "apply_autotile_mode_at",
       "has_doc": true
@@ -71849,267 +72651,6 @@
       "line": 8,
       "kind": "fn",
       "name": "remove_pos_from_gid",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 16,
-      "kind": "struct",
-      "name": "TileAnimFrame",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 25,
-      "kind": "struct",
-      "name": "TileSet",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 59,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 87,
-      "kind": "fn",
-      "name": "get_first_gid",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 91,
-      "kind": "fn",
-      "name": "get_tile_count",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 95,
-      "kind": "fn",
-      "name": "get_columns",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 99,
-      "kind": "fn",
-      "name": "get_tile_width",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 103,
-      "kind": "fn",
-      "name": "get_tile_height",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 107,
-      "kind": "fn",
-      "name": "get_tile_dimensions",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 111,
-      "kind": "fn",
-      "name": "get_spacing",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 115,
-      "kind": "fn",
-      "name": "get_margin",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 119,
-      "kind": "fn",
-      "name": "get_quad",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 132,
-      "kind": "fn",
-      "name": "set_animation",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 143,
-      "kind": "fn",
-      "name": "get_animation",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 148,
-      "kind": "fn",
-      "name": "iter_animated_local_ids",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 152,
-      "kind": "fn",
-      "name": "set_profile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 164,
-      "kind": "fn",
-      "name": "get_profile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 169,
-      "kind": "fn",
-      "name": "set_physics_shape",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 181,
-      "kind": "fn",
-      "name": "get_physics_shape",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 186,
-      "kind": "fn",
-      "name": "set_property",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 215,
-      "kind": "fn",
-      "name": "get_property",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 223,
-      "kind": "fn",
-      "name": "properties",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 227,
-      "kind": "fn",
-      "name": "set_auto_tile_rule",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 232,
-      "kind": "fn",
-      "name": "get_auto_tile_id",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 238,
-      "kind": "fn",
-      "name": "set_auto_tile_rule_8",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 243,
-      "kind": "fn",
-      "name": "get_auto_tile_id_8",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 250,
-      "kind": "fn",
-      "name": "set_auto_tile_mode",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 255,
-      "kind": "fn",
-      "name": "get_auto_tile_mode",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/tileset.rs",
-      "line": 263,
-      "kind": "fn",
-      "name": "has_auto_tile_mode",
       "has_doc": true
     },
     {
@@ -72236,6 +72777,420 @@
       "line": 259,
       "kind": "fn",
       "name": "load_tmx_with_options",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/animation.rs",
+      "line": 7,
+      "kind": "struct",
+      "name": "TileAnimFrame",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 12,
+      "kind": "struct",
+      "name": "TileObjectLight",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 33,
+      "kind": "struct",
+      "name": "TileObjectArchetype",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 64,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/autotile.rs",
+      "line": 7,
+      "kind": "enum",
+      "name": "AutoTileMode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/autotile.rs",
+      "line": 18,
+      "kind": "fn",
+      "name": "as_str",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/catalog.rs",
+      "line": 12,
+      "kind": "struct",
+      "name": "TileCatalog",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/catalog.rs",
+      "line": 18,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/catalog.rs",
+      "line": 23,
+      "kind": "fn",
+      "name": "set_tileset",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/catalog.rs",
+      "line": 33,
+      "kind": "fn",
+      "name": "tileset",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/catalog.rs",
+      "line": 38,
+      "kind": "fn",
+      "name": "ids",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/catalog.rs",
+      "line": 45,
+      "kind": "fn",
+      "name": "visual_for_ref",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 18,
+      "kind": "struct",
+      "name": "TileSet",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 37,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 66,
+      "kind": "fn",
+      "name": "get_first_gid",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 70,
+      "kind": "fn",
+      "name": "get_tile_count",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 74,
+      "kind": "fn",
+      "name": "get_columns",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 78,
+      "kind": "fn",
+      "name": "get_tile_width",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 82,
+      "kind": "fn",
+      "name": "get_tile_height",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 86,
+      "kind": "fn",
+      "name": "get_tile_dimensions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 90,
+      "kind": "fn",
+      "name": "get_spacing",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 94,
+      "kind": "fn",
+      "name": "get_margin",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 98,
+      "kind": "fn",
+      "name": "get_texture_width",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 109,
+      "kind": "fn",
+      "name": "get_texture_height",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 119,
+      "kind": "fn",
+      "name": "get_quad",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 134,
+      "kind": "fn",
+      "name": "set_archetype",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 139,
+      "kind": "fn",
+      "name": "archetype",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 144,
+      "kind": "fn",
+      "name": "remove_archetype",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 154,
+      "kind": "fn",
+      "name": "archetype_names",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 161,
+      "kind": "fn",
+      "name": "set_tile_archetype",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 184,
+      "kind": "fn",
+      "name": "get_tile_archetype",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 189,
+      "kind": "fn",
+      "name": "archetype_for_tile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 195,
+      "kind": "fn",
+      "name": "set_animation",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 207,
+      "kind": "fn",
+      "name": "get_animation",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 212,
+      "kind": "fn",
+      "name": "iter_animated_local_ids",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 217,
+      "kind": "fn",
+      "name": "set_property",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 246,
+      "kind": "fn",
+      "name": "get_property",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 254,
+      "kind": "fn",
+      "name": "properties",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 259,
+      "kind": "fn",
+      "name": "set_auto_tile_rule",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 264,
+      "kind": "fn",
+      "name": "get_auto_tile_id",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 270,
+      "kind": "fn",
+      "name": "set_auto_tile_rule_8",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 275,
+      "kind": "fn",
+      "name": "get_auto_tile_id_8",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 281,
+      "kind": "fn",
+      "name": "set_auto_tile_mode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 285,
+      "kind": "fn",
+      "name": "get_auto_tile_mode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 292,
+      "kind": "fn",
+      "name": "has_auto_tile_mode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/visual.rs",
+      "line": 7,
+      "kind": "struct",
+      "name": "TileVisual",
       "has_doc": true
     },
     {
@@ -77318,7 +78273,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 380,
+      "line": 628,
       "kind": "fn",
       "name": "type",
       "has_doc": true
@@ -77327,7 +78282,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 382,
+      "line": 630,
       "kind": "fn",
       "name": "player_id",
       "has_doc": true
@@ -77336,7 +78291,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 384,
+      "line": 632,
       "kind": "fn",
       "name": "region_id",
       "has_doc": true
@@ -77345,7 +78300,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 391,
+      "line": 639,
       "kind": "fn",
       "name": "type",
       "has_doc": true
@@ -77354,7 +78309,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 393,
+      "line": 641,
       "kind": "fn",
       "name": "player_id",
       "has_doc": true
@@ -77363,7 +78318,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 395,
+      "line": 643,
       "kind": "fn",
       "name": "region_id",
       "has_doc": true
@@ -77372,7 +78327,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 402,
+      "line": 650,
       "kind": "fn",
       "name": "type",
       "has_doc": true
@@ -77381,7 +78336,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 404,
+      "line": 652,
       "kind": "fn",
       "name": "player_id",
       "has_doc": true
@@ -77390,7 +78345,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 406,
+      "line": 654,
       "kind": "fn",
       "name": "region_id",
       "has_doc": true
@@ -77399,7 +78354,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 413,
+      "line": 661,
       "kind": "fn",
       "name": "type",
       "has_doc": true
@@ -77408,7 +78363,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 415,
+      "line": 663,
       "kind": "fn",
       "name": "player_id",
       "has_doc": true
@@ -77417,7 +78372,7 @@
       "source": "lua_api",
       "module": "awareness_api",
       "file": "src/lua_api/awareness_api.rs",
-      "line": 417,
+      "line": 665,
       "kind": "fn",
       "name": "group_id",
       "has_doc": true
@@ -78200,7 +79155,7 @@
       "source": "lua_api",
       "module": "procgen_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 1438,
+      "line": 1444,
       "kind": "fn",
       "name": "poissonDisk",
       "has_doc": true
@@ -78209,7 +79164,7 @@
       "source": "lua_api",
       "module": "procgen_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 2832,
+      "line": 2838,
       "kind": "fn",
       "name": "CELL_AIR",
       "has_doc": true
@@ -78218,7 +79173,7 @@
       "source": "lua_api",
       "module": "procgen_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 2834,
+      "line": 2840,
       "kind": "fn",
       "name": "CELL_SAND",
       "has_doc": true
@@ -78227,7 +79182,7 @@
       "source": "lua_api",
       "module": "procgen_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 2836,
+      "line": 2842,
       "kind": "fn",
       "name": "CELL_WATER",
       "has_doc": true
@@ -78236,7 +79191,7 @@
       "source": "lua_api",
       "module": "procgen_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 2838,
+      "line": 2844,
       "kind": "fn",
       "name": "CELL_ROCK",
       "has_doc": true
@@ -78245,7 +79200,7 @@
       "source": "lua_api",
       "module": "procgen_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 2840,
+      "line": 2846,
       "kind": "fn",
       "name": "CELL_FIRE",
       "has_doc": true
@@ -78254,7 +79209,7 @@
       "source": "lua_api",
       "module": "procgen_api",
       "file": "src/lua_api/procgen_api.rs",
-      "line": 2842,
+      "line": 2848,
       "kind": "fn",
       "name": "CELL_GAS",
       "has_doc": true
@@ -78830,43 +79785,7 @@
       "source": "lua_api",
       "module": "tilemap_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 206,
-      "kind": "fn",
-      "name": "x",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "tilemap_api",
-      "file": "src/lua_api/tilemap_api.rs",
-      "line": 208,
-      "kind": "fn",
-      "name": "y",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "tilemap_api",
-      "file": "src/lua_api/tilemap_api.rs",
-      "line": 210,
-      "kind": "fn",
-      "name": "width",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "tilemap_api",
-      "file": "src/lua_api/tilemap_api.rs",
-      "line": 212,
-      "kind": "fn",
-      "name": "height",
-      "has_doc": true
-    },
-    {
-      "source": "lua_api",
-      "module": "tilemap_api",
-      "file": "src/lua_api/tilemap_api.rs",
-      "line": 1801,
+      "line": 1598,
       "kind": "fn",
       "name": "newAutoTileSheet",
       "has_doc": true

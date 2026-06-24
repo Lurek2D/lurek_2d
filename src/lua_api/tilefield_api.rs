@@ -232,6 +232,25 @@ fn modifier_from_table(name: String, table: LuaTable, api: &str) -> LuaResult<Ti
     Ok(modifier)
 }
 
+fn profile_modifier_from_table(name: String, table: LuaTable, api: &str) -> LuaResult<TileModifier> {
+    let mut modifier = modifier_from_table(name, table.clone(), api)?;
+    if let Ok(costs) = table.get::<_, LuaTable>("costs") {
+        for pair in costs.pairs::<String, f32>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            modifier
+                .cost_add
+                .insert(channel_from_str(name, api)?, value - 1.0);
+        }
+    }
+    if let Some(value) = table
+        .get::<_, Option<f32>>("sunOcclusion")
+        .map_err(|e| lua_err(api, e))?
+    {
+        modifier.sun_occlusion_add = value;
+    }
+    Ok(modifier)
+}
+
 fn light_emitter_from_table(table: LuaTable, api: &str) -> LuaResult<TileLightEmitter> {
     let color = table
         .get::<_, Option<LuaTable>>("color")
@@ -528,6 +547,17 @@ fn modifier_to_lua<'lua>(lua: &'lua Lua, modifier: &TileModifier) -> LuaResult<L
         properties.set(name.as_str(), value.as_str())?;
     }
     table.set("properties", properties)?;
+    Ok(table)
+}
+
+fn profile_to_lua<'lua>(lua: &'lua Lua, modifier: &TileModifier) -> LuaResult<LuaTable<'lua>> {
+    let table = modifier_to_lua(lua, modifier)?;
+    let costs = lua.create_table()?;
+    for (channel, cost) in &modifier.cost_add {
+        costs.set(channel.as_str(), *cost + 1.0)?;
+    }
+    table.set("costs", costs)?;
+    table.set("sunOcclusion", modifier.sun_occlusion_add)?;
     Ok(table)
 }
 
@@ -1409,6 +1439,7 @@ impl LuaUserData for LuaTileField {
 
         // -- getVersion --
         /// Returns the current tilefield data version.
+        /// @return | integer | Monotonic field version incremented by data mutations.
         methods.add_method("getVersion", |_, this, ()| {
             Ok(this.inner.borrow().version())
         });
@@ -1469,6 +1500,41 @@ impl LuaUserData for LuaTileField {
                 Some(modifier) => Ok(Some(modifier_to_lua(lua, modifier)?)),
                 None => Ok(None),
             }
+        });
+
+        // -- setProfile --
+        /// Registers or replaces a legacy tilefield profile.
+        /// @param | name | string | Profile name.
+        /// @param | profile | table | Profile table with blocks, costs, sunOcclusion, light, or properties.
+        methods.add_method(
+            "setProfile",
+            |_, this, (name, table): (String, LuaTable)| {
+                let profile = profile_modifier_from_table(name.clone(), table, "setProfile")?;
+                this.inner
+                    .borrow_mut()
+                    .set_modifier(name, profile)
+                    .map_err(|e| lua_err("setProfile", e))
+            },
+        );
+
+        // -- getProfile --
+        /// Returns a legacy profile table, or nil.
+        /// @param | name | string | Profile name.
+        /// @return | table|nil | Profile table.
+        methods.add_method("getProfile", |lua, this, name: String| {
+            let field = this.inner.borrow();
+            match field.modifier(&name) {
+                Some(profile) => Ok(Some(profile_to_lua(lua, profile)?)),
+                None => Ok(None),
+            }
+        });
+
+        // -- removeProfile --
+        /// Removes a legacy profile and clears it from all cells.
+        /// @param | name | string | Profile name.
+        /// @return | boolean | True when removed.
+        methods.add_method("removeProfile", |_, this, name: String| {
+            Ok(this.inner.borrow_mut().remove_modifier(&name))
         });
 
         // -- removeModifier --
@@ -1581,6 +1647,23 @@ impl LuaUserData for LuaTileField {
                     .borrow_mut()
                     .apply_modifier(coord, &modifier)
                     .map_err(|e| lua_err("applyModifier", e))
+            },
+        );
+
+        // -- applyProfile --
+        /// Applies a legacy profile to one cell.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @param | z | integer? | One-based level, default 1.
+        /// @param | profile | string | Profile name.
+        methods.add_method(
+            "applyProfile",
+            |_, this, (x, y, z, profile): (u32, u32, Option<u32>, String)| {
+                let coord = coord_from_values(x, y, z)?;
+                this.inner
+                    .borrow_mut()
+                    .apply_modifier(coord, &profile)
+                    .map_err(|e| lua_err("applyProfile", e))
             },
         );
 

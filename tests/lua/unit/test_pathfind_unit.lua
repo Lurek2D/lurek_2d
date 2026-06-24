@@ -1096,43 +1096,30 @@ describe("pathfind tilefield adapters", function()
         expect_true(#range.cells > 1)
     end)
 
-    -- @covers lurek.pathfind.newNavGridFromField
-    it("creates footprint-aware navgrid from tilefield category", function()
-        local field = lurek.tilefield.new({ width = 5, height = 3 })
-        field:defineCategory("tank", { kind = "movement" })
-        field:setCategoryBlock(3, 2, 1, "tank", true)
-        field:setCategoryCost(1, 2, 1, "tank", 6)
-
-        local nav = lurek.pathfind.newNavGridFromField(field, {
-            level = 1,
-            category = "tank",
-            costCategory = "tank",
-            footprintWidth = 2,
-            footprintHeight = 1,
+    -- @covers lurek.pathfind.newNavGridFromProvider
+    it("creates navgrid from provider data", function()
+        local nav = lurek.pathfind.newNavGridFromProvider({
+            width = 3,
+            height = 2,
+            blocked = { false, true, false, false, false, false },
+            costs = { 1, 1, 4, 1, 1, 1 },
         })
-
-        expect_equal(6, nav:getCost(1, 2))
-        expect_true(nav:isBlocked(2, 2), "2x1 footprint overlaps the blocked tank cell")
-        expect_true(nav:isBlocked(5, 2), "2x1 footprint cannot anchor past the field edge")
+        expect_equal(3, nav:getWidth())
+        expect_true(nav:isBlocked(2, 1))
+        expect_equal(4, nav:getCost(3, 1))
     end)
 
-    -- @covers lurek.pathfind.rangeMapFromField
-    it("computes range from tilefield categories", function()
-        local field = lurek.tilefield.new({ width = 4, height = 3 })
-        field:defineCategory("tank", { kind = "movement" })
-        field:setCategoryCost(2, 1, 1, "tank", 3)
-        field:setCategoryBlock(3, 1, 1, "tank", true)
-
-        local range = lurek.pathfind.rangeMapFromField(field, {
-            origin = { x = 1, y = 1, z = 1 },
-            budget = 3,
-            category = "tank",
-            costCategory = "tank",
+    -- @covers lurek.pathfind.newPathGridFromProvider
+    it("creates path grid from provider data", function()
+        local grid = lurek.pathfind.newPathGridFromProvider({
+            width = 3,
+            height = 2,
+            cellSize = 16,
+            walkable = { true, false, true, true, true, true },
         })
-
-        expect_equal(4, range.width)
-        expect_equal(3, range.height)
-        expect_true(#range.cells >= 2)
+        expect_equal(3, grid:getWidth())
+        expect_equal(16, grid:getCellSize())
+        expect_true(not grid:isWalkable(2, 1))
     end)
 end)
 -- @describe pathfind movement and tactical APIs

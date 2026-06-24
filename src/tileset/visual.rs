@@ -1,5 +1,6 @@
-//! Owns sprite/atlas visual references attached to tileset object archetypes.
-//! Keeps rendering metadata as data so tilemap can order and emit render commands without owning object semantics.
+//! This file owns visual behavior inside the tileset subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate visual state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 /// Visual representation for one tileset object archetype.
 #[derive(Debug, Clone, Default)]

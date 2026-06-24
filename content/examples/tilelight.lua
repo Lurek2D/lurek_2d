@@ -1,49 +1,432 @@
 --- Tilelight Example
---- Demonstrates tile-based lighting over a shared LTileField.
-
-local function tilelight_log(message)
-    lurek.log.info("[tilelight.example] " .. tostring(message))
-end
+--- Compact one-owner examples for tile-based lighting.
 
 --@api: lurek.tilelight.new
 do
-    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 1 })
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
     local light = lurek.tilelight.new(field)
-    tilelight_log("tilelight type=" .. light:type())
-end
-
---@api: LTileLightMap:addPointLight
---@api: LTileLightMap:compute
---@api: LTileLightMap:getLight
-do
-    local field = lurek.tilefield.new({ width = 6, height = 3 })
-    field:setBlock(4, 2, 1, "light", true)
-    local light = lurek.tilelight.new(field)
-    light:addPointLight({ x = 2, y = 2, z = 1, radius = 5, intensity = 1, color = { r = 1, g = 0.6, b = 0.2 } })
-    light:compute({ includePointLights = true, includeGlobalLight = false })
-    local _, _, _, near = light:getLight(3, 2, 1)
-    local _, _, _, blocked = light:getLight(6, 2, 1)
-    tilelight_log("point light near=" .. near .. " blocked=" .. blocked)
-end
-
---@api: LTileLightMap:setGlobalLight
---@api: LTileLightMap:exportLayer
---@api: LTileLightMap:exportVolume
-do
-    local field = lurek.tilefield.new({ width = 3, height = 3, levels = 2 })
-    field:setSunOcclusion(2, 2, 2, 0.5)
-    local light = lurek.tilelight.new(field)
-    light:setGlobalLight({ intensity = 0.4, color = { r = 1, g = 0.85, b = 0.55 } })
-    light:compute({ includePointLights = false, includeGlobalLight = true })
-    local layer = light:exportLayer(1)
-    local volume = light:exportVolume()
-    tilelight_log("layer cells=" .. #layer .. " levels=" .. #volume)
+    local ok, value = pcall(function()
+        local made = lurek.tilelight.new(field)
+        return made:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 
 --@api: lurek.tilelight.compute
 do
-    local field = lurek.tilefield.new({ width = 2, height = 2 })
-    local light = lurek.tilelight.compute(field, { ambient = { r = 0.1, g = 0.1, b = 0.12 } })
-    local _, _, _, luma = light:getLight(1, 1, 1)
-    tilelight_log("ambient luma=" .. luma)
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local made = lurek.tilelight.compute(field, { ambient = { r = 0.1, g = 0.1, b = 0.12 } })
+        local _, _, _, luma = made:getLight(1, 1, 1)
+        return luma
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:addPointLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:addPointLight({ x = 2, y = 2, z = 1, radius = 3, intensity = 1 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:updatePointLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
+        light:updatePointLight(id, { x = 3, y = 3, radius = 3 })
+        return id
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:removePointLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addPointLight({ x = 1, y = 1, z = 1, radius = 2 })
+        return light:removePointLight(id)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:clearPointLights
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addPointLight({ x = 2, y = 2, z = 1, radius = 2 })
+        light:clearPointLights()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:addLineLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:addLineLight({ x1 = 1, y1 = 2, x2 = 6, y2 = 2, z1 = 1, z2 = 1, radius = 1.5 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:updateLineLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addLineLight({ x1 = 1, y1 = 2, x2 = 6, y2 = 2, z1 = 1, z2 = 1, radius = 1.5 })
+        light:updateLineLight(id, { x1 = 2, y1 = 2, x2 = 5, y2 = 2, radius = 2 })
+        return id
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:removeLineLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addLineLight({ x1 = 1, y1 = 2, x2 = 6, y2 = 2, z1 = 1, z2 = 1, radius = 1.5 })
+        return light:removeLineLight(id)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:clearLineLights
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addLineLight({ x1 = 1, y1 = 2, x2 = 6, y2 = 2, z1 = 1, z2 = 1, radius = 1.5 })
+        light:clearLineLights()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:addAreaLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:addAreaLight({ x = 2, y = 2, z = 1, width = 2, height = 2, radius = 2 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:addRectLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:addRectLight({ x = 2, y = 2, z = 1, w = 2, h = 2, radius = 2 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:updateAreaLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addAreaLight({ x = 2, y = 2, z = 1, width = 2, height = 2, radius = 2 })
+        light:updateAreaLight(id, { x = 3, y = 3, w = 1, h = 1 })
+        return id
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:updateRectLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addRectLight({ x = 2, y = 2, z = 1, w = 2, h = 2, radius = 2 })
+        light:updateRectLight(id, { x = 3, y = 3, w = 1, h = 1 })
+        return id
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:removeAreaLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addAreaLight({ x = 2, y = 2, z = 1, width = 2, height = 2, radius = 2 })
+        return light:removeAreaLight(id)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:removeRectLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local id = light:addRectLight({ x = 2, y = 2, z = 1, w = 2, h = 2, radius = 2 })
+        return light:removeRectLight(id)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:clearAreaLights
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addAreaLight({ x = 2, y = 2, z = 1, width = 2, height = 2, radius = 2 })
+        light:clearAreaLights()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:clearRectLights
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addRectLight({ x = 2, y = 2, z = 1, w = 2, h = 2, radius = 2 })
+        light:clearRectLights()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:setAmbient
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setAmbient({ r = 0.1, g = 0.2, b = 0.3 })
+        light:compute({ includeSunLight = false })
+        return light:getLight(1, 1, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:setSunLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setSunLight({ kind = "directional", intensity = 0.8, direction = { x = 1, y = 0 } })
+        light:compute({ includeSunLight = true })
+        return light:getLight(1, 1, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:setGlobalLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setGlobalLight({ intensity = 0.4, color = { r = 1, g = 0.85, b = 0.55 } })
+        light:compute({ includeGlobalLight = true })
+        return light:getLight(1, 1, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:compute
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:addPointLight({ x = 2, y = 2, z = 1, radius = 3, intensity = 1 })
+        light:compute({ includePointLights = true, includeSunLight = false })
+        return light:getLight(2, 2, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:getLight
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setAmbient({ r = 0.1, g = 0.1, b = 0.1 })
+        light:compute({ includeSunLight = false })
+        return light:getLight(1, 1, 1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:exportLayer
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setAmbient({ r = 0.1, g = 0.1, b = 0.1 })
+        light:compute({ includeSunLight = false })
+        return #light:exportLayer(1)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:exportVolume
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        light:setAmbient({ r = 0.1, g = 0.1, b = 0.1 })
+        light:compute({ includeSunLight = false })
+        return #light:exportVolume()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:getSize
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        local w, h, levels = light:getSize()
+        return w + h + levels
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:type
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileLightMap:typeOf
+do
+    local function example_log(message)
+        lurek.log.info("[tilelight.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 6, height = 4, levels = 2 })
+    local light = lurek.tilelight.new(field)
+    local ok, value = pcall(function()
+        return light:typeOf("LTileLightMap")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end

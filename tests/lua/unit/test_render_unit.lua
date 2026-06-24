@@ -584,13 +584,6 @@ describe("target rendering/drawing contract: tilemap", function()
         end)
     end)
 
-    -- @covers LTileMap:drawToImage
-    it("tilemaps expose drawToImage()", function()
-        local map = make_tilemap_subject()
-        expect_type("function", map.drawToImage)
-        local img = map:drawToImage(16)
-        verify_image_data_contract(img)
-    end)
 end)
 
 -- @describe target rendering/drawing contract: minimap

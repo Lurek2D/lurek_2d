@@ -1,4 +1,4 @@
-//! Registers `lurek.tilelight`, the tile-based lighting system that consumes `LTileField`.
+//! Registers lurek.lua_api Lua API bindings for tilelight api, including validation, conversions, and userdata.
 
 use super::tilefield_api::{field_from_provider, LuaTileField};
 use super::SharedState;
@@ -566,6 +566,8 @@ impl LuaUserData for LuaTileLightMap {
 
         // -- removeLineLight --
         /// Removes a line light by id and returns whether it existed.
+        /// @param | id | integer | Stable line-light id returned by `addLineLight`.
+        /// @return | boolean | True when a line light was removed.
         methods.add_method("removeLineLight", |_, this, id: u32| {
             Ok(this.inner.borrow_mut().remove_line_light(id))
         });
@@ -586,30 +588,40 @@ impl LuaUserData for LuaTileLightMap {
 
         // -- addRectLight --
         /// Alias for `addAreaLight`.
+        /// @param | opts | table | `{x,y,z?,width|w,height|h,radius,intensity?,color?,flicker?,colorCycle?}`.
+        /// @return | integer | Stable rectangular light id.
         methods.add_method("addRectLight", |_, this, opts: LuaTable| {
             add_area_light_from_opts(this, opts, "LTileLightMap.addRectLight")
         });
 
         // -- updateAreaLight --
         /// Updates an existing rectangular area light by id.
+        /// @param | id | integer | Stable area-light id returned by `addAreaLight`.
+        /// @param | opts | table | Area-light fields to update.
         methods.add_method("updateAreaLight", |_, this, (id, opts): (u32, LuaTable)| {
             update_area_light_from_opts(this, id, opts, "LTileLightMap.updateAreaLight")
         });
 
         // -- updateRectLight --
         /// Alias for `updateAreaLight`.
+        /// @param | id | integer | Stable rectangular light id returned by `addRectLight`.
+        /// @param | opts | table | Rectangular-light fields to update.
         methods.add_method("updateRectLight", |_, this, (id, opts): (u32, LuaTable)| {
             update_area_light_from_opts(this, id, opts, "LTileLightMap.updateRectLight")
         });
 
         // -- removeAreaLight --
         /// Removes a rectangular area light by id and returns whether it existed.
+        /// @param | id | integer | Stable area-light id returned by `addAreaLight`.
+        /// @return | boolean | True when an area light was removed.
         methods.add_method("removeAreaLight", |_, this, id: u32| {
             Ok(this.inner.borrow_mut().remove_area_light(id))
         });
 
         // -- removeRectLight --
         /// Alias for `removeAreaLight`.
+        /// @param | id | integer | Stable rectangular light id returned by `addRectLight`.
+        /// @return | boolean | True when a rectangular light was removed.
         methods.add_method("removeRectLight", |_, this, id: u32| {
             Ok(this.inner.borrow_mut().remove_area_light(id))
         });
@@ -647,6 +659,15 @@ impl LuaUserData for LuaTileLightMap {
             Ok(())
         });
 
+        // -- setGlobalLight --
+        /// Compatibility alias for top sun light parameters used during light computation.
+        /// @param | opts | table | `{intensity?, color?}` top-light settings.
+        methods.add_method("setGlobalLight", |_, this, opts: LuaTable| {
+            let sun = sun_from_table(opts, "LTileLightMap.setGlobalLight")?;
+            this.inner.borrow_mut().set_sun_light(sun);
+            Ok(())
+        });
+
         // -- compute --
         /// Computes tile light from ambient, point lights, line lights, and sun light.
         /// @param | opts | table? | Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.
@@ -673,6 +694,7 @@ impl LuaUserData for LuaTileLightMap {
         /// @param | x | integer | One-based cell x coordinate.
         /// @param | y | integer | One-based cell y coordinate.
         /// @param | z | integer? | One-based level, default 1.
+        /// @return | number, number, number, number | Red, green, blue, and luma values for the cell.
         methods.add_method("getLight", |_, this, (x, y, z): (u32, u32, Option<u32>)| {
             let coord = coord_from_values(x, y, z)?;
             let color = this.inner.borrow().light_at(coord);
@@ -682,6 +704,7 @@ impl LuaUserData for LuaTileLightMap {
         // -- exportLayer --
         /// Exports one level of computed light as row-major `{r,g,b,luma}` tables.
         /// @param | z | integer? | One-based level, default 1.
+        /// @return | table | Row-major array of light color tables for the requested level.
         methods.add_method("exportLayer", |lua, this, z: Option<u32>| {
             let z = one_based(z.unwrap_or(1), "z")?;
             let values = this.inner.borrow().export_layer(z);
@@ -694,6 +717,7 @@ impl LuaUserData for LuaTileLightMap {
 
         // -- exportVolume --
         /// Exports all computed light levels as nested row-major tables.
+        /// @return | table | Array of exported light layers, one table per level.
         methods.add_method("exportVolume", |lua, this, ()| {
             let volume = this.inner.borrow().export_volume();
             let out = lua.create_table()?;
@@ -709,6 +733,7 @@ impl LuaUserData for LuaTileLightMap {
 
         // -- getSize --
         /// Returns light-map width, height, and level count.
+        /// @return | integer, integer, integer | Width, height, and level count.
         methods.add_method("getSize", |_, this, ()| Ok(this.inner.borrow().size()));
 
         // -- type --

@@ -1,5 +1,6 @@
-//! Owns tilefield-side light emitter data stored on cells or contributed by modifiers.
-//! Tilefield stores emitters as input data; `tilelight` owns propagation and accumulation.
+//! This file owns emitter behavior inside the tilefield subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate emitter state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 /// Tile-based light emitter stored on a tilefield cell or modifier.
 #[derive(Debug, Clone)]

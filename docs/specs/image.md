@@ -555,7 +555,6 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 | Current artifact | `tests/artifacts/current/image/image_transform_flip_vertical.png` |
 | Current artifact | `tests/artifacts/current/image/image_transform_original.png` |
 | Current artifact | `tests/artifacts/current/image/image_transform_rotate90.png` |
-| Current artifact | `tests/artifacts/current/image/tileset_128x128.png` |
 | Baseline artifact | `tests/artifacts/baselines/image/gradient_horizontal.png` |
 | Baseline artifact | `tests/artifacts/baselines/image/gradient_vertical.png` |
 | Baseline artifact | `tests/artifacts/baselines/image/image_blur_crop.png` |
@@ -584,7 +583,6 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 | Baseline artifact | `tests/artifacts/baselines/image/image_transform_flip_vertical.png` |
 | Baseline artifact | `tests/artifacts/baselines/image/image_transform_original.png` |
 | Baseline artifact | `tests/artifacts/baselines/image/image_transform_rotate90.png` |
-| Baseline artifact | `tests/artifacts/baselines/image/tileset_128x128.png` |
 
 ## Architecture Links
 

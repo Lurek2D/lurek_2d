@@ -491,10 +491,7 @@ do
     example_print_log("columns = " .. ts:getColumns())
 end
 
---@api: LTileSet:setProfile
---@api: LTileSet:getProfile
---@api: LTileSet:setPhysicsShape
---@api: LTileSet:getPhysicsShape
+--@api: lurek.tilemap.newTileSet.2
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -520,7 +517,7 @@ do
     example_print_log("shape=" .. tostring(ts:getPhysicsShape(1)))
 end
 
---@api: LTileSet:getQuad
+--@api: lurek.tilemap.newTileSet.3
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -553,7 +550,7 @@ do
     example_print_log("tile 5: x=" .. q5.x .. " y=" .. q5.y .. " w=" .. q5.width .. " h=" .. q5.height)
 end
 
---@api: LTileSet:setAnimation
+--@api: lurek.tilemap.newTileSet.4
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -596,7 +593,7 @@ do
     example_print_log("tile 10 anim = " .. tostring(noAnim))
 end
 
---@api: LTileSet:getAnimation
+--@api: lurek.tilemap.newTileSet.5
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -1224,7 +1221,7 @@ end
 
 --- Tilemap Module Part 2: auto-tiling, collision sweep, tile callbacks, navigation
 
---@api: LTileSet:setAutoTileRule
+--@api: lurek.tilemap.newTileSet.6
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -1259,7 +1256,7 @@ do
     example_print_log("bitmask 15 -> tile " .. ts:getAutoTileId("grass", 15))
 end
 
---@api: LTileSet:getAutoTileId
+--@api: lurek.tilemap.newTileSet.7
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -1292,7 +1289,7 @@ do
     example_print_log("bitmask 15 -> tile " .. id)
 end
 
---@api: LTileSet:setAutoTileRule8
+--@api: lurek.tilemap.newTileSet.8
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -1327,7 +1324,7 @@ do
     example_print_log("8-bit bitmask 255 -> tile " .. ts:getAutoTileId8("wall", 255))
 end
 
---@api: LTileSet:getAutoTileId8
+--@api: lurek.tilemap.newTileSet.9
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -1363,7 +1360,7 @@ do
     example_print_log("8-bit bitmask 0 -> tile " .. edge)
 end
 
---@api: LTileSet:setAutoTileMode
+--@api: lurek.tilemap.newTileSet.10
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -1396,7 +1393,7 @@ do
     example_print_log("shore mode = " .. mode)
 end
 
---@api: LTileSet:getAutoTileMode
+--@api: lurek.tilemap.newTileSet.11
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -3963,7 +3960,7 @@ end
 
 --- TileMap Part 5: LTileSet full coverage
 
---@api: LTileSet:getColumns
+--@api: lurek.tilemap.newTileSet.12
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -3996,7 +3993,7 @@ do
     example_print_log("tileWidth=" .. ts:getTileWidth())
 end
 
---@api: LTileSet:getFirstGid
+--@api: lurek.tilemap.newTileSet.13
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -4029,7 +4026,7 @@ do
     example_print_log("tileHeight=" .. ts:getTileHeight())
 end
 
---@api: LTileSet:getMargin
+--@api: lurek.tilemap.newTileSet.14
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -4063,7 +4060,7 @@ do
     example_print_log("tileWidth=" .. width)
 end
 
---@api: LTileSet:getSpacing
+--@api: lurek.tilemap.newTileSet.15
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -4097,7 +4094,7 @@ do
     example_print_log("tileHeight=" .. height)
 end
 
---@api: LTileSet:getTileCount
+--@api: lurek.tilemap.newTileSet.16
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -4131,7 +4128,7 @@ do
     example_print_log("firstGid=" .. first_gid)
 end
 
---@api: LTileSet:getTileDimensions
+--@api: lurek.tilemap.newTileSet.17
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -4164,7 +4161,7 @@ do
     example_print_log("quad_w=" .. quad.width .. " quad_h=" .. quad.height)
 end
 
---@api: LTileSet:getTileHeight
+--@api: lurek.tilemap.newTileSet.18
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -4198,7 +4195,7 @@ do
     example_print_log("tileCount=" .. count)
 end
 
---@api: LTileSet:getTileWidth
+--@api: lurek.tilemap.newTileSet.19
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -4232,7 +4229,7 @@ do
     example_print_log("tileCount=" .. count)
 end
 
---@api: LTileSet:type
+--@api: lurek.tilemap.newTileSet.20
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -4266,7 +4263,7 @@ do
     example_print_log("columns=" .. columns)
 end
 
---@api: LTileSet:typeOf
+--@api: lurek.tilemap.newTileSet.21
 do
     local function tilemap_log(message)
         lurek.log.info("[tilemap] " .. message)
@@ -5037,4 +5034,52 @@ do
     example_print_log("typeOf:", ok)
     example_print_log("typeOfObject:", as_object)
     example_print_log("chunkSize:", lmr:getChunkSize())
+end
+
+--- Added coverage examples for newer API owners.
+
+--@api: lurek.tilemap.fromProvider
+do
+    local function example_log(message)
+        lurek.log.info("[tilemap.example] " .. tostring(message))
+    end
+    local provider = { tileWidth = 16, tileHeight = 16, layers = { { name = "ground", width = 2, height = 2, tiles = { 1, 2, 3, 4 } } } }
+    local ok, value = pcall(function()
+        local tm = lurek.tilemap.fromProvider(provider)
+        return tm:getLayerCount()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileMap:renderFieldSlot
+do
+    local function example_log(message)
+        lurek.log.info("[tilemap.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    field:setRef(1, 1, 1, "terrain", 1)
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    local tm = lurek.tilemap.newTileMap(16, 16)
+    local ok, value = pcall(function()
+        return tm:renderFieldSlot(field, tileset, { slot = "terrain", z = 1, refIsGid = true })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LTileMap:renderFieldCatalogSlot
+do
+    local function example_log(message)
+        lurek.log.info("[tilemap.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    field:setRef(1, 1, 1, "terrain", { tileset = "terrain", object = "grass" })
+    local catalog = lurek.tileset.newCatalog({ terrain = lurek.tileset.newTileSet(1, 4, 2, 16, 16) })
+    local tm = lurek.tilemap.newTileMap(16, 16)
+    local ok, value = pcall(function()
+        return tm:renderFieldCatalogSlot(field, catalog, { slot = "terrain", z = 1 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end

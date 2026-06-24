@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-23T22:02:12.906643+00:00",
+    "generated": "2026-06-24T11:26:37.117761+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3013,
-      "rust_modules": 716,
-      "rust_tests": 489,
-      "lua_tests": 274
+      "rust_items": 3039,
+      "rust_modules": 727,
+      "rust_tests": 492,
+      "lua_tests": 277
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3013,
-      "documented": 3010,
-      "modules": 716
+      "total_items": 3039,
+      "documented": 3036,
+      "modules": 727
     },
     "modules": {
       "agent::chat": {
@@ -2491,15 +2491,29 @@
         ]
       },
       "awareness::tile_awareness": {
-        "module_doc": "Owns per-player tile visibility, explored, and action masks backed by one shared `TileField`. Computes visible and actionable cells by asking tilefield for channel-specific line clearance data. Stores independent masks per player so teams can have different current sight, memory, and action reach. Exposes stateless line-of-sight and line-of-action helpers without owning movement or lighting rules. Keeps tilefield as the source for blockers, costs, profiles, and bounds while visibility owns masks only. Change this file when sight/action mask behavior changes, not when pathfinding or tile-light math changes.",
+        "module_doc": "This file owns tile awareness behavior inside the awareness subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate tile awareness state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for tile awareness work. Serialization, indexing, and boundary checks stay here when they depend on tile awareness internals. Renderer, API, and test layers should call through these helpers rather than duplicate private rules. Open this file when tile awareness ownership changes, but keep unrelated subsystem policy in sibling modules. The code favors small data transformations so examples, specs, and tests can assert behavior directly. Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.",
         "source_file": "src/awareness/tile_awareness.rs",
         "items": [
+          {
+            "name": "AwarenessMode",
+            "kind": "enum",
+            "description": "Tile awareness shape for one category computation.",
+            "file": "src/awareness/tile_awareness.rs",
+            "line": 16
+          },
+          {
+            "name": "AwarenessCategoryConfig",
+            "kind": "struct",
+            "description": "Per-category awareness computation config.",
+            "file": "src/awareness/tile_awareness.rs",
+            "line": 25
+          },
           {
             "name": "TileAwareness",
             "kind": "struct",
             "description": "Multi-player tile visibility/action state.",
             "file": "src/awareness/tile_awareness.rs",
-            "line": 38
+            "line": 101
           }
         ]
       },
@@ -3013,7 +3027,7 @@
         ]
       },
       "camera::walker": {
-        "module_doc": "`src/camera/walker.rs` owns the tile-grid camera walker that couples movement with a Camera2D. It defines `CameraWalker`, keeping walker position, speed, tile metrics, and camera linkage together. Tile-to-world placement, world-to-tile queries, directional movement, and camera follow updates live here. Movement legality belongs to gameplay systems such as tilefield/pathfind, not to tilemap. Read it when walker movement stepping or camera-follow coupling behavior needs to change.",
+        "module_doc": "This file owns walker behavior inside the camera subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate walker state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for walker work. Serialization, indexing, and boundary checks stay here when they depend on walker internals.",
         "source_file": "src/camera/walker.rs",
         "items": [
           {
@@ -15709,7 +15723,7 @@
         ]
       },
       "procgen::grid_result": {
-        "module_doc": "Owns typed procgen grid result containers shared by Rust generators and Lua bindings. Integer grids represent tile/object ids, while scalar grids represent height/noise/cost fields.",
+        "module_doc": "This file owns grid result behavior inside the procgen subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate grid result state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for grid result work.",
         "source_file": "src/procgen/grid_result.rs",
         "items": [
           {
@@ -15717,14 +15731,14 @@
             "kind": "struct",
             "description": "Typed 2D integer grid result produced by procedural map generators.",
             "file": "src/procgen/grid_result.rs",
-            "line": 6
+            "line": 8
           },
           {
             "name": "ProcgenScalarGrid",
             "kind": "struct",
             "description": "Typed 2D scalar grid result produced by procedural height/noise generators.",
             "file": "src/procgen/grid_result.rs",
-            "line": 45
+            "line": 47
           }
         ]
       },
@@ -19092,7 +19106,7 @@
         ]
       },
       "runtime::config": {
-        "module_doc": "Owns the configuration model for the runtime subsystem and keeps its rules local to this file. Keeps runtime data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how config data is validated, transformed, or stored before neighboring systems use it. Owns runtime behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on config behavior while Lua registration stays elsewhere. Documents the boundary where runtime code accepts inputs, reports errors, or updates state. Use this file when changing config defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the runtime state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping config calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating runtime rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose config behavior safely.",
+        "module_doc": "This file owns config behavior inside the runtime subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate config state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for config work. Serialization, indexing, and boundary checks stay here when they depend on config internals. Renderer, API, and test layers should call through these helpers rather than duplicate private rules. Open this file when config ownership changes, but keep unrelated subsystem policy in sibling modules. The code favors small data transformations so examples, specs, and tests can assert behavior directly. Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible. Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary. This module documents where runtime data becomes behavior and where surrounding systems take over. Maintenance work here should preserve the existing contracts before extending new config capabilities.",
         "source_file": "src/runtime/config.rs",
         "items": [
           {
@@ -19100,84 +19114,84 @@
             "kind": "struct",
             "description": "Top-level runtime configuration consumed during engine startup. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 37
+            "line": 38
           },
           {
             "name": "RuntimeConfig",
             "kind": "struct",
             "description": "Runtime mode configuration loaded from `[runtime]`. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 68
+            "line": 69
           },
           {
             "name": "RenderConfig",
             "kind": "struct",
             "description": "Renderer backend configuration. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 75
+            "line": 76
           },
           {
             "name": "WindowConfig",
             "kind": "struct",
             "description": "Window and viewport configuration. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 88
+            "line": 89
           },
           {
             "name": "TuiConfig",
             "kind": "struct",
             "description": "Terminal-grid mode defaults used by GUI-backed TUI startup. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 123
+            "line": 124
           },
           {
             "name": "CliConfig",
             "kind": "struct",
             "description": "GUI-rendered interactive Lua REPL defaults used by CLI startup. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 140
+            "line": 141
           },
           {
             "name": "HeadlessConfig",
             "kind": "struct",
             "description": "Headless runtime defaults for callback stepping. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 155
+            "line": 156
           },
           {
             "name": "ConfigValidationMode",
             "kind": "enum",
             "description": "Validation mode applied when config values are outside supported bounds.",
             "file": "src/runtime/config.rs",
-            "line": 165
+            "line": 166
           },
           {
             "name": "ConfigLoadOptions",
             "kind": "struct",
             "description": "Options controlling bounded `conf.toml` loading and validation behavior.",
             "file": "src/runtime/config.rs",
-            "line": 175
+            "line": 176
           },
           {
             "name": "ConfigReport",
             "kind": "struct",
             "description": "Structured report describing ignored keys, deprecated keys, corrected values, and errors.",
             "file": "src/runtime/config.rs",
-            "line": 199
+            "line": 200
           },
           {
             "name": "ModulesConfig",
             "kind": "struct",
             "description": "Feature-toggle table for engine modules. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 255
+            "line": 256
           },
           {
             "name": "PerformanceConfig",
             "kind": "struct",
             "description": "Performance-related runtime configuration. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 463
+            "line": 467
           }
         ]
       },
@@ -23048,8 +23062,41 @@
           }
         ]
       },
+      "tilefield::catalog": {
+        "module_doc": "This file owns catalog behavior inside the tilefield subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate catalog state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "source_file": "src/tilefield/catalog.rs",
+        "items": [
+          {
+            "name": "TileObjectCatalog",
+            "kind": "trait",
+            "description": "Resolves reusable object/archetype data for a typed tilefield reference.",
+            "file": "src/tilefield/catalog.rs",
+            "line": 8
+          }
+        ]
+      },
+      "tilefield::category": {
+        "module_doc": "This file owns category behavior inside the tilefield subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate category state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for category work.",
+        "source_file": "src/tilefield/category.rs",
+        "items": [
+          {
+            "name": "TileCategoryKind",
+            "kind": "enum",
+            "description": "Broad semantic kind for a tilefield category.",
+            "file": "src/tilefield/category.rs",
+            "line": 8
+          },
+          {
+            "name": "TileCategory",
+            "kind": "struct",
+            "description": "User-defined category record stored by a tilefield.",
+            "file": "src/tilefield/category.rs",
+            "line": 50
+          }
+        ]
+      },
       "tilefield::cell": {
-        "module_doc": "Owns per-cell gameplay channel data for blockers, traversal costs, and sun occlusion in tilefield maps. Defines the fixed semantic channels used by Lua, pathfind adapters, visibility checks, and tile lighting. Keeps movement, vision, action, point-light, top-light, and author-defined object references independent. Provides parsing and default-state helpers for field mutation without depending on higher-level systems. Does not know about topology, rendering, minimap presentation, player masks, or pathfinding algorithms.",
+        "module_doc": "This file owns cell behavior inside the tilefield subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate cell state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for cell work. Serialization, indexing, and boundary checks stay here when they depend on cell internals. Renderer, API, and test layers should call through these helpers rather than duplicate private rules. Open this file when cell ownership changes, but keep unrelated subsystem policy in sibling modules.",
         "source_file": "src/tilefield/cell.rs",
         "items": [
           {
@@ -23057,19 +23104,39 @@
             "kind": "enum",
             "description": "Gameplay channels tracked independently per cell.",
             "file": "src/tilefield/cell.rs",
-            "line": 11
+            "line": 14
           },
           {
             "name": "TileCell",
             "kind": "struct",
             "description": "Per-cell gameplay state with independent channel blockers, costs, and sun occlusion.",
             "file": "src/tilefield/cell.rs",
-            "line": 64
+            "line": 67
+          }
+        ]
+      },
+      "tilefield::emitter": {
+        "module_doc": "This file owns emitter behavior inside the tilefield subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate emitter state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "source_file": "src/tilefield/emitter.rs",
+        "items": [
+          {
+            "name": "TileLightEmitter",
+            "kind": "struct",
+            "description": "Tile-based light emitter stored on a tilefield cell or modifier.",
+            "file": "src/tilefield/emitter.rs",
+            "line": 7
+          },
+          {
+            "name": "TileLightSource",
+            "kind": "struct",
+            "description": "Tile light emitter instance at a concrete cell.",
+            "file": "src/tilefield/emitter.rs",
+            "line": 18
           }
         ]
       },
       "tilefield::field": {
-        "module_doc": "Owns multi-level tilefield storage, channel blockers, channel costs, profiles, and cell exports. Implements bounds checks, cell mutation, profile application, line queries, and layer exports. Stores cells and named profiles in one grid owner. Uses topology and line helpers locally so callers can query blockers without owning traversal logic. Provides renderer-independent input consumed by movement, awareness, tilelight, minimap, and render adapters. Keeps action, vision, movement, light, and sun channels independent by never inferring one from another. Returns controlled string errors at the domain boundary so Lua bindings can attach lurek.tilefield names. Does not depend on pathfind, awareness, tilelight, raycaster, minimap, tilemap rendering, or renderer state.",
+        "module_doc": "This file owns field behavior inside the tilefield subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate field state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for field work. Serialization, indexing, and boundary checks stay here when they depend on field internals. Renderer, API, and test layers should call through these helpers rather than duplicate private rules. Open this file when field ownership changes, but keep unrelated subsystem policy in sibling modules. The code favors small data transformations so examples, specs, and tests can assert behavior directly. Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible. Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary.",
         "source_file": "src/tilefield/field.rs",
         "items": [
           {
@@ -23077,19 +23144,19 @@
             "kind": "struct",
             "description": "Named tile-level region stored as an explicit set of whole cells.",
             "file": "src/tilefield/field.rs",
-            "line": 19
+            "line": 24
           },
           {
             "name": "TileField",
             "kind": "struct",
             "description": "Multi-level tile gameplay field.",
             "file": "src/tilefield/field.rs",
-            "line": 28
+            "line": 33
           }
         ]
       },
       "tilefield::field_map": {
-        "module_doc": "Owns a grid of shared `TileField` handles for chunked and stacked tilefield worlds. Stores map-level dimensions separately from each contained field's cell dimensions. Provides the bridge between a single field, a 2D field map, and layered field maps. Keeps the map container data-oriented and independent from pathfinding, awareness, tilelight, minimap, and render.",
+        "module_doc": "This file owns field map behavior inside the tilefield subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate field map state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for field map work. Serialization, indexing, and boundary checks stay here when they depend on field map internals.",
         "source_file": "src/tilefield/field_map.rs",
         "items": [
           {
@@ -23097,14 +23164,14 @@
             "kind": "type",
             "description": "Shared handle type for a `TileField` stored inside a `TileFieldMap`.",
             "file": "src/tilefield/field_map.rs",
-            "line": 12
+            "line": 13
           },
           {
             "name": "TileFieldMap",
             "kind": "struct",
             "description": "A 2D or layered map of tilefields.",
             "file": "src/tilefield/field_map.rs",
-            "line": 16
+            "line": 17
           }
         ]
       },
@@ -23136,63 +23203,124 @@
         ]
       },
       "tilefield": {
-        "module_doc": "Indexes the tilefield gameplay-semantics subsystem and keeps its public Rust surface explicit. Exports cell, field, field-map, line, profile, and topology owners used by Lua bindings and tests. Re-exports compact data types so callers can build field inputs without depending on file layout. Keeps tilefield independent from renderers, minimaps, raycasters, pathfinding, awareness, and tilelight state. Agents start here to trace which file owns blockers, costs, topology math, and profiles. Neighbor modules may consume exported data, but they do not become owners of tilefield semantics.",
+        "module_doc": "Indexes the tilefield gameplay-semantics subsystem and keeps its public Rust surface explicit. Exports cell, field, field-map, line, modifier, and topology owners used by Lua bindings and tests. Re-exports compact data types so callers can build field inputs without depending on file layout. Keeps tilefield independent from renderers, minimaps, raycasters, pathfinding, awareness, and tilelight state. Agents start here to trace which file owns blockers, costs, topology math, slots, and modifiers. Neighbor modules may consume exported data, but they do not become owners of tilefield semantics.",
         "source_file": "src/tilefield/mod.rs",
         "items": [
+          {
+            "name": "catalog",
+            "kind": "mod",
+            "description": "Catalog trait for resolving typed refs without depending on tileset.",
+            "file": "src/tilefield/mod.rs",
+            "line": 9
+          },
+          {
+            "name": "category",
+            "kind": "mod",
+            "description": "User-defined category metadata for field semantics.",
+            "file": "src/tilefield/mod.rs",
+            "line": 11
+          },
           {
             "name": "cell",
             "kind": "mod",
             "description": "Field cell storage and query behavior.",
             "file": "src/tilefield/mod.rs",
-            "line": 9
+            "line": 13
+          },
+          {
+            "name": "emitter",
+            "kind": "mod",
+            "description": "Tile light emitter data stored by fields and consumed by tilelight.",
+            "file": "src/tilefield/mod.rs",
+            "line": 15
           },
           {
             "name": "field",
             "kind": "mod",
-            "description": "Tile field dimensions, profiles, channels, and exports.",
+            "description": "Tile field dimensions, channels, slots, modifiers, regions, and exports.",
             "file": "src/tilefield/mod.rs",
-            "line": 11
+            "line": 17
           },
           {
             "name": "field_map",
             "kind": "mod",
             "description": "Field-map storage for 2D and layered grids of tilefields.",
             "file": "src/tilefield/mod.rs",
-            "line": 13
+            "line": 19
           },
           {
             "name": "line",
             "kind": "mod",
             "description": "Tile line traversal helpers.",
             "file": "src/tilefield/mod.rs",
-            "line": 15
+            "line": 21
           },
           {
-            "name": "profile",
+            "name": "modifier",
             "kind": "mod",
-            "description": "Named object profiles applied to cells.",
+            "description": "Runtime tile modifiers applied on top of cell/object defaults.",
             "file": "src/tilefield/mod.rs",
-            "line": 17
+            "line": 23
+          },
+          {
+            "name": "reference",
+            "kind": "mod",
+            "description": "Typed tile/object refs stored in author-defined field slots.",
+            "file": "src/tilefield/mod.rs",
+            "line": 25
+          },
+          {
+            "name": "semantics",
+            "kind": "mod",
+            "description": "Shared read-only semantic query facade over tilefield data.",
+            "file": "src/tilefield/mod.rs",
+            "line": 27
           },
           {
             "name": "topology",
             "kind": "mod",
             "description": "Supported grid topology parsing and distance helpers.",
             "file": "src/tilefield/mod.rs",
-            "line": 19
+            "line": 29
           }
         ]
       },
-      "tilefield::profile": {
-        "module_doc": "Owns named tilefield profiles that stamp blocker, cost, and sun-occlusion semantics onto cells. Provides built-in wall, window, door, half-wall, and empty profiles for common tactical map objects. Stores profile data only, keeping renderer geometry and gameplay consumers independent of each other. Lets `TileField` apply reusable object semantics without duplicating channel maps at every call site. Does not calculate movement, visibility, action lines, lighting, minimap overlays, or render geometry.",
-        "source_file": "src/tilefield/profile.rs",
+      "tilefield::modifier": {
+        "module_doc": "This file owns modifier behavior inside the tilefield subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate modifier state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "source_file": "src/tilefield/modifier.rs",
         "items": [
           {
-            "name": "TileProfile",
+            "name": "TileModifier",
             "kind": "struct",
-            "description": "Named collection of channel blockers, channel costs, and sun attenuation.",
-            "file": "src/tilefield/profile.rs",
-            "line": 12
+            "description": "Runtime modifier applied to one or more tilefield cells.",
+            "file": "src/tilefield/modifier.rs",
+            "line": 10
+          }
+        ]
+      },
+      "tilefield::reference": {
+        "module_doc": "This file owns reference behavior inside the tilefield subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate reference state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "source_file": "src/tilefield/reference.rs",
+        "items": [
+          {
+            "name": "TileRef",
+            "kind": "struct",
+            "description": "Typed reference stored in one tilefield slot.",
+            "file": "src/tilefield/reference.rs",
+            "line": 7
+          }
+        ]
+      },
+      "tilefield::semantics": {
+        "module_doc": "This file owns semantics behavior inside the tilefield subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate semantics state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for semantics work.",
+        "source_file": "src/tilefield/semantics.rs",
+        "items": [
+          {
+            "name": "TileSemanticsView",
+            "kind": "struct",
+            "description": "Read-only semantic facade for one tilefield.",
+            "file": "src/tilefield/semantics.rs",
+            "line": 9
           }
         ]
       },
@@ -23210,7 +23338,7 @@
         ]
       },
       "tilelight::color": {
-        "module_doc": "Owns tile-light color math in linear 0..1 RGB space. Keeps color accumulation independent from tilefield data and light-source storage.",
+        "module_doc": "This file owns color behavior inside the tilelight subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate color state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for color work.",
         "source_file": "src/tilelight/color.rs",
         "items": [
           {
@@ -23218,12 +23346,12 @@
             "kind": "struct",
             "description": "RGB light color in linear 0..1 components.",
             "file": "src/tilelight/color.rs",
-            "line": 6
+            "line": 8
           }
         ]
       },
       "tilelight::map": {
-        "module_doc": "Owns tile-based light-map storage and accumulation over a shared `TileField`. Consumes tilefield blockers, light costs, sun occlusion, dimensions, and topology. Keeps computed light separate from render lighting, player awareness, movement, and minimap display.",
+        "module_doc": "This file owns map behavior inside the tilelight subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate map state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for map work. Serialization, indexing, and boundary checks stay here when they depend on map internals. It keeps maintenance boundari. Renderer, API, and test layers should call through these helpers rather than duplicate private rules. Open this file when map ownership changes, but keep unrelated subsystem policy in sibling modules. The code favors small data transformations so examples, specs, and tests can assert behavior directly. Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible. Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary.",
         "source_file": "src/tilelight/map.rs",
         "items": [
           {
@@ -23231,12 +23359,12 @@
             "kind": "struct",
             "description": "Computed tile light values and source-light state for one tilefield-sized volume.",
             "file": "src/tilelight/map.rs",
-            "line": 14
+            "line": 21
           }
         ]
       },
       "tilelight": {
-        "module_doc": "Exports the tile-based lighting subsystem surface. The module computes light maps over `TileField` data without owning render submission or player awareness.",
+        "module_doc": "This module index owns the public shape of the tilelight subsystem and its source navigation map. It declares which sibling files participate in tilelight behavior and which names are reexported outward. Reexports here are intentionally narrow so callers do not depend on private implementation modules. Agents should start here to understand subsystem boundaries before opening deeper implementation files. New submodules belong here only when they add durable behavior rather than temporary test scaffolding. Keep this index synchronized with specs, examples, and Lua bindings whenever public ownership changes.",
         "source_file": "src/tilelight/mod.rs",
         "items": [
           {
@@ -23244,26 +23372,33 @@
             "kind": "mod",
             "description": "",
             "file": "src/tilelight/mod.rs",
-            "line": 4
+            "line": 8
           },
           {
             "name": "map",
             "kind": "mod",
             "description": "",
             "file": "src/tilelight/mod.rs",
-            "line": 5
+            "line": 9
           },
           {
             "name": "source",
             "kind": "mod",
             "description": "",
             "file": "src/tilelight/mod.rs",
-            "line": 6
+            "line": 10
+          },
+          {
+            "name": "GlobalLight",
+            "kind": "type",
+            "description": "Compatibility alias for the global top-light source.",
+            "file": "src/tilelight/mod.rs",
+            "line": 20
           }
         ]
       },
       "tilelight::source": {
-        "module_doc": "Owns tile-light source data: point lights, line lights, temporal modulation, and sun settings. Does not compute light maps or read tilefield state.",
+        "module_doc": "This file owns source behavior inside the tilelight subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate source state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for source work. Serialization, indexing, and boundary checks stay here when they depend on source internals. Renderer, API, and test layers should call through these helpers rather than duplicate private rules.",
         "source_file": "src/tilelight/source.rs",
         "items": [
           {
@@ -23271,56 +23406,63 @@
             "kind": "struct",
             "description": "Time-varying modulation applied to a tile light source.",
             "file": "src/tilelight/source.rs",
-            "line": 8
+            "line": 12
           },
           {
             "name": "PointLight",
             "kind": "struct",
             "description": "Tile point light definition.",
             "file": "src/tilelight/source.rs",
-            "line": 60
+            "line": 64
           },
           {
             "name": "PointLightUpdate",
             "kind": "struct",
             "description": "Optional patch for updating an existing point light.",
             "file": "src/tilelight/source.rs",
-            "line": 81
+            "line": 85
           },
           {
             "name": "LineLight",
             "kind": "struct",
             "description": "Tile line light definition.",
             "file": "src/tilelight/source.rs",
-            "line": 100
+            "line": 104
           },
           {
             "name": "LineLightUpdate",
             "kind": "struct",
             "description": "Optional patch for updating an existing line light.",
             "file": "src/tilelight/source.rs",
-            "line": 127
+            "line": 131
+          },
+          {
+            "name": "AreaLight",
+            "kind": "struct",
+            "description": "Tile rectangular area light definition.",
+            "file": "src/tilelight/source.rs",
+            "line": 156
+          },
+          {
+            "name": "AreaLightUpdate",
+            "kind": "struct",
+            "description": "Optional patch for updating an existing area light.",
+            "file": "src/tilelight/source.rs",
+            "line": 181
           },
           {
             "name": "SunLightMode",
             "kind": "enum",
             "description": "Sun propagation mode.",
             "file": "src/tilelight/source.rs",
-            "line": 152
+            "line": 204
           },
           {
             "name": "SunLight",
             "kind": "struct",
             "description": "Global sun light settings.",
             "file": "src/tilelight/source.rs",
-            "line": 166
-          },
-          {
-            "name": "GlobalLight",
-            "kind": "type",
-            "description": "Backwards-compatible alias for the previous top-light type name.",
-            "file": "src/tilelight/source.rs",
-            "line": 186
+            "line": 218
           }
         ]
       },
@@ -23336,32 +23478,25 @@
             "line": 15
           },
           {
-            "name": "AutoTileMode",
-            "kind": "enum",
-            "description": "Terrain-neighbour matching strategy used when applying autotile rules.",
-            "file": "src/tilemap/autotile_sheet.rs",
-            "line": 28
-          },
-          {
             "name": "AutoTileSheet",
             "kind": "struct",
             "description": "Autotile sprite sheet: holds bitmask tables for fast neighbor-to-tile lookup.",
             "file": "src/tilemap/autotile_sheet.rs",
-            "line": 50
+            "line": 28
           },
           {
             "name": "layout_name",
             "kind": "fn",
             "description": "Return the stable Lua/API name for an autotile sheet layout.",
             "file": "src/tilemap/autotile_sheet.rs",
-            "line": 65
+            "line": 43
           },
           {
             "name": "default_mode_for_layout",
             "kind": "fn",
             "description": "Return the default terrain-neighbour matching mode for an autotile sheet layout.",
             "file": "src/tilemap/autotile_sheet.rs",
-            "line": 75
+            "line": 53
           }
         ]
       },
@@ -23379,7 +23514,7 @@
         ]
       },
       "tilemap::coords": {
-        "module_doc": "Provides tilemap projection transforms for isometric and hex render layouts. Converts between tile/grid coordinates and screen space for storage-to-render adapters. Keeps orientation-specific projection math out of map storage while avoiding gameplay topology ownership. Does not provide navigation, range, neighbor, line, ring, or visibility algorithms. Open this file when tilemap projection between tile coordinates and screen coordinates is wrong.",
+        "module_doc": "This file owns coords behavior inside the tilemap subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate coords state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
         "source_file": "src/tilemap/coords.rs",
         "items": [
           {
@@ -23387,33 +23522,33 @@
             "kind": "fn",
             "description": "Convert tile coordinates `(tx, ty)` to isometric screen position for a tile of `tile_w` by `tile_h` pixels.",
             "file": "src/tilemap/coords.rs",
-            "line": 10
+            "line": 8
           },
           {
             "name": "from_screen_iso",
             "kind": "fn",
             "description": "Convert isometric screen position `(sx, sy)` back to tile coordinates for a tile of `tile_w` by `tile_h` pixels.",
             "file": "src/tilemap/coords.rs",
-            "line": 15
+            "line": 13
           },
           {
             "name": "to_screen_hex",
             "kind": "fn",
             "description": "Convert hex axial coordinates `(q, r)` to flat-top screen position for a hex of the given `size`.",
             "file": "src/tilemap/coords.rs",
-            "line": 22
+            "line": 20
           },
           {
             "name": "from_screen_hex",
             "kind": "fn",
             "description": "Convert screen position `(sx, sy)` to flat-top hex axial coordinates for a hex of the given `size`.",
             "file": "src/tilemap/coords.rs",
-            "line": 29
+            "line": 27
           }
         ]
       },
       "tilemap::error": {
-        "module_doc": "Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around TileMapError, fmt, with helpers kept close to their invariants. Defines how error data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere. Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.",
+        "module_doc": "This file owns error behavior inside the tilemap subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate error state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for error work. Serialization, indexing, and boundary checks stay here when they depend on error internals.",
         "source_file": "src/tilemap/error.rs",
         "items": [
           {
@@ -23421,7 +23556,7 @@
             "kind": "enum",
             "description": "Error returned by safe tilemap constructors, queries, and bounded helpers.",
             "file": "src/tilemap/error.rs",
-            "line": 12
+            "line": 11
           }
         ]
       },
@@ -23514,7 +23649,7 @@
         ]
       },
       "tilemap::limits": {
-        "module_doc": "Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how limits data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.",
+        "module_doc": "This file owns limits behavior inside the tilemap subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate limits state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for limits work.",
         "source_file": "src/tilemap/limits.rs",
         "items": [
           {
@@ -23522,12 +23657,12 @@
             "kind": "struct",
             "description": "Shared safety limits for tilemap storage, importers, rendering helpers, and bounded tile operations.",
             "file": "src/tilemap/limits.rs",
-            "line": 11
+            "line": 10
           }
         ]
       },
       "tilemap": {
-        "module_doc": "Exports the tilemap subsystem surface that combines storage, import, geometry, and render helpers. Acts as the ownership index for tile worlds so callers can see where chunks, tilesets, maps, and importers live. Centralizes module visibility and re-exports instead of storing live map data or running generation itself. Connects authored formats, autotiling, large-map helpers, and base tile storage into one stack. Provides the first navigation point when tracing whether a tile concern belongs to import, storage, or rendering. Keeps the public tilemap surface coherent while allowing specialized owners like isomap or TMX to stay narrow. Open this file first when adding a tilemap owner or changing re-export policy for shared tilemap APIs. Use it to map a tile feature to its concrete Rust owner before editing storage, import, or render behavior.",
+        "module_doc": "This module index owns the public shape of the tilemap subsystem and its source navigation map. It declares which sibling files participate in tilemap behavior and which names are reexported outward. Reexports here are intentionally narrow so callers do not depend on private implementation modules. Agents should start here to understand subsystem boundaries before opening deeper implementation files. New submodules belong here only when they add durable behavior rather than temporary test scaffolding. Keep this index synchronized with specs, examples, and Lua bindings whenever public ownership changes. The ordering groups core data, helpers, and rendering-facing pieces so code search stays predictable. This file should explain where to navigate next, not repeat details owned by the implementation files.",
         "source_file": "src/tilemap/mod.rs",
         "items": [
           {
@@ -23615,23 +23750,16 @@
             "line": 34
           },
           {
-            "name": "tileset",
-            "kind": "mod",
-            "description": "Tileset metadata and animation frame types.",
-            "file": "src/tilemap/mod.rs",
-            "line": 36
-          },
-          {
             "name": "tmx",
             "kind": "mod",
             "description": "Tiled TMX XML format import. This module is publicly re-exported.",
             "file": "src/tilemap/mod.rs",
-            "line": 38
+            "line": 36
           }
         ]
       },
       "tilemap::orientation": {
-        "module_doc": "Tilemap projection orientation shared by storage and render adapters.",
+        "module_doc": "This file owns orientation behavior inside the tilemap subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate orientation state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
         "source_file": "src/tilemap/orientation.rs",
         "items": [
           {
@@ -23639,17 +23767,25 @@
             "kind": "enum",
             "description": "Projection / rendering orientation for a tilemap.",
             "file": "src/tilemap/orientation.rs",
-            "line": 5
+            "line": 7
           }
         ]
       },
       "tilemap::render": {
-        "module_doc": "Generates tilemap render commands with camera-aware culling across layers and supported map orientations. Maps tile ids to fallback debug colors so maps can still visualize without relying on atlas sampling. Applies per-layer visibility and tint while composing deterministic draw output for the shared renderer. Handles orthogonal, isometric, and hex layouts so debug and runtime visualization match map geometry. Acts as the tilemap-to-render boundary rather than mixing draw emission into the base TileMap owner. Open this file when tile draw order, culling, tint, or orientation-specific render output is incorrect.",
+        "module_doc": "This file owns render behavior inside the tilemap subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate render state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for render work. Serialization, indexing, and boundary checks stay here when they depend on render internals. Renderer, API, and test layers should call through these helpers rather than duplicate private rules. Open this file when render ownership changes, but keep unrelated subsystem policy in sibling modules. The code favors small data transformations so examples, specs, and tests can assert behavior directly.",
         "source_file": "src/tilemap/render.rs",
-        "items": []
+        "items": [
+          {
+            "name": "TileFieldSlotRenderOptions",
+            "kind": "struct",
+            "description": "Options for rendering one tilefield slot through tileset object visuals.",
+            "file": "src/tilemap/render.rs",
+            "line": 20
+          }
+        ]
       },
       "tilemap::tilemap": {
-        "module_doc": "Owns the runtime tilemap storage object: layers, GIDs, tilesets, viewport, animation state, and indexes. Validates tilemap dimensions and tile writes before importers, Lua bindings, or render adapters use the data. Keeps gameplay semantics such as movement, visibility, lighting, physics collisions, and regions in tilefield or other systems. Provides storage-side helpers used by tilemap render-command generation without owning the renderer. Open this file when tile IDs, layer state, tileset attachment, animation resolution, or tilemap indexing is wrong.",
+        "module_doc": "This file owns tilemap behavior inside the tilemap subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate tilemap state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for tilemap work. Serialization, indexing, and boundary checks stay here when they depend on tilemap internals. Renderer, API, and test layers should call through these helpers rather than duplicate private rules. Open this file when tilemap ownership changes, but keep unrelated subsystem policy in sibling modules. The code favors small data transformations so examples, specs, and tests can assert behavior directly. Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible. Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary. This module documents where tilemap data becomes behavior and where surrounding systems take over.",
         "source_file": "src/tilemap/tilemap.rs",
         "items": [
           {
@@ -23657,28 +23793,28 @@
             "kind": "struct",
             "description": "A single tile layer with per-tile GID and optional per-tile tint data.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 21
+            "line": 26
           },
           {
             "name": "TileIndexPolicy",
             "kind": "enum",
             "description": "Policy controlling when the reverse GID index is materialized.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 76
+            "line": 81
           },
           {
             "name": "TileMapDiagnosticsSnapshot",
             "kind": "struct",
             "description": "Snapshot of tilemap diagnostics counters used to surface silent fallbacks and guarded queries.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 85
+            "line": 90
           },
           {
             "name": "TileMap",
             "kind": "struct",
             "description": "Multi-layer tile map with tileset attachment, tile storage, autotile, animation, and render-command output.",
             "file": "src/tilemap/tilemap.rs",
-            "line": 125
+            "line": 130
           }
         ]
       },
@@ -23686,26 +23822,6 @@
         "module_doc": "This file owns the reverse-index maintenance helper that maps tile GIDs back to their grid positions. The function removes one coordinate from a GID bucket and deletes empty buckets to keep index state compact. Open this file when tile lookup bookkeeping changes; map storage and generation logic belong to siblings.",
         "source_file": "src/tilemap/tilemap_index.rs",
         "items": []
-      },
-      "tilemap::tileset": {
-        "module_doc": "Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around TileAnimFrame, TileSet, new, with helpers kept close to their invariants. Defines how tileset data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on tileset behavior while Lua registration stays elsewhere. Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.",
-        "source_file": "src/tilemap/tileset.rs",
-        "items": [
-          {
-            "name": "TileAnimFrame",
-            "kind": "struct",
-            "description": "A single frame in a tile sprite-sheet animation.",
-            "file": "src/tilemap/tileset.rs",
-            "line": 16
-          },
-          {
-            "name": "TileSet",
-            "kind": "struct",
-            "description": "A tileset slice of a sprite-sheet texture with lightweight per-tile author metadata.",
-            "file": "src/tilemap/tileset.rs",
-            "line": 25
-          }
-        ]
       },
       "tilemap::tmx": {
         "module_doc": "Owns the tmx owner for the tilemap subsystem and keeps its rules local to this file while keeping call sites explicit. Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how tmx data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on tmx behavior while Lua registration stays elsewhere. Documents the boundary where tilemap code accepts inputs, reports errors, or updates state. Use this file when changing tmx defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the tilemap state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping tmx calculations explicit at their owner boundary.",
@@ -23794,6 +23910,139 @@
             "description": "Parse an XML-encoded TMX map string using explicit strictness, path policy, and byte limits.",
             "file": "src/tilemap/tmx.rs",
             "line": 259
+          }
+        ]
+      },
+      "tileset::animation": {
+        "module_doc": "This file owns animation behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate animation state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "source_file": "src/tileset/animation.rs",
+        "items": [
+          {
+            "name": "TileAnimFrame",
+            "kind": "struct",
+            "description": "A single frame in a tile sprite-sheet animation.",
+            "file": "src/tileset/animation.rs",
+            "line": 7
+          }
+        ]
+      },
+      "tileset::archetype": {
+        "module_doc": "This file owns archetype behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate archetype state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for archetype work.",
+        "source_file": "src/tileset/archetype.rs",
+        "items": [
+          {
+            "name": "TileObjectLight",
+            "kind": "struct",
+            "description": "Tile-based light source defaults authored on a tileset object archetype.",
+            "file": "src/tileset/archetype.rs",
+            "line": 12
+          },
+          {
+            "name": "TileObjectArchetype",
+            "kind": "struct",
+            "description": "Reusable object archetype that can be referenced by `tilefield` slots.",
+            "file": "src/tileset/archetype.rs",
+            "line": 33
+          }
+        ]
+      },
+      "tileset::autotile": {
+        "module_doc": "This file owns autotile behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate autotile state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "source_file": "src/tileset/autotile.rs",
+        "items": [
+          {
+            "name": "AutoTileMode",
+            "kind": "enum",
+            "description": "Terrain-neighbour matching strategy used when applying autotile rules.",
+            "file": "src/tileset/autotile.rs",
+            "line": 7
+          }
+        ]
+      },
+      "tileset::catalog": {
+        "module_doc": "This file owns catalog behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate catalog state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for catalog work.",
+        "source_file": "src/tileset/catalog.rs",
+        "items": [
+          {
+            "name": "TileCatalog",
+            "kind": "struct",
+            "description": "Many-tileset resolver keyed by stable Lua-authored tileset id.",
+            "file": "src/tileset/catalog.rs",
+            "line": 12
+          }
+        ]
+      },
+      "tileset": {
+        "module_doc": "This module index owns the public shape of the tileset subsystem and its source navigation map. It declares which sibling files participate in tileset behavior and which names are reexported outward. Reexports here are intentionally narrow so callers do not depend on private implementation modules. Agents should start here to understand subsystem boundaries before opening deeper implementation files. New submodules belong here only when they add durable behavior rather than temporary test scaffolding. Keep this index synchronized with specs, examples, and Lua bindings whenever public ownership changes.",
+        "source_file": "src/tileset/mod.rs",
+        "items": [
+          {
+            "name": "animation",
+            "kind": "mod",
+            "description": "Animation frame records for tileset-local tile animations.",
+            "file": "src/tileset/mod.rs",
+            "line": 11
+          },
+          {
+            "name": "archetype",
+            "kind": "mod",
+            "description": "Engine-facing object archetypes and light defaults.",
+            "file": "src/tileset/mod.rs",
+            "line": 13
+          },
+          {
+            "name": "autotile",
+            "kind": "mod",
+            "description": "Tileset-level autotile matching policy.",
+            "file": "src/tileset/mod.rs",
+            "line": 15
+          },
+          {
+            "name": "catalog",
+            "kind": "mod",
+            "description": "Many-tileset catalog lookup for typed tilefield refs.",
+            "file": "src/tileset/mod.rs",
+            "line": 17
+          },
+          {
+            "name": "tileset",
+            "kind": "mod",
+            "description": "Core tileset atlas, archetype registry, per-tile mappings, and autotile rule storage.",
+            "file": "src/tileset/mod.rs",
+            "line": 19
+          },
+          {
+            "name": "visual",
+            "kind": "mod",
+            "description": "Sprite/atlas/image visual references used by tilemap render ordering.",
+            "file": "src/tileset/mod.rs",
+            "line": 21
+          }
+        ]
+      },
+      "tileset::tileset": {
+        "module_doc": "This file owns tileset behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate tileset state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for tileset work. Serialization, indexing, and boundary checks stay here when they depend on tileset internals. Renderer, API, and test layers should call through these helpers rather than duplicate private rules.",
+        "source_file": "src/tileset/tileset.rs",
+        "items": [
+          {
+            "name": "TileSet",
+            "kind": "struct",
+            "description": "A tileset slice of a sprite-sheet texture plus reusable object archetypes.",
+            "file": "src/tileset/tileset.rs",
+            "line": 18
+          }
+        ]
+      },
+      "tileset::visual": {
+        "module_doc": "This file owns visual behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate visual state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "source_file": "src/tileset/visual.rs",
+        "items": [
+          {
+            "name": "TileVisual",
+            "kind": "struct",
+            "description": "Visual representation for one tileset object archetype.",
+            "file": "src/tileset/visual.rs",
+            "line": 7
           }
         ]
       },
@@ -28624,170 +28873,191 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_province_unit",
+        "name": "lua_unit_procgen_gap_unit",
         "description": "",
         "line": 1557
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_raycaster_unit",
+        "name": "lua_unit_province_unit",
         "description": "",
         "line": 1562
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_render_unit",
+        "name": "lua_unit_raycaster_unit",
         "description": "",
         "line": 1567
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_repl_unit",
+        "name": "lua_unit_render_unit",
         "description": "",
         "line": 1572
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_runtime_unit",
+        "name": "lua_unit_repl_unit",
         "description": "",
         "line": 1577
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_save_unit",
+        "name": "lua_unit_runtime_unit",
         "description": "",
         "line": 1582
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_scene_unit",
+        "name": "lua_unit_save_unit",
         "description": "",
         "line": 1587
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_serialize_unit",
+        "name": "lua_unit_scene_unit",
         "description": "",
         "line": 1592
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_shape_unit",
+        "name": "lua_unit_serialize_unit",
         "description": "",
         "line": 1597
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_spine_unit",
+        "name": "lua_unit_shape_unit",
         "description": "",
         "line": 1602
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_sprite_unit",
+        "name": "lua_unit_spine_unit",
         "description": "",
         "line": 1607
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_svg_unit",
+        "name": "lua_unit_sprite_unit",
         "description": "",
         "line": 1612
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_terminal_unit",
+        "name": "lua_unit_svg_unit",
         "description": "",
         "line": 1617
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_thread_unit",
+        "name": "lua_unit_terminal_unit",
         "description": "",
         "line": 1622
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilemap_unit",
+        "name": "lua_unit_thread_unit",
         "description": "",
         "line": 1627
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_unit",
+        "name": "lua_unit_tilemap_unit",
         "description": "",
         "line": 1632
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilelight_unit",
+        "name": "lua_unit_tilefield_unit",
         "description": "",
         "line": 1637
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_timer_unit",
+        "name": "lua_unit_tilefield_gap_unit",
         "description": "",
         "line": 1642
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tween_unit",
+        "name": "lua_unit_tilelight_unit",
         "description": "",
         "line": 1647
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ui_unit",
+        "name": "lua_unit_tileset_unit",
         "description": "",
         "line": 1652
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_validator_unit",
+        "name": "lua_unit_timer_unit",
         "description": "",
         "line": 1657
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_awareness_unit",
+        "name": "lua_unit_tween_unit",
         "description": "",
         "line": 1662
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_window_unit",
+        "name": "lua_unit_ui_unit",
         "description": "",
         "line": 1667
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_demo_colocated_games",
+        "name": "lua_unit_validator_unit",
         "description": "",
         "line": 1672
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_unit_awareness_unit",
+        "description": "",
+        "line": 1677
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_unit_window_unit",
+        "description": "",
+        "line": 1682
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_demo_colocated_games",
+        "description": "",
+        "line": 1687
       }
     ],
     "lua": [
@@ -30549,6 +30819,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/unit/test_procgen_gap_unit.lua",
+        "module": "test_procgen_gap_unit",
+        "name": "test_procgen_gap_unit",
+        "description": "Gap coverage for typed procgen grid APIs.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/unit/test_procgen_unit.lua",
         "module": "test_procgen_unit",
         "name": "test_procgen_unit",
@@ -30654,6 +30931,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/unit/test_tilefield_gap_unit.lua",
+        "module": "test_tilefield_gap_unit",
+        "name": "test_tilefield_gap_unit",
+        "description": "Gap coverage for newer tilefield APIs.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/unit/test_tilefield_unit.lua",
         "module": "test_tilefield_unit",
         "name": "test_tilefield_unit",
@@ -30672,6 +30956,13 @@
         "module": "test_tilemap_unit",
         "name": "test_tilemap_unit",
         "description": "Reorganized unit test file.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/unit/test_tileset_unit.lua",
+        "module": "test_tileset_unit",
+        "name": "test_tileset_unit",
+        "description": "Canonical unit coverage for lurek.tileset atlas, object, and catalog APIs.",
         "kind": "lua"
       },
       {

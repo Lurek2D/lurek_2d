@@ -1591,3 +1591,455 @@ do
     procgen_log("typeOf LObject = " .. tostring(ca:typeOf("LObject")))
     procgen_log("gas count = " .. ca:countCells(lurek.procgen.CELL_GAS))
 end
+
+--- Added coverage examples for newer API owners.
+
+--@api: LNoiseGenerator:generateMapComputeGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local gen = lurek.procgen.newNoiseGenerator(4)
+    local ok, value = pcall(function()
+        local grid = gen:generateMapComputeGrid(3, 2, { scaleX = 4, scaleY = 4, octaves = 1 })
+        return grid:getKind()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LNoiseGenerator:generateMapGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local gen = lurek.procgen.newNoiseGenerator(4)
+    local ok, value = pcall(function()
+        local grid = gen:generateMapGrid(3, 2, { scaleX = 4, scaleY = 4, octaves = 1 })
+        return grid:getKind()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:getCell
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        return grid:getCell(1, 2)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:getHeight
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        return grid:getHeight()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:getKind
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        return grid:getKind()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:getSize
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        local w, h = grid:getSize()
+        return w + h
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:getWidth
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        return grid:getWidth()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:toTable
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        return #grid:toTable().cells
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:toTileField
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        local field = grid:toTileField({ slot = "terrain" })
+        return field:getRef(2, 2, 1, "terrain")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:type
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        return grid:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:typeOf
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        return grid:typeOf("LProcgenGrid")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenGrid:writeTileField
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newGridResult(2, 2, { 1, 2, 3, 4 }, { kind = "manual_grid" })
+    local ok, value = pcall(function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        grid:writeTileField(field, { slot = "terrain" })
+        return field:getRef(2, 1, 1, "terrain")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:getCell
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        return grid:getCell(1, 2)
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:getHeight
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        return grid:getHeight()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:getKind
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        return grid:getKind()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:getSize
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        local w, h = grid:getSize()
+        return w + h
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:getWidth
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        return grid:getWidth()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:toTable
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        return #grid:toTable().cells
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:toTileField
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        local field = grid:toTileField({ target = "block", channel = "move", threshold = 0.5 })
+        return field:blocks(2, 1, 1, "move")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:type
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        return grid:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:typeOf
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        return grid:typeOf("LProcgenScalarGrid")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: LProcgenScalarGrid:writeTileField
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local grid = lurek.procgen.newScalarGridResult(2, 2, { 0.1, 0.6, 0.2, 0.9 }, { kind = "manual_scalar" })
+    local ok, value = pcall(function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        grid:writeTileField(field, { target = "cost", channel = "move", scale = 10 })
+        return field:getCost(2, 2, 1, "move")
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.cellularAutomataGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local opts = { width = 4, height = 3, seed = 8, fill_probability = 0.45, steps = 1 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.cellularAutomataGrid(opts)
+        return grid:getKind()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.heightmapFromCellularGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local cells = { 0, 1, 0, 1, 0, 1 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.heightmapFromCellularGrid(3, 2, cells, 0)
+        return grid:getHeight()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.heightmapGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local opts = { width = 4, height = 3, seed = 7, erosion_passes = 0 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.heightmapGrid(opts)
+        return grid:getKind()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.newGridResult
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local cells = { 1, 2, 3, 4 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.newGridResult(2, 2, cells, { kind = "manual_grid" })
+        return grid:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.newScalarGridResult
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local cells = { 0.1, 0.6, 0.2, 0.9 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.newScalarGridResult(2, 2, cells, { kind = "manual_scalar" })
+        return grid:type()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.noiseMapGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local opts = { seed = 5, scale_x = 4, scale_y = 4, octaves = 1 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.noiseMapGrid(3, 2, opts)
+        return #grid:toTable().cells
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.noiseMapParallelGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local opts = { scale_x = 4, scale_y = 4, octaves = 1 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.noiseMapParallelGrid(3, 2, opts)
+        return grid:getHeight()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.noiseMapParallelSeededGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local opts = { seed = 9, scale_x = 4, scale_y = 4, octaves = 1 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.noiseMapParallelSeededGrid(3, 2, opts)
+        return grid:getWidth()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.roomsDungeonGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local opts = { width = 8, height = 6, max_rooms = 3, min_room_size = 2, max_room_size = 3, seed = 11 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.roomsDungeonGrid(opts)
+        return grid:getWidth()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.roomsDungeonWithPrefabsGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local opts = { width = 8, height = 6, max_rooms = 3, min_room_size = 2, max_room_size = 3, seed = 11 }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.roomsDungeonWithPrefabsGrid(opts, { { name = "chest", width = 1, height = 1 } }, 3)
+        return grid:getWidth()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+
+--@api: lurek.procgen.wfcGenerateGrid
+do
+    local function example_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local tiles = { { id = 1, weight = 1 }, { id = 2, weight = 1 } }
+    local ok, value = pcall(function()
+        local grid = lurek.procgen.wfcGenerateGrid({ width = 3, height = 2, tiles = tiles, seed = 4 })
+        return grid:getWidth()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end

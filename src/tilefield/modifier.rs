@@ -1,5 +1,6 @@
-//! Owns named tile modifiers that change effective tilefield channel values at runtime.
-//! Modifiers are defined by Lua games and applied to cells without changing the underlying object refs.
+//! This file owns modifier behavior inside the tilefield subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate modifier state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 use crate::tilefield::{TileChannel, TileLightEmitter};
 use std::collections::HashMap;

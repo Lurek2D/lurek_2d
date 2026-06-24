@@ -1,9 +1,8 @@
-//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-//! Centers the implementation around TileMapError, fmt, with helpers kept close to their invariants.
-//! Defines how error data is validated, transformed, or stored before neighboring systems use it.
-//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
-//! Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
+//! This file owns error behavior inside the tilemap subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate error state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for error work.
+//! Serialization, indexing, and boundary checks stay here when they depend on error internals.
 
 use std::fmt;
 

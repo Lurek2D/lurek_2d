@@ -12,7 +12,7 @@
 - Source path: `src/tilefield`
 - Binding: `src/lua_api/tilefield_api.rs`
 - Namespace: `lurek.tilefield`
-- Lua API surface: `3` functions, `2` types, `56` methods
+- Lua API surface: `4` functions, `2` types, `75` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -43,31 +43,55 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 
 ## Source Files
 
+### catalog.rs
+
+- This file owns catalog behavior inside the tilefield subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate catalog state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+
+### category.rs
+
+- This file owns category behavior inside the tilefield subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate category state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for category work.
+
 ### cell.rs
 
-- Owns per-cell gameplay channel data for blockers, traversal costs, and sun occlusion in tilefield maps.
-- Defines the fixed semantic channels used by Lua, pathfind adapters, visibility checks, and tile lighting.
-- Keeps movement, vision, action, point-light, top-light, and author-defined object references independent.
-- Provides parsing and default-state helpers for field mutation without depending on higher-level systems.
-- Does not know about topology, rendering, minimap presentation, player masks, or pathfinding algorithms.
+- This file owns cell behavior inside the tilefield subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate cell state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for cell work.
+- Serialization, indexing, and boundary checks stay here when they depend on cell internals.
+- Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+- Open this file when cell ownership changes, but keep unrelated subsystem policy in sibling modules.
+
+### emitter.rs
+
+- This file owns emitter behavior inside the tilefield subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate emitter state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 ### field.rs
 
-- Owns multi-level tilefield storage, channel blockers, channel costs, profiles, and cell exports.
-- Implements bounds checks, cell mutation, profile application, line queries, and layer exports.
-- Stores cells and named profiles in one grid owner.
-- Uses topology and line helpers locally so callers can query blockers without owning traversal logic.
-- Provides renderer-independent input consumed by movement, awareness, tilelight, minimap, and render adapters.
-- Keeps action, vision, movement, light, and sun channels independent by never inferring one from another.
-- Returns controlled string errors at the domain boundary so Lua bindings can attach lurek.tilefield names.
-- Does not depend on pathfind, awareness, tilelight, raycaster, minimap, tilemap rendering, or renderer state.
+- This file owns field behavior inside the tilefield subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate field state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for field work.
+- Serialization, indexing, and boundary checks stay here when they depend on field internals.
+- Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+- Open this file when field ownership changes, but keep unrelated subsystem policy in sibling modules.
+- The code favors small data transformations so examples, specs, and tests can assert behavior directly.
+- Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.
+- Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary.
 
 ### field_map.rs
 
-- Owns a grid of shared `TileField` handles for chunked and stacked tilefield worlds.
-- Stores map-level dimensions separately from each contained field's cell dimensions.
-- Provides the bridge between a single field, a 2D field map, and layered field maps.
-- Keeps the map container data-oriented and independent from pathfinding, awareness, tilelight, minimap, and render.
+- This file owns field map behavior inside the tilefield subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate field map state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for field map work.
+- Serialization, indexing, and boundary checks stay here when they depend on field map internals.
 
 ### line.rs
 
@@ -80,19 +104,30 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 ### mod.rs
 
 - Indexes the tilefield gameplay-semantics subsystem and keeps its public Rust surface explicit.
-- Exports cell, field, field-map, line, profile, and topology owners used by Lua bindings and tests.
+- Exports cell, field, field-map, line, modifier, and topology owners used by Lua bindings and tests.
 - Re-exports compact data types so callers can build field inputs without depending on file layout.
 - Keeps tilefield independent from renderers, minimaps, raycasters, pathfinding, awareness, and tilelight state.
-- Agents start here to trace which file owns blockers, costs, topology math, and profiles.
+- Agents start here to trace which file owns blockers, costs, topology math, slots, and modifiers.
 - Neighbor modules may consume exported data, but they do not become owners of tilefield semantics.
 
-### profile.rs
+### modifier.rs
 
-- Owns named tilefield profiles that stamp blocker, cost, and sun-occlusion semantics onto cells.
-- Provides built-in wall, window, door, half-wall, and empty profiles for common tactical map objects.
-- Stores profile data only, keeping renderer geometry and gameplay consumers independent of each other.
-- Lets `TileField` apply reusable object semantics without duplicating channel maps at every call site.
-- Does not calculate movement, visibility, action lines, lighting, minimap overlays, or render geometry.
+- This file owns modifier behavior inside the tilefield subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate modifier state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+
+### reference.rs
+
+- This file owns reference behavior inside the tilefield subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate reference state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+
+### semantics.rs
+
+- This file owns semantics behavior inside the tilefield subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate semantics state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for semantics work.
 
 ### topology.rs
 
@@ -107,7 +142,8 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 
 ### Functions
 
-- `lurek.tilefield.fromTileMap(tilemap, opts?) -> LTileField`: Copies a tilemap layer into a tilefield, optionally applying profiles and a ref slot.
+- `lurek.tilefield.fromProvider(provider) -> LTileField`: Builds a native tilefield from a Lua provider table with width, height, optional levels/topology, slots, modifiers, regions, and optional getCell(x,y,z).
+- `lurek.tilefield.fromTileMap(tilemap, opts?) -> LTileField`: Copies a tilemap layer into a tilefield, optionally applying tileset object defaults and a ref slot.
 - `lurek.tilefield.new(opts) -> LTileField`: Creates a multi-level tilefield with explicit dimensions and topology.
 - `lurek.tilefield.newFieldMap(opts) -> LTileFieldMap`: Creates a 2D or layered map of shared tilefields.
 
@@ -131,44 +167,64 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 
 ##### Methods
 
-- `LTileField:applyProfile(x, y, z?, name) -> nil`: Applies a named profile to one cell.
-- `LTileField:applyTilesetProfile(x, y, z?, slot, tileset, opts?) -> boolean`: Applies the tilefield profile named by a tileset tile referenced from one cell.
-- `LTileField:applyTilesetStats(x, y, z?, slot, tileset, opts?) -> boolean`: Applies tileset gameplay properties for a tile referenced from one cell.
-- `LTileField:applyTilesetStatsLayer(slot, tileset, opts?) -> integer`: Applies tileset gameplay properties for every referenced cell on one tilefield level.
+- `LTileField:applyModifier(x, y, z?, modifier) -> nil`: Applies a named modifier to one cell.
+- `LTileField:applyProfile(x, y, z?, profile) -> nil`: Applies a legacy profile to one cell.
+- `LTileField:applyTilesetObject(x, y, z?, slot, tileset, opts?) -> boolean`: Applies the object archetype defaults for a tileset tile referenced from one cell.
+- `LTileField:applyTilesetObjectLayer(slot, tileset, opts?) -> integer`: Applies tileset object defaults for every referenced cell on one tilefield level.
 - `LTileField:blocks(x, y, z?, channel) -> boolean`: Returns whether a cell blocks a channel.
+- `LTileField:blocksCategory(x, y, z?, category) -> nil`: Returns whether one cell blocks a category.
 - `LTileField:clear() -> nil`: Clears all cell gameplay state.
 - `LTileField:clearCell(x, y, z?) -> nil`: Clears gameplay state for one addressed cell.
 - `LTileField:clearLine(from_tbl, to_tbl, channel, opts?) -> boolean`: Returns true when the line between two cell tables has no blocker for a channel.
+- `LTileField:clearModifier(x, y, z?, modifier) -> boolean`: Removes one modifier from one cell.
 - `LTileField:clearRef(x, y, z?, slot) -> nil`: Clears a named object/tile reference from one cell.
+- `LTileField:defineCategory(name, opts?) -> nil`: Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
+- `LTileField:defineSlot(slot) -> nil`: Defines a named object slot that cells may reference.
 - `LTileField:exportBlockLayer(channel, z?) -> table`: Exports one blocker channel and level as a row-major boolean array.
 - `LTileField:exportCostLayer(channel, z?) -> table`: Exports one cost channel and level as a row-major number array.
-- `LTileField:exportProfileLayer(z?) -> nil`: Exports one level of profile names as a row-major array.
 - `LTileField:exportRefLayer(slot, z?) -> nil`: Exports one named object/tile reference slot and level as a row-major array.
 - `LTileField:firstBlocker(from_tbl, to_tbl, channel, opts?) -> table|nil`: Returns the first one-based blocking cell table between two cells, or nil.
-- `LTileField:getCell(x, y, z?) -> table`: Returns a table with blockers, costs, sun occlusion, and optional profile name.
+- `LTileField:footprintPassable(x, y, z?, w, h, category) -> nil`: Returns whether a rectangular footprint can occupy a cell anchor for a category.
+- `LTileField:getCategories() -> string[]`: Returns known category names.
+- `LTileField:getCategory(name) -> table|nil`: Returns category metadata, or nil when the category is unknown.
+- `LTileField:getCategoryCost(x, y, z?, category) -> nil`: Returns one effective category cost.
+- `LTileField:getCategoryFilter(x, y, z?, category) -> nil`: Returns one effective RGB category filter.
+- `LTileField:getCategoryTransmission(x, y, z?, category) -> nil`: Returns one effective category transmission multiplier.
+- `LTileField:getCell(x, y, z?) -> table`: Returns a table with blockers, costs, sun occlusion, refs, and modifiers.
 - `LTileField:getCost(x, y, z?, channel) -> number`: Returns the cost for one cell/channel.
+- `LTileField:getModifier(name) -> table|nil`: Returns a named tile modifier table, or nil.
+- `LTileField:getModifiers(x, y, z?) -> string[]`: Returns active modifier names on one cell.
 - `LTileField:getNeighbors(x, y, z?) -> table`: Returns topology-aware same-level neighbours for one cell.
-- `LTileField:getProfile(name) -> table|nil`: Returns a named object profile table, or nil when absent.
-- `LTileField:getRef(x, y, z?, slot) -> integer|nil`: Returns a named object/tile reference from one cell, or nil.
+- `LTileField:getProfile(name) -> table|nil`: Returns a legacy profile table, or nil.
+- `LTileField:getRef(x, y, z?, slot) -> integer|table|nil`: Returns a named object/tile reference from one cell, or nil.
 - `LTileField:getRefProperties(x, y, z?, slot, tileset, opts?) -> table|nil`: Reads all tileset properties for a tile referenced from one cell.
 - `LTileField:getRefProperty(x, y, z?, slot, tileset, property, opts?) -> string|nil`: Reads a tileset property for a tile referenced from one cell.
 - `LTileField:getRefPropertyBool(x, y, z?, slot, tileset, property, opts?) -> boolean|nil`: Reads a tileset property for a tile referenced from one cell and parses it as a boolean.
 - `LTileField:getRefPropertyNumber(x, y, z?, slot, tileset, property, opts?) -> number|nil`: Reads a tileset property for a tile referenced from one cell and parses it as a number.
-- `LTileField:getRefSlots() -> string[]`: Returns every named ref slot currently used by this field.
+- `LTileField:getRefSlots() -> string[]`: Returns every declared ref slot.
 - `LTileField:getRegionCells(name) -> table?`: Returns one-based cells for a named region, or nil when it does not exist.
 - `LTileField:getRegionNames() -> table`: Returns all region names in stable order.
 - `LTileField:getSize() -> integer`: Returns field width, height, and level count.
 - `LTileField:getSunOcclusion(x, y, z?) -> number`: Returns top-light occlusion in the inclusive range 0..1.
 - `LTileField:getTopology() -> string`: Returns the field topology name used for coordinate interpretation.
+- `LTileField:getVersion() -> integer`: Returns the current tilefield data version.
+- `LTileField:hasSlot(slot) -> boolean`: Returns true when a named object slot is declared.
 - `LTileField:inBounds(x, y, z?) -> boolean`: Returns whether one-based coordinates are inside the field.
 - `LTileField:line(opts) -> nil`: Returns topology-aware one-based cells between `from` and `to` tables.
 - `LTileField:regionContains(name, x, y, z?) -> boolean`: Returns whether a named region contains a one-based tile cell.
-- `LTileField:removeProfile(name) -> nil`: Removes a named object profile from the tilefield profile registry.
+- `LTileField:removeModifier(name) -> boolean`: Removes a named modifier and clears it from all cells.
+- `LTileField:removeProfile(name) -> boolean`: Removes a legacy profile and clears it from all cells.
 - `LTileField:removeRegion(name) -> boolean`: Removes a named region.
+- `LTileField:removeSlot(slot) -> boolean`: Removes a named object slot and clears its references from the field.
 - `LTileField:setBlock(x, y, z?, channel, blocked) -> nil`: Sets whether a cell blocks a channel.
-- `LTileField:setCell(x, y, z?, cell) -> nil`: Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+- `LTileField:setCategoryBlock(x, y, z?, category, blocked) -> nil`: Sets one category blocker on one cell.
+- `LTileField:setCategoryCost(x, y, z?, category, cost) -> nil`: Sets one category cost on one cell.
+- `LTileField:setCategoryFilter(x, y, z?, category, filter) -> nil`: Sets one RGB category filter on one cell.
+- `LTileField:setCategoryTransmission(x, y, z?, category, value) -> nil`: Sets one category transmission multiplier on one cell.
+- `LTileField:setCell(x, y, z?, cell) -> nil`: Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
 - `LTileField:setCost(x, y, z?, channel, cost) -> nil`: Sets the cost for one cell/channel.
-- `LTileField:setProfile(name, profile_tbl) -> nil`: Registers or replaces a named object profile.
+- `LTileField:setModifier(name, modifier) -> nil`: Registers or replaces a named tile modifier.
+- `LTileField:setProfile(name, profile) -> nil`: Registers or replaces a legacy tilefield profile.
 - `LTileField:setRef(x, y, z?, slot, value) -> nil`: Sets a named object/tile reference on one cell.
 - `LTileField:setRegionCells(name, cells) -> nil`: Defines or replaces a named region from explicit one-based tile cells.
 - `LTileField:setRegionRect(name, x1, y1, x2, y2, z?) -> nil`: Defines or replaces a named region from an inclusive one-based tile rectangle.
@@ -177,7 +233,6 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
 - `LTileField:writeBlockLayer(channel, z?, values) -> nil`: Writes one full blocker channel layer from a row-major boolean array.
 - `LTileField:writeCostLayer(channel, z?, values) -> nil`: Writes one full cost channel layer from a row-major number array.
-- `LTileField:writeProfileLayer(z?, values) -> nil`: Writes one full profile-name layer from a row-major string-or-nil array.
 - `LTileField:writeRefLayer(slot, z?, values) -> nil`: Writes one full named ref layer from a row-major integer-or-nil array.
 
 #### LTileFieldMap Type

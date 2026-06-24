@@ -1,5 +1,7 @@
-//! Owns lookup across many named tilesets.
-//! Catalog state is reusable definition data only; placed refs remain owned by tilefield.
+//! This file owns catalog behavior inside the tileset subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate catalog state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for catalog work.
 
 use crate::tilefield::{TileObjectCatalog, TileRef};
 use crate::tileset::{TileObjectArchetype, TileSet, TileVisual};

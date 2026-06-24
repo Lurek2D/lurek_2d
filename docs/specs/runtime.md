@@ -72,17 +72,18 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 
 ### config.rs
 
-- Owns the configuration model for the runtime subsystem and keeps its rules local to this file.
-- Keeps runtime data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-- Defines how config data is validated, transformed, or stored before neighboring systems use it.
-- Owns runtime behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on config behavior while Lua registration stays elsewhere.
-- Documents the boundary where runtime code accepts inputs, reports errors, or updates state.
-- Use this file when changing config defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the runtime state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping config calculations explicit at their owner boundary.
-- Provides the local adaptation layer that lets callers avoid duplicating runtime rules while keeping call sites explicit.
-- Maintains small helper surfaces so broader engine modules can compose config behavior safely.
+- This file owns config behavior inside the runtime subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate config state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for config work.
+- Serialization, indexing, and boundary checks stay here when they depend on config internals.
+- Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+- Open this file when config ownership changes, but keep unrelated subsystem policy in sibling modules.
+- The code favors small data transformations so examples, specs, and tests can assert behavior directly.
+- Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.
+- Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary.
+- This module documents where runtime data becomes behavior and where surrounding systems take over.
+- Maintenance work here should preserve the existing contracts before extending new config capabilities.
 
 ### error.rs
 

@@ -1,16 +1,16 @@
 {
   "meta": {
-    "generated": "2026-06-23T22:03:32.284881+00:00",
+    "generated": "2026-06-24T11:27:48.917071+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6185,
-    "marker_covered": 6122,
+    "total_api_functions": 6241,
+    "marker_covered": 6216,
     "describe_covered": 152,
-    "describe_coverage_pct": 2.5,
-    "heuristic_covered": 14,
-    "total_covered": 6161,
-    "coverage_pct": 99.6
+    "describe_coverage_pct": 2.4,
+    "heuristic_covered": 0,
+    "total_covered": 6241,
+    "coverage_pct": 100.0
   },
   "modules": {
     "agent": {
@@ -6448,14 +6448,14 @@
       ]
     },
     "awareness": {
-      "total": 43,
-      "marker_covered": 43,
+      "total": 50,
+      "marker_covered": 50,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 43,
+      "covered": 50,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 2.3,
-      "describe_score": 0.023,
+      "describe_coverage_pct": 2.0,
+      "describe_score": 0.02,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_awareness_unit.lua"
@@ -6510,6 +6510,33 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LTileAwareness:defineCategory",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileAwareness:getCategory",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileAwareness:getCategories",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LTileAwareness:computeVisible",
           "kind": "method",
           "marker_covered": true,
@@ -6529,6 +6556,15 @@
         },
         {
           "lua_name": "LTileAwareness:isVisible",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileAwareness:isAware",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -6583,6 +6619,33 @@
         },
         {
           "lua_name": "LTileAwareness:clearAll",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileAwareness:share",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileAwareness:clearShares",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileAwareness:setTeam",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -26169,9 +26232,9 @@
     },
     "mapblock": {
       "total": 79,
-      "marker_covered": 77,
+      "marker_covered": 79,
       "describe_covered": 0,
-      "heuristic_covered": 2,
+      "heuristic_covered": 0,
       "covered": 79,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
@@ -26482,9 +26545,9 @@
         {
           "lua_name": "LMapGroup:addBlock",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -26518,9 +26581,9 @@
         {
           "lua_name": "LMapScript:addStep",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -34004,11 +34067,11 @@
       ]
     },
     "pathfind": {
-      "total": 189,
-      "marker_covered": 189,
+      "total": 191,
+      "marker_covered": 191,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 189,
+      "covered": 191,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -34020,6 +34083,15 @@
       "functions": [
         {
           "lua_name": "lurek.pathfind.newNavGrid",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.pathfind.newNavGridFromProvider",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -34047,6 +34119,15 @@
         },
         {
           "lua_name": "lurek.pathfind.newPathGrid",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.pathfind.newPathGridFromProvider",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -40422,65 +40503,17 @@
     },
     "procgen": {
       "total": 103,
-      "marker_covered": 91,
+      "marker_covered": 103,
       "describe_covered": 0,
-      "heuristic_covered": 4,
-      "covered": 95,
-      "coverage_pct": 92.2,
+      "heuristic_covered": 0,
+      "covered": 103,
+      "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
-      "uncovered": [
-        {
-          "lua_name": "lurek.procgen.roomsDungeonWithPrefabsGrid",
-          "kind": "function",
-          "file": "src/lua_api/procgen_api.rs",
-          "line": 1907
-        },
-        {
-          "lua_name": "lurek.procgen.heightmapGrid",
-          "kind": "function",
-          "file": "src/lua_api/procgen_api.rs",
-          "line": 2027
-        },
-        {
-          "lua_name": "lurek.procgen.heightmapFromCellularGrid",
-          "kind": "function",
-          "file": "src/lua_api/procgen_api.rs",
-          "line": 2116
-        },
-        {
-          "lua_name": "lurek.procgen.noiseMapGrid",
-          "kind": "function",
-          "file": "src/lua_api/procgen_api.rs",
-          "line": 2615
-        },
-        {
-          "lua_name": "lurek.procgen.noiseMapParallelGrid",
-          "kind": "function",
-          "file": "src/lua_api/procgen_api.rs",
-          "line": 2635
-        },
-        {
-          "lua_name": "lurek.procgen.noiseMapParallelSeededGrid",
-          "kind": "function",
-          "file": "src/lua_api/procgen_api.rs",
-          "line": 2653
-        },
-        {
-          "lua_name": "LNoiseGenerator:generateMapGrid",
-          "kind": "method",
-          "file": "src/lua_api/procgen_api.rs",
-          "line": 1013
-        },
-        {
-          "lua_name": "LNoiseGenerator:generateMapComputeGrid",
-          "kind": "method",
-          "file": "src/lua_api/procgen_api.rs",
-          "line": 1060
-        }
-      ],
+      "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_physics_unit.lua",
+        "tests/lua/unit/test_procgen_gap_unit.lua",
         "tests/lua/unit/test_procgen_unit.lua"
       ],
       "describe_files": [],
@@ -40605,10 +40638,10 @@
         {
           "lua_name": "lurek.procgen.roomsDungeonWithPrefabsGrid",
           "kind": "function",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
@@ -40623,10 +40656,10 @@
         {
           "lua_name": "lurek.procgen.heightmapGrid",
           "kind": "function",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
@@ -40641,10 +40674,10 @@
         {
           "lua_name": "lurek.procgen.heightmapFromCellularGrid",
           "kind": "function",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
@@ -40740,28 +40773,28 @@
         {
           "lua_name": "lurek.procgen.noiseMapGrid",
           "kind": "function",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "lurek.procgen.noiseMapParallelGrid",
           "kind": "function",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "lurek.procgen.noiseMapParallelSeededGrid",
           "kind": "function",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
@@ -40893,18 +40926,18 @@
         {
           "lua_name": "LProcgenGrid:getWidth",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LProcgenGrid:getHeight",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -40983,18 +41016,18 @@
         {
           "lua_name": "LProcgenScalarGrid:getWidth",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LProcgenScalarGrid:getHeight",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -41235,19 +41268,19 @@
         {
           "lua_name": "LNoiseGenerator:generateMapGrid",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LNoiseGenerator:generateMapComputeGrid",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
@@ -49007,95 +49040,32 @@
       ]
     },
     "tilefield": {
-      "total": 59,
-      "marker_covered": 44,
+      "total": 79,
+      "marker_covered": 79,
       "describe_covered": 0,
-      "heuristic_covered": 3,
-      "covered": 47,
-      "coverage_pct": 79.7,
+      "heuristic_covered": 0,
+      "covered": 79,
+      "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
-      "uncovered": [
-        {
-          "lua_name": "LTileField:applyTilesetProfile",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 804
-        },
-        {
-          "lua_name": "LTileField:applyTilesetStats",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 855
-        },
-        {
-          "lua_name": "LTileField:applyTilesetStatsLayer",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 903
-        },
-        {
-          "lua_name": "LTileField:getRefProperty",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 964
-        },
-        {
-          "lua_name": "LTileField:getRefPropertyNumber",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 1013
-        },
-        {
-          "lua_name": "LTileField:getRefPropertyBool",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 1062
-        },
-        {
-          "lua_name": "LTileField:getRefProperties",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 1110
-        },
-        {
-          "lua_name": "LTileField:getRefSlots",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 1172
-        },
-        {
-          "lua_name": "LTileField:writeBlockLayer",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 1284
-        },
-        {
-          "lua_name": "LTileField:writeCostLayer",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 1306
-        },
-        {
-          "lua_name": "LTileField:writeProfileLayer",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 1349
-        },
-        {
-          "lua_name": "LTileField:writeRefLayer",
-          "kind": "method",
-          "file": "src/lua_api/tilefield_api.rs",
-          "line": 1370
-        }
-      ],
+      "uncovered": [],
       "test_files": [
+        "tests/lua/unit/test_tilefield_gap_unit.lua",
         "tests/lua/unit/test_tilefield_unit.lua"
       ],
       "describe_files": [],
       "functions": [
         {
           "lua_name": "lurek.tilefield.new",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.tilefield.fromProvider",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -49151,9 +49121,9 @@
         {
           "lua_name": "LTileField:getNeighbors",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -49284,6 +49254,123 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LTileField:defineCategory",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getCategory",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getCategories",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:setCategoryBlock",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:blocksCategory",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:setCategoryCost",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getCategoryCost",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:setCategoryTransmission",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getCategoryTransmission",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:setCategoryFilter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getCategoryFilter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:footprintPassable",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getVersion",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LTileField:setSunOcclusion",
           "kind": "method",
           "marker_covered": true,
@@ -49302,7 +49389,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LTileField:setProfile",
+          "lua_name": "LTileField:setModifier",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -49311,7 +49398,16 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LTileField:applyProfile",
+          "lua_name": "LTileField:getModifier",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:setProfile",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -49338,6 +49434,42 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LTileField:removeModifier",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:defineSlot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:removeSlot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:hasSlot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LTileField:setRef",
           "kind": "method",
           "marker_covered": true,
@@ -49356,66 +49488,93 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LTileField:applyTilesetProfile",
+          "lua_name": "LTileField:applyModifier",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
-          "lua_name": "LTileField:applyTilesetStats",
+          "lua_name": "LTileField:applyProfile",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
-          "lua_name": "LTileField:applyTilesetStatsLayer",
+          "lua_name": "LTileField:clearModifier",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:getModifiers",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:applyTilesetObject",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:applyTilesetObjectLayer",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTileField:getRefProperty",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTileField:getRefPropertyNumber",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTileField:getRefPropertyBool",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTileField:getRefProperties",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
@@ -49430,10 +49589,10 @@
         {
           "lua_name": "LTileField:getRefSlots",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
@@ -49484,23 +49643,14 @@
         {
           "lua_name": "LTileField:writeBlockLayer",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTileField:writeCostLayer",
-          "kind": "method",
-          "marker_covered": false,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": false,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileField:exportProfileLayer",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -49518,21 +49668,12 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LTileField:writeProfileLayer",
-          "kind": "method",
-          "marker_covered": false,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": false,
-          "describe_score": 0.0
-        },
-        {
           "lua_name": "LTileField:writeRefLayer",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
@@ -49610,42 +49751,34 @@
         {
           "lua_name": "LTileFieldMap:type",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTileFieldMap:typeOf",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         }
       ]
     },
     "tilelight": {
-      "total": 20,
-      "marker_covered": 16,
+      "total": 28,
+      "marker_covered": 28,
       "describe_covered": 0,
-      "heuristic_covered": 3,
-      "covered": 19,
-      "coverage_pct": 95.0,
+      "heuristic_covered": 0,
+      "covered": 28,
+      "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
-      "uncovered": [
-        {
-          "lua_name": "LTileLightMap:updateLineLight",
-          "kind": "method",
-          "file": "src/lua_api/tilelight_api.rs",
-          "line": 380
-        }
-      ],
+      "uncovered": [],
       "test_files": [
-        "tests/lua/unit/test_tilefield_unit.lua",
         "tests/lua/unit/test_tilelight_unit.lua"
       ],
       "describe_files": [],
@@ -49716,10 +49849,10 @@
         {
           "lua_name": "LTileLightMap:updateLineLight",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
-          "covered": false,
+          "covered": true,
           "describe_score": 0.0
         },
         {
@@ -49741,6 +49874,78 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LTileLightMap:addAreaLight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileLightMap:addRectLight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileLightMap:updateAreaLight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileLightMap:updateRectLight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileLightMap:removeAreaLight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileLightMap:removeRectLight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileLightMap:clearAreaLights",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileLightMap:clearRectLights",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LTileLightMap:setAmbient",
           "kind": "method",
           "marker_covered": true,
@@ -49750,7 +49955,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LTileLightMap:setGlobalLight",
+          "lua_name": "LTileLightMap:setSunLight",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -49759,7 +49964,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "LTileLightMap:setSunLight",
+          "lua_name": "LTileLightMap:setGlobalLight",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -49806,61 +50011,42 @@
         {
           "lua_name": "LTileLightMap:getSize",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTileLightMap:type",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LTileLightMap:typeOf",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         }
       ]
     },
     "tilemap": {
-      "total": 150,
-      "marker_covered": 145,
+      "total": 125,
+      "marker_covered": 125,
       "describe_covered": 0,
-      "heuristic_covered": 2,
-      "covered": 147,
-      "coverage_pct": 98.0,
+      "heuristic_covered": 0,
+      "covered": 125,
+      "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
-      "uncovered": [
-        {
-          "lua_name": "LTileSet:getPropertyNumber",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 386
-        },
-        {
-          "lua_name": "LTileSet:getPropertyBool",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 406
-        },
-        {
-          "lua_name": "LTileSet:getProperties",
-          "kind": "method",
-          "file": "src/lua_api/tilemap_api.rs",
-          "line": 425
-        }
-      ],
+      "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_render_unit.lua",
         "tests/lua/unit/test_tilemap_unit.lua"
@@ -49878,6 +50064,15 @@
         },
         {
           "lua_name": "lurek.tilemap.newTileMap",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.tilemap.fromProvider",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -49978,258 +50173,6 @@
         {
           "lua_name": "lurek.tilemap.newLargeMapRenderer",
           "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getFirstGid",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getTileCount",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getColumns",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getTileWidth",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getTileHeight",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getTileDimensions",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getSpacing",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getMargin",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getQuad",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:setAnimation",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getAnimation",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:setProfile",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getProfile",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:setPhysicsShape",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getPhysicsShape",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:setProperty",
-          "kind": "method",
-          "marker_covered": false,
-          "describe_covered": false,
-          "heuristic_covered": true,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getProperty",
-          "kind": "method",
-          "marker_covered": false,
-          "describe_covered": false,
-          "heuristic_covered": true,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getPropertyNumber",
-          "kind": "method",
-          "marker_covered": false,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": false,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getPropertyBool",
-          "kind": "method",
-          "marker_covered": false,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": false,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getProperties",
-          "kind": "method",
-          "marker_covered": false,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": false,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:setAutoTileRule",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getAutoTileId",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:setAutoTileRule8",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getAutoTileId8",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:setAutoTileMode",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:getAutoTileMode",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:type",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LTileSet:typeOf",
-          "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
@@ -50625,6 +50568,24 @@
         },
         {
           "lua_name": "LTileMap:render",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileMap:renderFieldSlot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileMap:renderFieldCatalogSlot",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -51210,6 +51171,419 @@
         },
         {
           "lua_name": "LIsoMap:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        }
+      ]
+    },
+    "tileset": {
+      "total": 44,
+      "marker_covered": 44,
+      "describe_covered": 0,
+      "heuristic_covered": 0,
+      "covered": 44,
+      "coverage_pct": 100.0,
+      "describe_coverage_pct": 0.0,
+      "describe_score": 0.0,
+      "uncovered": [],
+      "test_files": [
+        "tests/lua/unit/test_tileset_unit.lua"
+      ],
+      "describe_files": [],
+      "functions": [
+        {
+          "lua_name": "lurek.tileset.newTileSet",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.tileset.newCatalog",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.tileset.fromProvider",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileCatalog:getIds",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileCatalog:getTileset",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileCatalog:getObject",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileCatalog:getVisual",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileCatalog:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileCatalog:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getFirstGid",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getTileCount",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getColumns",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getTileWidth",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getTileHeight",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getTileDimensions",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getTextureDimensions",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getSpacing",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getMargin",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getQuad",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setPhysicsShape",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getPhysicsShape",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setAnimation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getAnimation",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setObject",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getObject",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:removeObject",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getObjectNames",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setTileObject",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getTileObject",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setProperty",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getProperty",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getPropertyNumber",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getPropertyBool",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getProperties",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setAutoTileRule",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getAutoTileId",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setAutoTileRule8",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getAutoTileId8",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setAutoTileMode",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getAutoTileMode",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:typeOf",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

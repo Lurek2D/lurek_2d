@@ -1,11 +1,13 @@
-//! Owns multi-level tilefield storage, channel blockers, channel costs, declared object slots, regions, and cell exports.
-//! Implements bounds checks, cell mutation, line queries, modifiers, and layer exports.
-//! Stores cells, slots, modifiers, and regions in one grid owner.
-//! Uses topology and line helpers locally so callers can query blockers without owning traversal logic.
-//! Provides renderer-independent input consumed by movement, awareness, tilelight, minimap, and render adapters.
-//! Keeps action, vision, movement, light, and sun channels independent by never inferring one from another.
-//! Returns controlled string errors at the domain boundary so Lua bindings can attach lurek.tilefield names.
-//! Does not depend on pathfind, awareness, tilelight, raycaster, minimap, tilemap rendering, or renderer state.
+//! This file owns field behavior inside the tilefield subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate field state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for field work.
+//! Serialization, indexing, and boundary checks stay here when they depend on field internals.
+//! Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+//! Open this file when field ownership changes, but keep unrelated subsystem policy in sibling modules.
+//! The code favors small data transformations so examples, specs, and tests can assert behavior directly.
+//! Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.
+//! Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary.
 
 use crate::tilefield::category::{TileCategory, TileCategoryKind};
 use crate::tilefield::cell::{TileCell, TileChannel};
@@ -71,6 +73,8 @@ impl TileField {
                 TileCategory::new(name.to_string(), kind, true)?,
             );
         }
+        let mut modifiers = HashMap::new();
+        Self::install_builtin_profiles(&mut modifiers)?;
         Ok(Self {
             width,
             height,
@@ -78,7 +82,7 @@ impl TileField {
             topology,
             cells: vec![TileCell::default(); len],
             categories,
-            modifiers: HashMap::new(),
+            modifiers,
             slots: BTreeSet::new(),
             regions: HashMap::new(),
             version: 1,
@@ -139,6 +143,32 @@ impl TileField {
 
     fn channel_for_category(category: &str) -> Option<TileChannel> {
         TileChannel::parse(category).ok()
+    }
+
+    fn install_builtin_profiles(
+        modifiers: &mut HashMap<String, TileModifier>,
+    ) -> Result<(), String> {
+        for (name, blocks, sun_occlusion) in [
+            ("empty", [false, false, false, false], 0.0),
+            ("wall", [true, true, true, true], 1.0),
+            ("window", [true, false, true, false], 0.2),
+            ("door_open", [false, false, false, false], 0.0),
+            ("door_closed", [true, true, true, true], 0.6),
+            ("half_wall", [true, false, false, false], 0.5),
+        ] {
+            let mut modifier = TileModifier::new(name.to_string())?;
+            for (channel, blocked) in [
+                (TileChannel::Move, blocks[0]),
+                (TileChannel::Vision, blocks[1]),
+                (TileChannel::Action, blocks[2]),
+                (TileChannel::Light, blocks[3]),
+            ] {
+                modifier.blockers.insert(channel, blocked);
+            }
+            modifier.sun_occlusion_add = sun_occlusion;
+            modifiers.insert(name.to_string(), modifier);
+        }
+        Ok(())
     }
 
     /// Return same-level neighbours for a coordinate using this field topology.
@@ -563,6 +593,11 @@ impl TileField {
         cell.add_modifier(name.to_string());
         self.mark_dirty_cell(coord);
         Ok(())
+    }
+
+    /// Apply a named profile to one cell.
+    pub fn apply_profile(&mut self, coord: CellCoord, name: &str) -> Result<(), String> {
+        self.apply_modifier(coord, name)
     }
 
     /// Remove one modifier from one cell.

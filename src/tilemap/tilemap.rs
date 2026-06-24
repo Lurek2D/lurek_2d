@@ -1,8 +1,14 @@
-//! Owns the runtime tilemap storage object: layers, GIDs, tilesets, viewport, animation state, and indexes.
-//! Validates tilemap dimensions and tile writes before importers, Lua bindings, or render adapters use the data.
-//! Keeps gameplay semantics such as movement, visibility, lighting, physics collisions, and regions in tilefield or other systems.
-//! Provides storage-side helpers used by tilemap render-command generation without owning the renderer.
-//! Open this file when tile IDs, layer state, tileset attachment, animation resolution, or tilemap indexing is wrong.
+//! This file owns tilemap behavior inside the tilemap subsystem, close to its data and invariants.
+//! It keeps validation, defaults, and error-facing rules near the operations that mutate tilemap state.
+//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Public functions in this file are the stable entry points other modules should use for tilemap work.
+//! Serialization, indexing, and boundary checks stay here when they depend on tilemap internals.
+//! Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+//! Open this file when tilemap ownership changes, but keep unrelated subsystem policy in sibling modules.
+//! The code favors small data transformations so examples, specs, and tests can assert behavior directly.
+//! Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.
+//! Cross-module dependencies are intentionally narrow, with shared types imported only at this boundary.
+//! This module documents where tilemap data becomes behavior and where surrounding systems take over.
 
 use super::error::TileMapError;
 use super::limits::{checked_layer_cells, TileMapLimits};

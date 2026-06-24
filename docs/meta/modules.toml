@@ -708,6 +708,16 @@ lua_unit_test = "tests/lua/unit/test_tilelight_unit.lua"
 user_facing = true
 plugin_tier = "core_keep"
 
+[tileset]
+tier = "feature_systems"
+source = "src/tileset"
+lua_binding = "src/lua_api/tileset_api.rs"
+namespace = "lurek.tileset"
+example_file = "content/examples/tileset.lua"
+lua_unit_test = "tests/lua/unit/test_tileset_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
 [timer]
 tier = "core_runtime"
 source = "src/timer"

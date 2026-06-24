@@ -53,10 +53,10 @@ end
 ## Common Patterns
 
 - Start with `lurek.tilemap.fromLDtk` when exploring this module.
+- Start with `lurek.tilemap.fromProvider` when exploring this module.
 - Start with `lurek.tilemap.fromScreenHex` when exploring this module.
 - Start with `lurek.tilemap.fromScreenIso` when exploring this module.
 - Start with `lurek.tilemap.getAutoTileFormats` when exploring this module.
-- Start with `lurek.tilemap.loadTMX` when exploring this module.
 
 ## API Reference
 
@@ -158,6 +158,46 @@ do
         local code = err_tbl["code"] or "unknown"
         example_print_log("named level import error: " .. code)
     end
+end
+```
+
+---
+
+### `lurek.tilemap.fromProvider`
+
+Builds a native tilemap from a Lua provider table with tileWidth, tileHeight, layers, optional tilesets, and optional getTile(layer,x,y).
+
+```lua
+lurek.tilemap.fromProvider(provider, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `provider` | table | Lua-authored tilemap provider. |
+| `opts?` | table | Optional limits table. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTileMap](#ltilemap) | New tilemap copied from provider data. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilemap.example] " .. tostring(message))
+    end
+    local provider = { tileWidth = 16, tileHeight = 16, layers = { { name = "ground", width = 2, height = 2, tiles = { 1, 2, 3, 4 } } } }
+    local ok, value = pcall(function()
+        local tm = lurek.tilemap.fromProvider(provider)
+        return tm:getLayerCount()
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 ```
 
@@ -717,29 +757,11 @@ end
 
 ### `lurek.tilemap.newTileSet`
 
-Creates a new tileset from atlas parameters.
+Compatibility alias for `lurek.tileset.newTileSet`.
 
 ```lua
-lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin)
+lurek.tilemap.newTileSet()
 ```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `firstGid` | number | First global tile ID. |
-| `tileCount` | number | Total tiles in the set. |
-| `columns` | number | Columns in the atlas image. |
-| `tileWidth` | number | Tile width in pixels. |
-| `tileHeight` | number | Tile height in pixels. |
-| `spacing?` | number | Pixel spacing between tiles (default 0). |
-| `margin?` | number | Pixel margin around the atlas edge (default 0). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LTileSet](#ltileset) | New tileset. |
 
 **Example**
 
@@ -916,7 +938,6 @@ end
 - [LIsoMap](#lisomap)
 - [LLargeMapRenderer](#llargemaprenderer)
 - [LTileMap](#ltilemap)
-- [LTileSet](#ltileset)
 
 ## LAutoTileSheet
 
@@ -938,7 +959,7 @@ LAutoTileSheet:applyToTileSet(tileSet, typeName, startGid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSet` | [LTileSet](#ltileset) | Target tileset to receive the rules. |
+| `tileSet` | [LTileSet](tileset.md#ltileset) | Target tileset to receive the rules. |
 | `typeName` | string | Logical tile type name to register under. |
 | `startGid?` | number | Optional first GID offset. |
 
@@ -4284,7 +4305,7 @@ end
 
 #### `LLargeMapRenderer:setViewport`
 
-Sets the viewport dimensions for visibility calculations.
+Sets the viewport rectangle used for render-command culling.
 
 ```lua
 LLargeMapRenderer:setViewport(w, h)
@@ -4541,7 +4562,7 @@ LTileMap:addTileSet(tileSet)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSet` | [LTileSet](#ltileset) | Tileset to add. |
+| `tileSet` | [LTileSet](tileset.md#ltileset) | Tileset to add. |
 
 **Example**
 
@@ -5821,7 +5842,7 @@ LTileMap:getTileSet(idx)
 
 | Type | Description |
 |------|-------------|
-| [LTileSet](#ltileset) | The tileset, or nil if index is out of range. |
+| [LTileSet](tileset.md#ltileset) | The tileset, or nil if index is out of range. |
 
 **Example**
 
@@ -6076,6 +6097,80 @@ do
     example_print_log("rendered at origin")
     map:render(10, 10)
     example_print_log("rendered with offset")
+end
+```
+
+---
+
+#### `LTileMap:renderFieldCatalogSlot`
+
+Renders typed refs from a tilefield slot through a tileset catalog.
+
+```lua
+LTileMap:renderFieldCatalogSlot(field, catalog, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](tilefield.md#ltilefield)|table | Source tilefield handle or provider table containing typed slot refs. |
+| `catalog` | [LTileCatalog](tileset.md#ltilecatalog) | Catalog resolving `{tileset,tile/object}` refs to visuals. |
+| `opts` | table | Options: slot, z, offsetX, offsetY. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilemap.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    field:setRef(1, 1, 1, "terrain", { tileset = "terrain", object = "grass" })
+    local catalog = lurek.tileset.newCatalog({ terrain = lurek.tileset.newTileSet(1, 4, 2, 16, 16) })
+    local tm = lurek.tilemap.newTileMap(16, 16)
+    local ok, value = pcall(function()
+        return tm:renderFieldCatalogSlot(field, catalog, { slot = "terrain", z = 1 })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
+end
+```
+
+---
+
+#### `LTileMap:renderFieldSlot`
+
+Renders objects referenced from a tilefield slot using tileset object visuals.
+
+```lua
+LTileMap:renderFieldSlot(field, tileset, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](tilefield.md#ltilefield)|table | Source tilefield handle or provider table containing slot refs. |
+| `tileset` | [LTileSet](tileset.md#ltileset)|table | Tileset handle or provider table with object archetype visuals. |
+| `opts` | table | Options: slot, z, offsetX, offsetY, refIsGid. |
+
+**Example**
+
+```lua
+do
+    local function example_log(message)
+        lurek.log.info("[tilemap.example] " .. tostring(message))
+    end
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    field:setRef(1, 1, 1, "terrain", 1)
+    local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+    local tm = lurek.tilemap.newTileMap(16, 16)
+    local ok, value = pcall(function()
+        return tm:renderFieldSlot(field, tileset, { slot = "terrain", z = 1, refIsGid = true })
+    end)
+    local status = ok and "ok" or "error"
+    example_log(status .. " " .. tostring(value))
 end
 ```
 
@@ -7191,1298 +7286,6 @@ do
     local wx, wy = map:tileToWorld(tx, ty)
     example_print_log("world(100,80) -> tile(" .. tx .. "," .. ty .. ")")
     example_print_log("tile(" .. tx .. "," .. ty .. ") -> world(" .. wx .. "," .. wy .. ")")
-end
-```
-
----
-
-## LTileSet
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LTileSet:getAnimation`
-
-Returns the animation frames for a tile, or nil if none are set.
-
-```lua
-LTileSet:getAnimation(tileId)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to query (1-based). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| LTileSetGetAnimationResult | Array of `{tileid=number, duration=number}` frames, or nil. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
-    ts:setAnimation(1, {
-        { tileid = 1, duration = 200 },
-        { tileid = 2, duration = 200 },
-        { tileid = 3, duration = 200 },
-        { tileid = 4, duration = 200 },
-    })
-
-    local anim = ts:getAnimation(1)
-    example_print_log("animation frames = " .. #anim)
-    for i, frame in ipairs(anim) do
-        example_print_log("  frame " .. i .. ": tile=" .. frame.tileid .. " dur=" .. frame.duration)
-    end
-    local noAnim = ts:getAnimation(10)
-    example_print_log("tile 10 anim = " .. tostring(noAnim))
-end
-```
-
----
-
-#### `LTileSet:getAutoTileId`
-
-Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
-
-```lua
-LTileSet:getAutoTileId(typeName, bitmask)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `typeName` | string | Logical tile type name. |
-| `bitmask` | number | 4-bit neighbor bitmask (0..15). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Resolved tile ID (1-based), or nil if no rule matches. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
-    ts:setAutoTileRule("grass", 0, 1)
-    ts:setAutoTileRule("grass", 15, 16)
-    local id = ts:getAutoTileId("grass", 15)
-    example_print_log("bitmask 15 -> tile " .. id)
-end
-```
-
----
-
-#### `LTileSet:getAutoTileId8`
-
-Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
-
-```lua
-LTileSet:getAutoTileId8(typeName, bitmask)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `typeName` | string | Logical tile type name. |
-| `bitmask` | number | 8-bit neighbor bitmask (0..255). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Resolved tile ID (1-based), or nil if no rule matches. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    ---@type LTileSet
-    local ts = lurek.tilemap.newTileSet(1, 256, 16, 16, 16)
-    ts:setAutoTileRule8("wall", 255, 48)
-    local id = ts:getAutoTileId8("wall", 255)
-    ts:setAutoTileRule8("wall", 0, 1)
-    local edge = ts:getAutoTileId8("wall", 0)
-    example_print_log("8-bit bitmask 255 -> tile " .. id)
-    example_print_log("8-bit bitmask 0 -> tile " .. edge)
-end
-```
-
----
-
-#### `LTileSet:getAutoTileMode`
-
-Returns the neighbor matching mode for a named auto-tile type.
-
-```lua
-LTileSet:getAutoTileMode(typeName)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `typeName` | string | Logical tile type name. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
-    local default_mode = ts:getAutoTileMode("grass")
-    ts:setAutoTileMode("grass", "matchSides")
-    local configured_mode = ts:getAutoTileMode("grass")
-    example_print_log("grass default mode = " .. default_mode)
-    example_print_log("grass configured mode = " .. configured_mode)
-end
-```
-
----
-
-#### `LTileSet:getColumns`
-
-Returns the number of columns in the tileset atlas image.
-
-```lua
-LTileSet:getColumns()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Column count. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local count = ts:getTileCount()
-    example_print_log("columns=" .. ts:getColumns())
-    example_print_log("tileCount=" .. count)
-    example_print_log("tileWidth=" .. ts:getTileWidth())
-end
-```
-
----
-
-#### `LTileSet:getFirstGid`
-
-Returns the first global tile ID (GID) of this tileset.
-
-```lua
-LTileSet:getFirstGid()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | First GID assigned to this tileset. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local columns = ts:getColumns()
-    example_print_log("firstGid=" .. ts:getFirstGid())
-    example_print_log("columns=" .. columns)
-    example_print_log("tileHeight=" .. ts:getTileHeight())
-end
-```
-
----
-
-#### `LTileSet:getMargin`
-
-Returns the margin around the edge of the atlas image, in pixels.
-
-```lua
-LTileSet:getMargin()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Margin in pixels. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local spacing = ts:getSpacing()
-    local width = ts:getTileWidth()
-    example_print_log("margin=" .. ts:getMargin())
-    example_print_log("spacing=" .. spacing)
-    example_print_log("tileWidth=" .. width)
-end
-```
-
----
-
-#### `LTileSet:getPhysicsShape`
-
-Returns the physics shape name associated with this tile.
-
-```lua
-LTileSet:getPhysicsShape(tileId)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to check (1-based). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Shape name, or nil when unset. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 32, 8, 32, 32)
-    ts:setProfile(1, "stone_floor")
-    ts:setPhysicsShape(1, "rect")
-    example_print_log("profile=" .. tostring(ts:getProfile(1)))
-    example_print_log("shape=" .. tostring(ts:getPhysicsShape(1)))
-end
-```
-
----
-
-#### `LTileSet:getProfile`
-
-Returns the tilefield profile name associated with this tile.
-
-```lua
-LTileSet:getProfile(tileId)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to check (1-based). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Profile name, or nil when unset. |
-
----
-
-#### `LTileSet:getProperties`
-
-Returns all gameplay properties associated with this tile.
-
-```lua
-LTileSet:getProperties(tileId)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to check (1-based). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| table | Property name/value table. |
-
----
-
-#### `LTileSet:getProperty`
-
-Returns an arbitrary gameplay property associated with this tile.
-
-```lua
-LTileSet:getProperty(tileId, name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to check (1-based). |
-| `name` | string | Property name. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Property value, or nil when unset. |
-
----
-
-#### `LTileSet:getPropertyBool`
-
-Returns an arbitrary gameplay property parsed as a boolean.
-
-```lua
-LTileSet:getPropertyBool(tileId, name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to check (1-based). |
-| `name` | string | Property name. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | Property bool, or nil when unset/not boolean. |
-
----
-
-#### `LTileSet:getPropertyNumber`
-
-Returns an arbitrary gameplay property parsed as a number.
-
-```lua
-LTileSet:getPropertyNumber(tileId, name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to check (1-based). |
-| `name` | string | Property name. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Property number, or nil when unset/not numeric. |
-
----
-
-#### `LTileSet:getQuad`
-
-Returns the source rectangle (UV quad) for a tile in the atlas.
-
-```lua
-LTileSet:getQuad(tileId)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID (1-based). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| LTileSetGetQuadResult | Table with fields `x`, `y`, `width`, `height` in pixels. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
-    local q1 = ts:getQuad(1)
-    example_print_log("tile 1: x=" .. q1.x .. " y=" .. q1.y .. " w=" .. q1.width .. " h=" .. q1.height)
-    local q5 = ts:getQuad(5)
-    example_print_log("tile 5: x=" .. q5.x .. " y=" .. q5.y .. " w=" .. q5.width .. " h=" .. q5.height)
-end
-```
-
----
-
-#### `LTileSet:getSpacing`
-
-Returns the spacing between tiles in the atlas image, in pixels.
-
-```lua
-LTileSet:getSpacing()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Spacing in pixels. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local margin = ts:getMargin()
-    local height = ts:getTileHeight()
-    example_print_log("spacing=" .. ts:getSpacing())
-    example_print_log("margin=" .. margin)
-    example_print_log("tileHeight=" .. height)
-end
-```
-
----
-
-#### `LTileSet:getTileCount`
-
-Returns the total number of tiles defined in this tileset.
-
-```lua
-LTileSet:getTileCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Total tile count. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local columns = ts:getColumns()
-    local first_gid = ts:getFirstGid()
-    example_print_log("tileCount=" .. ts:getTileCount())
-    example_print_log("columns=" .. columns)
-    example_print_log("firstGid=" .. first_gid)
-end
-```
-
----
-
-#### `LTileSet:getTileDimensions`
-
-Returns both tile width and height in pixels.
-
-```lua
-LTileSet:getTileDimensions()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Tile width in pixels. |
-| number | Tile height in pixels. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local tw, th = ts:getTileDimensions()
-    local quad = ts:getQuad(1)
-    example_print_log("tile_w=" .. tw .. " tile_h=" .. th)
-    example_print_log("quad_w=" .. quad.width .. " quad_h=" .. quad.height)
-end
-```
-
----
-
-#### `LTileSet:getTileHeight`
-
-Returns the height of a single tile in pixels.
-
-```lua
-LTileSet:getTileHeight()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Tile height in pixels. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local tw = ts:getTileWidth()
-    local count = ts:getTileCount()
-    example_print_log("tileHeight=" .. ts:getTileHeight())
-    example_print_log("tileWidth=" .. tw)
-    example_print_log("tileCount=" .. count)
-end
-```
-
----
-
-#### `LTileSet:getTileWidth`
-
-Returns the width of a single tile in pixels.
-
-```lua
-LTileSet:getTileWidth()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Tile width in pixels. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local th = ts:getTileHeight()
-    local count = ts:getTileCount()
-    example_print_log("tileWidth=" .. ts:getTileWidth())
-    example_print_log("tileHeight=" .. th)
-    example_print_log("tileCount=" .. count)
-end
-```
-
----
-
-#### `LTileSet:setAnimation`
-
-Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
-
-```lua
-LTileSet:setAnimation(tileId, frames)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to animate (1-based). |
-| `frames` | table | Array of `{tileid=number, duration=number}` frame definitions. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
-    ts:setAnimation(1, {
-        { tileid = 1, duration = 200 },
-        { tileid = 2, duration = 200 },
-        { tileid = 3, duration = 200 },
-        { tileid = 4, duration = 200 },
-    })
-
-    local anim = ts:getAnimation(1)
-    example_print_log("animation frames = " .. #anim)
-    for i, frame in ipairs(anim) do
-        example_print_log("  frame " .. i .. ": tile=" .. frame.tileid .. " dur=" .. frame.duration)
-    end
-    local noAnim = ts:getAnimation(10)
-    example_print_log("tile 10 anim = " .. tostring(noAnim))
-end
-```
-
----
-
-#### `LTileSet:setAutoTileMode`
-
-Sets the neighbor matching mode for a named auto-tile type.
-
-```lua
-LTileSet:setAutoTileMode(typeName, mode)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `typeName` | string | Logical tile type name. |
-| `mode` | string | One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
-    ts:setAutoTileRule8("shore", 255, 8)
-    ts:setAutoTileMode("shore", "matchCornersAndSides")
-    local mode = ts:getAutoTileMode("shore")
-    example_print_log("shore mode = " .. mode)
-end
-```
-
----
-
-#### `LTileSet:setAutoTileRule`
-
-Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
-
-```lua
-LTileSet:setAutoTileRule(typeName, bitmask, tileId)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `typeName` | string | Logical tile type name (e.g. "grass"). |
-| `bitmask` | number | 4-bit neighbor bitmask (0..15). |
-| `tileId` | number | Tile ID to use for this bitmask (1-based). |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    ---@type LTileSet
-    local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
-    ts:setAutoTileRule("grass", 0, 1)
-    ts:setAutoTileRule("grass", 15, 16)
-    local id = ts:getAutoTileId("grass", 0)
-    example_print_log("bitmask 0 -> tile " .. id)
-    example_print_log("bitmask 15 -> tile " .. ts:getAutoTileId("grass", 15))
-end
-```
-
----
-
-#### `LTileSet:setAutoTileRule8`
-
-Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
-
-```lua
-LTileSet:setAutoTileRule8(typeName, bitmask, tileId)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `typeName` | string | Logical tile type name. |
-| `bitmask` | number | 8-bit neighbor bitmask (0..255). |
-| `tileId` | number | Tile ID to use for this bitmask (1-based). |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    ---@type LTileSet
-    local ts = lurek.tilemap.newTileSet(1, 256, 16, 16, 16)
-    ts:setAutoTileRule8("wall", 0, 1)
-    ts:setAutoTileRule8("wall", 255, 48)
-    local id = ts:getAutoTileId8("wall", 0)
-    example_print_log("8-bit bitmask 0 -> tile " .. id)
-    example_print_log("8-bit bitmask 255 -> tile " .. ts:getAutoTileId8("wall", 255))
-end
-```
-
----
-
-#### `LTileSet:setPhysicsShape`
-
-Assigns or clears the physics shape name associated with this tile.
-
-```lua
-LTileSet:setPhysicsShape(tileId, shape)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to modify (1-based). |
-| `shape?` | string | Shape name such as `"none"`, `"rect"`, or `"slopeNE"`; nil/empty clears. |
-
----
-
-#### `LTileSet:setProfile`
-
-Assigns or clears the tilefield profile name associated with this tile.
-
-```lua
-LTileSet:setProfile(tileId, profile)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to modify (1-based). |
-| `profile?` | string | Profile name, or nil/empty string to clear. |
-
----
-
-#### `LTileSet:setProperty`
-
-Assigns or clears an arbitrary gameplay property associated with this tile.
-
-```lua
-LTileSet:setProperty(tileId, name, value)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tileId` | number | Tile ID to modify (1-based). |
-| `name` | string | Property name. |
-| `value?` | string | Property value, or nil to clear. |
-
----
-
-#### `LTileSet:type`
-
-Returns the type name of this userdata.
-
-```lua
-LTileSet:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always `"[LTileSet](#ltileset)"`. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local count = ts:getTileCount()
-    local columns = ts:getColumns()
-    example_print_log("type=" .. ts:type())
-    example_print_log("tileCount=" .. count)
-    example_print_log("columns=" .. columns)
-end
-```
-
----
-
-#### `LTileSet:typeOf`
-
-Checks whether this object matches the given type name.
-
-```lua
-LTileSet:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to check against. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if `name` is `"[LTileSet](#ltileset)"` or `"Object"`. |
-
-**Example**
-
-```lua
-do
-    local function tilemap_log(message)
-        lurek.log.info("[tilemap] " .. message)
-    end
-    local tilemap_log_count = 0
-    local tilemap_log_limit = 96
-    local function example_print_log(...)
-        tilemap_log_count = tilemap_log_count + 1
-        if tilemap_log_count > tilemap_log_limit then
-            return
-        end
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        tilemap_log(table.concat(parts, " "))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    local is_tileset = ts:typeOf("LTileSet")
-    local is_object = ts:typeOf("LObject")
-    example_print_log("typeOf=" .. tostring(ts:typeOf("LTileSet")))
-    example_print_log("as_tileset=" .. tostring(is_tileset))
-    example_print_log("as_object=" .. tostring(is_object))
 end
 ```
 

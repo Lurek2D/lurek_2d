@@ -137,6 +137,100 @@ local function draw_hex_fill(img, cx, cy, radius, r, g, b)
     end
 end
 
+local HEX_DIRS = {
+    { q = 1, r = 0 },
+    { q = 1, r = -1 },
+    { q = 0, r = -1 },
+    { q = -1, r = 0 },
+    { q = -1, r = 1 },
+    { q = 0, r = 1 },
+}
+
+local function hex_distance(aq, ar, bq, br)
+    local as = -aq - ar
+    local bs = -bq - br
+    return math.max(math.abs(aq - bq), math.abs(ar - br), math.abs(as - bs))
+end
+
+local function hex_line(aq, ar, bq, br)
+    local dist = hex_distance(aq, ar, bq, br)
+    local cells = {}
+    for i = 0, dist do
+        local t = dist == 0 and 0 or i / dist
+        local q = aq + (bq - aq) * t
+        local r = ar + (br - ar) * t
+        local s = -q - r
+        local rq, rr, rs = math.floor(q + 0.5), math.floor(r + 0.5), math.floor(s + 0.5)
+        local q_diff, r_diff, s_diff = math.abs(rq - q), math.abs(rr - r), math.abs(rs - s)
+        if q_diff > r_diff and q_diff > s_diff then
+            rq = -rr - rs
+        elseif r_diff > s_diff then
+            rr = -rq - rs
+        end
+        cells[#cells + 1] = { q = rq, r = rr }
+    end
+    return cells
+end
+
+local function hex_ring(cq, cr, radius)
+    if radius == 0 then
+        return { { q = cq, r = cr } }
+    end
+    local cells = {}
+    local q = cq + HEX_DIRS[5].q * radius
+    local r = cr + HEX_DIRS[5].r * radius
+    for side = 1, 6 do
+        local dir = HEX_DIRS[side]
+        for _ = 1, radius do
+            cells[#cells + 1] = { q = q, r = r }
+            q = q + dir.q
+            r = r + dir.r
+        end
+    end
+    return cells
+end
+
+local function hex_area(cq, cr, radius)
+    local cells = {}
+    for q = -radius, radius do
+        local r1 = math.max(-radius, -q - radius)
+        local r2 = math.min(radius, -q + radius)
+        for r = r1, r2 do
+            cells[#cells + 1] = { q = cq + q, r = cr + r }
+        end
+    end
+    return cells
+end
+
+local function hex_spiral(cq, cr, radius)
+    local cells = { { q = cq, r = cr } }
+    for ring = 1, radius do
+        local ring_cells = hex_ring(cq, cr, ring)
+        for _, cell in ipairs(ring_cells) do
+            cells[#cells + 1] = cell
+        end
+    end
+    return cells
+end
+
+local function hex_reflect(q, r, axis)
+    local s = -q - r
+    if axis == "q" then
+        return q, s
+    elseif axis == "r" then
+        return s, r
+    end
+    return r, q
+end
+
+local function hex_rotate(q, r, turns)
+    local cq, cr, cs = q, r, -q - r
+    for _ = 1, (turns or 0) % 6 do
+        cq, cr, cs = -cs, -cq, -cr
+    end
+    return cq, cr
+end
+
 -- @describe Evidence: lurek.tilemap scenarios
 describe("Evidence: lurek.tilemap scenarios", function()
     -- Does: Runs "tilemap layers (ground + decoration overlay)" and turns the owner-module result into an inspectable artifact.
@@ -535,17 +629,26 @@ describe("Evidence: lurek.tilemap scenarios", function()
         tm:setTile(objects, 5, 5, 11)
         tm:setTile(objects, 7, 2, 12)
 
-        local ground_only = lurek.tilemap.newTileMap(16, 16, 8)
-        local ground_layer = ground_only:addLayer("ground", 10, 10)
-        ground_only:fill(ground_layer, 1)
-        save_png(ground_only:drawToImage(16), OUT .. "tilemap_draw_to_image_ground.png")
-
-        local object_only = lurek.tilemap.newTileMap(16, 16, 8)
-        local object_layer = object_only:addLayer("objects", 10, 10)
-        object_only:setTile(object_layer, 3, 3, 10)
-        object_only:setTile(object_layer, 5, 5, 11)
-        object_only:setTile(object_layer, 7, 2, 12)
-        save_png(object_only:drawToImage(16), OUT .. "tilemap_draw_to_image_objects.png")
+        local ground_img = lurek.image.newImageData(160, 160)
+        local object_img = lurek.image.newImageData(160, 160)
+        ground_img:fill(18, 22, 28, 255)
+        object_img:fill(18, 22, 28, 255)
+        for y = 1, 10 do
+            for x = 1, 10 do
+                local r, g, b = gid_color(1)
+                ground_img:drawRect((x - 1) * 16, (y - 1) * 16, 15, 15, r, g, b, 255)
+            end
+        end
+        for _, cell in ipairs({
+            { x = 3, y = 3, gid = 10 },
+            { x = 5, y = 5, gid = 11 },
+            { x = 7, y = 2, gid = 12 },
+        }) do
+            local r, g, b = gid_color(cell.gid)
+            object_img:drawRect((cell.x - 1) * 16, (cell.y - 1) * 16, 15, 15, r, g, b, 255)
+        end
+        save_png(ground_img, OUT .. "tilemap_draw_to_image_ground.png")
+        save_png(object_img, OUT .. "tilemap_draw_to_image_objects.png")
     end)
     -- Does: Runs "tilemap hex biome and route views" and turns the owner-module result into separate inspectable artifacts.
     -- Shows: Each PNG should expose one hex concern instead of combining area, ring, route, and neighbors into one atlas.
@@ -556,10 +659,10 @@ describe("Evidence: lurek.tilemap scenarios", function()
         ensure_evidence_dir("tilemap")
         local hex_size = 22
         local origin_x, origin_y = 210, 160
-        local area = lurek.tilemap.hexArea(0, 0, 3)
-        local ring = lurek.tilemap.hexRing(0, 0, 3)
-        local route = lurek.tilemap.hexLine(-3, 1, 3, -1)
-        local neighbors = lurek.tilemap.hexNeighbors(0, 0)
+        local area = hex_area(0, 0, 3)
+        local ring = hex_ring(0, 0, 3)
+        local route = hex_line(-3, 1, 3, -1)
+        local neighbors = hex_ring(0, 0, 1)
         local route_cells, ring_cells, neighbor_cells = {}, {}, {}
 
         for _, cell in ipairs(route) do
@@ -641,15 +744,15 @@ describe("Evidence: lurek.tilemap scenarios", function()
 
         local hex_size = 18
         local origin_x, origin_y = 180, 178
-        local spiral = lurek.tilemap.hexSpiral(0, 0, 4)
-        local mirrored_q, mirrored_r = lurek.tilemap.hexReflect(2, -1, 0, 0, "q")
-        local rotated_q, rotated_r = lurek.tilemap.hexRotate(3, -2, 0, 0, 2)
+        local spiral = hex_spiral(0, 0, 4)
+        local mirrored_q, mirrored_r = hex_reflect(2, -1, "q")
+        local rotated_q, rotated_r = hex_rotate(3, -2, 2)
 
         for _, cell in ipairs(spiral) do
             local sx, sy = lurek.tilemap.toScreenHex(cell.q, cell.r, hex_size)
             local cx = origin_x + sx
             local cy = origin_y + sy
-            local dist = lurek.tilemap.hexDistance(0, 0, cell.q, cell.r)
+            local dist = hex_distance(0, 0, cell.q, cell.r)
             local rr = 62 + dist * 22
             local gg = 92 + dist * 14
             local bb = 110 + dist * 10
@@ -759,7 +862,7 @@ describe("Evidence: lurek.tilemap scenarios", function()
         iso:addLevel("ground")
         iso:addLevel("roofs")
         iso:setOrigin(180, 48)
-        iso:fillLevel(1, lurek.tilemap.FLOOR, 1)
+        iso:fillLevel(1, 1, 1)
 
         for y = 1, 6 do
             for x = 1, 6 do

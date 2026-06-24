@@ -1337,18 +1337,6 @@ LTileMapFindTilesByGidResult = {}
 ---@field y number Y.
 LTileMapTileTypeIndexResult = {}
 
----@class LTileSetGetAnimationResult
----@field duration number Duration.
----@field tileid number Tileid.
-LTileSetGetAnimationResult = {}
-
----@class LTileSetGetQuadResult
----@field height number Height.
----@field width number Width.
----@field x number X.
----@field y number Y.
-LTileSetGetQuadResult = {}
-
 ---@class LTilemapFromLDtkResult
 ---@field code string Stable machine-readable error code.
 ---@field column number? Always nil for LDtk parser errors.
@@ -1790,6 +1778,9 @@ lurek.tilelight = {}
 
 ---@class lurek.tilemap
 lurek.tilemap = {}
+
+---@class lurek.tileset
+lurek.tileset = {}
 
 ---@class lurek.timer
 lurek.timer = {}
@@ -2903,7 +2894,11 @@ LLargeMapRenderer = {}
 ---@class LTileMap
 LTileMap = {}
 
---- Lua-side handle wrapping a `TileSet` for defining tile atlas metadata, animation, profiles, and auto-tile rules.
+--- Creates a catalog that resolves typed references across named tilesets.
+---@class LTileCatalog
+LTileCatalog = {}
+
+--- Creates a native tileset from atlas dimensions.
 ---@class LTileSet
 LTileSet = {}
 
@@ -6479,6 +6474,9 @@ function LTileAwareness:clearAll() end
 ---@param player string Player identifier whose visibility state should be cleared.
 function LTileAwareness:clearPlayer(player) end
 
+--- Clears all directed awareness share edges.
+function LTileAwareness:clearShares() end
+
 --- Computes one player's current action mask from a tilefield origin.
 ---@param player string Player identifier whose action mask should be computed.
 ---@param opts table Options table with origin, range, and optional action channel.
@@ -6486,8 +6484,30 @@ function LTileAwareness:computeAction(player, opts) end
 
 --- Computes one player's current visible mask from a tilefield origin.
 ---@param player string Player identifier whose visibility mask should be computed.
----@param opts table Options table with origin, range, and optional vision channel.
+---@param opts table Options table with origin, range, category, mode, arc, facing, and blockerCategory.
 function LTileAwareness:computeVisible(player, opts) end
+
+--- Defines or replaces one awareness category.
+---@param name any
+---@param opts? any
+function LTileAwareness:defineCategory(name, opts) end
+
+--- Returns known awareness category names.
+---@return table Array of registered awareness category names.
+function LTileAwareness:getCategories() end
+
+--- Returns awareness category metadata.
+---@param name string Category name to inspect.
+---@return table? Category metadata table, or nil when the category is unknown.
+function LTileAwareness:getCategory(name) end
+
+--- Returns whether a one-based cell is visible for a specific awareness category.
+---@param player any
+---@param category any
+---@param x any
+---@param y any
+---@param z? any
+function LTileAwareness:isAware(player, category, x, y, z) end
 
 --- Returns whether a one-based cell has been explored for a player.
 ---@param player string Player identifier to query.
@@ -6504,6 +6524,18 @@ function LTileAwareness:isExplored(player, x, y, z) end
 ---@param z? number One-based level, default 1.
 ---@return boolean True when the cell is currently visible.
 function LTileAwareness:isVisible(player, x, y, z) end
+
+--- Creates directed share edges between all listed players for selected categories.
+---@param players any
+---@param categories? any
+function LTileAwareness:setTeam(players, categories) end
+
+--- Adds a directed awareness share edge for one category.
+---@param from any
+---@param to any
+---@param category any
+---@param opts? any
+function LTileAwareness:share(from, to, category, opts) end
 
 --- Returns the Lua-visible type name for this tile visibility handle.
 ---@return string The string `LTileAwareness`.
@@ -6524,7 +6556,7 @@ function LTileAwareness:visibleCells(player, z) end
 ---@param field LTileField Tilefield to query.
 ---@param from table One-based `{x,y,z?}` start.
 ---@param to table One-based `{x,y,z?}` target.
----@param opts? table Optional `{channel="action"}`.
+---@param opts? table Optional `{category="action"}` or legacy `{channel="action"}`.
 ---@return boolean True when clear.
 lurek.awareness.lineOfAction = function(field, from, to, opts) end
 
@@ -6532,7 +6564,7 @@ lurek.awareness.lineOfAction = function(field, from, to, opts) end
 ---@param field LTileField Tilefield to query.
 ---@param from table One-based `{x,y,z?}` start.
 ---@param to table One-based `{x,y,z?}` target.
----@param opts? table Optional `{channel="vision"}`.
+---@param opts? table Optional `{category="sight"}` or legacy `{channel="vision"}`.
 ---@return boolean True when clear.
 lurek.awareness.lineOfSight = function(field, from, to, opts) end
 
@@ -21863,11 +21895,16 @@ lurek.pathfind.newJpsGrid = function(width, height) end
 ---@return LNavGrid New navigation grid handle.
 lurek.pathfind.newNavGrid = function(width, height) end
 
---- Creates a navigation grid from a tilefield level and channel.
+--- Creates a navigation grid from a tilefield level and movement category.
 ---@param field_ud LTileField Tilefield to derive navigation grid from.
----@param opts? table Options with `level`, `channel`, `costChannel`, and `diagonalMode`.
+---@param opts? table Options with `level`, `category`, `costCategory`, `footprintWidth`, `footprintHeight`, and `diagonalMode`.
 ---@return LNavGrid New navigation grid handle.
 lurek.pathfind.newNavGridFromField = function(field_ud, opts) end
+
+--- Builds a navigation grid from a Lua provider table with width, height, optional costs/blocked arrays, or getCost/isBlocked callbacks.
+---@param provider table Lua-authored navigation-grid provider.
+---@return LNavGrid New navigation grid copied from provider data.
+lurek.pathfind.newNavGridFromProvider = function(provider) end
 
 --- Creates a navigation grid from a tilemap layer and blocked gid table.
 ---@param tm_ud LTileMap Tilemap to derive navigation grid from.
@@ -21897,6 +21934,11 @@ lurek.pathfind.newPathFlowField = function(grid_ud) end
 ---@return LPathGrid New path grid handle.
 lurek.pathfind.newPathGrid = function(w, h, cell_size) end
 
+--- Builds a path grid from a Lua provider table with width, height, optional cellSize, costs/walkable arrays, or getCost/isWalkable callbacks.
+---@param provider table Lua-authored path-grid provider.
+---@return LPathGrid New path grid copied from provider data.
+lurek.pathfind.newPathGridFromProvider = function(provider) end
+
 --- Creates a unit pathfinder for a navigation grid.
 ---@param grid_ud LNavGrid Navigation grid to pathfind on.
 ---@return LUnitPathfinder New pathfinder handle.
@@ -21915,9 +21957,9 @@ lurek.pathfind.pollAsyncPaths = function() end
 ---@return LPathfindRangeMapResult Range map result with `cells`, `width`, and `height` fields.
 lurek.pathfind.rangeMap = function(opts) end
 
---- Computes reachable cells from a tilefield level and movement channel.
+--- Computes reachable cells from a tilefield level and movement category.
 ---@param field_ud LTileField Tilefield to read.
----@param opts table Options with `origin`, `budget`, optional `level`, `channel`, `costChannel`, and `diagonal`.
+---@param opts table Options with `origin`, `budget`, optional `level`, `category`, `costCategory`, and `diagonal`.
 ---@return table Range map result with `cells`, `width`, `height`, and `level`.
 lurek.pathfind.rangeMapFromField = function(field_ud, opts) end
 
@@ -29368,39 +29410,36 @@ lurek.thread.newPool = function(size, code) end
 ---@return LThread A thread handle that can be started, waited on, and inspected.
 lurek.thread.newThread = function(code) end
 
---- Applies a named profile to one cell.
+--- Applies a named modifier to one cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
----@param name string Profile name to apply to the cell.
-function LTileField:applyProfile(x, y, z, name) end
+---@param modifier string Modifier name.
+function LTileField:applyModifier(x, y, z, modifier) end
 
---- Applies the tilefield profile named by a tileset tile referenced from one cell.
+--- Applies a legacy profile to one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param profile string Profile name.
+function LTileField:applyProfile(x, y, z, profile) end
+
+--- Applies the object archetype defaults for a tileset tile referenced from one cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
 ---@param slot string Reference slot name.
----@param tileset LTileSet Tileset that stores profile metadata.
+---@param tileset LTileSet Tileset that stores object archetype metadata.
 ---@param opts? table Options: refIsGid.
----@return boolean True when a profile was found and applied.
-function LTileField:applyTilesetProfile(x, y, z, slot, tileset, opts) end
+---@return boolean True when the tileset object was found and applied.
+function LTileField:applyTilesetObject(x, y, z, slot, tileset, opts) end
 
---- Applies tileset gameplay properties for a tile referenced from one cell.
----@param x number One-based column.
----@param y number One-based row.
----@param z? number One-based level, default 1.
----@param slot string Reference slot name.
----@param tileset LTileSet Tileset that stores object metadata.
----@param opts? table Options: refIsGid.
----@return boolean True when referenced tileset properties were found and applied.
-function LTileField:applyTilesetStats(x, y, z, slot, tileset, opts) end
-
---- Applies tileset gameplay properties for every referenced cell on one tilefield level.
+--- Applies tileset object defaults for every referenced cell on one tilefield level.
 ---@param slot string Reference slot name.
 ---@param tileset LTileSet Tileset that stores object metadata.
 ---@param opts? table Options: z, refIsGid.
----@return number Number of cells that received at least one stat.
-function LTileField:applyTilesetStatsLayer(slot, tileset, opts) end
+---@return number Number of cells that received object defaults.
+function LTileField:applyTilesetObjectLayer(slot, tileset, opts) end
 
 --- Returns whether a cell blocks a channel.
 ---@param x number One-based column.
@@ -29409,6 +29448,13 @@ function LTileField:applyTilesetStatsLayer(slot, tileset, opts) end
 ---@param channel string Blocker channel name to query.
 ---@return boolean True when the addressed cell blocks the channel.
 function LTileField:blocks(x, y, z, channel) end
+
+--- Returns whether one cell blocks a category.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+function LTileField:blocksCategory(x, y, z, category) end
 
 --- Clears all cell gameplay state.
 function LTileField:clear() end
@@ -29427,12 +29473,29 @@ function LTileField:clearCell(x, y, z) end
 ---@return boolean True when no blocker exists between the two cells.
 function LTileField:clearLine(from_tbl, to_tbl, channel, opts) end
 
+--- Removes one modifier from one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param modifier string Modifier name.
+---@return boolean True when the cell had the modifier.
+function LTileField:clearModifier(x, y, z, modifier) end
+
 --- Clears a named object/tile reference from one cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
 ---@param slot string Reference slot name.
 function LTileField:clearRef(x, y, z, slot) end
+
+--- Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
+---@param name string Stable category name.
+---@param opts? table?|Options custom', active=true?.
+function LTileField:defineCategory(name, opts) end
+
+--- Defines a named object slot that cells may reference.
+---@param slot string Slot name chosen by the Lua game.
+function LTileField:defineSlot(slot) end
 
 --- Exports one blocker channel and level as a row-major boolean array.
 ---@param channel string Blocker channel name to export.
@@ -29445,10 +29508,6 @@ function LTileField:exportBlockLayer(channel, z) end
 ---@param z? number One-based level, default 1.
 ---@return table Row-major number array for the requested channel and level.
 function LTileField:exportCostLayer(channel, z) end
-
---- Exports one level of profile names as a row-major array.
----@param z? number One-based level, default 1.
-function LTileField:exportProfileLayer(z) end
 
 --- Exports one named object/tile reference slot and level as a row-major array.
 ---@param slot string Reference slot name to export.
@@ -29463,7 +29522,46 @@ function LTileField:exportRefLayer(slot, z) end
 ---@return table nil | First blocking cell table, or nil when the line is clear.
 function LTileField:firstBlocker(from_tbl, to_tbl, channel, opts) end
 
---- Returns a table with blockers, costs, sun occlusion, and optional profile name.
+--- Returns whether a rectangular footprint can occupy a cell anchor for a category.
+---@param x any
+---@param y any
+---@param z? any
+---@param w any
+---@param h any
+---@param category any
+function LTileField:footprintPassable(x, y, z, w, h, category) end
+
+--- Returns known category names.
+---@return string[] Sorted category names.
+function LTileField:getCategories() end
+
+--- Returns category metadata, or nil when the category is unknown.
+---@param name string Category name.
+---@return table nil | Category table with name, kind, and active.
+function LTileField:getCategory(name) end
+
+--- Returns one effective category cost.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+function LTileField:getCategoryCost(x, y, z, category) end
+
+--- Returns one effective RGB category filter.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+function LTileField:getCategoryFilter(x, y, z, category) end
+
+--- Returns one effective category transmission multiplier.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+function LTileField:getCategoryTransmission(x, y, z, category) end
+
+--- Returns a table with blockers, costs, sun occlusion, refs, and modifiers.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
@@ -29478,6 +29576,18 @@ function LTileField:getCell(x, y, z) end
 ---@return number Movement or traversal cost value.
 function LTileField:getCost(x, y, z, channel) end
 
+--- Returns a named tile modifier table, or nil.
+---@param name string Modifier name.
+---@return table nil | Modifier table.
+function LTileField:getModifier(name) end
+
+--- Returns active modifier names on one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return string[] Active modifier names.
+function LTileField:getModifiers(x, y, z) end
+
 --- Returns topology-aware same-level neighbours for one cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
@@ -29485,9 +29595,9 @@ function LTileField:getCost(x, y, z, channel) end
 ---@return table Array of one-based coordinate tables.
 function LTileField:getNeighbors(x, y, z) end
 
---- Returns a named object profile table, or nil when absent.
----@param name string Profile name to read.
----@return table nil | Profile table with blockers, costs, and sunOcclusion, or nil.
+--- Returns a legacy profile table, or nil.
+---@param name string Profile name.
+---@return table nil | Profile table.
 function LTileField:getProfile(name) end
 
 --- Returns a named object/tile reference from one cell, or nil.
@@ -29495,7 +29605,7 @@ function LTileField:getProfile(name) end
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
 ---@param slot string Reference slot name.
----@return number nil | Stored reference id, or nil when unset.
+---@return number table|nil | Stored legacy id, typed ref table, or nil when unset.
 function LTileField:getRef(x, y, z, slot) end
 
 --- Reads all tileset properties for a tile referenced from one cell.
@@ -29541,7 +29651,7 @@ function LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts) e
 ---@return number nil | Numeric property value, or nil when missing/not numeric.
 function LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts) end
 
---- Returns every named ref slot currently used by this field.
+--- Returns every declared ref slot.
 ---@return string[] Ref slot names.
 function LTileField:getRefSlots() end
 
@@ -29571,6 +29681,15 @@ function LTileField:getSunOcclusion(x, y, z) end
 ---@return string `square`, `square4`, `square8`, `iso_square`, or `hex`.
 function LTileField:getTopology() end
 
+--- Returns the current tilefield data version.
+---@return number Monotonic field version incremented by data mutations.
+function LTileField:getVersion() end
+
+--- Returns true when a named object slot is declared.
+---@param slot string Slot name.
+---@return boolean True when declared.
+function LTileField:hasSlot(slot) end
+
 --- Returns whether one-based coordinates are inside the field.
 ---@param x number One-based column.
 ---@param y number One-based row.
@@ -29590,14 +29709,25 @@ function LTileField:line(opts) end
 ---@return boolean True when the region contains the cell.
 function LTileField:regionContains(name, x, y, z) end
 
---- Removes a named object profile from the tilefield profile registry.
----@param name string Profile name to remove.
+--- Removes a named modifier and clears it from all cells.
+---@param name string Modifier name.
+---@return boolean True when removed.
+function LTileField:removeModifier(name) end
+
+--- Removes a legacy profile and clears it from all cells.
+---@param name string Profile name.
+---@return boolean True when removed.
 function LTileField:removeProfile(name) end
 
 --- Removes a named region.
 ---@param name string Region name.
 ---@return boolean True when the region existed.
 function LTileField:removeRegion(name) end
+
+--- Removes a named object slot and clears its references from the field.
+---@param slot string Slot name.
+---@return boolean True when the slot existed.
+function LTileField:removeSlot(slot) end
 
 --- Sets whether a cell blocks a channel.
 ---@param x number One-based column.
@@ -29607,7 +29737,39 @@ function LTileField:removeRegion(name) end
 ---@param blocked boolean True when the channel should be blocked.
 function LTileField:setBlock(x, y, z, channel, blocked) end
 
---- Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+--- Sets one category blocker on one cell.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+---@param blocked any
+function LTileField:setCategoryBlock(x, y, z, category, blocked) end
+
+--- Sets one category cost on one cell.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+---@param cost any
+function LTileField:setCategoryCost(x, y, z, category, cost) end
+
+--- Sets one RGB category filter on one cell.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+---@param filter any
+function LTileField:setCategoryFilter(x, y, z, category, filter) end
+
+--- Sets one category transmission multiplier on one cell.
+---@param x any
+---@param y any
+---@param z? any
+---@param category any
+---@param value any
+function LTileField:setCategoryTransmission(x, y, z, category, value) end
+
+--- Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
@@ -29622,17 +29784,22 @@ function LTileField:setCell(x, y, z, cell) end
 ---@param cost number Movement or traversal cost value.
 function LTileField:setCost(x, y, z, channel, cost) end
 
---- Registers or replaces a named object profile.
----@param name string Profile name to create or replace.
----@param profile_tbl table Profile table with blockers, costs, and sunOcclusion fields.
-function LTileField:setProfile(name, profile_tbl) end
+--- Registers or replaces a named tile modifier.
+---@param name string Modifier name.
+---@param modifier table Modifier table with blocks, costAdd, costMul, sunOcclusionAdd, light, properties.
+function LTileField:setModifier(name, modifier) end
+
+--- Registers or replaces a legacy tilefield profile.
+---@param name string Profile name.
+---@param profile table Profile table with blocks, costs, sunOcclusion, light, or properties.
+function LTileField:setProfile(name, profile) end
 
 --- Sets a named object/tile reference on one cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
 ---@param slot string Reference slot name defined by the Lua game.
----@param value number Object, tile, or tileset-local id stored for the slot.
+---@param value number|table Legacy id or typed `{ tileset, tile?/object? }` ref stored for the slot.
 function LTileField:setRef(x, y, z, slot, value) end
 
 --- Defines or replaces a named region from explicit one-based tile cells.
@@ -29676,11 +29843,6 @@ function LTileField:writeBlockLayer(channel, z, values) end
 ---@param z? number One-based level, default 1.
 ---@param values table Row-major number array with width*height entries.
 function LTileField:writeCostLayer(channel, z, values) end
-
---- Writes one full profile-name layer from a row-major string-or-nil array.
----@param z? number One-based level, default 1.
----@param values table Row-major string-or-nil array with width*height entries.
-function LTileField:writeProfileLayer(z, values) end
 
 --- Writes one full named ref layer from a row-major integer-or-nil array.
 ---@param slot string Reference slot name to write.
@@ -29734,9 +29896,14 @@ function LTileFieldMap:type() end
 ---@return boolean True for `LTileFieldMap` or `LObject`.
 function LTileFieldMap:typeOf(name) end
 
---- Copies a tilemap layer into a tilefield, optionally applying profiles and a ref slot.
+--- Builds a native tilefield from a Lua provider table with width, height, optional levels/topology, slots, modifiers, regions, and optional getCell(x,y,z).
+---@param provider table Lua-authored tilefield provider.
+---@return LTileField New tilefield copied from the provider.
+lurek.tilefield.fromProvider = function(provider) end
+
+--- Copies a tilemap layer into a tilefield, optionally applying tileset object defaults and a ref slot.
 ---@param tilemap LTileMap Source tilemap.
----@param opts? table `{level?, topology?, solidProfile?, emptyProfile?, solidGids?, refSlot?}`; `solidGids` is explicit and no tileset solidity is inferred.
+---@param opts? table `{layer?, level?, levels?, topology?, solidGids?, refSlot?, applyTilesetObject?}`; `solidGids` and `applyTilesetObject` are explicit, no tileset solidity is inferred.
 ---@return LTileField New tilefield copied from the tilemap layer.
 lurek.tilefield.fromTileMap = function(tilemap, opts) end
 
@@ -29750,6 +29917,10 @@ lurek.tilefield.new = function(opts) end
 ---@return LTileFieldMap New tilefield map handle.
 lurek.tilefield.newFieldMap = function(opts) end
 
+--- Adds a rectangular area light and returns its stable id.
+---@param opts table h,radius,intensity?,color?,flicker?,colorCycle?}`.
+function LTileLightMap:addAreaLight(opts) end
+
 --- Adds a tile line light and returns its stable id.
 ---@param opts table `{x1,y1,z1?,x2,y2,z2?,radius,intensity?,color?,flicker?,colorCycle?}`.
 function LTileLightMap:addLineLight(opts) end
@@ -29758,34 +29929,60 @@ function LTileLightMap:addLineLight(opts) end
 ---@param opts table `{x, y, z?, radius, intensity?, color?, flicker?, colorCycle?}` light definition.
 function LTileLightMap:addPointLight(opts) end
 
+--- Alias for `addAreaLight`.
+---@param opts table h,radius,intensity?,color?,flicker?,colorCycle?}`.
+---@return number Stable rectangular light id.
+function LTileLightMap:addRectLight(opts) end
+
+--- Removes all rectangular area lights currently stored on this tile light map.
+function LTileLightMap:clearAreaLights() end
+
 --- Removes all line lights currently stored on this tile light map.
 function LTileLightMap:clearLineLights() end
 
 --- Removes all point lights currently stored on this tile light map.
 function LTileLightMap:clearPointLights() end
 
+--- Alias for `clearAreaLights`.
+function LTileLightMap:clearRectLights() end
+
 --- Computes tile light from ambient, point lights, line lights, and sun light.
----@param opts? table Optional includePointLights, includeLineLights, includeSunLight/includeGlobalLight, ambient, and time settings.
+---@param opts? table Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.
 function LTileLightMap:compute(opts) end
 
 --- Exports one level of computed light as row-major `{r,g,b,luma}` tables.
 ---@param z? number One-based level, default 1.
+---@return table Row-major array of light color tables for the requested level.
 function LTileLightMap:exportLayer(z) end
 
 --- Exports all computed light levels as nested row-major tables.
+---@return table Array of exported light layers, one table per level.
 function LTileLightMap:exportVolume() end
 
 --- Returns r, g, b, and luma for one cell.
 ---@param x number One-based cell x coordinate.
 ---@param y number One-based cell y coordinate.
 ---@param z? number One-based level, default 1.
+---@return number Red; green; blue; and luma values for the cell. (value 1).
+---@return number Red; green; blue; and luma values for the cell. (value 2).
+---@return number Red; green; blue; and luma values for the cell. (value 3).
+---@return number Red; green; blue; and luma values for the cell. (value 4).
 function LTileLightMap:getLight(x, y, z) end
 
 --- Returns light-map width, height, and level count.
+---@return number Width; height; and level count. (value 1).
+---@return number Width; height; and level count. (value 2).
+---@return number Width; height; and level count. (value 3).
 function LTileLightMap:getSize() end
 
+--- Removes a rectangular area light by id and returns whether it existed.
+---@param id number Stable area-light id returned by `addAreaLight`.
+---@return boolean True when an area light was removed.
+function LTileLightMap:removeAreaLight(id) end
+
 --- Removes a line light by id and returns whether it existed.
----@param id any
+---@param id number Stable line-light id returned by `addLineLight`.
+---@return boolean True when a line light was removed.
 function LTileLightMap:removeLineLight(id) end
 
 --- Removes a point light by id and returns whether it existed.
@@ -29793,12 +29990,17 @@ function LTileLightMap:removeLineLight(id) end
 ---@return boolean True when a point light was removed.
 function LTileLightMap:removePointLight(id) end
 
+--- Alias for `removeAreaLight`.
+---@param id number Stable rectangular light id returned by `addRectLight`.
+---@return boolean True when a rectangular light was removed.
+function LTileLightMap:removeRectLight(id) end
+
 --- Sets ambient tile light stored on this light map.
 ---@param color table `{r,g,b}` ambient color.
 function LTileLightMap:setAmbient(color) end
 
---- Sets top-down global light parameters used during light computation.
----@param opts table `{intensity?, color?}` global top-light settings.
+--- Compatibility alias for top sun light parameters used during light computation.
+---@param opts table `{intensity?, color?}` top-light settings.
 function LTileLightMap:setGlobalLight(opts) end
 
 --- Sets tile sun light parameters used during light computation.
@@ -29814,6 +30016,11 @@ function LTileLightMap:type() end
 ---@return boolean True for `LTileLightMap` or `LObject`.
 function LTileLightMap:typeOf(name) end
 
+--- Updates an existing rectangular area light by id.
+---@param id number Stable area-light id returned by `addAreaLight`.
+---@param opts table Area-light fields to update.
+function LTileLightMap:updateAreaLight(id, opts) end
+
 --- Updates an existing tile line light by id.
 ---@param id number Stable line light id returned by `addLineLight`.
 ---@param opts table Partial line light update.
@@ -29824,14 +30031,19 @@ function LTileLightMap:updateLineLight(id, opts) end
 ---@param opts table Partial light update table with x, y, z, radius, intensity, or color.
 function LTileLightMap:updatePointLight(id, opts) end
 
---- Creates and computes a tile light map for a shared tilefield.
----@param field LTileField Source tilefield.
----@param opts? table Optional includePointLights, includeLineLights, includeSunLight/includeGlobalLight, ambient, and time settings.
+--- Alias for `updateAreaLight`.
+---@param id number Stable rectangular light id returned by `addRectLight`.
+---@param opts table Rectangular-light fields to update.
+function LTileLightMap:updateRectLight(id, opts) end
+
+--- Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.
+---@param field LTileField|table Source tilefield handle or provider table.
+---@param opts? table Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings.
 ---@return LTileLightMap Computed tile light map handle.
 lurek.tilelight.compute = function(field, opts) end
 
---- Creates a tile light map attached to a shared tilefield.
----@param field LTileField Source tilefield.
+--- Creates a tile light map attached to a shared tilefield or copied from a Lua tilefield provider table.
+---@param field LTileField|table Source tilefield handle or provider table.
 ---@return LTileLightMap New tile light map handle.
 lurek.tilelight.new = function(field) end
 
@@ -30133,7 +30345,7 @@ function LLargeMapRenderer:setTile(x, y, tileId) end
 ---@param cols number Number of columns in the tileset image.
 function LLargeMapRenderer:setTilesetColumns(cols) end
 
---- Sets the viewport dimensions for visibility calculations.
+--- Sets the viewport rectangle used for render-command culling.
 ---@param w number Viewport width in pixels.
 ---@param h number Viewport height in pixels.
 function LLargeMapRenderer:setViewport(w, h) end
@@ -30297,6 +30509,18 @@ function LTileMap:getViewport() end
 ---@param oy? number Vertical scroll offset (default 0).
 function LTileMap:render(ox, oy) end
 
+--- Renders typed refs from a tilefield slot through a tileset catalog.
+---@param field LTileField|table Source tilefield handle or provider table containing typed slot refs.
+---@param catalog LTileCatalog Catalog resolving `{tileset,tile/object}` refs to visuals.
+---@param opts table Options: slot, z, offsetX, offsetY.
+function LTileMap:renderFieldCatalogSlot(field, catalog, opts) end
+
+--- Renders objects referenced from a tilefield slot using tileset object visuals.
+---@param field LTileField|table Source tilefield handle or provider table containing slot refs.
+---@param tileset LTileSet|table Tileset handle or provider table with object archetype visuals.
+---@param opts table Options: slot, z, offsetX, offsetY, refIsGid.
+function LTileMap:renderFieldSlot(field, tileset, opts) end
+
 --- Sets the tint color for an entire layer.
 ---@param idx number Layer index (1-based).
 ---@param r number Red channel (0..1).
@@ -30426,146 +30650,6 @@ function LTileMap:update(dt) end
 ---@return number Tile row (1-based).
 function LTileMap:worldToTile(wx, wy) end
 
---- Returns the animation frames for a tile, or nil if none are set.
----@param tileId number Tile ID to query (1-based).
----@return LTileSetGetAnimationResult Array of `{tileid=number, duration=number}` frames, or nil.
-function LTileSet:getAnimation(tileId) end
-
---- Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
----@param typeName string Logical tile type name.
----@param bitmask number 4-bit neighbor bitmask (0..15).
----@return number Resolved tile ID (1-based), or nil if no rule matches.
-function LTileSet:getAutoTileId(typeName, bitmask) end
-
---- Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
----@param typeName string Logical tile type name.
----@param bitmask number 8-bit neighbor bitmask (0..255).
----@return number Resolved tile ID (1-based), or nil if no rule matches.
-function LTileSet:getAutoTileId8(typeName, bitmask) end
-
---- Returns the neighbor matching mode for a named auto-tile type.
----@param typeName string Logical tile type name.
----@return string One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`.
-function LTileSet:getAutoTileMode(typeName) end
-
---- Returns the number of columns in the tileset atlas image.
----@return number Column count.
-function LTileSet:getColumns() end
-
---- Returns the first global tile ID (GID) of this tileset.
----@return number First GID assigned to this tileset.
-function LTileSet:getFirstGid() end
-
---- Returns the margin around the edge of the atlas image, in pixels.
----@return number Margin in pixels.
-function LTileSet:getMargin() end
-
---- Returns the physics shape name associated with this tile.
----@param tileId number Tile ID to check (1-based).
----@return string Shape name, or nil when unset.
-function LTileSet:getPhysicsShape(tileId) end
-
---- Returns the tilefield profile name associated with this tile.
----@param tileId number Tile ID to check (1-based).
----@return string Profile name, or nil when unset.
-function LTileSet:getProfile(tileId) end
-
---- Returns all gameplay properties associated with this tile.
----@param tileId number Tile ID to check (1-based).
----@return table Property name/value table.
-function LTileSet:getProperties(tileId) end
-
---- Returns an arbitrary gameplay property associated with this tile.
----@param tileId number Tile ID to check (1-based).
----@param name string Property name.
----@return string Property value, or nil when unset.
-function LTileSet:getProperty(tileId, name) end
-
---- Returns an arbitrary gameplay property parsed as a boolean.
----@param tileId number Tile ID to check (1-based).
----@param name string Property name.
----@return boolean Property bool, or nil when unset/not boolean.
-function LTileSet:getPropertyBool(tileId, name) end
-
---- Returns an arbitrary gameplay property parsed as a number.
----@param tileId number Tile ID to check (1-based).
----@param name string Property name.
----@return number Property number, or nil when unset/not numeric.
-function LTileSet:getPropertyNumber(tileId, name) end
-
---- Returns the source rectangle (UV quad) for a tile in the atlas.
----@param tileId number Tile ID (1-based).
----@return LTileSetGetQuadResult Table with fields `x`, `y`, `width`, `height` in pixels.
-function LTileSet:getQuad(tileId) end
-
---- Returns the spacing between tiles in the atlas image, in pixels.
----@return number Spacing in pixels.
-function LTileSet:getSpacing() end
-
---- Returns the total number of tiles defined in this tileset.
----@return number Total tile count.
-function LTileSet:getTileCount() end
-
---- Returns both tile width and height in pixels.
----@return number Tile width in pixels.
----@return number Tile height in pixels.
-function LTileSet:getTileDimensions() end
-
---- Returns the height of a single tile in pixels.
----@return number Tile height in pixels.
-function LTileSet:getTileHeight() end
-
---- Returns the width of a single tile in pixels.
----@return number Tile width in pixels.
-function LTileSet:getTileWidth() end
-
---- Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
----@param tileId number Tile ID to animate (1-based).
----@param frames table Array of `{tileid=number, duration=number}` frame definitions.
-function LTileSet:setAnimation(tileId, frames) end
-
---- Sets the neighbor matching mode for a named auto-tile type.
----@param typeName string Logical tile type name.
----@param mode string One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`.
-function LTileSet:setAutoTileMode(typeName, mode) end
-
---- Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
----@param typeName string Logical tile type name (e.g. "grass").
----@param bitmask number 4-bit neighbor bitmask (0..15).
----@param tileId number Tile ID to use for this bitmask (1-based).
-function LTileSet:setAutoTileRule(typeName, bitmask, tileId) end
-
---- Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
----@param typeName string Logical tile type name.
----@param bitmask number 8-bit neighbor bitmask (0..255).
----@param tileId number Tile ID to use for this bitmask (1-based).
-function LTileSet:setAutoTileRule8(typeName, bitmask, tileId) end
-
---- Assigns or clears the physics shape name associated with this tile.
----@param tileId number Tile ID to modify (1-based).
----@param shape? string Shape name such as `"none"`, `"rect"`, or `"slopeNE"`; nil/empty clears.
-function LTileSet:setPhysicsShape(tileId, shape) end
-
---- Assigns or clears the tilefield profile name associated with this tile.
----@param tileId number Tile ID to modify (1-based).
----@param profile? string Profile name, or nil/empty string to clear.
-function LTileSet:setProfile(tileId, profile) end
-
---- Assigns or clears an arbitrary gameplay property associated with this tile.
----@param tileId number Tile ID to modify (1-based).
----@param name string Property name.
----@param value? string Property value, or nil to clear.
-function LTileSet:setProperty(tileId, name, value) end
-
---- Returns the type name of this userdata.
----@return string Always `"LTileSet"`.
-function LTileSet:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check against.
----@return boolean True if `name` is `"LTileSet"` or `"Object"`.
-function LTileSet:typeOf(name) end
-
 --- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 ---@param jsonStr string Raw LDtk JSON content.
 ---@param levelName? string Level name to load, or nil for the first level.
@@ -30573,6 +30657,12 @@ function LTileSet:typeOf(name) end
 ---@return LTileMap Loaded tilemap; or nil when import fails.
 ---@return LTilemapFromLDtkResult Structured import error table on import failure; or nil on success.
 lurek.tilemap.fromLDtk = function(jsonStr, levelName, opts) end
+
+--- Builds a native tilemap from a Lua provider table with tileWidth, tileHeight, layers, optional tilesets, and optional getTile(layer,x,y).
+---@param provider table Lua-authored tilemap provider.
+---@param opts? table Optional limits table.
+---@return LTileMap New tilemap copied from provider data.
+lurek.tilemap.fromProvider = function(provider, opts) end
 
 --- Converts screen-space pixel coordinates to axial hex coordinates.
 ---@param sx number Screen X.
@@ -30639,16 +30729,8 @@ lurek.tilemap.newLargeMapRenderer = function(tileW, tileH) end
 ---@return LTileMap New tilemap.
 lurek.tilemap.newTileMap = function(tileWidth, tileHeight, chunkSize, opts) end
 
---- Creates a new tileset from atlas parameters.
----@param firstGid number First global tile ID.
----@param tileCount number Total tiles in the set.
----@param columns number Columns in the atlas image.
----@param tileWidth number Tile width in pixels.
----@param tileHeight number Tile height in pixels.
----@param spacing? number Pixel spacing between tiles (default 0).
----@param margin? number Pixel margin around the atlas edge (default 0).
----@return LTileSet New tileset.
-lurek.tilemap.newTileSet = function(firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin) end
+--- Compatibility alias for `lurek.tileset.newTileSet`.
+lurek.tilemap.newTileSet = function() end
 
 --- Converts axial hex coordinates to screen-space pixel position.
 ---@param q number Axial Q coordinate.
@@ -30666,6 +30748,229 @@ lurek.tilemap.toScreenHex = function(q, r, size) end
 ---@return number Screen X.
 ---@return number Screen Y.
 lurek.tilemap.toScreenIso = function(tx, ty, tw, th) end
+
+--- Returns the sorted catalog ids available for typed tile references.
+---@return table Array of catalog id strings.
+function LTileCatalog:getIds() end
+
+--- Resolves object archetype metadata from a typed tile or object reference.
+---@param reference table Reference table with `tileset` and either `tile` or `object`.
+---@return table nil | Object archetype table, or nil when the reference cannot resolve.
+function LTileCatalog:getObject(reference) end
+
+--- Returns the tileset stored under a catalog id.
+---@param id string Catalog id to resolve.
+---@return LTileSet nil | Tileset for the id, or nil when missing.
+function LTileCatalog:getTileset(id) end
+
+--- Resolves render visual metadata from a typed tile or object reference.
+---@param reference table Reference table with `tileset` and either `tile` or `object`.
+---@return table nil | Visual metadata table, or nil when the reference has no visual.
+function LTileCatalog:getVisual(reference) end
+
+--- Returns the userdata type name.
+---@return string Always `LTileCatalog`.
+function LTileCatalog:type() end
+
+--- Checks whether this catalog matches a type name.
+---@param name string Type name to compare.
+---@return boolean True for `LTileCatalog` or `LObject`.
+function LTileCatalog:typeOf(name) end
+
+--- Returns the animation frames for one tile.
+---@param tile_id number Tile id (1-based).
+---@return table nil | Array of frame tables, or nil when no animation exists.
+function LTileSet:getAnimation(tile_id) end
+
+--- Resolves a four-neighbor autotile bitmask to a tile id.
+---@param type_name string Logical tile type name.
+---@param bitmask number Four-neighbor bitmask.
+---@return number nil | Tile id (1-based), or nil when no rule exists.
+function LTileSet:getAutoTileId(type_name, bitmask) end
+
+--- Resolves an eight-neighbor autotile bitmask to a tile id.
+---@param type_name string Logical tile type name.
+---@param bitmask number Eight-neighbor bitmask.
+---@return number nil | Tile id (1-based), or nil when no rule exists.
+function LTileSet:getAutoTileId8(type_name, bitmask) end
+
+--- Returns the autotile matching mode for a tile type.
+---@param type_name string Logical tile type name.
+---@return string Autotile matching mode.
+function LTileSet:getAutoTileMode(type_name) end
+
+--- Returns the number of atlas columns.
+---@return number Column count.
+function LTileSet:getColumns() end
+
+--- Returns the first global tile id assigned to this tileset.
+---@return number First global tile id.
+function LTileSet:getFirstGid() end
+
+--- Returns the atlas margin in pixels.
+---@return number Atlas margin.
+function LTileSet:getMargin() end
+
+--- Returns object archetype metadata by name.
+---@param name string Object archetype name.
+---@return table nil | Object metadata table, or nil when missing.
+function LTileSet:getObject(name) end
+
+--- Returns all object archetype names in this tileset.
+---@return table Array of object archetype names.
+function LTileSet:getObjectNames() end
+
+--- Returns the physics shape label for one tile.
+---@param tile_id number Tile id (1-based).
+---@return string nil | Physics shape label, or nil when unset.
+function LTileSet:getPhysicsShape(tile_id) end
+
+--- Returns the named gameplay profile for one tile.
+---@param tile_id number Tile id (1-based).
+---@return string nil | Profile name, or nil when unset.
+function LTileSet:getProfile(tile_id) end
+
+--- Returns all custom properties for one tile.
+---@param tile_id number Tile id (1-based).
+---@return table Property name/value table.
+function LTileSet:getProperties(tile_id) end
+
+--- Returns a custom tile property as a string.
+---@param tile_id number Tile id (1-based).
+---@param name string Property name.
+---@return string nil | Property value, or nil when unset.
+function LTileSet:getProperty(tile_id, name) end
+
+--- Returns a custom tile property parsed as a boolean.
+---@param tile_id number Tile id (1-based).
+---@param name string Property name.
+---@return boolean nil | Boolean property value, or nil when unset or not boolean.
+function LTileSet:getPropertyBool(tile_id, name) end
+
+--- Returns a custom tile property parsed as a number.
+---@param tile_id number Tile id (1-based).
+---@param name string Property name.
+---@return number nil | Numeric property value, or nil when unset or not numeric.
+function LTileSet:getPropertyNumber(tile_id, name) end
+
+--- Returns the atlas rectangle for one tile id.
+---@param tile_id number Tile id (1-based).
+---@return table Rectangle table with x, y, width, and height.
+function LTileSet:getQuad(tile_id) end
+
+--- Returns the spacing between atlas tiles in pixels.
+---@return number Tile spacing.
+function LTileSet:getSpacing() end
+
+--- Returns the computed texture width and height in pixels.
+---@return number Texture width.
+---@return number Texture height.
+function LTileSet:getTextureDimensions() end
+
+--- Returns the number of tile entries in this tileset.
+---@return number Tile count.
+function LTileSet:getTileCount() end
+
+--- Returns the tile width and height in pixels.
+---@return number Tile width.
+---@return number Tile height.
+function LTileSet:getTileDimensions() end
+
+--- Returns the tile height in pixels.
+---@return number Tile height.
+function LTileSet:getTileHeight() end
+
+--- Returns the object archetype name mapped to one tile.
+---@param tile_id number Tile id (1-based).
+---@return string nil | Object archetype name, or nil when unmapped.
+function LTileSet:getTileObject(tile_id) end
+
+--- Returns the tile width in pixels.
+---@return number Tile width.
+function LTileSet:getTileWidth() end
+
+--- Removes an object archetype by name.
+---@param name string Object archetype name.
+---@return boolean True when an archetype was removed.
+function LTileSet:removeObject(name) end
+
+--- Replaces the animation frames for one tile.
+---@param tile_id number Tile id (1-based).
+---@param frames table Array of frame tables with `tileid` and `duration`.
+function LTileSet:setAnimation(tile_id, frames) end
+
+--- Sets the autotile matching mode for a tile type.
+---@param type_name string Logical tile type name.
+---@param mode string One of `matchSides`, `matchCorners`, or `matchCornersAndSides`.
+function LTileSet:setAutoTileMode(type_name, mode) end
+
+--- Sets a four-neighbor autotile bitmask rule for a tile type.
+---@param type_name string Logical tile type name.
+---@param bitmask number Four-neighbor bitmask.
+---@param tile_id number Tile id (1-based) to emit for the bitmask.
+function LTileSet:setAutoTileRule(type_name, bitmask, tile_id) end
+
+--- Sets an eight-neighbor autotile bitmask rule for a tile type.
+---@param type_name string Logical tile type name.
+---@param bitmask number Eight-neighbor bitmask.
+---@param tile_id number Tile id (1-based) to emit for the bitmask.
+function LTileSet:setAutoTileRule8(type_name, bitmask, tile_id) end
+
+--- Stores an object archetype and its visual, pathing, lighting, and custom metadata.
+---@param name string Object archetype name.
+---@param object table Object metadata table.
+function LTileSet:setObject(name, object) end
+
+--- Sets or clears the physics shape label for one tile.
+---@param tile_id number Tile id (1-based).
+---@param shape? string Physics shape label, or nil/empty to clear it.
+function LTileSet:setPhysicsShape(tile_id, shape) end
+
+--- Sets or clears the named gameplay profile for one tile.
+---@param tile_id number Tile id (1-based).
+---@param profile? string Profile name, or nil/empty to clear it.
+function LTileSet:setProfile(tile_id, profile) end
+
+--- Sets or clears a custom string-convertible tile property.
+---@param tile_id number Tile id (1-based).
+---@param name string Property name.
+---@param value any String, number, boolean, or nil to clear the property.
+function LTileSet:setProperty(tile_id, name, value) end
+
+--- Assigns or clears the object archetype mapped to one tile.
+---@param tile_id number Tile id (1-based).
+---@param object_name? string Object archetype name, or nil to clear it.
+function LTileSet:setTileObject(tile_id, object_name) end
+
+--- Returns the userdata type name.
+---@return string Always `LTileSet`.
+function LTileSet:type() end
+
+--- Checks whether this tileset matches a type name.
+---@param name string Type name to compare.
+---@return boolean True for `LTileSet` or `LObject`.
+function LTileSet:typeOf(name) end
+
+--- Builds a native tileset from a Lua provider table with atlas fields, objects, tileObjects, properties, and animations.
+---@param provider table Lua-authored tileset provider.
+---@return LTileSet New tileset copied from provider data.
+lurek.tileset.fromProvider = function(provider) end
+
+--- Creates a catalog that resolves typed references across named tilesets.
+---@param entries table Map of catalog id to `LTileSet`.
+---@return LTileCatalog New tile catalog handle.
+lurek.tileset.newCatalog = function(entries) end
+
+--- Creates a native tileset from atlas dimensions.
+---@param first_gid number First global tile id assigned to the tileset.
+---@param tile_count number Number of tiles in the atlas.
+---@param columns number Number of atlas columns.
+---@param tile_width number Tile width in pixels.
+---@param tile_height number Tile height in pixels.
+---@param spacing? number Optional pixel spacing between tiles.
+---@param margin? number Optional atlas margin in pixels.
+---@return LTileSet New tileset handle.
+lurek.tileset.newTileSet = function(first_gid, tile_count, columns, tile_width, tile_height, spacing, margin) end
 
 --- Schedules a one-shot callback to fire after the given delay in seconds. Returns an event ID that can be used to cancel, pause, or query the event.
 ---@param delay number Time in seconds before the callback fires.

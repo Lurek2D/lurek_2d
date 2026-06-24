@@ -8164,12 +8164,31 @@ end
 
 ### Type Methods
 
+#### `LTileField:applyModifier`
+
+Applies a named modifier to one cell.
+
+```lua
+LTileField:applyModifier(x, y, z, modifier)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `modifier` | string | Modifier name. |
+
+---
+
 #### `LTileField:applyProfile`
 
-Applies a named profile to one cell.
+Applies a legacy profile to one cell.
 
 ```lua
-LTileField:applyProfile(x, y, z, name)
+LTileField:applyProfile(x, y, z, profile)
 ```
 
 **Parameters**
@@ -8179,16 +8198,16 @@ LTileField:applyProfile(x, y, z, name)
 | `x` | number | One-based column. |
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
-| `name` | string | Profile name to apply to the cell. |
+| `profile` | string | Profile name. |
 
 ---
 
-#### `LTileField:applyTilesetProfile`
+#### `LTileField:applyTilesetObject`
 
-Applies the tilefield profile named by a tileset tile referenced from one cell.
+Applies the object archetype defaults for a tileset tile referenced from one cell.
 
 ```lua
-LTileField:applyTilesetProfile(x, y, z, slot, tileset, opts)
+LTileField:applyTilesetObject(x, y, z, slot, tileset, opts)
 ```
 
 **Parameters**
@@ -8199,50 +8218,23 @@ LTileField:applyTilesetProfile(x, y, z, slot, tileset, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores profile metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object archetype metadata. |
 | `opts?` | table | Options: refIsGid. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| boolean | True when a profile was found and applied. |
+| boolean | True when the tileset object was found and applied. |
 
 ---
 
-#### `LTileField:applyTilesetStats`
+#### `LTileField:applyTilesetObjectLayer`
 
-Applies tileset gameplay properties for a tile referenced from one cell.
-
-```lua
-LTileField:applyTilesetStats(x, y, z, slot, tileset, opts)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | One-based column. |
-| `y` | number | One-based row. |
-| `z?` | number | One-based level, default 1. |
-| `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
-| `opts?` | table | Options: refIsGid. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when referenced tileset properties were found and applied. |
-
----
-
-#### `LTileField:applyTilesetStatsLayer`
-
-Applies tileset gameplay properties for every referenced cell on one tilefield level.
+Applies tileset object defaults for every referenced cell on one tilefield level.
 
 ```lua
-LTileField:applyTilesetStatsLayer(slot, tileset, opts)
+LTileField:applyTilesetObjectLayer(slot, tileset, opts)
 ```
 
 **Parameters**
@@ -8250,14 +8242,14 @@ LTileField:applyTilesetStatsLayer(slot, tileset, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `opts?` | table | Options: z, refIsGid. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| number | Number of cells that received at least one stat. |
+| number | Number of cells that received object defaults. |
 
 ---
 
@@ -8283,6 +8275,25 @@ LTileField:blocks(x, y, z, channel)
 | Type | Description |
 |------|-------------|
 | boolean | True when the addressed cell blocks the channel. |
+
+---
+
+#### `LTileField:blocksCategory`
+
+Returns whether one cell blocks a category.
+
+```lua
+LTileField:blocksCategory(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
 
 ---
 
@@ -8339,6 +8350,31 @@ LTileField:clearLine(from_tbl, to_tbl, channel, opts)
 
 ---
 
+#### `LTileField:clearModifier`
+
+Removes one modifier from one cell.
+
+```lua
+LTileField:clearModifier(x, y, z, modifier)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `modifier` | string | Modifier name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the cell had the modifier. |
+
+---
+
 #### `LTileField:clearRef`
 
 Clears a named object/tile reference from one cell.
@@ -8355,6 +8391,39 @@ LTileField:clearRef(x, y, z, slot)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
+
+---
+
+#### `LTileField:defineCategory`
+
+Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
+
+```lua
+LTileField:defineCategory(name, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Stable category name. |
+| `opts?` | table?|Options | custom', active=true?. |
+
+---
+
+#### `LTileField:defineSlot`
+
+Defines a named object slot that cells may reference.
+
+```lua
+LTileField:defineSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name chosen by the Lua game. |
 
 ---
 
@@ -8404,22 +8473,6 @@ LTileField:exportCostLayer(channel, z)
 
 ---
 
-#### `LTileField:exportProfileLayer`
-
-Exports one level of profile names as a row-major array.
-
-```lua
-LTileField:exportProfileLayer(z)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `z?` | number | One-based level, default 1. |
-
----
-
 #### `LTileField:exportRefLayer`
 
 Exports one named object/tile reference slot and level as a row-major array.
@@ -8462,9 +8515,125 @@ LTileField:firstBlocker(from_tbl, to_tbl, channel, opts)
 
 ---
 
+#### `LTileField:footprintPassable`
+
+Returns whether a rectangular footprint can occupy a cell anchor for a category.
+
+```lua
+LTileField:footprintPassable(x, y, z, w, h, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `w` | any |  |
+| `h` | any |  |
+| `category` | any |  |
+
+---
+
+#### `LTileField:getCategories`
+
+Returns known category names.
+
+```lua
+LTileField:getCategories()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Sorted category names. |
+
+---
+
+#### `LTileField:getCategory`
+
+Returns category metadata, or nil when the category is unknown.
+
+```lua
+LTileField:getCategory(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Category name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Category table with name, kind, and active. |
+
+---
+
+#### `LTileField:getCategoryCost`
+
+Returns one effective category cost.
+
+```lua
+LTileField:getCategoryCost(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+---
+
+#### `LTileField:getCategoryFilter`
+
+Returns one effective RGB category filter.
+
+```lua
+LTileField:getCategoryFilter(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+---
+
+#### `LTileField:getCategoryTransmission`
+
+Returns one effective category transmission multiplier.
+
+```lua
+LTileField:getCategoryTransmission(x, y, z, category)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+
+---
+
 #### `LTileField:getCell`
 
-Returns a table with blockers, costs, sun occlusion, and optional profile name.
+Returns a table with blockers, costs, sun occlusion, refs, and modifiers.
 
 ```lua
 LTileField:getCell(x, y, z)
@@ -8511,6 +8680,52 @@ LTileField:getCost(x, y, z, channel)
 
 ---
 
+#### `LTileField:getModifier`
+
+Returns a named tile modifier table, or nil.
+
+```lua
+LTileField:getModifier(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Modifier name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Modifier table. |
+
+---
+
+#### `LTileField:getModifiers`
+
+Returns active modifier names on one cell.
+
+```lua
+LTileField:getModifiers(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Active modifier names. |
+
+---
+
 #### `LTileField:getNeighbors`
 
 Returns topology-aware same-level neighbours for one cell.
@@ -8537,7 +8752,7 @@ LTileField:getNeighbors(x, y, z)
 
 #### `LTileField:getProfile`
 
-Returns a named object profile table, or nil when absent.
+Returns a legacy profile table, or nil.
 
 ```lua
 LTileField:getProfile(name)
@@ -8547,13 +8762,13 @@ LTileField:getProfile(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Profile name to read. |
+| `name` | string | Profile name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| table | nil | Profile table with blockers, costs, and sunOcclusion, or nil. |
+| table | nil | Profile table. |
 
 ---
 
@@ -8578,7 +8793,7 @@ LTileField:getRef(x, y, z, slot)
 
 | Type | Description |
 |------|-------------|
-| number | nil | Stored reference id, or nil when unset. |
+| number | table|nil | Stored legacy id, typed ref table, or nil when unset. |
 
 ---
 
@@ -8598,7 +8813,7 @@ LTileField:getRefProperties(x, y, z, slot, tileset, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `opts?` | table | Options: refIsGid. |
 
 **Returns**
@@ -8625,7 +8840,7 @@ LTileField:getRefProperty(x, y, z, slot, tileset, property, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `property` | string | Property name to read. |
 | `opts?` | table | Options: refIsGid. |
 
@@ -8653,7 +8868,7 @@ LTileField:getRefPropertyBool(x, y, z, slot, tileset, property, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `property` | string | Property name to read. |
 | `opts?` | table | Options: refIsGid. |
 
@@ -8681,7 +8896,7 @@ LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name. |
-| `tileset` | [LTileSet](tilemap.md#ltileset) | Tileset that stores object metadata. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset that stores object metadata. |
 | `property` | string | Property name to read. |
 | `opts?` | table | Options: refIsGid. |
 
@@ -8695,7 +8910,7 @@ LTileField:getRefPropertyNumber(x, y, z, slot, tileset, property, opts)
 
 #### `LTileField:getRefSlots`
 
-Returns every named ref slot currently used by this field.
+Returns every declared ref slot.
 
 ```lua
 LTileField:getRefSlots()
@@ -8805,6 +9020,44 @@ LTileField:getTopology()
 
 ---
 
+#### `LTileField:getVersion`
+
+Returns the current tilefield data version.
+
+```lua
+LTileField:getVersion()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Monotonic field version incremented by data mutations. |
+
+---
+
+#### `LTileField:hasSlot`
+
+Returns true when a named object slot is declared.
+
+```lua
+LTileField:hasSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when declared. |
+
+---
+
 #### `LTileField:inBounds`
 
 Returns whether one-based coordinates are inside the field.
@@ -8870,9 +9123,31 @@ LTileField:regionContains(name, x, y, z)
 
 ---
 
+#### `LTileField:removeModifier`
+
+Removes a named modifier and clears it from all cells.
+
+```lua
+LTileField:removeModifier(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Modifier name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when removed. |
+
+---
+
 #### `LTileField:removeProfile`
 
-Removes a named object profile from the tilefield profile registry.
+Removes a legacy profile and clears it from all cells.
 
 ```lua
 LTileField:removeProfile(name)
@@ -8882,7 +9157,13 @@ LTileField:removeProfile(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Profile name to remove. |
+| `name` | string | Profile name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when removed. |
 
 ---
 
@@ -8908,6 +9189,28 @@ LTileField:removeRegion(name)
 
 ---
 
+#### `LTileField:removeSlot`
+
+Removes a named object slot and clears its references from the field.
+
+```lua
+LTileField:removeSlot(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the slot existed. |
+
+---
+
 #### `LTileField:setBlock`
 
 Sets whether a cell blocks a channel.
@@ -8928,9 +9231,89 @@ LTileField:setBlock(x, y, z, channel, blocked)
 
 ---
 
+#### `LTileField:setCategoryBlock`
+
+Sets one category blocker on one cell.
+
+```lua
+LTileField:setCategoryBlock(x, y, z, category, blocked)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `blocked` | any |  |
+
+---
+
+#### `LTileField:setCategoryCost`
+
+Sets one category cost on one cell.
+
+```lua
+LTileField:setCategoryCost(x, y, z, category, cost)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `cost` | any |  |
+
+---
+
+#### `LTileField:setCategoryFilter`
+
+Sets one RGB category filter on one cell.
+
+```lua
+LTileField:setCategoryFilter(x, y, z, category, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `filter` | any |  |
+
+---
+
+#### `LTileField:setCategoryTransmission`
+
+Sets one category transmission multiplier on one cell.
+
+```lua
+LTileField:setCategoryTransmission(x, y, z, category, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `category` | any |  |
+| `value` | any |  |
+
+---
+
 #### `LTileField:setCell`
 
-Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
 
 ```lua
 LTileField:setCell(x, y, z, cell)
@@ -8967,20 +9350,37 @@ LTileField:setCost(x, y, z, channel, cost)
 
 ---
 
-#### `LTileField:setProfile`
+#### `LTileField:setModifier`
 
-Registers or replaces a named object profile.
+Registers or replaces a named tile modifier.
 
 ```lua
-LTileField:setProfile(name, profile_tbl)
+LTileField:setModifier(name, modifier)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Profile name to create or replace. |
-| `profile_tbl` | table | Profile table with blockers, costs, and sunOcclusion fields. |
+| `name` | string | Modifier name. |
+| `modifier` | table | Modifier table with blocks, costAdd, costMul, sunOcclusionAdd, light, properties. |
+
+---
+
+#### `LTileField:setProfile`
+
+Registers or replaces a legacy tilefield profile.
+
+```lua
+LTileField:setProfile(name, profile)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name. |
+| `profile` | table | Profile table with blocks, costs, sunOcclusion, light, or properties. |
 
 ---
 
@@ -9000,7 +9400,7 @@ LTileField:setRef(x, y, z, slot, value)
 | `y` | number | One-based row. |
 | `z?` | number | One-based level, default 1. |
 | `slot` | string | Reference slot name defined by the Lua game. |
-| `value` | number | Object, tile, or tileset-local id stored for the slot. |
+| `value` | number|table | Legacy id or typed `{ tileset, tile?/object? }` ref stored for the slot. |
 
 ---
 
@@ -9132,23 +9532,6 @@ LTileField:writeCostLayer(channel, z, values)
 | `channel` | string | Cost channel name to write. |
 | `z?` | number | One-based level, default 1. |
 | `values` | table | Row-major number array with width*height entries. |
-
----
-
-#### `LTileField:writeProfileLayer`
-
-Writes one full profile-name layer from a row-major string-or-nil array.
-
-```lua
-LTileField:writeProfileLayer(z, values)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `z?` | number | One-based level, default 1. |
-| `values` | table | Row-major string-or-nil array with width*height entries. |
 
 ---
 

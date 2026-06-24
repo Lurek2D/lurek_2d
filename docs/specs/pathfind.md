@@ -14,7 +14,7 @@
 - Source path: `src/pathfind`
 - Binding: `src/lua_api/pathfind_api.rs`
 - Namespace: `lurek.pathfind`
-- Lua API surface: `24` functions, `26` types, `165` methods
+- Lua API surface: `26` functions, `26` types, `165` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -306,17 +306,19 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `lurek.pathfind.newInfluenceMap(w, h, cs) -> LInfluenceMap`: Creates a grid influence map with the supplied cell dimensions and world cell size.
 - `lurek.pathfind.newJpsGrid(width, height) -> LJpsGrid`: Creates a Jump Point Search grid with given dimensions.
 - `lurek.pathfind.newNavGrid(width, height) -> LNavGrid`: Creates a navigation grid with the given dimensions.
-- `lurek.pathfind.newNavGridFromField(field_ud, opts?) -> LNavGrid`: Creates a navigation grid from a tilefield level and channel.
+- `lurek.pathfind.newNavGridFromField(field_ud, opts?) -> LNavGrid`: Creates a navigation grid from a tilefield level and movement category.
+- `lurek.pathfind.newNavGridFromProvider(provider) -> LNavGrid`: Builds a navigation grid from a Lua provider table with width, height, optional costs/blocked arrays, or getCost/isBlocked callbacks.
 - `lurek.pathfind.newNavGridFromTileMap(tm_ud, layer_index, blocked_table) -> LNavGrid`: Creates a navigation grid from a tilemap layer and blocked gid table.
 - `lurek.pathfind.newNavMesh() -> LNavMesh`: Creates an empty navigation mesh for polygon-based pathfinding.
 - `lurek.pathfind.newORCASolver(time_horizon) -> LORCASolver`: Creates an ORCA avoidance solver with the supplied prediction horizon.
 - `lurek.pathfind.newPathFlowField(grid_ud) -> LAIFlowField`: Creates an AI flow field from a path grid.
 - `lurek.pathfind.newPathGrid(w, h, cell_size) -> LPathGrid`: Creates a cell-size path grid with given dimensions.
+- `lurek.pathfind.newPathGridFromProvider(provider) -> LPathGrid`: Builds a path grid from a Lua provider table with width, height, optional cellSize, costs/walkable arrays, or getCost/isWalkable callbacks.
 - `lurek.pathfind.newPathfinder(grid_ud) -> LUnitPathfinder`: Creates a unit pathfinder for a navigation grid.
 - `lurek.pathfind.newSteeringManager() -> LSteeringManager`: Creates an empty steering manager with support for built-in and custom movement behaviors.
 - `lurek.pathfind.pollAsyncPaths() -> table`: Returns all currently available async path events without blocking.
 - `lurek.pathfind.rangeMap(opts) -> table`: Computes reachable cells from range map options.
-- `lurek.pathfind.rangeMapFromField(field_ud, opts) -> table`: Computes reachable cells from a tilefield level and movement channel.
+- `lurek.pathfind.rangeMapFromField(field_ud, opts) -> table`: Computes reachable cells from a tilefield level and movement category.
 - `lurek.pathfind.setThreadCount(count) -> nil`: Sets the configured pathfinding worker-thread count.
 - `lurek.pathfind.submitAsyncPath(grid_ud, opts) -> integer`: Queues an async path query against a navigation grid snapshot.
 

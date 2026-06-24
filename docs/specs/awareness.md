@@ -12,7 +12,7 @@
 - Source path: `src/awareness`
 - Binding: `src/lua_api/awareness_api.rs`
 - Namespace: `lurek.awareness`
-- Lua API surface: `5` functions, `3` types, `38` methods
+- Lua API surface: `5` functions, `3` types, `45` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -116,12 +116,15 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### tile_awareness.rs
 
-- Owns per-player tile visibility, explored, and action masks backed by one shared `TileField`.
-- Computes visible and actionable cells by asking tilefield for channel-specific line clearance data.
-- Stores independent masks per player so teams can have different current sight, memory, and action reach.
-- Exposes stateless line-of-sight and line-of-action helpers without owning movement or lighting rules.
-- Keeps tilefield as the source for blockers, costs, profiles, and bounds while visibility owns masks only.
-- Change this file when sight/action mask behavior changes, not when pathfinding or tile-light math changes.
+- This file owns tile awareness behavior inside the awareness subsystem, close to its data and invariants.
+- It keeps validation, defaults, and error-facing rules near the operations that mutate tile awareness state.
+- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Public functions in this file are the stable entry points other modules should use for tile awareness work.
+- Serialization, indexing, and boundary checks stay here when they depend on tile awareness internals.
+- Renderer, API, and test layers should call through these helpers rather than duplicate private rules.
+- Open this file when tile awareness ownership changes, but keep unrelated subsystem policy in sibling modules.
+- The code favors small data transformations so examples, specs, and tests can assert behavior directly.
+- Stateful changes are kept deterministic here so generated docs and smoke tests remain reproducible.
 
 
 
@@ -209,13 +212,20 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LTileAwareness:canActOn(player, x, y, z?) -> boolean`: Returns whether a one-based cell is currently actionable for a player.
 - `LTileAwareness:clearAll() -> nil`: Clears current, explored, and action masks for all players.
 - `LTileAwareness:clearPlayer(player) -> nil`: Clears current, explored, and action masks for one player.
+- `LTileAwareness:clearShares() -> nil`: Clears all directed awareness share edges.
 - `LTileAwareness:computeAction(player, opts) -> nil`: Computes one player's current action mask from a tilefield origin.
 - `LTileAwareness:computeVisible(player, opts) -> nil`: Computes one player's current visible mask from a tilefield origin.
+- `LTileAwareness:defineCategory(name, opts?) -> nil`: Defines or replaces one awareness category.
+- `LTileAwareness:getCategories() -> table`: Returns known awareness category names.
+- `LTileAwareness:getCategory(name) -> table?`: Returns awareness category metadata.
+- `LTileAwareness:isAware(player, category, x, y, z?) -> nil`: Returns whether a one-based cell is visible for a specific awareness category.
 - `LTileAwareness:isExplored(player, x, y, z?) -> boolean`: Returns whether a one-based cell has been explored for a player.
 - `LTileAwareness:isVisible(player, x, y, z?) -> boolean`: Returns whether a one-based cell is currently visible for a player.
+- `LTileAwareness:setTeam(players, categories?) -> nil`: Creates directed share edges between all listed players for selected categories.
+- `LTileAwareness:share(from, to, category, opts?) -> nil`: Adds a directed awareness share edge for one category.
 - `LTileAwareness:type() -> string`: Returns the Lua-visible type name for this tile visibility handle.
 - `LTileAwareness:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
-- `LTileAwareness:visibleCells(player, z?) -> table`: Returns all currently visible cells for a player, optionally filtered to a level.
+- `LTileAwareness:visibleCells(player, z?, z?) -> table`: Returns all currently visible cells for a player, optionally filtered to a level.
 
 ## Examples
 
