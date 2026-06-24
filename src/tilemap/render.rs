@@ -8,11 +8,10 @@
 use super::coords::{to_screen_hex, to_screen_iso};
 use super::orientation::MapOrientation;
 use super::tilemap::TileMap;
+use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::resource_keys::TextureKey;
 use crate::tilefield::{CellCoord, TileField};
-use crate::render::renderer::{DrawMode, RenderCommand};
-use crate::tileset::TileSet;
-use slotmap::Key;
+use crate::tileset::{TileCatalog, TileSet, TileVisual};
 
 /// Options for rendering one tilefield slot through tileset object visuals.
 #[derive(Debug, Clone)]
@@ -171,8 +170,9 @@ impl TileMap {
                             let quad = tileset.get_quad(draw_tile_id);
                             [quad.x, quad.y, quad.width, quad.height]
                         });
-                        let texture_size =
-                            visual.and_then(|visual| visual.texture_size).unwrap_or_else(|| {
+                        let texture_size = visual
+                            .and_then(|visual| visual.texture_size)
+                            .unwrap_or_else(|| {
                                 [
                                     tileset.get_texture_width() as f32,
                                     tileset.get_texture_height() as f32,
@@ -216,6 +216,124 @@ impl TileMap {
             out.extend(commands);
         }
         Ok(out)
+    }
+
+    /// Build render commands for one typed tilefield ref slot through a multi-tileset catalog.
+    pub fn build_field_catalog_slot_render_commands(
+        &self,
+        field: &TileField,
+        catalog: &TileCatalog,
+        options: &TileFieldSlotRenderOptions,
+        texture_exists: impl Fn(TextureKey) -> bool,
+    ) -> Result<Vec<RenderCommand>, String> {
+        let (width, height, levels) = field.size();
+        if options.z >= levels {
+            return Err("tilemap renderFieldCatalogSlot z is out of bounds".to_string());
+        }
+        let tile_w = self.get_tile_width() as f32;
+        let tile_h = self.get_tile_height() as f32;
+        let mut ordered = Vec::<(i32, u32, u32, Vec<RenderCommand>)>::new();
+        for y in 0..height {
+            for x in 0..width {
+                let coord = CellCoord { x, y, z: options.z };
+                let Some(reference) = field.get_typed_ref(coord, &options.slot) else {
+                    continue;
+                };
+                let Some(tileset) = catalog.tileset(&reference.tileset_id) else {
+                    continue;
+                };
+                let visual = catalog.visual_for_ref(reference);
+                let visual_ref = visual.as_ref();
+                let draw_tile_id = visual_ref
+                    .and_then(|visual| visual.tile_id)
+                    .or(reference.local_id);
+                let order = visual_ref.map(|visual| visual.order).unwrap_or(0);
+                let (world_x, world_y) = self.tile_render_origin(x, y);
+                let x_px = options.offset_x + world_x;
+                let y_px = options.offset_y + world_y;
+                let mut commands = Vec::new();
+                self.push_visual_render_commands(
+                    &mut commands,
+                    tileset,
+                    visual_ref,
+                    draw_tile_id,
+                    x_px,
+                    y_px,
+                    tile_w,
+                    tile_h,
+                    &texture_exists,
+                );
+                if commands.is_empty() {
+                    commands.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
+                    commands.push(RenderCommand::Rectangle {
+                        mode: DrawMode::Fill,
+                        x: x_px,
+                        y: y_px,
+                        w: tile_w,
+                        h: tile_h,
+                    });
+                }
+                ordered.push((order, y, x, commands));
+            }
+        }
+        ordered.sort_by_key(|(order, y, x, _)| (*order, *y, *x));
+        let mut out = Vec::new();
+        for (_, _, _, commands) in ordered {
+            out.extend(commands);
+        }
+        Ok(out)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn push_visual_render_commands(
+        &self,
+        commands: &mut Vec<RenderCommand>,
+        tileset: &TileSet,
+        visual: Option<&TileVisual>,
+        draw_tile_id: Option<u32>,
+        x_px: f32,
+        y_px: f32,
+        tile_w: f32,
+        tile_h: f32,
+        texture_exists: &impl Fn(TextureKey) -> bool,
+    ) {
+        if let Some(texture_id) = visual.and_then(|visual| visual.texture_id) {
+            let texture_key = TextureKey::from(slotmap::KeyData::from_ffi(texture_id));
+            if texture_exists(texture_key) {
+                let quad = visual.and_then(|visual| visual.quad).or_else(|| {
+                    draw_tile_id.map(|tile_id| {
+                        let quad = tileset.get_quad(tile_id);
+                        [quad.x, quad.y, quad.width, quad.height]
+                    })
+                });
+                let texture_size = visual
+                    .and_then(|visual| visual.texture_size)
+                    .unwrap_or_else(|| {
+                        [
+                            tileset.get_texture_width() as f32,
+                            tileset.get_texture_height() as f32,
+                        ]
+                    });
+                let quad = quad.unwrap_or([0.0, 0.0, tile_w, tile_h]);
+                commands.push(RenderCommand::DrawQuad {
+                    texture_key,
+                    quad_x: quad[0],
+                    quad_y: quad[1],
+                    quad_w: quad[2],
+                    quad_h: quad[3],
+                    tex_w: texture_size[0],
+                    tex_h: texture_size[1],
+                    x: x_px,
+                    y: y_px,
+                    rotation: 0.0,
+                    sx: 1.0,
+                    sy: 1.0,
+                    ox: 0.0,
+                    oy: 0.0,
+                    effect: None,
+                });
+            }
+        }
     }
 
     /// Build a flat `RenderCommand` list for all visible layers using the debug color palette and `offset`.

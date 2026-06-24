@@ -35,4 +35,4 @@ pub use grid::AwarenessGrid;
 pub use owner::PlayerOwnership;
 pub use shadowcast::TileFov;
 pub use state::AwarenessState;
-pub use tile_awareness::TileAwareness;
+pub use tile_awareness::{AwarenessCategoryConfig, AwarenessMode, TileAwareness};

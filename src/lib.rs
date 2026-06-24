@@ -144,10 +144,10 @@ pub mod spine;
 pub mod sprite;
 /// Exposes the terminal subsystem module.
 pub mod terminal;
-/// Exposes reusable tile/object archetypes and atlas tilesets.
-pub mod tileset;
 /// Exposes the threading subsystem module.
 pub mod thread;
+/// Exposes reusable tile/object archetypes and atlas tilesets.
+pub mod tileset;
 
 /// Exposes the awareness subsystem module.
 pub mod awareness;

@@ -3,9 +3,9 @@
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{TS01, TS02};
-use crate::tileset::autotile::AutoTileMode;
 use crate::tileset::animation::TileAnimFrame;
 use crate::tileset::archetype::TileObjectArchetype;
+use crate::tileset::autotile::AutoTileMode;
 use std::collections::HashMap;
 
 /// A tileset slice of a sprite-sheet texture plus reusable object archetypes.
@@ -58,26 +58,46 @@ impl TileSet {
     }
 
     /// Return the first global tile ID owned by this tileset.
-    pub fn get_first_gid(&self) -> u32 { self.first_gid }
+    pub fn get_first_gid(&self) -> u32 {
+        self.first_gid
+    }
     /// Return the total tile count.
-    pub fn get_tile_count(&self) -> u32 { self.tile_count }
+    pub fn get_tile_count(&self) -> u32 {
+        self.tile_count
+    }
     /// Return the number of tile columns in the source image.
-    pub fn get_columns(&self) -> u32 { self.columns }
+    pub fn get_columns(&self) -> u32 {
+        self.columns
+    }
     /// Return tile width in pixels.
-    pub fn get_tile_width(&self) -> u32 { self.tile_width }
+    pub fn get_tile_width(&self) -> u32 {
+        self.tile_width
+    }
     /// Return tile height in pixels.
-    pub fn get_tile_height(&self) -> u32 { self.tile_height }
+    pub fn get_tile_height(&self) -> u32 {
+        self.tile_height
+    }
     /// Return tile dimensions as `(width, height)` in pixels.
-    pub fn get_tile_dimensions(&self) -> (u32, u32) { (self.tile_width, self.tile_height) }
+    pub fn get_tile_dimensions(&self) -> (u32, u32) {
+        (self.tile_width, self.tile_height)
+    }
     /// Return pixel spacing between tiles in the source image.
-    pub fn get_spacing(&self) -> u32 { self.spacing }
+    pub fn get_spacing(&self) -> u32 {
+        self.spacing
+    }
     /// Return pixel margin around the source image edge.
-    pub fn get_margin(&self) -> u32 { self.margin }
+    pub fn get_margin(&self) -> u32 {
+        self.margin
+    }
     /// Return inferred atlas texture width in pixels.
     pub fn get_texture_width(&self) -> u32 {
         self.margin
             .saturating_mul(2)
-            .saturating_add(self.columns.max(1).saturating_mul(self.tile_width + self.spacing))
+            .saturating_add(
+                self.columns
+                    .max(1)
+                    .saturating_mul(self.tile_width + self.spacing),
+            )
             .saturating_sub(self.spacing)
     }
     /// Return inferred atlas texture height in pixels.
@@ -97,7 +117,12 @@ impl TileSet {
         let row = local_tile_id / columns;
         let x = self.margin + col * (self.tile_width + self.spacing);
         let y = self.margin + row * (self.tile_height + self.spacing);
-        Rect::new(x as f32, y as f32, self.tile_width as f32, self.tile_height as f32)
+        Rect::new(
+            x as f32,
+            y as f32,
+            self.tile_width as f32,
+            self.tile_height as f32,
+        )
     }
 
     /// Register or replace an object archetype.
@@ -106,13 +131,16 @@ impl TileSet {
     }
 
     /// Return an object archetype by name.
-    pub fn archetype(&self, name: &str) -> Option<&TileObjectArchetype> { self.archetypes.get(name) }
+    pub fn archetype(&self, name: &str) -> Option<&TileObjectArchetype> {
+        self.archetypes.get(name)
+    }
 
     /// Remove an object archetype and detach tile mappings that referenced it.
     pub fn remove_archetype(&mut self, name: &str) -> bool {
         let removed = self.archetypes.remove(name).is_some();
         if removed {
-            self.tile_archetypes.retain(|_, archetype_name| archetype_name != name);
+            self.tile_archetypes
+                .retain(|_, archetype_name| archetype_name != name);
         }
         removed
     }
@@ -154,12 +182,19 @@ impl TileSet {
 
     /// Return the object archetype assigned to a local tile ID.
     pub fn archetype_for_tile(&self, local_tile_id: u32) -> Option<&TileObjectArchetype> {
-        self.get_tile_archetype(local_tile_id).and_then(|name| self.archetype(name))
+        self.get_tile_archetype(local_tile_id)
+            .and_then(|name| self.archetype(name))
     }
 
     /// Register or replace the animation frame sequence for `local_tile_id`.
     pub fn set_animation(&mut self, local_tile_id: u32, frames: Vec<TileAnimFrame>) {
-        log_msg!(debug, TS02, "tile={} frames={}", local_tile_id, frames.len());
+        log_msg!(
+            debug,
+            TS02,
+            "tile={} frames={}",
+            local_tile_id,
+            frames.len()
+        );
         self.animations.insert(local_tile_id, frames);
     }
 
@@ -174,12 +209,22 @@ impl TileSet {
     }
 
     /// Set, replace, or clear an arbitrary author property for `local_tile_id`.
-    pub fn set_property(&mut self, local_tile_id: u32, name: String, value: Option<String>) -> Result<(), String> {
+    pub fn set_property(
+        &mut self,
+        local_tile_id: u32,
+        name: String,
+        value: Option<String>,
+    ) -> Result<(), String> {
         if name.trim().is_empty() {
             return Err("tileset property name must not be empty".to_string());
         }
         match value {
-            Some(value) => { self.properties.entry(local_tile_id).or_default().insert(name, value); }
+            Some(value) => {
+                self.properties
+                    .entry(local_tile_id)
+                    .or_default()
+                    .insert(name, value);
+            }
             None => {
                 if let Some(properties) = self.properties.get_mut(&local_tile_id) {
                     properties.remove(&name);
@@ -194,7 +239,10 @@ impl TileSet {
 
     /// Return an arbitrary author property for `local_tile_id`, or `None` when unset.
     pub fn get_property(&self, local_tile_id: u32, name: &str) -> Option<&str> {
-        self.properties.get(&local_tile_id).and_then(|p| p.get(name)).map(String::as_str)
+        self.properties
+            .get(&local_tile_id)
+            .and_then(|p| p.get(name))
+            .map(String::as_str)
     }
 
     /// Return arbitrary author properties for `local_tile_id`.
@@ -204,19 +252,25 @@ impl TileSet {
 
     /// Register a 4-bit autotile rule mapping `(type_name, bitmask)` to `local_tile_id`.
     pub fn set_auto_tile_rule(&mut self, type_name: &str, bitmask: u8, local_tile_id: u32) {
-        self.auto_rules_4.insert((type_name.to_string(), bitmask), local_tile_id);
+        self.auto_rules_4
+            .insert((type_name.to_string(), bitmask), local_tile_id);
     }
     /// Look up the 4-bit autotile local ID for `(type_name, bitmask)`, or `None`.
     pub fn get_auto_tile_id(&self, type_name: &str, bitmask: u8) -> Option<u32> {
-        self.auto_rules_4.get(&(type_name.to_string(), bitmask)).copied()
+        self.auto_rules_4
+            .get(&(type_name.to_string(), bitmask))
+            .copied()
     }
     /// Register an 8-bit autotile rule mapping `(type_name, bitmask)` to `local_tile_id`.
     pub fn set_auto_tile_rule_8(&mut self, type_name: &str, bitmask: u16, local_tile_id: u32) {
-        self.auto_rules_8.insert((type_name.to_string(), bitmask), local_tile_id);
+        self.auto_rules_8
+            .insert((type_name.to_string(), bitmask), local_tile_id);
     }
     /// Look up the 8-bit autotile local ID for `(type_name, bitmask)`, or `None`.
     pub fn get_auto_tile_id_8(&self, type_name: &str, bitmask: u16) -> Option<u32> {
-        self.auto_rules_8.get(&(type_name.to_string(), bitmask)).copied()
+        self.auto_rules_8
+            .get(&(type_name.to_string(), bitmask))
+            .copied()
     }
     /// Set the neighbour matching strategy for a logical autotile type.
     pub fn set_auto_tile_mode(&mut self, type_name: &str, mode: AutoTileMode) {
@@ -224,8 +278,13 @@ impl TileSet {
     }
     /// Return the neighbour matching strategy for a logical autotile type.
     pub fn get_auto_tile_mode(&self, type_name: &str) -> AutoTileMode {
-        self.auto_modes.get(type_name).copied().unwrap_or(AutoTileMode::MatchSides)
+        self.auto_modes
+            .get(type_name)
+            .copied()
+            .unwrap_or(AutoTileMode::MatchSides)
     }
     /// Return true if this tileset has an explicit matching strategy for the logical autotile type.
-    pub fn has_auto_tile_mode(&self, type_name: &str) -> bool { self.auto_modes.contains_key(type_name) }
+    pub fn has_auto_tile_mode(&self, type_name: &str) -> bool {
+        self.auto_modes.contains_key(type_name)
+    }
 }

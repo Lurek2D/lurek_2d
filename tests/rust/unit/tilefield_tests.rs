@@ -133,7 +133,15 @@ fn point_light_respects_light_blockers() {
         )
         .unwrap();
     light
-        .compute(&field, true, false, false, Some(LightColor::BLACK), 0.0)
+        .compute(
+            &field,
+            true,
+            false,
+            false,
+            false,
+            Some(LightColor::BLACK),
+            0.0,
+        )
         .unwrap();
 
     let near = light.light_at(CellCoord { x: 1, y: 1, z: 0 }).luma();
@@ -163,7 +171,15 @@ fn point_light_uses_light_cost_as_partial_transmission() {
         )
         .unwrap();
     light
-        .compute(&field, true, false, false, Some(LightColor::BLACK), 0.0)
+        .compute(
+            &field,
+            true,
+            false,
+            false,
+            false,
+            Some(LightColor::BLACK),
+            0.0,
+        )
         .unwrap();
 
     let before_filter = light.light_at(CellCoord { x: 1, y: 1, z: 0 }).luma();
@@ -191,7 +207,15 @@ fn square_point_light_uses_radial_euclidean_distance() {
         )
         .unwrap();
     light
-        .compute(&field, true, false, false, Some(LightColor::BLACK), 0.0)
+        .compute(
+            &field,
+            true,
+            false,
+            false,
+            false,
+            Some(LightColor::BLACK),
+            0.0,
+        )
         .unwrap();
 
     let straight_edge = light.light_at(CellCoord { x: 2, y: 0, z: 0 }).luma();
@@ -217,7 +241,15 @@ fn square_point_light_uses_radial_euclidean_distance() {
         )
         .unwrap();
     light
-        .compute(&field, true, false, false, Some(LightColor::BLACK), 0.0)
+        .compute(
+            &field,
+            true,
+            false,
+            false,
+            false,
+            Some(LightColor::BLACK),
+            0.0,
+        )
         .unwrap();
     let diagonal_inside = light.light_at(CellCoord { x: 2, y: 2, z: 0 }).luma();
 
@@ -261,7 +293,15 @@ fn colored_point_lights_add_by_channel_and_clamp() {
         )
         .unwrap();
     light
-        .compute(&field, true, false, false, Some(LightColor::BLACK), 0.0)
+        .compute(
+            &field,
+            true,
+            false,
+            false,
+            false,
+            Some(LightColor::BLACK),
+            0.0,
+        )
         .unwrap();
 
     let mixed = light.light_at(CellCoord { x: 2, y: 1, z: 0 });
@@ -284,7 +324,15 @@ fn global_light_is_attenuated_from_upper_levels() {
         mode: SunLightMode::Top,
     });
     light
-        .compute(&field, false, false, true, Some(LightColor::BLACK), 0.0)
+        .compute(
+            &field,
+            false,
+            false,
+            false,
+            true,
+            Some(LightColor::BLACK),
+            0.0,
+        )
         .unwrap();
 
     let top = light.light_at(CellCoord { x: 0, y: 0, z: 2 }).luma();
@@ -311,7 +359,15 @@ fn global_light_preserves_dusk_and_night_color() {
         mode: SunLightMode::Top,
     });
     light
-        .compute(&field, false, false, true, Some(LightColor::BLACK), 0.0)
+        .compute(
+            &field,
+            false,
+            false,
+            false,
+            true,
+            Some(LightColor::BLACK),
+            0.0,
+        )
         .unwrap();
     let dusk_lower = light.light_at(CellCoord { x: 0, y: 0, z: 0 });
 
@@ -325,7 +381,15 @@ fn global_light_preserves_dusk_and_night_color() {
         mode: SunLightMode::Top,
     });
     light
-        .compute(&field, false, false, true, Some(LightColor::BLACK), 0.0)
+        .compute(
+            &field,
+            false,
+            false,
+            false,
+            true,
+            Some(LightColor::BLACK),
+            0.0,
+        )
         .unwrap();
     let night_lower = light.light_at(CellCoord { x: 0, y: 0, z: 0 });
 

@@ -948,9 +948,7 @@ impl LuaUserData for LuaMapBlockResult {
                 if let Some(slot) = tileset_ref_slot.as_ref() {
                     if !field.has_slot(slot) {
                         field.define_slot(slot.clone()).map_err(|err| {
-                            LuaError::RuntimeError(format!(
-                                "lurek.mapblock.writeTileField: {err}"
-                            ))
+                            LuaError::RuntimeError(format!("lurek.mapblock.writeTileField: {err}"))
                         })?;
                     }
                 }

@@ -3,10 +3,10 @@
 //! Keeps computed light separate from render lighting, player awareness, movement, and minimap display.
 
 use crate::tilefield::line::visit_line_cells;
-use crate::tilefield::{CellCoord, TileChannel, TileField, TileTopology};
+use crate::tilefield::{CellCoord, TileField, TileTopology};
 use crate::tilelight::{
-    LightColor, LightModulation, LineLight, LineLightUpdate, PointLight, PointLightUpdate,
-    SunLight, SunLightMode,
+    AreaLight, AreaLightUpdate, LightColor, LightModulation, LineLight, LineLightUpdate,
+    PointLight, PointLightUpdate, SunLight, SunLightMode,
 };
 
 /// Computed tile light values and source-light state for one tilefield-sized volume.
@@ -18,6 +18,7 @@ pub struct TileLightMap {
     topology: TileTopology,
     point_lights: Vec<Option<PointLight>>,
     line_lights: Vec<Option<LineLight>>,
+    area_lights: Vec<Option<AreaLight>>,
     next_light_id: u32,
     ambient_light: LightColor,
     sun_light: SunLight,
@@ -47,6 +48,7 @@ impl TileLightMap {
             topology,
             point_lights: Vec::new(),
             line_lights: Vec::new(),
+            area_lights: Vec::new(),
             next_light_id: 1,
             ambient_light: LightColor::BLACK,
             sun_light: SunLight::default(),
@@ -86,6 +88,7 @@ impl TileLightMap {
     }
 
     /// Add a point light and return its stable id.
+    #[allow(clippy::too_many_arguments)]
     pub fn add_point_light(
         &mut self,
         field: &TileField,
@@ -303,6 +306,110 @@ impl TileLightMap {
         self.line_lights.clear();
     }
 
+    /// Add a rectangular area light and return its stable id.
+    #[allow(clippy::too_many_arguments)]
+    pub fn add_area_light(
+        &mut self,
+        field: &TileField,
+        origin: CellCoord,
+        width: u32,
+        height: u32,
+        radius: f32,
+        intensity: f32,
+        color: LightColor,
+        modulation: LightModulation,
+    ) -> Result<u32, String> {
+        self.ensure_matches_field(field)?;
+        Self::validate_area_light(
+            field,
+            origin,
+            width,
+            height,
+            radius,
+            intensity,
+            "addAreaLight",
+        )?;
+        let id = self.next_light_id;
+        self.next_light_id = self.next_light_id.saturating_add(1).max(1);
+        self.area_lights.push(Some(AreaLight {
+            id,
+            x: origin.x,
+            y: origin.y,
+            z: origin.z,
+            width,
+            height,
+            radius,
+            intensity,
+            color: color.clamped(),
+            modulation,
+        }));
+        Ok(id)
+    }
+
+    /// Update an existing rectangular area light.
+    pub fn update_area_light(
+        &mut self,
+        field: &TileField,
+        id: u32,
+        patch: AreaLightUpdate,
+    ) -> Result<(), String> {
+        self.ensure_matches_field(field)?;
+        let light = self
+            .area_lights
+            .iter_mut()
+            .filter_map(Option::as_mut)
+            .find(|light| light.id == id)
+            .ok_or_else(|| format!("tilelight area light id {id} does not exist"))?;
+        let origin = CellCoord {
+            x: patch.x.unwrap_or(light.x),
+            y: patch.y.unwrap_or(light.y),
+            z: patch.z.unwrap_or(light.z),
+        };
+        let width = patch.width.unwrap_or(light.width);
+        let height = patch.height.unwrap_or(light.height);
+        let radius = patch.radius.unwrap_or(light.radius);
+        let intensity = patch.intensity.unwrap_or(light.intensity);
+        Self::validate_area_light(
+            field,
+            origin,
+            width,
+            height,
+            radius,
+            intensity,
+            "updateAreaLight",
+        )?;
+        light.x = origin.x;
+        light.y = origin.y;
+        light.z = origin.z;
+        light.width = width;
+        light.height = height;
+        light.radius = radius;
+        light.intensity = intensity;
+        if let Some(color) = patch.color {
+            light.color = color.clamped();
+        }
+        if let Some(modulation) = patch.modulation {
+            light.modulation = modulation;
+        }
+        Ok(())
+    }
+
+    /// Remove a rectangular area light by id. Returns true when a light was removed.
+    pub fn remove_area_light(&mut self, id: u32) -> bool {
+        for slot in &mut self.area_lights {
+            if slot.as_ref().is_some_and(|light| light.id == id) {
+                *slot = None;
+                return true;
+            }
+        }
+        false
+    }
+
+    /// Remove all rectangular area lights.
+    pub fn clear_area_lights(&mut self) {
+        self.area_lights.clear();
+    }
+
     /// Set ambient light stored on this light map.
     pub fn set_ambient_light(&mut self, ambient: LightColor) {
         self.ambient_light = ambient.clamped();
@@ -318,11 +425,13 @@ impl TileLightMap {
     }
 
     /// Compute current light values from ambient, point lights, line lights, and sun light.
+    #[allow(clippy::too_many_arguments)]
     pub fn compute(
         &mut self,
         field: &TileField,
         include_point_lights: bool,
         include_line_lights: bool,
+        include_area_lights: bool,
         include_sun_light: bool,
         ambient: Option<LightColor>,
         time_seconds: f32,
@@ -341,6 +450,51 @@ impl TileLightMap {
         }
         if include_line_lights {
             self.apply_line_lights(field, time_seconds);
+        }
+        if include_area_lights {
+            self.apply_area_lights(field, time_seconds);
+        }
+        Ok(())
+    }
+
+    fn validate_area_light(
+        field: &TileField,
+        origin: CellCoord,
+        width: u32,
+        height: u32,
+        radius: f32,
+        intensity: f32,
+        api: &str,
+    ) -> Result<(), String> {
+        if width == 0 || height == 0 {
+            return Err(format!("tilelight {api} width and height must be > 0"));
+        }
+        let max_x = origin
+            .x
+            .checked_add(width - 1)
+            .ok_or_else(|| format!("tilelight {api} rectangle overflows tile coordinates"))?;
+        let max_y = origin
+            .y
+            .checked_add(height - 1)
+            .ok_or_else(|| format!("tilelight {api} rectangle overflows tile coordinates"))?;
+        if !field.in_bounds(origin)
+            || !field.in_bounds(CellCoord {
+                x: max_x,
+                y: max_y,
+                z: origin.z,
+            })
+        {
+            return Err(format!("tilelight {api} rectangle is out of bounds"));
+        }
+        if !radius.is_finite() || radius <= 0.0 {
+            return Err(format!(
+                "tilelight {api} area light radius must be finite and > 0"
+            ));
+        }
+        if !intensity.is_finite() || intensity < 0.0 {
+            return Err(format!(
+                "tilelight {api} area light intensity must be finite and >= 0"
+            ));
         }
         Ok(())
     }
@@ -432,10 +586,11 @@ impl TileLightMap {
                     if dist > light.radius {
                         continue;
                     }
-                    let transmission = self.light_transmission(field, origin, coord);
+                    let (transmission, filter) = self.light_transfer(field, origin, coord);
                     if transmission <= f32::EPSILON {
                         continue;
                     }
+                    let color = Self::filtered_color(color, filter);
                     let falloff = 1.0 - (dist / light.radius);
                     if let Some(idx) = self.index(coord) {
                         self.light_values[idx]
@@ -482,16 +637,15 @@ impl TileLightMap {
                     if dist > light.radius {
                         continue;
                     }
-                    let transmission = self.light_transmission(field, origin, coord);
+                    let (transmission, filter) = self.light_transfer(field, origin, coord);
                     if transmission <= f32::EPSILON {
                         continue;
                     }
+                    let color = Self::filtered_color(color, filter);
                     let falloff = 1.0 - (dist / light.radius);
                     if let Some(idx) = self.index(coord) {
-                        self.light_values[idx].add_scaled(
-                            color,
-                            light.intensity * falloff.max(0.0) * transmission,
-                        );
+                        self.light_values[idx]
+                            .add_scaled(color, light.intensity * falloff.max(0.0) * transmission);
                     }
                 }
             }
@@ -545,10 +699,11 @@ impl TileLightMap {
                         if dist > light.radius {
                             continue;
                         }
-                        let transmission = self.light_transmission(field, nearest, coord);
+                        let (transmission, filter) = self.light_transfer(field, nearest, coord);
                         if transmission <= f32::EPSILON {
                             continue;
                         }
+                        let color = Self::filtered_color(color, filter);
                         let falloff = 1.0 - (dist / light.radius);
                         if let Some(idx) = self.index(coord) {
                             self.light_values[idx]
@@ -557,6 +712,60 @@ impl TileLightMap {
                     }
                 }
             }
+        }
+    }
+
+    fn apply_area_lights(&mut self, field: &TileField, time_seconds: f32) {
+        let lights: Vec<_> = self.area_lights.iter().filter_map(Clone::clone).collect();
+        for light in lights {
+            let intensity = light.modulation.intensity_at(light.intensity, time_seconds);
+            let color = light.modulation.color_at(light.color, time_seconds);
+            let radius = light.radius.ceil() as i32;
+            let start_x = light.x.saturating_sub(radius as u32);
+            let start_y = light.y.saturating_sub(radius as u32);
+            let end_x = light
+                .x
+                .saturating_add(light.width - 1)
+                .saturating_add(radius as u32)
+                .min(self.width - 1);
+            let end_y = light
+                .y
+                .saturating_add(light.height - 1)
+                .saturating_add(radius as u32)
+                .min(self.height - 1);
+            for y in start_y..=end_y {
+                for x in start_x..=end_x {
+                    let coord = CellCoord { x, y, z: light.z };
+                    if !field.in_bounds(coord) {
+                        continue;
+                    }
+                    let nearest = self.nearest_area_cell(&light, coord);
+                    let dist = self.point_light_distance(nearest, coord);
+                    if dist > light.radius {
+                        continue;
+                    }
+                    let (transmission, filter) = self.light_transfer(field, nearest, coord);
+                    if transmission <= f32::EPSILON {
+                        continue;
+                    }
+                    let color = Self::filtered_color(color, filter);
+                    let falloff = 1.0 - (dist / light.radius);
+                    if let Some(idx) = self.index(coord) {
+                        self.light_values[idx]
+                            .add_scaled(color, intensity * falloff.max(0.0) * transmission);
+                    }
+                }
+            }
+        }
+    }
+
+    fn nearest_area_cell(&self, light: &AreaLight, target: CellCoord) -> CellCoord {
+        let max_x = light.x + light.width - 1;
+        let max_y = light.y + light.height - 1;
+        CellCoord {
+            x: target.x.clamp(light.x, max_x),
+            y: target.y.clamp(light.y, max_y),
+            z: light.z,
         }
     }
 
@@ -582,11 +791,26 @@ impl TileLightMap {
         }
     }
 
-    fn light_transmission(&self, field: &TileField, origin: CellCoord, target: CellCoord) -> f32 {
+    fn filtered_color(color: LightColor, filter: [f32; 3]) -> LightColor {
+        LightColor {
+            r: color.r * filter[0],
+            g: color.g * filter[1],
+            b: color.b * filter[2],
+        }
+        .clamped()
+    }
+
+    fn light_transfer(
+        &self,
+        field: &TileField,
+        origin: CellCoord,
+        target: CellCoord,
+    ) -> (f32, [f32; 3]) {
         if origin == target {
-            return 1.0;
+            return (1.0, [1.0, 1.0, 1.0]);
         }
         let mut transmission = 1.0;
+        let mut filter = [1.0, 1.0, 1.0];
         let mut first = true;
         let _ = visit_line_cells(self.topology, origin, target, |coord| {
             if first {
@@ -596,14 +820,14 @@ impl TileLightMap {
             if coord == target {
                 return false;
             }
-            if field.blocks(coord, TileChannel::Light) {
-                transmission = 0.0;
-                return false;
-            }
-            transmission *= field.cost(coord, TileChannel::Light).clamp(0.0, 1.0);
+            transmission *= field.category_transmission(coord, "light");
+            let cell_filter = field.category_filter(coord, "light");
+            filter[0] *= cell_filter[0];
+            filter[1] *= cell_filter[1];
+            filter[2] *= cell_filter[2];
             transmission > f32::EPSILON
         });
-        transmission.clamp(0.0, 1.0)
+        (transmission.clamp(0.0, 1.0), filter)
     }
 
     fn directional_sun_transmission(
@@ -668,20 +892,14 @@ impl TileLightMap {
     }
 
     fn top_sun_transmission_at(&self, field: &TileField, coord: CellCoord) -> f32 {
-        if field.blocks(coord, TileChannel::Sun) {
-            return 0.0;
-        }
-        let channel = field.cost(coord, TileChannel::Sun).clamp(0.0, 1.0);
+        let channel = field.category_transmission(coord, "sun");
         let occlusion = 1.0 - field.sun_occlusion(coord).clamp(0.0, 1.0);
         (channel * occlusion).clamp(0.0, 1.0)
     }
 
     fn directional_sun_transmission_at(&self, field: &TileField, coord: CellCoord) -> f32 {
-        if field.blocks(coord, TileChannel::Sun) || field.blocks(coord, TileChannel::Light) {
-            return 0.0;
-        }
-        let sun = field.cost(coord, TileChannel::Sun).clamp(0.0, 1.0);
-        let light = field.cost(coord, TileChannel::Light).clamp(0.0, 1.0);
+        let sun = field.category_transmission(coord, "sun");
+        let light = field.category_transmission(coord, "light");
         let occlusion = 1.0 - field.sun_occlusion(coord).clamp(0.0, 1.0);
         (sun * light * occlusion).clamp(0.0, 1.0)
     }

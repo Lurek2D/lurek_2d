@@ -15,7 +15,7 @@ use crate::pathfind::{
     UnitPathfinder, Waypoint,
 };
 use crate::pathfind::{HexGrid, HexLayout, InfluenceMap, JpsGrid, RangeMap};
-use crate::tilefield::{CellCoord, TileChannel};
+use crate::tilefield::CellCoord;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -127,16 +127,16 @@ fn lua_require_positive_f32(field: &'static str, value: f32) -> LuaResult<f32> {
     }
 }
 
-fn parse_tilefield_channel(
+fn parse_tilefield_category(
     opts: &LuaTable,
     key: &str,
+    legacy_key: &str,
     default: &str,
-    api: &str,
-) -> LuaResult<TileChannel> {
-    let value = opts
+) -> LuaResult<String> {
+    Ok(opts
         .get::<_, Option<String>>(key)?
-        .unwrap_or_else(|| default.to_string());
-    TileChannel::parse(&value).map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))
+        .or(opts.get::<_, Option<String>>(legacy_key)?)
+        .unwrap_or_else(|| default.to_string()))
 }
 
 fn parse_tilefield_level(opts: &LuaTable, api: &str) -> LuaResult<u32> {
@@ -2575,9 +2575,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         )?,
     )?;
     // -- newNavGridFromField --
-    /// Creates a navigation grid from a tilefield level and channel.
+    /// Creates a navigation grid from a tilefield level and movement category.
     /// @param | field_ud | LTileField | Tilefield to derive navigation grid from.
-    /// @param | opts | table? | Options with `level`, `channel`, `costChannel`, and `diagonalMode`.
+    /// @param | opts | table? | Options with `level`, `category`, `costCategory`, `footprintWidth`, `footprintHeight`, and `diagonalMode`.
     /// @return | LNavGrid | New navigation grid handle.
     tbl.set(
         "newNavGridFromField",
@@ -2587,23 +2587,32 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 Some(opts) => parse_tilefield_level(opts, "lurek.pathfind.newNavGridFromField")?,
                 None => 0,
             };
-            let channel = match &opts {
-                Some(opts) => parse_tilefield_channel(
-                    opts,
-                    "channel",
-                    "move",
-                    "lurek.pathfind.newNavGridFromField",
-                )?,
-                None => TileChannel::Move,
+            let category = match &opts {
+                Some(opts) => parse_tilefield_category(opts, "category", "channel", "move")?,
+                None => "move".to_string(),
             };
-            let cost_channel = match &opts {
-                Some(opts) => parse_tilefield_channel(
-                    opts,
-                    "costChannel",
-                    channel.as_str(),
-                    "lurek.pathfind.newNavGridFromField",
-                )?,
-                None => channel,
+            let cost_category = match &opts {
+                Some(opts) => opts
+                    .get::<_, Option<String>>("costCategory")?
+                    .or(opts.get::<_, Option<String>>("costChannel")?)
+                    .unwrap_or_else(|| category.clone()),
+                None => category.clone(),
+            };
+            let footprint_width = match &opts {
+                Some(opts) => opts
+                    .get::<_, Option<u32>>("footprintWidth")?
+                    .or(opts.get::<_, Option<u32>>("unitSize")?)
+                    .unwrap_or(1)
+                    .max(1),
+                None => 1,
+            };
+            let footprint_height = match &opts {
+                Some(opts) => opts
+                    .get::<_, Option<u32>>("footprintHeight")?
+                    .or(opts.get::<_, Option<u32>>("unitSize")?)
+                    .unwrap_or(footprint_width)
+                    .max(1),
+                None => 1,
             };
             let diagonal_mode = match &opts {
                 Some(opts) => opts.get::<_, Option<String>>("diagonalMode")?,
@@ -2630,10 +2639,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             for y in 0..height {
                 for x in 0..width {
                     let coord = CellCoord { x, y, z: level };
-                    if field.blocks(coord, channel) {
+                    if !field.footprint_passable(
+                        coord,
+                        footprint_width,
+                        footprint_height,
+                        &category,
+                    ) {
                         grid.set_cost(x, y, 0);
                     } else {
-                        let cost = field.cost(coord, cost_channel).round().clamp(1.0, 254.0) as u8;
+                        let cost = field
+                            .category_cost(coord, &cost_category)
+                            .round()
+                            .clamp(1.0, 254.0) as u8;
                         grid.set_cost(x, y, cost);
                     }
                 }
@@ -2751,9 +2768,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- rangeMapFromField --
-    /// Computes reachable cells from a tilefield level and movement channel.
+    /// Computes reachable cells from a tilefield level and movement category.
     /// @param | field_ud | LTileField | Tilefield to read.
-    /// @param | opts | table | Options with `origin`, `budget`, optional `level`, `channel`, `costChannel`, and `diagonal`.
+    /// @param | opts | table | Options with `origin`, `budget`, optional `level`, `category`, `costCategory`, and `diagonal`.
     /// @return | table | Range map result with `cells`, `width`, `height`, and `level`.
     tbl.set(
         "rangeMapFromField",
@@ -2772,18 +2789,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             let budget: f32 = opts.get("budget")?;
             let budget = require_positive_f32(budget, "budget")?;
             let diagonal: bool = opts.get("diagonal").unwrap_or(false);
-            let channel = parse_tilefield_channel(
-                &opts,
-                "channel",
-                "move",
-                "lurek.pathfind.rangeMapFromField",
-            )?;
-            let cost_channel = parse_tilefield_channel(
-                &opts,
-                "costChannel",
-                channel.as_str(),
-                "lurek.pathfind.rangeMapFromField",
-            )?;
+            let category = parse_tilefield_category(&opts, "category", "channel", "move")?;
+            let cost_category = opts
+                .get::<_, Option<String>>("costCategory")?
+                .or(opts.get::<_, Option<String>>("costChannel")?)
+                .unwrap_or_else(|| category.clone());
             let field = field_ud.inner.borrow();
             let (width, height, levels) = field.size();
             if level >= levels {
@@ -2799,8 +2809,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 for x in 0..width {
                     let idx = (y * width + x) as usize;
                     let coord = CellCoord { x, y, z: level };
-                    blocked[idx] = field.blocks(coord, channel);
-                    costs[idx] = field.cost(coord, cost_channel).max(0.0);
+                    blocked[idx] = field.blocks_category(coord, &category);
+                    costs[idx] = field.category_cost(coord, &cost_category).max(0.0);
                 }
             }
             let rm = RangeMap::from_grid(

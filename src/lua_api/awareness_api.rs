@@ -3,7 +3,8 @@
 use super::tilefield_api::LuaTileField;
 use super::SharedState;
 use crate::awareness::{
-    AwarenessEvent, AwarenessFlags, AwarenessGrid, FogConfig, TileAwareness, TileFov,
+    AwarenessCategoryConfig, AwarenessEvent, AwarenessFlags, AwarenessGrid, AwarenessMode,
+    FogConfig, TileAwareness, TileFov,
 };
 use crate::tilefield::{CellCoord, TileChannel};
 use mlua::prelude::*;
@@ -39,6 +40,66 @@ fn awareness_channel(opts: &LuaTable, default: &str, api: &str) -> LuaResult<Til
     TileChannel::parse(&name).map_err(|e| awareness_lua_err(api, e))
 }
 
+fn awareness_category(
+    opts: &LuaTable,
+    default: &str,
+    legacy: &str,
+    api: &str,
+) -> LuaResult<String> {
+    Ok(opts
+        .get::<_, Option<String>>("category")
+        .map_err(|e| awareness_lua_err(api, e))?
+        .or(opts.get::<_, Option<String>>(legacy).ok().flatten())
+        .unwrap_or_else(|| default.to_string()))
+}
+
+fn awareness_mode_from_opts(opts: &LuaTable, api: &str) -> LuaResult<Option<AwarenessMode>> {
+    let Some(mode) = opts
+        .get::<_, Option<String>>("mode")
+        .map_err(|e| awareness_lua_err(api, e))?
+    else {
+        return Ok(None);
+    };
+    match mode.as_str() {
+        "omni" => Ok(Some(AwarenessMode::Omni)),
+        "cone" => Ok(Some(AwarenessMode::Cone)),
+        other => Err(awareness_lua_err(
+            api,
+            format!("unknown awareness mode '{other}'"),
+        )),
+    }
+}
+
+fn awareness_facing_from_opts(opts: &LuaTable, api: &str) -> LuaResult<Option<(i32, i32)>> {
+    if let Some(facing) = opts
+        .get::<_, Option<LuaTable>>("facing")
+        .map_err(|e| awareness_lua_err(api, e))?
+    {
+        return Ok(Some((
+            facing
+                .get::<_, Option<i32>>("x")
+                .map_err(|e| awareness_lua_err(api, e))?
+                .unwrap_or(1),
+            facing
+                .get::<_, Option<i32>>("y")
+                .map_err(|e| awareness_lua_err(api, e))?
+                .unwrap_or(0),
+        )));
+    }
+    let dx = opts
+        .get::<_, Option<i32>>("dx")
+        .map_err(|e| awareness_lua_err(api, e))?;
+    let dy = opts
+        .get::<_, Option<i32>>("dy")
+        .map_err(|e| awareness_lua_err(api, e))?;
+    Ok(match (dx, dy) {
+        (Some(dx), Some(dy)) => Some((dx, dy)),
+        (Some(dx), None) => Some((dx, 0)),
+        (None, Some(dy)) => Some((1, dy)),
+        (None, None) => None,
+    })
+}
+
 fn awareness_cells_to_lua<'lua>(
     lua: &'lua Lua,
     cells: Vec<CellCoord>,
@@ -67,10 +128,90 @@ struct LuaTileAwareness {
 
 impl LuaUserData for LuaTileAwareness {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- defineCategory --
+        /// Defines or replaces one awareness category.
+        methods.add_method(
+            "defineCategory",
+            |_, this, (name, opts): (String, Option<LuaTable>)| {
+                let mut config = AwarenessCategoryConfig::new(&name);
+                if let Some(opts) = opts {
+                    config.active = opts
+                        .get::<_, Option<bool>>("active")
+                        .map_err(|e| awareness_lua_err("LTileAwareness.defineCategory", e))?
+                        .unwrap_or(true);
+                    config.range = opts
+                        .get::<_, Option<u32>>("range")
+                        .map_err(|e| awareness_lua_err("LTileAwareness.defineCategory", e))?
+                        .unwrap_or(config.range);
+                    if let Some(mode) =
+                        awareness_mode_from_opts(&opts, "LTileAwareness.defineCategory")?
+                    {
+                        config.mode = mode;
+                    }
+                    config.arc_degrees = opts
+                        .get::<_, Option<f32>>("arc")
+                        .map_err(|e| awareness_lua_err("LTileAwareness.defineCategory", e))?
+                        .or_else(|| opts.get::<_, Option<f32>>("arcDegrees").ok().flatten())
+                        .unwrap_or(config.arc_degrees);
+                    if let Some(facing) =
+                        awareness_facing_from_opts(&opts, "LTileAwareness.defineCategory")?
+                    {
+                        config.facing = facing;
+                    }
+                    config.blocker_category = opts
+                        .get::<_, Option<String>>("blockerCategory")
+                        .map_err(|e| awareness_lua_err("LTileAwareness.defineCategory", e))?
+                        .or_else(|| opts.get::<_, Option<String>>("blocker").ok().flatten())
+                        .unwrap_or_else(|| config.blocker_category.clone());
+                }
+                this.inner
+                    .borrow_mut()
+                    .define_category(name, config)
+                    .map_err(|e| awareness_lua_err("LTileAwareness.defineCategory", e))
+            },
+        );
+
+        // -- getCategory --
+        /// Returns awareness category metadata.
+        methods.add_method("getCategory", |lua, this, name: String| {
+            let inner = this.inner.borrow();
+            let Some(config) = inner.category(&name) else {
+                return Ok(None);
+            };
+            let table = lua.create_table()?;
+            table.set("active", config.active)?;
+            table.set("range", config.range)?;
+            table.set(
+                "mode",
+                match config.mode {
+                    AwarenessMode::Omni => "omni",
+                    AwarenessMode::Cone => "cone",
+                },
+            )?;
+            table.set("arc", config.arc_degrees)?;
+            let facing = lua.create_table()?;
+            facing.set("x", config.facing.0)?;
+            facing.set("y", config.facing.1)?;
+            table.set("facing", facing)?;
+            table.set("blockerCategory", config.blocker_category.as_str())?;
+            Ok(Some(table))
+        });
+
+        // -- getCategories --
+        /// Returns known awareness category names.
+        methods.add_method("getCategories", |lua, this, ()| {
+            let names = this.inner.borrow().category_names();
+            let table = lua.create_table()?;
+            for (index, name) in names.into_iter().enumerate() {
+                table.set(index + 1, name)?;
+            }
+            Ok(table)
+        });
+
         // -- computeVisible --
         /// Computes one player's current visible mask from a tilefield origin.
         /// @param | player | string | Player identifier whose visibility mask should be computed.
-        /// @param | opts | table | Options table with origin, range, and optional vision channel.
+        /// @param | opts | table | Options table with origin, range, category, mode, arc, facing, and blockerCategory.
         methods.add_method(
             "computeVisible",
             |_, this, (player, opts): (String, LuaTable)| {
@@ -78,14 +219,31 @@ impl LuaUserData for LuaTileAwareness {
                     opts.get("origin")?,
                     "LTileAwareness.computeVisible",
                 )?;
-                let range: u32 = opts
-                    .get("range")
+                let range = opts
+                    .get::<_, Option<u32>>("range")
                     .map_err(|e| awareness_lua_err("LTileAwareness.computeVisible", e))?;
-                let channel = awareness_channel(&opts, "vision", "LTileAwareness.computeVisible")?;
+                let category = awareness_category(
+                    &opts,
+                    "vision",
+                    "channel",
+                    "LTileAwareness.computeVisible",
+                )?;
+                let mode = awareness_mode_from_opts(&opts, "LTileAwareness.computeVisible")?;
+                let arc = opts
+                    .get::<_, Option<f32>>("arc")
+                    .map_err(|e| awareness_lua_err("LTileAwareness.computeVisible", e))?
+                    .or_else(|| opts.get::<_, Option<f32>>("arcDegrees").ok().flatten());
+                let facing = awareness_facing_from_opts(&opts, "LTileAwareness.computeVisible")?;
+                let blocker = opts
+                    .get::<_, Option<String>>("blockerCategory")
+                    .map_err(|e| awareness_lua_err("LTileAwareness.computeVisible", e))?
+                    .or_else(|| opts.get::<_, Option<String>>("blocker").ok().flatten());
                 let field = this.field.borrow();
                 this.inner
                     .borrow_mut()
-                    .compute_visible(&field, &player, origin, range, channel)
+                    .compute_category_visible(
+                        &field, &player, &category, origin, range, mode, arc, facing, blocker,
+                    )
                     .map_err(|e| awareness_lua_err("LTileAwareness.computeVisible", e))
             },
         );
@@ -129,6 +287,20 @@ impl LuaUserData for LuaTileAwareness {
                     z: one_based_awareness(z.unwrap_or(1), "z")?,
                 };
                 Ok(this.inner.borrow().is_visible(&player, coord))
+            },
+        );
+
+        // -- isAware --
+        /// Returns whether a one-based cell is visible for a specific awareness category.
+        methods.add_method(
+            "isAware",
+            |_, this, (player, category, x, y, z): (String, String, u32, u32, Option<u32>)| {
+                let coord = CellCoord {
+                    x: one_based_awareness(x, "x")?,
+                    y: one_based_awareness(y, "y")?,
+                    z: one_based_awareness(z.unwrap_or(1), "z")?,
+                };
+                Ok(this.inner.borrow().is_aware(&player, &category, coord))
             },
         );
 
@@ -177,9 +349,39 @@ impl LuaUserData for LuaTileAwareness {
         /// @return | table | Array of one-based visible cell tables.
         methods.add_method(
             "visibleCells",
-            |lua, this, (player, z): (String, Option<u32>)| {
-                let level = z.map(|v| one_based_awareness(v, "z")).transpose()?;
-                awareness_cells_to_lua(lua, this.inner.borrow().visible_cells(&player, level))
+            |lua, this, (player, category_or_z, z): (String, Option<LuaValue>, Option<u32>)| {
+                let mut category = None;
+                let mut level = z.map(|v| one_based_awareness(v, "z")).transpose()?;
+                if let Some(value) = category_or_z {
+                    match value {
+                        LuaValue::String(value) => category = Some(value.to_str()?.to_string()),
+                        LuaValue::Integer(value) if value >= 1 && value <= u32::MAX as i64 => {
+                            level = Some(one_based_awareness(value as u32, "z")?);
+                        }
+                        LuaValue::Number(value)
+                            if value >= 1.0 && value.fract() == 0.0 && value <= u32::MAX as f64 =>
+                        {
+                            level = Some(one_based_awareness(value as u32, "z")?);
+                        }
+                        other => {
+                            return Err(awareness_lua_err(
+                                "LTileAwareness.visibleCells",
+                                format!(
+                                    "category/z must be string, integer, or nil, got {}",
+                                    other.type_name()
+                                ),
+                            ));
+                        }
+                    }
+                }
+                let cells = match category {
+                    Some(category) => this
+                        .inner
+                        .borrow()
+                        .visible_cells_for_category(&player, &category, level),
+                    None => this.inner.borrow().visible_cells(&player, level),
+                };
+                awareness_cells_to_lua(lua, cells)
             },
         );
 
@@ -212,6 +414,49 @@ impl LuaUserData for LuaTileAwareness {
             this.inner.borrow_mut().clear_all();
             Ok(())
         });
+
+        // -- share --
+        /// Adds a directed awareness share edge for one category.
+        methods.add_method(
+            "share",
+            |_, this, (from, to, category, _opts): (String, String, String, Option<LuaTable>)| {
+                this.inner
+                    .borrow_mut()
+                    .share(from, to, category)
+                    .map_err(|e| awareness_lua_err("LTileAwareness.share", e))
+            },
+        );
+
+        // -- clearShares --
+        /// Clears all directed awareness share edges.
+        methods.add_method("clearShares", |_, this, ()| {
+            this.inner.borrow_mut().clear_shares();
+            Ok(())
+        });
+
+        // -- setTeam --
+        /// Creates directed share edges between all listed players for selected categories.
+        methods.add_method(
+            "setTeam",
+            |_, this, (players, categories): (LuaTable, Option<LuaTable>)| {
+                let mut player_ids = Vec::new();
+                for value in players.sequence_values::<String>() {
+                    player_ids.push(value?);
+                }
+                let mut category_ids = Vec::new();
+                if let Some(categories) = categories {
+                    for value in categories.sequence_values::<String>() {
+                        category_ids.push(value?);
+                    }
+                } else {
+                    category_ids.push("vision".to_string());
+                }
+                this.inner
+                    .borrow_mut()
+                    .set_team(&player_ids, &category_ids)
+                    .map_err(|e| awareness_lua_err("LTileAwareness.setTeam", e))
+            },
+        );
 
         // -- type --
         /// Returns the Lua-visible type name for this tile visibility handle.
@@ -527,7 +772,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | field | LTileField | Tilefield to query.
     /// @param | from | table | One-based `{x,y,z?}` start.
     /// @param | to | table | One-based `{x,y,z?}` target.
-    /// @param | opts | table? | Optional `{channel="vision"}`.
+    /// @param | opts | table? | Optional `{category="sight"}` or legacy `{channel="vision"}`.
     /// @return | boolean | True when clear.
     tbl.set(
         "lineOfSight",
@@ -542,16 +787,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 let field_ud = field_ud.borrow::<LuaTileField>()?;
                 let from = awareness_coord_from_table(from_tbl, "lineOfSight")?;
                 let to = awareness_coord_from_table(to_tbl, "lineOfSight")?;
-                let channel = match opts {
-                    Some(opts) => awareness_channel(&opts, "vision", "lineOfSight")?,
-                    None => TileChannel::Vision,
-                };
-                let result = field_ud
-                    .inner
-                    .borrow()
-                    .clear_line(from, to, channel)
-                    .map_err(|e| awareness_lua_err("lineOfSight", e));
-                result
+                let field = field_ud.inner.borrow();
+                match opts {
+                    Some(opts) => {
+                        let category =
+                            awareness_category(&opts, "vision", "channel", "lineOfSight")?;
+                        field
+                            .clear_line_category(from, to, &category)
+                            .map_err(|e| awareness_lua_err("lineOfSight", e))
+                    }
+                    None => field
+                        .clear_line(from, to, TileChannel::Vision)
+                        .map_err(|e| awareness_lua_err("lineOfSight", e)),
+                }
             },
         )?,
     )?;
@@ -561,7 +809,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | field | LTileField | Tilefield to query.
     /// @param | from | table | One-based `{x,y,z?}` start.
     /// @param | to | table | One-based `{x,y,z?}` target.
-    /// @param | opts | table? | Optional `{channel="action"}`.
+    /// @param | opts | table? | Optional `{category="action"}` or legacy `{channel="action"}`.
     /// @return | boolean | True when clear.
     tbl.set(
         "lineOfAction",
@@ -576,16 +824,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 let field_ud = field_ud.borrow::<LuaTileField>()?;
                 let from = awareness_coord_from_table(from_tbl, "lineOfAction")?;
                 let to = awareness_coord_from_table(to_tbl, "lineOfAction")?;
-                let channel = match opts {
-                    Some(opts) => awareness_channel(&opts, "action", "lineOfAction")?,
-                    None => TileChannel::Action,
-                };
-                let result = field_ud
-                    .inner
-                    .borrow()
-                    .clear_line(from, to, channel)
-                    .map_err(|e| awareness_lua_err("lineOfAction", e));
-                result
+                let field = field_ud.inner.borrow();
+                match opts {
+                    Some(opts) => {
+                        let category =
+                            awareness_category(&opts, "action", "channel", "lineOfAction")?;
+                        field
+                            .clear_line_category(from, to, &category)
+                            .map_err(|e| awareness_lua_err("lineOfAction", e))
+                    }
+                    None => field
+                        .clear_line(from, to, TileChannel::Action)
+                        .map_err(|e| awareness_lua_err("lineOfAction", e)),
+                }
             },
         )?,
     )?;

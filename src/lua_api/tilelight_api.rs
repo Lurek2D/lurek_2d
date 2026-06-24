@@ -4,8 +4,8 @@ use super::tilefield_api::{field_from_provider, LuaTileField};
 use super::SharedState;
 use crate::tilefield::CellCoord;
 use crate::tilelight::{
-    LightColor, LightModulation, LineLightUpdate, PointLightUpdate, SunLight, SunLightMode,
-    TileLightMap,
+    AreaLightUpdate, LightColor, LightModulation, LineLightUpdate, PointLightUpdate, SunLight,
+    SunLightMode, TileLightMap,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -172,7 +172,9 @@ fn modulation_patch_from_table(table: LuaTable, api: &str) -> LuaResult<Option<L
     }
 }
 
-fn compute_opts(opts: Option<LuaTable>) -> LuaResult<(bool, bool, bool, Option<LightColor>, f32)> {
+fn compute_opts(
+    opts: Option<LuaTable>,
+) -> LuaResult<(bool, bool, bool, bool, Option<LightColor>, f32)> {
     if let Some(opts) = opts {
         let include_point = opts
             .get::<_, Option<bool>>("includePointLights")
@@ -181,6 +183,15 @@ fn compute_opts(opts: Option<LuaTable>) -> LuaResult<(bool, bool, bool, Option<L
         let include_line = opts
             .get::<_, Option<bool>>("includeLineLights")
             .map_err(|e| lua_err("compute", e))?
+            .unwrap_or(true);
+        let include_area = opts
+            .get::<_, Option<bool>>("includeAreaLights")
+            .map_err(|e| lua_err("compute", e))?
+            .or_else(|| {
+                opts.get::<_, Option<bool>>("includeRectLights")
+                    .ok()
+                    .flatten()
+            })
             .unwrap_or(true);
         let include_sun = opts
             .get::<_, Option<bool>>("includeSunLight")
@@ -199,12 +210,13 @@ fn compute_opts(opts: Option<LuaTable>) -> LuaResult<(bool, bool, bool, Option<L
         Ok((
             include_point,
             include_line,
+            include_area,
             include_sun,
             ambient,
             time_seconds,
         ))
     } else {
-        Ok((true, true, true, None, 0.0))
+        Ok((true, true, true, true, None, 0.0))
     }
 }
 
@@ -254,6 +266,99 @@ fn sun_from_table(opts: LuaTable, api: &str) -> LuaResult<SunLight> {
         color,
         mode,
     })
+}
+
+fn area_size_from_table(opts: &LuaTable, api: &str) -> LuaResult<(u32, u32)> {
+    let width = opts
+        .get::<_, Option<u32>>("width")
+        .map_err(|e| lua_err(api, e))?
+        .or_else(|| opts.get::<_, Option<u32>>("w").ok().flatten())
+        .ok_or_else(|| lua_err(api, "width/w is required"))?;
+    let height = opts
+        .get::<_, Option<u32>>("height")
+        .map_err(|e| lua_err(api, e))?
+        .or_else(|| opts.get::<_, Option<u32>>("h").ok().flatten())
+        .ok_or_else(|| lua_err(api, "height/h is required"))?;
+    Ok((width, height))
+}
+
+fn add_area_light_from_opts(this: &LuaTileLightMap, opts: LuaTable, api: &str) -> LuaResult<u32> {
+    let coord = coord_from_table(opts.clone(), api)?;
+    let (width, height) = area_size_from_table(&opts, api)?;
+    let radius: f32 = opts.get("radius").map_err(|e| lua_err(api, e))?;
+    let intensity: f32 = opts
+        .get::<_, Option<f32>>("intensity")
+        .map_err(|e| lua_err(api, e))?
+        .unwrap_or(1.0);
+    let color = color_from_table(
+        opts.get::<_, Option<LuaTable>>("color")
+            .map_err(|e| lua_err(api, e))?,
+        LightColor::WHITE,
+        api,
+    )?;
+    let modulation = modulation_from_table(Some(opts), api)?;
+    let field = this.field.borrow();
+    this.inner
+        .borrow_mut()
+        .add_area_light(
+            &field, coord, width, height, radius, intensity, color, modulation,
+        )
+        .map_err(|e| lua_err(api, e))
+}
+
+fn update_area_light_from_opts(
+    this: &LuaTileLightMap,
+    id: u32,
+    opts: LuaTable,
+    api: &str,
+) -> LuaResult<()> {
+    let parse_coord = |name: &str| -> LuaResult<Option<u32>> {
+        opts.get::<_, Option<u32>>(name)
+            .map_err(|e| lua_err(api, e))?
+            .map(|v| one_based(v, name))
+            .transpose()
+    };
+    let width = opts
+        .get::<_, Option<u32>>("width")
+        .map_err(|e| lua_err(api, e))?
+        .or_else(|| opts.get::<_, Option<u32>>("w").ok().flatten());
+    let height = opts
+        .get::<_, Option<u32>>("height")
+        .map_err(|e| lua_err(api, e))?
+        .or_else(|| opts.get::<_, Option<u32>>("h").ok().flatten());
+    let radius = opts
+        .get::<_, Option<f32>>("radius")
+        .map_err(|e| lua_err(api, e))?;
+    let intensity = opts
+        .get::<_, Option<f32>>("intensity")
+        .map_err(|e| lua_err(api, e))?;
+    let color = match opts
+        .get::<_, Option<LuaTable>>("color")
+        .map_err(|e| lua_err(api, e))?
+    {
+        Some(table) => Some(color_from_table(Some(table), LightColor::WHITE, api)?),
+        None => None,
+    };
+    let modulation = modulation_patch_from_table(opts.clone(), api)?;
+    let field = this.field.borrow();
+    this.inner
+        .borrow_mut()
+        .update_area_light(
+            &field,
+            id,
+            AreaLightUpdate {
+                x: parse_coord("x")?,
+                y: parse_coord("y")?,
+                z: parse_coord("z")?,
+                width,
+                height,
+                radius,
+                intensity,
+                color,
+                modulation,
+            },
+        )
+        .map_err(|e| lua_err(api, e))
 }
 
 impl LuaUserData for LuaTileLightMap {
@@ -472,6 +577,57 @@ impl LuaUserData for LuaTileLightMap {
             Ok(())
         });
 
+        // -- addAreaLight --
+        /// Adds a rectangular area light and returns its stable id.
+        /// @param | opts | table | `{x,y,z?,width|w,height|h,radius,intensity?,color?,flicker?,colorCycle?}`.
+        methods.add_method("addAreaLight", |_, this, opts: LuaTable| {
+            add_area_light_from_opts(this, opts, "LTileLightMap.addAreaLight")
+        });
+
+        // -- addRectLight --
+        /// Alias for `addAreaLight`.
+        methods.add_method("addRectLight", |_, this, opts: LuaTable| {
+            add_area_light_from_opts(this, opts, "LTileLightMap.addRectLight")
+        });
+
+        // -- updateAreaLight --
+        /// Updates an existing rectangular area light by id.
+        methods.add_method("updateAreaLight", |_, this, (id, opts): (u32, LuaTable)| {
+            update_area_light_from_opts(this, id, opts, "LTileLightMap.updateAreaLight")
+        });
+
+        // -- updateRectLight --
+        /// Alias for `updateAreaLight`.
+        methods.add_method("updateRectLight", |_, this, (id, opts): (u32, LuaTable)| {
+            update_area_light_from_opts(this, id, opts, "LTileLightMap.updateRectLight")
+        });
+
+        // -- removeAreaLight --
+        /// Removes a rectangular area light by id and returns whether it existed.
+        methods.add_method("removeAreaLight", |_, this, id: u32| {
+            Ok(this.inner.borrow_mut().remove_area_light(id))
+        });
+
+        // -- removeRectLight --
+        /// Alias for `removeAreaLight`.
+        methods.add_method("removeRectLight", |_, this, id: u32| {
+            Ok(this.inner.borrow_mut().remove_area_light(id))
+        });
+
+        // -- clearAreaLights --
+        /// Removes all rectangular area lights currently stored on this tile light map.
+        methods.add_method("clearAreaLights", |_, this, ()| {
+            this.inner.borrow_mut().clear_area_lights();
+            Ok(())
+        });
+
+        // -- clearRectLights --
+        /// Alias for `clearAreaLights`.
+        methods.add_method("clearRectLights", |_, this, ()| {
+            this.inner.borrow_mut().clear_area_lights();
+            Ok(())
+        });
+
         // -- setAmbient --
         /// Sets ambient tile light stored on this light map.
         /// @param | color | table | `{r,g,b}` ambient color.
@@ -493,9 +649,9 @@ impl LuaUserData for LuaTileLightMap {
 
         // -- compute --
         /// Computes tile light from ambient, point lights, line lights, and sun light.
-        /// @param | opts | table? | Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings.
+        /// @param | opts | table? | Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.
         methods.add_method("compute", |_, this, opts: Option<LuaTable>| {
-            let (include_point, include_line, include_sun, ambient, time_seconds) =
+            let (include_point, include_line, include_area, include_sun, ambient, time_seconds) =
                 compute_opts(opts)?;
             let field = this.field.borrow();
             this.inner
@@ -504,6 +660,7 @@ impl LuaUserData for LuaTileLightMap {
                     &field,
                     include_point,
                     include_line,
+                    include_area,
                     include_sun,
                     ambient,
                     time_seconds,
@@ -601,7 +758,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|_, (field_value, opts): (LuaValue, Option<LuaTable>)| {
             let shared_field = shared_field_from_value(field_value, "compute")?;
             let field = shared_field.borrow();
-            let (include_point, include_line, include_sun, ambient, time_seconds) =
+            let (include_point, include_line, include_area, include_sun, ambient, time_seconds) =
                 compute_opts(opts)?;
             let mut light_map =
                 TileLightMap::from_field(&field).map_err(|e| lua_err("compute", e))?;
@@ -610,6 +767,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     &field,
                     include_point,
                     include_line,
+                    include_area,
                     include_sun,
                     ambient,
                     time_seconds,

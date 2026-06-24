@@ -147,6 +147,54 @@ pub struct LineLightUpdate {
     pub modulation: Option<LightModulation>,
 }
 
+/// Tile rectangular area light definition.
+#[derive(Debug, Clone)]
+pub struct AreaLight {
+    /// Stable area-light id.
+    pub id: u32,
+    /// Zero-based rectangle origin x coordinate.
+    pub x: u32,
+    /// Zero-based rectangle origin y coordinate.
+    pub y: u32,
+    /// Zero-based level.
+    pub z: u32,
+    /// Rectangle width in tiles.
+    pub width: u32,
+    /// Rectangle height in tiles.
+    pub height: u32,
+    /// Tile radius around the emitting rectangle.
+    pub radius: f32,
+    /// Scalar intensity.
+    pub intensity: f32,
+    /// RGB color.
+    pub color: LightColor,
+    /// Time-varying intensity or color modulation.
+    pub modulation: LightModulation,
+}
+
+/// Optional patch for updating an existing area light.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct AreaLightUpdate {
+    /// New zero-based rectangle origin x coordinate.
+    pub x: Option<u32>,
+    /// New zero-based rectangle origin y coordinate.
+    pub y: Option<u32>,
+    /// New zero-based level.
+    pub z: Option<u32>,
+    /// New rectangle width in tiles.
+    pub width: Option<u32>,
+    /// New rectangle height in tiles.
+    pub height: Option<u32>,
+    /// New tile radius.
+    pub radius: Option<f32>,
+    /// New scalar intensity.
+    pub intensity: Option<f32>,
+    /// New RGB color.
+    pub color: Option<LightColor>,
+    /// New time-varying modulation.
+    pub modulation: Option<LightModulation>,
+}
+
 /// Sun propagation mode.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SunLightMode {

@@ -22,10 +22,13 @@ describe("lurek.tilefield module functions", function()
 
     -- @covers lurek.tilefield.fromTileMap
     it("optionally applies tileset stats while copying tilemap gids", function()
-        local tileset = lurek.tilemap.newTileSet(1, 4, 2, 16, 16)
-        tileset:setProperty(2, "block.move", "true")
-        tileset:setProperty(2, "cost.vision", "3.5")
-        tileset:setProperty(2, "sunOcclusion", "0.25")
+        local tileset = lurek.tileset.newTileSet(1, 4, 2, 16, 16)
+        tileset:setObject("wall", {
+            blocks = { move = true },
+            costs = { vision = 3.5 },
+            sunOcclusion = 0.25,
+        })
+        tileset:setTileObject(2, "wall")
 
         local map = lurek.tilemap.newTileMap(16, 16)
         map:addTileSet(tileset)
@@ -35,7 +38,7 @@ describe("lurek.tilefield module functions", function()
         local field = lurek.tilefield.fromTileMap(map, {
             layer = 1,
             refSlot = "tile",
-            applyTilesetStats = true,
+            applyTilesetObject = true,
         })
 
         expect_equal(2, field:getRef(1, 1, 1, "tile"))
@@ -237,41 +240,49 @@ describe("LTileField cell state", function()
     end)
 end)
 
--- @describe LTileField profiles and lines
-describe("LTileField profiles and lines", function()
-    -- @covers LTileField:setProfile
-    it("registers custom profile", function()
+-- @describe LTileField categories and lines
+describe("LTileField categories and lines", function()
+    -- @covers LTileField:setCategoryBlock
+    it("registers custom category blocker", function()
         local field = lurek.tilefield.new({ width = 4, height = 4 })
-        field:setProfile("grate", { blocks = { move = true, vision = false }, sunOcclusion = 0.1 })
-        field:applyProfile(2, 2, 1, "grate")
-        expect_true(field:blocks(2, 2, 1, "move"))
-        expect_true(not field:blocks(2, 2, 1, "vision"))
+        field:defineCategory("grate_move", { kind = "movement" })
+        field:setCategoryBlock(2, 2, 1, "grate_move", true)
+        field:setSunOcclusion(2, 2, 1, 0.1)
+        expect_true(field:blocksCategory(2, 2, 1, "grate_move"))
+        expect_near(0.1, field:getSunOcclusion(2, 2, 1), 0.001)
     end)
 
-    -- @covers LTileField:applyProfile
-    it("applies built-in window profile", function()
+    -- @covers LTileField:setModifier
+    -- @covers LTileField:applyModifier
+    it("applies modifier as reusable cell semantic", function()
         local field = lurek.tilefield.new({ width = 4, height = 4 })
-        field:applyProfile(2, 2, 1, "window")
+        field:setModifier("window", {
+            blocks = { move = true, vision = false, action = true, light = false },
+        })
+        field:applyModifier(2, 2, 1, "window")
         expect_true(field:blocks(2, 2, 1, "move"))
         expect_true(not field:blocks(2, 2, 1, "vision"))
         expect_true(field:blocks(2, 2, 1, "action"))
         expect_true(not field:blocks(2, 2, 1, "light"))
     end)
 
-    -- @covers LTileField:getProfile
-    it("returns profile details", function()
+    -- @covers LTileField:getCategory
+    it("returns category details", function()
         local field = lurek.tilefield.new({ width = 4, height = 4 })
-        local wall = field:getProfile("wall")
-        expect_true(wall.blocks.move)
-        expect_true(wall.blocks.vision)
+        field:defineCategory("wall_move", { kind = "movement", active = true })
+        local wall = field:getCategory("wall_move")
+        expect_equal("movement", wall.kind)
+        expect_true(wall.active)
     end)
 
-    -- @covers LTileField:removeProfile
-    it("removes custom profile", function()
+    -- @covers LTileField:clearModifier
+    it("removes applied modifier", function()
         local field = lurek.tilefield.new({ width = 4, height = 4 })
-        field:setProfile("tmp", { blocks = { move = true } })
-        field:removeProfile("tmp")
-        expect_nil(field:getProfile("tmp"))
+        field:setModifier("tmp", { blocks = { move = true } })
+        field:applyModifier(2, 2, 1, "tmp")
+        expect_true(field:blocks(2, 2, 1, "move"))
+        expect_true(field:clearModifier(2, 2, 1, "tmp"))
+        expect_true(not field:blocks(2, 2, 1, "move"))
     end)
 
     -- @covers LTileField:setRef
@@ -362,12 +373,12 @@ describe("LTileLightMap lighting and LTileField exports", function()
         expect_near(0.0, luma, 0.001)
     end)
 
-    -- @covers LTileLightMap:setGlobalLight
-    it("sets global light", function()
+    -- @covers LTileLightMap:setSunLight
+    it("sets sun light", function()
         local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
         local light = lurek.tilelight.new(field)
-        light:setGlobalLight({ intensity = 0.5, color = { r = 1, g = 1, b = 1 } })
-        light:compute({ includeGlobalLight = true })
+        light:setSunLight({ kind = "top", intensity = 0.5, color = { r = 1, g = 1, b = 1 } })
+        light:compute({ includeSunLight = true })
         local _, _, _, luma = light:getLight(1, 1, 2)
         expect_true(luma > 0.4)
     end)
@@ -441,12 +452,71 @@ describe("LTileLightMap lighting and LTileField exports", function()
         expect_equal(5, layer[2])
     end)
 
-    -- @covers LTileField:exportProfileLayer
-    it("exports profile layer", function()
+    -- @covers LTileField:getCategories
+    it("exports category registry names", function()
         local field = lurek.tilefield.new({ width = 2, height = 2 })
-        field:applyProfile(2, 1, 1, "window")
-        local layer = field:exportProfileLayer(1)
-        expect_equal("window", layer[2])
+        field:defineCategory("window_move", { kind = "movement" })
+        local names = field:getCategories()
+        expect_true(#names >= 1)
+    end)
+
+    -- @covers LTileField:defineCategory
+    -- @covers LTileField:getCategory
+    -- @covers LTileField:getCategories
+    -- @covers LTileField:setCategoryBlock
+    -- @covers LTileField:blocksCategory
+    -- @covers LTileField:setCategoryCost
+    -- @covers LTileField:getCategoryCost
+    -- @covers LTileField:setCategoryTransmission
+    -- @covers LTileField:getCategoryTransmission
+    -- @covers LTileField:setCategoryFilter
+    -- @covers LTileField:getCategoryFilter
+    -- @covers LTileField:footprintPassable
+    -- @covers LTileField:getVersion
+    it("stores v2 user categories and footprint semantics", function()
+        local field = lurek.tilefield.new({ width = 5, height = 4 })
+        local before = field:getVersion()
+        field:defineCategory("tank", { kind = "movement" })
+        field:setCategoryCost(3, 2, 1, "tank", 5)
+        field:setCategoryBlock(4, 2, 1, "tank", true)
+        field:setCategoryTransmission(2, 2, 1, "light", 0.5)
+        field:setCategoryFilter(2, 2, 1, "light", { 1, 0.25, 0.25 })
+
+        expect_equal("movement", field:getCategory("tank").kind)
+        expect_true(#field:getCategories() >= 1)
+        expect_near(5.0, field:getCategoryCost(3, 2, 1, "tank"), 0.001)
+        expect_true(field:blocksCategory(4, 2, 1, "tank"))
+        expect_true(not field:footprintPassable(3, 2, 1, 2, 1, "tank"))
+        expect_near(0.5, field:getCategoryTransmission(2, 2, 1, "light"), 0.001)
+        expect_near(0.25, field:getCategoryFilter(2, 2, 1, "light")[2], 0.001)
+        expect_true(field:getVersion() > before)
+    end)
+
+    -- @covers LTileField:setRef
+    -- @covers LTileField:getRef
+    -- @covers LTileField:getCell
+    -- @covers LTileField:setCell
+    it("stores typed v2 refs and category cell tables", function()
+        local field = lurek.tilefield.new({ width = 3, height = 3 })
+        field:setRef(2, 2, 1, "object", { tileset = "terrain", tile = 3 })
+        local ref = field:getRef(2, 2, 1, "object")
+        expect_equal("terrain", ref.tileset)
+        expect_equal(3, ref.tile)
+
+        field:setCell(1, 1, 1, {
+            refs = { object = { tileset = "objects", object = "crate" } },
+            categoryBlocks = { sound = true },
+            categoryCosts = { tank = 7 },
+            transmission = { light = 0.4 },
+            filters = { light = { 0.5, 0.75, 1.0 } },
+        })
+        local cell = field:getCell(1, 1, 1)
+        expect_equal("objects", cell.refs.object.tileset)
+        expect_equal("crate", cell.refs.object.object)
+        expect_true(cell.categoryBlocks.sound)
+        expect_near(7.0, cell.categoryCosts.tank, 0.001)
+        expect_near(0.4, cell.transmission.light, 0.001)
+        expect_near(0.75, cell.filters.light[2], 0.001)
     end)
 
     -- @covers LTileField:type

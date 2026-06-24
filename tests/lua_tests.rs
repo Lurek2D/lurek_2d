@@ -1639,6 +1639,11 @@ fn lua_unit_tilelight_unit() {
 }
 
 #[test]
+fn lua_unit_tileset_unit() {
+    run_lua_test("unit/test_tileset_unit.lua");
+}
+
+#[test]
 fn lua_unit_timer_unit() {
     run_lua_test("unit/test_timer_unit.lua");
 }

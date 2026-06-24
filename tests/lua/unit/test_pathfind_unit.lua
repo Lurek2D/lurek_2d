@@ -1077,7 +1077,7 @@ describe("pathfind tilefield adapters", function()
     -- @covers lurek.pathfind.newNavGridFromField
     it("creates navgrid from tilefield move channel", function()
         local field = lurek.tilefield.new({ width = 4, height = 4 })
-        field:applyProfile(2, 2, 1, "window")
+        field:setBlock(2, 2, 1, "move", true)
         local nav = lurek.pathfind.newNavGridFromField(field, { level = 1, channel = "move" })
         expect_equal(4, nav:getWidth())
         expect_true(nav:isBlocked(2, 2))
@@ -1086,7 +1086,7 @@ describe("pathfind tilefield adapters", function()
     -- @covers lurek.pathfind.rangeMapFromField
     it("computes movement range from tilefield", function()
         local field = lurek.tilefield.new({ width = 5, height = 5 })
-        field:applyProfile(3, 3, 1, "wall")
+        field:setBlock(3, 3, 1, "move", true)
         local range = lurek.pathfind.rangeMapFromField(field, {
             origin = { x = 1, y = 1, z = 1 },
             budget = 3,
@@ -1094,6 +1094,45 @@ describe("pathfind tilefield adapters", function()
         })
         expect_equal(5, range.width)
         expect_true(#range.cells > 1)
+    end)
+
+    -- @covers lurek.pathfind.newNavGridFromField
+    it("creates footprint-aware navgrid from tilefield category", function()
+        local field = lurek.tilefield.new({ width = 5, height = 3 })
+        field:defineCategory("tank", { kind = "movement" })
+        field:setCategoryBlock(3, 2, 1, "tank", true)
+        field:setCategoryCost(1, 2, 1, "tank", 6)
+
+        local nav = lurek.pathfind.newNavGridFromField(field, {
+            level = 1,
+            category = "tank",
+            costCategory = "tank",
+            footprintWidth = 2,
+            footprintHeight = 1,
+        })
+
+        expect_equal(6, nav:getCost(1, 2))
+        expect_true(nav:isBlocked(2, 2), "2x1 footprint overlaps the blocked tank cell")
+        expect_true(nav:isBlocked(5, 2), "2x1 footprint cannot anchor past the field edge")
+    end)
+
+    -- @covers lurek.pathfind.rangeMapFromField
+    it("computes range from tilefield categories", function()
+        local field = lurek.tilefield.new({ width = 4, height = 3 })
+        field:defineCategory("tank", { kind = "movement" })
+        field:setCategoryCost(2, 1, 1, "tank", 3)
+        field:setCategoryBlock(3, 1, 1, "tank", true)
+
+        local range = lurek.pathfind.rangeMapFromField(field, {
+            origin = { x = 1, y = 1, z = 1 },
+            budget = 3,
+            category = "tank",
+            costCategory = "tank",
+        })
+
+        expect_equal(4, range.width)
+        expect_equal(3, range.height)
+        expect_true(#range.cells >= 2)
     end)
 end)
 -- @describe pathfind movement and tactical APIs

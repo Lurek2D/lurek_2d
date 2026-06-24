@@ -7,10 +7,12 @@
 //! Returns controlled string errors at the domain boundary so Lua bindings can attach lurek.tilefield names.
 //! Does not depend on pathfind, awareness, tilelight, raycaster, minimap, tilemap rendering, or renderer state.
 
+use crate::tilefield::category::{TileCategory, TileCategoryKind};
 use crate::tilefield::cell::{TileCell, TileChannel};
 use crate::tilefield::emitter::{TileLightEmitter, TileLightSource};
 use crate::tilefield::line::{line_between, CellCoord};
 use crate::tilefield::modifier::TileModifier;
+use crate::tilefield::reference::TileRef;
 use crate::tilefield::topology::TileTopology;
 use std::collections::BTreeSet;
 use std::collections::{HashMap, HashSet};
@@ -32,9 +34,12 @@ pub struct TileField {
     levels: u32,
     topology: TileTopology,
     cells: Vec<TileCell>,
+    categories: HashMap<String, TileCategory>,
     modifiers: HashMap<String, TileModifier>,
     slots: BTreeSet<String>,
     regions: HashMap<String, TileRegion>,
+    version: u64,
+    dirty_rects: Vec<(u32, u32, u32, u32, u32)>,
 }
 
 impl TileField {
@@ -53,15 +58,31 @@ impl TileField {
             .and_then(|v| v.checked_mul(levels))
             .and_then(|v| usize::try_from(v).ok())
             .ok_or_else(|| "tilefield dimensions overflow addressable storage".to_string())?;
+        let mut categories = HashMap::new();
+        for (name, kind) in [
+            ("move", TileCategoryKind::Movement),
+            ("vision", TileCategoryKind::Awareness),
+            ("action", TileCategoryKind::Awareness),
+            ("light", TileCategoryKind::Light),
+            ("sun", TileCategoryKind::Sun),
+        ] {
+            categories.insert(
+                name.to_string(),
+                TileCategory::new(name.to_string(), kind, true)?,
+            );
+        }
         Ok(Self {
             width,
             height,
             levels,
             topology,
             cells: vec![TileCell::default(); len],
+            categories,
             modifiers: HashMap::new(),
             slots: BTreeSet::new(),
             regions: HashMap::new(),
+            version: 1,
+            dirty_rects: Vec::new(),
         })
     }
 
@@ -73,6 +94,51 @@ impl TileField {
     /// Return field topology.
     pub fn topology(&self) -> TileTopology {
         self.topology
+    }
+
+    /// Return the monotonically increasing field data version.
+    pub fn version(&self) -> u64 {
+        self.version
+    }
+
+    /// Register or replace a user-defined category.
+    pub fn define_category(&mut self, category: TileCategory) -> Result<(), String> {
+        if category.name.trim().is_empty() {
+            return Err("tilefield category name must not be empty".to_string());
+        }
+        self.categories.insert(category.name.clone(), category);
+        self.bump_version();
+        Ok(())
+    }
+
+    /// Return a category record by name.
+    pub fn category(&self, name: &str) -> Option<&TileCategory> {
+        self.categories.get(name)
+    }
+
+    /// Return known category names in stable order.
+    pub fn category_names(&self) -> Vec<String> {
+        let mut names: Vec<_> = self.categories.keys().cloned().collect();
+        names.sort();
+        names
+    }
+
+    /// Clear and return pending dirty cell rectangles.
+    pub fn drain_dirty_rects(&mut self) -> Vec<(u32, u32, u32, u32, u32)> {
+        std::mem::take(&mut self.dirty_rects)
+    }
+
+    fn bump_version(&mut self) {
+        self.version = self.version.saturating_add(1).max(1);
+    }
+
+    fn mark_dirty_cell(&mut self, coord: CellCoord) {
+        self.bump_version();
+        self.dirty_rects.push((coord.x, coord.y, coord.z, 1, 1));
+    }
+
+    fn channel_for_category(category: &str) -> Option<TileChannel> {
+        TileChannel::parse(category).ok()
     }
 
     /// Return same-level neighbours for a coordinate using this field topology.
@@ -202,6 +268,7 @@ impl TileField {
             .cell_mut(coord)
             .ok_or_else(|| "tilefield clearCell coordinate is out of bounds".to_string())?;
         *cell = TileCell::default();
+        self.mark_dirty_cell(coord);
         Ok(())
     }
 
@@ -216,6 +283,7 @@ impl TileField {
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setBlock coordinate is out of bounds".to_string())?;
         cell.set_block(channel, blocked);
+        self.mark_dirty_cell(coord);
         Ok(())
     }
 
@@ -237,6 +305,45 @@ impl TileField {
         blocked
     }
 
+    /// Set a blocker override for one user-defined category on one cell.
+    pub fn set_category_block(
+        &mut self,
+        coord: CellCoord,
+        category: String,
+        blocked: bool,
+    ) -> Result<(), String> {
+        let cell = self
+            .cell_mut(coord)
+            .ok_or_else(|| "tilefield setCategoryBlock coordinate is out of bounds".to_string())?;
+        cell.set_category_block(category, Some(blocked))?;
+        self.mark_dirty_cell(coord);
+        Ok(())
+    }
+
+    /// Return whether one cell blocks a user-defined category.
+    pub fn blocks_category(&self, coord: CellCoord, category: &str) -> bool {
+        let Some(cell) = self.cell(coord) else {
+            return true;
+        };
+        let mut blocked = cell
+            .blocks_category(category)
+            .or_else(|| Self::channel_for_category(category).map(|channel| cell.blocks(channel)))
+            .unwrap_or(false);
+        for modifier_name in cell.modifiers() {
+            let Some(modifier) = self.modifiers.get(modifier_name) else {
+                continue;
+            };
+            if let Some(value) = modifier.category_blockers.get(category) {
+                blocked = *value;
+            } else if let Some(channel) = Self::channel_for_category(category) {
+                if let Some(value) = modifier.blockers.get(&channel) {
+                    blocked = *value;
+                }
+            }
+        }
+        blocked
+    }
+
     /// Set channel cost for one cell.
     pub fn set_cost(
         &mut self,
@@ -247,7 +354,9 @@ impl TileField {
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setCost coordinate is out of bounds".to_string())?;
-        cell.set_cost(channel, cost)
+        cell.set_cost(channel, cost)?;
+        self.mark_dirty_cell(coord);
+        Ok(())
     }
 
     /// Return channel cost for one cell; out-of-bounds returns 0.
@@ -270,12 +379,134 @@ impl TileField {
         cost.max(0.0)
     }
 
+    /// Set a movement/transmission cost for a user-defined category on one cell.
+    pub fn set_category_cost(
+        &mut self,
+        coord: CellCoord,
+        category: String,
+        cost: f32,
+    ) -> Result<(), String> {
+        let cell = self
+            .cell_mut(coord)
+            .ok_or_else(|| "tilefield setCategoryCost coordinate is out of bounds".to_string())?;
+        cell.set_category_cost(category, Some(cost))?;
+        self.mark_dirty_cell(coord);
+        Ok(())
+    }
+
+    /// Return effective cost for a user-defined category.
+    pub fn category_cost(&self, coord: CellCoord, category: &str) -> f32 {
+        let Some(cell) = self.cell(coord) else {
+            return 0.0;
+        };
+        let mut cost = cell
+            .category_cost(category)
+            .or_else(|| Self::channel_for_category(category).map(|channel| cell.cost(channel)))
+            .unwrap_or(1.0);
+        for modifier_name in cell.modifiers() {
+            let Some(modifier) = self.modifiers.get(modifier_name) else {
+                continue;
+            };
+            if let Some(multiplier) = modifier.category_cost_mul.get(category) {
+                cost *= *multiplier;
+            } else if let Some(channel) = Self::channel_for_category(category) {
+                if let Some(multiplier) = modifier.cost_mul.get(&channel) {
+                    cost *= *multiplier;
+                }
+            }
+            if let Some(add) = modifier.category_cost_add.get(category) {
+                cost += *add;
+            } else if let Some(channel) = Self::channel_for_category(category) {
+                if let Some(add) = modifier.cost_add.get(&channel) {
+                    cost += *add;
+                }
+            }
+        }
+        cost.max(0.0)
+    }
+
+    /// Set a transmission multiplier for a category.
+    pub fn set_category_transmission(
+        &mut self,
+        coord: CellCoord,
+        category: String,
+        value: f32,
+    ) -> Result<(), String> {
+        let cell = self.cell_mut(coord).ok_or_else(|| {
+            "tilefield setCategoryTransmission coordinate is out of bounds".to_string()
+        })?;
+        cell.set_category_transmission(category, Some(value))?;
+        self.mark_dirty_cell(coord);
+        Ok(())
+    }
+
+    /// Return effective category transmission in `[0, 1]`.
+    pub fn category_transmission(&self, coord: CellCoord, category: &str) -> f32 {
+        if self.blocks_category(coord, category) {
+            return 0.0;
+        }
+        let Some(cell) = self.cell(coord) else {
+            return 0.0;
+        };
+        let base = cell
+            .category_transmission(category)
+            .unwrap_or_else(|| self.category_cost(coord, category).clamp(0.0, 1.0));
+        let mut transmission = base;
+        for modifier_name in cell.modifiers() {
+            if let Some(value) = self
+                .modifiers
+                .get(modifier_name)
+                .and_then(|modifier| modifier.category_transmission.get(category))
+            {
+                transmission *= *value;
+            }
+        }
+        transmission.clamp(0.0, 1.0)
+    }
+
+    /// Set an RGB filter for a category.
+    pub fn set_category_filter(
+        &mut self,
+        coord: CellCoord,
+        category: String,
+        value: [f32; 3],
+    ) -> Result<(), String> {
+        let cell = self
+            .cell_mut(coord)
+            .ok_or_else(|| "tilefield setCategoryFilter coordinate is out of bounds".to_string())?;
+        cell.set_category_filter(category, Some(value))?;
+        self.mark_dirty_cell(coord);
+        Ok(())
+    }
+
+    /// Return effective RGB filter for a category.
+    pub fn category_filter(&self, coord: CellCoord, category: &str) -> [f32; 3] {
+        let Some(cell) = self.cell(coord) else {
+            return [0.0, 0.0, 0.0];
+        };
+        let mut filter = cell.category_filter(category).unwrap_or([1.0, 1.0, 1.0]);
+        for modifier_name in cell.modifiers() {
+            if let Some(value) = self
+                .modifiers
+                .get(modifier_name)
+                .and_then(|modifier| modifier.category_filters.get(category))
+            {
+                filter[0] *= value[0];
+                filter[1] *= value[1];
+                filter[2] *= value[2];
+            }
+        }
+        filter
+    }
+
     /// Set top-light occlusion for one cell.
     pub fn set_sun_occlusion(&mut self, coord: CellCoord, value: f32) -> Result<(), String> {
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setSunOcclusion coordinate is out of bounds".to_string())?;
-        cell.set_sun_occlusion(value)
+        cell.set_sun_occlusion(value)?;
+        self.mark_dirty_cell(coord);
+        Ok(())
     }
 
     /// Return top-light occlusion for one cell.
@@ -300,6 +531,7 @@ impl TileField {
         }
         modifier.name = name.to_string();
         self.modifiers.insert(name.to_string(), modifier);
+        self.bump_version();
         Ok(())
     }
 
@@ -315,6 +547,7 @@ impl TileField {
             for cell in &mut self.cells {
                 cell.remove_modifier(name);
             }
+            self.bump_version();
         }
         removed
     }
@@ -328,6 +561,7 @@ impl TileField {
             .cell_mut(coord)
             .ok_or_else(|| "tilefield applyModifier coordinate is out of bounds".to_string())?;
         cell.add_modifier(name.to_string());
+        self.mark_dirty_cell(coord);
         Ok(())
     }
 
@@ -336,7 +570,11 @@ impl TileField {
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield clearModifier coordinate is out of bounds".to_string())?;
-        Ok(cell.remove_modifier(name))
+        let removed = cell.remove_modifier(name);
+        if removed {
+            self.mark_dirty_cell(coord);
+        }
+        Ok(removed)
     }
 
     /// Return active modifier names for one cell.
@@ -356,7 +594,9 @@ impl TileField {
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setLight coordinate is out of bounds".to_string())?;
-        cell.set_light(source, light)
+        cell.set_light(source, light)?;
+        self.mark_dirty_cell(coord);
+        Ok(())
     }
 
     /// Return tilelight sources contributed by base cell data and active modifiers.
@@ -404,18 +644,39 @@ impl TileField {
 
     /// Set a named object/tile reference on one cell.
     pub fn set_ref(&mut self, coord: CellCoord, slot: String, value: u32) -> Result<(), String> {
-        if !self.has_slot(&slot) {
-            return Err(format!("tilefield slot '{slot}' is not defined"));
-        }
+        self.define_slot(slot.clone())?;
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setRef coordinate is out of bounds".to_string())?;
-        cell.set_ref(slot, value)
+        cell.set_ref(slot, value)?;
+        self.mark_dirty_cell(coord);
+        Ok(())
     }
 
     /// Return a named object/tile reference for one cell.
     pub fn get_ref(&self, coord: CellCoord, slot: &str) -> Option<u32> {
         self.cell(coord).and_then(|cell| cell.get_ref(slot))
+    }
+
+    /// Set a typed object/tile reference on one cell.
+    pub fn set_typed_ref(
+        &mut self,
+        coord: CellCoord,
+        slot: String,
+        value: TileRef,
+    ) -> Result<(), String> {
+        self.define_slot(slot.clone())?;
+        let cell = self
+            .cell_mut(coord)
+            .ok_or_else(|| "tilefield setRef coordinate is out of bounds".to_string())?;
+        cell.set_typed_ref(slot, value)?;
+        self.mark_dirty_cell(coord);
+        Ok(())
+    }
+
+    /// Return a typed object/tile reference for one cell.
+    pub fn get_typed_ref(&self, coord: CellCoord, slot: &str) -> Option<&TileRef> {
+        self.cell(coord).and_then(|cell| cell.get_typed_ref(slot))
     }
 
     /// Define a game-owned object slot that cells may reference.
@@ -436,6 +697,7 @@ impl TileField {
                 cell.clear_ref(slot);
                 let _ = cell.set_light(slot.to_string(), None);
             }
+            self.bump_version();
         }
         removed
     }
@@ -460,7 +722,53 @@ impl TileField {
             .ok_or_else(|| "tilefield clearRef coordinate is out of bounds".to_string())?;
         cell.clear_ref(slot);
         cell.set_light(slot.to_string(), None)?;
+        self.mark_dirty_cell(coord);
         Ok(())
+    }
+
+    /// Return true when a footprint anchored at `anchor` is passable for a category.
+    pub fn footprint_passable(
+        &self,
+        anchor: CellCoord,
+        width: u32,
+        height: u32,
+        category: &str,
+    ) -> bool {
+        let width = width.max(1);
+        let height = height.max(1);
+        let Some(x_end) = anchor.x.checked_add(width) else {
+            return false;
+        };
+        let Some(y_end) = anchor.y.checked_add(height) else {
+            return false;
+        };
+        if anchor.z >= self.levels || x_end > self.width || y_end > self.height {
+            return false;
+        }
+        for y in anchor.y..y_end {
+            for x in anchor.x..x_end {
+                if self.blocks_category(CellCoord { x, y, z: anchor.z }, category) {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    /// Return true when no cell blocks the category between two cells.
+    pub fn clear_line_category(
+        &self,
+        from: CellCoord,
+        to: CellCoord,
+        category: &str,
+    ) -> Result<bool, String> {
+        let cells = self.line(from, to, true)?;
+        for coord in cells.into_iter().skip(1) {
+            if self.blocks_category(coord, category) {
+                return Ok(false);
+            }
+        }
+        Ok(true)
     }
 
     /// Compute a topology-aware line.

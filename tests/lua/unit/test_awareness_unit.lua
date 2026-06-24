@@ -229,14 +229,14 @@ describe("visibility tilefield helpers", function()
     -- @covers lurek.awareness.lineOfSight
     it("checks sight line with vision channel", function()
         local field = lurek.tilefield.new({ width = 5, height = 3 })
-        field:applyProfile(3, 2, 1, "window")
+        field:setBlock(3, 2, 1, "action", true)
         expect_true(lurek.awareness.lineOfSight(field, { x = 1, y = 2, z = 1 }, { x = 5, y = 2, z = 1 }))
     end)
 
     -- @covers lurek.awareness.lineOfAction
     it("checks action line separately from sight", function()
         local field = lurek.tilefield.new({ width = 5, height = 3 })
-        field:applyProfile(3, 2, 1, "window")
+        field:setBlock(3, 2, 1, "action", true)
         expect_true(not lurek.awareness.lineOfAction(field, { x = 1, y = 2, z = 1 }, { x = 5, y = 2, z = 1 }))
     end)
 
@@ -256,10 +256,35 @@ describe("visibility tilefield helpers", function()
         expect_true(not vis:isVisible("p2", 2, 1, 1))
     end)
 
+    -- @covers LTileAwareness:defineCategory
+    -- @covers LTileAwareness:getCategory
+    -- @covers LTileAwareness:getCategories
+    -- @covers LTileAwareness:isAware
+    it("computes a user-defined cone category", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        field:defineCategory("sight", { kind = "awareness" })
+        local vis = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
+        vis:defineCategory("sight", {
+            active = true,
+            range = 3,
+            mode = "cone",
+            arc = 90,
+            facing = { x = 1, y = 0 },
+            blockerCategory = "sight",
+        })
+        local config = vis:getCategory("sight")
+        expect_equal("cone", config.mode)
+        expect_equal("sight", config.blockerCategory)
+        expect_true(#vis:getCategories() >= 1)
+        vis:computeVisible("p1", { origin = { x = 3, y = 3, z = 1 }, category = "sight" })
+        expect_true(vis:isAware("p1", "sight", 4, 3, 1))
+        expect_true(not vis:isAware("p1", "sight", 2, 3, 1))
+    end)
+
     -- @covers LTileAwareness:computeAction
     it("computes action mask separately", function()
         local field = lurek.tilefield.new({ width = 5, height = 3 })
-        field:applyProfile(3, 2, 1, "window")
+        field:setBlock(3, 2, 1, "action", true)
         local vis = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
         vis:computeVisible("p1", { origin = { x = 1, y = 2, z = 1 }, range = 5 })
         vis:computeAction("p1", { origin = { x = 1, y = 2, z = 1 }, range = 5 })
@@ -297,6 +322,33 @@ describe("visibility tilefield helpers", function()
         local vis = lurek.awareness.newTileAwareness(field, { players = { "p1" } })
         vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
         expect_true(#vis:visibleCells("p1", 1) > 0)
+    end)
+
+    -- @covers LTileAwareness:share
+    -- @covers LTileAwareness:visibleCells
+    -- @covers LTileAwareness:clearShares
+    it("shares awareness category masks in one direction", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        field:defineCategory("sound", { kind = "awareness" })
+        local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
+        vis:defineCategory("sound", { active = true, range = 1, blockerCategory = "sound" })
+        vis:computeVisible("p1", { origin = { x = 1, y = 1, z = 1 }, category = "sound" })
+        vis:computeVisible("p2", { origin = { x = 5, y = 5, z = 1 }, category = "sound" })
+        vis:share("p1", "p2", "sound")
+        expect_true(vis:isVisible("p2", 2, 1, 1))
+        expect_true(not vis:isVisible("p1", 5, 5, 1))
+        expect_true(#vis:visibleCells("p2", "sound", 1) > 0)
+        vis:clearShares()
+        expect_true(not vis:isVisible("p2", 2, 1, 1))
+    end)
+
+    -- @covers LTileAwareness:setTeam
+    it("creates team share edges for selected categories", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        local vis = lurek.awareness.newTileAwareness(field, { players = { "p1", "p2" } })
+        vis:computeVisible("p1", { origin = { x = 1, y = 1, z = 1 }, range = 1 })
+        vis:setTeam({ "p1", "p2" }, { "vision" })
+        expect_true(vis:isVisible("p2", 2, 1, 1))
     end)
 
     -- @covers LTileAwareness:actionCells

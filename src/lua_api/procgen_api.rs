@@ -156,6 +156,7 @@ fn procgen_channel_from_name(name: &str, api: &str) -> LuaResult<TileChannel> {
     TileChannel::parse(name).map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))
 }
 
+#[allow(clippy::too_many_arguments)]
 fn write_procgen_grid_to_field(
     field: &mut TileField,
     width: u32,

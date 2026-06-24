@@ -38,6 +38,16 @@ pub struct TileObjectArchetype {
     pub blockers: HashMap<TileChannel, bool>,
     /// Per-channel cost/transmission defaults.
     pub costs: HashMap<TileChannel, f32>,
+    /// Per-category blocker defaults.
+    pub category_blockers: HashMap<String, bool>,
+    /// Per-category cost defaults.
+    pub category_costs: HashMap<String, f32>,
+    /// Per-category transmission defaults.
+    pub category_transmission: HashMap<String, f32>,
+    /// Per-category RGB filter defaults.
+    pub category_filters: HashMap<String, [f32; 3]>,
+    /// Optional footprint width/height in cells.
+    pub footprint: Option<(u32, u32)>,
     /// Optional top-sun occlusion default in 0..1.
     pub sun_occlusion: Option<f32>,
     /// Optional tilelight source defaults.
@@ -59,6 +69,11 @@ impl TileObjectArchetype {
             visual: None,
             blockers: HashMap::new(),
             costs: HashMap::new(),
+            category_blockers: HashMap::new(),
+            category_costs: HashMap::new(),
+            category_transmission: HashMap::new(),
+            category_filters: HashMap::new(),
+            footprint: None,
             sun_occlusion: None,
             light: None,
             properties: HashMap::new(),

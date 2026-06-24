@@ -8,6 +8,6 @@ pub mod source;
 pub use color::LightColor;
 pub use map::TileLightMap;
 pub use source::{
-    LightModulation, LineLight, LineLightUpdate, PointLight, PointLightUpdate, SunLight,
-    SunLightMode,
+    AreaLight, AreaLightUpdate, LightModulation, LineLight, LineLightUpdate, PointLight,
+    PointLightUpdate, SunLight, SunLightMode,
 };

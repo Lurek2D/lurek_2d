@@ -1,7 +1,7 @@
 //! Registers the `lurek.tilemap` Lua API for tilemap userdata, imports, one-based coordinates, and validation.
 
 use super::tilefield_api::{field_from_provider, LuaTileField};
-use super::tileset_api::{tileset_from_provider, LuaTileSet};
+use super::tileset_api::{tileset_from_provider, LuaTileCatalog, LuaTileSet};
 use super::SharedState;
 use crate::tilemap::autotile_sheet::{layout_name, AutoTileLayout, AutoTileSheet};
 use crate::tilemap::chunk::ChunkMap;
@@ -14,7 +14,7 @@ use crate::tilemap::render::TileFieldSlotRenderOptions;
 use crate::tilemap::tilemap::TileMap;
 use crate::tilemap::tmx::{load_tmx_with_options, TmxLoadOptions};
 use crate::tilemap::{TileMapDiagnosticsSnapshot, TileMapLimits};
-use crate::tileset::{AutoTileMode, TileSet};
+use crate::tileset::{TileCatalog, TileSet};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::path::PathBuf;
@@ -181,6 +181,19 @@ fn tileset_from_value(value: LuaValue, api: &str) -> LuaResult<Rc<RefCell<TileSe
         }
         other => Err(LuaError::RuntimeError(format!(
             "{api}: expected LTileSet or provider table, got {}",
+            other.type_name()
+        ))),
+    }
+}
+
+fn catalog_from_value(value: LuaValue, api: &str) -> LuaResult<Rc<RefCell<TileCatalog>>> {
+    match value {
+        LuaValue::UserData(catalog_ud) => {
+            let catalog = catalog_ud.borrow::<LuaTileCatalog>()?;
+            Ok(catalog.inner.clone())
+        }
+        other => Err(LuaError::RuntimeError(format!(
+            "{api}: expected LTileCatalog, got {}",
             other.type_name()
         ))),
     }
@@ -844,6 +857,53 @@ impl LuaUserData for LuaTileMap {
                 Ok(())
             },
         );
+
+        // -- renderFieldCatalogSlot --
+        /// Renders typed refs from a tilefield slot through a tileset catalog.
+        /// @param | field | LTileField|table | Source tilefield handle or provider table containing typed slot refs.
+        /// @param | catalog | LTileCatalog | Catalog resolving `{tileset,tile/object}` refs to visuals.
+        /// @param | opts | table | Options: slot, z, offsetX, offsetY.
+        methods.add_method(
+            "renderFieldCatalogSlot",
+            |_, this, (field_value, catalog_value, opts): (LuaValue, LuaValue, LuaTable)| {
+                let slot: String = opts.get("slot")?;
+                let z = opts
+                    .get::<_, Option<u32>>("z")?
+                    .unwrap_or(1)
+                    .checked_sub(1)
+                    .ok_or_else(|| {
+                        LuaError::RuntimeError("renderFieldCatalogSlot: z must be >= 1".to_string())
+                    })?;
+                let offset_x = opts.get::<_, Option<f32>>("offsetX")?.unwrap_or(0.0);
+                let offset_y = opts.get::<_, Option<f32>>("offsetY")?.unwrap_or(0.0);
+                let field_ref =
+                    tilefield_from_value(field_value, "LTileMap:renderFieldCatalogSlot")?;
+                let catalog_ref =
+                    catalog_from_value(catalog_value, "LTileMap:renderFieldCatalogSlot")?;
+                let field = field_ref.borrow();
+                let catalog = catalog_ref.borrow();
+                let map = this.inner.borrow();
+                let options = TileFieldSlotRenderOptions {
+                    slot,
+                    z,
+                    offset_x,
+                    offset_y,
+                    ref_is_gid: false,
+                };
+                let state = this.state.borrow();
+                let commands = map
+                    .build_field_catalog_slot_render_commands(
+                        &field,
+                        &catalog,
+                        &options,
+                        |texture_key| state.textures.contains_key(texture_key),
+                    )
+                    .map_err(LuaError::RuntimeError)?;
+                drop(state);
+                this.state.borrow_mut().render_commands.extend(commands);
+                Ok(())
+            },
+        );
         // -- getDiagnostics --
         /// Returns tilemap diagnostics counters for invalid calls, unknown gids, and lazy index rebuilds.
         methods.add_method("getDiagnostics", |lua, this, ()| {
@@ -1442,6 +1502,36 @@ impl LuaUserData for LuaIsoMap {
 /// Registers the `lurek.tilemap` module table and all factory functions.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // -- newTileSet --
+    /// Compatibility alias for `lurek.tileset.newTileSet`.
+    tbl.set(
+        "newTileSet",
+        lua.create_function(
+            |lua,
+             (first_gid, tile_count, columns, tile_width, tile_height, spacing, margin): (
+                u32,
+                u32,
+                u32,
+                u32,
+                u32,
+                Option<u32>,
+                Option<u32>,
+            )| {
+                lua.create_userdata(LuaTileSet {
+                    inner: Rc::new(RefCell::new(TileSet::new(
+                        first_gid,
+                        tile_count,
+                        columns,
+                        tile_width,
+                        tile_height,
+                        spacing.unwrap_or(0),
+                        margin.unwrap_or(0),
+                    ))),
+                })
+            },
+        )?,
+    )?;
+
     let s = state.clone();
     // -- newTileMap --
     /// Creates a new empty tilemap with the given tile dimensions.

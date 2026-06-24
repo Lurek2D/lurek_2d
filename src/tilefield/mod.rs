@@ -5,6 +5,10 @@
 //! Agents start here to trace which file owns blockers, costs, topology math, slots, and modifiers.
 //! Neighbor modules may consume exported data, but they do not become owners of tilefield semantics.
 
+/// Catalog trait for resolving typed refs without depending on tileset.
+pub mod catalog;
+/// User-defined category metadata for field semantics.
+pub mod category;
 /// Field cell storage and query behavior.
 pub mod cell;
 /// Tile light emitter data stored by fields and consumed by tilelight.
@@ -17,13 +21,21 @@ pub mod field_map;
 pub mod line;
 /// Runtime tile modifiers applied on top of cell/object defaults.
 pub mod modifier;
+/// Typed tile/object refs stored in author-defined field slots.
+pub mod reference;
+/// Shared read-only semantic query facade over tilefield data.
+pub mod semantics;
 /// Supported grid topology parsing and distance helpers.
 pub mod topology;
 
+pub use catalog::TileObjectCatalog;
+pub use category::{TileCategory, TileCategoryKind};
 pub use cell::{TileCell, TileChannel};
 pub use emitter::{TileLightEmitter, TileLightSource};
 pub use field::{TileField, TileRegion};
 pub use field_map::{SharedTileField, TileFieldMap};
 pub use line::CellCoord;
 pub use modifier::TileModifier;
+pub use reference::TileRef;
+pub use semantics::TileSemanticsView;
 pub use topology::TileTopology;

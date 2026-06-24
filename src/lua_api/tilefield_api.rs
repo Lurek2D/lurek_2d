@@ -4,7 +4,8 @@ use super::tilemap_api::LuaTileMap;
 use super::tileset_api::LuaTileSet;
 use super::SharedState;
 use crate::tilefield::{
-    CellCoord, TileChannel, TileField, TileFieldMap, TileLightEmitter, TileModifier, TileTopology,
+    CellCoord, TileCategory, TileCategoryKind, TileChannel, TileField, TileFieldMap,
+    TileLightEmitter, TileModifier, TileRef, TileTopology,
 };
 use crate::tilemap::tilemap::TileMap;
 use crate::tileset::TileSet;
@@ -53,6 +54,46 @@ fn channel_from_str(value: String, api: &str) -> LuaResult<TileChannel> {
     TileChannel::parse(&value).map_err(|err| lua_err(api, err))
 }
 
+fn category_kind_from_opts(opts: &LuaTable, api: &str) -> LuaResult<TileCategoryKind> {
+    let kind = opts
+        .get::<_, Option<String>>("kind")
+        .map_err(|e| lua_err(api, e))?
+        .unwrap_or_else(|| "custom".to_string());
+    TileCategoryKind::parse(&kind).map_err(|e| lua_err(api, e))
+}
+
+fn tile_ref_from_table(table: LuaTable, api: &str) -> LuaResult<TileRef> {
+    let tileset = table
+        .get::<_, Option<String>>("tileset")
+        .map_err(|e| lua_err(api, e))?
+        .or_else(|| table.get::<_, Option<String>>("tilesetId").ok().flatten())
+        .ok_or_else(|| lua_err(api, "typed ref requires tileset"))?;
+    let tile = table
+        .get::<_, Option<u32>>("tile")
+        .map_err(|e| lua_err(api, e))?
+        .or_else(|| table.get::<_, Option<u32>>("tileId").ok().flatten())
+        .map(|value| one_based(value, "tile"))
+        .transpose()
+        .map_err(|e| lua_err(api, e))?;
+    let object = table
+        .get::<_, Option<String>>("object")
+        .map_err(|e| lua_err(api, e))?
+        .or_else(|| table.get::<_, Option<String>>("objectId").ok().flatten());
+    TileRef::new(tileset, tile, object).map_err(|e| lua_err(api, e))
+}
+
+fn tile_ref_to_lua<'lua>(lua: &'lua Lua, value: &TileRef) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("tileset", value.tileset_id.as_str())?;
+    if let Some(tile) = value.local_id {
+        table.set("tile", tile + 1)?;
+    }
+    if let Some(object) = value.object_id.as_ref() {
+        table.set("object", object.as_str())?;
+    }
+    Ok(table)
+}
+
 fn property_string_to_bool(value: &str) -> Option<bool> {
     match value {
         "true" | "1" => Some(true),
@@ -99,6 +140,54 @@ fn modifier_from_table(name: String, table: LuaTable, api: &str) -> LuaResult<Ti
             modifier
                 .cost_mul
                 .insert(channel_from_str(name, api)?, value);
+        }
+    }
+    if let Ok(blocks) = table.get::<_, LuaTable>("categoryBlocks") {
+        for pair in blocks.pairs::<String, bool>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            modifier.category_blockers.insert(name, value);
+        }
+    }
+    if let Ok(costs) = table.get::<_, LuaTable>("categoryCostAdd") {
+        for pair in costs.pairs::<String, f32>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            modifier.category_cost_add.insert(name, value);
+        }
+    }
+    if let Ok(costs) = table.get::<_, LuaTable>("categoryCostMul") {
+        for pair in costs.pairs::<String, f32>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            modifier.category_cost_mul.insert(name, value);
+        }
+    }
+    if let Ok(transmission) = table.get::<_, LuaTable>("transmission") {
+        for pair in transmission.pairs::<String, f32>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            modifier
+                .category_transmission
+                .insert(name, value.clamp(0.0, 1.0));
+        }
+    }
+    if let Ok(filters) = table.get::<_, LuaTable>("filters") {
+        for pair in filters.pairs::<String, LuaTable>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            modifier.category_filters.insert(
+                name,
+                [
+                    value
+                        .get::<_, Option<f32>>(1)?
+                        .unwrap_or(1.0)
+                        .clamp(0.0, 1.0),
+                    value
+                        .get::<_, Option<f32>>(2)?
+                        .unwrap_or(1.0)
+                        .clamp(0.0, 1.0),
+                    value
+                        .get::<_, Option<f32>>(3)?
+                        .unwrap_or(1.0)
+                        .clamp(0.0, 1.0),
+                ],
+            );
         }
     }
     modifier.sun_occlusion_add = table
@@ -207,6 +296,46 @@ fn apply_provider_cell(
                 .map_err(|e| lua_err(api, e))?;
         }
     }
+    if let Ok(blocks) = cell.get::<_, LuaTable>("categoryBlocks") {
+        for pair in blocks.pairs::<String, bool>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            field
+                .set_category_block(coord, name, value)
+                .map_err(|e| lua_err(api, e))?;
+        }
+    }
+    if let Ok(costs) = cell.get::<_, LuaTable>("categoryCosts") {
+        for pair in costs.pairs::<String, f32>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            field
+                .set_category_cost(coord, name, value)
+                .map_err(|e| lua_err(api, e))?;
+        }
+    }
+    if let Ok(transmission) = cell.get::<_, LuaTable>("transmission") {
+        for pair in transmission.pairs::<String, f32>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            field
+                .set_category_transmission(coord, name, value)
+                .map_err(|e| lua_err(api, e))?;
+        }
+    }
+    if let Ok(filters) = cell.get::<_, LuaTable>("filters") {
+        for pair in filters.pairs::<String, LuaTable>() {
+            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+            field
+                .set_category_filter(
+                    coord,
+                    name,
+                    [
+                        value.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
+                        value.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
+                        value.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
+                    ],
+                )
+                .map_err(|e| lua_err(api, e))?;
+        }
+    }
     if let Some(sun_occlusion) = cell
         .get::<_, Option<f32>>("sunOcclusion")
         .map_err(|e| lua_err(api, e))?
@@ -216,16 +345,33 @@ fn apply_provider_cell(
             .map_err(|e| lua_err(api, e))?;
     }
     if let Ok(refs) = cell.get::<_, LuaTable>("refs") {
-        for pair in refs.pairs::<String, u32>() {
+        for pair in refs.pairs::<String, LuaValue>() {
             let (slot, value) = pair.map_err(|e| lua_err(api, e))?;
             if !field.has_slot(&slot) {
                 field
                     .define_slot(slot.clone())
                     .map_err(|e| lua_err(api, e))?;
             }
-            field
-                .set_ref(coord, slot, value)
-                .map_err(|e| lua_err(api, e))?;
+            match value {
+                LuaValue::Integer(value) if value >= 0 && value <= u32::MAX as i64 => field
+                    .set_ref(coord, slot, value as u32)
+                    .map_err(|e| lua_err(api, e))?,
+                LuaValue::Table(value) => {
+                    let typed = tile_ref_from_table(value, api)?;
+                    field
+                        .set_typed_ref(coord, slot, typed)
+                        .map_err(|e| lua_err(api, e))?;
+                }
+                other => {
+                    return Err(lua_err(
+                        api,
+                        format!(
+                            "ref value must be integer or table, got {}",
+                            other.type_name()
+                        ),
+                    ));
+                }
+            }
         }
     }
     if let Ok(lights) = cell.get::<_, LuaTable>("lights") {
@@ -258,6 +404,21 @@ pub(crate) fn field_from_provider(provider: LuaTable, api: &str) -> LuaResult<Ti
     let topology_name = provider_string(&provider, "topology", "square", api)?;
     let topology = TileTopology::parse(&topology_name).map_err(|e| lua_err(api, e))?;
     let mut field = TileField::new(width, height, levels, topology).map_err(|e| lua_err(api, e))?;
+    if let Ok(categories) = provider.get::<_, LuaTable>("categories") {
+        for pair in categories.pairs::<String, LuaTable>() {
+            let (name, opts) = pair.map_err(|e| lua_err(api, e))?;
+            let kind = category_kind_from_opts(&opts, api)?;
+            let active = opts
+                .get::<_, Option<bool>>("active")
+                .map_err(|e| lua_err(api, e))?
+                .unwrap_or(true);
+            field
+                .define_category(
+                    TileCategory::new(name, kind, active).map_err(|e| lua_err(api, e))?,
+                )
+                .map_err(|e| lua_err(api, e))?;
+        }
+    }
     if let Ok(slots) = provider.get::<_, LuaTable>("slots") {
         for slot in slots.sequence_values::<String>() {
             field
@@ -451,6 +612,26 @@ fn apply_tileset_object_to_field(
                 .set_cost(coord, *channel, *cost)
                 .map_err(|e| lua_err(api, e))?;
         }
+        for (category, blocked) in &archetype.category_blockers {
+            field
+                .set_category_block(coord, category.clone(), *blocked)
+                .map_err(|e| lua_err(api, e))?;
+        }
+        for (category, cost) in &archetype.category_costs {
+            field
+                .set_category_cost(coord, category.clone(), *cost)
+                .map_err(|e| lua_err(api, e))?;
+        }
+        for (category, value) in &archetype.category_transmission {
+            field
+                .set_category_transmission(coord, category.clone(), *value)
+                .map_err(|e| lua_err(api, e))?;
+        }
+        for (category, filter) in &archetype.category_filters {
+            field
+                .set_category_filter(coord, category.clone(), *filter)
+                .map_err(|e| lua_err(api, e))?;
+        }
         if let Some(sun_occlusion) = archetype.sun_occlusion {
             field
                 .set_sun_occlusion(coord, sun_occlusion)
@@ -537,9 +718,36 @@ fn cell_to_lua<'lua>(
     table.set("costs", costs)?;
     table.set("sunOcclusion", field.sun_occlusion(coord))?;
     if let Some(cell) = field.cell(coord) {
+        let category_blocks = lua.create_table()?;
+        for (category, blocked) in cell.category_blockers() {
+            category_blocks.set(category.as_str(), *blocked)?;
+        }
+        table.set("categoryBlocks", category_blocks)?;
+        let category_costs = lua.create_table()?;
+        for (category, cost) in cell.category_costs() {
+            category_costs.set(category.as_str(), *cost)?;
+        }
+        table.set("categoryCosts", category_costs)?;
+        let transmissions = lua.create_table()?;
+        for (category, value) in cell.category_transmissions() {
+            transmissions.set(category.as_str(), *value)?;
+        }
+        table.set("transmission", transmissions)?;
+        let filters = lua.create_table()?;
+        for (category, value) in cell.category_filters() {
+            let filter = lua.create_table()?;
+            filter.set(1, value[0])?;
+            filter.set(2, value[1])?;
+            filter.set(3, value[2])?;
+            filters.set(category.as_str(), filter)?;
+        }
+        table.set("filters", filters)?;
         let refs = lua.create_table()?;
         for (slot, value) in cell.refs() {
             refs.set(slot.as_str(), *value)?;
+        }
+        for (slot, value) in cell.typed_refs() {
+            refs.set(slot.as_str(), tile_ref_to_lua(lua, value)?)?;
         }
         table.set("refs", refs)?;
         let lights = lua.create_table()?;
@@ -876,6 +1084,43 @@ impl LuaUserData for LuaTileField {
                             .map_err(|e| lua_err("setCell", e))?;
                     }
                 }
+                if let Ok(blocks) = cell_tbl.get::<_, LuaTable>("categoryBlocks") {
+                    for pair in blocks.pairs::<String, bool>() {
+                        let (name, value) = pair.map_err(|e| lua_err("setCell", e))?;
+                        field
+                            .set_category_block(coord, name, value)
+                            .map_err(|e| lua_err("setCell", e))?;
+                    }
+                }
+                if let Ok(costs) = cell_tbl.get::<_, LuaTable>("categoryCosts") {
+                    for pair in costs.pairs::<String, f32>() {
+                        let (name, value) = pair.map_err(|e| lua_err("setCell", e))?;
+                        field
+                            .set_category_cost(coord, name, value)
+                            .map_err(|e| lua_err("setCell", e))?;
+                    }
+                }
+                if let Ok(transmission) = cell_tbl.get::<_, LuaTable>("transmission") {
+                    for pair in transmission.pairs::<String, f32>() {
+                        let (name, value) = pair.map_err(|e| lua_err("setCell", e))?;
+                        field
+                            .set_category_transmission(coord, name, value)
+                            .map_err(|e| lua_err("setCell", e))?;
+                    }
+                }
+                if let Ok(filters) = cell_tbl.get::<_, LuaTable>("filters") {
+                    for pair in filters.pairs::<String, LuaTable>() {
+                        let (name, value) = pair.map_err(|e| lua_err("setCell", e))?;
+                        let filter = [
+                            value.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
+                            value.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
+                            value.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
+                        ];
+                        field
+                            .set_category_filter(coord, name, filter)
+                            .map_err(|e| lua_err("setCell", e))?;
+                    }
+                }
                 if let Some(value) = cell_tbl
                     .get::<_, Option<f32>>("sunOcclusion")
                     .map_err(|e| lua_err("setCell", e))?
@@ -885,11 +1130,39 @@ impl LuaUserData for LuaTileField {
                         .map_err(|e| lua_err("setCell", e))?;
                 }
                 if let Ok(refs) = cell_tbl.get::<_, LuaTable>("refs") {
-                    for pair in refs.pairs::<String, u32>() {
+                    for pair in refs.pairs::<String, LuaValue>() {
                         let (slot, value) = pair.map_err(|e| lua_err("setCell", e))?;
-                        field
-                            .set_ref(coord, slot, value)
-                            .map_err(|e| lua_err("setCell", e))?;
+                        match value {
+                            LuaValue::Integer(value) if value >= 0 && value <= u32::MAX as i64 => {
+                                field
+                                    .set_ref(coord, slot, value as u32)
+                                    .map_err(|e| lua_err("setCell", e))?;
+                            }
+                            LuaValue::Number(value)
+                                if value >= 0.0
+                                    && value.fract() == 0.0
+                                    && value <= u32::MAX as f64 =>
+                            {
+                                field
+                                    .set_ref(coord, slot, value as u32)
+                                    .map_err(|e| lua_err("setCell", e))?;
+                            }
+                            LuaValue::Table(value) => {
+                                let typed = tile_ref_from_table(value, "setCell")?;
+                                field
+                                    .set_typed_ref(coord, slot, typed)
+                                    .map_err(|e| lua_err("setCell", e))?;
+                            }
+                            other => {
+                                return Err(lua_err(
+                                    "setCell",
+                                    format!(
+                                        "ref value must be integer or table, got {}",
+                                        other.type_name()
+                                    ),
+                                ));
+                            }
+                        }
                     }
                 }
                 Ok(())
@@ -965,6 +1238,180 @@ impl LuaUserData for LuaTileField {
                 Ok(this.inner.borrow().cost(coord, channel))
             },
         );
+
+        // -- defineCategory --
+        /// Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
+        /// @param | name | string | Stable category name.
+        /// @param | opts | table? | Options: kind='movement|awareness|light|sun|custom', active=true?.
+        methods.add_method(
+            "defineCategory",
+            |_, this, (name, opts): (String, Option<LuaTable>)| {
+                let (kind, active) = match opts {
+                    Some(opts) => (
+                        category_kind_from_opts(&opts, "defineCategory")?,
+                        opts.get::<_, Option<bool>>("active")
+                            .map_err(|e| lua_err("defineCategory", e))?
+                            .unwrap_or(true),
+                    ),
+                    None => (TileCategoryKind::Custom, true),
+                };
+                let category = TileCategory::new(name, kind, active)
+                    .map_err(|e| lua_err("defineCategory", e))?;
+                this.inner
+                    .borrow_mut()
+                    .define_category(category)
+                    .map_err(|e| lua_err("defineCategory", e))
+            },
+        );
+
+        // -- getCategory --
+        /// Returns category metadata, or nil when the category is unknown.
+        /// @param | name | string | Category name.
+        /// @return | table|nil | Category table with name, kind, and active.
+        methods.add_method("getCategory", |lua, this, name: String| {
+            let field = this.inner.borrow();
+            let Some(category) = field.category(&name) else {
+                return Ok(None);
+            };
+            let table = lua.create_table()?;
+            table.set("name", category.name.as_str())?;
+            table.set("kind", category.kind.as_str())?;
+            table.set("active", category.active)?;
+            Ok(Some(table))
+        });
+
+        // -- getCategories --
+        /// Returns known category names.
+        /// @return | string[] | Sorted category names.
+        methods.add_method("getCategories", |lua, this, ()| {
+            let names = this.inner.borrow().category_names();
+            let table = lua.create_table()?;
+            for (index, name) in names.into_iter().enumerate() {
+                table.set(index + 1, name)?;
+            }
+            Ok(table)
+        });
+
+        // -- setCategoryBlock --
+        /// Sets one category blocker on one cell.
+        methods.add_method(
+            "setCategoryBlock",
+            |_, this, (x, y, z, category, blocked): (u32, u32, Option<u32>, String, bool)| {
+                let coord = coord_from_values(x, y, z)?;
+                this.inner
+                    .borrow_mut()
+                    .set_category_block(coord, category, blocked)
+                    .map_err(|e| lua_err("setCategoryBlock", e))
+            },
+        );
+
+        // -- blocksCategory --
+        /// Returns whether one cell blocks a category.
+        methods.add_method(
+            "blocksCategory",
+            |_, this, (x, y, z, category): (u32, u32, Option<u32>, String)| {
+                let coord = coord_from_values(x, y, z)?;
+                Ok(this.inner.borrow().blocks_category(coord, &category))
+            },
+        );
+
+        // -- setCategoryCost --
+        /// Sets one category cost on one cell.
+        methods.add_method(
+            "setCategoryCost",
+            |_, this, (x, y, z, category, cost): (u32, u32, Option<u32>, String, f32)| {
+                let coord = coord_from_values(x, y, z)?;
+                this.inner
+                    .borrow_mut()
+                    .set_category_cost(coord, category, cost)
+                    .map_err(|e| lua_err("setCategoryCost", e))
+            },
+        );
+
+        // -- getCategoryCost --
+        /// Returns one effective category cost.
+        methods.add_method(
+            "getCategoryCost",
+            |_, this, (x, y, z, category): (u32, u32, Option<u32>, String)| {
+                let coord = coord_from_values(x, y, z)?;
+                Ok(this.inner.borrow().category_cost(coord, &category))
+            },
+        );
+
+        // -- setCategoryTransmission --
+        /// Sets one category transmission multiplier on one cell.
+        methods.add_method(
+            "setCategoryTransmission",
+            |_, this, (x, y, z, category, value): (u32, u32, Option<u32>, String, f32)| {
+                let coord = coord_from_values(x, y, z)?;
+                this.inner
+                    .borrow_mut()
+                    .set_category_transmission(coord, category, value)
+                    .map_err(|e| lua_err("setCategoryTransmission", e))
+            },
+        );
+
+        // -- getCategoryTransmission --
+        /// Returns one effective category transmission multiplier.
+        methods.add_method(
+            "getCategoryTransmission",
+            |_, this, (x, y, z, category): (u32, u32, Option<u32>, String)| {
+                let coord = coord_from_values(x, y, z)?;
+                Ok(this.inner.borrow().category_transmission(coord, &category))
+            },
+        );
+
+        // -- setCategoryFilter --
+        /// Sets one RGB category filter on one cell.
+        methods.add_method(
+            "setCategoryFilter",
+            |_, this, (x, y, z, category, filter): (u32, u32, Option<u32>, String, LuaTable)| {
+                let coord = coord_from_values(x, y, z)?;
+                let value = [
+                    filter.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
+                    filter.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
+                    filter.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
+                ];
+                this.inner
+                    .borrow_mut()
+                    .set_category_filter(coord, category, value)
+                    .map_err(|e| lua_err("setCategoryFilter", e))
+            },
+        );
+
+        // -- getCategoryFilter --
+        /// Returns one effective RGB category filter.
+        methods.add_method(
+            "getCategoryFilter",
+            |lua, this, (x, y, z, category): (u32, u32, Option<u32>, String)| {
+                let coord = coord_from_values(x, y, z)?;
+                let value = this.inner.borrow().category_filter(coord, &category);
+                let table = lua.create_table()?;
+                table.set(1, value[0])?;
+                table.set(2, value[1])?;
+                table.set(3, value[2])?;
+                Ok(table)
+            },
+        );
+
+        // -- footprintPassable --
+        /// Returns whether a rectangular footprint can occupy a cell anchor for a category.
+        methods.add_method(
+            "footprintPassable",
+            |_, this, (x, y, z, w, h, category): (u32, u32, Option<u32>, u32, u32, String)| {
+                let coord = coord_from_values(x, y, z)?;
+                Ok(this
+                    .inner
+                    .borrow()
+                    .footprint_passable(coord, w, h, &category))
+            },
+        );
+
+        // -- getVersion --
+        /// Returns the current tilefield data version.
+        methods.add_method("getVersion", |_, this, ()| {
+            Ok(this.inner.borrow().version())
+        });
 
         // -- setSunOcclusion --
         /// Sets top-light occlusion in the inclusive range 0..1.
@@ -1064,15 +1511,37 @@ impl LuaUserData for LuaTileField {
         /// @param | y | integer | One-based row.
         /// @param | z | integer? | One-based level, default 1.
         /// @param | slot | string | Reference slot name defined by the Lua game.
-        /// @param | value | integer | Object, tile, or tileset-local id stored for the slot.
+        /// @param | value | integer|table | Legacy id or typed `{ tileset, tile?/object? }` ref stored for the slot.
         methods.add_method(
             "setRef",
-            |_, this, (x, y, z, slot, value): (u32, u32, Option<u32>, String, u32)| {
+            |_, this, (x, y, z, slot, value): (u32, u32, Option<u32>, String, LuaValue)| {
                 let coord = coord_from_values(x, y, z)?;
-                this.inner
-                    .borrow_mut()
-                    .set_ref(coord, slot, value)
-                    .map_err(|e| lua_err("setRef", e))
+                match value {
+                    LuaValue::Integer(value) if value >= 0 && value <= u32::MAX as i64 => this
+                        .inner
+                        .borrow_mut()
+                        .set_ref(coord, slot, value as u32)
+                        .map_err(|e| lua_err("setRef", e)),
+                    LuaValue::Number(value)
+                        if value >= 0.0 && value.fract() == 0.0 && value <= u32::MAX as f64 =>
+                    {
+                        this.inner
+                            .borrow_mut()
+                            .set_ref(coord, slot, value as u32)
+                            .map_err(|e| lua_err("setRef", e))
+                    }
+                    LuaValue::Table(value) => {
+                        let typed = tile_ref_from_table(value, "setRef")?;
+                        this.inner
+                            .borrow_mut()
+                            .set_typed_ref(coord, slot, typed)
+                            .map_err(|e| lua_err("setRef", e))
+                    }
+                    other => Err(lua_err(
+                        "setRef",
+                        format!("value must be integer or table, got {}", other.type_name()),
+                    )),
+                }
             },
         );
 
@@ -1082,12 +1551,19 @@ impl LuaUserData for LuaTileField {
         /// @param | y | integer | One-based row.
         /// @param | z | integer? | One-based level, default 1.
         /// @param | slot | string | Reference slot name.
-        /// @return | integer|nil | Stored reference id, or nil when unset.
+        /// @return | integer|table|nil | Stored legacy id, typed ref table, or nil when unset.
         methods.add_method(
             "getRef",
-            |_, this, (x, y, z, slot): (u32, u32, Option<u32>, String)| {
+            |lua, this, (x, y, z, slot): (u32, u32, Option<u32>, String)| {
                 let coord = coord_from_values(x, y, z)?;
-                Ok(this.inner.borrow().get_ref(coord, &slot))
+                let field = this.inner.borrow();
+                if let Some(value) = field.get_typed_ref(coord, &slot) {
+                    return Ok(LuaValue::Table(tile_ref_to_lua(lua, value)?));
+                }
+                match field.get_ref(coord, &slot) {
+                    Some(value) => Ok(LuaValue::Integer(value.into())),
+                    None => Ok(LuaValue::Nil),
+                }
             },
         );
 

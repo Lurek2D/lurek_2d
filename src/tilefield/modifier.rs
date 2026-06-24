@@ -15,6 +15,16 @@ pub struct TileModifier {
     pub cost_add: HashMap<TileChannel, f32>,
     /// Multiplicative cost changes per channel.
     pub cost_mul: HashMap<TileChannel, f32>,
+    /// Optional blocker overrides per user-defined category.
+    pub category_blockers: HashMap<String, bool>,
+    /// Additive cost changes per user-defined category.
+    pub category_cost_add: HashMap<String, f32>,
+    /// Multiplicative cost changes per user-defined category.
+    pub category_cost_mul: HashMap<String, f32>,
+    /// Transmission multipliers per user-defined category.
+    pub category_transmission: HashMap<String, f32>,
+    /// RGB filters per user-defined category.
+    pub category_filters: HashMap<String, [f32; 3]>,
     /// Additive top-sun occlusion change.
     pub sun_occlusion_add: f32,
     /// Optional tilelight source emitted by cells with this modifier.

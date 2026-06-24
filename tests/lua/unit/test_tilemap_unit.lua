@@ -782,6 +782,29 @@ describe("LTileMap methods", function()
         expect_type("string", err)
     end)
 
+    -- @covers LTileMap:renderFieldCatalogSlot
+    it("renders typed tilefield refs through a tileset catalog", function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        field:setRef(1, 1, 1, "object", { tileset = "objects", object = "crate" })
+        local tileset = lurek.tileset.fromProvider({
+            tileCount = 2,
+            columns = 1,
+            tileWidth = 16,
+            tileHeight = 16,
+            objects = {
+                crate = {
+                    slot = "object",
+                    visual = { order = 3 },
+                },
+            },
+        })
+        local catalog = lurek.tileset.newCatalog({ objects = tileset })
+        local tm = new_tilemap()
+        expect_no_error(function()
+            tm:renderFieldCatalogSlot(field, catalog, { slot = "object", z = 1 })
+        end)
+    end)
+
     -- @covers LTileMap:type
     it("type returns LTileMap", function()
         expect_equal("LTileMap", new_tilemap():type())

@@ -4,7 +4,7 @@
 //! Provides parsing and default-state helpers for field mutation without depending on higher-level systems.
 //! Does not know about topology, rendering, minimap presentation, player masks, or pathfinding algorithms.
 
-use crate::tilefield::TileLightEmitter;
+use crate::tilefield::{TileLightEmitter, TileRef};
 use std::collections::HashMap;
 
 /// Gameplay channels tracked independently per cell.
@@ -65,8 +65,13 @@ impl TileChannel {
 pub struct TileCell {
     blockers: [bool; 5],
     costs: [f32; 5],
+    category_blockers: HashMap<String, bool>,
+    category_costs: HashMap<String, f32>,
+    category_transmission: HashMap<String, f32>,
+    category_filters: HashMap<String, [f32; 3]>,
     sun_occlusion: f32,
     refs: HashMap<String, u32>,
+    typed_refs: HashMap<String, TileRef>,
     lights: HashMap<String, TileLightEmitter>,
     modifiers: Vec<String>,
 }
@@ -76,8 +81,13 @@ impl Default for TileCell {
         Self {
             blockers: [false; 5],
             costs: [1.0; 5],
+            category_blockers: HashMap::new(),
+            category_costs: HashMap::new(),
+            category_transmission: HashMap::new(),
+            category_filters: HashMap::new(),
             sun_occlusion: 0.0,
             refs: HashMap::new(),
+            typed_refs: HashMap::new(),
             lights: HashMap::new(),
             modifiers: Vec::new(),
         }
@@ -109,6 +119,140 @@ impl TileCell {
         Ok(())
     }
 
+    /// Return whether this cell blocks a user-defined category.
+    pub fn blocks_category(&self, category: &str) -> Option<bool> {
+        self.category_blockers.get(category).copied()
+    }
+
+    /// Return all explicit category blocker overrides stored on this cell.
+    pub fn category_blockers(&self) -> &HashMap<String, bool> {
+        &self.category_blockers
+    }
+
+    /// Set or clear a user-defined category blocker.
+    pub fn set_category_block(
+        &mut self,
+        category: String,
+        blocked: Option<bool>,
+    ) -> Result<(), String> {
+        let category = category.trim();
+        if category.is_empty() {
+            return Err("tilefield category name must not be empty".to_string());
+        }
+        match blocked {
+            Some(blocked) => {
+                self.category_blockers.insert(category.to_string(), blocked);
+            }
+            None => {
+                self.category_blockers.remove(category);
+            }
+        }
+        Ok(())
+    }
+
+    /// Return the cost for a user-defined category when present.
+    pub fn category_cost(&self, category: &str) -> Option<f32> {
+        self.category_costs.get(category).copied()
+    }
+
+    /// Return all explicit category costs stored on this cell.
+    pub fn category_costs(&self) -> &HashMap<String, f32> {
+        &self.category_costs
+    }
+
+    /// Set or clear a user-defined category cost.
+    pub fn set_category_cost(&mut self, category: String, cost: Option<f32>) -> Result<(), String> {
+        let category = category.trim();
+        if category.is_empty() {
+            return Err("tilefield category name must not be empty".to_string());
+        }
+        match cost {
+            Some(cost) => {
+                if !cost.is_finite() || cost < 0.0 {
+                    return Err("tilefield category cost must be a finite number >= 0".to_string());
+                }
+                self.category_costs.insert(category.to_string(), cost);
+            }
+            None => {
+                self.category_costs.remove(category);
+            }
+        }
+        Ok(())
+    }
+
+    /// Return the transmission multiplier for a category when present.
+    pub fn category_transmission(&self, category: &str) -> Option<f32> {
+        self.category_transmission.get(category).copied()
+    }
+
+    /// Return all explicit category transmissions stored on this cell.
+    pub fn category_transmissions(&self) -> &HashMap<String, f32> {
+        &self.category_transmission
+    }
+
+    /// Set or clear a category transmission multiplier in `[0, 1]`.
+    pub fn set_category_transmission(
+        &mut self,
+        category: String,
+        value: Option<f32>,
+    ) -> Result<(), String> {
+        let category = category.trim();
+        if category.is_empty() {
+            return Err("tilefield category name must not be empty".to_string());
+        }
+        match value {
+            Some(value) => {
+                if !value.is_finite() {
+                    return Err("tilefield category transmission must be finite".to_string());
+                }
+                self.category_transmission
+                    .insert(category.to_string(), value.clamp(0.0, 1.0));
+            }
+            None => {
+                self.category_transmission.remove(category);
+            }
+        }
+        Ok(())
+    }
+
+    /// Return the RGB filter for a category when present.
+    pub fn category_filter(&self, category: &str) -> Option<[f32; 3]> {
+        self.category_filters.get(category).copied()
+    }
+
+    /// Return all explicit category RGB filters stored on this cell.
+    pub fn category_filters(&self) -> &HashMap<String, [f32; 3]> {
+        &self.category_filters
+    }
+
+    /// Set or clear an RGB filter for a category.
+    pub fn set_category_filter(
+        &mut self,
+        category: String,
+        value: Option<[f32; 3]>,
+    ) -> Result<(), String> {
+        let category = category.trim();
+        if category.is_empty() {
+            return Err("tilefield category name must not be empty".to_string());
+        }
+        match value {
+            Some(value) => {
+                self.category_filters.insert(
+                    category.to_string(),
+                    [
+                        value[0].clamp(0.0, 1.0),
+                        value[1].clamp(0.0, 1.0),
+                        value[2].clamp(0.0, 1.0),
+                    ],
+                );
+            }
+            None => {
+                self.category_filters.remove(category);
+            }
+        }
+        Ok(())
+    }
+
     /// Return sun occlusion in the inclusive range 0..1.
     pub fn sun_occlusion(&self) -> f32 {
         self.sun_occlusion
@@ -135,17 +279,40 @@ impl TileCell {
             return Err("tilefield ref slot must not be empty".to_string());
         }
         self.refs.insert(slot.to_string(), value);
+        self.typed_refs.remove(slot);
+        Ok(())
+    }
+
+    /// Return a typed reference stored on this cell.
+    pub fn get_typed_ref(&self, slot: &str) -> Option<&TileRef> {
+        self.typed_refs.get(slot)
+    }
+
+    /// Set or replace a typed reference on this cell.
+    pub fn set_typed_ref(&mut self, slot: String, value: TileRef) -> Result<(), String> {
+        let slot = slot.trim();
+        if slot.is_empty() {
+            return Err("tilefield ref slot must not be empty".to_string());
+        }
+        self.typed_refs.insert(slot.to_string(), value);
+        self.refs.remove(slot);
         Ok(())
     }
 
     /// Remove a named object/tile reference from this cell.
     pub fn clear_ref(&mut self, slot: &str) {
         self.refs.remove(slot);
+        self.typed_refs.remove(slot);
     }
 
     /// Return all named object/tile references stored on this cell.
     pub fn refs(&self) -> &HashMap<String, u32> {
         &self.refs
+    }
+
+    /// Return all typed references stored on this cell.
+    pub fn typed_refs(&self) -> &HashMap<String, TileRef> {
+        &self.typed_refs
     }
 
     /// Set, replace, or clear a named tile light emitter on this cell.

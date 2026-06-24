@@ -36,15 +36,15 @@ describe("LTileLightMap methods", function()
         expect_near(0.0, blocked, 0.001)
     end)
 
-    -- @covers LTileLightMap:setGlobalLight
+    -- @covers LTileLightMap:setSunLight
     -- @covers LTileLightMap:exportLayer
     -- @covers LTileLightMap:exportVolume
     it("computes and exports global top light", function()
         local field = lurek.tilefield.new({ width = 2, height = 2, levels = 2 })
         field:setSunOcclusion(1, 1, 2, 0.5)
         local light = lurek.tilelight.new(field)
-        light:setGlobalLight({ intensity = 1, color = { r = 1, g = 1, b = 1 } })
-        light:compute({ includePointLights = false, includeGlobalLight = true })
+        light:setSunLight({ kind = "top", intensity = 1, color = { r = 1, g = 1, b = 1 } })
+        light:compute({ includePointLights = false, includeSunLight = true })
         local layer = light:exportLayer(1)
         local volume = light:exportVolume()
         expect_equal(4, #layer)
@@ -83,6 +83,29 @@ describe("LTileLightMap methods", function()
         light:clearLineLights()
     end)
 
+    -- @covers LTileLightMap:addAreaLight
+    -- @covers LTileLightMap:updateAreaLight
+    -- @covers LTileLightMap:removeAreaLight
+    -- @covers LTileLightMap:addRectLight
+    -- @covers LTileLightMap:clearRectLights
+    it("computes rectangular area lights", function()
+        local field = lurek.tilefield.new({ width = 6, height = 5 })
+        local light = lurek.tilelight.new(field)
+        local id = light:addAreaLight({ x = 2, y = 2, z = 1, width = 2, height = 2, radius = 2, intensity = 1, color = { r = 0, g = 0, b = 1 } })
+        light:compute({ includePointLights = false, includeLineLights = false, includeAreaLights = true, includeSunLight = false })
+        local _, _, inside_b, inside_luma = light:getLight(3, 3, 1)
+        local _, _, edge_b = light:getLight(4, 3, 1)
+        expect_true(inside_b > 0)
+        expect_true(inside_luma > 0)
+        expect_true(edge_b > 0)
+        light:updateAreaLight(id, { x = 4, y = 2, w = 1, h = 1 })
+        expect_true(light:removeAreaLight(id))
+        local rect_id = light:addRectLight({ x = 1, y = 1, z = 1, w = 2, h = 2, radius = 1.5 })
+        expect_true(light:removeRectLight(rect_id))
+        light:addRectLight({ x = 1, y = 1, z = 1, w = 2, h = 2, radius = 1.5 })
+        light:clearRectLights()
+    end)
+
     -- @covers LTileLightMap:setAmbient
     -- @covers LTileLightMap:setSunLight
     it("computes ambient and directional sun", function()
@@ -116,6 +139,23 @@ describe("LTileLightMap methods", function()
         local r2, _, b2 = light:getLight(2, 2, 1)
         expect_true(math.abs(r1 - r2) > 0.01 or math.abs(b1 - b2) > 0.01)
         light:updatePointLight(id, { flicker = { amplitude = 0.0, frequency = 0.0 } })
+    end)
+
+    -- @covers LTileField:setCategoryTransmission
+    -- @covers LTileField:setCategoryFilter
+    -- @covers LTileLightMap:addPointLight
+    -- @covers LTileLightMap:compute
+    it("filters point light RGB through tilefield light category", function()
+        local field = lurek.tilefield.new({ width = 5, height = 3 })
+        field:setCategoryTransmission(3, 2, 1, "light", 0.75)
+        field:setCategoryFilter(3, 2, 1, "light", { 1.0, 0.0, 0.0 })
+        local light = lurek.tilelight.new(field)
+        light:addPointLight({ x = 1, y = 2, z = 1, radius = 5, intensity = 1, color = { r = 1, g = 1, b = 1 } })
+        light:compute({ includePointLights = true, includeSunLight = false, ambient = { r = 0, g = 0, b = 0 } })
+        local r, g, b = light:getLight(5, 2, 1)
+        expect_true(r > 0)
+        expect_near(0.0, g, 0.001)
+        expect_near(0.0, b, 0.001)
     end)
 end)
 
