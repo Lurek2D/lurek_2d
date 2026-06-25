@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-24T17:22:27.835723+00:00",
+    "generated": "2026-06-25T09:33:24.499149+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6249,
-    "marker_covered": 6224,
+    "total_api_functions": 6271,
+    "marker_covered": 6246,
     "describe_covered": 152,
     "describe_coverage_pct": 2.4,
     "heuristic_covered": 0,
-    "total_covered": 6249,
+    "total_covered": 6271,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -20220,14 +20220,14 @@
       ]
     },
     "globe": {
-      "total": 104,
-      "marker_covered": 104,
+      "total": 114,
+      "marker_covered": 114,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 104,
+      "covered": 114,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 1.0,
-      "describe_score": 0.01,
+      "describe_coverage_pct": 0.9,
+      "describe_score": 0.009,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_globe_unit.lua"
@@ -20381,6 +20381,33 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LGlobe:addTerrainPatch",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:removeTerrainPatch",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:terrainPatchCount",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LGlobe:provinceCount",
           "kind": "method",
           "marker_covered": true,
@@ -20462,6 +20489,42 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LGlobe:setTerrainPatchAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:getTerrainPatchAttr",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:setRegionColor",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:setRegionVisible",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LGlobe:setProvinceTexture",
           "kind": "method",
           "marker_covered": true,
@@ -20472,6 +20535,33 @@
         },
         {
           "lua_name": "LGlobe:clearProvinceTexture",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:setTerrainPatchTexture",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:clearTerrainPatchTexture",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LGlobe:validateTerrainCoverage",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -42034,11 +42124,11 @@
       ]
     },
     "raycaster": {
-      "total": 125,
-      "marker_covered": 125,
+      "total": 126,
+      "marker_covered": 126,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 125,
+      "covered": 126,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -42122,6 +42212,15 @@
         },
         {
           "lua_name": "lurek.raycaster.getLastBuildStats",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.raycaster.drawLastScene",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -53017,11 +53116,11 @@
       ]
     },
     "ui": {
-      "total": 431,
-      "marker_covered": 431,
+      "total": 442,
+      "marker_covered": 442,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 431,
+      "covered": 442,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -53060,6 +53159,42 @@
         },
         {
           "lua_name": "lurek.ui.hasAutoUpdate",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.getIconNames",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.hasIcon",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.getIconGlyph",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newIcon",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -53951,6 +54086,69 @@
         },
         {
           "lua_name": "LUiWidget:getStyleClass",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setIcon",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:getIcon",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:clearIcon",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setIconPosition",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:getIconPosition",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setIconSize",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:getIconSize",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

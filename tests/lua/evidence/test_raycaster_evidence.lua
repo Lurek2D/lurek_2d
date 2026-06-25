@@ -352,6 +352,289 @@ describe("Evidence: lurek.raycaster", function()
         end
         save_png(img, "raycaster_multilevel_hole_pick.png")
     end)
+
+    -- Does: Renders textured first-person day/night views from a tilefield-authored scene and pairs them with the same scene's top-down layout.
+    -- Shows: Tilefield slots drive walls, floors, holes, doors, windows, half-wall objects, billboard objects, lights, skybox/background, and overlay weather; the raycaster renders all of it in first person under different ambient lighting.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_full_scene_day_night.png
+    -- Why: This demonstrates the full tilefield + tileset + tile light configuration feeding the first-person raycaster output, with a map-side proof of the source data.
+    it("PNG: full scene day and night render", function()
+        local function make_texture(kind)
+            local texture_paths = {
+                wall = "content/games/dungeon_crawler/assets/textures/wall_stone_64.png",
+                floor = "content/games/dungeon_crawler/assets/textures/wall_cobble_64.png",
+                ceiling = "content/games/dungeon_crawler/assets/textures/wall_grass_64.png",
+                door = "content/games/dungeon_crawler/assets/textures/wall_wood_64.png",
+                crate = "content/games/dungeon_crawler/assets/textures/wall_wood_64.png",
+                window = "content/games/dungeon_crawler/assets/textures/ray_water.png",
+            }
+            if texture_paths[kind] then
+                return lurek.render.newImage(texture_paths[kind])
+            end
+            local img = lurek.image.newImageData(32, 32)
+            if kind == "skybox" then
+                local sky = lurek.image.newImageData(64, 64)
+                for y = 0, 63 do
+                    local t = y / 63
+                    sky:drawLine(0, y, 63, y, math.floor(110 + 90 * t), math.floor(158 + 62 * t), math.floor(224 + 22 * t), 255)
+                end
+                sky:drawCircle(48, 12, 7, 255, 232, 148, 230)
+                sky:drawCircle(18, 24, 10, 235, 244, 255, 180)
+                sky:drawCircle(28, 22, 8, 235, 244, 255, 160)
+                return lurek.render.newImage(sky)
+            elseif kind == "torch" then
+                img:fill(0, 0, 0, 0)
+                img:drawRect(14, 12, 4, 18, 88, 54, 28, 255)
+                img:drawCircle(16, 10, 8, 255, 112, 28, 220)
+                img:drawCircle(16, 8, 4, 255, 224, 92, 255)
+            else
+                img:fill(0, 0, 0, 0)
+                img:drawRect(11, 10, 10, 18, 92, 100, 132, 255)
+                img:drawCircle(16, 8, 5, 160, 170, 210, 255)
+                img:drawLine(8, 28, 24, 28, 58, 62, 82, 255)
+            end
+            return lurek.render.newImage(img)
+        end
+
+        local textures = {
+            wall = make_texture("wall"),
+            floor = make_texture("floor"),
+            ceiling = make_texture("ceiling"),
+            door = make_texture("door"),
+            window = make_texture("window"),
+            crate = make_texture("crate"),
+            torch = make_texture("torch"),
+            statue = make_texture("statue"),
+            skybox = make_texture("skybox"),
+        }
+
+        local width, height = 10, 8
+        local field = lurek.tilefield.new({ width = width, height = height, levels = 1 })
+        for y = 1, height do
+            for x = 1, width do
+                field:setRef(x, y, 1, "floor", { tileset = "dungeon", object = "stone_floor" })
+                field:setRef(x, y, 1, "ceiling", { tileset = "dungeon", object = "beam_ceiling" })
+                field:setRef(x, y, 1, "ceilingHole", { tileset = "dungeon", object = "sky_open" })
+            end
+        end
+        field:setRef(2, 2, 1, "skybox", { tileset = "dungeon", object = "day_skybox" })
+        field:setRef(3, 2, 1, "overlay", { tileset = "dungeon", object = "snow_overlay" })
+        for x = 1, width do
+            field:setRef(x, 1, 1, "wall", { tileset = "dungeon", object = "stone_wall" })
+            field:setRef(x, height, 1, "wall", { tileset = "dungeon", object = "stone_wall" })
+        end
+        for y = 1, height do
+            field:setRef(1, y, 1, "wall", { tileset = "dungeon", object = "stone_wall" })
+            field:setRef(width, y, 1, "wall", { tileset = "dungeon", object = "stone_wall" })
+        end
+        field:setRef(7, 3, 1, "wall", { tileset = "dungeon", object = "stone_wall" })
+        field:setRef(7, 6, 1, "wall", { tileset = "dungeon", object = "stone_wall" })
+        field:setRef(8, 4, 1, "door", { tileset = "dungeon", object = "oak_door" })
+        field:setRef(8, 5, 1, "window", { tileset = "dungeon", object = "blue_window" })
+        field:setRef(5, 4, 1, "solidObject", { tileset = "dungeon", object = "crate_block" })
+        field:setRef(6, 5, 1, "solidObject", { tileset = "dungeon", object = "crate_block" })
+        field:setRef(4, 4, 1, "object", { tileset = "dungeon", object = "torch_sprite" })
+        field:setRef(6, 4, 1, "object", { tileset = "dungeon", object = "statue_sprite" })
+        field:setModifier("torch_light", { light = { radius = 6.8, intensity = 22.0, color = { 1.0, 0.42, 0.06 } } })
+        field:setModifier("moon_light", { light = { radius = 6.0, intensity = 6.0, color = { 0.16, 0.36, 1.0 } } })
+        field:applyModifier(4, 4, 1, "torch_light")
+        field:applyModifier(3, 6, 1, "moon_light")
+
+        local catalog = lurek.tileset.newCatalog({
+            dungeon = lurek.tileset.fromProvider({
+                firstGid = 1,
+                tileCount = 10,
+                columns = 4,
+                tileWidth = 16,
+                tileHeight = 16,
+                objects = {
+                    stone_wall = {
+                        slot = "wall",
+                        tileId = 1,
+                        visual = { textureId = textures.wall:getId(), tileId = 1 },
+                    },
+                    stone_floor = {
+                        slot = "floor",
+                        tileId = 2,
+                        visual = { textureId = textures.floor:getId(), tileId = 2 },
+                    },
+                    beam_ceiling = {
+                        slot = "ceiling",
+                        tileId = 3,
+                        visual = { textureId = textures.ceiling:getId(), tileId = 3 },
+                    },
+                    oak_door = {
+                        slot = "door",
+                        tileId = 4,
+                        visual = { textureId = textures.door:getId(), tileId = 4 },
+                    },
+                    blue_window = {
+                        slot = "window",
+                        tileId = 5,
+                        visual = { textureId = textures.window:getId(), tileId = 5 },
+                    },
+                    crate_block = {
+                        slot = "solidObject",
+                        tileId = 6,
+                        visual = { textureId = textures.crate:getId(), tileId = 6 },
+                    },
+                    torch_sprite = {
+                        slot = "object",
+                        tileId = 7,
+                        visual = { textureId = textures.torch:getId(), tileId = 7 },
+                    },
+                    statue_sprite = {
+                        slot = "object",
+                        tileId = 8,
+                        visual = { textureId = textures.statue:getId(), tileId = 8 },
+                    },
+                    day_skybox = {
+                        slot = "skybox",
+                        tileId = 9,
+                        visual = { textureId = textures.skybox:getId(), tileId = 9 },
+                        properties = { type = "skybox", tint = "1,1,1,1", offset = "0.03" },
+                    },
+                    snow_overlay = {
+                        slot = "overlay",
+                        tileId = 10,
+                        properties = { effect = "snow", density = "0.34", wind = "0.45", color = "1,1,1,0.70" },
+                    },
+                },
+            }),
+        })
+
+        local function render_scene(params_extra, extra_lights)
+            local p = {
+                px = 2.5,
+                py = 5.35,
+                angle = -0.28,
+                fov = math.pi / 2.6,
+                rays = 320,
+                max_dist = 11.0,
+                screen_w = 560,
+                screen_h = 230,
+                active_level = 0,
+                shade_dist = 10.5,
+                floor_r = 0.24,
+                floor_g = 0.20,
+                floor_b = 0.15,
+                ceiling_r = 0.82,
+                ceiling_g = 0.92,
+                ceiling_b = 1.0,
+            }
+            for k, v in pairs(params_extra) do p[k] = v end
+            lurek.raycaster.buildMultiLevelSceneFromField(p, field, {
+                catalog = catalog,
+                wallChannel = "vision",
+                wallSlot = "wall",
+                doorSlot = "door",
+                windowSlot = "window",
+                halfWallSlot = "solidObject",
+                halfWallHeight = 0.48,
+                floorSlot = "floor",
+                ceilingHoleSlot = "ceilingHole",
+                skyboxSlot = "skybox",
+                overlaySlot = "overlay",
+                objectSlot = "object",
+                objectSize = 0.70,
+                tileLights = true,
+                doorOpenAmount = 0.45,
+                windowAlpha = 0.50,
+            }, extra_lights or {}, nil, nil)
+            return lurek.raycaster.drawLastScene(560, 230)
+        end
+
+        local day = render_scene({
+            ambient = 0.86,
+            sun_r = 1.0,
+            sun_g = 0.94,
+            sun_b = 0.76,
+            sun_intensity = 1.18,
+            sun_angle = -0.2,
+            roof_darkness = 0.02,
+        }, {
+            { x = 4.0, y = 4.0, radius = 6.2, intensity = 11.0, color = { 1.0, 0.62, 0.18 } },
+        })
+        local night = render_scene({
+            ambient = 0.20,
+            sun_r = 0.34,
+            sun_g = 0.48,
+            sun_b = 1.0,
+            sun_intensity = 0.45,
+            sun_angle = 2.6,
+            roof_darkness = 0.72,
+            floor_r = 0.08,
+            floor_g = 0.10,
+            floor_b = 0.18,
+            ceiling_r = 0.05,
+            ceiling_g = 0.08,
+            ceiling_b = 0.20,
+            background = {
+                type = "gradient",
+                top = { 0.02, 0.06, 0.18, 1.0 },
+                bottom = { 0.10, 0.16, 0.30, 1.0 },
+            },
+            overlays = {
+                { type = "fog", color = { 0.06, 0.10, 0.22, 0.42 }, density = 0.75 },
+            },
+        }, {
+            { x = 4.0, y = 4.0, radius = 7.2, intensity = 28.0, color = { 1.0, 0.34, 0.06 } },
+            { x = 3.0, y = 6.0, radius = 5.4, intensity = 8.0, color = { 0.12, 0.34, 1.0 } },
+        })
+
+        local img = lurek.image.newImageData(980, 540)
+        img:fill(7, 9, 14, 255)
+        img:drawRect(10, 10, 564, 234, 28, 34, 44, 255)
+        img:drawRect(10, 264, 564, 234, 28, 34, 44, 255)
+        img:blit(day, 12, 12)
+        img:blit(night, 12, 266)
+
+        local ox, oy, scale = 620, 32, 30
+        for y = 1, height do
+            for x = 1, width do
+                local r, g, b = 74, 66, 54
+                local is_wall = x == 1 or x == width or y == 1 or y == height or (x == 7 and (y == 3 or y == 6))
+                if is_wall then r, g, b = 132, 138, 146 end
+                if x == 8 and y == 4 then r, g, b = 144, 82, 36 end
+                if x == 8 and y == 5 then r, g, b = 66, 150, 216 end
+                if (x == 5 and y == 4) or (x == 6 and y == 5) then r, g, b = 166, 104, 48 end
+                if x == 2 and y == 2 then r, g, b = 92, 148, 224 end
+                if x == 3 and y == 2 then r, g, b = 222, 232, 246 end
+                img:drawRect(ox + (x - 1) * scale, oy + (y - 1) * scale, scale - 2, scale - 2, r, g, b, 255)
+            end
+        end
+        local player_x, player_y, view_angle = 2.5, 5.35, -0.28
+        img:drawCircle(ox + math.floor((player_x - 1) * scale), oy + math.floor((player_y - 1) * scale), 6, 245, 245, 245, 255)
+        for _, a in ipairs({ -math.pi / 6, 0.0, math.pi / 6 }) do
+            img:drawLine(
+                ox + math.floor((player_x - 1) * scale),
+                oy + math.floor((player_y - 1) * scale),
+                ox + math.floor((player_x - 1 + math.cos(view_angle + a) * 6.0) * scale),
+                oy + math.floor((player_y - 1 + math.sin(view_angle + a) * 6.0) * scale),
+                245,
+                245,
+                245,
+                180
+            )
+        end
+        img:drawCircle(ox + math.floor((4.0 - 1) * scale), oy + math.floor((4.0 - 1) * scale), 16, 255, 118, 28, 90)
+        img:drawCircle(ox + math.floor((3.0 - 1) * scale), oy + math.floor((6.0 - 1) * scale), 8, 60, 126, 255, 220)
+        img:drawCircle(ox + math.floor((4.0 - 1) * scale), oy + math.floor((4.0 - 1) * scale), 5, 255, 235, 90, 255)
+        img:drawCircle(ox + math.floor((6.0 - 1) * scale), oy + math.floor((4.0 - 1) * scale), 5, 178, 184, 220, 255)
+
+        img:drawRect(620, 306, 32, 22, 132, 138, 146, 255)
+        img:drawRect(660, 306, 32, 22, 74, 66, 54, 255)
+        img:drawRect(700, 306, 32, 22, 28, 40, 58, 255)
+        img:drawRect(740, 306, 32, 22, 144, 82, 36, 255)
+        img:drawRect(780, 306, 32, 22, 66, 150, 216, 255)
+        img:drawRect(820, 306, 32, 22, 166, 104, 48, 255)
+        img:drawRect(860, 306, 32, 22, 92, 148, 224, 255)
+        img:drawRect(900, 306, 32, 22, 222, 232, 246, 255)
+        img:drawCircle(636, 366, 10, 255, 118, 28, 220)
+        img:drawCircle(676, 366, 10, 60, 126, 255, 220)
+        img:drawCircle(716, 366, 8, 255, 235, 90, 255)
+        img:drawCircle(756, 366, 8, 178, 184, 220, 255)
+        save_png(img, "raycaster_full_scene_day_night.png")
+    end)
 end)
 
 test_summary()

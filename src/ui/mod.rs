@@ -15,6 +15,8 @@ pub mod controls;
 pub mod diagnostics;
 /// Extended widgets: dialogs, menus, trees, tables, toasts, toolbars.
 pub mod extras;
+/// Built-in icon catalog and icon placement metadata.
+pub mod icons;
 /// UI render helpers and draw-command generation.
 pub mod render;
 /// Theming and per-widget style configuration.
@@ -36,6 +38,7 @@ pub use extras::{
     MenuBar, MenuItem, Separator, Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton,
     TooltipPanel, TreeNode, TreeView,
 };
+pub use icons::{has_icon, icon_names, lookup_icon, UiIcon, UiIconPosition, BUILTIN_UI_ICONS};
 pub use theme::{Theme, WidgetStyle};
 pub use widget::{
     EasingFunction, MouseFilter, TextVAlign, WidgetBase, WidgetState, WidgetTransition,

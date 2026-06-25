@@ -29,7 +29,9 @@ pub fn emit_split_frame(
             let mut g = emit_globe_frame(
                 &globe.spec,
                 &clone,
+                &globe.terrain,
                 &globe.graph,
+                &globe.regions,
                 &globe.fog,
                 &globe.markers,
                 &globe.labels,

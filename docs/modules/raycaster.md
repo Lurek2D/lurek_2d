@@ -39,11 +39,60 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local field = lurek.tilefield.new({ width = 5, height = 5, levels = 2 })
-    field:applyProfile(3, 3, 1, "wall")
-    field:applyProfile(4, 4, 2, "wall")
-    local quads = lurek.raycaster.buildMultiLevelSceneFromField({ px = 2.5, py = 2.5, angle = 0, fov = 1.0, rays = 32, max_dist = 8, screen_w = 96, screen_h = 64, active_level = 0 }, field, { wallChannel = "vision" })
-    ray_log("tilefield raycaster quads = " .. quads)
+    field:setRef(3, 3, 1, "wall", { tileset = "dungeon", object = "stone_wall" })
+    field:setRef(4, 3, 1, "door", 12)
+    field:setRef(4, 4, 2, "window", 13)
+    field:setRef(3, 4, 1, "floor", { tileset = "dungeon", object = "stone_floor" })
+    field:setRef(3, 4, 1, "ceiling", { tileset = "dungeon", object = "stone_ceiling" })
+    field:setRef(3, 4, 1, "object", { tileset = "dungeon", object = "banner" })
+    field:setModifier("torch", { light = { radius = 4, intensity = 1.25, color = { 1.0, 0.75, 0.35 } } })
+    field:applyModifier(3, 4, 1, "torch")
+    local catalog = lurek.tileset.newCatalog({
+        dungeon = lurek.tileset.fromProvider({
+            firstGid = 1,
+            tileCount = 4,
+            columns = 2,
+            tileWidth = 16,
+            tileHeight = 16,
+            objects = {
+                stone_wall = {
+                    slot = "wall",
+                    tileId = 2,
+                    visual = { textureId = texture:getId(), tileId = 2 },
+                },
+                stone_floor = {
+                    slot = "floor",
+                    tileId = 3,
+                    visual = { textureId = texture:getId(), tileId = 3 },
+                },
+                stone_ceiling = {
+                    slot = "ceiling",
+                    tileId = 4,
+                    visual = { textureId = texture:getId(), tileId = 4 },
+                },
+                banner = {
+                    slot = "object",
+                    visual = { textureId = texture:getId() },
+                },
+            },
+        }),
+    })
+    local quads = lurek.raycaster.buildMultiLevelSceneFromField({ px = 2.5, py = 2.5, angle = 0, fov = 1.0, rays = 32, max_dist = 8, screen_w = 96, screen_h = 64, active_level = 0 }, field, {
+        catalog = catalog,
+        wallChannel = "vision",
+        wallSlot = "wall",
+        doorSlot = "door",
+        windowSlot = "window",
+        floorSlot = "floor",
+        ceilingSlot = "ceiling",
+        objectSlot = "object",
+        objectSize = 0.75,
+        tileLights = true,
+    }, nil, nil, { [11] = texture, [12] = texture, [13] = texture })
+    local stats = lurek.raycaster.getLastBuildStats()
+    ray_log("tilefield raycaster quads = " .. quads .. " lighting samples = " .. stats.lightingSamples)
 end
 ```
 
@@ -410,7 +459,7 @@ end
 
 ### `lurek.raycaster.buildMultiLevelSceneFromField`
 
-Builds a multilevel raycaster scene from a tilefield blocker channel.
+Builds a multilevel raycaster scene from tilefield blockers, slots, holes, surfaces, and tile light emitters.
 
 ```lua
 lurek.raycaster.buildMultiLevelSceneFromField(params, field, opts, lights, sprites, wallTextures)
@@ -422,7 +471,7 @@ lurek.raycaster.buildMultiLevelSceneFromField(params, field, opts, lights, sprit
 |------|------|-------------|
 | `params` | table | Scene params plus optional active_level. |
 | `field` | [LTileField](#ltilefield) | Source tilefield. |
-| `opts?` | table | Options with `wallChannel` (default `vision`). |
+| `opts?` | table | Options with `wallChannel` (default `vision`), `catalog`/`tileCatalog`, `wallSlot`, `doorSlot`, `windowSlot`, `halfWallSlot`, `floorSlot`, `ceilingSlot`, `objectSlot`, `spriteSlot`, `floorHoleSlot`, `ceilingHoleSlot`, `backgroundSlot`, `skyboxSlot`, `overlaySlot`, `floorTextures`, `ceilingTextures`, `objectTextures`, `objectSize`, `objectIdBase`, `slotRefsAreTextures`, and `tileLights`. |
 | `lights?` | table | Optional raycaster point lights. |
 | `sprites?` | table|[LSpriteManager](#lspritemanager) | Optional raycaster sprites. |
 | `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
@@ -460,11 +509,60 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local field = lurek.tilefield.new({ width = 5, height = 5, levels = 2 })
-    field:applyProfile(3, 3, 1, "wall")
-    field:applyProfile(4, 4, 2, "wall")
-    local quads = lurek.raycaster.buildMultiLevelSceneFromField({ px = 2.5, py = 2.5, angle = 0, fov = 1.0, rays = 32, max_dist = 8, screen_w = 96, screen_h = 64, active_level = 0 }, field, { wallChannel = "vision" })
-    ray_log("tilefield raycaster quads = " .. quads)
+    field:setRef(3, 3, 1, "wall", { tileset = "dungeon", object = "stone_wall" })
+    field:setRef(4, 3, 1, "door", 12)
+    field:setRef(4, 4, 2, "window", 13)
+    field:setRef(3, 4, 1, "floor", { tileset = "dungeon", object = "stone_floor" })
+    field:setRef(3, 4, 1, "ceiling", { tileset = "dungeon", object = "stone_ceiling" })
+    field:setRef(3, 4, 1, "object", { tileset = "dungeon", object = "banner" })
+    field:setModifier("torch", { light = { radius = 4, intensity = 1.25, color = { 1.0, 0.75, 0.35 } } })
+    field:applyModifier(3, 4, 1, "torch")
+    local catalog = lurek.tileset.newCatalog({
+        dungeon = lurek.tileset.fromProvider({
+            firstGid = 1,
+            tileCount = 4,
+            columns = 2,
+            tileWidth = 16,
+            tileHeight = 16,
+            objects = {
+                stone_wall = {
+                    slot = "wall",
+                    tileId = 2,
+                    visual = { textureId = texture:getId(), tileId = 2 },
+                },
+                stone_floor = {
+                    slot = "floor",
+                    tileId = 3,
+                    visual = { textureId = texture:getId(), tileId = 3 },
+                },
+                stone_ceiling = {
+                    slot = "ceiling",
+                    tileId = 4,
+                    visual = { textureId = texture:getId(), tileId = 4 },
+                },
+                banner = {
+                    slot = "object",
+                    visual = { textureId = texture:getId() },
+                },
+            },
+        }),
+    })
+    local quads = lurek.raycaster.buildMultiLevelSceneFromField({ px = 2.5, py = 2.5, angle = 0, fov = 1.0, rays = 32, max_dist = 8, screen_w = 96, screen_h = 64, active_level = 0 }, field, {
+        catalog = catalog,
+        wallChannel = "vision",
+        wallSlot = "wall",
+        doorSlot = "door",
+        windowSlot = "window",
+        floorSlot = "floor",
+        ceilingSlot = "ceiling",
+        objectSlot = "object",
+        objectSize = 0.75,
+        tileLights = true,
+    }, nil, nil, { [11] = texture, [12] = texture, [13] = texture })
+    local stats = lurek.raycaster.getLastBuildStats()
+    ray_log("tilefield raycaster quads = " .. quads .. " lighting samples = " .. stats.lightingSamples)
 end
 ```
 
@@ -525,6 +623,72 @@ do
     example_print_log("near = " .. string.format("%.2f", near))
     example_print_log("mid = " .. string.format("%.2f", mid))
     example_print_log("far = " .. string.format("%.2f", far))
+end
+```
+
+---
+
+### `lurek.raycaster.drawLastScene`
+
+Rasterizes the most recently built raycaster scene to raw image data.
+
+```lua
+lurek.raycaster.drawLastScene(width, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Output image width in pixels. |
+| `height` | number | Output image height in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Rasterized image data for the last built scene. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.raycaster.new(8, 8)
+    local texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+    map:setCell(5, 4, 2)
+    map:buildScene({
+        px = 3.5,
+        py = 4.5,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 8,
+        screen_w = 160,
+        screen_h = 100,
+        ambient = 0.35,
+        floor_r = 0.25,
+        floor_g = 0.20,
+        floor_b = 0.14,
+        ceiling_r = 0.08,
+        ceiling_g = 0.10,
+        ceiling_b = 0.20,
+    }, {
+        { x = 4.5, y = 4.5, radius = 4.0, intensity = 1.2, color = { 1.0, 0.70, 0.35 } },
+    }, {
+        { x = 4.5, y = 4.5, texture = texture, size = 0.85, id = 7 },
+    }, {
+        [1] = texture,
+        [2] = texture,
+    })
+    local image = lurek.raycaster.drawLastScene(160, 100)
+    local r, g, b = image:getPixel(80, 50)
+    lurek.log.info("[raycaster.example] drawLastScene image=" .. image:getWidth() .. "x" .. image:getHeight() .. " center=" .. r .. "," .. g .. "," .. b)
 end
 ```
 
@@ -1380,6 +1544,7 @@ end
 
 - [LDoorManager](#ldoormanager)
 - [LHeightMap](#lheightmap)
+- [LImageData](#limagedata)
 - [LMultiLevelGrid](#lmultilevelgrid)
 - [LRaycaster](#lraycaster)
 - [LSceneAdapter](#lsceneadapter)
@@ -2199,6 +2364,782 @@ do
     ray_log("ceiling sample=" .. hm:ceilingAt(2, 2))
 end
 ```
+
+---
+
+## LImageData
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LImageData:alphaMask`
+
+Multiplies this image alpha channel by a factor in place.
+
+```lua
+LImageData:alphaMask(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Alpha multiplier. |
+
+---
+
+#### `LImageData:applyPaletteLut`
+
+Applies a palette lookup table to this image in place.
+
+```lua
+LImageData:applyPaletteLut(lut_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lut_ud` | [LPaletteLUT](image.md#lpalettelut) | Palette lookup table handle. |
+
+---
+
+#### `LImageData:blit`
+
+Copies a source image into this image at a destination coordinate.
+
+```lua
+LImageData:blit(src_ud, dst_x, dst_y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:blur`
+
+Returns a blurred copy of this image.
+
+```lua
+LImageData:blur(radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `radius` | number | Blur radius. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Blurred image data handle. |
+
+---
+
+#### `LImageData:brightness`
+
+Applies a brightness factor to this image in place.
+
+```lua
+LImageData:brightness(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Brightness multiplier or adjustment factor. |
+
+---
+
+#### `LImageData:contrast`
+
+Applies a contrast factor to this image in place.
+
+```lua
+LImageData:contrast(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Contrast factor. |
+
+---
+
+#### `LImageData:convolve`
+
+Applies a convolution kernel and returns the filtered image.
+
+```lua
+LImageData:convolve(kernel_t, ksize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kernel_t` | table | Array table of numeric kernel weights. |
+| `ksize` | number | Kernel width and height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Convolved image data handle. |
+
+---
+
+#### `LImageData:crop`
+
+Returns a cropped image region. This method is available to Lua scripts.
+
+```lua
+LImageData:crop(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Crop width. |
+| `h` | number | Crop height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Cropped image data handle. |
+
+---
+
+#### `LImageData:diff`
+
+Computes a difference metric against another image.
+
+```lua
+LImageData:diff(other_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `other_ud` | [LImageData](#limagedata) | Image data handle to compare with this image. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Difference score. |
+
+---
+
+#### `LImageData:drawCircle`
+
+Draws a filled circle into this image.
+
+```lua
+LImageData:drawCircle(cx, cy, radius, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `radius` | number | Circle radius. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawLine`
+
+Draws a line into this image. This method is available to Lua scripts.
+
+```lua
+LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x0` | number | Start x coordinate. |
+| `y0` | number | Start y coordinate. |
+| `x1` | number | End x coordinate. |
+| `y1` | number | End y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawRect`
+
+Draws a filled rectangle into this image.
+
+```lua
+LImageData:drawRect(x, y, w, h, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:encode`
+
+Encodes image data in a supported format.
+
+```lua
+LImageData:encode(format)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `format` | string | Format name; currently `png`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Encoded image bytes. |
+
+---
+
+#### `LImageData:fill`
+
+Fills the whole image with one RGBA color.
+
+```lua
+LImageData:fill(r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:flipHorizontal`
+
+Flips this image horizontally in place.
+
+```lua
+LImageData:flipHorizontal()
+```
+
+---
+
+#### `LImageData:flipVertical`
+
+Flips this image vertically in place.
+
+```lua
+LImageData:flipVertical()
+```
+
+---
+
+#### `LImageData:gamma`
+
+Applies gamma correction to this image in place.
+
+```lua
+LImageData:gamma(gamma)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gamma` | number | Gamma value. |
+
+---
+
+#### `LImageData:getDimensions`
+
+Returns image dimensions. This method is available to Lua scripts.
+
+```lua
+LImageData:getDimensions()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getHeight`
+
+Returns image height. This method is available to Lua scripts.
+
+```lua
+LImageData:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getPixel`
+
+Returns RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:getPixel(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LImageData:getRawBytes`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getRawBytes()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getRegion`
+
+Returns an image region when the requested rectangle is inside bounds.
+
+```lua
+LImageData:getRegion(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Region x coordinate. |
+| `y` | number | Region y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | `[LImageData](#limagedata)` handle, or nil when the region is out of bounds. |
+
+---
+
+#### `LImageData:getString`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getString()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getWidth`
+
+Returns image width. This method is available to Lua scripts.
+
+```lua
+LImageData:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+
+---
+
+#### `LImageData:grayscale`
+
+Converts this image to grayscale in place.
+
+```lua
+LImageData:grayscale()
+```
+
+---
+
+#### `LImageData:invert`
+
+Inverts image color channels in place.
+
+```lua
+LImageData:invert()
+```
+
+---
+
+#### `LImageData:mapPixel`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixel(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:mapPixels`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixels(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:noise`
+
+Adds noise to this image in place. This method is available to Lua scripts.
+
+```lua
+LImageData:noise(amount)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `amount` | number | Noise amount. |
+
+---
+
+#### `LImageData:paste`
+
+Pastes a source image into this image at unsigned destination coordinates.
+
+```lua
+LImageData:paste(src_ud, dx, dy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
+| `dx` | number | Destination x coordinate. |
+| `dy` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:posterize`
+
+Reduces image colors to a fixed number of levels in place.
+
+```lua
+LImageData:posterize(levels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `levels` | number | Number of posterization levels. |
+
+---
+
+#### `LImageData:resize`
+
+Returns a resized image using an optional named filter.
+
+```lua
+LImageData:resize(width, height, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Output width. |
+| `height` | number | Output height. |
+| `filter` | string | Optional filter name, defaulting to `bilinear`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | Resized `[LImageData](#limagedata)` handle, or nil when resizing fails. |
+
+---
+
+#### `LImageData:resizeNearest`
+
+Returns a resized image using nearest-neighbor sampling.
+
+```lua
+LImageData:resizeNearest(new_w, new_h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `new_w` | number | Output width. |
+| `new_h` | number | Output height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Resized image data handle. |
+
+---
+
+#### `LImageData:rotate90cw`
+
+Returns a new image rotated ninety degrees clockwise.
+
+```lua
+LImageData:rotate90cw()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Rotated image data handle. |
+
+---
+
+#### `LImageData:saturation`
+
+Applies a saturation factor to this image in place.
+
+```lua
+LImageData:saturation(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Saturation factor. |
+
+---
+
+#### `LImageData:sepia`
+
+Applies a sepia filter to this image in place.
+
+```lua
+LImageData:sepia()
+```
+
+---
+
+#### `LImageData:setPixel`
+
+Sets RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:setPixel(x, y, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:setRawData`
+
+Replaces the image byte buffer with raw bytes.
+
+```lua
+LImageData:setRawData(bytes)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bytes` | string | Raw byte string matching the image storage size. |
+
+---
+
+#### `LImageData:sharpen`
+
+Returns a sharpened copy of this image.
+
+```lua
+LImageData:sharpen()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Sharpened image data handle. |
+
+---
+
+#### `LImageData:threshold`
+
+Applies a threshold filter to this image in place.
+
+```lua
+LImageData:threshold(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | number | Threshold channel value. |
+
+---
+
+#### `LImageData:tint`
+
+Blends this image toward a tint color in place.
+
+```lua
+LImageData:tint(tr, tg, tb, factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tr` | number | Tint red channel. |
+| `tg` | number | Tint green channel. |
+| `tb` | number | Tint blue channel. |
+| `factor` | number | Tint blend factor. |
+
+---
+
+#### `LImageData:type`
+
+Returns the Lua-visible type name for this image data handle.
+
+```lua
+LImageData:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LImageData](#limagedata)`. |
+
+---
+
+#### `LImageData:typeOf`
+
+Returns whether this image data handle matches the `[LImageData](#limagedata)` type name.
+
+```lua
+LImageData:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LImageData](#limagedata)` or `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches. |
 
 ---
 
@@ -5001,7 +5942,7 @@ LRaycaster:drawCameraSweep(x, y, fov, maxDist, numFrames, fw, fh)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](render.md#limagedata) | Raw image data for all frames. |
+| [LImageData](#limagedata) | Raw image data for all frames. |
 
 **Example**
 
@@ -5072,7 +6013,7 @@ LRaycaster:drawDepthMap(px, py, angle, fov, numRays, w, h, maxDist)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](render.md#limagedata) | Raw depth-map image data. |
+| [LImageData](#limagedata) | Raw depth-map image data. |
 
 **Example**
 
@@ -5139,7 +6080,7 @@ LRaycaster:drawTopDown(px, py, angle, scale)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](render.md#limagedata) | Raw image data. |
+| [LImageData](#limagedata) | Raw image data. |
 
 **Example**
 
@@ -5211,7 +6152,7 @@ LRaycaster:drawView(px, py, angle, fov, w, h, maxDist)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](render.md#limagedata) | Raw image data. |
+| [LImageData](#limagedata) | Raw image data. |
 
 **Example**
 

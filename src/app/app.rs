@@ -113,7 +113,8 @@ use crate::input::{gilrs_axis_to_string, gilrs_button_to_string, SystemCursor};
 #[allow(unused_imports)]
 use crate::log_msg;
 use crate::lua_api::create_lua_vm;
-use crate::render::renderer::{RenderCommand, TextureData};
+use crate::raycaster::{RaycasterBackground, RaycasterOverlayEffect};
+use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand, TextureData};
 use crate::render::GpuRenderer;
 pub use crate::runtime::config::Config;
 use crate::runtime::log_messages::{
@@ -1908,6 +1909,114 @@ impl LurekApp {
         {
             let scene_opt = state.borrow_mut().raycaster_output.take();
             if let Some(scene) = scene_opt {
+                fn push_raycaster_background_commands(
+                    cmds: &mut Vec<RenderCommand>,
+                    background: &RaycasterBackground,
+                    width: f32,
+                    height: f32,
+                ) {
+                    match background {
+                        RaycasterBackground::Solid { color } => {
+                            let [r, g, b, a] = *color;
+                            cmds.push(RenderCommand::SetColor(r, g, b, a));
+                            cmds.push(RenderCommand::Rectangle {
+                                mode: DrawMode::Fill,
+                                x: 0.0,
+                                y: 0.0,
+                                w: width,
+                                h: height,
+                            });
+                        }
+                        RaycasterBackground::VerticalGradient { top, bottom } => {
+                            cmds.push(RenderCommand::DrawGradientRect {
+                                x: 0.0,
+                                y: 0.0,
+                                w: width,
+                                h: height,
+                                color1: *top,
+                                color2: *bottom,
+                                direction: GradientDirection::Vertical,
+                            });
+                        }
+                        RaycasterBackground::Skybox {
+                            texture_key,
+                            tint,
+                            offset,
+                        } => {
+                            cmds.push(RenderCommand::DrawTexturedQuad {
+                                corners: [
+                                    crate::math::Vec2::new(0.0, 0.0),
+                                    crate::math::Vec2::new(width, 0.0),
+                                    crate::math::Vec2::new(width, height),
+                                    crate::math::Vec2::new(0.0, height),
+                                ],
+                                uvs: [
+                                    crate::math::Vec2::new(*offset, 0.0),
+                                    crate::math::Vec2::new(*offset + 1.0, 0.0),
+                                    crate::math::Vec2::new(*offset + 1.0, 1.0),
+                                    crate::math::Vec2::new(*offset, 1.0),
+                                ],
+                                corner_w: [1.0, 1.0, 1.0, 1.0],
+                                texture_key: *texture_key,
+                                color: *tint,
+                            });
+                        }
+                    }
+                }
+
+                fn push_raycaster_overlay_commands(
+                    cmds: &mut Vec<RenderCommand>,
+                    overlays: &[RaycasterOverlayEffect],
+                    width: f32,
+                    height: f32,
+                ) {
+                    for overlay in overlays {
+                        match *overlay {
+                            RaycasterOverlayEffect::Fog { mut color, density } => {
+                                color[3] = (color[3] * density.clamp(0.0, 1.0)).clamp(0.0, 1.0);
+                                let [r, g, b, a] = color;
+                                cmds.push(RenderCommand::SetColor(r, g, b, a));
+                                cmds.push(RenderCommand::Rectangle {
+                                    mode: DrawMode::Fill,
+                                    x: 0.0,
+                                    y: 0.0,
+                                    w: width,
+                                    h: height,
+                                });
+                            }
+                            RaycasterOverlayEffect::Snow {
+                                color,
+                                density,
+                                wind,
+                            } => {
+                                let count = ((width * height * density.clamp(0.0, 2.0)) / 850.0)
+                                    .round()
+                                    .clamp(0.0, 800.0)
+                                    as u32;
+                                let [r, g, b, a] = color;
+                                cmds.push(RenderCommand::SetColor(r, g, b, a));
+                                let mut seed = 0x9e37_79b9_u32
+                                    ^ (width.max(1.0) as u32).rotate_left(8)
+                                    ^ height.max(1.0) as u32;
+                                let wind_px = (wind * 4.0).round();
+                                for _ in 0..count {
+                                    seed = seed.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+                                    let x = (seed % width.max(1.0) as u32) as f32;
+                                    seed = seed.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+                                    let y = (seed % height.max(1.0) as u32) as f32;
+                                    let len = 2.0 + (seed % 4) as f32;
+                                    cmds.push(RenderCommand::Line {
+                                        x1: x,
+                                        y1: y,
+                                        x2: x + wind_px,
+                                        y2: y + len,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+
                 #[derive(Clone)]
                 /// Screen-space textured quad with depth used for raycaster depth sorting.
                 struct DepthQuad {
@@ -1972,7 +2081,7 @@ impl LurekApp {
                     depth_items.push(DepthItem::Quad(DepthQuad {
                         corners: sprite.corners,
                         uvs: sprite.uvs,
-                        corner_w: [1.0, 1.0, 1.0, 1.0],
+                        corner_w: [sprite.depth, sprite.depth, sprite.depth, sprite.depth],
                         texture_key: sprite.texture_key,
                         color: sprite.light,
                         depth: sprite.depth,
@@ -1993,6 +2102,14 @@ impl LurekApp {
                     bd.partial_cmp(&ad).unwrap_or(std::cmp::Ordering::Equal)
                 });
                 let mut s = state.borrow_mut();
+                if let Some(background) = &scene.background {
+                    push_raycaster_background_commands(
+                        &mut s.render_commands,
+                        background,
+                        scene.screen_width,
+                        scene.screen_height,
+                    );
+                }
                 for item in depth_items {
                     match item {
                         DepthItem::Quad(dq) => {
@@ -2018,6 +2135,12 @@ impl LurekApp {
                         }
                     }
                 }
+                push_raycaster_overlay_commands(
+                    &mut s.render_commands,
+                    &scene.overlays,
+                    scene.screen_width,
+                    scene.screen_height,
+                );
             }
         }
         {

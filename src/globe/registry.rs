@@ -38,6 +38,8 @@ pub struct Globe {
     pub camera: OrbitCamera,
     /// Province topology and cached adjacency.
     pub graph: RegionGraph,
+    /// Base terrain polygon patches rendered before province and region overlays.
+    pub terrain: HashMap<RegionId, Region>,
     /// Semantic regions that may overlap and do not participate in province rendering.
     pub regions: HashMap<RegionId, Region>,
     /// Fog state per viewer.
@@ -63,6 +65,20 @@ pub struct Globe {
     /// Simulation time in seconds.
     pub sim_time_sec: f32,
 }
+
+/// Sampled terrain coverage report for a globe.
+#[derive(Debug, Clone)]
+pub struct TerrainCoverageReport {
+    /// True when every sampled lat/lon point lands inside at least one terrain patch.
+    pub ok: bool,
+    /// Total sampled points.
+    pub samples: usize,
+    /// Sampled points covered by terrain.
+    pub covered_samples: usize,
+    /// Lat/lon points not covered by any terrain patch.
+    pub gaps: Vec<(f32, f32)>,
+}
+
 impl Globe {
     /// Create a globe with the supplied name and spec.
     pub fn new(name: impl Into<String>, spec: GlobeSpec) -> Self {
@@ -70,6 +86,66 @@ impl Globe {
             name: name.into(),
             spec,
             ..Default::default()
+        }
+    }
+    /// Insert a base terrain polygon patch or return TooManyRegions when storage is full.
+    pub fn add_terrain_patch(&mut self, patch: Region) -> Result<(), GlobeError> {
+        if self.terrain.len() >= MAX_REGIONS {
+            return Err(GlobeError::TooManyRegions);
+        }
+        self.terrain.insert(patch.id, patch);
+        Ok(())
+    }
+    /// Remove a terrain patch by id and return it when present.
+    pub fn remove_terrain_patch(&mut self, id: RegionId) -> Option<Region> {
+        self.terrain.remove(&id)
+    }
+    /// Return a shared terrain patch reference when the id exists.
+    pub fn get_terrain_patch(&self, id: RegionId) -> Option<&Region> {
+        self.terrain.get(&id)
+    }
+    /// Return a mutable terrain patch reference when the id exists.
+    pub fn get_terrain_patch_mut(&mut self, id: RegionId) -> Option<&mut Region> {
+        self.terrain.get_mut(&id)
+    }
+    /// Return the number of stored terrain patches.
+    pub fn terrain_patch_count(&self) -> usize {
+        self.terrain.len()
+    }
+    /// Validate terrain coverage by sampling equirectangular lat/lon cell centers.
+    pub fn validate_terrain_coverage(
+        &self,
+        lat_step_deg: f32,
+        lon_step_deg: f32,
+    ) -> TerrainCoverageReport {
+        let lat_step = lat_step_deg.max(0.001);
+        let lon_step = lon_step_deg.max(0.001);
+        let mut samples = 0_usize;
+        let mut covered_samples = 0_usize;
+        let mut gaps = Vec::new();
+        let mut lat = -90.0 + lat_step * 0.5;
+        while lat < 90.0 {
+            let mut lon = -180.0 + lon_step * 0.5;
+            while lon < 180.0 {
+                samples += 1;
+                if self
+                    .terrain
+                    .values()
+                    .any(|patch| patch.visible && point_in_geo_region(patch, lat, lon))
+                {
+                    covered_samples += 1;
+                } else {
+                    gaps.push((lat, lon));
+                }
+                lon += lon_step;
+            }
+            lat += lat_step;
+        }
+        TerrainCoverageReport {
+            ok: gaps.is_empty(),
+            samples,
+            covered_samples,
+            gaps,
         }
     }
     /// Insert a region or return TooManyRegions when the graph is full.
@@ -171,7 +247,15 @@ impl Globe {
     pub fn regions_at_lat_lon(&self, lat_deg: f32, lon_deg: f32) -> Vec<RegionId> {
         self.regions
             .values()
-            .filter(|region| point_in_geo_region(region, lat_deg, lon_deg))
+            .filter(|region| {
+                region.visible
+                    && (point_in_geo_region(region, lat_deg, lon_deg)
+                        || region.member_terrain_ids.iter().any(|id| {
+                            self.terrain
+                                .get(id)
+                                .is_some_and(|patch| point_in_geo_region(patch, lat_deg, lon_deg))
+                        }))
+            })
             .map(|region| region.id)
             .collect()
     }
@@ -228,7 +312,9 @@ impl Globe {
         emit_globe_frame(
             &self.spec,
             &self.camera,
+            &self.terrain,
             &self.graph,
+            &self.regions,
             &self.fog,
             &self.markers,
             &self.labels,

@@ -13,7 +13,7 @@
 - Source path: `src/globe`
 - Binding: `src/lua_api/globe_api.rs`
 - Namespace: `lurek.globe`
-- Lua API surface: `12` functions, `4` types, `92` methods
+- Lua API surface: `12` functions, `4` types, `102` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -186,7 +186,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 - Defines snapshot payloads and channel helpers used to transfer full globe state safely across thread boundaries.
 - Owns GlobeSyncSnapshot contents, channel creation, and the copy rules that build and apply globe state snapshots.
-- Clones topology, fog, overlays, labels, markers, arcs, sectors, and timing so remote views can stay aligned.
+- Clones terrain, topology, fog, overlays, labels, markers, arcs, sectors, and timing so remote views can stay aligned.
 - Provides the sync boundary between live Globe instances and background systems that exchange complete state images.
 - Open this owner when snapshot completeness, sync transport shape, or restore semantics need to change together.
 
@@ -255,10 +255,12 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:addMarker(mtype, lat, lon, label?) -> integer`: Adds a marker at latitude and longitude with an optional label.
 - `LGlobe:addProvince(p) -> boolean`: Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
 - `LGlobe:addRegion(p) -> boolean`: Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
+- `LGlobe:addTerrainPatch(p) -> boolean`: Adds a base terrain polygon patch described by id, centroid, polygon vertices or multipart geometry, optional attrs, and optional base color.
 - `LGlobe:applyMouseDrag(start_x, start_y, end_x, end_y) -> nil`: Applies a pointer drag to the globe camera using screen-space deltas.
 - `LGlobe:applyWheelZoom(delta) -> nil`: Applies a wheel delta using an exponential zoom scale.
 - `LGlobe:cacheReachability(faction, start_id, max_cost) -> nil`: Caches default-cost reachability for a named faction.
 - `LGlobe:clearProvinceTexture(id) -> boolean`: Removes texture metadata from a province.
+- `LGlobe:clearTerrainPatchTexture(id) -> boolean`: Removes texture metadata from a terrain patch.
 - `LGlobe:decodeFogBase64(viewer, payload) -> boolean`: Loads one viewer's fog state from a base64 string.
 - `LGlobe:distanceBetweenMarkers(a, b) -> number`: Computes great-circle distance between two markers on the unit sphere.
 - `LGlobe:draw(opts?) -> nil`: Emits the globe's render commands into the shared renderer command queue.
@@ -278,6 +280,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:getProvinceSector(id) -> string`: Returns the sector name assigned to a province.
 - `LGlobe:getRegionAttr(id, key) -> string`: Reads a string attribute from a semantic region.
 - `LGlobe:getSectorProvinces(sector) -> integer[]`: Returns province ids assigned to a sector.
+- `LGlobe:getTerrainPatchAttr(id, key) -> string`: Reads a string attribute from a terrain patch.
 - `LGlobe:getTimeOfDay() -> number`: Returns globe time of day. This method is available to Lua scripts.
 - `LGlobe:hideProvince(viewer, id) -> nil`: Hides a province for one fog-of-war viewer.
 - `LGlobe:isVisible(viewer, id) -> boolean`: Returns whether a province is visible for one fog-of-war viewer.
@@ -301,6 +304,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:removeMarker(id) -> boolean`: Removes a marker by id. This method is available to Lua scripts.
 - `LGlobe:removeProvince(id) -> boolean`: Removes a region by id. This method is available to Lua scripts.
 - `LGlobe:removeRegion(id) -> boolean`: Removes a region by id. This method is available to Lua scripts.
+- `LGlobe:removeTerrainPatch(id) -> boolean`: Removes a terrain patch by id.
 - `LGlobe:revealAll(viewer) -> nil`: Reveals every province for one fog-of-war viewer.
 - `LGlobe:revealProvince(viewer, id) -> nil`: Reveals a province for one fog-of-war viewer.
 - `LGlobe:screenDeltaToPan(dx, dy) -> number`: Converts a screen-space drag delta into latitude and longitude pan deltas.
@@ -329,11 +333,17 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:setProvinceSector(id, sector) -> boolean`: Assigns a province to a named sector.
 - `LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1) -> boolean`: Assigns a raw texture handle and UV rectangle to a province.
 - `LGlobe:setRegionAttr(id, key, val) -> boolean`: Sets a string attribute on a semantic region.
+- `LGlobe:setRegionColor(id, r, g, b, a) -> boolean`: Sets the RGBA color used to render a semantic region overlay.
+- `LGlobe:setRegionVisible(id, visible) -> boolean`: Shows or hides a semantic region overlay and its picking participation.
 - `LGlobe:setRotation(deg) -> nil`: Sets globe rotation angle. This method is available to Lua scripts.
+- `LGlobe:setTerrainPatchAttr(id, key, val) -> boolean`: Sets a string attribute on a terrain patch.
+- `LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1) -> boolean`: Assigns a raw texture handle and UV rectangle to a terrain patch.
 - `LGlobe:setTimeOfDay(t) -> nil`: Sets globe time of day modulo 24 hours.
+- `LGlobe:terrainPatchCount() -> integer`: Returns the number of stored base terrain patches.
 - `LGlobe:type() -> string`: Returns the Lua-visible type name for this globe handle.
 - `LGlobe:typeOf(name) -> boolean`: Returns whether this globe handle matches a supported type name.
 - `LGlobe:update(dt) -> nil`: Advances globe simulation timers and animated state.
+- `LGlobe:validateTerrainCoverage(opts?) -> table`: Samples terrain coverage over equirectangular latitude-longitude space.
 - `LGlobe:zoom(factor) -> nil`: Multiplies the globe camera zoom by a factor.
 
 #### LGlobeGreatCirclePathResult Type
@@ -404,6 +414,8 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 | Current artifact | `tests/artifacts/current/globe/globe_province_projection.png` |
 | Current artifact | `tests/artifacts/current/globe/globe_region_trace.txt` |
 | Current artifact | `tests/artifacts/current/globe/globe_semantic_region_holes.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_terrain_region_overlay.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_terrain_rotation.gif` |
 | Current artifact | `tests/artifacts/current/globe/globe_topology_cost_route.png` |
 | Baseline artifact | `tests/artifacts/baselines/globe/globe_camera_fog_registry_trace.txt` |
 | Baseline artifact | `tests/artifacts/baselines/globe/globe_camera_lod_panels.png` |
@@ -414,6 +426,8 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 | Baseline artifact | `tests/artifacts/baselines/globe/globe_province_projection.png` |
 | Baseline artifact | `tests/artifacts/baselines/globe/globe_region_trace.txt` |
 | Baseline artifact | `tests/artifacts/baselines/globe/globe_semantic_region_holes.png` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_terrain_region_overlay.png` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_terrain_rotation.gif` |
 | Baseline artifact | `tests/artifacts/baselines/globe/globe_topology_cost_route.png` |
 
 ## Architecture Links

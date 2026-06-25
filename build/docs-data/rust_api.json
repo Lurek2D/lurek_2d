@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-24T17:21:31.276557+00:00",
+    "generated": "2026-06-25T09:32:00.388674+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3044,
-      "rust_modules": 727,
+      "rust_items": 3055,
+      "rust_modules": 728,
       "rust_tests": 492,
       "lua_tests": 277
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3044,
-      "documented": 3041,
-      "modules": 727
+      "total_items": 3055,
+      "documented": 3052,
+      "modules": 728
     },
     "modules": {
       "agent::chat": {
@@ -1579,168 +1579,168 @@
             "kind": "fn",
             "description": "Recompute viewport scale and offset from game-space size to current window size.",
             "file": "src/app/app.rs",
-            "line": 155
+            "line": 156
           },
           {
             "name": "RunState",
             "kind": "enum",
             "description": "High-level app runtime state used by the frame/event loop.",
             "file": "src/app/app.rs",
-            "line": 231
+            "line": 232
           },
           {
             "name": "splash_window_title",
             "kind": "fn",
             "description": "Build splash window title with engine version suffix.",
             "file": "src/app/app.rs",
-            "line": 240
+            "line": 241
           },
           {
             "name": "fit_contain_size",
             "kind": "fn",
             "description": "Fit source size into max bounds while preserving aspect ratio.",
             "file": "src/app/app.rs",
-            "line": 244
+            "line": 245
           },
           {
             "name": "DropStartupTarget",
             "kind": "enum",
             "description": "Startup target inferred from a drag-and-drop path.",
             "file": "src/app/app.rs",
-            "line": 253
+            "line": 254
           },
           {
             "name": "AppStartupStage",
             "kind": "enum",
             "description": "GPU startup phase that failed before the app could enter steady execution.",
             "file": "src/app/app.rs",
-            "line": 268
+            "line": 269
           },
           {
             "name": "AppStartupError",
             "kind": "struct",
             "description": "Structured startup failure used to avoid panics during GPU initialization.",
             "file": "src/app/app.rs",
-            "line": 279
+            "line": 280
           },
           {
             "name": "map_startup_error_to_run_state",
             "kind": "fn",
             "description": "Map a structured startup failure into recoverable app error state.",
             "file": "src/app/app.rs",
-            "line": 305
+            "line": 306
           },
           {
             "name": "StartupTargetPolicy",
             "kind": "struct",
             "description": "Policy used to validate startup targets and `.lurek` archives before loading.",
             "file": "src/app/app.rs",
-            "line": 311
+            "line": 312
           },
           {
             "name": "StartupTargetDiagnostic",
             "kind": "enum",
             "description": "Diagnostic emitted while classifying startup input.",
             "file": "src/app/app.rs",
-            "line": 329
+            "line": 330
           },
           {
             "name": "StartupTargetReport",
             "kind": "struct",
             "description": "Classification result plus diagnostics for drag-drop startup input.",
             "file": "src/app/app.rs",
-            "line": 349
+            "line": 350
           },
           {
             "name": "CallbackFailurePolicy",
             "kind": "enum",
             "description": "Callback failure mode used by app-hosted Lua execution.",
             "file": "src/app/app.rs",
-            "line": 358
+            "line": 359
           },
           {
             "name": "CallbackErrorRecord",
             "kind": "struct",
             "description": "Diagnostic record for one Lua callback failure.",
             "file": "src/app/app.rs",
-            "line": 367
+            "line": 368
           },
           {
             "name": "WindowRuntimeReport",
             "kind": "struct",
             "description": "Structured report for one attempted window-state apply cycle.",
             "file": "src/app/app.rs",
-            "line": 380
+            "line": 381
           },
           {
             "name": "InputDispatchTarget",
             "kind": "enum",
             "description": "Dispatch stage used for input-routing diagnostics.",
             "file": "src/app/app.rs",
-            "line": 409
+            "line": 410
           },
           {
             "name": "InputDispatchReport",
             "kind": "struct",
             "description": "Diagnostic report for one input event routed through the app host.",
             "file": "src/app/app.rs",
-            "line": 420
+            "line": 421
           },
           {
             "name": "ReloadReport",
             "kind": "struct",
             "description": "Structured report for one runtime reload attempt.",
             "file": "src/app/app.rs",
-            "line": 435
+            "line": 436
           },
           {
             "name": "HotReloadReport",
             "kind": "struct",
             "description": "Report emitted when hot reload coalesces filesystem changes into one restart.",
             "file": "src/app/app.rs",
-            "line": 452
+            "line": 453
           },
           {
             "name": "classify_drop_startup_target",
             "kind": "fn",
             "description": "Classify a dropped path into archive, game directory, or unsupported input.",
             "file": "src/app/app.rs",
-            "line": 480
+            "line": 481
           },
           {
             "name": "classify_drop_startup_target_with_policy",
             "kind": "fn",
             "description": "Classify a dropped path under an explicit startup policy and retain diagnostics.",
             "file": "src/app/app.rs",
-            "line": 485
+            "line": 486
           },
           {
             "name": "should_open_startup_picker_on_key",
             "kind": "fn",
             "description": "Return `true` when the splash screen should open the startup picker for a key press.",
             "file": "src/app/app.rs",
-            "line": 577
+            "line": 578
           },
           {
             "name": "LurekApp",
             "kind": "struct",
             "description": "Central app runtime state shared by winit callbacks and frame update/render flow.",
             "file": "src/app/app.rs",
-            "line": 581
+            "line": 582
           },
           {
             "name": "App",
             "kind": "struct",
             "description": "Thin bootstrap wrapper that owns startup config and launches `LurekApp` event loop.",
             "file": "src/app/app.rs",
-            "line": 4075
+            "line": 4198
           },
           {
             "name": "AppRunOptions",
             "kind": "struct",
             "description": "Startup options passed to the GUI/TUI/CLI application runner.",
             "file": "src/app/app.rs",
-            "line": 4083
+            "line": 4206
           }
         ]
       },
@@ -7273,7 +7273,7 @@
             "kind": "fn",
             "description": "Project a great-circle arc into a flat polyline of screen coordinates.",
             "file": "src/globe/draw.rs",
-            "line": 630
+            "line": 699
           }
         ]
       },
@@ -7705,11 +7705,18 @@
             "line": 32
           },
           {
+            "name": "TerrainCoverageReport",
+            "kind": "struct",
+            "description": "Sampled terrain coverage report for a globe.",
+            "file": "src/globe/registry.rs",
+            "line": 71
+          },
+          {
             "name": "GlobeRegistry",
             "kind": "struct",
             "description": "Named globe registry keyed by globe name.",
             "file": "src/globe/registry.rs",
-            "line": 314
+            "line": 400
           }
         ]
       },
@@ -7762,7 +7769,7 @@
         ]
       },
       "globe::sync": {
-        "module_doc": "Defines snapshot payloads and channel helpers used to transfer full globe state safely across thread boundaries. Owns GlobeSyncSnapshot contents, channel creation, and the copy rules that build and apply globe state snapshots. Clones topology, fog, overlays, labels, markers, arcs, sectors, and timing so remote views can stay aligned. Provides the sync boundary between live Globe instances and background systems that exchange complete state images. Open this owner when snapshot completeness, sync transport shape, or restore semantics need to change together.",
+        "module_doc": "Defines snapshot payloads and channel helpers used to transfer full globe state safely across thread boundaries. Owns GlobeSyncSnapshot contents, channel creation, and the copy rules that build and apply globe state snapshots. Clones terrain, topology, fog, overlays, labels, markers, arcs, sectors, and timing so remote views can stay aligned. Provides the sync boundary between live Globe instances and background systems that exchange complete state images. Open this owner when snapshot completeness, sync transport shape, or restore semantics need to change together.",
         "source_file": "src/globe/sync.rs",
         "items": [
           {
@@ -7777,21 +7784,21 @@
             "kind": "struct",
             "description": "Channel pair used to send and receive globe snapshots.",
             "file": "src/globe/sync.rs",
-            "line": 55
+            "line": 57
           },
           {
             "name": "build_snapshot",
             "kind": "fn",
             "description": "Build a snapshot from the current globe state.",
             "file": "src/globe/sync.rs",
-            "line": 76
+            "line": 78
           },
           {
             "name": "apply_snapshot",
             "kind": "fn",
             "description": "Apply a snapshot to a mutable globe instance.",
             "file": "src/globe/sync.rs",
-            "line": 97
+            "line": 100
           }
         ]
       },
@@ -7852,119 +7859,119 @@
             "kind": "enum",
             "description": "Fog-of-war state for a region.",
             "file": "src/globe/types.rs",
-            "line": 257
+            "line": 272
           },
           {
             "name": "HeatLayer",
             "kind": "struct",
             "description": "Heat overlay parameters used by globe color mapping.",
             "file": "src/globe/types.rs",
-            "line": 267
+            "line": 282
           },
           {
             "name": "GlobeSpec",
             "kind": "struct",
             "description": "Render-time globe parameters shared by loaders and draw code.",
             "file": "src/globe/types.rs",
-            "line": 289
+            "line": 304
           },
           {
             "name": "Marker",
             "kind": "struct",
             "description": "Globe marker with position, label, style, and custom attributes.",
             "file": "src/globe/types.rs",
-            "line": 341
+            "line": 356
           },
           {
             "name": "MarkerStyle",
             "kind": "struct",
             "description": "Marker drawing style shared by globe markers.",
             "file": "src/globe/types.rs",
-            "line": 361
+            "line": 376
           },
           {
             "name": "MarkerShape",
             "kind": "enum",
             "description": "Marker shape selection used by the renderer.",
             "file": "src/globe/types.rs",
-            "line": 379
+            "line": 394
           },
           {
             "name": "Label",
             "kind": "struct",
             "description": "Globe label with text, position, style, and LOD gating.",
             "file": "src/globe/types.rs",
-            "line": 407
+            "line": 422
           },
           {
             "name": "LabelStyle",
             "kind": "struct",
             "description": "Label styling shared by globe labels.",
             "file": "src/globe/types.rs",
-            "line": 427
+            "line": 442
           },
           {
             "name": "Layer",
             "kind": "struct",
             "description": "Named globe overlay layer with per-region color overrides.",
             "file": "src/globe/types.rs",
-            "line": 447
+            "line": 462
           },
           {
             "name": "LodTier",
             "kind": "enum",
             "description": "Level-of-detail tier used by globe render decisions.",
             "file": "src/globe/types.rs",
-            "line": 476
+            "line": 491
           },
           {
             "name": "ProjectedRegion",
             "kind": "struct",
             "description": "Projected region with screen-space geometry and lighting state.",
             "file": "src/globe/types.rs",
-            "line": 486
+            "line": 501
           },
           {
             "name": "Arc",
             "kind": "struct",
             "description": "Projected arc with path geometry and render parameters.",
             "file": "src/globe/types.rs",
-            "line": 502
+            "line": 517
           },
           {
             "name": "GlobeError",
             "kind": "enum",
             "description": "Globe-level errors for loading, lookup, and pathfinding failures.",
             "file": "src/globe/types.rs",
-            "line": 524
+            "line": 539
           },
           {
             "name": "Province",
             "kind": "type",
             "description": "Backward compatibility aliases.",
             "file": "src/globe/types.rs",
-            "line": 554
+            "line": 569
           },
           {
             "name": "ProvinceId",
             "kind": "type",
             "description": "Backward-compatible type alias for `RegionId`.",
             "file": "src/globe/types.rs",
-            "line": 556
+            "line": 571
           },
           {
             "name": "ProjectedProvince",
             "kind": "type",
             "description": "Backward-compatible type alias for `ProjectedRegion`.",
             "file": "src/globe/types.rs",
-            "line": 558
+            "line": 573
           },
           {
             "name": "MAX_PROVINCES",
             "kind": "const",
             "description": "Maximum number of provinces (regions) supported per globe — backward-compat alias for `MAX_REGIONS`.",
             "file": "src/globe/types.rs",
-            "line": 560
+            "line": 575
           }
         ]
       },
@@ -17034,49 +17041,49 @@
             "kind": "struct",
             "description": "A floor cell that sits below the standard floor plane, used for pits and step-down areas.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 30
+            "line": 31
           },
           {
             "name": "LevelSprite",
             "kind": "struct",
             "description": "A billboard sprite attached to a specific multi-level slice.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 43
+            "line": 44
           },
           {
             "name": "SceneBuildParams",
             "kind": "struct",
             "description": "All camera and world parameters consumed by `RaycasterScene::build` each frame.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1477
+            "line": 1478
           },
           {
             "name": "DirectionalSpriteTextures",
             "kind": "struct",
             "description": "Optional 4-direction texture set for bitmap actors that should read as front/side/back sprites.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1528
+            "line": 1533
           },
           {
             "name": "WorldSprite",
             "kind": "struct",
             "description": "A billboard sprite placed in world space and projected to screen by `RaycasterScene::build`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1567
+            "line": 1572
           },
           {
             "name": "TextureLookup",
             "kind": "type",
             "description": "Callback type mapping a wall cell value to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1584
+            "line": 1589
           },
           {
             "name": "CellTextureLookup",
             "kind": "type",
             "description": "Callback type mapping a grid `(x, y)` cell to an optional `TextureKey`.",
             "file": "src/raycaster/build_scene.rs",
-            "line": 1586
+            "line": 1591
           }
         ]
       },
@@ -17511,18 +17518,32 @@
             "line": 118
           },
           {
+            "name": "RaycasterBackground",
+            "kind": "enum",
+            "description": "Full-frame background drawn before raycaster geometry.",
+            "file": "src/raycaster/scene.rs",
+            "line": 141
+          },
+          {
+            "name": "RaycasterOverlayEffect",
+            "kind": "enum",
+            "description": "Screen-space presentation effect drawn over the raycaster frame.",
+            "file": "src/raycaster/scene.rs",
+            "line": 156
+          },
+          {
             "name": "ModelMesh",
             "kind": "struct",
             "description": "A static mesh injected into the raycaster scene with an associated depth.",
             "file": "src/raycaster/scene.rs",
-            "line": 140
+            "line": 168
           },
           {
             "name": "RaycasterScene",
             "kind": "struct",
             "description": "Full frame scene produced by `RaycasterScene::build`; consumed by `render::generate_render_commands`.",
             "file": "src/raycaster/scene.rs",
-            "line": 158
+            "line": 186
           }
         ]
       },
@@ -24742,6 +24763,61 @@
           }
         ]
       },
+      "ui::icons": {
+        "module_doc": "Owns the built-in UI icon catalog used by retained widgets, TOML layouts, and Lua helpers. The catalog maps stable semantic names to compact text glyphs so icons work without external assets. Names stay independent from the rendered glyphs, allowing a future SVG or atlas backend to reuse the same API. Widget code stores icon names, while render code resolves them here at paint time. Keep this module focused on catalog lookup and icon placement metadata, not widget state or drawing policy.",
+        "source_file": "src/ui/icons.rs",
+        "items": [
+          {
+            "name": "UiIcon",
+            "kind": "struct",
+            "description": "One built-in UI icon entry.",
+            "file": "src/ui/icons.rs",
+            "line": 9
+          },
+          {
+            "name": "UiIconPosition",
+            "kind": "enum",
+            "description": "Icon placement relative to widget text.",
+            "file": "src/ui/icons.rs",
+            "line": 18
+          },
+          {
+            "name": "BUILTIN_UI_ICONS",
+            "kind": "const",
+            "description": "Built-in icon entries grouped around common application and game operations.",
+            "file": "src/ui/icons.rs",
+            "line": 57
+          },
+          {
+            "name": "normalize_icon_name",
+            "kind": "fn",
+            "description": "Normalize a user-facing icon token for catalog lookup.",
+            "file": "src/ui/icons.rs",
+            "line": 541
+          },
+          {
+            "name": "lookup_icon",
+            "kind": "fn",
+            "description": "Return the built-in icon with `name`, accepting case-insensitive spaces and underscores.",
+            "file": "src/ui/icons.rs",
+            "line": 553
+          },
+          {
+            "name": "has_icon",
+            "kind": "fn",
+            "description": "Return whether `name` resolves to a built-in icon.",
+            "file": "src/ui/icons.rs",
+            "line": 561
+          },
+          {
+            "name": "icon_names",
+            "kind": "fn",
+            "description": "Return all built-in icon names in stable catalog order.",
+            "file": "src/ui/icons.rs",
+            "line": 566
+          }
+        ]
+      },
       "ui::layout_loader": {
         "module_doc": "Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Centers the implementation around DialogActionDef, WidgetDef, LayoutDef, with helpers kept close to their invariants. Defines how layout loader data is validated, transformed, or stored before neighboring systems use it. Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on layout loader behavior while Lua registration stays elsewhere. Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing layout loader defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping layout loader calculations explicit at their owner boundary.",
         "source_file": "src/ui/layout_loader.rs",
@@ -24765,28 +24841,28 @@
             "kind": "struct",
             "description": "Top-level TOML layout definition containing an optional resolution hint and the root widget tree.",
             "file": "src/ui/layout_loader.rs",
-            "line": 115
+            "line": 121
           },
           {
             "name": "load_layout_def",
             "kind": "fn",
             "description": "Recursively instantiate `def` and all its `children` into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 122
+            "line": 128
           },
           {
             "name": "load_layout_toml",
             "kind": "fn",
             "description": "Parse `toml_src` into a `LayoutDef` and load it into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 273
+            "line": 279
           },
           {
             "name": "render_to_image",
             "kind": "fn",
             "description": "Run the engine UI rasteriser on `ctx` at the given resolution and save the PNG to `path`.",
             "file": "src/ui/layout_loader.rs",
-            "line": 279
+            "line": 285
           }
         ]
       },
@@ -24830,32 +24906,39 @@
             "line": 17
           },
           {
+            "name": "icons",
+            "kind": "mod",
+            "description": "Built-in icon catalog and icon placement metadata.",
+            "file": "src/ui/mod.rs",
+            "line": 19
+          },
+          {
             "name": "render",
             "kind": "mod",
             "description": "UI render helpers and draw-command generation.",
             "file": "src/ui/mod.rs",
-            "line": 19
+            "line": 21
           },
           {
             "name": "theme",
             "kind": "mod",
             "description": "Theming and per-widget style configuration.",
             "file": "src/ui/mod.rs",
-            "line": 21
+            "line": 23
           },
           {
             "name": "widget",
             "kind": "mod",
             "description": "Base widget trait, state, transitions, and type registry.",
             "file": "src/ui/mod.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "layout_loader",
             "kind": "mod",
             "description": "TOML-based declarative layout loader and image renderer.",
             "file": "src/ui/mod.rs",
-            "line": 46
+            "line": 49
           }
         ]
       },
@@ -24875,14 +24958,14 @@
             "kind": "fn",
             "description": "Push a scissor rect onto the stack, intersecting with the current topmost scissor.",
             "file": "src/ui/render.rs",
-            "line": 1089
+            "line": 1355
           },
           {
             "name": "pop_scissor",
             "kind": "fn",
             "description": "Pop the topmost scissor rect and restore the previous one (or disable scissor if stack is empty).",
             "file": "src/ui/render.rs",
-            "line": 1110
+            "line": 1376
           }
         ]
       },
@@ -24922,56 +25005,56 @@
             "kind": "enum",
             "description": "Vertical alignment of text inside a text-bearing widget.",
             "file": "src/ui/widget.rs",
-            "line": 16
+            "line": 17
           },
           {
             "name": "WidgetState",
             "kind": "enum",
             "description": "Interaction state of a widget used as a theme lookup key.",
             "file": "src/ui/widget.rs",
-            "line": 46
+            "line": 47
           },
           {
             "name": "MouseFilter",
             "kind": "enum",
             "description": "Mouse interaction filter matching Godot's control behavior.",
             "file": "src/ui/widget.rs",
-            "line": 107
+            "line": 108
           },
           {
             "name": "WidgetType",
             "kind": "enum",
             "description": "Discriminated widget class used as the second key in `Theme` style lookups and for dispatch.",
             "file": "src/ui/widget.rs",
-            "line": 136
+            "line": 137
           },
           {
             "name": "EasingFunction",
             "kind": "enum",
             "description": "Easing function for property animations.",
             "file": "src/ui/widget.rs",
-            "line": 413
+            "line": 414
           },
           {
             "name": "WidgetTransitionKind",
             "kind": "enum",
             "description": "Which property a `WidgetTransition` animates.",
             "file": "src/ui/widget.rs",
-            "line": 494
+            "line": 495
           },
           {
             "name": "WidgetTransition",
             "kind": "struct",
             "description": "Active animation on a `WidgetBase`; evaluated each frame by `GuiContext::update`.",
             "file": "src/ui/widget.rs",
-            "line": 541
+            "line": 542
           },
           {
             "name": "WidgetBase",
             "kind": "struct",
             "description": "Shared layout, identity, and state fields embedded in every concrete widget struct.",
             "file": "src/ui/widget.rs",
-            "line": 622
+            "line": 623
           }
         ]
       },

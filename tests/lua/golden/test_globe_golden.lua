@@ -43,6 +43,14 @@ describe("golden: globe evidence comparison", function()
             evidence_output_dir("globe") .. "globe_semantic_region_holes.png",
             "tests/artifacts/baselines/globe/globe_semantic_region_holes.png"
         )
+        expect_golden_file_match(
+            evidence_output_dir("globe") .. "globe_terrain_region_overlay.png",
+            "tests/artifacts/baselines/globe/globe_terrain_region_overlay.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("globe") .. "globe_terrain_rotation.gif",
+            "tests/artifacts/baselines/globe/globe_terrain_rotation.gif"
+        )
     end)
 end)
 test_summary()

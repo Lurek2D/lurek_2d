@@ -1,6 +1,6 @@
 //! Defines snapshot payloads and channel helpers used to transfer full globe state safely across thread boundaries.
 //! Owns GlobeSyncSnapshot contents, channel creation, and the copy rules that build and apply globe state snapshots.
-//! Clones topology, fog, overlays, labels, markers, arcs, sectors, and timing so remote views can stay aligned.
+//! Clones terrain, topology, fog, overlays, labels, markers, arcs, sectors, and timing so remote views can stay aligned.
 //! Provides the sync boundary between live Globe instances and background systems that exchange complete state images.
 //! Open this owner when snapshot completeness, sync transport shape, or restore semantics need to change together.
 
@@ -25,6 +25,8 @@ pub struct GlobeSyncSnapshot {
     pub camera: OrbitCamera,
     /// Province topology graph.
     pub graph: RegionGraph,
+    /// Base terrain polygon patches.
+    pub terrain: HashMap<RegionId, Region>,
     /// Semantic regions that sit beside province topology.
     pub regions: HashMap<RegionId, Region>,
     /// Fog-of-war state for all viewers.
@@ -79,6 +81,7 @@ pub fn build_snapshot(globe: &Globe) -> GlobeSyncSnapshot {
         spec: globe.spec.clone(),
         camera: globe.camera.clone(),
         graph: globe.graph.clone(),
+        terrain: globe.terrain.clone(),
         regions: globe.regions.clone(),
         fog: globe.fog.clone(),
         markers: globe.markers.clone(),
@@ -100,6 +103,7 @@ pub fn apply_snapshot(globe: &mut Globe, snap: &GlobeSyncSnapshot) {
     globe.camera = snap.camera.clone();
     globe.camera.clamp();
     globe.graph = snap.graph.clone();
+    globe.terrain = snap.terrain.clone();
     globe.regions = snap.regions.clone();
     globe.fog = snap.fog.clone();
     globe.markers = snap.markers.clone();

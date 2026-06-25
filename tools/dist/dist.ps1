@@ -41,7 +41,9 @@ $ErrorActionPreference = 'Stop'
 $WorkspaceRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 if (-not $OutDir) { $OutDir = Join-Path $WorkspaceRoot 'dist' }
 
-$Version = "1.0.0"
+$CargoToml = Join-Path $WorkspaceRoot 'Cargo.toml'
+$Version = (Select-String -Path $CargoToml -Pattern '^version\s*=\s*"([^"]+)"' | Select-Object -First 1).Matches.Groups[1].Value
+if (-not $Version) { $Version = "1.0.0" }
 $ArchName = "lurek2d-windows-x86_64"
 $PackageDir = Join-Path $OutDir $ArchName
 $ZipPath = Join-Path $OutDir "$ArchName.zip"
@@ -52,6 +54,15 @@ $BinarySource = Join-Path $WorkspaceRoot 'build\dist\lurek2d.exe'
 function Write-Step([string]$Msg) { Write-Host "[dist] $Msg" -ForegroundColor Cyan }
 function Write-OK  ([string]$Msg) { Write-Host "[ OK ] $Msg" -ForegroundColor Green }
 function Write-Fail([string]$Msg) { Write-Host "[FAIL] $Msg" -ForegroundColor Red; exit 1 }
+function Resolve-UpxPath {
+    $upxCmd = Get-Command upx -ErrorAction SilentlyContinue
+    if ($upxCmd) { return $upxCmd.Source }
+
+    $scoopShim = Join-Path $env:USERPROFILE 'scoop\shims\upx.exe'
+    if (Test-Path $scoopShim) { return $scoopShim }
+
+    return $null
+}
 
 # -- 0. Verify workspace -------------------------------------------------------
 if (-not (Test-Path (Join-Path $WorkspaceRoot 'Cargo.toml'))) {
@@ -100,24 +111,35 @@ New-Item -ItemType Directory -Path $PackageDir -Force | Out-Null
 $DestBinary = Join-Path $PackageDir 'lurek2d.exe'
 Copy-Item $BinarySource -Destination $DestBinary -Force
 $SizeBefore = [math]::Round((Get-Item $DestBinary).Length / 1MB, 2)
-Write-OK "Copied lurek2d.exe ($SizeBefore MB)"
+Write-OK ("Copied lurek2d.exe ({0} MB)" -f $SizeBefore)
 
 # -- Optional UPX compression --------------------------------------------------
 # UPX --best uses UCL/NRV compression (no LZMA): strong size reduction with
 # faster startup decompression than --lzma. Target range: 10-15 MB on Windows.
 # Install: https://upx.github.io/  (place upx.exe anywhere on PATH)
 # Caveats: some AV scanners flag UPX'd bins.
-$upx = Get-Command upx -ErrorAction SilentlyContinue
-if ($upx) {
-    Write-Step "UPX found -- compressing lurek2d.exe ..."
-    # --best = maximum UCL compression (no LZMA): smaller package, still fast
-    & upx --best $DestBinary 2>&1 | ForEach-Object { Write-Host "    $_" }
-    if ($LASTEXITCODE -eq 0) {
-        $SizeAfter = [math]::Round((Get-Item $DestBinary).Length / 1MB, 2)
-        Write-OK "UPX compressed: $SizeBefore MB � $SizeAfter MB"
+$upxPath = Resolve-UpxPath
+if ($upxPath) {
+    $quotedUpx = '"' + $upxPath + '"'
+    $quotedBinary = '"' + $DestBinary + '"'
+    $listOutput = cmd.exe /d /c "$quotedUpx -l $quotedBinary 2>&1"
+    $alreadyPacked = ($LASTEXITCODE -eq 0)
+
+    if ($alreadyPacked) {
+        Write-Host "[dist] Binary already packed by UPX -- leaving as-is." -ForegroundColor DarkGray
     }
     else {
-        Write-Host "[warn] UPX returned non-zero; binary unchanged." -ForegroundColor Yellow
+        Write-Step "UPX found -- compressing lurek2d.exe ..."
+        # --best = maximum UCL compression (no LZMA): smaller package, still fast
+        $upxOutput = cmd.exe /d /c "$quotedUpx --best $quotedBinary 2>&1"
+        $upxOutput | ForEach-Object { Write-Host "    $_" }
+        if ($LASTEXITCODE -eq 0) {
+            $SizeAfter = [math]::Round((Get-Item $DestBinary).Length / 1MB, 2)
+            Write-OK "UPX compressed: $SizeBefore MB � $SizeAfter MB"
+        }
+        else {
+            Write-Host "[warn] UPX returned non-zero; binary unchanged." -ForegroundColor Yellow
+        }
     }
 }
 else {
@@ -295,7 +317,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
     $true   # $true = include top-level dir name in entry paths
 )
 $ZipSizeKB = [math]::Round((Get-Item $ZipPath).Length / 1024)
-Write-OK "ZIP created ($ZipSizeKB KB) → $ZipPath"
+Write-OK ("ZIP created ({0} KB) -> {1}" -f $ZipSizeKB, $ZipPath)
 
 # -- 5. Summary ----------------------------------------------------------------
 Write-Host ""
@@ -304,4 +326,4 @@ Write-Host "  Folder : $PackageDir" -ForegroundColor White
 Write-Host "  ZIP    : $ZipPath"    -ForegroundColor White
 Write-Host ""
 Write-Host "  Distribute the ZIP or the folder contents to end users." -ForegroundColor Yellow
-Write-Host "  For a full installer, run:  makensis tools\installer.nsi" -ForegroundColor Yellow
+Write-Host "  For a full installer, run:  makensis tools\dist\installer.nsi" -ForegroundColor Yellow

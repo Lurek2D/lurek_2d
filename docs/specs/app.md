@@ -35,7 +35,7 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 - Owning tier: `Edge/Integration`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/engine_api.rs`
-- Referenced engine modules: `event`, `filesystem`, `font`, `image`, `input`, `light`, `lua_api`, `math`, `parallax`, `render`, `runtime`, `sprite`, `tilemap`, `window`
+- Referenced engine modules: `event`, `filesystem`, `font`, `image`, `input`, `light`, `lua_api`, `math`, `parallax`, `raycaster`, `render`, `runtime`, `sprite`, `tilemap`, `window`
 
 ## Imports
 
@@ -48,6 +48,7 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 - `lua_api`: Imports or references `src/lua_api/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
 - `parallax`: Imports or references `src/parallax/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
+- `raycaster`: Imports or references `src/raycaster/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
 - `sprite`: Imports or references `src/sprite/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.

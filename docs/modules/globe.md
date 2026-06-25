@@ -1111,7 +1111,7 @@ LGlobe:addRegion(p)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `p` | table | Region table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`. |
+| `p` | table | Region table with `id`, optional `centroid`, `vertices` or `parts`, optional `members`, optional `neighbors`, optional `attrs`, and optional `base_color`. |
 
 **Returns**
 
@@ -1157,6 +1157,47 @@ do
     })
     example_print_log("added region = " .. tostring(ok))
     example_print_log("region count = " .. g:regionCount())
+end
+```
+
+---
+
+#### `LGlobe:addTerrainPatch`
+
+Adds a base terrain polygon patch described by id, centroid, polygon vertices or multipart geometry, optional attrs, and optional base color.
+
+```lua
+LGlobe:addTerrainPatch(p)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `p` | table | Terrain patch table with `id`, optional `centroid`, either `vertices` or `parts`, optional `attrs`, and optional `base_color`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the terrain patch was accepted by the globe. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_add_terrain_patch")
+    local ok = g:addTerrainPatch({ id = 1, vertices = {{-90,-180},{-90,0},{0,0},{0,-180}}, base_color = {0.1, 0.35, 0.8, 1.0} })
+    local count = g:terrainPatchCount()
+    local report = g:validateTerrainCoverage({ lat_step = 45, lon_step = 90 })
+    example_print_log("terrain added=" .. tostring(ok))
+    example_print_log("terrain count=" .. tostring(count) .. " covered=" .. tostring(report.covered_samples))
 end
 ```
 
@@ -1377,6 +1418,47 @@ do
     g:setProvinceTexture(1, 42, 0, 0, 1, 1)
     g:clearProvinceTexture(1)
     example_print_log("texture cleared")
+end
+```
+
+---
+
+#### `LGlobe:clearTerrainPatchTexture`
+
+Removes texture metadata from a terrain patch.
+
+```lua
+LGlobe:clearTerrainPatchTexture(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Terrain patch id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the terrain patch exists. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_clear_terrain_patch_texture")
+    g:addTerrainPatch({ id = 7, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
+    g:setTerrainPatchTexture(7, 0, 0.0, 0.0, 1.0, 1.0)
+    local ok = g:clearTerrainPatchTexture(7)
+    local raw = g:getTerrainPatchAttr(7, "__texture_raw")
+    example_print_log("terrain texture cleared=" .. tostring(ok) .. " raw=" .. tostring(raw))
 end
 ```
 
@@ -2473,6 +2555,48 @@ do
     g:setProvinceSector(1, "west")
     local ids = g:getSectorProvinces("west")
     example_print_log("west has " .. #ids .. " provinces")
+end
+```
+
+---
+
+#### `LGlobe:getTerrainPatchAttr`
+
+Reads a string attribute from a terrain patch.
+
+```lua
+LGlobe:getTerrainPatchAttr(id, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Terrain patch id. |
+| `key` | string | Attribute key. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Attribute string, or nil when the patch or key is missing. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_get_terrain_patch_attr")
+    g:addTerrainPatch({ id = 5, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}}, attrs = { danger = "low" } })
+    local danger = g:getTerrainPatchAttr(5, "danger")
+    local missing = g:getTerrainPatchAttr(5, "missing")
+    local ok = danger == "low" and missing == nil
+    example_print_log("terrain danger=" .. tostring(danger) .. " ok=" .. tostring(ok))
 end
 ```
 
@@ -3820,6 +3944,47 @@ do
     local ok = g:removeRegion(1)
     example_print_log("removed region = " .. tostring(ok))
     example_print_log("region count = " .. g:regionCount())
+end
+```
+
+---
+
+#### `LGlobe:removeTerrainPatch`
+
+Removes a terrain patch by id.
+
+```lua
+LGlobe:removeTerrainPatch(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Terrain patch id to remove. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a terrain patch was removed. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_remove_terrain_patch")
+    g:addTerrainPatch({ id = 2, vertices = {{0,0},{0,20},{20,20},{20,0}}, base_color = {0.2, 0.7, 0.3, 1.0} })
+    local before = g:terrainPatchCount()
+    local removed = g:removeTerrainPatch(2)
+    local after = g:terrainPatchCount()
+    example_print_log("terrain removed=" .. tostring(removed) .. " " .. tostring(before) .. "->" .. tostring(after))
 end
 ```
 
@@ -5458,6 +5623,94 @@ end
 
 ---
 
+#### `LGlobe:setRegionColor`
+
+Sets the RGBA color used to render a semantic region overlay.
+
+```lua
+LGlobe:setRegionColor(id, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Region id. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the semantic region exists. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_set_region_color")
+    g:addTerrainPatch({ id = 9, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
+    g:addRegion({ id = 90, members = {9} })
+    local ok = g:setRegionColor(90, 0.9, 0.3, 0.1, 0.35)
+    local hits = g:regionsAtLatLon(0, 0)
+    example_print_log("region color set=" .. tostring(ok) .. " hit=" .. tostring(hits[1]))
+end
+```
+
+---
+
+#### `LGlobe:setRegionVisible`
+
+Shows or hides a semantic region overlay and its picking participation.
+
+```lua
+LGlobe:setRegionVisible(id, visible)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Region id. |
+| `visible` | boolean | New visibility flag. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the semantic region exists. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_set_region_visible")
+    g:addTerrainPatch({ id = 10, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
+    g:addRegion({ id = 91, members = {10} })
+    local before = #g:regionsAtLatLon(0, 0)
+    local ok = g:setRegionVisible(91, false)
+    local after = #g:regionsAtLatLon(0, 0)
+    example_print_log("region visible set=" .. tostring(ok) .. " hits=" .. tostring(before) .. "->" .. tostring(after))
+end
+```
+
+---
+
 #### `LGlobe:setRotation`
 
 Sets globe rotation angle. This method is available to Lua scripts.
@@ -5510,6 +5763,95 @@ end
 
 ---
 
+#### `LGlobe:setTerrainPatchAttr`
+
+Sets a string attribute on a terrain patch.
+
+```lua
+LGlobe:setTerrainPatchAttr(id, key, val)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Terrain patch id. |
+| `key` | string | Attribute key. |
+| `val` | string | Attribute value. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the terrain patch exists. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_set_terrain_patch_attr")
+    g:addTerrainPatch({ id = 4, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
+    local ok = g:setTerrainPatchAttr(4, "biome", "forest")
+    local value = g:getTerrainPatchAttr(4, "biome")
+    local count = g:terrainPatchCount()
+    example_print_log("terrain attr set=" .. tostring(ok) .. " value=" .. tostring(value) .. " count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LGlobe:setTerrainPatchTexture`
+
+Assigns a raw texture handle and UV rectangle to a terrain patch.
+
+```lua
+LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Terrain patch id. |
+| `tex_raw` | number | Raw texture identifier stored in terrain attributes. |
+| `u0` | number | Left UV coordinate. |
+| `v0` | number | Top UV coordinate. |
+| `u1` | number | Right UV coordinate. |
+| `v1` | number | Bottom UV coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the terrain patch exists. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_set_terrain_patch_texture")
+    g:addTerrainPatch({ id = 6, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}} })
+    local ok = g:setTerrainPatchTexture(6, 0, 0.0, 0.0, 1.0, 1.0)
+    local raw = g:getTerrainPatchAttr(6, "__texture_raw")
+    local count = g:terrainPatchCount()
+    example_print_log("terrain texture set=" .. tostring(ok) .. " raw=" .. tostring(raw) .. " count=" .. tostring(count))
+end
+```
+
+---
+
 #### `LGlobe:setTimeOfDay`
 
 Sets globe time of day modulo 24 hours.
@@ -5557,6 +5899,41 @@ do
     local province_count = g:provinceCount()
     g:setTimeOfDay(14.5)
     example_print_log("time = 14:30")
+end
+```
+
+---
+
+#### `LGlobe:terrainPatchCount`
+
+Returns the number of stored base terrain patches.
+
+```lua
+LGlobe:terrainPatchCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Terrain patch count. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_terrain_patch_count")
+    g:addTerrainPatch({ id = 3, vertices = {{-10,-10},{-10,10},{10,10},{10,-10}}, base_color = {0.45, 0.45, 0.45, 1.0} })
+    local count = g:terrainPatchCount()
+    local ok = count == 1
+    local report = g:validateTerrainCoverage({ lat_step = 90, lon_step = 180 })
+    example_print_log("terrain patch count=" .. tostring(count) .. " ok=" .. tostring(ok) .. " samples=" .. tostring(report.samples))
 end
 ```
 
@@ -5717,6 +6094,47 @@ do
     local province_count = g:provinceCount()
     g:update(0.016)
     example_print_log("globe updated")
+end
+```
+
+---
+
+#### `LGlobe:validateTerrainCoverage`
+
+Samples terrain coverage over equirectangular latitude-longitude space.
+
+```lua
+LGlobe:validateTerrainCoverage(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Optional `lat_step` and `lon_step` sample spacing in degrees. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Coverage report with `ok`, `samples`, `covered_samples`, and `gaps`. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local g = lurek.globe.new("example_validate_terrain_coverage")
+    g:addTerrainPatch({ id = 8, vertices = {{-90,-180},{-90,180},{90,180},{90,-180}}, base_color = {0.1, 0.2, 0.6, 1.0} })
+    local report = g:validateTerrainCoverage({ lat_step = 45, lon_step = 90 })
+    local ok = report.ok and report.samples == report.covered_samples
+    local gaps = #report.gaps
+    example_print_log("terrain coverage ok=" .. tostring(ok) .. " gaps=" .. tostring(gaps))
 end
 ```
 

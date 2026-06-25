@@ -122,10 +122,10 @@ try {
         if (Get-Command makensis -ErrorAction SilentlyContinue) {
             # Ensure output dir exists for NSIS
             if (-not (Test-Path $OutDir)) { New-Item -ItemType Directory -Path $OutDir | Out-Null }
-            Invoke-Checked makensis @('tools/dist/installer.nsi')
+            Invoke-Checked makensis @("/DAPP_VERSION=$Version", 'tools/dist/installer.nsi')
             if (Test-Path $InstallerPath) {
                 $sizeMB = [math]::Round((Get-Item $InstallerPath).Length / 1MB, 1)
-                Write-OK "Installer → $InstallerPath ($sizeMB MB)"
+                Write-OK ("Installer -> {0} ({1} MB)" -f $InstallerPath, $sizeMB)
             }
         } else {
             Write-Warn "makensis not on PATH — skipping installer. Install NSIS: https://nsis.sourceforge.io"

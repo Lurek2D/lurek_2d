@@ -312,6 +312,143 @@ fn display_text(widget: &WidgetKind) -> Option<&str> {
         Some(text)
     }
 }
+
+fn widget_icon_glyph(base: &WidgetBase) -> Option<&'static str> {
+    base.icon
+        .as_deref()
+        .and_then(crate::ui::lookup_icon)
+        .map(|icon| icon.glyph)
+}
+
+fn icon_style(base: &WidgetBase, style: &WidgetStyle) -> WidgetStyle {
+    let mut icon_style = style.clone();
+    if base.icon_size > 0.0 {
+        icon_style.font_size = base.icon_size;
+    }
+    icon_style
+}
+
+fn emit_icon_and_text(
+    base: &WidgetBase,
+    text: Option<&str>,
+    font_key: FontKey,
+    font: Option<&Font>,
+    style: &WidgetStyle,
+    cmds: &mut Vec<RenderCommand>,
+) {
+    let Some(glyph) = widget_icon_glyph(base) else {
+        if let Some(text) = text {
+            emit_text(base, text, style, font_key, font, cmds);
+        }
+        return;
+    };
+    let icon_style = icon_style(base, style);
+    let icon_w = measure_text(glyph, &icon_style, font);
+    let icon_h = icon_style.font_size;
+    let text = match base.icon_position {
+        crate::ui::UiIconPosition::Only => None,
+        _ => text,
+    };
+    let gap = if text.is_some() { 6.0 } else { 0.0 };
+    match (base.icon_position, text) {
+        (crate::ui::UiIconPosition::Right, Some(text)) => {
+            let text_w = measure_text(text, style, font);
+            let total_w = icon_w + gap + text_w;
+            let x = base.x + ((base.width - total_w) * 0.5).max(0.0);
+            let y = base.y + (base.height - style.font_size) * 0.5;
+            emit_text_at(text, x, y, font_key, font, style, cmds);
+            emit_text_at(
+                glyph,
+                x + text_w + gap,
+                base.y + (base.height - icon_h) * 0.5,
+                font_key,
+                font,
+                &icon_style,
+                cmds,
+            );
+        }
+        (crate::ui::UiIconPosition::Top, Some(text)) => {
+            let text_w = measure_text(text, style, font);
+            let total_h = icon_h + gap + style.font_size;
+            let y = base.y + ((base.height - total_h) * 0.5).max(0.0);
+            emit_text_at(
+                glyph,
+                base.x + ((base.width - icon_w) * 0.5).max(0.0),
+                y,
+                font_key,
+                font,
+                &icon_style,
+                cmds,
+            );
+            emit_text_at(
+                text,
+                base.x + ((base.width - text_w) * 0.5).max(0.0),
+                y + icon_h + gap,
+                font_key,
+                font,
+                style,
+                cmds,
+            );
+        }
+        (crate::ui::UiIconPosition::Bottom, Some(text)) => {
+            let text_w = measure_text(text, style, font);
+            let total_h = icon_h + gap + style.font_size;
+            let y = base.y + ((base.height - total_h) * 0.5).max(0.0);
+            emit_text_at(
+                text,
+                base.x + ((base.width - text_w) * 0.5).max(0.0),
+                y,
+                font_key,
+                font,
+                style,
+                cmds,
+            );
+            emit_text_at(
+                glyph,
+                base.x + ((base.width - icon_w) * 0.5).max(0.0),
+                y + style.font_size + gap,
+                font_key,
+                font,
+                &icon_style,
+                cmds,
+            );
+        }
+        (_, Some(text)) => {
+            let text_w = measure_text(text, style, font);
+            let total_w = icon_w + gap + text_w;
+            let x = base.x + ((base.width - total_w) * 0.5).max(0.0);
+            emit_text_at(
+                glyph,
+                x,
+                base.y + (base.height - icon_h) * 0.5,
+                font_key,
+                font,
+                &icon_style,
+                cmds,
+            );
+            emit_text_at(
+                text,
+                x + icon_w + gap,
+                base.y + (base.height - style.font_size) * 0.5,
+                font_key,
+                font,
+                style,
+                cmds,
+            );
+        }
+        (_, None) => {
+            emit_text_at(
+                glyph,
+                base.x + ((base.width - icon_w) * 0.5).max(0.0),
+                base.y + ((base.height - icon_h) * 0.5).max(0.0),
+                font_key,
+                font,
+                &icon_style,
+                cmds,
+            );
+        }
+    }
+}
 /// Convert HSV in `[0.0, 1.0]` to 8-bit `(R, G, B)` using a six-sector conversion.
 fn hsv_to_rgb(h: f32, s: f32, v: f32) -> (u8, u8, u8) {
     let h6 = (h * 6.0).rem_euclid(6.0);
@@ -346,6 +483,135 @@ fn draw_cpu_text(
         img.draw_text_with_font(text, x, y, r, g, b, f);
     } else {
         img.draw_label(text, x, y, r, g, b);
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn draw_cpu_icon_and_text(
+    img: &mut crate::image::ImageData,
+    font: Option<&crate::font::Font>,
+    base: &WidgetBase,
+    text: Option<&str>,
+    x: i32,
+    y: i32,
+    w: u32,
+    h: u32,
+    style: &WidgetStyle,
+    r: u8,
+    g: u8,
+    b: u8,
+) {
+    let Some(glyph) = widget_icon_glyph(base) else {
+        if let Some(text) = text {
+            let approx_w = font
+                .map(|f| f.text_width(text) as i32)
+                .unwrap_or((text.chars().count() as i32) * 6);
+            let tx = match style.text_align.as_str() {
+                "left" => x + base.padding[3] as i32 + 4,
+                "right" => x + w as i32 - approx_w - 6,
+                _ => x + ((w as i32 - approx_w) / 2).max(2),
+            };
+            let ty = y + ((h as i32 - 7) / 2).max(1);
+            draw_cpu_text(img, font, text, tx, ty, r, g, b);
+        }
+        return;
+    };
+    let text = match base.icon_position {
+        crate::ui::UiIconPosition::Only => None,
+        _ => text,
+    };
+    let glyph_w = font
+        .map(|f| f.text_width(glyph) as i32)
+        .unwrap_or((glyph.chars().count() as i32) * 6);
+    let glyph_h = 7;
+    let gap = if text.is_some() { 6 } else { 0 };
+    match (base.icon_position, text) {
+        (crate::ui::UiIconPosition::Right, Some(text)) => {
+            let text_w = font
+                .map(|f| f.text_width(text) as i32)
+                .unwrap_or((text.chars().count() as i32) * 6);
+            let total_w = text_w + gap + glyph_w;
+            let tx = x + ((w as i32 - total_w) / 2).max(2);
+            let ty = y + ((h as i32 - glyph_h) / 2).max(1);
+            draw_cpu_text(img, font, text, tx, ty, r, g, b);
+            draw_cpu_text(img, font, glyph, tx + text_w + gap, ty, r, g, b);
+        }
+        (crate::ui::UiIconPosition::Top, Some(text)) => {
+            let text_w = font
+                .map(|f| f.text_width(text) as i32)
+                .unwrap_or((text.chars().count() as i32) * 6);
+            let total_h = glyph_h * 2 + gap;
+            let iy = y + ((h as i32 - total_h) / 2).max(1);
+            draw_cpu_text(
+                img,
+                font,
+                glyph,
+                x + ((w as i32 - glyph_w) / 2).max(2),
+                iy,
+                r,
+                g,
+                b,
+            );
+            draw_cpu_text(
+                img,
+                font,
+                text,
+                x + ((w as i32 - text_w) / 2).max(2),
+                iy + glyph_h + gap,
+                r,
+                g,
+                b,
+            );
+        }
+        (crate::ui::UiIconPosition::Bottom, Some(text)) => {
+            let text_w = font
+                .map(|f| f.text_width(text) as i32)
+                .unwrap_or((text.chars().count() as i32) * 6);
+            let total_h = glyph_h * 2 + gap;
+            let ty = y + ((h as i32 - total_h) / 2).max(1);
+            draw_cpu_text(
+                img,
+                font,
+                text,
+                x + ((w as i32 - text_w) / 2).max(2),
+                ty,
+                r,
+                g,
+                b,
+            );
+            draw_cpu_text(
+                img,
+                font,
+                glyph,
+                x + ((w as i32 - glyph_w) / 2).max(2),
+                ty + glyph_h + gap,
+                r,
+                g,
+                b,
+            );
+        }
+        (_, Some(text)) => {
+            let text_w = font
+                .map(|f| f.text_width(text) as i32)
+                .unwrap_or((text.chars().count() as i32) * 6);
+            let total_w = glyph_w + gap + text_w;
+            let ix = x + ((w as i32 - total_w) / 2).max(2);
+            let iy = y + ((h as i32 - glyph_h) / 2).max(1);
+            draw_cpu_text(img, font, glyph, ix, iy, r, g, b);
+            draw_cpu_text(img, font, text, ix + glyph_w + gap, iy, r, g, b);
+        }
+        (_, None) => {
+            draw_cpu_text(
+                img,
+                font,
+                glyph,
+                x + ((w as i32 - glyph_w) / 2).max(2),
+                y + ((h as i32 - glyph_h) / 2).max(1),
+                r,
+                g,
+                b,
+            );
+        }
     }
 }
 
@@ -2079,9 +2345,7 @@ fn render_widget(
             | WidgetKind::MenuItem(_)
     );
     if !skip_text {
-        if let Some(text) = display_text(widget) {
-            emit_text(base, text, style, font_key, font, cmds);
-        }
+        emit_icon_and_text(base, display_text(widget), font_key, font, style, cmds);
     }
     let mut render_children = widget_render_children(widget);
     render_children.sort_by_key(|&i| ctx.widgets.get(i).map(|w| w.base().z_order).unwrap_or(0));
@@ -3281,19 +3545,20 @@ impl GuiContext {
             }
             draw_cpu_focus_ring(&layout_ctx, base, &mut img);
             if !skip_text {
-                if let Some(text) = display_text(widget) {
-                    let approx_w = ui_font
-                        .as_ref()
-                        .map(|f| f.text_width(text) as i32)
-                        .unwrap_or((text.chars().count() as i32) * 6);
-                    let tx = match style.text_align.as_str() {
-                        "left" => x + base.padding[3] as i32 + 4,
-                        "right" => x + w as i32 - approx_w - 6,
-                        _ => x + ((w as i32 - approx_w) / 2).max(2),
-                    };
-                    let ty = y + ((h as i32 - 7) / 2).max(1);
-                    draw_cpu_text(&mut img, ui_font.as_ref(), text, tx, ty, fr, fg, fb);
-                }
+                draw_cpu_icon_and_text(
+                    &mut img,
+                    ui_font.as_ref(),
+                    base,
+                    display_text(widget),
+                    x,
+                    y,
+                    w,
+                    h,
+                    style,
+                    fr,
+                    fg,
+                    fb,
+                );
             }
             let mut render_children = widget_render_children(widget);
             render_children.sort_by_key(|&child| {

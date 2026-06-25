@@ -8,6 +8,11 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function save_gif(frames, path, options)
+    lurek.image.saveGIF(frames, path, options)
+    expect_evidence_created(path)
+end
+
 local FONT = {
     [" "] = { "000", "000", "000", "000", "000", "000", "000" },
     ["-"] = { "00000", "00000", "00000", "11110", "00000", "00000", "00000" },
@@ -576,6 +581,325 @@ describe("Evidence: lurek.globe projections, routes, and registry traces", funct
         mark(42, 92, "ISLAND HIT", 52, 116, 255, 160)
         save_png(img, OUT .. "globe_semantic_region_holes.png")
         lurek.globe.remove("globe_semantic_holes")
+    end)
+
+    -- Does: Builds a 500-patch full-globe terrain polygon layer, groups it into 30 strategic overlay regions, then renders the same terrain set on a rotating sphere.
+    -- Shows: The PNG and GIF make the requested globe stack legible: a flat lat/lon polygon map covers the planet, Earth-like terrain cells project onto a globe, regions sit above terrain, and markers remain readable.
+    -- Artifact: tests/artifacts/current/globe/globe_terrain_region_overlay.png, tests/artifacts/current/globe/globe_terrain_rotation.gif
+    -- Why: This proves terrain polygons are a first-class base layer separate from higher-level regions, instead of reusing EU-style province data.
+    it("PNG+GIF: detailed terrain polygons with rotating region overlays", function()
+        local globe = lurek.globe.new("globe_terrain_overlay", { axial_tilt_deg = 0.0, render_borders = true })
+        local lat_bands, lon_bands = 20, 25
+        local lat_step, lon_step = 180 / lat_bands, 360 / lon_bands
+        local terrain = {}
+        local grid = {}
+        local region_members = {}
+        local region_colors = {}
+        local land_count, sea_count = 0, 0
+        for i = 1, 30 do
+            region_members[i] = {}
+            region_colors[i] = {
+                46 + ((i * 47) % 150),
+                70 + ((i * 73) % 130),
+                88 + ((i * 37) % 126),
+            }
+        end
+
+        local function wrap_delta(lon, center)
+            local delta = lon - center
+            while delta > 180 do delta = delta - 360 end
+            while delta < -180 do delta = delta + 360 end
+            return delta
+        end
+
+        local function in_oval(lat, lon, center_lat, center_lon, radius_lat, radius_lon)
+            local x = wrap_delta(lon, center_lon) / radius_lon
+            local y = (lat - center_lat) / radius_lat
+            return x * x + y * y <= 1.0
+        end
+
+        local function is_land(lat, lon)
+            if lat < -65 then return true end
+            return in_oval(lat, lon, 48, -105, 34, 60)
+                or in_oval(lat, lon, 15, -88, 18, 28)
+                or in_oval(lat, lon, -22, -60, 43, 28)
+                or in_oval(lat, lon, 72, -42, 13, 24)
+                or in_oval(lat, lon, 50, 18, 20, 42)
+                or in_oval(lat, lon, 46, 82, 34, 78)
+                or in_oval(lat, lon, 16, 92, 22, 38)
+                or in_oval(lat, lon, 2, 22, 43, 33)
+                or in_oval(lat, lon, 23, 46, 15, 22)
+                or in_oval(lat, lon, -25, 134, 17, 27)
+        end
+
+        local function is_mountain(lat, lon)
+            return (lon > -82 and lon < -58 and lat > -55 and lat < 12)
+                or (lon > 62 and lon < 102 and lat > 25 and lat < 42)
+                or (lon > -126 and lon < -104 and lat > 32 and lat < 62)
+                or (lon > 5 and lon < 26 and lat > 42 and lat < 48)
+        end
+
+        local function classify_biome(lat, lon)
+            if lat > 68 or lat < -66 then return "ice", { 196, 222, 229 }, 2 end
+            local land = is_land(lat, lon)
+            if not land then
+                local blue = 112 + math.floor(math.abs(lat) * 0.35)
+                return "ocean", { 18, 61 + math.floor(math.abs(lon) % 18), blue }, 3
+            end
+            if is_mountain(lat, lon) then return "mountain", { 118, 112, 102 }, 9 end
+            if (lat > 5 and lat < 34 and lon > -18 and lon < 62) or (lat > -35 and lat < -17 and lon > 116 and lon < 148) then
+                return "desert", { 190, 158, 82 }, 8
+            end
+            if math.abs(lat) < 16 then return "jungle", { 30, 116, 68 }, 18 end
+            if math.abs(lat) > 48 then return "tundra", { 116, 146, 114 }, 6 end
+            if lat > 20 and lat < 58 and lon > 42 and lon < 126 then return "steppe", { 108, 154, 76 }, 11 end
+            return "forest", { 48, 134, 73 }, 14
+        end
+
+        for row = 1, lat_bands do
+            grid[row] = {}
+            local min_lat = -90 + (row - 1) * lat_step
+            local max_lat = min_lat + lat_step
+            local center_lat = min_lat + lat_step * 0.5
+            for col = 1, lon_bands do
+                local min_lon = -180 + (col - 1) * lon_step
+                local max_lon = min_lon + lon_step
+                local center_lon = min_lon + lon_step * 0.5
+                local biome, color, richness = classify_biome(center_lat, center_lon)
+                local variation = ((row * 37 + col * 17) % 23) - 11
+                color = {
+                    math.max(0, math.min(255, color[1] + variation)),
+                    math.max(0, math.min(255, color[2] + variation)),
+                    math.max(0, math.min(255, color[3] + variation)),
+                }
+                local region_col = math.min(6, math.floor((col - 1) * 6 / lon_bands) + 1)
+                local region_row = math.min(5, math.floor((row - 1) * 5 / lat_bands) + 1)
+                local region_index = (region_row - 1) * 6 + region_col
+                local id = #terrain + 1
+                local patch = {
+                    id = id,
+                    row = row,
+                    col = col,
+                    min_lat = min_lat,
+                    max_lat = max_lat,
+                    min_lon = min_lon,
+                    max_lon = max_lon,
+                    center_lat = center_lat,
+                    center_lon = center_lon,
+                    biome = biome,
+                    color = color,
+                    richness = richness,
+                    region_index = region_index,
+                    vertices = {
+                        { min_lat, min_lon },
+                        { min_lat, max_lon },
+                        { max_lat, max_lon },
+                        { max_lat, min_lon },
+                    },
+                }
+                terrain[#terrain + 1] = patch
+                grid[row][col] = patch
+                region_members[region_index][#region_members[region_index] + 1] = id
+                if biome == "ocean" then sea_count = sea_count + 1 else land_count = land_count + 1 end
+            end
+        end
+
+        for _, patch in ipairs(terrain) do
+            expect_true(globe:addTerrainPatch({
+                id = patch.id,
+                vertices = patch.vertices,
+                base_color = {patch.color[1] / 255, patch.color[2] / 255, patch.color[3] / 255, 1.0},
+                attrs = {
+                    biome = patch.biome,
+                    richness = tostring(patch.richness),
+                    sector = tostring(patch.region_index),
+                },
+            }))
+        end
+        expect_equal(500, globe:terrainPatchCount())
+
+        for i = 1, 30 do
+            local c = region_colors[i]
+            expect_true(globe:addRegion({
+                id = 1000 + i,
+                members = region_members[i],
+                base_color = { c[1] / 255, c[2] / 255, c[3] / 255, 0.18 },
+                attrs = { name = "sector " .. tostring(i) },
+            }))
+            expect_true(globe:setRegionColor(1000 + i, c[1] / 255, c[2] / 255, c[3] / 255, 0.22))
+        end
+
+        local markers = {
+            { lat = 42, lon = -74, label = "ALPHA", color = { 255, 220, 72 }, shape = "diamond" },
+            { lat = 51, lon = 8, label = "BRAVO", color = { 120, 218, 255 }, shape = "triangle" },
+            { lat = 30, lon = 78, label = "RIDGE", color = { 255, 178, 96 }, shape = "circle" },
+            { lat = -23, lon = 133, label = "DELTA", color = { 170, 255, 150 }, shape = "square" },
+            { lat = -33, lon = -58, label = "ECHO", color = { 230, 150, 255 }, shape = "diamond" },
+        }
+        for _, marker in ipairs(markers) do
+            local marker_id = globe:addMarker("site", marker.lat, marker.lon, marker.label)
+            globe:setMarkerShape(marker_id, marker.shape)
+            globe:setMarkerColor(marker_id, marker.color[1] / 255, marker.color[2] / 255, marker.color[3] / 255, 1.0)
+            globe:addLabel("marker", marker.lat, marker.lon, marker.label)
+        end
+        local report = globe:validateTerrainCoverage({ lat_step = lat_step, lon_step = lon_step })
+        expect_true(report.ok)
+
+        local w, h = 640, 360
+        local sphere_cx, sphere_cy, sphere_r = 224, 190, 128
+
+        local function normalize_lon(lon)
+            while lon >= 180 do lon = lon - 360 end
+            while lon < -180 do lon = lon + 360 end
+            return lon
+        end
+
+        local function terrain_at(lat, lon)
+            lon = normalize_lon(lon)
+            local row = math.floor((lat + 90) / lat_step) + 1
+            local col = math.floor((lon + 180) / lon_step) + 1
+            if row < 1 then row = 1 end
+            if row > lat_bands then row = lat_bands end
+            if col < 1 then col = 1 end
+            if col > lon_bands then col = lon_bands end
+            return grid[row][col]
+        end
+
+        local function blend_channel(base, overlay, alpha)
+            return math.floor(base * (1.0 - alpha) + overlay * alpha + 0.5)
+        end
+
+        local function shade_color(color, shade)
+            return math.floor(color[1] * shade), math.floor(color[2] * shade), math.floor(color[3] * shade)
+        end
+
+        local function draw_ring(img, cx, cy, r, rr, gg, bb)
+            local prev_x, prev_y = nil, nil
+            for deg = 0, 360, 6 do
+                local a = math.rad(deg)
+                local px = cx + math.floor(math.cos(a) * r + 0.5)
+                local py = cy + math.floor(math.sin(a) * r + 0.5)
+                if prev_x then img:drawLine(prev_x, prev_y, px, py, rr, gg, bb, 230) end
+                prev_x, prev_y = px, py
+            end
+        end
+
+        local function draw_flat_source(img, inset_x, inset_y, inset_w, inset_h)
+            img:drawRect(inset_x, inset_y, inset_w, inset_h, 10, 24, 42, 255)
+            for _, patch in ipairs(terrain) do
+                local x0, y0 = latlon_to_px(patch.max_lat, patch.min_lon, inset_w, inset_h)
+                local x1, y1 = latlon_to_px(patch.min_lat, patch.max_lon, inset_w, inset_h)
+                local rw = math.max(1, x1 - x0 + 1)
+                local rh = math.max(1, y1 - y0 + 1)
+                img:drawRect(inset_x + x0, inset_y + y0, rw, rh, patch.color[1], patch.color[2], patch.color[3], 255)
+            end
+            for r = 1, 4 do
+                local py = inset_y + math.floor(r * inset_h / 5)
+                img:drawLine(inset_x, py, inset_x + inset_w - 1, py, 230, 238, 248, 110)
+            end
+            for c = 1, 5 do
+                local px = inset_x + math.floor(c * inset_w / 6)
+                img:drawLine(px, inset_y, px, inset_y + inset_h - 1, 230, 238, 248, 110)
+            end
+            draw_outline(img, inset_x, inset_y, inset_w, inset_h, 232, 236, 244, 255)
+        end
+
+        local function render_frame(center_lon, frame_index, frame_count)
+            local img = new_board("GLOBE TERRAIN ROTATION", w, h)
+            local function project(lat, lon)
+                local latr = math.rad(lat)
+                local dlon = math.rad(wrap_delta(lon, center_lon))
+                local x = math.cos(latr) * math.sin(dlon)
+                local y = math.sin(latr)
+                local z = math.cos(latr) * math.cos(dlon)
+                if z <= 0 then return nil end
+                return sphere_cx + math.floor(x * sphere_r + 0.5), sphere_cy - math.floor(y * sphere_r + 0.5), z
+            end
+
+            for y = sphere_cy - sphere_r, sphere_cy + sphere_r, 2 do
+                for x = sphere_cx - sphere_r, sphere_cx + sphere_r, 2 do
+                    local nx = (x - sphere_cx) / sphere_r
+                    local ny = (sphere_cy - y) / sphere_r
+                    local rr = nx * nx + ny * ny
+                    if rr <= 1.0 then
+                        local z = math.sqrt(1.0 - rr)
+                        local lat = math.deg(math.asin(ny))
+                        local lon = normalize_lon(center_lon + math.deg(math.atan2(nx, z)))
+                        local patch = terrain_at(lat, lon)
+                        local shade = 0.38 + 0.62 * z
+                        local r, g, b = shade_color(patch.color, shade)
+                        local region_color = region_colors[patch.region_index]
+                        local overlay_alpha = patch.biome == "ocean" and 0.08 or 0.18
+                        r = blend_channel(r, region_color[1], overlay_alpha)
+                        g = blend_channel(g, region_color[2], overlay_alpha)
+                        b = blend_channel(b, region_color[3], overlay_alpha)
+                        img:drawRect(x, y, 2, 2, r, g, b, 255)
+                    end
+                end
+            end
+
+            local function draw_projected_poly(points, r, g, b, a)
+                local first_x, first_y, prev_x, prev_y = nil, nil, nil, nil
+                for _, p in ipairs(points) do
+                    local px, py = project(p[1], p[2])
+                    if px then
+                        if not first_x then first_x, first_y = px, py end
+                        if prev_x then img:drawLine(prev_x, prev_y, px, py, r, g, b, a or 160) end
+                        prev_x, prev_y = px, py
+                    else
+                        prev_x, prev_y = nil, nil
+                    end
+                end
+                if first_x and prev_x then img:drawLine(prev_x, prev_y, first_x, first_y, r, g, b, a or 160) end
+            end
+
+            for _, patch in ipairs(terrain) do
+                draw_projected_poly(patch.vertices, 12, 20, 30, 95)
+            end
+            for region_index, members in ipairs(region_members) do
+                local c = region_colors[region_index]
+                for _, id in ipairs(members) do
+                    local patch = terrain[id]
+                    if patch.biome ~= "ocean" and patch.id % 2 == 0 then
+                        draw_projected_poly(patch.vertices, c[1], c[2], c[3], 125)
+                    end
+                end
+            end
+            draw_ring(img, sphere_cx, sphere_cy, sphere_r, 190, 218, 245)
+            draw_ring(img, sphere_cx, sphere_cy, sphere_r + 4, 54, 88, 132)
+
+            for _, marker in ipairs(markers) do
+                local mx, my, z = project(marker.lat, marker.lon)
+                if mx and z > 0.05 then
+                    img:drawCircle(mx, my, 7, marker.color[1], marker.color[2], marker.color[3], 255)
+                    img:drawCircle(mx, my, 3, 22, 26, 34, 255)
+                    if z > 0.18 then
+                        draw_text(img, marker.label, mx + 10, my - 4, 1, marker.color[1], marker.color[2], marker.color[3])
+                    end
+                end
+            end
+
+            local inset_x, inset_y, inset_w, inset_h = 414, 74, 188, 94
+            draw_flat_source(img, inset_x, inset_y, inset_w, inset_h)
+            draw_text(img, "FLAT POLYGON SOURCE", inset_x, inset_y + inset_h + 12, 1, 180, 200, 224)
+            draw_text(img, "PATCHES " .. tostring(globe:terrainPatchCount()), 414, 206, 1, 170, 220, 170)
+            draw_text(img, "REGIONS 30", 414, 228, 1, 150, 210, 255)
+            draw_text(img, "LAND " .. tostring(land_count) .. " SEA " .. tostring(sea_count), 414, 250, 1, 235, 241, 247)
+            draw_text(img, "COVER " .. tostring(report.covered_samples) .. "/" .. tostring(report.samples), 414, 272, 1, 235, 241, 247)
+            draw_text(img, "FRAME " .. tostring(frame_index) .. "/" .. tostring(frame_count), 414, 294, 1, 255, 210, 92)
+            draw_text(img, "LON " .. tostring(math.floor(center_lon)), 414, 316, 1, 255, 210, 92)
+            return img
+        end
+
+        local frames = {}
+        local frame_count = 16
+        for i = 1, frame_count do
+            local center_lon = normalize_lon(-150 + (i - 1) * 360 / frame_count)
+            frames[#frames + 1] = render_frame(center_lon, i, frame_count)
+        end
+        save_png(frames[1], OUT .. "globe_terrain_region_overlay.png")
+        save_gif(frames, OUT .. "globe_terrain_rotation.gif", { delayMs = 140, speed = 10, loop = true })
+        lurek.globe.remove("globe_terrain_overlay")
     end)
 end)
 

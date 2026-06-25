@@ -17,7 +17,7 @@ use crate::globe::marker::MarkerStore;
 use crate::globe::projection::{build_view_matrix, project_geo_loop, project_point, OrbitCamera};
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{
-    Arc as GlobeArc, FogState, GlobeSpec, HeatLayer, LodTier, MarkerShape, Region,
+    Arc as GlobeArc, FogState, GlobeSpec, HeatLayer, LodTier, MarkerShape, Region, RegionId,
 };
 use crate::math::{polygon, Vec2, Vec3};
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
@@ -34,7 +34,9 @@ type RegionRenderPart<'a> = (&'a [(f32, f32)], &'a [Vec<(f32, f32)>]);
 pub fn emit_globe_frame(
     spec: &GlobeSpec,
     camera: &OrbitCamera,
+    terrain: &HashMap<RegionId, Region>,
     graph: &RegionGraph,
+    semantic_regions: &HashMap<RegionId, Region>,
     fog: &FogStore,
     markers: &MarkerStore,
     labels: &LabelStore,
@@ -55,197 +57,80 @@ pub fn emit_globe_frame(
     let cy = camera.screen_cy;
     let radius = spec.radius;
     emit_atmosphere_halo(&mut cmds, spec, camera);
+    let mut terrain_regions: Vec<&Region> = terrain.values().filter(|r| r.visible).collect();
+    terrain_regions.sort_by_key(|region| region.id);
+    for region in terrain_regions {
+        emit_region_draw(
+            &mut cmds,
+            region,
+            spec,
+            camera,
+            &view,
+            &sun,
+            None,
+            layers,
+            false,
+            true,
+            true,
+            heat_layers,
+            lod,
+        );
+    }
     for region in graph.iter() {
-        if let Some(viewer) = active_viewer {
-            if let FogState::Hidden = fog.state(viewer, region.id) {
-                for (outer_vertices, hole_loops) in region_render_parts(region) {
-                    let Some(proj) = project_geo_loop(
-                        region.id,
-                        outer_vertices,
-                        region.centroid,
-                        &view,
-                        spec,
-                        camera,
-                        0.0,
-                    ) else {
-                        continue;
-                    };
-                    let projected_holes: Vec<Vec<Vec2>> = hole_loops
-                        .iter()
-                        .filter_map(|hole| {
-                            project_geo_loop(
-                                region.id,
-                                hole,
-                                region.centroid,
-                                &view,
-                                spec,
-                                camera,
-                                0.0,
-                            )
-                            .map(|proj_hole| proj_hole.screen_verts)
-                        })
-                        .filter(|verts| verts.len() >= 3)
-                        .collect();
-                    let has_holes = !projected_holes.is_empty();
-                    if has_holes {
-                        cmds.push(RenderCommand::SetColorMask(false, false, false, false));
-                        cmds.push(RenderCommand::StencilBegin {
-                            action: StencilAction::Replace,
-                            value: 1,
-                        });
-                        emit_stencil_triangles(&mut cmds, &proj.screen_verts);
-                        cmds.push(RenderCommand::StencilEnd);
-                        cmds.push(RenderCommand::StencilBegin {
-                            action: StencilAction::Zero,
-                            value: 0,
-                        });
-                        for hole in &projected_holes {
-                            emit_stencil_triangles(&mut cmds, hole);
-                        }
-                        cmds.push(RenderCommand::StencilEnd);
-                        cmds.push(RenderCommand::SetColorMask(true, true, true, true));
-                        cmds.push(RenderCommand::SetStencilTest(Some((
-                            crate::render::renderer::CompareMode::Equal,
-                            1,
-                        ))));
-                    }
-                    emit_flat_colored_fill(&mut cmds, &proj.screen_verts, [0.05, 0.05, 0.05, 1.0]);
-                    if has_holes {
-                        cmds.push(RenderCommand::SetStencilTest(None));
-                    }
-                }
-                continue;
-            }
-        }
-        let mut base = layers
-            .effective_color(region.id)
-            .unwrap_or(region.base_color);
-        apply_heat_layers(&mut base, region, heat_layers);
-        if let Some(viewer) = active_viewer {
-            if let FogState::Explored = fog.state(viewer, region.id) {
-                base[0] *= 0.45;
-                base[1] *= 0.45;
-                base[2] *= 0.45;
-            }
-        }
-        let centroid_intensity =
-            province_intensity(region.centroid.0, region.centroid.1, &sun, spec.ambient);
-        let texture_key = region
-            .attrs
-            .get("__texture_raw")
-            .and_then(|v| v.parse::<u64>().ok())
-            .map(|raw| TextureKey::from(KeyData::from_ffi(raw)));
-        let render_parts = region_render_parts(region);
-        if render_parts.is_empty() {
+        emit_region_draw(
+            &mut cmds,
+            region,
+            spec,
+            camera,
+            &view,
+            &sun,
+            active_viewer.map(|viewer| (fog, viewer)),
+            layers,
+            true,
+            true,
+            true,
+            heat_layers,
+            lod,
+        );
+    }
+    let mut overlays: Vec<&Region> = semantic_regions
+        .values()
+        .filter(|region| region.visible)
+        .collect();
+    overlays.sort_by_key(|region| region.id);
+    for region in overlays {
+        let overlay_color = region
+            .overlay_color
+            .unwrap_or([region.base_color[0], region.base_color[1], region.base_color[2], 0.22]);
+        if overlay_color[3] <= 0.0 {
             continue;
         }
-        for (outer_vertices, hole_loops) in render_parts {
-            let Some(proj) = project_geo_loop(
-                region.id,
-                outer_vertices,
-                region.centroid,
-                &view,
+        if region.member_terrain_ids.is_empty() {
+            emit_region_draw_with_color(
+                &mut cmds,
+                region,
                 spec,
                 camera,
-                centroid_intensity,
-            ) else {
-                continue;
-            };
-            let projected_holes: Vec<Vec<Vec2>> = hole_loops
-                .iter()
-                .filter_map(|hole| {
-                    project_geo_loop(
-                        region.id,
-                        hole,
-                        region.centroid,
-                        &view,
+                &view,
+                &sun,
+                overlay_color,
+                false,
+                lod,
+            );
+        } else {
+            for member_id in &region.member_terrain_ids {
+                if let Some(patch) = terrain.get(member_id) {
+                    emit_region_draw_with_color(
+                        &mut cmds,
+                        patch,
                         spec,
                         camera,
-                        centroid_intensity,
-                    )
-                    .map(|proj_hole| proj_hole.screen_verts)
-                })
-                .filter(|verts| verts.len() >= 3)
-                .collect();
-            let has_holes = !projected_holes.is_empty();
-            if has_holes {
-                cmds.push(RenderCommand::SetColorMask(false, false, false, false));
-                cmds.push(RenderCommand::StencilBegin {
-                    action: StencilAction::Replace,
-                    value: 1,
-                });
-                emit_stencil_triangles(&mut cmds, &proj.screen_verts);
-                cmds.push(RenderCommand::StencilEnd);
-                cmds.push(RenderCommand::StencilBegin {
-                    action: StencilAction::Zero,
-                    value: 0,
-                });
-                for hole in &projected_holes {
-                    emit_stencil_triangles(&mut cmds, hole);
-                }
-                cmds.push(RenderCommand::StencilEnd);
-                cmds.push(RenderCommand::SetColorMask(true, true, true, true));
-                cmds.push(RenderCommand::SetStencilTest(Some((
-                    crate::render::renderer::CompareMode::Equal,
-                    1,
-                ))));
-            }
-            if let Some(texture_key) = texture_key {
-                emit_textured_region_fill(
-                    &mut cmds,
-                    &proj.screen_verts,
-                    &proj.surface_points,
-                    region.texture_uv_rect,
-                    texture_key,
-                    [
-                        (base[0] * centroid_intensity).clamp(0.0, 1.0),
-                        (base[1] * centroid_intensity).clamp(0.0, 1.0),
-                        (base[2] * centroid_intensity).clamp(0.0, 1.0),
-                        base[3],
-                    ],
-                );
-            } else {
-                let vertices: Vec<f32> =
-                    proj.screen_verts.iter().flat_map(|v| [v.x, v.y]).collect();
-                let colors: Vec<[f32; 4]> = proj
-                    .surface_points
-                    .iter()
-                    .map(|point| {
-                        let light = (point.x * sun.x + point.y * sun.y + point.z * sun.z)
-                            .max(spec.ambient)
-                            .min(1.0);
-                        [
-                            (base[0] * light).clamp(0.0, 1.0),
-                            (base[1] * light).clamp(0.0, 1.0),
-                            (base[2] * light).clamp(0.0, 1.0),
-                            base[3],
-                        ]
-                    })
-                    .collect();
-                cmds.push(RenderCommand::DrawColoredPolygon {
-                    vertices,
-                    colors,
-                    mode: DrawMode::Fill,
-                });
-            }
-            let night_alpha =
-                (1.0 - terminator_alpha(region.centroid.0, region.centroid.1, &sun, 24.0)) * 0.45;
-            if night_alpha > 0.01 {
-                cmds.push(RenderCommand::DrawConvexFan {
-                    vertices: proj.screen_verts.clone(),
-                    uvs: Vec::new(),
-                    texture_key: None,
-                    tint: [0.02, 0.03, 0.08, night_alpha.clamp(0.0, 0.6)],
-                    blend: BlendMode::Alpha,
-                });
-            }
-            if has_holes {
-                cmds.push(RenderCommand::SetStencilTest(None));
-            }
-            if spec.render_borders && lod >= LodTier::Mid {
-                emit_border_polyline(&mut cmds, spec, &proj.screen_verts);
-                for hole in &projected_holes {
-                    emit_border_polyline(&mut cmds, spec, hole);
+                        &view,
+                        &sun,
+                        overlay_color,
+                        false,
+                        lod,
+                    );
                 }
             }
         }
@@ -418,6 +303,200 @@ fn region_render_parts(region: &Region) -> Vec<RegionRenderPart<'_>> {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
+fn emit_region_draw(
+    cmds: &mut Vec<RenderCommand>,
+    region: &Region,
+    spec: &GlobeSpec,
+    camera: &OrbitCamera,
+    view: &crate::globe::sphere::Mat3x3,
+    sun: &Vec3,
+    fog_viewer: Option<(&FogStore, &str)>,
+    layers: &LayerStore,
+    use_layers: bool,
+    use_heat: bool,
+    allow_texture: bool,
+    heat_layers: &[HeatLayer],
+    lod: LodTier,
+) {
+    if let Some((fog, viewer)) = fog_viewer {
+        if let FogState::Hidden = fog.state(viewer, region.id) {
+            emit_region_draw_with_color(
+                cmds,
+                region,
+                spec,
+                camera,
+                view,
+                sun,
+                [0.05, 0.05, 0.05, 1.0],
+                false,
+                lod,
+            );
+            return;
+        }
+    }
+    let mut base = if use_layers {
+        layers.effective_color(region.id).unwrap_or(region.base_color)
+    } else {
+        region.base_color
+    };
+    if use_heat {
+        apply_heat_layers(&mut base, region, heat_layers);
+    }
+    if let Some((fog, viewer)) = fog_viewer {
+        if let FogState::Explored = fog.state(viewer, region.id) {
+            base[0] *= 0.45;
+            base[1] *= 0.45;
+            base[2] *= 0.45;
+        }
+    }
+    emit_region_draw_with_color(
+        cmds,
+        region,
+        spec,
+        camera,
+        view,
+        sun,
+        base,
+        allow_texture,
+        lod,
+    );
+}
+
+#[allow(clippy::too_many_arguments)]
+fn emit_region_draw_with_color(
+    cmds: &mut Vec<RenderCommand>,
+    region: &Region,
+    spec: &GlobeSpec,
+    camera: &OrbitCamera,
+    view: &crate::globe::sphere::Mat3x3,
+    sun: &Vec3,
+    base: [f32; 4],
+    allow_texture: bool,
+    lod: LodTier,
+) {
+    let centroid_intensity =
+        province_intensity(region.centroid.0, region.centroid.1, sun, spec.ambient);
+    let texture_key = if allow_texture {
+        region
+            .attrs
+            .get("__texture_raw")
+            .and_then(|v| v.parse::<u64>().ok())
+            .map(|raw| TextureKey::from(KeyData::from_ffi(raw)))
+    } else {
+        None
+    };
+    for (outer_vertices, hole_loops) in region_render_parts(region) {
+        let Some(proj) = project_geo_loop(
+            region.id,
+            outer_vertices,
+            region.centroid,
+            view,
+            spec,
+            camera,
+            centroid_intensity,
+        ) else {
+            continue;
+        };
+        let projected_holes: Vec<Vec<Vec2>> = hole_loops
+            .iter()
+            .filter_map(|hole| {
+                project_geo_loop(
+                    region.id,
+                    hole,
+                    region.centroid,
+                    view,
+                    spec,
+                    camera,
+                    centroid_intensity,
+                )
+                .map(|proj_hole| proj_hole.screen_verts)
+            })
+            .filter(|verts| verts.len() >= 3)
+            .collect();
+        let has_holes = !projected_holes.is_empty();
+        if has_holes {
+            cmds.push(RenderCommand::SetColorMask(false, false, false, false));
+            cmds.push(RenderCommand::StencilBegin {
+                action: StencilAction::Replace,
+                value: 1,
+            });
+            emit_stencil_triangles(cmds, &proj.screen_verts);
+            cmds.push(RenderCommand::StencilEnd);
+            cmds.push(RenderCommand::StencilBegin {
+                action: StencilAction::Zero,
+                value: 0,
+            });
+            for hole in &projected_holes {
+                emit_stencil_triangles(cmds, hole);
+            }
+            cmds.push(RenderCommand::StencilEnd);
+            cmds.push(RenderCommand::SetColorMask(true, true, true, true));
+            cmds.push(RenderCommand::SetStencilTest(Some((
+                crate::render::renderer::CompareMode::Equal,
+                1,
+            ))));
+        }
+        if let Some(texture_key) = texture_key {
+            emit_textured_region_fill(
+                cmds,
+                &proj.screen_verts,
+                &proj.surface_points,
+                region.texture_uv_rect,
+                texture_key,
+                [
+                    (base[0] * centroid_intensity).clamp(0.0, 1.0),
+                    (base[1] * centroid_intensity).clamp(0.0, 1.0),
+                    (base[2] * centroid_intensity).clamp(0.0, 1.0),
+                    base[3],
+                ],
+            );
+        } else {
+            let vertices: Vec<f32> = proj.screen_verts.iter().flat_map(|v| [v.x, v.y]).collect();
+            let colors: Vec<[f32; 4]> = proj
+                .surface_points
+                .iter()
+                .map(|point| {
+                    let light = (point.x * sun.x + point.y * sun.y + point.z * sun.z)
+                        .max(spec.ambient)
+                        .min(1.0);
+                    [
+                        (base[0] * light).clamp(0.0, 1.0),
+                        (base[1] * light).clamp(0.0, 1.0),
+                        (base[2] * light).clamp(0.0, 1.0),
+                        base[3],
+                    ]
+                })
+                .collect();
+            cmds.push(RenderCommand::DrawColoredPolygon {
+                vertices,
+                colors,
+                mode: DrawMode::Fill,
+            });
+        }
+        let night_alpha =
+            (1.0 - terminator_alpha(region.centroid.0, region.centroid.1, sun, 24.0)) * 0.45;
+        if night_alpha > 0.01 {
+            cmds.push(RenderCommand::DrawConvexFan {
+                vertices: proj.screen_verts.clone(),
+                uvs: Vec::new(),
+                texture_key: None,
+                tint: [0.02, 0.03, 0.08, night_alpha.clamp(0.0, 0.6)],
+                blend: BlendMode::Alpha,
+            });
+        }
+        if has_holes {
+            cmds.push(RenderCommand::SetStencilTest(None));
+        }
+        if spec.render_borders && lod >= LodTier::Mid {
+            emit_border_polyline(cmds, spec, &proj.screen_verts);
+            for hole in &projected_holes {
+                emit_border_polyline(cmds, spec, hole);
+            }
+        }
+    }
+}
+
 fn emit_stencil_triangles(cmds: &mut Vec<RenderCommand>, vertices: &[Vec2]) {
     for tri in triangulate_loop_indices(vertices).chunks_exact(3) {
         let a = vertices[tri[0] as usize];
@@ -433,16 +512,6 @@ fn emit_stencil_triangles(cmds: &mut Vec<RenderCommand>, vertices: &[Vec2]) {
             y3: c.y,
         });
     }
-}
-
-fn emit_flat_colored_fill(cmds: &mut Vec<RenderCommand>, vertices: &[Vec2], color: [f32; 4]) {
-    let flat: Vec<f32> = vertices.iter().flat_map(|v| [v.x, v.y]).collect();
-    let colors = vec![color; vertices.len()];
-    cmds.push(RenderCommand::DrawColoredPolygon {
-        vertices: flat,
-        colors,
-        mode: DrawMode::Fill,
-    });
 }
 
 fn emit_textured_region_fill(

@@ -10,6 +10,7 @@ use crate::ui::extras::{
 };
 use crate::ui::theme::{Theme, ThemeToken, WidgetStyle};
 use crate::ui::widget::{EasingFunction, MouseFilter, WidgetState, WidgetType};
+use crate::ui::{icon_names, lookup_icon, UiIconPosition};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -334,6 +335,148 @@ fn create_widget_table<'a>(
                 .get(idx)
                 .and_then(|w| w.base().style_class.clone())
                 .unwrap_or_default())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setIcon --
+    /// Sets this widget's built-in UI icon by semantic name.
+    /// @summary The icon is resolved from `lurek.ui.getIconNames`; unknown names leave the previous icon unchanged.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | icon | string | Built-in icon name such as "save", "settings", or "inventory".
+    /// @return | boolean | True when the icon exists and was assigned.
+    t.set(
+        "setIcon",
+        lua.create_function(move |_, (_self, icon): (LuaValue, String)| {
+            let Some(icon) = lookup_icon(&icon) else {
+                return Ok(false);
+            };
+            let mut g = c.borrow_mut();
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().icon = Some(icon.name.to_string());
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(false, false, true, true);
+            }
+            Ok(changed)
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- getIcon --
+    /// Returns this widget's assigned built-in icon name, or nil when no icon is assigned.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | string|nil | The assigned icon name.
+    t.set(
+        "getIcon",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(g.widgets.get(idx).and_then(|w| w.base().icon.clone()))
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- clearIcon --
+    /// Clears this widget's assigned built-in icon.
+    /// @param | self | LUiWidget | The widget instance.
+    t.set(
+        "clearIcon",
+        lua.create_function(move |_, _self: LuaValue| {
+            let mut g = c.borrow_mut();
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().icon = None;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(false, false, true, true);
+            }
+            Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setIconPosition --
+    /// Sets where this widget's icon is placed relative to its text.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | position | string | One of "left", "right", "top", "bottom", or "only".
+    /// @return | boolean | True when the position string is recognised.
+    t.set(
+        "setIconPosition",
+        lua.create_function(move |_, (_self, position): (LuaValue, String)| {
+            let Some(position) = UiIconPosition::parse_str(&position) else {
+                return Ok(false);
+            };
+            let mut g = c.borrow_mut();
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().icon_position = position;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(false, false, true, true);
+            }
+            Ok(changed)
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- getIconPosition --
+    /// Returns this widget's icon placement token.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | string | One of "left", "right", "top", "bottom", or "only".
+    t.set(
+        "getIconPosition",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(g.widgets
+                .get(idx)
+                .map_or("left", |w| w.base().icon_position.as_str())
+                .to_string())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setIconSize --
+    /// Sets this widget's requested icon size in pixels.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | size | number | Pixel size; 0 uses the widget font size.
+    /// @return | boolean | True when size is finite and non-negative.
+    t.set(
+        "setIconSize",
+        lua.create_function(move |_, (_self, size): (LuaValue, f32)| {
+            if !size.is_finite() || size < 0.0 {
+                return Ok(false);
+            }
+            let mut g = c.borrow_mut();
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().icon_size = size;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(false, false, true, true);
+            }
+            Ok(changed)
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- getIconSize --
+    /// Returns this widget's requested icon size in pixels.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | number | Pixel size; 0 means the widget font size is used.
+    t.set(
+        "getIconSize",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(g.widgets.get(idx).map_or(0.0, |w| w.base().icon_size))
         })?,
     )?;
 
@@ -6355,6 +6498,62 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "hasAutoUpdate",
         lua.create_function(move |_, ()| Ok(s.borrow().auto_ui_update))?,
     )?;
+    // -- getIconNames --
+    /// Returns all built-in UI icon names in stable catalog order.
+    /// @return | string[] | Built-in icon names such as "save", "settings", and "inventory".
+    tbl.set(
+        "getIconNames",
+        lua.create_function(move |lua, ()| {
+            let result = lua.create_table()?;
+            for (index, name) in icon_names().enumerate() {
+                result.set(index + 1, name)?;
+            }
+            Ok(result)
+        })?,
+    )?;
+    // -- hasIcon --
+    /// Returns whether a built-in UI icon name exists.
+    /// @param | name | string | Icon name to resolve.
+    /// @return | boolean | True when the icon exists.
+    tbl.set(
+        "hasIcon",
+        lua.create_function(move |_, name: String| Ok(lookup_icon(&name).is_some()))?,
+    )?;
+    // -- getIconGlyph --
+    /// Returns the built-in text glyph for an icon name, or nil when missing.
+    /// @param | name | string | Icon name to resolve.
+    /// @return | string|nil | The text glyph used by the built-in renderer backend.
+    tbl.set(
+        "getIconGlyph",
+        lua.create_function(move |_, name: String| Ok(lookup_icon(&name).map(|icon| icon.glyph)))?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newIcon --
+    /// Creates a label-like widget that displays only a built-in UI icon.
+    /// @param | icon | string | Built-in icon name.
+    /// @return | LLabel|nil | The icon widget, or nil when the icon name is unknown.
+    tbl.set(
+        "newIcon",
+        lua.create_function(move |lua, icon: String| {
+            let Some(icon) = lookup_icon(&icon) else {
+                return Ok(None);
+            };
+            let mut g = c.borrow_mut();
+            let idx = g.add_label("");
+            if let Some(widget) = g.widgets.get_mut(idx) {
+                let base = widget.base_mut();
+                base.icon = Some(icon.name.to_string());
+                base.icon_position = UiIconPosition::Only;
+                base.role = "image".to_string();
+                base.aria_name = icon.name.to_string();
+            }
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LLabel")?;
+            add_label_methods(lua, &t, &c, idx)?;
+            Ok(Some(t))
+        })?,
+    )?;
     let c = ctx.clone();
     let cbs = callbacks.clone();
     // -- newButton --
@@ -7911,6 +8110,15 @@ fn apply_widget_scalar_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Tabl
     def.enabled = table.get("enabled").ok();
     def.placeholder = table.get("placeholder").ok();
     def.tooltip = table.get("tooltip").ok();
+    def.icon = table.get("icon").ok();
+    def.icon_position = table
+        .get("icon_position")
+        .or_else(|_| table.get("iconPosition"))
+        .ok();
+    def.icon_size = table
+        .get("icon_size")
+        .or_else(|_| table.get("iconSize"))
+        .ok();
 }
 
 fn apply_widget_text_layout_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {

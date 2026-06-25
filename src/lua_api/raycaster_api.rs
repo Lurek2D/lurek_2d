@@ -1,6 +1,7 @@
 //! Registers the `lurek.raycaster` Lua API for raycast scenes, textures, level parsing, and raycaster userdata.
 
 use super::tilefield_api::LuaTileField;
+use super::tileset_api::LuaTileCatalog;
 use super::SharedState;
 use crate::color::Color;
 use crate::lua_api::physics_api::LuaBody;
@@ -14,14 +15,16 @@ use crate::raycaster::SceneAdapterModel;
 use crate::raycaster::{
     compute_lighting, distance_shade, project_column, DirectionalSpriteTextures, DoorDirection,
     DoorManager, DoorState, EntityPickResult, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid,
-    PickResult, PickSurface, PointLight, RayHit, Raycaster2D, RaycasterBuildStats, RaycasterLevel,
-    RaycasterScene, SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneBuildParams,
-    SceneTransform, ScreenPickParams, WallFeature, WallFeatureKind, WorldSprite,
+    PickResult, PickSurface, PointLight, RayHit, Raycaster2D, RaycasterBackground,
+    RaycasterBuildStats, RaycasterLevel, RaycasterOverlayEffect, RaycasterScene, SceneAdapter,
+    SceneAdapterLight, SceneAdapterSprite, SceneBuildParams, SceneTransform, ScreenPickParams,
+    WallFeature, WallFeatureKind, WorldSprite,
 };
 #[cfg(feature = "obj-loader")]
 use crate::render::obj_loader::Vec3;
 use crate::runtime::resource_keys::TextureKey;
-use crate::tilefield::{CellCoord, TileChannel};
+use crate::tilefield::{CellCoord, TileChannel, TileField, TileObjectCatalog, TileRef};
+use crate::tileset::{TileCatalog, TileVisual};
 use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;
@@ -191,6 +194,207 @@ fn table_opt_clamped_f32(
         .clamp(min, max))
 }
 
+fn parse_color_string(value: &str, default: [f32; 4]) -> [f32; 4] {
+    let mut out = default;
+    for (i, part) in value.split(',').take(4).enumerate() {
+        if let Ok(component) = part.trim().parse::<f32>() {
+            out[i] = component.clamp(0.0, 1.0);
+        }
+    }
+    out
+}
+
+fn parse_rgba_value(value: &LuaValue, api_name: &str, default: [f32; 4]) -> LuaResult<[f32; 4]> {
+    match value {
+        LuaValue::Nil => Ok(default),
+        LuaValue::String(value) => Ok(parse_color_string(value.to_str()?, default)),
+        LuaValue::Table(tbl) => {
+            let r = tbl
+                .get::<_, Option<f32>>(1)?
+                .or(tbl.get::<_, Option<f32>>("r")?)
+                .unwrap_or(default[0])
+                .clamp(0.0, 1.0);
+            let g = tbl
+                .get::<_, Option<f32>>(2)?
+                .or(tbl.get::<_, Option<f32>>("g")?)
+                .unwrap_or(default[1])
+                .clamp(0.0, 1.0);
+            let b = tbl
+                .get::<_, Option<f32>>(3)?
+                .or(tbl.get::<_, Option<f32>>("b")?)
+                .unwrap_or(default[2])
+                .clamp(0.0, 1.0);
+            let a = tbl
+                .get::<_, Option<f32>>(4)?
+                .or(tbl.get::<_, Option<f32>>("a")?)
+                .unwrap_or(default[3])
+                .clamp(0.0, 1.0);
+            Ok([r, g, b, a])
+        }
+        other => Err(LuaError::RuntimeError(format!(
+            "{}: color must be a table, comma string, or nil, got {}",
+            api_name,
+            other.type_name()
+        ))),
+    }
+}
+
+fn table_color(
+    table: &LuaTable,
+    key: &str,
+    api_name: &str,
+    default: [f32; 4],
+) -> LuaResult<[f32; 4]> {
+    let value = table
+        .get::<_, Option<LuaValue>>(key)?
+        .unwrap_or(LuaValue::Nil);
+    parse_rgba_value(&value, api_name, default)
+}
+
+fn parse_background_value(
+    value: &LuaValue,
+    api_name: &str,
+) -> LuaResult<Option<RaycasterBackground>> {
+    match value {
+        LuaValue::Nil => Ok(None),
+        LuaValue::Table(tbl) => {
+            let kind = tbl
+                .get::<_, Option<String>>("type")?
+                .or(tbl.get::<_, Option<String>>("kind")?)
+                .unwrap_or_else(|| {
+                    if tbl
+                        .get::<_, Option<LuaValue>>("texture")
+                        .ok()
+                        .flatten()
+                        .is_some()
+                        || tbl
+                            .get::<_, Option<LuaValue>>("image")
+                            .ok()
+                            .flatten()
+                            .is_some()
+                    {
+                        "skybox".to_string()
+                    } else {
+                        "gradient".to_string()
+                    }
+                })
+                .to_ascii_lowercase();
+            match kind.as_str() {
+                "solid" | "color" => Ok(Some(RaycasterBackground::Solid {
+                    color: table_color(tbl, "color", api_name, [0.0, 0.0, 0.0, 1.0])?,
+                })),
+                "gradient" | "verticalgradient" | "vertical_gradient" => {
+                    Ok(Some(RaycasterBackground::VerticalGradient {
+                        top: table_color(tbl, "top", api_name, [0.45, 0.62, 0.86, 1.0])?,
+                        bottom: table_color(tbl, "bottom", api_name, [0.82, 0.90, 1.0, 1.0])?,
+                    }))
+                }
+                "skybox" | "texture" => {
+                    let texture_value = tbl
+                        .get::<_, Option<LuaValue>>("texture")?
+                        .or(tbl.get::<_, Option<LuaValue>>("image")?)
+                        .or(tbl.get::<_, Option<LuaValue>>("textureId")?)
+                        .unwrap_or(LuaValue::Nil);
+                    let (texture_key, _) = parse_texture_key_value(&texture_value, api_name)?
+                        .ok_or_else(|| {
+                            LuaError::RuntimeError(format!(
+                                "{}: skybox.texture must be an image or texture id",
+                                api_name
+                            ))
+                        })?;
+                    Ok(Some(RaycasterBackground::Skybox {
+                        texture_key,
+                        tint: table_color(tbl, "tint", api_name, [1.0, 1.0, 1.0, 1.0])?,
+                        offset: tbl.get::<_, Option<f32>>("offset")?.unwrap_or(0.0),
+                    }))
+                }
+                other => Err(LuaError::RuntimeError(format!(
+                    "{}: unsupported background type {:?}",
+                    api_name, other
+                ))),
+            }
+        }
+        other => {
+            let (texture_key, _) = parse_texture_key_value(other, api_name)?.ok_or_else(|| {
+                LuaError::RuntimeError(format!(
+                    "{}: background must be a table, texture id, LImage, or nil",
+                    api_name
+                ))
+            })?;
+            Ok(Some(RaycasterBackground::Skybox {
+                texture_key,
+                tint: [1.0, 1.0, 1.0, 1.0],
+                offset: 0.0,
+            }))
+        }
+    }
+}
+
+fn parse_overlay_effect_value(
+    value: LuaValue,
+    api_name: &str,
+) -> LuaResult<RaycasterOverlayEffect> {
+    let LuaValue::Table(tbl) = value else {
+        return Err(LuaError::RuntimeError(format!(
+            "{}: overlay effect must be a table",
+            api_name
+        )));
+    };
+    let kind = tbl
+        .get::<_, Option<String>>("type")?
+        .or(tbl.get::<_, Option<String>>("effect")?)
+        .unwrap_or_else(|| "fog".to_string())
+        .to_ascii_lowercase();
+    match kind.as_str() {
+        "fog" => Ok(RaycasterOverlayEffect::Fog {
+            color: table_color(&tbl, "color", api_name, [0.55, 0.62, 0.70, 0.35])?,
+            density: tbl
+                .get::<_, Option<f32>>("density")?
+                .unwrap_or(0.35)
+                .clamp(0.0, 1.0),
+        }),
+        "snow" => Ok(RaycasterOverlayEffect::Snow {
+            color: table_color(&tbl, "color", api_name, [1.0, 1.0, 1.0, 0.70])?,
+            density: tbl
+                .get::<_, Option<f32>>("density")?
+                .unwrap_or(0.30)
+                .clamp(0.0, 2.0),
+            wind: tbl.get::<_, Option<f32>>("wind")?.unwrap_or(0.0),
+        }),
+        other => Err(LuaError::RuntimeError(format!(
+            "{}: unsupported overlay effect {:?}",
+            api_name, other
+        ))),
+    }
+}
+
+fn parse_overlay_effects(
+    value: LuaValue,
+    api_name: &str,
+) -> LuaResult<Vec<RaycasterOverlayEffect>> {
+    match value {
+        LuaValue::Nil => Ok(Vec::new()),
+        LuaValue::Table(tbl) => {
+            let mut overlays = Vec::new();
+            let has_kind = tbl.get::<_, Option<String>>("type")?.is_some()
+                || tbl.get::<_, Option<String>>("effect")?.is_some();
+            if has_kind {
+                overlays.push(parse_overlay_effect_value(LuaValue::Table(tbl), api_name)?);
+            } else {
+                for value in tbl.sequence_values::<LuaValue>() {
+                    overlays.push(parse_overlay_effect_value(value?, api_name)?);
+                }
+            }
+            Ok(overlays)
+        }
+        other => Err(LuaError::RuntimeError(format!(
+            "{}: overlays must be a table or nil, got {}",
+            api_name,
+            other.type_name()
+        ))),
+    }
+}
+
 fn parse_scene_build_params(params_tbl: &LuaTable, api_name: &str) -> LuaResult<SceneBuildParams> {
     // add_method
     let sun_r = table_opt_f32(params_tbl, "sun_r")?
@@ -213,6 +417,24 @@ fn parse_scene_build_params(params_tbl: &LuaTable, api_name: &str) -> LuaResult<
     let roof_darkness = table_opt_f32(params_tbl, "roof_darkness")?
         .unwrap_or(0.8)
         .clamp(0.0, 1.0);
+    let background = parse_background_value(
+        &params_tbl
+            .get::<_, Option<LuaValue>>("background")?
+            .unwrap_or(LuaValue::Nil),
+        api_name,
+    )?
+    .or(parse_background_value(
+        &params_tbl
+            .get::<_, Option<LuaValue>>("skybox")?
+            .unwrap_or(LuaValue::Nil),
+        api_name,
+    )?);
+    let overlays = parse_overlay_effects(
+        params_tbl
+            .get::<_, Option<LuaValue>>("overlays")?
+            .unwrap_or(LuaValue::Nil),
+        api_name,
+    )?;
     let params = SceneBuildParams {
         player_x: params_tbl.get::<_, f32>("px").map_err(|e| {
             LuaError::RuntimeError(format!("{}: params.px is required ({})", api_name, e))
@@ -269,6 +491,8 @@ fn parse_scene_build_params(params_tbl: &LuaTable, api_name: &str) -> LuaResult<
         horizon_offset: params_tbl
             .get::<_, Option<f32>>("horizon_offset")?
             .unwrap_or(0.0),
+        background,
+        overlays,
     };
     Ok(params)
 }
@@ -1004,6 +1228,29 @@ fn texture_pick_is_opaque(
     texture.pixels.get(idx).copied().unwrap_or(255) > 0
 }
 
+fn sample_texture_rgba(
+    textures: &slotmap::SlotMap<TextureKey, crate::render::renderer::TextureData>,
+    texture_key: TextureKey,
+    u: f32,
+    v: f32,
+) -> Option<(u8, u8, u8, u8)> {
+    let texture = textures.get(texture_key)?;
+    if texture.width == 0 || texture.height == 0 {
+        return None;
+    }
+    let wrapped_u = u.rem_euclid(1.0);
+    let wrapped_v = v.rem_euclid(1.0);
+    let sx = (wrapped_u * texture.width as f32).floor() as u32 % texture.width;
+    let sy = (wrapped_v * texture.height as f32).floor() as u32 % texture.height;
+    let idx = ((sy * texture.width + sx) * 4) as usize;
+    Some((
+        *texture.pixels.get(idx)?,
+        *texture.pixels.get(idx + 1)?,
+        *texture.pixels.get(idx + 2)?,
+        *texture.pixels.get(idx + 3)?,
+    ))
+}
+
 fn parse_level_sprites(
     value: LuaValue,
     api_name: &str,
@@ -1193,6 +1440,532 @@ fn parse_wall_texture_map(
             Ok(m)
         }
         _ => Ok(std::collections::HashMap::new()),
+    }
+}
+
+#[derive(Clone)]
+struct TileFieldRaycasterOptions {
+    wall_channel: TileChannel,
+    catalog: Option<Rc<RefCell<TileCatalog>>>,
+    wall_slot: Option<String>,
+    door_slot: Option<String>,
+    window_slot: Option<String>,
+    half_wall_slot: Option<String>,
+    floor_slot: Option<String>,
+    ceiling_slot: Option<String>,
+    object_slot: Option<String>,
+    sprite_slot: Option<String>,
+    floor_hole_slot: Option<String>,
+    ceiling_hole_slot: Option<String>,
+    background_slot: Option<String>,
+    skybox_slot: Option<String>,
+    overlay_slot: Option<String>,
+    wall_default: u32,
+    object_size: f32,
+    object_id_base: u32,
+    slot_refs_are_textures: bool,
+    include_tile_lights: bool,
+    door_direction: DoorDirection,
+    door_open_amount: f32,
+    door_alpha: f32,
+    window_sill_height: f32,
+    window_lintel_height: f32,
+    window_alpha: f32,
+    half_wall_height: f32,
+    floor_textures: HashMap<u32, TextureKey>,
+    ceiling_textures: HashMap<u32, TextureKey>,
+    object_textures: HashMap<u32, TextureKey>,
+}
+
+#[derive(Clone, Copy)]
+struct FieldSlotRef {
+    value: u32,
+    texture: Option<TextureKey>,
+    legacy_numeric: bool,
+}
+
+fn option_string(opts: Option<&LuaTable>, key: &str) -> LuaResult<Option<String>> {
+    opts.map(|table| table.get::<_, Option<String>>(key))
+        .transpose()
+        .map(|value| value.flatten())
+}
+
+fn option_bool(opts: Option<&LuaTable>, key: &str, default: bool) -> LuaResult<bool> {
+    Ok(opts
+        .map(|table| table.get::<_, Option<bool>>(key))
+        .transpose()?
+        .flatten()
+        .unwrap_or(default))
+}
+
+fn option_f32(opts: Option<&LuaTable>, key: &str, default: f32) -> LuaResult<f32> {
+    Ok(opts
+        .map(|table| table.get::<_, Option<f32>>(key))
+        .transpose()?
+        .flatten()
+        .unwrap_or(default))
+}
+
+fn option_u32(opts: Option<&LuaTable>, key: &str, default: u32) -> LuaResult<u32> {
+    Ok(opts
+        .map(|table| table.get::<_, Option<u32>>(key))
+        .transpose()?
+        .flatten()
+        .unwrap_or(default))
+}
+
+fn option_texture_map(
+    opts: Option<&LuaTable>,
+    key: &str,
+    api_name: &str,
+) -> LuaResult<HashMap<u32, TextureKey>> {
+    let Some(opts) = opts else {
+        return Ok(HashMap::new());
+    };
+    let value = opts
+        .get::<_, Option<LuaValue>>(key)?
+        .unwrap_or(LuaValue::Nil);
+    parse_wall_texture_map(value, api_name)
+}
+
+fn option_tile_catalog(
+    opts: Option<&LuaTable>,
+    api_name: &str,
+) -> LuaResult<Option<Rc<RefCell<TileCatalog>>>> {
+    let Some(opts) = opts else {
+        return Ok(None);
+    };
+    let value = match opts.get::<_, Option<LuaValue>>("catalog")? {
+        Some(value) => value,
+        None => opts
+            .get::<_, Option<LuaValue>>("tileCatalog")?
+            .unwrap_or(LuaValue::Nil),
+    };
+    match value {
+        LuaValue::Nil => Ok(None),
+        LuaValue::UserData(catalog_ud) => {
+            let catalog = catalog_ud.borrow::<LuaTileCatalog>()?;
+            Ok(Some(catalog.inner.clone()))
+        }
+        other => Err(LuaError::RuntimeError(format!(
+            "{api_name}: catalog must be LTileCatalog or nil, got {}",
+            other.type_name()
+        ))),
+    }
+}
+
+fn parse_tilefield_raycaster_options(
+    opts: Option<&LuaTable>,
+    api_name: &str,
+) -> LuaResult<TileFieldRaycasterOptions> {
+    let channel_name = option_string(opts, "wallChannel")?.unwrap_or_else(|| "vision".to_string());
+    let wall_channel = TileChannel::parse(&channel_name)
+        .map_err(|err| LuaError::RuntimeError(format!("{api_name}: {err}")))?;
+    let door_direction = match option_string(opts, "doorDirection")? {
+        Some(value) => parse_door_direction(api_name, &value)?,
+        None => DoorDirection::Vertical,
+    };
+    Ok(TileFieldRaycasterOptions {
+        wall_channel,
+        catalog: option_tile_catalog(opts, api_name)?,
+        wall_slot: option_string(opts, "wallSlot")?,
+        door_slot: option_string(opts, "doorSlot")?,
+        window_slot: option_string(opts, "windowSlot")?,
+        half_wall_slot: option_string(opts, "halfWallSlot")?,
+        floor_slot: option_string(opts, "floorSlot")?,
+        ceiling_slot: option_string(opts, "ceilingSlot")?,
+        object_slot: option_string(opts, "objectSlot")?,
+        sprite_slot: option_string(opts, "spriteSlot")?,
+        floor_hole_slot: option_string(opts, "floorHoleSlot")?,
+        ceiling_hole_slot: option_string(opts, "ceilingHoleSlot")?,
+        background_slot: option_string(opts, "backgroundSlot")?,
+        skybox_slot: option_string(opts, "skyboxSlot")?,
+        overlay_slot: option_string(opts, "overlaySlot")?,
+        wall_default: option_u32(opts, "wallDefault", 1)?,
+        object_size: option_f32(opts, "objectSize", 1.0)?.max(0.01),
+        object_id_base: option_u32(opts, "objectIdBase", 1_000_000)?,
+        slot_refs_are_textures: option_bool(opts, "slotRefsAreTextures", false)?,
+        include_tile_lights: option_bool(opts, "tileLights", true)?,
+        door_direction,
+        door_open_amount: option_f32(opts, "doorOpenAmount", 0.0)?.clamp(0.0, 1.0),
+        door_alpha: option_f32(opts, "doorAlpha", 1.0)?.clamp(0.0, 1.0),
+        window_sill_height: option_f32(opts, "windowSillHeight", 0.25)?.clamp(0.0, 0.95),
+        window_lintel_height: option_f32(opts, "windowLintelHeight", 0.8)?.clamp(0.05, 1.0),
+        window_alpha: option_f32(opts, "windowAlpha", 0.45)?.clamp(0.0, 1.0),
+        half_wall_height: option_f32(opts, "halfWallHeight", 0.5)?.clamp(0.05, 1.0),
+        floor_textures: option_texture_map(opts, "floorTextures", api_name)?,
+        ceiling_textures: option_texture_map(opts, "ceilingTextures", api_name)?,
+        object_textures: option_texture_map(opts, "objectTextures", api_name)?,
+    })
+}
+
+fn typed_ref_cell_value(
+    reference: &TileRef,
+    visual: Option<&TileVisual>,
+    default_value: u32,
+) -> u32 {
+    visual
+        .and_then(|visual| visual.tile_id)
+        .or(reference.local_id)
+        .and_then(|tile_id| tile_id.checked_add(1))
+        .filter(|value| *value > 0)
+        .unwrap_or_else(|| default_value.max(1))
+}
+
+fn typed_ref_texture(visual: Option<&TileVisual>) -> Option<TextureKey> {
+    visual
+        .and_then(|visual| visual.texture_id)
+        .map(|texture_id| texture_key_from_raw_id(texture_id).0)
+}
+
+fn typed_field_slot_ref(reference: &TileRef, options: &TileFieldRaycasterOptions) -> FieldSlotRef {
+    let visual = options
+        .catalog
+        .as_ref()
+        .and_then(|catalog| catalog.borrow().visual_for_ref(reference));
+    let visual_ref = visual.as_ref();
+    FieldSlotRef {
+        value: typed_ref_cell_value(reference, visual_ref, options.wall_default),
+        texture: typed_ref_texture(visual_ref),
+        legacy_numeric: false,
+    }
+}
+
+fn field_slot_ref(
+    field: &TileField,
+    coord: CellCoord,
+    slot: Option<&str>,
+    options: &TileFieldRaycasterOptions,
+) -> Option<FieldSlotRef> {
+    let slot = slot?;
+    if let Some(reference) = field.get_typed_ref(coord, slot) {
+        return Some(typed_field_slot_ref(reference, options));
+    }
+    field
+        .get_ref(coord, slot)
+        .filter(|value| *value > 0)
+        .map(|value| FieldSlotRef {
+            value,
+            texture: None,
+            legacy_numeric: true,
+        })
+}
+
+fn texture_for_field_ref(
+    value: Option<FieldSlotRef>,
+    textures: &HashMap<u32, TextureKey>,
+    slot_refs_are_textures: bool,
+) -> Option<TextureKey> {
+    let value = value?;
+    if let Some(texture) = value.texture {
+        return Some(texture);
+    }
+    textures.get(&value.value).copied().or_else(|| {
+        (slot_refs_are_textures && value.legacy_numeric)
+            .then(|| texture_key_from_raw_id(value.value as u64).0)
+    })
+}
+
+fn tilefield_wall_value_and_feature(
+    field: &TileField,
+    coord: CellCoord,
+    options: &TileFieldRaycasterOptions,
+) -> (u32, Option<WallFeature>, Option<TextureKey>) {
+    if let Some(value) = field_slot_ref(field, coord, options.door_slot.as_deref(), options) {
+        return (
+            value.value,
+            Some(WallFeature::door(
+                options.door_direction,
+                options.door_open_amount,
+                options.door_alpha,
+            )),
+            value.texture,
+        );
+    }
+    if let Some(value) = field_slot_ref(field, coord, options.window_slot.as_deref(), options) {
+        return (
+            value.value,
+            Some(WallFeature::window(
+                options.window_sill_height,
+                options.window_lintel_height,
+                options.window_alpha,
+            )),
+            value.texture,
+        );
+    }
+    if let Some(value) = field_slot_ref(field, coord, options.half_wall_slot.as_deref(), options) {
+        return (
+            value.value,
+            Some(WallFeature::half_height(options.half_wall_height)),
+            value.texture,
+        );
+    }
+    if let Some(value) = field_slot_ref(field, coord, options.wall_slot.as_deref(), options) {
+        return (value.value, None, value.texture);
+    }
+    if field.blocks(coord, options.wall_channel) {
+        (options.wall_default, None, None)
+    } else {
+        (0, None, None)
+    }
+}
+
+fn tilefield_object_slots(options: &TileFieldRaycasterOptions) -> Vec<&str> {
+    let mut slots = Vec::new();
+    if let Some(slot) = options.object_slot.as_deref() {
+        slots.push(slot);
+    }
+    if let Some(slot) = options.sprite_slot.as_deref() {
+        if !slots.contains(&slot) {
+            slots.push(slot);
+        }
+    }
+    slots
+}
+
+fn tilefield_object_entity_id(
+    options: &TileFieldRaycasterOptions,
+    width: u32,
+    height: u32,
+    coord: CellCoord,
+    slot_index: usize,
+) -> Option<u32> {
+    let cell_index = coord.z as u64 * width as u64 * height as u64
+        + coord.y as u64 * width as u64
+        + coord.x as u64;
+    let value = options.object_id_base as u64 + cell_index * 2 + slot_index as u64;
+    u32::try_from(value).ok()
+}
+
+fn collect_tilefield_object_sprites(
+    field: &TileField,
+    width: u32,
+    height: u32,
+    levels: u32,
+    options: &TileFieldRaycasterOptions,
+) -> Vec<LevelSprite> {
+    let slots = tilefield_object_slots(options);
+    if slots.is_empty() {
+        return Vec::new();
+    }
+
+    let mut sprites = Vec::new();
+    for z in 0..levels {
+        for y in 0..height {
+            for x in 0..width {
+                let coord = CellCoord { x, y, z };
+                for (slot_index, slot) in slots.iter().enumerate() {
+                    let Some(value) = field_slot_ref(field, coord, Some(*slot), options) else {
+                        continue;
+                    };
+                    let Some(texture_key) = texture_for_field_ref(
+                        Some(value),
+                        &options.object_textures,
+                        options.slot_refs_are_textures,
+                    ) else {
+                        continue;
+                    };
+                    let level_index = z as usize;
+                    sprites.push(LevelSprite {
+                        level_index,
+                        sprite: WorldSprite {
+                            entity_id: tilefield_object_entity_id(
+                                options, width, height, coord, slot_index,
+                            ),
+                            level_index,
+                            world_x: x as f32 + 0.5,
+                            world_y: y as f32 + 0.5,
+                            texture_key,
+                            directional_textures: None,
+                            size: options.object_size,
+                        },
+                    });
+                }
+            }
+        }
+    }
+    sprites
+}
+
+fn first_field_ref_for_slot(
+    field: &TileField,
+    width: u32,
+    height: u32,
+    z: u32,
+    slot: Option<&str>,
+    options: &TileFieldRaycasterOptions,
+) -> Option<(Option<TileRef>, FieldSlotRef)> {
+    let slot = slot?;
+    for y in 0..height {
+        for x in 0..width {
+            let coord = CellCoord { x, y, z };
+            if let Some(reference) = field.get_typed_ref(coord, slot) {
+                return Some((
+                    Some(reference.clone()),
+                    typed_field_slot_ref(reference, options),
+                ));
+            }
+            if let Some(value) = field.get_ref(coord, slot).filter(|value| *value > 0) {
+                return Some((
+                    None,
+                    FieldSlotRef {
+                        value,
+                        texture: None,
+                        legacy_numeric: true,
+                    },
+                ));
+            }
+        }
+    }
+    None
+}
+
+fn tile_ref_properties(
+    reference: Option<&TileRef>,
+    options: &TileFieldRaycasterOptions,
+) -> HashMap<String, String> {
+    let Some(reference) = reference else {
+        return HashMap::new();
+    };
+    options
+        .catalog
+        .as_ref()
+        .and_then(|catalog| {
+            catalog
+                .borrow()
+                .object_for_ref(reference)
+                .map(|object| object.properties.clone())
+        })
+        .unwrap_or_default()
+}
+
+fn property_color(properties: &HashMap<String, String>, key: &str, default: [f32; 4]) -> [f32; 4] {
+    properties
+        .get(key)
+        .map(|value| parse_color_string(value, default))
+        .unwrap_or(default)
+}
+
+fn property_f32(properties: &HashMap<String, String>, key: &str, default: f32) -> f32 {
+    properties
+        .get(key)
+        .and_then(|value| value.parse::<f32>().ok())
+        .unwrap_or(default)
+}
+
+fn background_from_field_slot(
+    value: (Option<TileRef>, FieldSlotRef),
+    options: &TileFieldRaycasterOptions,
+    prefer_texture: bool,
+) -> Option<RaycasterBackground> {
+    let (reference, slot_ref) = value;
+    let properties = tile_ref_properties(reference.as_ref(), options);
+    let kind = properties
+        .get("type")
+        .or_else(|| properties.get("kind"))
+        .map(|value| value.to_ascii_lowercase());
+    if prefer_texture {
+        if let Some(texture_key) = texture_for_field_ref(
+            Some(slot_ref),
+            &HashMap::new(),
+            options.slot_refs_are_textures,
+        ) {
+            return Some(RaycasterBackground::Skybox {
+                texture_key,
+                tint: property_color(&properties, "tint", [1.0, 1.0, 1.0, 1.0]),
+                offset: property_f32(&properties, "offset", 0.0),
+            });
+        }
+    }
+    match kind.as_deref() {
+        Some("solid") | Some("color") => Some(RaycasterBackground::Solid {
+            color: property_color(&properties, "color", [0.0, 0.0, 0.0, 1.0]),
+        }),
+        Some("skybox") | Some("texture") => {
+            slot_ref
+                .texture
+                .map(|texture_key| RaycasterBackground::Skybox {
+                    texture_key,
+                    tint: property_color(&properties, "tint", [1.0, 1.0, 1.0, 1.0]),
+                    offset: property_f32(&properties, "offset", 0.0),
+                })
+        }
+        _ => Some(RaycasterBackground::VerticalGradient {
+            top: property_color(&properties, "top", [0.45, 0.62, 0.86, 1.0]),
+            bottom: property_color(&properties, "bottom", [0.82, 0.90, 1.0, 1.0]),
+        }),
+    }
+}
+
+fn overlay_from_field_slot(
+    value: (Option<TileRef>, FieldSlotRef),
+    options: &TileFieldRaycasterOptions,
+) -> Option<RaycasterOverlayEffect> {
+    let (reference, _) = value;
+    let properties = tile_ref_properties(reference.as_ref(), options);
+    let kind = properties
+        .get("effect")
+        .or_else(|| properties.get("type"))
+        .map(|value| value.to_ascii_lowercase())
+        .unwrap_or_else(|| "fog".to_string());
+    match kind.as_str() {
+        "snow" => Some(RaycasterOverlayEffect::Snow {
+            color: property_color(&properties, "color", [1.0, 1.0, 1.0, 0.70]),
+            density: property_f32(&properties, "density", 0.30).clamp(0.0, 2.0),
+            wind: property_f32(&properties, "wind", 0.0),
+        }),
+        "fog" => Some(RaycasterOverlayEffect::Fog {
+            color: property_color(&properties, "color", [0.55, 0.62, 0.70, 0.35]),
+            density: property_f32(&properties, "density", 0.35).clamp(0.0, 1.0),
+        }),
+        _ => None,
+    }
+}
+
+fn apply_tilefield_presentation_slots(
+    params: &mut SceneBuildParams,
+    field: &TileField,
+    width: u32,
+    height: u32,
+    active_level: usize,
+    options: &TileFieldRaycasterOptions,
+) {
+    let z = active_level as u32;
+    if params.background.is_none() {
+        if let Some(value) = first_field_ref_for_slot(
+            field,
+            width,
+            height,
+            z,
+            options.background_slot.as_deref(),
+            options,
+        ) {
+            params.background = background_from_field_slot(value, options, false);
+        }
+    }
+    if params.background.is_none() {
+        if let Some(value) = first_field_ref_for_slot(
+            field,
+            width,
+            height,
+            z,
+            options.skybox_slot.as_deref(),
+            options,
+        ) {
+            params.background = background_from_field_slot(value, options, true);
+        }
+    }
+    if let Some(value) = first_field_ref_for_slot(
+        field,
+        width,
+        height,
+        z,
+        options.overlay_slot.as_deref(),
+        options,
+    ) {
+        if let Some(overlay) = overlay_from_field_slot(value, options) {
+            params.overlays.push(overlay);
+        }
     }
 }
 /// Lua-visible door manager that controls sliding doors within a raycaster map.
@@ -5114,10 +5887,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
     // -- buildMultiLevelSceneFromField --
-    /// Builds a multilevel raycaster scene from a tilefield blocker channel.
+    /// Builds a multilevel raycaster scene from tilefield blockers, slots, holes, surfaces, and tile light emitters.
     /// @param | params | table | Scene params plus optional active_level.
     /// @param | field | LTileField | Source tilefield.
-    /// @param | opts | table? | Options with `wallChannel` (default `vision`).
+    /// @param | opts | table? | Options with `wallChannel` (default `vision`), `catalog`/`tileCatalog`, `wallSlot`, `doorSlot`, `windowSlot`, `halfWallSlot`, `floorSlot`, `ceilingSlot`, `objectSlot`, `spriteSlot`, `floorHoleSlot`, `ceilingHoleSlot`, `backgroundSlot`, `skyboxSlot`, `overlaySlot`, `floorTextures`, `ceilingTextures`, `objectTextures`, `objectSize`, `objectIdBase`, `slotRefsAreTextures`, and `tileLights`.
     /// @param | lights | table? | Optional raycaster point lights.
     /// @param | sprites | table|LSpriteManager? | Optional raycaster sprites.
     /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
@@ -5135,22 +5908,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 LuaValue,
                 LuaValue,
             )| {
-                let params = parse_scene_build_params(
+                let mut params = parse_scene_build_params(
                     &params_tbl,
                     "lurek.raycaster.buildMultiLevelSceneFromField",
                 )?;
                 let active_level = parse_active_level(&params_tbl)?;
-                let channel_name = match &opts_tbl {
-                    Some(opts) => opts
-                        .get::<_, Option<String>>("wallChannel")?
-                        .unwrap_or_else(|| "vision".to_string()),
-                    None => "vision".to_string(),
-                };
-                let wall_channel = TileChannel::parse(&channel_name).map_err(|err| {
-                    LuaError::RuntimeError(format!(
-                        "lurek.raycaster.buildMultiLevelSceneFromField: {err}"
-                    ))
-                })?;
+                let options = parse_tilefield_raycaster_options(
+                    opts_tbl.as_ref(),
+                    "lurek.raycaster.buildMultiLevelSceneFromField",
+                )?;
                 let field_ud = field_ud.borrow::<LuaTileField>()?;
                 let field = field_ud.inner.borrow();
                 let (width, height, levels) = field.size();
@@ -5161,19 +5927,41 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         levels
                     )));
                 }
-                let lights = parse_point_lights(
+                apply_tilefield_presentation_slots(
+                    &mut params,
+                    &field,
+                    width,
+                    height,
+                    active_level,
+                    &options,
+                );
+                let mut lights = parse_point_lights(
                     lights_tbl,
                     "lurek.raycaster.buildMultiLevelSceneFromField",
                 )?;
-                let sprites = parse_level_sprites(
+                if options.include_tile_lights {
+                    lights.extend(field.tile_light_sources().into_iter().map(|source| PointLight {
+                        x: source.x as f32 + 0.5,
+                        y: source.y as f32 + 0.5,
+                        level_index: Some(source.z as usize),
+                        radius: source.radius,
+                        intensity: source.intensity,
+                        color: source.color,
+                    }));
+                }
+                let mut sprites = parse_level_sprites(
                     sprites_tbl,
                     "lurek.raycaster.buildMultiLevelSceneFromField",
                     active_level,
                 )?;
+                sprites.extend(collect_tilefield_object_sprites(
+                    &field, width, height, levels, &options,
+                ));
                 let wall_tex_map = parse_wall_texture_map(
                     wall_tex_tbl,
                     "lurek.raycaster.buildMultiLevelSceneFromField",
                 )?;
+                let mut field_wall_tex_map = HashMap::<u32, TextureKey>::new();
 
                 let mut grid = MultiLevelGrid::new();
                 for z in 0..levels {
@@ -5183,11 +5971,62 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     for y in 0..height {
                         for x in 0..width {
                             let idx = (y * width + x) as usize;
-                            level.walls[idx] = if field.blocks(CellCoord { x, y, z }, wall_channel) {
-                                1
-                            } else {
-                                0
-                            };
+                            let coord = CellCoord { x, y, z };
+                            let (wall_value, feature, wall_texture) =
+                                tilefield_wall_value_and_feature(&field, coord, &options);
+                            level.walls[idx] = wall_value;
+                            if wall_value > 0 {
+                                if let Some(texture) = wall_texture {
+                                    field_wall_tex_map.entry(wall_value).or_insert(texture);
+                                }
+                            }
+                            if let Some(feature) = feature {
+                                level.set_wall_feature(x as usize, y as usize, feature);
+                            }
+                            if field_slot_ref(
+                                &field,
+                                coord,
+                                options.floor_hole_slot.as_deref(),
+                                &options,
+                            )
+                            .is_some()
+                            {
+                                level.set_floor_hole(x as usize, y as usize, true);
+                            }
+                            if field_slot_ref(
+                                &field,
+                                coord,
+                                options.ceiling_hole_slot.as_deref(),
+                                &options,
+                            )
+                            .is_some()
+                            {
+                                level.set_ceiling_hole(x as usize, y as usize, true);
+                            }
+                            if let Some(texture) = texture_for_field_ref(
+                                field_slot_ref(
+                                    &field,
+                                    coord,
+                                    options.floor_slot.as_deref(),
+                                    &options,
+                                ),
+                                &options.floor_textures,
+                                options.slot_refs_are_textures,
+                            ) {
+                                level.set_floor_texture(x as usize, y as usize, texture);
+                            }
+                            if let Some(texture) = texture_for_field_ref(
+                                field_slot_ref(
+                                    &field,
+                                    coord,
+                                    options.ceiling_slot.as_deref(),
+                                    &options,
+                                ),
+                                &options.ceiling_textures,
+                                options.slot_refs_are_textures,
+                            ) {
+                                level.set_ceiling_texture(x as usize, y as usize, texture);
+                            }
                         }
                     }
                     grid.add_level(level);
@@ -5198,7 +6037,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     &params,
                     &lights,
                     &sprites,
-                    &|_, cell_value| wall_tex_map.get(&cell_value).copied(),
+                    &|_, cell_value| {
+                        wall_tex_map
+                            .get(&cell_value)
+                            .copied()
+                            .or_else(|| field_wall_tex_map.get(&cell_value).copied())
+                    },
                     &|_, _, _| None,
                     &|_, _, _| None,
                     &|_, _, _| None,
@@ -5370,6 +6214,32 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 )?)),
                 None => Ok(LuaValue::Nil),
             }
+        })?,
+    )?;
+    // -- drawLastScene --
+    /// Rasterizes the most recently built raycaster scene to raw image data.
+    /// This captures the prepared floor, ceiling, wall, sprite, model, and lighting quads produced by `buildScene`, `buildMultiLevelScene`, `buildMultiLevelSceneFromField`, or their adapter variants.
+    /// @param | width | integer | Output image width in pixels.
+    /// @param | height | integer | Output image height in pixels.
+    /// @return | LImageData | Rasterized image data for the last built scene.
+    let draw_last_scene_state = state.clone();
+    tbl.set(
+        "drawLastScene",
+        lua.create_function(move |_, (width, height): (u32, u32)| {
+            crate::image::ImageData::rgba_byte_len(width, height).map_err(|err| {
+                LuaError::RuntimeError(format!("lurek.raycaster.drawLastScene: {}", err))
+            })?;
+            let state = draw_last_scene_state.borrow();
+            let scene = state.raycaster_output.as_ref().ok_or_else(|| {
+                LuaError::RuntimeError(
+                    "lurek.raycaster.drawLastScene: no raycaster scene has been built yet".into(),
+                )
+            })?;
+            Ok(scene.draw_to_image_with_textures(
+                width,
+                height,
+                Some(&|texture_key, u, v| sample_texture_rgba(&state.textures, texture_key, u, v)),
+            ))
         })?,
     )?;
     // -- projectColumn --

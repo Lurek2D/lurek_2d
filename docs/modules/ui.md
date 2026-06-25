@@ -898,6 +898,86 @@ end
 
 ---
 
+### `lurek.ui.getIconGlyph`
+
+Returns the built-in text glyph for an icon name, or nil when missing.
+
+```lua
+lurek.ui.getIconGlyph(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Icon name to resolve. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | nil | The text glyph used by the built-in renderer backend. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local save_glyph = lurek.ui.getIconGlyph("save") or ""
+    local health_glyph = lurek.ui.getIconGlyph("health") or ""
+    local missing_glyph = lurek.ui.getIconGlyph("missing-icon")
+    example_print_log("save glyph = " .. save_glyph)
+    example_print_log("health glyph = " .. health_glyph)
+    example_print_log("missing glyph = " .. tostring(missing_glyph))
+end
+```
+
+---
+
+### `lurek.ui.getIconNames`
+
+Returns all built-in UI icon names in stable catalog order.
+
+```lua
+lurek.ui.getIconNames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Built-in icon names such as "save", "settings", and "inventory". |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local names = lurek.ui.getIconNames()
+    local first = names[1] or ""
+    local last = names[#names] or ""
+    example_print_log("icon count = " .. #names)
+    example_print_log("first icon = " .. first)
+    example_print_log("last icon = " .. last)
+end
+```
+
+---
+
 ### `lurek.ui.getRoot`
 
 Returns the root panel widget of the UI tree.
@@ -1236,6 +1316,49 @@ do
     local disabled = lurek.ui.hasAutoUpdate()
     example_print_log("auto update enabled=" .. tostring(enabled))
     example_print_log("auto update disabled=" .. tostring(disabled))
+end
+```
+
+---
+
+### `lurek.ui.hasIcon`
+
+Returns whether a built-in UI icon name exists.
+
+```lua
+lurek.ui.hasIcon(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Icon name to resolve. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the icon exists. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local can_save = lurek.ui.hasIcon("save")
+    local can_map = lurek.ui.hasIcon("map")
+    local missing = lurek.ui.hasIcon("missing-icon")
+    example_print_log("save icon = " .. tostring(can_save))
+    example_print_log("map icon = " .. tostring(can_map))
+    example_print_log("missing icon = " .. tostring(missing))
 end
 ```
 
@@ -1970,6 +2093,49 @@ do
     dock:setSplitSize("top", 60)
     example_print_log("docked count = " .. dock:getDockedCount())
     example_print_log("left size = " .. dock:getSplitSize("left"))
+end
+```
+
+---
+
+### `lurek.ui.newIcon`
+
+Creates a label-like widget that displays only a built-in UI icon.
+
+```lua
+lurek.ui.newIcon(icon)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `icon` | string | Built-in icon name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLabel](#llabel) | nil | The icon widget, or nil when the icon name is unknown. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local icon = lurek.ui.newIcon("settings")
+    icon:setSize(28, 28)
+    icon:setPosition(12, 12)
+    example_print_log("icon type = " .. icon:type())
+    example_print_log("icon name = " .. tostring(icon:getIcon()))
+    example_print_log("icon position = " .. icon:getIconPosition())
 end
 ```
 
@@ -16190,6 +16356,38 @@ end
 
 ---
 
+#### `LUiWidget:clearIcon`
+
+Clears this widget's assigned built-in icon.
+
+```lua
+LUiWidget:clearIcon()
+```
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Map")
+    button:setIcon("map")
+    local before = button:getIcon()
+    button:clearIcon()
+    example_print_log("icon before clear = " .. tostring(before))
+    example_print_log("icon after clear = " .. tostring(button:getIcon()))
+    example_print_log("button text = " .. button:getText())
+end
+```
+
+---
+
 #### `LUiWidget:containsPoint`
 
 Tests whether the given screen-space point is inside this widget's bounds.
@@ -16592,6 +16790,120 @@ do
     example_print_log("shrink = " .. btn:getFlexShrink())
     btn:setFlexShrink(1)
     example_print_log("shrink = " .. btn:getFlexShrink())
+end
+```
+
+---
+
+#### `LUiWidget:getIcon`
+
+Returns this widget's assigned built-in icon name, or nil when no icon is assigned.
+
+```lua
+LUiWidget:getIcon()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | nil | The assigned icon name. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Inventory")
+    local before = button:getIcon()
+    button:setIcon("inventory")
+    local after = button:getIcon()
+    example_print_log("icon before = " .. tostring(before))
+    example_print_log("icon after = " .. tostring(after))
+    example_print_log("button text = " .. button:getText())
+end
+```
+
+---
+
+#### `LUiWidget:getIconPosition`
+
+Returns this widget's icon placement token.
+
+```lua
+LUiWidget:getIconPosition()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | One of "left", "right", "top", "bottom", or "only". |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Play")
+    local before = button:getIconPosition()
+    button:setIcon("play")
+    button:setIconPosition("only")
+    example_print_log("position before = " .. before)
+    example_print_log("position after = " .. button:getIconPosition())
+    example_print_log("icon = " .. tostring(button:getIcon()))
+end
+```
+
+---
+
+#### `LUiWidget:getIconSize`
+
+Returns this widget's requested icon size in pixels.
+
+```lua
+LUiWidget:getIconSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Pixel size; 0 means the widget font size is used. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Health")
+    local default_size = button:getIconSize()
+    button:setIcon("health")
+    button:setIconSize(20)
+    example_print_log("default size = " .. default_size)
+    example_print_log("updated size = " .. button:getIconSize())
+    example_print_log("icon = " .. tostring(button:getIcon()))
 end
 ```
 
@@ -17805,6 +18117,137 @@ do
     local w, h = widget:getSize()
     lurek.log.info("Invoked setFont on widget size " .. w .. "x" .. h)
     if w > 0 then widget:setVisible(true) end
+end
+```
+
+---
+
+#### `LUiWidget:setIcon`
+
+Sets this widget's built-in UI icon by semantic name.
+
+```lua
+LUiWidget:setIcon(icon)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `icon` | string | Built-in icon name such as "save", "settings", or "inventory". |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the icon exists and was assigned. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Save")
+    local ok = button:setIcon("save")
+    local bad = button:setIcon("missing-icon")
+    example_print_log("set icon ok = " .. tostring(ok))
+    example_print_log("set icon bad = " .. tostring(bad))
+    example_print_log("button icon = " .. tostring(button:getIcon()))
+end
+```
+
+---
+
+#### `LUiWidget:setIconPosition`
+
+Sets where this widget's icon is placed relative to its text.
+
+```lua
+LUiWidget:setIconPosition(position)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `position` | string | One of "left", "right", "top", "bottom", or "only". |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the position string is recognised. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Settings")
+    button:setIcon("settings")
+    local ok = button:setIconPosition("right")
+    local bad = button:setIconPosition("diagonal")
+    example_print_log("position ok = " .. tostring(ok))
+    example_print_log("position bad = " .. tostring(bad))
+    example_print_log("position = " .. button:getIconPosition())
+end
+```
+
+---
+
+#### `LUiWidget:setIconSize`
+
+Sets this widget's requested icon size in pixels.
+
+```lua
+LUiWidget:setIconSize(size)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `size` | number | Pixel size; 0 uses the widget font size. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when size is finite and non-negative. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Zoom")
+    button:setIcon("zoom-in")
+    local ok = button:setIconSize(18)
+    local bad = button:setIconSize(-1)
+    example_print_log("size ok = " .. tostring(ok))
+    example_print_log("size bad = " .. tostring(bad))
+    example_print_log("size = " .. button:getIconSize())
 end
 ```
 

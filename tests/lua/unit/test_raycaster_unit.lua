@@ -2408,11 +2408,9 @@ end)
 -- @describe raycaster tilefield adapters
 describe("raycaster tilefield adapters", function()
     -- @covers lurek.raycaster.buildMultiLevelSceneFromField
-    it("builds multilevel scene from tilefield channel", function()
+    it("builds multilevel scene from tilefield channels and render slots", function()
         local field = lurek.tilefield.new({ width = 4, height = 4, levels = 2 })
-        field:applyProfile(2, 2, 1, "wall")
-        field:applyProfile(3, 3, 2, "wall")
-        local count = lurek.raycaster.buildMultiLevelSceneFromField({
+        local empty_count = lurek.raycaster.buildMultiLevelSceneFromField({
             px = 1.5,
             py = 1.5,
             angle = 0,
@@ -2423,7 +2421,147 @@ describe("raycaster tilefield adapters", function()
             screen_h = 50,
             active_level = 0,
         }, field, { wallChannel = "vision" })
-        expect_true(count >= 0)
+
+        local texture = load_texture()
+        field:setRef(3, 2, 1, "wall", 7)
+        field:setRef(4, 2, 1, "door", 8)
+        field:setRef(3, 3, 2, "window", 9)
+        field:setRef(2, 2, 1, "floor", 21)
+        field:setRef(2, 2, 1, "ceiling", 22)
+        field:setRef(2, 3, 1, "floorHole", 1)
+        field:setRef(2, 3, 1, "ceilingHole", 1)
+        field:setModifier("torch", { light = { radius = 4, intensity = 1.5, color = { 1.0, 0.8, 0.4 } } })
+        field:applyModifier(2, 2, 1, "torch")
+
+        local count = lurek.raycaster.buildMultiLevelSceneFromField({
+            px = 1.5,
+            py = 1.5,
+            angle = 0,
+            fov = 1.0,
+            rays = 32,
+            max_dist = 8,
+            screen_w = 80,
+            screen_h = 50,
+            active_level = 0,
+        }, field, {
+            wallChannel = "vision",
+            wallSlot = "wall",
+            doorSlot = "door",
+            windowSlot = "window",
+            floorSlot = "floor",
+            ceilingSlot = "ceiling",
+            floorHoleSlot = "floorHole",
+            ceilingHoleSlot = "ceilingHole",
+            floorTextures = { [21] = texture },
+            ceilingTextures = { [22] = texture },
+            tileLights = true,
+        }, nil, nil, { [7] = texture, [8] = texture, [9] = texture })
+        local stats = lurek.raycaster.getLastBuildStats()
+        expect_true(count > empty_count)
+        expect_true(stats.lightingSamples > 0)
+
+        local typed_field = lurek.tilefield.new({ width = 4, height = 4, levels = 1 })
+        typed_field:setRef(3, 2, 1, "wall", { tileset = "dungeon", object = "stone_wall" })
+        typed_field:setRef(3, 3, 1, "floor", { tileset = "dungeon", object = "stone_floor" })
+        typed_field:setRef(3, 3, 1, "ceiling", { tileset = "dungeon", object = "stone_ceiling" })
+        typed_field:setRef(3, 3, 1, "object", { tileset = "dungeon", object = "banner" })
+        local tileset = lurek.tileset.fromProvider({
+            firstGid = 1,
+            tileCount = 4,
+            columns = 2,
+            tileWidth = 16,
+            tileHeight = 16,
+            objects = {
+                stone_wall = {
+                    slot = "wall",
+                    tileId = 2,
+                    visual = { textureId = texture:getId(), tileId = 2 },
+                },
+                stone_floor = {
+                    slot = "floor",
+                    tileId = 3,
+                    visual = { textureId = texture:getId(), tileId = 3 },
+                },
+                stone_ceiling = {
+                    slot = "ceiling",
+                    tileId = 4,
+                    visual = { textureId = texture:getId(), tileId = 4 },
+                },
+                banner = {
+                    slot = "object",
+                    visual = { textureId = texture:getId() },
+                },
+            },
+        })
+        local catalog = lurek.tileset.newCatalog({ dungeon = tileset })
+
+        local typed_base_quads = lurek.raycaster.buildMultiLevelSceneFromField({
+            px = 1.5,
+            py = 2.5,
+            angle = 0,
+            fov = 1.0,
+            rays = 32,
+            max_dist = 8,
+            screen_w = 80,
+            screen_h = 50,
+            active_level = 0,
+        }, typed_field, {
+            catalog = catalog,
+            wallSlot = "wall",
+            floorSlot = "floor",
+            ceilingSlot = "ceiling",
+        })
+        local quads = lurek.raycaster.buildMultiLevelSceneFromField({
+            px = 1.5,
+            py = 2.5,
+            angle = 0,
+            fov = 1.0,
+            rays = 32,
+            max_dist = 8,
+            screen_w = 80,
+            screen_h = 50,
+            active_level = 0,
+        }, typed_field, {
+            catalog = catalog,
+            wallSlot = "wall",
+            floorSlot = "floor",
+            ceilingSlot = "ceiling",
+            objectSlot = "object",
+            objectSize = 0.75,
+        })
+
+        expect_true(quads > typed_base_quads)
+    end)
+
+    -- @covers lurek.raycaster.drawLastScene
+    it("drawLastScene rasterizes the last prepared scene", function()
+        local map = make_map(8, 8)
+        map:setCell(4, 3, 2)
+        map:buildScene({
+            px = 2.5,
+            py = 3.5,
+            angle = 0,
+            fov = 1.0,
+            rays = 32,
+            max_dist = 8,
+            screen_w = 64,
+            screen_h = 40,
+            ambient = 0.5,
+        }, {
+            { x = 3.5, y = 3.5, radius = 3.0, intensity = 1.0, color = { 1.0, 0.8, 0.4 } },
+        }, {
+            { x = 3.5, y = 3.5, texture = load_texture(), size = 0.75, id = 42 },
+        }, {
+            [1] = load_texture(),
+            [2] = load_texture(),
+        })
+
+        local img = lurek.raycaster.drawLastScene(64, 40)
+        expect_equal(64, img:getWidth())
+        expect_equal(40, img:getHeight())
+        local r, g, b, a = img:getPixel(32, 20)
+        expect_true(a > 0)
+        expect_true(r + g + b > 0)
     end)
 end)
 end

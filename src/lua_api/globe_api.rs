@@ -111,6 +111,30 @@ fn parse_color_table(
     Ok(out)
 }
 
+fn parse_attrs_table(tbl: LuaTable, label: &str) -> LuaResult<HashMap<String, String>> {
+    let mut attrs = HashMap::new();
+    for pair in tbl.pairs::<String, String>() {
+        let (key, val) = pair.map_err(|err| {
+            LuaError::RuntimeError(format!("lurek.globe: {label} attrs must be string keys and values: {err}"))
+        })?;
+        attrs.insert(key, val);
+    }
+    Ok(attrs)
+}
+
+fn parse_member_ids(tbl: LuaTable, label: &str) -> LuaResult<Vec<RegionId>> {
+    let mut members = Vec::new();
+    for id in tbl.sequence_values::<u32>() {
+        members.push(RegionId(id?));
+    }
+    if members.is_empty() {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.globe.{label}: members must not be empty"
+        )));
+    }
+    Ok(members)
+}
+
 fn parse_lat_lon_loop(tbl: LuaTable, label: &str) -> LuaResult<Vec<(f32, f32)>> {
     let mut vertices = Vec::new();
     for (index, vt) in tbl.sequence_values::<LuaTable>().enumerate() {
@@ -168,25 +192,37 @@ fn parse_region_parts(tbl: LuaTable, kind: &str, id: u32) -> LuaResult<Vec<Regio
     Ok(parts)
 }
 
-fn parse_region_table(p: LuaTable, kind: &str) -> LuaResult<Region> {
+fn parse_region_table_with_options(
+    p: LuaTable,
+    kind: &str,
+    fallback_color: [f32; 4],
+    allow_member_only: bool,
+    overlay_region: bool,
+) -> LuaResult<Region> {
     let id: u32 = p.get("id")?;
+    let members = p
+        .get::<_, LuaTable>("members")
+        .ok()
+        .map(|tbl| parse_member_ids(tbl, kind))
+        .transpose()?
+        .unwrap_or_default();
     let parts = p
         .get::<_, LuaTable>("parts")
         .ok()
         .map(|tbl| parse_region_parts(tbl, kind, id))
         .transpose()?;
     let vertices = if let Some(parts) = &parts {
-        parts
-            .first()
-            .map(|part| part.outer.clone())
-            .unwrap_or_default()
+        parts.first().map(|part| part.outer.clone()).unwrap_or_default()
     } else {
-        let verts_tbl: LuaTable = p.get::<_, LuaTable>("vertices").map_err(|_| {
-            LuaError::RuntimeError(format!(
-                "lurek.globe.{kind}: region {id} requires 'vertices' or 'parts'"
-            ))
-        })?;
-        parse_lat_lon_loop(verts_tbl, &format!("{kind} region {id}"))?
+        match p.get::<_, LuaTable>("vertices") {
+            Ok(verts_tbl) => parse_lat_lon_loop(verts_tbl, &format!("{kind} region {id}"))?,
+            Err(_) if allow_member_only && !members.is_empty() => Vec::new(),
+            Err(_) => {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.globe.{kind}: region {id} requires 'vertices' or 'parts'"
+                )));
+            }
+        }
     };
     let neighbors: Vec<RegionId> = p
         .get::<_, LuaTable>("neighbors")
@@ -202,6 +238,8 @@ fn parse_region_table(p: LuaTable, kind: &str) -> LuaResult<Region> {
             ct.get::<_, f32>(2)?,
             &format!("{kind} region {id} centroid"),
         )?
+    } else if vertices.is_empty() && parts.is_none() {
+        (0.0, 0.0)
     } else {
         if let Some(parts) = &parts {
             Region::from_parts(RegionId(id), parts.clone()).centroid
@@ -211,14 +249,26 @@ fn parse_region_table(p: LuaTable, kind: &str) -> LuaResult<Region> {
     };
     let base_color = parse_color_table(
         p.get("base_color").ok(),
-        [0.5, 0.5, 0.5, 1.0],
+        fallback_color,
         &format!("{kind} region {id} base_color"),
     )?;
-    Ok(if let Some(parts) = parts {
+    let mut region = if let Some(parts) = parts {
         Region::with_parts_data(RegionId(id), centroid, parts, neighbors, base_color)
     } else {
         Region::with_data(RegionId(id), centroid, vertices, neighbors, base_color)
-    })
+    };
+    if let Ok(attrs_tbl) = p.get::<_, LuaTable>("attrs") {
+        region.attrs = parse_attrs_table(attrs_tbl, &format!("{kind} region {id}"))?;
+    }
+    region.member_terrain_ids = members;
+    if overlay_region {
+        region.overlay_color = Some(base_color);
+    }
+    Ok(region)
+}
+
+fn parse_region_table(p: LuaTable, kind: &str) -> LuaResult<Region> {
+    parse_region_table_with_options(p, kind, [0.5, 0.5, 0.5, 1.0], false, false)
 }
 
 fn parse_marker_shape(shape: &str) -> LuaResult<MarkerShape> {
@@ -303,10 +353,16 @@ impl LuaUserData for LuaGlobe {
         });
         // -- addRegion -- (alias for addProvince)
         /// Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
-        /// @param | p | table | Region table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.
+        /// @param | p | table | Region table with `id`, optional `centroid`, `vertices` or `parts`, optional `members`, optional `neighbors`, optional `attrs`, and optional `base_color`.
         /// @return | boolean | True when the region was accepted by the globe.
         methods.add_method_mut("addRegion", |_, this, p: LuaTable| {
-            let region = parse_region_table(p, "addRegion")?;
+            let region = parse_region_table_with_options(
+                p,
+                "addRegion",
+                [0.2, 0.55, 1.0, 0.22],
+                true,
+                true,
+            )?;
             this.with_mut(|g| {
                 if g.get_region(region.id).is_some() {
                     return Err(LuaError::RuntimeError(format!(
@@ -325,6 +381,43 @@ impl LuaUserData for LuaGlobe {
         /// @return | boolean | True when a region was removed.
         methods.add_method_mut("removeRegion", |_, this, id: u32| {
             this.with_mut(|g| g.remove_region(RegionId(id)).is_some())
+        });
+        // -- addTerrainPatch --
+        /// Adds a base terrain polygon patch described by id, centroid, polygon vertices or multipart geometry, optional attrs, and optional base color.
+        /// @param | p | table | Terrain patch table with `id`, optional `centroid`, either `vertices` or `parts`, optional `attrs`, and optional `base_color`.
+        /// @return | boolean | True when the terrain patch was accepted by the globe.
+        methods.add_method_mut("addTerrainPatch", |_, this, p: LuaTable| {
+            let patch = parse_region_table_with_options(
+                p,
+                "addTerrainPatch",
+                [0.5, 0.5, 0.5, 1.0],
+                false,
+                false,
+            )?;
+            this.with_mut(|g| {
+                if g.get_terrain_patch(patch.id).is_some() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.globe.addTerrainPatch: terrain patch {} already exists",
+                        patch.id
+                    )));
+                }
+                g.add_terrain_patch(patch).map(|_| true).map_err(|e| {
+                    LuaError::RuntimeError(format!("lurek.globe.addTerrainPatch: {e}"))
+                })
+            })?
+        });
+        // -- removeTerrainPatch --
+        /// Removes a terrain patch by id.
+        /// @param | id | integer | Terrain patch id to remove.
+        /// @return | boolean | True when a terrain patch was removed.
+        methods.add_method_mut("removeTerrainPatch", |_, this, id: u32| {
+            this.with_mut(|g| g.remove_terrain_patch(RegionId(id)).is_some())
+        });
+        // -- terrainPatchCount --
+        /// Returns the number of stored base terrain patches.
+        /// @return | integer | Terrain patch count.
+        methods.add_method("terrainPatchCount", |_, this, ()| {
+            this.with(|g| g.terrain_patch_count())
         });
         // -- provinceCount --
         /// Returns the number of rendered provinces in this globe.
@@ -445,6 +538,81 @@ impl LuaUserData for LuaGlobe {
                     .and_then(|region| region.attrs.get(&key).cloned())
             })
         });
+        // -- setTerrainPatchAttr --
+        /// Sets a string attribute on a terrain patch.
+        /// @param | id | integer | Terrain patch id.
+        /// @param | key | string | Attribute key.
+        /// @param | val | string | Attribute value.
+        /// @return | boolean | True when the terrain patch exists.
+        methods.add_method_mut(
+            "setTerrainPatchAttr",
+            |_, this, (id, key, val): (u32, String, String)| {
+                this.with_mut(|g| {
+                    if let Some(patch) = g.get_terrain_patch_mut(RegionId(id)) {
+                        patch.attrs.insert(key, val);
+                        true
+                    } else {
+                        false
+                    }
+                })
+            },
+        );
+        // -- getTerrainPatchAttr --
+        /// Reads a string attribute from a terrain patch.
+        /// @param | id | integer | Terrain patch id.
+        /// @param | key | string | Attribute key.
+        /// @return | string | Attribute string, or nil when the patch or key is missing.
+        methods.add_method(
+            "getTerrainPatchAttr",
+            |_, this, (id, key): (u32, String)| {
+                this.with(|g| {
+                    g.get_terrain_patch(RegionId(id))
+                        .and_then(|patch| patch.attrs.get(&key).cloned())
+                })
+            },
+        );
+        // -- setRegionColor --
+        /// Sets the RGBA color used to render a semantic region overlay.
+        /// @param | id | integer | Region id.
+        /// @param | r | number | Red channel.
+        /// @param | g | number | Green channel.
+        /// @param | b | number | Blue channel.
+        /// @param | a | number | Alpha channel.
+        /// @return | boolean | True when the semantic region exists.
+        methods.add_method_mut(
+            "setRegionColor",
+            |_, this, (id, r, g, b, a): (u32, f32, f32, f32, f32)| {
+                let color = [
+                    finite_f32(r, "region color red")?.clamp(0.0, 1.0),
+                    finite_f32(g, "region color green")?.clamp(0.0, 1.0),
+                    finite_f32(b, "region color blue")?.clamp(0.0, 1.0),
+                    finite_f32(a, "region color alpha")?.clamp(0.0, 1.0),
+                ];
+                this.with_mut(|g| {
+                    if let Some(region) = g.get_region_mut(RegionId(id)) {
+                        region.overlay_color = Some(color);
+                        true
+                    } else {
+                        false
+                    }
+                })
+            },
+        );
+        // -- setRegionVisible --
+        /// Shows or hides a semantic region overlay and its picking participation.
+        /// @param | id | integer | Region id.
+        /// @param | visible | boolean | New visibility flag.
+        /// @return | boolean | True when the semantic region exists.
+        methods.add_method_mut("setRegionVisible", |_, this, (id, visible): (u32, bool)| {
+            this.with_mut(|g| {
+                if let Some(region) = g.get_region_mut(RegionId(id)) {
+                    region.visible = visible;
+                    true
+                } else {
+                    false
+                }
+            })
+        });
         // -- setProvinceTexture --
         /// Assigns a raw texture handle and UV rectangle to a province.
         /// @param | id | integer | Province id.
@@ -483,6 +651,76 @@ impl LuaUserData for LuaGlobe {
                     false
                 }
             })
+        });
+        // -- setTerrainPatchTexture --
+        /// Assigns a raw texture handle and UV rectangle to a terrain patch.
+        /// @param | id | integer | Terrain patch id.
+        /// @param | tex_raw | integer | Raw texture identifier stored in terrain attributes.
+        /// @param | u0 | number | Left UV coordinate.
+        /// @param | v0 | number | Top UV coordinate.
+        /// @param | u1 | number | Right UV coordinate.
+        /// @param | v1 | number | Bottom UV coordinate.
+        /// @return | boolean | True when the terrain patch exists.
+        methods.add_method_mut(
+            "setTerrainPatchTexture",
+            |_, this, (id, tex_raw, u0, v0, u1, v1): (u32, u64, f32, f32, f32, f32)| {
+                this.with_mut(|g| {
+                    if let Some(patch) = g.get_terrain_patch_mut(RegionId(id)) {
+                        patch
+                            .attrs
+                            .insert("__texture_raw".to_string(), tex_raw.to_string());
+                        patch.texture_uv_rect = Some([u0, v0, u1, v1]);
+                        true
+                    } else {
+                        false
+                    }
+                })
+            },
+        );
+        // -- clearTerrainPatchTexture --
+        /// Removes texture metadata from a terrain patch.
+        /// @param | id | integer | Terrain patch id.
+        /// @return | boolean | True when the terrain patch exists.
+        methods.add_method_mut("clearTerrainPatchTexture", |_, this, id: u32| {
+            this.with_mut(|g| {
+                if let Some(patch) = g.get_terrain_patch_mut(RegionId(id)) {
+                    patch.attrs.remove("__texture_raw");
+                    patch.texture_uv_rect = None;
+                    true
+                } else {
+                    false
+                }
+            })
+        });
+        // -- validateTerrainCoverage --
+        /// Samples terrain coverage over equirectangular latitude-longitude space.
+        /// @param | opts | table? | Optional `lat_step` and `lon_step` sample spacing in degrees.
+        /// @return | table | Coverage report with `ok`, `samples`, `covered_samples`, and `gaps`.
+        methods.add_method("validateTerrainCoverage", |lua, this, opts: Option<LuaTable>| {
+            let lat_step = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<f32>>("lat_step").ok().flatten())
+                .unwrap_or(30.0);
+            let lon_step = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<f32>>("lon_step").ok().flatten())
+                .unwrap_or(30.0);
+            let lat_step = finite_f32(lat_step, "terrain coverage lat_step")?.clamp(1.0, 180.0);
+            let lon_step = finite_f32(lon_step, "terrain coverage lon_step")?.clamp(1.0, 360.0);
+            let report = this.with(|g| g.validate_terrain_coverage(lat_step, lon_step))?;
+            let out = lua.create_table()?;
+            out.set("ok", report.ok)?;
+            out.set("samples", report.samples)?;
+            out.set("covered_samples", report.covered_samples)?;
+            let gaps = lua.create_table()?;
+            for (index, (lat, lon)) in report.gaps.iter().enumerate() {
+                let gap = lua.create_table()?;
+                gap.set("lat", *lat)?;
+                gap.set("lon", *lon)?;
+                gaps.set(index + 1, gap)?;
+            }
+            out.set("gaps", gaps)?;
+            Ok(out)
         });
         // -- setProvinceSector --
         /// Assigns a province to a named sector.

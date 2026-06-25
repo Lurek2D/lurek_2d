@@ -61,6 +61,12 @@ pub struct WidgetDef {
     pub submit_on_enter: Option<bool>,
     /// Hover tooltip text.
     pub tooltip: Option<String>,
+    /// Optional built-in icon name assigned to the widget.
+    pub icon: Option<String>,
+    /// Icon placement relative to text: `left`, `right`, `top`, `bottom`, or `only`.
+    pub icon_position: Option<String>,
+    /// Requested icon size in pixels; `0` means use the widget font size.
+    pub icon_size: Option<f32>,
     /// Inner padding `[top, right, bottom, left]` in pixels.
     pub padding: Option<[f32; 4]>,
     /// Outer margin `[top, right, bottom, left]` in pixels.
@@ -459,6 +465,20 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
         }
         if let Some(ref tt) = def.tooltip {
             base.tooltip = tt.clone();
+        }
+        if let Some(ref icon_name) = def.icon {
+            if let Some(icon) = crate::ui::lookup_icon(icon_name) {
+                base.icon = Some(icon.name.to_string());
+            } else {
+                return Err(format!("unknown built-in icon \"{}\"", icon_name));
+            }
+        }
+        if let Some(ref position) = def.icon_position {
+            base.icon_position = crate::ui::UiIconPosition::parse_str(position)
+                .ok_or_else(|| format!("unsupported icon_position value \"{}\"", position))?;
+        }
+        if let Some(size) = def.icon_size {
+            base.icon_size = ensure_finite_f32("icon_size", size)?.max(0.0);
         }
         if let Some(padding) = def.padding {
             base.padding = [

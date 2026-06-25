@@ -28,6 +28,9 @@ describe("lurek.ui module", function()
                     type = "label",
                     id = "hp_label",
                     text = "HP",
+                    icon = "health",
+                    iconPosition = "left",
+                    iconSize = 16,
                     padding = { 1, 2, 3, 4 },
                     margin = { 5, 6, 7, 8 },
                     textAlign = "center",
@@ -43,6 +46,9 @@ describe("lurek.ui module", function()
         expect_true(lurek.ui.getWidgetCount() > before)
         local label = lurek.ui.getRoot():findById("hp_label")
         expect_equal("center", label:getTextAlign())
+        expect_equal("health", label:getIcon())
+        expect_equal("left", label:getIconPosition())
+        expect_equal(16, label:getIconSize())
         local pt, pr, pb, pl = label:getPadding()
         expect_equal(1, pt)
         expect_equal(2, pr)
@@ -161,6 +167,37 @@ describe("lurek.ui module", function()
     it("hasAutoUpdate reports automatic UI updates", function()
         lurek.ui.setAutoUpdate(true)
         expect_true(lurek.ui.hasAutoUpdate())
+    end)
+
+    -- @covers lurek.ui.getIconNames
+    it("getIconNames returns the built-in icon catalog", function()
+        local names = lurek.ui.getIconNames()
+        expect_type("table", names)
+        expect_true(#names >= 120)
+        expect_equal("new-file", names[1])
+    end)
+
+    -- @covers lurek.ui.hasIcon
+    it("hasIcon resolves built-in icon names", function()
+        expect_true(lurek.ui.hasIcon("save"))
+        expect_true(lurek.ui.hasIcon("Inventory"))
+        expect_false(lurek.ui.hasIcon("missing-icon"))
+    end)
+
+    -- @covers lurek.ui.getIconGlyph
+    it("getIconGlyph returns the renderer glyph", function()
+        expect_equal("S", lurek.ui.getIconGlyph("save"))
+        expect_equal("IV", lurek.ui.getIconGlyph("inventory"))
+        expect_nil(lurek.ui.getIconGlyph("missing-icon"))
+    end)
+
+    -- @covers lurek.ui.newIcon
+    it("newIcon creates an icon-only label widget", function()
+        local icon = lurek.ui.newIcon("settings")
+        expect_not_nil(icon)
+        expect_equal("settings", icon:getIcon())
+        expect_equal("only", icon:getIconPosition())
+        expect_nil(lurek.ui.newIcon("missing-icon"))
     end)
 
     -- @covers lurek.ui.addToast
@@ -1893,6 +1930,59 @@ describe("supplemental widget coverage", function()
         expect_equal("inventory", widget:getStyleClass())
     end)
 
+    -- @covers LUiWidget:setIcon
+    it("setIcon stores a known built-in icon name", function()
+        local widget = basic_widget()
+        expect_true(widget:setIcon("save"))
+        expect_equal("save", widget:getIcon())
+        expect_false(widget:setIcon("missing-icon"))
+        expect_equal("save", widget:getIcon())
+    end)
+
+    -- @covers LUiWidget:getIcon
+    it("getIcon returns nil until an icon is assigned", function()
+        local widget = basic_widget()
+        expect_nil(widget:getIcon())
+        widget:setIcon("map")
+        expect_equal("map", widget:getIcon())
+    end)
+
+    -- @covers LUiWidget:clearIcon
+    it("clearIcon removes the assigned icon", function()
+        local widget = basic_widget()
+        widget:setIcon("settings")
+        widget:clearIcon()
+        expect_nil(widget:getIcon())
+    end)
+
+    -- @covers LUiWidget:setIconPosition
+    it("setIconPosition accepts supported placements", function()
+        local widget = basic_widget()
+        expect_true(widget:setIconPosition("right"))
+        expect_equal("right", widget:getIconPosition())
+        expect_false(widget:setIconPosition("diagonal"))
+        expect_equal("right", widget:getIconPosition())
+    end)
+
+    -- @covers LUiWidget:getIconPosition
+    it("getIconPosition returns the default placement", function()
+        expect_equal("left", basic_widget():getIconPosition())
+    end)
+
+    -- @covers LUiWidget:setIconSize
+    it("setIconSize stores a finite non-negative size", function()
+        local widget = basic_widget()
+        expect_true(widget:setIconSize(18))
+        expect_equal(18, widget:getIconSize())
+        expect_false(widget:setIconSize(-1))
+        expect_equal(18, widget:getIconSize())
+    end)
+
+    -- @covers LUiWidget:getIconSize
+    it("getIconSize returns zero before override", function()
+        expect_equal(0, basic_widget():getIconSize())
+    end)
+
     -- @covers LUiWidget:setMouseFilter
     it("setMouseFilter stores mouse filtering policy", function()
         local widget = basic_widget()
@@ -1939,7 +2029,7 @@ describe("supplemental widget coverage", function()
 
     -- @covers LUiWidget:getTextAlign
     it("getTextAlign returns the default horizontal text alignment", function()
-        expect_equal("left", basic_widget():getTextAlign())
+        expect_equal("center", basic_widget():getTextAlign())
     end)
 
     -- @covers LUiWidget:setFocusable

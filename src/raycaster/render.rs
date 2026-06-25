@@ -4,9 +4,117 @@
 //! It is the handoff point where raycaster-specific presentation becomes backend-agnostic `RenderCommand` work.
 //! Open this file when command translation or draw ordering changes; CPU rasterization and scene assembly live in siblings.
 
-use crate::raycaster::scene::RaycasterScene;
-use crate::render::renderer::{DrawMode, RenderCommand};
+use crate::math::Vec2;
+use crate::raycaster::scene::{RaycasterBackground, RaycasterOverlayEffect, RaycasterScene};
+use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
 use crate::render::BlendMode;
+
+fn push_background_commands(
+    cmds: &mut Vec<RenderCommand>,
+    background: &RaycasterBackground,
+    width: f32,
+    height: f32,
+) {
+    match background {
+        RaycasterBackground::Solid { color } => {
+            let [r, g, b, a] = *color;
+            cmds.push(RenderCommand::SetColor(r, g, b, a));
+            cmds.push(RenderCommand::Rectangle {
+                mode: DrawMode::Fill,
+                x: 0.0,
+                y: 0.0,
+                w: width,
+                h: height,
+            });
+        }
+        RaycasterBackground::VerticalGradient { top, bottom } => {
+            cmds.push(RenderCommand::DrawGradientRect {
+                x: 0.0,
+                y: 0.0,
+                w: width,
+                h: height,
+                color1: *top,
+                color2: *bottom,
+                direction: GradientDirection::Vertical,
+            });
+        }
+        RaycasterBackground::Skybox {
+            texture_key,
+            tint,
+            offset,
+        } => {
+            cmds.push(RenderCommand::DrawTexturedQuad {
+                corners: [
+                    Vec2::new(0.0, 0.0),
+                    Vec2::new(width, 0.0),
+                    Vec2::new(width, height),
+                    Vec2::new(0.0, height),
+                ],
+                uvs: [
+                    Vec2::new(*offset, 0.0),
+                    Vec2::new(*offset + 1.0, 0.0),
+                    Vec2::new(*offset + 1.0, 1.0),
+                    Vec2::new(*offset, 1.0),
+                ],
+                corner_w: [1.0, 1.0, 1.0, 1.0],
+                texture_key: *texture_key,
+                color: *tint,
+            });
+        }
+    }
+}
+
+fn push_overlay_commands(
+    cmds: &mut Vec<RenderCommand>,
+    overlays: &[RaycasterOverlayEffect],
+    width: f32,
+    height: f32,
+) {
+    for overlay in overlays {
+        match *overlay {
+            RaycasterOverlayEffect::Fog { mut color, density } => {
+                color[3] = (color[3] * density.clamp(0.0, 1.0)).clamp(0.0, 1.0);
+                let [r, g, b, a] = color;
+                cmds.push(RenderCommand::SetColor(r, g, b, a));
+                cmds.push(RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: 0.0,
+                    y: 0.0,
+                    w: width,
+                    h: height,
+                });
+            }
+            RaycasterOverlayEffect::Snow {
+                color,
+                density,
+                wind,
+            } => {
+                let count = ((width * height * density.clamp(0.0, 2.0)) / 850.0)
+                    .round()
+                    .clamp(0.0, 800.0) as u32;
+                let [r, g, b, a] = color;
+                cmds.push(RenderCommand::SetColor(r, g, b, a));
+                let mut seed = 0x9e37_79b9_u32
+                    ^ (width.max(1.0) as u32).rotate_left(8)
+                    ^ height.max(1.0) as u32;
+                let wind_px = (wind * 4.0).round();
+                for _ in 0..count {
+                    seed = seed.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+                    let x = (seed % width.max(1.0) as u32) as f32;
+                    seed = seed.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+                    let y = (seed % height.max(1.0) as u32) as f32;
+                    let len = 2.0 + (seed % 4) as f32;
+                    cmds.push(RenderCommand::Line {
+                        x1: x,
+                        y1: y,
+                        x2: x + wind_px,
+                        y2: y + len,
+                    });
+                }
+            }
+        }
+    }
+}
 
 /// Render-command generation for a fully built raycaster scene.
 impl RaycasterScene {
@@ -19,6 +127,9 @@ impl RaycasterScene {
 
         let mut cmds = Vec::with_capacity(self.quad_count() + 2);
         cmds.push(RenderCommand::SetBlendMode(BlendMode::Alpha));
+        if let Some(background) = &self.background {
+            push_background_commands(&mut cmds, background, self.screen_width, self.screen_height);
+        }
         for ceil in &self.ceilings {
             match ceil.texture_key {
                 Some(tex) => {
@@ -115,7 +226,7 @@ impl RaycasterScene {
                     cmds.push(RenderCommand::DrawTexturedQuad {
                         corners: sprite.corners,
                         uvs: sprite.uvs,
-                        corner_w: [1.0, 1.0, 1.0, 1.0],
+                        corner_w: [sprite.depth, sprite.depth, sprite.depth, sprite.depth],
                         texture_key: sprite.texture_key,
                         color: sprite.light,
                     });
@@ -134,6 +245,12 @@ impl RaycasterScene {
                 }
             }
         }
+        push_overlay_commands(
+            &mut cmds,
+            &self.overlays,
+            self.screen_width,
+            self.screen_height,
+        );
         cmds
     }
 }

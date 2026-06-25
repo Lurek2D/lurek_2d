@@ -10,6 +10,7 @@
 //! Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
 
 use crate::runtime::resource_keys::FontKey;
+use crate::ui::icons::UiIconPosition;
 
 /// Vertical alignment of text inside a text-bearing widget.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -726,6 +727,12 @@ pub struct WidgetBase {
     pub rotation: f32,
     /// RGBA colour tint multiplied with all widget colours during rendering.
     pub color_tint: [f32; 4],
+    /// Optional built-in UI icon name rendered with or instead of widget text.
+    pub icon: Option<String>,
+    /// Placement of `icon` relative to the widget's display text.
+    pub icon_position: UiIconPosition,
+    /// Requested icon size in pixels; `0.0` means use the widget font size.
+    pub icon_size: f32,
 }
 impl WidgetBase {
     /// Create a `WidgetBase` with `widget_type` defaults from `WidgetType::default_size`, visible, enabled, alpha 1.
@@ -785,6 +792,9 @@ impl WidgetBase {
             scale_y: 1.0,
             rotation: 0.0,
             color_tint: [1.0, 1.0, 1.0, 1.0],
+            icon: None,
+            icon_position: UiIconPosition::Left,
+            icon_size: 0.0,
         }
     }
     /// Return `true` if `(px, py)` lies within the computed screen rect, falling back to local geometry.

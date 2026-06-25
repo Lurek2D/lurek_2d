@@ -12479,4 +12479,208 @@ do
     example_print_log("label width = " .. select(3, lbl:getRect()))
 end
 
+--@api: lurek.ui.getIconNames
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local names = lurek.ui.getIconNames()
+    local first = names[1] or ""
+    local last = names[#names] or ""
+    example_print_log("icon count = " .. #names)
+    example_print_log("first icon = " .. first)
+    example_print_log("last icon = " .. last)
+end
+
+--@api: lurek.ui.hasIcon
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local can_save = lurek.ui.hasIcon("save")
+    local can_map = lurek.ui.hasIcon("map")
+    local missing = lurek.ui.hasIcon("missing-icon")
+    example_print_log("save icon = " .. tostring(can_save))
+    example_print_log("map icon = " .. tostring(can_map))
+    example_print_log("missing icon = " .. tostring(missing))
+end
+
+--@api: lurek.ui.getIconGlyph
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local save_glyph = lurek.ui.getIconGlyph("save") or ""
+    local health_glyph = lurek.ui.getIconGlyph("health") or ""
+    local missing_glyph = lurek.ui.getIconGlyph("missing-icon")
+    example_print_log("save glyph = " .. save_glyph)
+    example_print_log("health glyph = " .. health_glyph)
+    example_print_log("missing glyph = " .. tostring(missing_glyph))
+end
+
+--@api: lurek.ui.newIcon
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local icon = lurek.ui.newIcon("settings")
+    icon:setSize(28, 28)
+    icon:setPosition(12, 12)
+    example_print_log("icon type = " .. icon:type())
+    example_print_log("icon name = " .. tostring(icon:getIcon()))
+    example_print_log("icon position = " .. icon:getIconPosition())
+end
+
+--@api: LUiWidget:setIcon
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Save")
+    local ok = button:setIcon("save")
+    local bad = button:setIcon("missing-icon")
+    example_print_log("set icon ok = " .. tostring(ok))
+    example_print_log("set icon bad = " .. tostring(bad))
+    example_print_log("button icon = " .. tostring(button:getIcon()))
+end
+
+--@api: LUiWidget:getIcon
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Inventory")
+    local before = button:getIcon()
+    button:setIcon("inventory")
+    local after = button:getIcon()
+    example_print_log("icon before = " .. tostring(before))
+    example_print_log("icon after = " .. tostring(after))
+    example_print_log("button text = " .. button:getText())
+end
+
+--@api: LUiWidget:clearIcon
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Map")
+    button:setIcon("map")
+    local before = button:getIcon()
+    button:clearIcon()
+    example_print_log("icon before clear = " .. tostring(before))
+    example_print_log("icon after clear = " .. tostring(button:getIcon()))
+    example_print_log("button text = " .. button:getText())
+end
+
+--@api: LUiWidget:setIconPosition
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Settings")
+    button:setIcon("settings")
+    local ok = button:setIconPosition("right")
+    local bad = button:setIconPosition("diagonal")
+    example_print_log("position ok = " .. tostring(ok))
+    example_print_log("position bad = " .. tostring(bad))
+    example_print_log("position = " .. button:getIconPosition())
+end
+
+--@api: LUiWidget:getIconPosition
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Play")
+    local before = button:getIconPosition()
+    button:setIcon("play")
+    button:setIconPosition("only")
+    example_print_log("position before = " .. before)
+    example_print_log("position after = " .. button:getIconPosition())
+    example_print_log("icon = " .. tostring(button:getIcon()))
+end
+
+--@api: LUiWidget:setIconSize
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Zoom")
+    button:setIcon("zoom-in")
+    local ok = button:setIconSize(18)
+    local bad = button:setIconSize(-1)
+    example_print_log("size ok = " .. tostring(ok))
+    example_print_log("size bad = " .. tostring(bad))
+    example_print_log("size = " .. button:getIconSize())
+end
+
+--@api: LUiWidget:getIconSize
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local button = lurek.ui.newButton("Health")
+    local default_size = button:getIconSize()
+    button:setIcon("health")
+    button:setIconSize(20)
+    example_print_log("default size = " .. default_size)
+    example_print_log("updated size = " .. button:getIconSize())
+    example_print_log("icon = " .. tostring(button:getIcon()))
+end
+
 -- Duplicate coverage lives in content/examples/charts.lua.

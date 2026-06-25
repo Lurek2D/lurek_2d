@@ -135,6 +135,34 @@ pub struct BillboardSprite {
     /// World-space anchor Y position of the sprite.
     pub world_y: f32,
 }
+
+/// Full-frame background drawn before raycaster geometry.
+#[derive(Debug, Clone)]
+pub enum RaycasterBackground {
+    /// Flat RGBA clear color.
+    Solid { color: [f32; 4] },
+    /// Vertical sky/background gradient.
+    VerticalGradient { top: [f32; 4], bottom: [f32; 4] },
+    /// Textured skybox/background covering the frame.
+    Skybox {
+        texture_key: TextureKey,
+        tint: [f32; 4],
+        offset: f32,
+    },
+}
+
+/// Screen-space presentation effect drawn over the raycaster frame.
+#[derive(Debug, Clone)]
+pub enum RaycasterOverlayEffect {
+    /// Transparent full-screen fog tint.
+    Fog { color: [f32; 4], density: f32 },
+    /// Deterministic snow streaks drawn over the frame.
+    Snow {
+        color: [f32; 4],
+        density: f32,
+        wind: f32,
+    },
+}
 /// A static mesh injected into the raycaster scene with an associated depth.
 #[derive(Debug, Clone)]
 pub struct ModelMesh {
@@ -166,6 +194,10 @@ pub struct RaycasterScene {
     pub sprites: Vec<BillboardSprite>,
     /// Static model meshes sorted back-to-front.
     pub models: Vec<ModelMesh>,
+    /// Optional full-frame background drawn before geometry.
+    pub background: Option<RaycasterBackground>,
+    /// Optional full-frame overlay effects drawn after geometry.
+    pub overlays: Vec<RaycasterOverlayEffect>,
     /// Framebuffer width in pixels used when building this scene.
     pub screen_width: f32,
     /// Framebuffer height in pixels used when building this scene.
@@ -182,6 +214,8 @@ impl RaycasterScene {
             ceilings: Vec::new(),
             sprites: Vec::new(),
             models: Vec::new(),
+            background: None,
+            overlays: Vec::new(),
             screen_width,
             screen_height,
             build_stats: RaycasterBuildStats::default(),

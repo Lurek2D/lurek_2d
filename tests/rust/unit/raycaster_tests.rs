@@ -592,6 +592,8 @@ mod heightmap_tests {
 mod draw_tests {
     use super::*;
     use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
+    use lurek2d::runtime::resource_keys::TextureKey;
+    use slotmap::Key;
 
     #[test]
     fn draw_to_image_empty_scene_returns_correct_dimensions() {
@@ -607,6 +609,138 @@ mod draw_tests {
         let img = scene.draw_to_image(64, 48);
         assert_eq!(img.width(), 64);
         assert_eq!(img.height(), 48);
+    }
+
+    #[test]
+    fn draw_to_image_samples_textured_wall_quads() {
+        let texture_key = TextureKey::null();
+        let mut scene = RaycasterScene::new(16.0, 8.0);
+        scene.walls.push(WallQuad {
+            corners: [
+                Vec2::new(0.0, 0.0),
+                Vec2::new(16.0, 0.0),
+                Vec2::new(16.0, 8.0),
+                Vec2::new(0.0, 8.0),
+            ],
+            uvs: [
+                Vec2::new(0.0, 0.0),
+                Vec2::new(1.0, 0.0),
+                Vec2::new(1.0, 1.0),
+                Vec2::new(0.0, 1.0),
+            ],
+            texture_key: Some(texture_key),
+            light: [1.0, 1.0, 1.0, 1.0],
+            depth: 1.0,
+            corner_w: [1.0, 1.0, 1.0, 1.0],
+            cell_value: 1,
+        });
+
+        let img = scene.draw_to_image_with_textures(
+            16,
+            8,
+            Some(&|_, u, _| {
+                if u < 0.5 {
+                    Some((220, 40, 20, 255))
+                } else {
+                    Some((20, 180, 70, 255))
+                }
+            }),
+        );
+
+        let left = img.get_pixel(2, 4).expect("left textured pixel");
+        let right = img.get_pixel(13, 4).expect("right textured pixel");
+        assert!(left.0 > left.1, "left half should sample red texels");
+        assert!(right.1 > right.0, "right half should sample green texels");
+    }
+
+    #[test]
+    fn draw_to_image_clips_slanted_wall_to_quad_shape() {
+        let mut scene = RaycasterScene::new(20.0, 20.0);
+        scene.walls.push(WallQuad {
+            corners: [
+                Vec2::new(4.0, 2.0),
+                Vec2::new(16.0, 6.0),
+                Vec2::new(14.0, 18.0),
+                Vec2::new(2.0, 14.0),
+            ],
+            uvs: [
+                Vec2::new(0.0, 0.0),
+                Vec2::new(1.0, 0.0),
+                Vec2::new(1.0, 1.0),
+                Vec2::new(0.0, 1.0),
+            ],
+            texture_key: None,
+            light: [1.0, 0.0, 0.0, 1.0],
+            depth: 1.0,
+            corner_w: [1.0, 1.0, 1.0, 1.0],
+            cell_value: 1,
+        });
+
+        let img = scene.draw_to_image(20, 20);
+        let inside = img.get_pixel(8, 8).expect("inside slanted quad");
+        let outside = img
+            .get_pixel(3, 3)
+            .expect("outside slanted quad but inside bbox");
+
+        assert!(inside.0 > 200, "quad interior should be filled");
+        assert_eq!(outside.0, 0, "quad rasterizer must not fill its whole bbox");
+    }
+
+    #[test]
+    fn draw_to_image_keeps_far_sprite_behind_near_wall() {
+        let sprite_key = TextureKey::null();
+        let mut scene = RaycasterScene::new(20.0, 20.0);
+        scene.walls.push(WallQuad {
+            corners: [
+                Vec2::new(6.0, 2.0),
+                Vec2::new(14.0, 2.0),
+                Vec2::new(14.0, 18.0),
+                Vec2::new(6.0, 18.0),
+            ],
+            uvs: [
+                Vec2::new(0.0, 0.0),
+                Vec2::new(1.0, 0.0),
+                Vec2::new(1.0, 1.0),
+                Vec2::new(0.0, 1.0),
+            ],
+            texture_key: None,
+            light: [0.0, 0.0, 1.0, 1.0],
+            depth: 2.0,
+            corner_w: [2.0, 2.0, 2.0, 2.0],
+            cell_value: 1,
+        });
+        scene.sprites.push(BillboardSprite {
+            corners: [
+                Vec2::new(4.0, 4.0),
+                Vec2::new(16.0, 4.0),
+                Vec2::new(16.0, 16.0),
+                Vec2::new(4.0, 16.0),
+            ],
+            uvs: [
+                Vec2::new(0.0, 0.0),
+                Vec2::new(1.0, 0.0),
+                Vec2::new(1.0, 1.0),
+                Vec2::new(0.0, 1.0),
+            ],
+            texture_key: sprite_key,
+            light: [1.0, 1.0, 1.0, 1.0],
+            depth: 4.0,
+            entity_id: None,
+            level_index: 0,
+            world_x: 4.0,
+            world_y: 4.0,
+        });
+
+        let img =
+            scene.draw_to_image_with_textures(20, 20, Some(&|_, _, _| Some((255, 0, 0, 255))));
+        let covered = img
+            .get_pixel(10, 10)
+            .expect("overlapping wall/sprite pixel");
+
+        assert!(
+            covered.2 > 200 && covered.0 < 20,
+            "near wall depth must occlude the farther sprite"
+        );
     }
 
     #[test]
@@ -921,6 +1055,8 @@ mod build_scene_tests {
             ceiling_color: Color::new(0.1, 0.1, 0.15, 1.0),
             camera_height: 2.0 / 3.0,
             horizon_offset: 0.0,
+            background: None,
+            overlays: Vec::new(),
         }
     }
 
@@ -1004,6 +1140,8 @@ mod build_scene_tests {
             ceiling_color: Color::BLACK,
             camera_height: 2.0 / 3.0,
             horizon_offset: 0.0,
+            background: None,
+            overlays: Vec::new(),
         };
 
         let tk = TextureKey::from(KeyData::from_ffi(1));
@@ -1069,6 +1207,8 @@ mod build_scene_tests {
             ceiling_color: Color::BLACK,
             camera_height: 2.0 / 3.0,
             horizon_offset: 0.0,
+            background: None,
+            overlays: Vec::new(),
         };
 
         let front = TextureKey::from(KeyData::from_ffi(11));
@@ -1369,6 +1509,8 @@ mod build_scene_tests {
             ceiling_color: Color::new(0.1, 0.1, 0.15, 1.0),
             camera_height: 0.5,
             horizon_offset: 0.0,
+            background: None,
+            overlays: Vec::new(),
         };
 
         let baseline = RaycasterScene::build_multilevel(
@@ -1522,6 +1664,8 @@ mod build_scene_tests {
             ceiling_color: Color::new(0.1, 0.1, 0.15, 1.0),
             camera_height: 2.0 / 3.0,
             horizon_offset: 0.0,
+            background: None,
+            overlays: Vec::new(),
         };
         let closed_scene = RaycasterScene::build_multilevel(
             &closed_grid,
@@ -1579,6 +1723,8 @@ mod build_scene_tests {
             ceiling_color: Color::new(1.0, 1.0, 1.0, 1.0),
             camera_height: 2.0 / 3.0,
             horizon_offset: 0.0,
+            background: None,
+            overlays: Vec::new(),
         };
         let closed_scene = RaycasterScene::build_multilevel(
             &closed_grid,
@@ -1640,6 +1786,8 @@ mod build_scene_tests {
             ceiling_color: Color::new(0.1, 0.1, 0.15, 1.0),
             camera_height: 2.0 / 3.0,
             horizon_offset: 0.0,
+            background: None,
+            overlays: Vec::new(),
         };
         let scene = RaycasterScene::build_multilevel(
             &grid,
@@ -1691,6 +1839,8 @@ mod build_scene_tests {
             ceiling_color: Color::new(0.1, 0.1, 0.15, 1.0),
             camera_height: 0.5,
             horizon_offset: 0.0,
+            background: None,
+            overlays: Vec::new(),
         };
         let scene = RaycasterScene::build_multilevel(
             &grid,

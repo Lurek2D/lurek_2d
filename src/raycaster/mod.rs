@@ -65,7 +65,7 @@ pub use projection::{distance_shade, project_column};
 pub use ray_hit::RayHit;
 pub use scene::{
     BillboardSprite, CeilingQuad, EntityPickKind, EntityPickResult, FloorQuad, ModelMesh,
-    RaycasterBuildStats, RaycasterScene, WallQuad,
+    RaycasterBackground, RaycasterBuildStats, RaycasterOverlayEffect, RaycasterScene, WallQuad,
 };
 #[cfg(feature = "obj-loader")]
 pub use scene_adapter::{ResolvedSceneModel, SceneAdapterModel};

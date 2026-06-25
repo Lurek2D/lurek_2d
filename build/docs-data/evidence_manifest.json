@@ -501,6 +501,8 @@
       "tests/artifacts/baselines/globe/globe_province_projection.png",
       "tests/artifacts/baselines/globe/globe_region_trace.txt",
       "tests/artifacts/baselines/globe/globe_semantic_region_holes.png",
+      "tests/artifacts/baselines/globe/globe_terrain_region_overlay.png",
+      "tests/artifacts/baselines/globe/globe_terrain_rotation.gif",
       "tests/artifacts/baselines/globe/globe_topology_cost_route.png"
     ],
     "current_artifacts": [
@@ -513,6 +515,8 @@
       "tests/artifacts/current/globe/globe_province_projection.png",
       "tests/artifacts/current/globe/globe_region_trace.txt",
       "tests/artifacts/current/globe/globe_semantic_region_holes.png",
+      "tests/artifacts/current/globe/globe_terrain_region_overlay.png",
+      "tests/artifacts/current/globe/globe_terrain_rotation.gif",
       "tests/artifacts/current/globe/globe_topology_cost_route.png"
     ],
     "evidence_tests": [
@@ -1061,6 +1065,7 @@
       "tests/artifacts/baselines/raycaster/raycaster_depth_columns_vs_view.png",
       "tests/artifacts/baselines/raycaster/raycaster_feature_walls_view_pick.png",
       "tests/artifacts/baselines/raycaster/raycaster_floor_ceiling_pick_uv.png",
+      "tests/artifacts/baselines/raycaster/raycaster_full_scene_day_night.png",
       "tests/artifacts/baselines/raycaster/raycaster_multilevel_hole_pick.png",
       "tests/artifacts/baselines/raycaster/raycaster_topdown_cast_rays.png",
       "tests/artifacts/baselines/raycaster/raycaster_transparent_layered_hits.png"
@@ -1071,6 +1076,7 @@
       "tests/artifacts/current/raycaster/raycaster_depth_columns_vs_view.png",
       "tests/artifacts/current/raycaster/raycaster_feature_walls_view_pick.png",
       "tests/artifacts/current/raycaster/raycaster_floor_ceiling_pick_uv.png",
+      "tests/artifacts/current/raycaster/raycaster_full_scene_day_night.png",
       "tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png",
       "tests/artifacts/current/raycaster/raycaster_topdown_cast_rays.png",
       "tests/artifacts/current/raycaster/raycaster_transparent_layered_hits.png"

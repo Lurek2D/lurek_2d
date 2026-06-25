@@ -16,7 +16,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `92` functions, `39` types, `339` methods
+- Lua API surface: `96` functions, `39` types, `346` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -128,6 +128,14 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - Open this file when complex composite widgets work incorrectly even though simpler controls still behave well.
 - Read this owner for tree, menu, dialog, or notification issues before changing the central context logic.
 
+### icons.rs
+
+- Owns the built-in UI icon catalog used by retained widgets, TOML layouts, and Lua helpers.
+- The catalog maps stable semantic names to compact text glyphs so icons work without external assets.
+- Names stay independent from the rendered glyphs, allowing a future SVG or atlas backend to reuse the same API.
+- Widget code stores icon names, while render code resolves them here at paint time.
+- Keep this module focused on catalog lookup and icon placement metadata, not widget state or drawing policy.
+
 ### layout_loader.rs
 
 - Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
@@ -221,6 +229,8 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.getActiveDrag() -> integer`: Returns the widget index currently being dragged, or nil.
 - `lurek.ui.getFocus() -> integer`: Returns the index of the currently focused widget, or nil.
 - `lurek.ui.getFont() -> LFont`: Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
+- `lurek.ui.getIconGlyph(name) -> string|nil`: Returns the built-in text glyph for an icon name, or nil when missing.
+- `lurek.ui.getIconNames() -> string[]`: Returns all built-in UI icon names in stable catalog order.
 - `lurek.ui.getRoot() -> LPanel`: Returns the root panel widget of the UI tree.
 - `lurek.ui.getScaleFactor() -> number`: Get the current UI scale factor (current_height / base_height).
 - `lurek.ui.getStyleToken(name) -> number`: Returns the value of a named semantic style token from the active theme.
@@ -230,6 +240,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.getWidgetFont(widget) -> LFont`: Returns the font override assigned to a widget, or nil when the widget inherits its font from a parent.
 - `lurek.ui.hasAutoInput() -> boolean`: Returns whether platform input is automatically forwarded to `lurek.ui`.
 - `lurek.ui.hasAutoUpdate() -> boolean`: Returns whether `lurek.ui.update(dt)` is called automatically each frame.
+- `lurek.ui.hasIcon(name) -> boolean`: Returns whether a built-in UI icon name exists.
 - `lurek.ui.keypressed(key) -> boolean`: Delivers a key press event to the UI.
 - `lurek.ui.loadLayout(def) -> integer`: Loads a UI layout from a Lua table definition.
 - `lurek.ui.loadLayoutFile(path) -> integer`: Loads a UI layout from a TOML layout file.
@@ -246,6 +257,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newCustomWidget(config?) -> LUiWidget`: Creates a new custom widget with optional initial configuration.
 - `lurek.ui.newDialog(title?) -> LDialog`: Creates a new dialog widget with an optional title.
 - `lurek.ui.newDockPanel() -> LDockPanel`: Creates a new dock panel widget for docking child widgets to sides.
+- `lurek.ui.newIcon(icon) -> LLabel|nil`: Creates a label-like widget that displays only a built-in UI icon.
 - `lurek.ui.newImageWidget() -> LImageWidget`: Creates a new image display widget.
 - `lurek.ui.newLabel(text?) -> LLabel`: Creates a new label widget for displaying text.
 - `lurek.ui.newLayout(direction?) -> LLayout`: Creates a new layout container widget.
@@ -1012,6 +1024,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:cancelAnimations() -> boolean`: Cancels all active animations on this widget, leaving it at its current state.
 - `LUiWidget:clearAnchor() -> nil`: Removes all anchor constraints from this widget.
 - `LUiWidget:clearFont() -> nil`: Clears any font override on this widget so it inherits from its parent again.
+- `LUiWidget:clearIcon() -> nil`: Clears this widget's assigned built-in icon.
 - `LUiWidget:containsPoint(x, y) -> boolean`: Tests whether the given screen-space point is inside this widget's bounds.
 - `LUiWidget:detachFromEntity() -> nil`: Detaches this widget from any previously attached entity.
 - `LUiWidget:fadeIn() -> nil`: Instantly makes this widget fully opaque and visible.
@@ -1023,6 +1036,9 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:getChildren() -> table`: Returns a table of lightweight child widget references, each containing an _idx field.
 - `LUiWidget:getFlexGrow() -> number`: Returns the flex-grow factor of this widget.
 - `LUiWidget:getFlexShrink() -> number`: Returns the flex-shrink factor of this widget.
+- `LUiWidget:getIcon() -> string|nil`: Returns this widget's assigned built-in icon name, or nil when no icon is assigned.
+- `LUiWidget:getIconPosition() -> string`: Returns this widget's icon placement token.
+- `LUiWidget:getIconSize() -> number`: Returns this widget's requested icon size in pixels.
 - `LUiWidget:getId() -> string`: Returns the string identifier assigned to this widget.
 - `LUiWidget:getLabelFor() -> integer`: Returns the widget index associated through `setLabelFor`, or nil.
 - `LUiWidget:getMargin() -> number, number, number, number`: Returns the outer margin of this widget.
@@ -1055,6 +1071,9 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:setFocusNeighbor(direction, target?) -> boolean`: Sets an explicit directional focus neighbor for this widget.
 - `LUiWidget:setFocusable(value) -> nil`: Sets whether this widget participates in keyboard focus traversal.
 - `LUiWidget:setFont(font) -> nil`: Assigns a specific font to this widget and its descendants unless overridden further down the tree.
+- `LUiWidget:setIcon(icon) -> boolean`: Sets this widget's built-in UI icon by semantic name.
+- `LUiWidget:setIconPosition(position) -> boolean`: Sets where this widget's icon is placed relative to its text.
+- `LUiWidget:setIconSize(size) -> boolean`: Sets this widget's requested icon size in pixels.
 - `LUiWidget:setId(id) -> nil`: Assigns a string identifier to this widget for lookup with findById.
 - `LUiWidget:setLabelFor(target?) -> nil`: Associates this label widget with another widget for accessibility naming.
 - `LUiWidget:setMargin(top, right?, bottom?, left?) -> nil`: Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.

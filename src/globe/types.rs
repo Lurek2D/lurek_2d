@@ -140,6 +140,12 @@ pub struct Region {
     pub texture_uv_rect: Option<[f32; 4]>,
     /// Base RGBA color used when no overlay overrides it.
     pub base_color: [f32; 4],
+    /// Terrain patch ids that compose this semantic overlay region.
+    pub member_terrain_ids: Vec<RegionId>,
+    /// Optional RGBA color used when the region is rendered as an overlay.
+    pub overlay_color: Option<[f32; 4]>,
+    /// Visibility flag used by terrain and overlay rendering.
+    pub visible: bool,
 }
 impl Region {
     /// Create a region from vertices and derive a centroid from them.
@@ -161,6 +167,9 @@ impl Region {
             texture: None,
             texture_uv_rect: None,
             base_color: [0.5, 0.5, 0.5, 1.0],
+            member_terrain_ids: Vec::new(),
+            overlay_color: None,
+            visible: true,
         }
     }
     /// Create a region from explicit cached data.
@@ -187,6 +196,9 @@ impl Region {
             texture: None,
             texture_uv_rect: None,
             base_color,
+            member_terrain_ids: Vec::new(),
+            overlay_color: None,
+            visible: true,
         }
     }
     /// Create a region from explicit multipart geometry.
@@ -212,6 +224,9 @@ impl Region {
             texture: None,
             texture_uv_rect: None,
             base_color,
+            member_terrain_ids: Vec::new(),
+            overlay_color: None,
+            visible: true,
         }
     }
     /// Create a multipart region and derive its centroid from outer-ring vertices on the sphere.

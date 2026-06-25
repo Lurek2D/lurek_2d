@@ -20,7 +20,8 @@ use crate::raycaster::multilevel::MultiLevelGrid;
 use crate::raycaster::projection::distance_shade;
 use crate::raycaster::ray_hit::RayHit;
 use crate::raycaster::scene::{
-    BillboardSprite, CeilingQuad, FloorQuad, RaycasterBuildStats, RaycasterScene, WallQuad,
+    BillboardSprite, CeilingQuad, FloorQuad, RaycasterBackground, RaycasterBuildStats,
+    RaycasterOverlayEffect, RaycasterScene, WallQuad,
 };
 use crate::raycaster::wall_feature::{WallFeature, WallFeatureKind};
 use crate::runtime::resource_keys::TextureKey;
@@ -1511,6 +1512,10 @@ pub struct SceneBuildParams {
     pub camera_height: f32,
     /// Vertical offset applied to the horizon line in pixels (positive = up).
     pub horizon_offset: f32,
+    /// Optional scene background drawn behind first-person geometry.
+    pub background: Option<RaycasterBackground>,
+    /// Optional full-frame overlay effects drawn after first-person geometry.
+    pub overlays: Vec<RaycasterOverlayEffect>,
 }
 
 fn normalize_signed_angle(mut angle: f32) -> f32 {
@@ -1786,6 +1791,8 @@ impl RaycasterScene {
         lowered_floor_at: &dyn Fn(u32, u32) -> Option<LoweredFloorCell>,
     ) -> Self {
         let mut scene = RaycasterScene::new(params.screen_width, params.screen_height);
+        scene.background = params.background.clone();
+        scene.overlays = params.overlays.clone();
         let mut lighting_cache = LightingSampleCache::default();
         scene.build_scene_into(
             raycaster,
@@ -1826,6 +1833,8 @@ impl RaycasterScene {
         lowered_floor_at: &dyn Fn(usize, u32, u32) -> Option<LoweredFloorCell>,
     ) -> Self {
         let mut scene = RaycasterScene::new(params.screen_width, params.screen_height);
+        scene.background = params.background.clone();
+        scene.overlays = params.overlays.clone();
         let mut lighting_cache = LightingSampleCache::default();
         let eye = params.camera_height.clamp(0.1, 0.9);
         let camera_world_z = grid

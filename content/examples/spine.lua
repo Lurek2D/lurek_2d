@@ -1359,9 +1359,10 @@ do
             { time = 1.0, x = 12, y = 0, rotation = 0.0 },
         } },
     })
+    local timeline_count = anim:getTimelineCount()
     skel:addAnimation(anim)
     skel:playAnimation("wave", true)
-    lurek.log.info("[spine] buildAnimation bone=" .. tostring(hand) .. " timelines=" .. tostring(anim:getTimelineCount()))
+    lurek.log.info("[spine] buildAnimation bone=" .. tostring(hand) .. " timelines=" .. tostring(timeline_count))
 end
 
 --@api: LSkeleton:bindPhysics

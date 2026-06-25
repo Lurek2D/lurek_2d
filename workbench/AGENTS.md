@@ -17,3 +17,6 @@
 - Keep `main.lua` thin; put shell and editor logic in modules.
 - Use forward slashes in paths.
 
+## Workflow
+- Run the workbench smoke path when changing app boot, editor registration, or project IO.
+- Keep editor changes scoped to the owning `editors/` module and shell wiring in `app/`.

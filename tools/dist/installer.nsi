@@ -15,7 +15,9 @@
 ; =============================================================================
 
 !define APP_NAME     "Lurek2D"
+!ifndef APP_VERSION
 !define APP_VERSION  "1.0.0"
+!endif
 !define APP_PUBLISHER "Lurek2D Project"
 !define APP_URL      "https://github.com/RandomBladeDude/lurek2d"
 !define APP_EXE      "lurek2d.exe"

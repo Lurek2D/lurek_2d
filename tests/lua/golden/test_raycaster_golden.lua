@@ -9,6 +9,7 @@ local FILES = {
     "raycaster_feature_walls_view_pick.png",
     "raycaster_floor_ceiling_pick_uv.png",
     "raycaster_multilevel_hole_pick.png",
+    "raycaster_full_scene_day_night.png",
 }
 
 -- @describe golden: raycaster evidence comparison

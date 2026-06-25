@@ -13485,9 +13485,14 @@ function LGlobe:addMarker(mtype, lat, lon, label) end
 function LGlobe:addProvince(p) end
 
 --- Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
----@param p table Region table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.
+---@param p table Region table with `id`, optional `centroid`, `vertices` or `parts`, optional `members`, optional `neighbors`, optional `attrs`, and optional `base_color`.
 ---@return boolean True when the region was accepted by the globe.
 function LGlobe:addRegion(p) end
+
+--- Adds a base terrain polygon patch described by id, centroid, polygon vertices or multipart geometry, optional attrs, and optional base color.
+---@param p table Terrain patch table with `id`, optional `centroid`, either `vertices` or `parts`, optional `attrs`, and optional `base_color`.
+---@return boolean True when the terrain patch was accepted by the globe.
+function LGlobe:addTerrainPatch(p) end
 
 --- Applies a pointer drag to the globe camera using screen-space deltas.
 ---@param start_x number Drag start x.
@@ -13510,6 +13515,11 @@ function LGlobe:cacheReachability(faction, start_id, max_cost) end
 ---@param id number Province id.
 ---@return boolean True when the province exists.
 function LGlobe:clearProvinceTexture(id) end
+
+--- Removes texture metadata from a terrain patch.
+---@param id number Terrain patch id.
+---@return boolean True when the terrain patch exists.
+function LGlobe:clearTerrainPatchTexture(id) end
 
 --- Loads one viewer's fog state from a base64 string.
 ---@param viewer string Viewer name.
@@ -13612,6 +13622,12 @@ function LGlobe:getRegionAttr(id, key) end
 ---@param sector string Sector name.
 ---@return number[] Array table of province ids.
 function LGlobe:getSectorProvinces(sector) end
+
+--- Reads a string attribute from a terrain patch.
+---@param id number Terrain patch id.
+---@param key string Attribute key.
+---@return string Attribute string, or nil when the patch or key is missing.
+function LGlobe:getTerrainPatchAttr(id, key) end
 
 --- Returns globe time of day. This method is available to Lua scripts.
 ---@return number Time of day in hours.
@@ -13741,6 +13757,11 @@ function LGlobe:removeProvince(id) end
 ---@param id number Region id to remove.
 ---@return boolean True when a region was removed.
 function LGlobe:removeRegion(id) end
+
+--- Removes a terrain patch by id.
+---@param id number Terrain patch id to remove.
+---@return boolean True when a terrain patch was removed.
+function LGlobe:removeTerrainPatch(id) end
 
 --- Reveals every province for one fog-of-war viewer.
 ---@param viewer string Viewer name.
@@ -13924,13 +13945,49 @@ function LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1) end
 ---@return boolean True when the region exists.
 function LGlobe:setRegionAttr(id, key, val) end
 
+--- Sets the RGBA color used to render a semantic region overlay.
+---@param id number Region id.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+---@return boolean True when the semantic region exists.
+function LGlobe:setRegionColor(id, r, g, b, a) end
+
+--- Shows or hides a semantic region overlay and its picking participation.
+---@param id number Region id.
+---@param visible boolean New visibility flag.
+---@return boolean True when the semantic region exists.
+function LGlobe:setRegionVisible(id, visible) end
+
 --- Sets globe rotation angle. This method is available to Lua scripts.
 ---@param deg number Rotation in degrees.
 function LGlobe:setRotation(deg) end
 
+--- Sets a string attribute on a terrain patch.
+---@param id number Terrain patch id.
+---@param key string Attribute key.
+---@param val string Attribute value.
+---@return boolean True when the terrain patch exists.
+function LGlobe:setTerrainPatchAttr(id, key, val) end
+
+--- Assigns a raw texture handle and UV rectangle to a terrain patch.
+---@param id number Terrain patch id.
+---@param tex_raw number Raw texture identifier stored in terrain attributes.
+---@param u0 number Left UV coordinate.
+---@param v0 number Top UV coordinate.
+---@param u1 number Right UV coordinate.
+---@param v1 number Bottom UV coordinate.
+---@return boolean True when the terrain patch exists.
+function LGlobe:setTerrainPatchTexture(id, tex_raw, u0, v0, u1, v1) end
+
 --- Sets globe time of day modulo 24 hours.
 ---@param t number Time of day in hours.
 function LGlobe:setTimeOfDay(t) end
+
+--- Returns the number of stored base terrain patches.
+---@return number Terrain patch count.
+function LGlobe:terrainPatchCount() end
 
 --- Returns the Lua-visible type name for this globe handle.
 ---@return string The string `LGlobe`.
@@ -13944,6 +14001,11 @@ function LGlobe:typeOf(name) end
 --- Advances globe simulation timers and animated state.
 ---@param dt number Delta time in seconds.
 function LGlobe:update(dt) end
+
+--- Samples terrain coverage over equirectangular latitude-longitude space.
+---@param opts? table Optional `lat_step` and `lon_step` sample spacing in degrees.
+---@return table Coverage report with `ok`, `samples`, `covered_samples`, and `gaps`.
+function LGlobe:validateTerrainCoverage(opts) end
 
 --- Multiplies the globe camera zoom by a factor.
 ---@param factor number Zoom factor.
@@ -26165,10 +26227,10 @@ lurek.raycaster.buildMultiLevelScene = function(params, levels, lights, sprites,
 ---@return number Total number of quads in the built scene.
 lurek.raycaster.buildMultiLevelSceneFromAdapter = function(params, levels, adapter, wallTextures) end
 
---- Builds a multilevel raycaster scene from a tilefield blocker channel.
+--- Builds a multilevel raycaster scene from tilefield blockers, slots, holes, surfaces, and tile light emitters.
 ---@param params table Scene params plus optional active_level.
 ---@param field LTileField Source tilefield.
----@param opts? table Options with `wallChannel` (default `vision`).
+---@param opts? table Options with `wallChannel` (default `vision`), `catalog`/`tileCatalog`, `wallSlot`, `doorSlot`, `windowSlot`, `halfWallSlot`, `floorSlot`, `ceilingSlot`, `objectSlot`, `spriteSlot`, `floorHoleSlot`, `ceilingHoleSlot`, `backgroundSlot`, `skyboxSlot`, `overlaySlot`, `floorTextures`, `ceilingTextures`, `objectTextures`, `objectSize`, `objectIdBase`, `slotRefsAreTextures`, and `tileLights`.
 ---@param lights? table Optional raycaster point lights.
 ---@param sprites? table|LSpriteManager Optional raycaster sprites.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
@@ -26180,6 +26242,12 @@ lurek.raycaster.buildMultiLevelSceneFromField = function(params, field, opts, li
 ---@param maxDistance number Distance at which shade reaches zero.
 ---@return number Shade factor (1.0 at distance 0, approaching 0.0 at maxDistance).
 lurek.raycaster.distanceShade = function(distance, maxDistance) end
+
+--- Rasterizes the most recently built raycaster scene to raw image data.
+---@param width number Output image width in pixels.
+---@param height number Output image height in pixels.
+---@return LImageData Rasterized image data for the last built scene.
+lurek.raycaster.drawLastScene = function(width, height) end
 
 --- Returns stats for the last stored raycaster scene build.
 ---@return LRaycasterGetLastBuildStatsResult Nil if no raycaster scene has been built yet; otherwise a stats table.
@@ -32862,6 +32930,9 @@ function LUiWidget:clearAnchor() end
 --- Clears any font override on this widget so it inherits from its parent again.
 function LUiWidget:clearFont() end
 
+--- Clears this widget's assigned built-in icon.
+function LUiWidget:clearIcon() end
+
 --- Tests whether the given screen-space point is inside this widget's bounds.
 ---@param x number X coordinate in screen pixels.
 ---@param y number Y coordinate in screen pixels.
@@ -32905,6 +32976,18 @@ function LUiWidget:getFlexGrow() end
 --- Returns the flex-shrink factor of this widget.
 ---@return number The shrink factor.
 function LUiWidget:getFlexShrink() end
+
+--- Returns this widget's assigned built-in icon name, or nil when no icon is assigned.
+---@return string nil | The assigned icon name.
+function LUiWidget:getIcon() end
+
+--- Returns this widget's icon placement token.
+---@return string One of "left", "right", "top", "bottom", or "only".
+function LUiWidget:getIconPosition() end
+
+--- Returns this widget's requested icon size in pixels.
+---@return number Pixel size; 0 means the widget font size is used.
+function LUiWidget:getIconSize() end
 
 --- Returns the string identifier assigned to this widget.
 ---@return string The widget ID, or an empty string if none was set.
@@ -33053,6 +33136,21 @@ function LUiWidget:setFocusable(value) end
 --- Assigns a specific font to this widget and its descendants unless overridden further down the tree.
 ---@param font LFont Font handle to use for this widget subtree.
 function LUiWidget:setFont(font) end
+
+--- Sets this widget's built-in UI icon by semantic name.
+---@param icon string Built-in icon name such as "save", "settings", or "inventory".
+---@return boolean True when the icon exists and was assigned.
+function LUiWidget:setIcon(icon) end
+
+--- Sets where this widget's icon is placed relative to its text.
+---@param position string One of "left", "right", "top", "bottom", or "only".
+---@return boolean True when the position string is recognised.
+function LUiWidget:setIconPosition(position) end
+
+--- Sets this widget's requested icon size in pixels.
+---@param size number Pixel size; 0 uses the widget font size.
+---@return boolean True when size is finite and non-negative.
+function LUiWidget:setIconSize(size) end
 
 --- Assigns a string identifier to this widget for lookup with findById.
 ---@param id string A unique identifier string.
@@ -33281,6 +33379,15 @@ lurek.ui.getFocus = function() end
 ---@return LFont Current global UI font handle.
 lurek.ui.getFont = function() end
 
+--- Returns the built-in text glyph for an icon name, or nil when missing.
+---@param name string Icon name to resolve.
+---@return string nil | The text glyph used by the built-in renderer backend.
+lurek.ui.getIconGlyph = function(name) end
+
+--- Returns all built-in UI icon names in stable catalog order.
+---@return string[] Built-in icon names such as "save", "settings", and "inventory".
+lurek.ui.getIconNames = function() end
+
 --- Returns the root panel widget of the UI tree.
 ---@return LPanel The root panel widget table.
 lurek.ui.getRoot = function() end
@@ -33320,6 +33427,11 @@ lurek.ui.hasAutoInput = function() end
 --- Returns whether `lurek.ui.update(dt)` is called automatically each frame.
 ---@return boolean True when automatic UI updates are enabled.
 lurek.ui.hasAutoUpdate = function() end
+
+--- Returns whether a built-in UI icon name exists.
+---@param name string Icon name to resolve.
+---@return boolean True when the icon exists.
+lurek.ui.hasIcon = function(name) end
 
 --- Delivers a key press event to the UI.
 ---@param key string The key name.
@@ -33401,6 +33513,11 @@ lurek.ui.newDialog = function(title) end
 --- Creates a new dock panel widget for docking child widgets to sides.
 ---@return LDockPanel The new dock panel widget table.
 lurek.ui.newDockPanel = function() end
+
+--- Creates a label-like widget that displays only a built-in UI icon.
+---@param icon string Built-in icon name.
+---@return LLabel nil | The icon widget, or nil when the icon name is unknown.
+lurek.ui.newIcon = function(icon) end
 
 --- Creates a new image display widget.
 ---@return LImageWidget The new image widget table.

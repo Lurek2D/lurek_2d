@@ -720,6 +720,15 @@ describe("Globe addRegion and removeRegion", function()
         })
         expect_true(ok)
         expect_equal(1, g:regionCount())
+        expect_true(g:addTerrainPatch({
+            id = 101,
+            vertices = {{-5.0, -5.0}, {-5.0, 5.0}, {5.0, 5.0}, {5.0, -5.0}},
+            base_color = {0.2, 0.5, 0.2, 1.0},
+        }))
+        expect_true(g:addRegion({ id = 11, members = {101} }))
+        expect_equal(2, g:regionCount())
+        local member_hits = g:regionsAtLatLon(0.0, 0.0)
+        expect_equal(11, member_hits[1])
     end)
 
     -- @covers LGlobe:removeRegion
@@ -1206,6 +1215,119 @@ describe("globe surface interaction and semantic region coverage", function()
         expect_no_error(function()
             g:draw({ screen_cx = 640.0, screen_cy = 360.0 })
         end)
+    end)
+end)
+
+-- @describe globe terrain polygon layer coverage
+describe("globe terrain polygon layer coverage", function()
+    local function terrain_patch(id, min_lat, min_lon, max_lat, max_lon)
+        return {
+            id = id,
+            vertices = {
+                {min_lat, min_lon},
+                {min_lat, max_lon},
+                {max_lat, max_lon},
+                {max_lat, min_lon},
+            },
+            base_color = {0.1 + id * 0.01, 0.4, 0.2, 1.0},
+        }
+    end
+
+    local function full_coverage_globe(name)
+        local g = lurek.globe.new(name, { axial_tilt_deg = 0.0 })
+        expect_true(g:addTerrainPatch(terrain_patch(1, -90.0, -180.0, 0.0, 0.0)))
+        expect_true(g:addTerrainPatch(terrain_patch(2, -90.0, 0.0, 0.0, 180.0)))
+        expect_true(g:addTerrainPatch(terrain_patch(3, 0.0, -180.0, 90.0, 0.0)))
+        expect_true(g:addTerrainPatch(terrain_patch(4, 0.0, 0.0, 90.0, 180.0)))
+        return g
+    end
+
+    -- @covers LGlobe:addTerrainPatch
+    it("addTerrainPatch inserts colored base terrain polygons", function()
+        local g = lurek.globe.new("coverage_add_terrain_patch")
+        expect_true(g:addTerrainPatch(terrain_patch(10, -10.0, -10.0, 10.0, 10.0)))
+        expect_equal(1, g:terrainPatchCount())
+    end)
+
+    -- @covers LGlobe:removeTerrainPatch
+    it("removeTerrainPatch removes a base terrain polygon by id", function()
+        local g = lurek.globe.new("coverage_remove_terrain_patch")
+        g:addTerrainPatch(terrain_patch(11, -10.0, -10.0, 10.0, 10.0))
+        expect_true(g:removeTerrainPatch(11))
+        expect_false(g:removeTerrainPatch(11))
+    end)
+
+    -- @covers LGlobe:terrainPatchCount
+    it("terrainPatchCount returns the number of base terrain polygons", function()
+        local g = lurek.globe.new("coverage_terrain_patch_count")
+        expect_equal(0, g:terrainPatchCount())
+        g:addTerrainPatch(terrain_patch(12, -10.0, -10.0, 10.0, 10.0))
+        expect_equal(1, g:terrainPatchCount())
+    end)
+
+    -- @covers LGlobe:setTerrainPatchAttr
+    it("setTerrainPatchAttr stores terrain patch metadata", function()
+        local g = lurek.globe.new("coverage_set_terrain_patch_attr")
+        g:addTerrainPatch(terrain_patch(13, -10.0, -10.0, 10.0, 10.0))
+        expect_true(g:setTerrainPatchAttr(13, "biome", "forest"))
+    end)
+
+    -- @covers LGlobe:getTerrainPatchAttr
+    it("getTerrainPatchAttr reads terrain patch metadata", function()
+        local g = lurek.globe.new("coverage_get_terrain_patch_attr")
+        g:addTerrainPatch({
+            id = 14,
+            vertices = {{-10.0,-10.0},{-10.0,10.0},{10.0,10.0},{10.0,-10.0}},
+            attrs = { biome = "desert" },
+        })
+        expect_equal("desert", g:getTerrainPatchAttr(14, "biome"))
+    end)
+
+    -- @covers LGlobe:setTerrainPatchTexture
+    it("setTerrainPatchTexture stores raw texture metadata for terrain", function()
+        local g = lurek.globe.new("coverage_set_terrain_patch_texture")
+        g:addTerrainPatch(terrain_patch(15, -10.0, -10.0, 10.0, 10.0))
+        expect_true(g:setTerrainPatchTexture(15, 42, 0.0, 0.0, 1.0, 1.0))
+        expect_equal("42", g:getTerrainPatchAttr(15, "__texture_raw"))
+    end)
+
+    -- @covers LGlobe:clearTerrainPatchTexture
+    it("clearTerrainPatchTexture removes raw texture metadata from terrain", function()
+        local g = lurek.globe.new("coverage_clear_terrain_patch_texture")
+        g:addTerrainPatch(terrain_patch(16, -10.0, -10.0, 10.0, 10.0))
+        g:setTerrainPatchTexture(16, 42, 0.0, 0.0, 1.0, 1.0)
+        expect_true(g:clearTerrainPatchTexture(16))
+        expect_nil(g:getTerrainPatchAttr(16, "__texture_raw"))
+    end)
+
+    -- @covers LGlobe:validateTerrainCoverage
+    it("validateTerrainCoverage reports complete sampled coverage and gaps", function()
+        local complete = full_coverage_globe("coverage_terrain_complete")
+        local ok_report = complete:validateTerrainCoverage({ lat_step = 45.0, lon_step = 90.0 })
+        expect_true(ok_report.ok)
+        expect_equal(ok_report.samples, ok_report.covered_samples)
+
+        local gap = lurek.globe.new("coverage_terrain_gap")
+        gap:addTerrainPatch(terrain_patch(20, -90.0, -180.0, 0.0, 0.0))
+        local gap_report = gap:validateTerrainCoverage({ lat_step = 45.0, lon_step = 90.0 })
+        expect_false(gap_report.ok)
+        expect_true(#gap_report.gaps > 0)
+    end)
+
+    -- @covers LGlobe:setRegionColor
+    it("setRegionColor updates semantic overlay tint", function()
+        local g = full_coverage_globe("coverage_set_region_color")
+        g:addRegion({ id = 30, members = {1, 2} })
+        expect_true(g:setRegionColor(30, 0.8, 0.2, 0.1, 0.35))
+    end)
+
+    -- @covers LGlobe:setRegionVisible
+    it("setRegionVisible controls semantic overlay picking participation", function()
+        local g = full_coverage_globe("coverage_set_region_visible")
+        g:addRegion({ id = 31, members = {1} })
+        expect_equal(31, g:regionsAtLatLon(-45.0, -90.0)[1])
+        expect_true(g:setRegionVisible(31, false))
+        expect_equal(0, #g:regionsAtLatLon(-45.0, -90.0))
     end)
 end)
 end
