@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated": "2026-06-25T09:32:03.101431+00:00",
+    "generated": "2026-06-25T15:00:18.607982+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 6271,
+      "lua_functions": 6273,
       "lua_modules": 72,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 6271,
-      "documented": 6271,
+      "total_functions": 6273,
+      "documented": 6273,
       "coverage_pct": 100.0,
       "modules": 72
     },
@@ -50485,7 +50485,7 @@
             "typed_params": [],
             "inferred_return": "LGlobeRegistry",
             "return_description": "New globe registry handle.",
-            "line": 1753,
+            "line": 1761,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50514,7 +50514,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "New globe handle.",
-            "line": 1770,
+            "line": 1778,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50537,7 +50537,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "Globe handle, or nil when no globe exists with that name.",
-            "line": 1794,
+            "line": 1802,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50560,7 +50560,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when a globe was removed.",
-            "line": 1820,
+            "line": 1828,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50595,7 +50595,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "New populated globe handle.",
-            "line": 1837,
+            "line": 1845,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50630,7 +50630,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "New populated globe handle.",
-            "line": 1872,
+            "line": 1880,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50665,7 +50665,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "New populated globe handle.",
-            "line": 1907,
+            "line": 1915,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50700,7 +50700,7 @@
             ],
             "inferred_return": "LGlobe",
             "return_description": "New generated globe handle.",
-            "line": 1941,
+            "line": 1949,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50741,7 +50741,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Great-circle distance on the unit sphere.",
-            "line": 1980,
+            "line": 1988,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50788,7 +50788,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array table of `{lat, lon}` point tables.",
-            "line": 1996,
+            "line": 2004,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50817,7 +50817,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array table `{x, y, z}` on the unit sphere.",
-            "line": 2018,
+            "line": 2026,
             "file": "src/lua_api/globe_api.rs"
           },
           {
@@ -50876,7 +50876,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Hit distance `t`, or nil when the ray misses.",
-            "line": 2039,
+            "line": 2047,
             "file": "src/lua_api/globe_api.rs"
           }
         ],
@@ -50905,7 +50905,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province was accepted by the globe.",
-                "line": 333,
+                "line": 338,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -50928,7 +50928,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a region was removed.",
-                "line": 351,
+                "line": 356,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -50951,7 +50951,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region was accepted by the globe.",
-                "line": 358,
+                "line": 363,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -50974,7 +50974,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a region was removed.",
-                "line": 382,
+                "line": 387,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -50997,7 +50997,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the terrain patch was accepted by the globe.",
-                "line": 389,
+                "line": 394,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51020,7 +51020,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a terrain patch was removed.",
-                "line": 413,
+                "line": 418,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51036,7 +51036,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Terrain patch count.",
-                "line": 419,
+                "line": 424,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51052,7 +51052,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Province count.",
-                "line": 425,
+                "line": 430,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51068,7 +51068,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Semantic region count.",
-                "line": 431,
+                "line": 436,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51091,7 +51091,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of neighboring province ids.",
-                "line": 436,
+                "line": 441,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51126,7 +51126,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the edge exists and the tags were stored.",
-                "line": 454,
+                "line": 459,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51155,7 +51155,7 @@
                 ],
                 "inferred_return": "string[]",
                 "return_description": "Sequential table of edge tag strings, empty when none are set.",
-                "line": 473,
+                "line": 478,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51190,7 +51190,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province exists.",
-                "line": 487,
+                "line": 492,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51219,7 +51219,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Attribute string, or nil when the province or key is missing.",
-                "line": 505,
+                "line": 510,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51254,7 +51254,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region exists.",
-                "line": 517,
+                "line": 522,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51283,7 +51283,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Attribute string, or nil when the region or key is missing.",
-                "line": 535,
+                "line": 540,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51318,7 +51318,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the terrain patch exists.",
-                "line": 547,
+                "line": 552,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51347,7 +51347,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Attribute string, or nil when the patch or key is missing.",
-                "line": 565,
+                "line": 570,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51394,7 +51394,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the semantic region exists.",
-                "line": 582,
+                "line": 587,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51423,7 +51423,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the semantic region exists.",
-                "line": 606,
+                "line": 611,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51476,7 +51476,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province exists.",
-                "line": 625,
+                "line": 630,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51499,7 +51499,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province exists.",
-                "line": 644,
+                "line": 649,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51552,7 +51552,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the terrain patch exists.",
-                "line": 664,
+                "line": 669,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51575,7 +51575,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the terrain patch exists.",
-                "line": 684,
+                "line": 689,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51598,7 +51598,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Coverage report with `ok`, `samples`, `covered_samples`, and `gaps`.",
-                "line": 699,
+                "line": 704,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51627,7 +51627,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province sector was set.",
-                "line": 730,
+                "line": 738,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51650,7 +51650,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Sector string, or nil when absent.",
-                "line": 740,
+                "line": 748,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51673,7 +51673,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of province ids.",
-                "line": 747,
+                "line": 755,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51720,7 +51720,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 762,
+                "line": 770,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51743,7 +51743,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a layer was removed.",
-                "line": 784,
+                "line": 792,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51772,7 +51772,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 791,
+                "line": 799,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51795,7 +51795,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 797,
+                "line": 805,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51830,7 +51830,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 805,
+                "line": 813,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51846,7 +51846,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Camera latitude in degrees.",
-                "line": 818,
+                "line": 826,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51875,7 +51875,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Latitude delta in degrees.",
-                "line": 827,
+                "line": 835,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51916,7 +51916,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 836,
+                "line": 844,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51939,7 +51939,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 845,
+                "line": 853,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51955,7 +51955,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "One of `far`, `mid`, or `near`.",
-                "line": 854,
+                "line": 862,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -51984,7 +51984,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province id, or nil when nothing is hit.",
-                "line": 869,
+                "line": 877,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52013,7 +52013,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Latitude in degrees, or nil when the point is off the globe.",
-                "line": 881,
+                "line": 889,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52048,7 +52048,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province id, or nil when no sample hits.",
-                "line": 899,
+                "line": 907,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52077,7 +52077,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Latitude in degrees, or nil when nothing is hit.",
-                "line": 926,
+                "line": 934,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52106,7 +52106,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of semantic region ids.",
-                "line": 937,
+                "line": 945,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52135,7 +52135,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of semantic region ids.",
-                "line": 950,
+                "line": 958,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52170,7 +52170,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Marker id, or nil when no visible marker is within range.",
-                "line": 965,
+                "line": 973,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52205,7 +52205,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Pick result table, or nil when the screen point is off the globe.",
-                "line": 977,
+                "line": 985,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52228,7 +52228,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1007,
+                "line": 1015,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52263,7 +52263,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1015,
+                "line": 1023,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52292,7 +52292,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "`visible`, `explored`, or `hidden`.",
-                "line": 1031,
+                "line": 1039,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52315,7 +52315,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Base64-encoded fog state, or an empty string on encode failure.",
-                "line": 1045,
+                "line": 1053,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52344,7 +52344,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the payload was decoded.",
-                "line": 1053,
+                "line": 1061,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52373,7 +52373,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1063,
+                "line": 1071,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52402,7 +52402,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1070,
+                "line": 1078,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52431,7 +52431,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the province is visible.",
-                "line": 1078,
+                "line": 1086,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52454,7 +52454,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1084,
+                "line": 1092,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52495,7 +52495,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "New marker id.",
-                "line": 1099,
+                "line": 1107,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52518,7 +52518,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a marker was removed.",
-                "line": 1113,
+                "line": 1121,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52553,7 +52553,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1122,
+                "line": 1130,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52582,7 +52582,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1131,
+                "line": 1139,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52617,7 +52617,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1140,
+                "line": 1148,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52646,7 +52646,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1159,
+                "line": 1167,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52681,7 +52681,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1175,
+                "line": 1183,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52710,7 +52710,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Attribute string, or nil when missing.",
-                "line": 1186,
+                "line": 1194,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52757,7 +52757,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1197,
+                "line": 1205,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52786,7 +52786,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1221,
+                "line": 1229,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52815,7 +52815,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1237,
+                "line": 1245,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52844,7 +52844,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1253,
+                "line": 1261,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52873,7 +52873,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Great-circle distance, or nil when either marker is missing.",
-                "line": 1271,
+                "line": 1279,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52914,7 +52914,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "New label id.",
-                "line": 1281,
+                "line": 1289,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52943,7 +52943,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the label exists.",
-                "line": 1296,
+                "line": 1304,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52972,7 +52972,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the label exists.",
-                "line": 1304,
+                "line": 1312,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -52995,7 +52995,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a label was removed.",
-                "line": 1311,
+                "line": 1319,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53024,7 +53024,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1318,
+                "line": 1326,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53047,7 +53047,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a layer was removed.",
-                "line": 1337,
+                "line": 1345,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53100,7 +53100,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 1349,
+                "line": 1357,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53129,7 +53129,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 1364,
+                "line": 1372,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53158,7 +53158,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 1372,
+                "line": 1380,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53181,7 +53181,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1378,
+                "line": 1386,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53197,7 +53197,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Time of day in hours.",
-                "line": 1385,
+                "line": 1393,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53220,7 +53220,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1391,
+                "line": 1399,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53243,7 +53243,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1398,
+                "line": 1406,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53266,7 +53266,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1405,
+                "line": 1413,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53289,7 +53289,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1409,
+                "line": 1417,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53312,7 +53312,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1415,
+                "line": 1423,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53341,7 +53341,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Province ids, or nil when no path exists.",
-                "line": 1441,
+                "line": 1449,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53376,7 +53376,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Result table with `ids` and `total_cost`, or nil when no path exists.",
-                "line": 1463,
+                "line": 1471,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53405,7 +53405,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Map table from province id (integer key) to accumulated traversal cost (number).",
-                "line": 1490,
+                "line": 1498,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53440,7 +53440,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Map table from province id (integer key) to accumulated traversal cost (number).",
-                "line": 1509,
+                "line": 1517,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53475,7 +53475,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1528,
+                "line": 1536,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53498,7 +53498,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Map table from province id (integer key) to accumulated traversal cost (number), empty when missing.",
-                "line": 1541,
+                "line": 1549,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53514,7 +53514,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "OBJ text for the current provinces, including grouped boundary loops and any available fill geometry.",
-                "line": 1554,
+                "line": 1562,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53561,7 +53561,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "New arc id.",
-                "line": 1565,
+                "line": 1573,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53584,7 +53584,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an arc was removed.",
-                "line": 1592,
+                "line": 1600,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53600,7 +53600,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Globe registry name.",
-                "line": 1598,
+                "line": 1606,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53616,7 +53616,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LGlobe`.",
-                "line": 1605,
+                "line": 1613,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53639,7 +53639,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1610,
+                "line": 1618,
                 "file": "src/lua_api/globe_api.rs"
               }
             ]
@@ -53674,7 +53674,7 @@
                 ],
                 "inferred_return": "LGlobe",
                 "return_description": "New globe handle.",
-                "line": 1631,
+                "line": 1639,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53697,7 +53697,7 @@
                 ],
                 "inferred_return": "LGlobe",
                 "return_description": "Globe handle, or nil when no globe exists with that name.",
-                "line": 1652,
+                "line": 1660,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53720,7 +53720,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a globe was removed.",
-                "line": 1673,
+                "line": 1681,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53736,7 +53736,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Globe names.",
-                "line": 1683,
+                "line": 1691,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53752,7 +53752,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LGlobeRegistry`.",
-                "line": 1698,
+                "line": 1706,
                 "file": "src/lua_api/globe_api.rs"
               },
               {
@@ -53775,7 +53775,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1703,
+                "line": 1711,
                 "file": "src/lua_api/globe_api.rs"
               }
             ]
@@ -107653,7 +107653,7 @@
             ],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The newly created registry handle.",
-            "line": 1350,
+            "line": 1658,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107688,7 +107688,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Summary with fields: replaced_pixels (number), unresolved_pixels (number).",
-            "line": 1376,
+            "line": 1684,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107711,7 +107711,7 @@
             ],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The registry handle, or nil if not found.",
-            "line": 1400,
+            "line": 1708,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107734,7 +107734,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry exists.",
-            "line": 1419,
+            "line": 1727,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107757,7 +107757,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry existed and was removed.",
-            "line": 1430,
+            "line": 1738,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107780,7 +107780,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry was found and activated.",
-            "line": 1446,
+            "line": 1754,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107796,7 +107796,7 @@
             "typed_params": [],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The active registry handle, or nil.",
-            "line": 1462,
+            "line": 1770,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107849,7 +107849,7 @@
             ],
             "inferred_return": "number, number",
             "return_description": "New camera x and y after zoom adjustment.",
-            "line": 1481,
+            "line": 1789,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107884,7 +107884,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1505,
+            "line": 1813,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107913,7 +107913,7 @@
             ],
             "inferred_return": "number",
             "return_description": "The stored value, or nil.",
-            "line": 1520,
+            "line": 1828,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107948,7 +107948,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1532,
+            "line": 1840,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107977,7 +107977,7 @@
             ],
             "inferred_return": "string",
             "return_description": "The stored value, or nil.",
-            "line": 1547,
+            "line": 1855,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -108012,7 +108012,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1562,
+            "line": 1870,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -108041,7 +108041,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the flag bit is set.",
-            "line": 1575,
+            "line": 1883,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -108064,7 +108064,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1585,
+            "line": 1893,
             "file": "src/lua_api/province_api.rs"
           }
         ],
@@ -108086,7 +108086,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The registry name passed to `newFromPng`.",
-                "line": 223,
+                "line": 295,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108102,7 +108102,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid width in cells.",
-                "line": 227,
+                "line": 299,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108118,7 +108118,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid height in cells.",
-                "line": 231,
+                "line": 303,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108147,7 +108147,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province ID at (x, y), or 0 for unowned cells.",
-                "line": 239,
+                "line": 311,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108182,7 +108182,7 @@
                 ],
                 "inferred_return": "number, number, number",
                 "return_description": "Camera x, camera y, and zoom factor.",
-                "line": 248,
+                "line": 320,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108235,7 +108235,7 @@
                 ],
                 "inferred_return": "number, number",
                 "return_description": "Map-space x and y.",
-                "line": 271,
+                "line": 343,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108288,7 +108288,30 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province ID under the cursor, or nil if none.",
-                "line": 303,
+                "line": 375,
+                "file": "src/lua_api/province_api.rs"
+              },
+              {
+                "name": "viewportRect",
+                "lua_name": "LProvinceRegistry:viewportRect",
+                "kind": "method",
+                "owner_type": "LProvinceRegistry",
+                "description": "Computes the province-space viewport rectangle used by province rendering and culling. The returned table can be passed to minimap:setViewportRect(rect.x, rect.y, rect.w, rect.h).",
+                "full_doc": "Computes the province-space viewport rectangle used by province rendering and culling. The returned table can be passed to minimap:setViewportRect(rect.x, rect.y, rect.w, rect.h).\n@param | opts | table? | Camera/render options: x/y translation, zoom, pixel_size, screen_w, screen_h.\n@return | table | Viewport table with x, y, w, h, left, top, right, and bottom fields in province map pixels.",
+                "params_doc": "- `opts` â€” `table?`: Camera/render options: x/y translation, zoom, pixel_size, screen_w, screen_h.",
+                "returns_doc": "table",
+                "inferred_sig": "([opts])",
+                "typed_params": [
+                  [
+                    "opts",
+                    "table?",
+                    true,
+                    "Camera/render options: x/y translation, zoom, pixel_size, screen_w, screen_h."
+                  ]
+                ],
+                "inferred_return": "table",
+                "return_description": "Viewport table with x, y, w, h, left, top, right, and bottom fields in province map pixels.",
+                "line": 411,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108304,7 +108327,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Count of provinces.",
-                "line": 338,
+                "line": 450,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108320,7 +108343,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Province ID numbers.",
-                "line": 344,
+                "line": 456,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108336,7 +108359,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with fields: province_a (number), province_b (number).",
-                "line": 357,
+                "line": 469,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108352,7 +108375,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with fields: province_id (number), y (number), x0 (number), x1 (number).",
-                "line": 377,
+                "line": 489,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108368,7 +108391,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with fields: province_a (number), province_b (number), x0 (number), y0 (number), x1 (number), y1 (number).",
-                "line": 403,
+                "line": 515,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108384,7 +108407,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Current revision number.",
-                "line": 427,
+                "line": 539,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108407,7 +108430,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Province snapshot table, or nil if the ID does not exist.",
-                "line": 439,
+                "line": 551,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108430,7 +108453,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of neighboring province IDs.",
-                "line": 490,
+                "line": 602,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108465,7 +108488,36 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of province ids from start to target; nil when unreachable.",
-                "line": 504,
+                "line": 616,
+                "file": "src/lua_api/province_api.rs"
+              },
+              {
+                "name": "drawCapitalPath",
+                "lua_name": "LProvinceRegistry:drawCapitalPath",
+                "kind": "method",
+                "owner_type": "LProvinceRegistry",
+                "description": "Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode (\"line\"|\"bezier\"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.",
+                "full_doc": "Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode (\"line\"|\"bezier\"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.\n@param | route | integer[] | Array of province ids whose capitals should be connected in order.\n@param | opts | table? | Draw options: mode=\"line\"|\"bezier\", color={r,g,b,a?}, width=number, pixel_size=number, curve_offset=number, segments=integer.\n@return | integer | Number of route hop primitives queued.",
+                "params_doc": "- `route` â€” `integer[]`: Array of province ids whose capitals should be connected in order.\n- `opts` â€” `table? | Draw options: mode=\"line\"`: \"bezier\", color={r,g,b,a?}, width=number, pixel_size=number, curve_offset=number, segments=integer.",
+                "returns_doc": "integer",
+                "inferred_sig": "(route_tbl, [opts])",
+                "typed_params": [
+                  [
+                    "route",
+                    "integer[]",
+                    false,
+                    "Array of province ids whose capitals should be connected in order."
+                  ],
+                  [
+                    "opts",
+                    "table?|Draw options: mode=\"line\"",
+                    true,
+                    "\"bezier\", color={r,g,b,a?}, width=number, pixel_size=number, curve_offset=number, segments=integer."
+                  ]
+                ],
+                "inferred_return": "integer",
+                "return_description": "Number of route hop primitives queued.",
+                "line": 673,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108494,7 +108546,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of route arrays (or nil for unreachable entries).",
-                "line": 561,
+                "line": 739,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108510,7 +108562,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of arrays of province ids.",
-                "line": 623,
+                "line": 801,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108533,7 +108585,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of isolated province ids.",
-                "line": 649,
+                "line": 827,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108562,7 +108614,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when connected.",
-                "line": 686,
+                "line": 864,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108597,7 +108649,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Total numeric sum.",
-                "line": 708,
+                "line": 886,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108626,7 +108678,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Border type ID, or nil.",
-                "line": 745,
+                "line": 923,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108661,7 +108713,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 754,
+                "line": 932,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108690,7 +108742,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Border type ID, or nil.",
-                "line": 768,
+                "line": 946,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108725,7 +108777,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 777,
+                "line": 955,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108754,7 +108806,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 790,
+                "line": 968,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108789,7 +108841,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when style was applied.",
-                "line": 821,
+                "line": 999,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108818,7 +108870,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Style table or nil.",
-                "line": 836,
+                "line": 1014,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108865,7 +108917,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 867,
+                "line": 1045,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108894,7 +108946,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 880,
+                "line": 1058,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108923,7 +108975,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 891,
+                "line": 1069,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108952,7 +109004,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 902,
+                "line": 1080,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108981,7 +109033,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 910,
+                "line": 1088,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109016,7 +109068,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 924,
+                "line": 1102,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109051,7 +109103,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 936,
+                "line": 1114,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109098,7 +109150,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 947,
+                "line": 1125,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109127,7 +109179,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 958,
+                "line": 1136,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109150,7 +109202,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Summary with fields: mapped_provinces (number), capitals_set (number), label_lines_set (number), labels_set (number).",
-                "line": 969,
+                "line": 1147,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109159,21 +109211,21 @@
                 "kind": "method",
                 "owner_type": "LProvinceRegistry",
                 "description": "Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.",
-                "full_doc": "Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.\n@param | opts | table? | Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"|\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
-                "params_doc": "- `opts` â€” `table? | Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"`: \"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
+                "full_doc": "Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.\n@param | opts | table? | Render options: backend (\"commands\"|\"gpu\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"|\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
+                "params_doc": "- `opts` â€” `table? | Render options: backend (\"commands\"|\"gpu\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"`: \"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
                 "returns_doc": "",
                 "inferred_sig": "([opts])",
                 "typed_params": [
                   [
                     "opts",
-                    "table?|Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
+                    "table?|Render options: backend (\"commands\"|\"gpu\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
                     true,
                     "\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?)."
                   ]
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1044,
+                "line": 1222,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109196,7 +109248,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).",
-                "line": 1153,
+                "line": 1461,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109225,7 +109277,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1272,
+                "line": 1580,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109248,7 +109300,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if mode exists and was activated.",
-                "line": 1317,
+                "line": 1625,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109264,7 +109316,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Active mode name.",
-                "line": 1324,
+                "line": 1632,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109280,7 +109332,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LProvinceRegistry\".",
-                "line": 1331,
+                "line": 1639,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109303,7 +109355,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 1336,
+                "line": 1644,
                 "file": "src/lua_api/province_api.rs"
               }
             ]

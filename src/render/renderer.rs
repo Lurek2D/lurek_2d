@@ -562,6 +562,30 @@ pub enum RenderCommand {
         geometry_kind: DrawableKind,
         instances: InstanceBufferKey,
     },
+    /// Draw a province registry through the dedicated GPU province-map pipeline.
+    DrawProvinceMap {
+        registry_name: String,
+        viewport: [f32; 4],
+        screen_size: [f32; 2],
+        tint: [f32; 4],
+        province_tints: Vec<(u32, [f32; 4])>,
+        terrain_texture: Option<TextureKey>,
+        terrain_texture_scale: f32,
+        terrain_texture_strength: f32,
+        edge_gradient_color: [f32; 4],
+        edge_gradient_radius: f32,
+        edge_gradient_strength: f32,
+        edge_gradient_softness: f32,
+        border_palette_enabled: bool,
+        province_border_color: [f32; 4],
+        coast_border_color: [f32; 4],
+        country_border_color: [f32; 4],
+        sea_border_darken: f32,
+        selected_id: u32,
+        hovered_id: u32,
+        zoom_mode: u32,
+        time: f32,
+    },
 }
 
 /// Broad owner bucket for one `RenderCommand` variant.
@@ -664,7 +688,9 @@ impl RenderCommand {
             }
             PushLayer { .. } | PopLayer { .. } => RenderCommandCategory::Layer,
             InstancedDraw { .. } => RenderCommandCategory::Instance,
-            DrawPhysicsDebug { .. } | DrawSpineSkeleton { .. } => RenderCommandCategory::Debug,
+            DrawPhysicsDebug { .. } | DrawSpineSkeleton { .. } | DrawProvinceMap { .. } => {
+                RenderCommandCategory::Debug
+            }
         }
     }
 }

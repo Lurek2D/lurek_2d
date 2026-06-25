@@ -79,6 +79,16 @@ describe("Evidence: lurek.province fixture-derived artifacts", function()
         save_png(Fixture.render_zoom_pick_view(loaded), OUT .. "province_zoom_pick_view.png")
     end)
 
+    -- Does: Applies runtime political tints, terrain-style watermarking, styled border widths, a capital path, and a province viewport rectangle.
+    -- Shows: The PNG combines the render-prep data province owns with a minimap-style viewport inset while keeping routing and minimap ownership outside province.
+    -- Artifact: tests/artifacts/current/province/province_render_plan_overlay.png
+    -- Why: This is meaningful because the province module must provide static geometry, fast visual state, input-space mapping, and render-ready commands without becoming an all-in-one strategy system.
+    it("PNG: render plan overlay", function()
+        local loaded = Fixture.load_registry(registry_name("render_plan"), OUT .. "province_sanitized_map.png")
+        save_png(Fixture.render_render_plan_overlay(loaded), OUT .. "province_render_plan_overlay.png")
+        expect_true((loaded.render_plan_path_primitives or 0) > 0)
+    end)
+
     -- Does: Mutates ownership, terrain, fog, visibility, political color, and map mode state across a short revision timeline.
     -- Shows: The PNG captures the final strategic view, while the GIF animates map-mode and revision-driven visual state changes.
     -- Artifact: tests/artifacts/current/province/province_strategy_modes.png, province_revision_timeline.gif

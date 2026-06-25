@@ -47,6 +47,72 @@ mod province_map_pipeline_tests {
         assert_f32_slice_eq(&u.map_size, &[2000.0, 900.0]);
         assert_f32_slice_eq(&u.screen_size, &[1920.0, 1080.0]);
         assert_eq!(u.zoom_mode, 1);
+        assert_eq!(u.terrain_texture_scale, 32.0);
+        assert_eq!(u.terrain_texture_strength, 0.0);
+        assert_f32_slice_eq(&u.fill_tint, &[1.0, 1.0, 1.0, 1.0]);
+        assert_f32_slice_eq(
+            &u.edge_gradient_color,
+            &[64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 1.0],
+        );
+        assert_f32_slice_eq(&u.edge_gradient_params, &[16.0, 0.25, 0.45, 255.0]);
+        assert_f32_slice_eq(
+            &u.province_border_color,
+            &[64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 210.0 / 255.0],
+        );
+        assert_f32_slice_eq(
+            &u.coast_border_color,
+            &[224.0 / 255.0, 196.0 / 255.0, 128.0 / 255.0, 238.0 / 255.0],
+        );
+        assert_f32_slice_eq(
+            &u.country_border_color,
+            &[230.0 / 255.0, 48.0 / 255.0, 44.0 / 255.0, 245.0 / 255.0],
+        );
+        assert_f32_slice_eq(&u.border_palette_params, &[1.0, 0.15, 0.0, 0.0]);
+        assert_eq!(u.highlight_ids, [0, 0, 0, 0]);
+    }
+
+    #[test]
+    fn province_map_shader_is_parseable_wgsl() {
+        let source = include_str!("../../../assets/shaders/province_map.wgsl");
+        wgpu::naga::front::wgsl::parse_str(source)
+            .expect("province map shader should remain valid WGSL");
+    }
+
+    #[test]
+    fn province_map_command_validates_projection_inputs() {
+        let command = RenderCommand::DrawProvinceMap {
+            registry_name: "world".to_string(),
+            viewport: [0.0, 0.0, 100.0, 50.0],
+            screen_size: [320.0, 180.0],
+            tint: [1.0, 1.0, 1.0, 1.0],
+            province_tints: Vec::new(),
+            terrain_texture: None,
+            terrain_texture_scale: 32.0,
+            terrain_texture_strength: 0.0,
+            edge_gradient_color: [0.0, 0.0, 0.0, 1.0],
+            edge_gradient_radius: 6.0,
+            edge_gradient_strength: 0.22,
+            edge_gradient_softness: 0.45,
+            border_palette_enabled: true,
+            province_border_color: [64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 1.0],
+            coast_border_color: [224.0 / 255.0, 196.0 / 255.0, 128.0 / 255.0, 1.0],
+            country_border_color: [230.0 / 255.0, 46.0 / 255.0, 42.0 / 255.0, 1.0],
+            sea_border_darken: 0.15,
+            selected_id: 0,
+            hovered_id: 0,
+            zoom_mode: 1,
+            time: 0.0,
+        };
+
+        lurek2d::render::input_validation::validate_render_command(
+            &command,
+            &lurek2d::render::input_validation::RenderInputLimits::default(),
+        )
+        .expect("valid province map command");
+        assert_eq!(
+            command.category(),
+            lurek2d::render::renderer::RenderCommandCategory::Debug
+        );
     }
 }
 

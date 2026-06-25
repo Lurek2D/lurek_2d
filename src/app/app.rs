@@ -2341,6 +2341,7 @@ impl LurekApp {
             renderer.render_frame(
                 surface,
                 final_commands,
+                &s_ref.province_registries,
                 &textures,
                 &mut fonts,
                 &s_ref.light_world,
@@ -2539,10 +2540,12 @@ impl LurekApp {
         let no_shaders: SlotMap<ShaderKey, crate::render::Shader> = SlotMap::with_key();
         let default_filter = ("linear".to_string(), "linear".to_string(), 1);
         let no_lights = crate::light::light_world::LightWorld::new();
+        let no_province_registries = std::collections::HashMap::new();
         let splash_textures = branding.map_or(&empty_textures, |assets| &assets.textures);
         if let Err(e) = renderer.render_frame(
             surface,
             &cmds,
+            &no_province_registries,
             splash_textures,
             splash_fonts,
             &no_lights,
@@ -2595,9 +2598,11 @@ impl LurekApp {
                 let no_shaders: SlotMap<ShaderKey, crate::render::Shader> = SlotMap::with_key();
                 let default_filter = ("linear".to_string(), "linear".to_string(), 1);
                 let no_lights = crate::light::light_world::LightWorld::new();
+                let no_province_registries = std::collections::HashMap::new();
                 let render_result = renderer.render_frame(
                     surface,
                     &cmds,
+                    &no_province_registries,
                     &no_textures,
                     &mut st.fonts,
                     &no_lights,
@@ -2663,9 +2668,11 @@ impl LurekApp {
         let no_shaders: SlotMap<ShaderKey, crate::render::Shader> = SlotMap::with_key();
         let default_filter = ("linear".to_string(), "linear".to_string(), 1);
         let no_lights = crate::light::light_world::LightWorld::new();
+        let no_province_registries = std::collections::HashMap::new();
         if let Err(e) = renderer.render_frame(
             surface,
             &cmds,
+            &no_province_registries,
             &no_textures,
             error_fonts,
             &no_lights,

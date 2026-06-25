@@ -42,7 +42,11 @@ use crate::render::gpu_types::{
 use crate::render::input_validation::{
     validate_compound_shape, validate_render_command_with_category, RenderInputLimits,
 };
+use crate::render::province_map_pipeline::{
+    ProvinceMapDataBindings, ProvinceMapPipeline, ProvinceMapUniforms,
+};
 use crate::render::render_diagnostics::RenderDiagnostics;
+use wgpu::util::DeviceExt;
 
 // Submodule helper imports
 use crate::render::gpu_frame_builder::merge_adjacent_prepared_draws;
@@ -52,6 +56,177 @@ use crate::render::gpu_tess::{
     color_write_mask_bits, normalize_scissor, push_quad_verts, push_tex_quad,
     push_tex_quad_corners, push_thick_line,
 };
+
+struct PendingProvinceMapDraw {
+    registry_name: String,
+    viewport: [f32; 4],
+    screen_size: [f32; 2],
+    tint: [f32; 4],
+    province_tints: Vec<(u32, [f32; 4])>,
+    terrain_texture: Option<TextureKey>,
+    terrain_texture_scale: f32,
+    terrain_texture_strength: f32,
+    edge_gradient_color: [f32; 4],
+    edge_gradient_radius: f32,
+    edge_gradient_strength: f32,
+    edge_gradient_softness: f32,
+    border_palette_enabled: bool,
+    province_border_color: [f32; 4],
+    coast_border_color: [f32; 4],
+    country_border_color: [f32; 4],
+    sea_border_darken: f32,
+    selected_id: u32,
+    hovered_id: u32,
+    zoom_mode: u32,
+    time: f32,
+}
+
+struct ProvinceMapGpuCache {
+    textures: crate::province::gpu_upload::ProvinceGpuTextures,
+    border_index: crate::province::border_index::ProvinceBorderIndex,
+    revision: u64,
+    province_data_buffer: wgpu::Buffer,
+    border_style_buffer: wgpu::Buffer,
+    data_bind_group: wgpu::BindGroup,
+}
+
+impl ProvinceMapGpuCache {
+    fn new(
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        pipeline: &ProvinceMapPipeline,
+        registry: &crate::province::registry::ProvinceRegistry,
+    ) -> Self {
+        let width = registry.width();
+        let height = registry.height();
+        let mut province_ids = Vec::with_capacity((width as usize).saturating_mul(height as usize));
+        for y in 0..height {
+            for x in 0..width {
+                province_ids.push(registry.get_at(x, y));
+            }
+        }
+
+        let border_index =
+            crate::province::border_index::build_border_index_from_registry(registry);
+        let distance_field =
+            crate::province::distance_field::compute_distance_field_from_registry(registry, 32);
+        let textures = crate::province::gpu_upload::create_province_gpu_textures(
+            device,
+            queue,
+            width,
+            height,
+            &province_ids,
+            &border_index.data,
+            &distance_field.data,
+        );
+        let province_records = crate::province::gpu_bridge::build_dense_gpu_records(registry);
+        let border_records =
+            crate::province::gpu_bridge::build_border_style_gpu_records(registry, &border_index);
+        let province_data_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some("province_map_province_data"),
+            contents: bytemuck::cast_slice(&province_records),
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+        });
+        let border_style_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some("province_map_border_styles"),
+            contents: bytemuck::cast_slice(&border_records),
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+        });
+        let data_bind_group = pipeline.create_data_bind_group(
+            device,
+            ProvinceMapDataBindings {
+                province_id_view: &textures.province_id_view,
+                border_index_view: &textures.border_index_view,
+                distance_field_view: &textures.distance_field_view,
+                province_data_buffer: &province_data_buffer,
+                border_style_buffer: &border_style_buffer,
+                terrain_texture_view: &pipeline.default_terrain_view,
+                terrain_texture_sampler: &pipeline.default_terrain_sampler,
+            },
+        );
+
+        Self {
+            textures,
+            border_index,
+            revision: registry.revision(),
+            province_data_buffer,
+            border_style_buffer,
+            data_bind_group,
+        }
+    }
+
+    fn refresh_dynamic_buffers(
+        &mut self,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        pipeline: &ProvinceMapPipeline,
+        registry: &crate::province::registry::ProvinceRegistry,
+    ) {
+        let border_index =
+            crate::province::border_index::build_border_index_from_registry(registry);
+        if border_index.data != self.border_index.data
+            || border_index.id_to_pair != self.border_index.id_to_pair
+        {
+            let (border_index_texture, border_index_view) =
+                crate::province::gpu_upload::create_border_index_texture(
+                    device,
+                    queue,
+                    self.textures.width,
+                    self.textures.height,
+                    &border_index.data,
+                );
+            self.textures.border_index_texture = border_index_texture;
+            self.textures.border_index_view = border_index_view;
+            self.border_index = border_index;
+        }
+
+        let province_records = crate::province::gpu_bridge::build_dense_gpu_records(registry);
+        let border_records = crate::province::gpu_bridge::build_border_style_gpu_records(
+            registry,
+            &self.border_index,
+        );
+        self.province_data_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some("province_map_province_data"),
+            contents: bytemuck::cast_slice(&province_records),
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+        });
+        self.border_style_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some("province_map_border_styles"),
+            contents: bytemuck::cast_slice(&border_records),
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+        });
+        self.data_bind_group = pipeline.create_data_bind_group(
+            device,
+            ProvinceMapDataBindings {
+                province_id_view: &self.textures.province_id_view,
+                border_index_view: &self.textures.border_index_view,
+                distance_field_view: &self.textures.distance_field_view,
+                province_data_buffer: &self.province_data_buffer,
+                border_style_buffer: &self.border_style_buffer,
+                terrain_texture_view: &pipeline.default_terrain_view,
+                terrain_texture_sampler: &pipeline.default_terrain_sampler,
+            },
+        );
+        self.revision = registry.revision();
+    }
+}
+
+fn province_map_uses_render_tints(draw: &PendingProvinceMapDraw) -> bool {
+    !draw.province_tints.is_empty()
+}
+
+fn build_tinted_province_records(
+    registry: &crate::province::registry::ProvinceRegistry,
+    province_tints: &[(u32, [f32; 4])],
+) -> Vec<crate::province::gpu_bridge::ProvinceGpuRecord> {
+    let mut records = crate::province::gpu_bridge::build_dense_gpu_records(registry);
+    for (id, color) in province_tints {
+        if let Some(record) = records.get_mut(*id as usize) {
+            record.political_color = *color;
+        }
+    }
+    records
+}
 
 fn transform_stack_last(stack: &[Mat3]) -> &Mat3 {
     static IDENTITY: OnceLock<Mat3> = OnceLock::new();
@@ -410,6 +585,10 @@ pub struct GpuRenderer {
     pub(crate) light_gpu: Option<crate::render::gpu_light::LightGpuState>,
     /// Optional post-processing pipeline chain applied after the main pass.
     pub(crate) postfx_pipeline: Option<crate::render::postfx_pipeline::PostFxPipeline>,
+    /// Specialized fullscreen province-map shader pipeline.
+    pub(crate) province_map_pipeline: ProvinceMapPipeline,
+    /// GPU resource cache for immutable province map textures and mutable style buffers.
+    province_map_cache: HashMap<String, ProvinceMapGpuCache>,
     /// Per-effect capture textures for multi-pass post-fx.
     pub(crate) postfx_capture: HashMap<u64, crate::render::postfx_pipeline::PostFxTexture>,
     /// Persistent geometry and instancing buffer cache.
@@ -600,6 +779,7 @@ impl GpuRenderer {
             };
             mesh_cache.static_geometry.insert(quad_key, quad_entry);
         }
+        let province_map_pipeline = ProvinceMapPipeline::new(&device, &queue, surface_format);
         GpuRenderer {
             device,
             queue,
@@ -641,6 +821,8 @@ impl GpuRenderer {
             render_diagnostics: RenderDiagnostics::default(),
             light_gpu: None,
             postfx_pipeline: None,
+            province_map_pipeline,
+            province_map_cache: HashMap::new(),
             postfx_capture: HashMap::new(),
             mesh_cache,
             frame_buffers: FrameRenderBuffers::default(),
@@ -663,12 +845,184 @@ impl GpuRenderer {
         self.screen_stencil_target = None;
         self.light_gpu = None;
     }
+
+    fn ensure_province_map_cache(
+        &mut self,
+        registry_name: &str,
+        registry: &crate::province::registry::ProvinceRegistry,
+    ) {
+        let rebuild_static = self
+            .province_map_cache
+            .get(registry_name)
+            .map(|cache| {
+                cache.textures.width != registry.width()
+                    || cache.textures.height != registry.height()
+            })
+            .unwrap_or(true);
+        if rebuild_static {
+            let cache = ProvinceMapGpuCache::new(
+                &self.device,
+                &self.queue,
+                &self.province_map_pipeline,
+                registry,
+            );
+            self.province_map_cache
+                .insert(registry_name.to_string(), cache);
+            return;
+        }
+
+        if let Some(cache) = self.province_map_cache.get_mut(registry_name) {
+            if cache.revision != registry.revision() {
+                cache.refresh_dynamic_buffers(
+                    &self.device,
+                    &self.queue,
+                    &self.province_map_pipeline,
+                    registry,
+                );
+            }
+        }
+    }
+
+    fn draw_province_maps_to_screen(
+        &mut self,
+        encoder: &mut wgpu::CommandEncoder,
+        view: &wgpu::TextureView,
+        pending: &[PendingProvinceMapDraw],
+        province_registries: &HashMap<String, crate::province::registry::ProvinceRegistry>,
+        background_color: [f32; 4],
+        screen_started: &mut bool,
+    ) {
+        for draw in pending {
+            let Some(registry) = province_registries.get(&draw.registry_name) else {
+                self.render_diagnostics.record_missing_texture();
+                continue;
+            };
+            self.ensure_province_map_cache(&draw.registry_name, registry);
+            let color_load = if *screen_started {
+                wgpu::LoadOp::Load
+            } else {
+                wgpu::LoadOp::Clear(wgpu::Color {
+                    r: background_color[0] as f64,
+                    g: background_color[1] as f64,
+                    b: background_color[2] as f64,
+                    a: background_color[3] as f64,
+                })
+            };
+            let Some(cache) = self.province_map_cache.get(&draw.registry_name) else {
+                continue;
+            };
+            let terrain_texture = draw
+                .terrain_texture
+                .and_then(|key| self.gpu_textures.get(key))
+                .filter(|_| draw.terrain_texture_strength > 0.0);
+            if draw.terrain_texture.is_some() && terrain_texture.is_none() {
+                self.render_diagnostics.record_missing_texture();
+            }
+            let terrain_texture_strength = if draw.terrain_texture_strength > 0.0 {
+                draw.terrain_texture_strength
+            } else {
+                0.0
+            };
+            let uniforms = ProvinceMapUniforms {
+                viewport: draw.viewport,
+                map_size: [registry.width() as f32, registry.height() as f32],
+                screen_size: draw.screen_size,
+                zoom_mode: draw.zoom_mode,
+                time: draw.time,
+                terrain_texture_scale: draw.terrain_texture_scale,
+                terrain_texture_strength,
+                fill_tint: draw.tint,
+                edge_gradient_color: draw.edge_gradient_color,
+                edge_gradient_params: [
+                    draw.edge_gradient_radius,
+                    draw.edge_gradient_strength,
+                    draw.edge_gradient_softness,
+                    255.0,
+                ],
+                province_border_color: draw.province_border_color,
+                coast_border_color: draw.coast_border_color,
+                country_border_color: draw.country_border_color,
+                border_palette_params: [
+                    if draw.border_palette_enabled {
+                        1.0
+                    } else {
+                        0.0
+                    },
+                    draw.sea_border_darken,
+                    0.0,
+                    0.0,
+                ],
+                highlight_ids: [draw.selected_id, draw.hovered_id, 0, 0],
+            };
+            self.province_map_pipeline
+                .update_uniforms(&self.queue, &uniforms);
+            let terrain_view = terrain_texture
+                .map(|texture| &texture.view)
+                .unwrap_or(&self.province_map_pipeline.default_terrain_view);
+            let terrain_sampler = &self.province_map_pipeline.default_terrain_sampler;
+            let mut transient_province_buffer = None;
+            let mut transient_bind_group = None;
+            let uses_transient_bind_group =
+                province_map_uses_render_tints(draw) || terrain_texture.is_some();
+            let data_bind_group = if uses_transient_bind_group {
+                let province_records =
+                    build_tinted_province_records(registry, &draw.province_tints);
+                let province_buffer =
+                    self.device
+                        .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                            label: Some("province_map_tinted_province_data"),
+                            contents: bytemuck::cast_slice(&province_records),
+                            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+                        });
+                transient_bind_group = Some(self.province_map_pipeline.create_data_bind_group(
+                    &self.device,
+                    ProvinceMapDataBindings {
+                        province_id_view: &cache.textures.province_id_view,
+                        border_index_view: &cache.textures.border_index_view,
+                        distance_field_view: &cache.textures.distance_field_view,
+                        province_data_buffer: &province_buffer,
+                        border_style_buffer: &cache.border_style_buffer,
+                        terrain_texture_view: terrain_view,
+                        terrain_texture_sampler: terrain_sampler,
+                    },
+                ));
+                transient_province_buffer = Some(province_buffer);
+                transient_bind_group.as_ref().unwrap()
+            } else {
+                &cache.data_bind_group
+            };
+            {
+                let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                    label: Some("province_map_pass"),
+                    color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                        view,
+                        resolve_target: None,
+                        ops: wgpu::Operations {
+                            load: color_load,
+                            store: wgpu::StoreOp::Store,
+                        },
+                    })],
+                    depth_stencil_attachment: None,
+                    ..Default::default()
+                });
+                pass.set_pipeline(&self.province_map_pipeline.pipeline);
+                pass.set_bind_group(0, data_bind_group, &[]);
+                pass.set_bind_group(1, &self.province_map_pipeline.uniform_bind_group, &[]);
+                pass.draw(0..3, 0..1);
+            }
+            drop(transient_bind_group);
+            drop(transient_province_buffer);
+            self.render_stats.draw_calls += 1;
+            *screen_started = true;
+        }
+    }
     /// Renders a full frame of deferred draw commands to the surface swapchain texture.
     #[allow(clippy::too_many_arguments)]
     pub fn render_frame(
         &mut self,
         surface: &wgpu::Surface<'static>,
         commands: &[RenderCommand],
+        province_registries: &HashMap<String, crate::province::registry::ProvinceRegistry>,
         textures: &SlotMap<TextureKey, TextureData>,
         fonts: &mut SlotMap<FontKey, crate::font::Font>,
         light_world: &crate::light::light_world::LightWorld,
@@ -731,6 +1085,7 @@ impl GpuRenderer {
         let render_input_limits = RenderInputLimits::default();
         let mut pending_postfx: Vec<(u64, Vec<crate::render::renderer::PostFxPass>, u32, u32)> =
             Vec::new();
+        let mut pending_province_maps: Vec<PendingProvinceMapDraw> = Vec::new();
         for cmd in commands {
             if let Err(err) = validate_render_command_with_category(cmd, &render_input_limits) {
                 self.render_diagnostics.record_invalid_render_input();
@@ -3309,6 +3664,53 @@ impl GpuRenderer {
                         idxs,
                     );
                 }
+                RenderCommand::DrawProvinceMap {
+                    registry_name,
+                    viewport,
+                    screen_size,
+                    tint,
+                    province_tints,
+                    terrain_texture,
+                    terrain_texture_scale,
+                    terrain_texture_strength,
+                    edge_gradient_color,
+                    edge_gradient_radius,
+                    edge_gradient_strength,
+                    edge_gradient_softness,
+                    border_palette_enabled,
+                    province_border_color,
+                    coast_border_color,
+                    country_border_color,
+                    sea_border_darken,
+                    selected_id,
+                    hovered_id,
+                    zoom_mode,
+                    time,
+                } => {
+                    pending_province_maps.push(PendingProvinceMapDraw {
+                        registry_name: registry_name.clone(),
+                        viewport: *viewport,
+                        screen_size: *screen_size,
+                        tint: *tint,
+                        province_tints: province_tints.clone(),
+                        terrain_texture: *terrain_texture,
+                        terrain_texture_scale: *terrain_texture_scale,
+                        terrain_texture_strength: *terrain_texture_strength,
+                        edge_gradient_color: *edge_gradient_color,
+                        edge_gradient_radius: *edge_gradient_radius,
+                        edge_gradient_strength: *edge_gradient_strength,
+                        edge_gradient_softness: *edge_gradient_softness,
+                        border_palette_enabled: *border_palette_enabled,
+                        province_border_color: *province_border_color,
+                        coast_border_color: *coast_border_color,
+                        country_border_color: *country_border_color,
+                        sea_border_darken: *sea_border_darken,
+                        selected_id: *selected_id,
+                        hovered_id: *hovered_id,
+                        zoom_mode: *zoom_mode,
+                        time: *time,
+                    });
+                }
             }
         }
         self.render_stats.batched_draws +=
@@ -3410,6 +3812,16 @@ impl GpuRenderer {
                 label: Some("render_encoder"),
             });
         let mut screen_started = false;
+        if !pending_province_maps.is_empty() {
+            self.draw_province_maps_to_screen(
+                &mut encoder,
+                &view,
+                &pending_province_maps,
+                province_registries,
+                background_color,
+                &mut screen_started,
+            );
+        }
         let mut touched_canvases: HashSet<CanvasKey> = HashSet::new();
         let mut cursor = 0usize;
         while cursor < draws.len() {

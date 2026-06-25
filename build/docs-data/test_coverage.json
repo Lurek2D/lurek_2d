@@ -1,8 +1,8 @@
 {
   "rust": {
-    "total": 6764,
-    "covered": 3817,
-    "uncovered": 2947,
+    "total": 6770,
+    "covered": 3821,
+    "uncovered": 2949,
     "coverage_pct": 56.4,
     "covered_items": [
       {
@@ -1479,19 +1479,19 @@
         "module": "app",
         "name": "LurekApp::extract_lurek_archive_with_policy",
         "file": "src/app/app.rs",
-        "line": 2690
+        "line": 2697
       },
       {
         "module": "app",
         "name": "App::new",
         "file": "src/app/app.rs",
-        "line": 4229
+        "line": 4236
       },
       {
         "module": "app",
         "name": "App::run",
         "file": "src/app/app.rs",
-        "line": 4233
+        "line": 4240
       },
       {
         "module": "app",
@@ -10521,7 +10521,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1746
+        "line": 1754
       },
       {
         "module": "lua_api",
@@ -10719,7 +10719,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/province_api.rs",
-        "line": 1342
+        "line": 1650
       },
       {
         "module": "lua_api",
@@ -16869,7 +16869,13 @@
         "module": "province",
         "name": "build_border_index_from_registry",
         "file": "src/province/border_index.rs",
-        "line": 161
+        "line": 195
+      },
+      {
+        "module": "province",
+        "name": "build_styled_border_index_from_registry",
+        "file": "src/province/border_index.rs",
+        "line": 208
       },
       {
         "module": "province",
@@ -16909,9 +16915,15 @@
       },
       {
         "module": "province",
+        "name": "build_dense_gpu_records",
+        "file": "src/province/gpu_bridge.rs",
+        "line": 65
+      },
+      {
+        "module": "province",
         "name": "build_border_style_gpu_records",
         "file": "src/province/gpu_bridge.rs",
-        "line": 56
+        "line": 118
       },
       {
         "module": "province",
@@ -17233,9 +17245,21 @@
       },
       {
         "module": "province",
+        "name": "generate_capital_path_commands",
+        "file": "src/province/render.rs",
+        "line": 140
+      },
+      {
+        "module": "province",
+        "name": "viewport_bounds",
+        "file": "src/province/render.rs",
+        "line": 236
+      },
+      {
+        "module": "province",
         "name": "generate_render_commands",
         "file": "src/province/render.rs",
-        "line": 187
+        "line": 311
       },
       {
         "module": "province",
@@ -18015,13 +18039,13 @@
         "module": "render",
         "name": "GpuRenderer::new",
         "file": "src/render/gpu_renderer.rs",
-        "line": 427
+        "line": 598
       },
       {
         "module": "render",
         "name": "GpuRenderer::resize",
         "file": "src/render/gpu_renderer.rs",
-        "line": 650
+        "line": 824
       },
       {
         "module": "render",
@@ -18195,13 +18219,13 @@
         "module": "render",
         "name": "validate_render_command_with_category",
         "file": "src/render/input_validation.rs",
-        "line": 625
+        "line": 676
       },
       {
         "module": "render",
         "name": "validate_compound_shape",
         "file": "src/render/input_validation.rs",
-        "line": 636
+        "line": 687
       },
       {
         "module": "render",
@@ -18363,13 +18387,13 @@
         "module": "render",
         "name": "ProvinceMapUniforms::full_map",
         "file": "src/render/province_map_pipeline.rs",
-        "line": 33
+        "line": 77
       },
       {
         "module": "render",
         "name": "ProvinceMapPipeline::new",
         "file": "src/render/province_map_pipeline.rs",
-        "line": 61
+        "line": 119
       },
       {
         "module": "render",
@@ -18489,19 +18513,19 @@
         "module": "render",
         "name": "RenderCommand::category",
         "file": "src/render/renderer.rs",
-        "line": 600
+        "line": 622
       },
       {
         "module": "render",
         "name": "TextureData::new",
         "file": "src/render/renderer.rs",
-        "line": 688
+        "line": 712
       },
       {
         "module": "render",
         "name": "TextureData::mark_dirty",
         "file": "src/render/renderer.rs",
-        "line": 704
+        "line": 728
       },
       {
         "module": "render",
@@ -29315,7 +29339,7 @@
         "module": "globe",
         "name": "project_arc",
         "file": "src/globe/draw.rs",
-        "line": 699
+        "line": 704
       },
       {
         "module": "globe",
@@ -31079,7 +31103,7 @@
         "module": "lua_api",
         "name": "LuaProvinceRegistry::with_registry",
         "file": "src/lua_api/province_api.rs",
-        "line": 203
+        "line": 275
       },
       {
         "module": "lua_api",
@@ -35727,9 +35751,15 @@
       },
       {
         "module": "province",
+        "name": "dilate_border_index_with_registry_styles",
+        "file": "src/province/border_index.rs",
+        "line": 144
+      },
+      {
+        "module": "province",
         "name": "build_gpu_records",
         "file": "src/province/gpu_bridge.rs",
-        "line": 40
+        "line": 49
       },
       {
         "module": "province",
@@ -35904,6 +35934,12 @@
         "name": "ProvinceRegistry::get_map_mode_config",
         "file": "src/province/registry.rs",
         "line": 461
+      },
+      {
+        "module": "province",
+        "name": "resolve_zoom_mode",
+        "file": "src/province/render.rs",
+        "line": 289
       },
       {
         "module": "province",
@@ -36449,7 +36485,7 @@
         "module": "render",
         "name": "GpuRenderer::render_frame",
         "file": "src/render/gpu_renderer.rs",
-        "line": 668
+        "line": 1006
       },
       {
         "module": "render",
@@ -36737,13 +36773,13 @@
         "module": "render",
         "name": "ProvinceMapPipeline::create_data_bind_group",
         "file": "src/render/province_map_pipeline.rs",
-        "line": 204
+        "line": 330
       },
       {
         "module": "render",
         "name": "ProvinceMapPipeline::update_uniforms",
         "file": "src/render/province_map_pipeline.rs",
-        "line": 242
+        "line": 378
       },
       {
         "module": "render",
@@ -40594,8 +40630,8 @@
     ]
   },
   "lua": {
-    "total": 6271,
-    "covered": 6271,
+    "total": 6273,
+    "covered": 6273,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -55948,798 +55984,798 @@
         "lua_name": "LGlobe:addProvince",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 333
+        "line": 338
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:removeProvince",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 351
+        "line": 356
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:addRegion",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 358
+        "line": 363
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:removeRegion",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 382
+        "line": 387
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:addTerrainPatch",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 389
+        "line": 394
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:removeTerrainPatch",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 413
+        "line": 418
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:terrainPatchCount",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 419
+        "line": 424
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:provinceCount",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 425
+        "line": 430
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:regionCount",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 431
+        "line": 436
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 436
+        "line": 441
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setEdgeTags",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 454
+        "line": 459
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getEdgeTags",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 473
+        "line": 478
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setProvinceAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 487
+        "line": 492
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getProvinceAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 505
+        "line": 510
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setRegionAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 517
+        "line": 522
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getRegionAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 535
+        "line": 540
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setTerrainPatchAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 547
+        "line": 552
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getTerrainPatchAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 565
+        "line": 570
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setRegionColor",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 582
+        "line": 587
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setRegionVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 606
+        "line": 611
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setProvinceTexture",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 625
+        "line": 630
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:clearProvinceTexture",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 644
+        "line": 649
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setTerrainPatchTexture",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 664
+        "line": 669
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:clearTerrainPatchTexture",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 684
+        "line": 689
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:validateTerrainCoverage",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 699
+        "line": 704
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setProvinceSector",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 730
+        "line": 738
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getProvinceSector",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 740
+        "line": 748
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getSectorProvinces",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 747
+        "line": 755
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setHeatLayer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 762
+        "line": 770
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:removeHeatLayer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 784
+        "line": 792
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:pan",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 791
+        "line": 799
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:zoom",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 797
+        "line": 805
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setCamera",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 805
+        "line": 813
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getCamera",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 818
+        "line": 826
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:screenDeltaToPan",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 827
+        "line": 835
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:applyMouseDrag",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 836
+        "line": 844
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:applyWheelZoom",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 845
+        "line": 853
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getLod",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 854
+        "line": 862
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:pick",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 869
+        "line": 877
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:screenToLatLon",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 881
+        "line": 889
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:pickRaycast",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 899
+        "line": 907
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:pickLatLon",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 926
+        "line": 934
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:pickRegions",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 937
+        "line": 945
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:regionsAtLatLon",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 950
+        "line": 958
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:pickMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 965
+        "line": 973
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:pickSurface",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 977
+        "line": 985
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setActiveViewer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1007
+        "line": 1015
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setFogState",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1015
+        "line": 1023
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getFogState",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1031
+        "line": 1039
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:encodeFogBase64",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1045
+        "line": 1053
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:decodeFogBase64",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1053
+        "line": 1061
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:revealProvince",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1063
+        "line": 1071
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:hideProvince",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1070
+        "line": 1078
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:isVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1078
+        "line": 1086
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:revealAll",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1084
+        "line": 1092
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:addMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1099
+        "line": 1107
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:removeMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1113
+        "line": 1121
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:moveMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1122
+        "line": 1130
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setMarkerVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1131
+        "line": 1139
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setMarkerPulse",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1140
+        "line": 1148
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setMarkerRotation",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1159
+        "line": 1167
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setMarkerAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1175
+        "line": 1183
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getMarkerAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1186
+        "line": 1194
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setMarkerColor",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1197
+        "line": 1205
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setMarkerSize",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1221
+        "line": 1229
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setMarkerShape",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1237
+        "line": 1245
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setMarkerIconTexture",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1253
+        "line": 1261
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:distanceBetweenMarkers",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1271
+        "line": 1279
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:addLabel",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1281
+        "line": 1289
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setLabelText",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1296
+        "line": 1304
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setLabelVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1304
+        "line": 1312
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:removeLabel",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1311
+        "line": 1319
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:addLayer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1318
+        "line": 1326
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:removeLayer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1337
+        "line": 1345
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setLayerColor",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1349
+        "line": 1357
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setLayerVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1364
+        "line": 1372
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setLayerAlpha",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1372
+        "line": 1380
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setTimeOfDay",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1378
+        "line": 1386
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getTimeOfDay",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1385
+        "line": 1393
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setRotation",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1391
+        "line": 1399
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setAutoRotationSpeed",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1398
+        "line": 1406
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:update",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1405
+        "line": 1413
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:setBorders",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1409
+        "line": 1417
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:draw",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1415
+        "line": 1423
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:findPath",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1441
+        "line": 1449
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:findPathWithCosts",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1463
+        "line": 1471
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:reachable",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1490
+        "line": 1498
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:reachableWithCosts",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1509
+        "line": 1517
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:cacheReachability",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1528
+        "line": 1536
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getCachedReachability",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1541
+        "line": 1549
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:exportProvinceMeshOBJ",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1554
+        "line": 1562
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:addArc",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1565
+        "line": 1573
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:removeArc",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1592
+        "line": 1600
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:getName",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1598
+        "line": 1606
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:type",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1605
+        "line": 1613
       },
       {
         "module": "globe",
         "lua_name": "LGlobe:typeOf",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1610
+        "line": 1618
       },
       {
         "module": "globe",
         "lua_name": "LGlobeRegistry:new",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1631
+        "line": 1639
       },
       {
         "module": "globe",
         "lua_name": "LGlobeRegistry:get",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1652
+        "line": 1660
       },
       {
         "module": "globe",
         "lua_name": "LGlobeRegistry:remove",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1673
+        "line": 1681
       },
       {
         "module": "globe",
         "lua_name": "LGlobeRegistry:names",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1683
+        "line": 1691
       },
       {
         "module": "globe",
         "lua_name": "LGlobeRegistry:type",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1698
+        "line": 1706
       },
       {
         "module": "globe",
         "lua_name": "LGlobeRegistry:typeOf",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1703
+        "line": 1711
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.newRegistry",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1753
+        "line": 1761
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.new",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1770
+        "line": 1778
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.get",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1794
+        "line": 1802
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.remove",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1820
+        "line": 1828
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.loadFromTOMLFile",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1837
+        "line": 1845
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.loadFromTOML",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1872
+        "line": 1880
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.loadFromPNG",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1907
+        "line": 1915
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.generateVoronoi",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1941
+        "line": 1949
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.greatCircleDistance",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1980
+        "line": 1988
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.greatCirclePath",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 1996
+        "line": 2004
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.latLonToUnit",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 2018
+        "line": 2026
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.raySphereIntersect",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 2039
+        "line": 2047
       },
       {
         "module": "grep",
@@ -72223,420 +72259,434 @@
         "lua_name": "LProvinceRegistry:getName",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 223
+        "line": 295
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getWidth",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 227
+        "line": 299
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getHeight",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 231
+        "line": 303
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getAt",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 239
+        "line": 311
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:fitCamera",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 248
+        "line": 320
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:screenToMap",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 271
+        "line": 343
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:screenToProvince",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 303
+        "line": 375
+      },
+      {
+        "module": "province",
+        "lua_name": "LProvinceRegistry:viewportRect",
+        "kind": "method",
+        "file": "src/lua_api/province_api.rs",
+        "line": 411
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:provinceCount",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 338
+        "line": 450
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:provinceIds",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 344
+        "line": 456
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:adjacencies",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 357
+        "line": 469
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:provinceSpans",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 377
+        "line": 489
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:borderSegments",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 403
+        "line": 515
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getRevision",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 427
+        "line": 539
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getProvince",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 439
+        "line": 551
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 490
+        "line": 602
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:findRoute",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 504
+        "line": 616
+      },
+      {
+        "module": "province",
+        "lua_name": "LProvinceRegistry:drawCapitalPath",
+        "kind": "method",
+        "file": "src/lua_api/province_api.rs",
+        "line": 673
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:findRoutes",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 561
+        "line": 739
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getConnectedComponents",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 623
+        "line": 801
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:findIsolatedProvinces",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 649
+        "line": 827
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:isConnected",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 686
+        "line": 864
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:totalAttrForOwner",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 708
+        "line": 886
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getBorderType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 745
+        "line": 923
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 754
+        "line": 932
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getBorderClass",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 768
+        "line": 946
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderClass",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 777
+        "line": 955
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:registerBorderType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 790
+        "line": 968
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderPairStyle",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 821
+        "line": 999
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getBorderPairStyle",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 836
+        "line": 1014
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setPoliticalColor",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 867
+        "line": 1045
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setTerrainType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 880
+        "line": 1058
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderStyle",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 891
+        "line": 1069
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setFogState",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 902
+        "line": 1080
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setVisibilityState",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 910
+        "line": 1088
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setAttr",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 924
+        "line": 1102
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setCapital",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 936
+        "line": 1114
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setLabelLine",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 947
+        "line": 1125
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setLabelText",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 958
+        "line": 1136
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:importMetadataFromFiles",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 969
+        "line": 1147
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:render",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1044
+        "line": 1222
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getChangesSince",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1153
+        "line": 1461
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:registerMapMode",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1272
+        "line": 1580
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setMapMode",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1317
+        "line": 1625
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getMapMode",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1324
+        "line": 1632
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:type",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1331
+        "line": 1639
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:typeOf",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1336
+        "line": 1644
       },
       {
         "module": "province",
         "lua_name": "lurek.province.newFromPng",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1350
+        "line": 1658
       },
       {
         "module": "province",
         "lua_name": "lurek.province.sanitizeMarkedPng",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1376
+        "line": 1684
       },
       {
         "module": "province",
         "lua_name": "lurek.province.get",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1400
+        "line": 1708
       },
       {
         "module": "province",
         "lua_name": "lurek.province.exists",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1419
+        "line": 1727
       },
       {
         "module": "province",
         "lua_name": "lurek.province.remove",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1430
+        "line": 1738
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setActive",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1446
+        "line": 1754
       },
       {
         "module": "province",
         "lua_name": "lurek.province.getActive",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1462
+        "line": 1770
       },
       {
         "module": "province",
         "lua_name": "lurek.province.zoomCameraAt",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1481
+        "line": 1789
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setProperty",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1505
+        "line": 1813
       },
       {
         "module": "province",
         "lua_name": "lurek.province.getProperty",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1520
+        "line": 1828
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setAttr",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1532
+        "line": 1840
       },
       {
         "module": "province",
         "lua_name": "lurek.province.getAttr",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1547
+        "line": 1855
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setFlag",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1562
+        "line": 1870
       },
       {
         "module": "province",
         "lua_name": "lurek.province.hasFlag",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1575
+        "line": 1883
       },
       {
         "module": "province",
         "lua_name": "lurek.province.clearProperties",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 1585
+        "line": 1893
       },
       {
         "module": "raycaster",

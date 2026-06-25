@@ -51,7 +51,39 @@ local function unrest_color(province)
     return color_mix({ 0.22, 0.45, 0.23, 1.0 }, { 0.88, 0.08, 0.05, 1.0 }, t)
 end
 
+local function terrain_color(province)
+    local terrain = tostring(province and province.terrain or ""):lower()
+    if province and province.owner == "SEA" then
+        return { 0.18, 0.38, 0.60, 1.0 }
+    end
+    if terrain == "forest" then
+        return { 0.30, 0.55, 0.34, 1.0 }
+    end
+    if terrain == "mountain" then
+        return { 0.48, 0.46, 0.42, 1.0 }
+    end
+    if terrain == "desert" then
+        return { 0.78, 0.64, 0.36, 1.0 }
+    end
+    if terrain == "marsh" then
+        return { 0.35, 0.56, 0.52, 1.0 }
+    end
+    return { 0.42, 0.62, 0.35, 1.0 }
+end
+
+local function political_base_color(state, province)
+    local country = state.countries[province.owner]
+    if country and country.color then
+        return country.color
+    end
+    local neutral = state.countries.NEU
+    return neutral and neutral.color or { 126 / 255, 126 / 255, 118 / 255, 1.0 }
+end
+
 local function province_color(state, province, mode)
+    if mode == "terrain" then
+        return terrain_color(province)
+    end
     if mode == "economy" then
         return economy_color(province)
     end
@@ -61,8 +93,7 @@ local function province_color(state, province, mode)
     if mode == "unrest" then
         return unrest_color(province)
     end
-    local country = state.countries[province.owner] or state.countries.NEU
-    return country.color or { 0.5, 0.5, 0.5, 1.0 }
+    return political_base_color(state, province)
 end
 
 local function apply_country_borders(reg, state)
@@ -81,19 +112,21 @@ local function apply_country_borders(reg, state)
             local b_sea = b.owner == "SEA"
             if a_sea ~= b_sea then
                 reg:setBorderPairStyle(pair.province_a, pair.province_b, {
-                    color = { 1.0, 0.82, 0.25, 1.0 },
-                    thickness = 4.0,
-                    flags = { "country" },
+                    thickness = 1.0,
+                    flags = {},
                 })
             elseif a.owner ~= b.owner and not a_sea and not b_sea then
                 reg:setBorderPairStyle(pair.province_a, pair.province_b, {
-                    color = { 0.95, 0.18, 0.14, 1.0 },
-                    thickness = 3.0,
+                    thickness = 1.5,
                     flags = { "country" },
+                })
+            elseif a_sea and b_sea then
+                reg:setBorderPairStyle(pair.province_a, pair.province_b, {
+                    thickness = 1.0,
+                    flags = {},
                 })
             else
                 reg:setBorderPairStyle(pair.province_a, pair.province_b, {
-                    color = { 0.10, 0.10, 0.10, 0.35 },
                     thickness = 1.0,
                     flags = {},
                 })
@@ -103,10 +136,11 @@ local function apply_country_borders(reg, state)
     state.applied_border_revision = state.border_revision
 end
 
-local function mode_cache(state, mode)
-    if state.mode_color_cache_revision ~= state.style_revision then
+local function mode_cache(state, mode, revision_key)
+    revision_key = revision_key or tostring(state.style_revision or 0)
+    if state.mode_color_cache_revision ~= revision_key then
         state.mode_color_cache = {}
-        state.mode_color_cache_revision = state.style_revision
+        state.mode_color_cache_revision = revision_key
     end
     state.mode_color_cache[mode] = state.mode_color_cache[mode] or {}
     return state.mode_color_cache[mode]
@@ -120,25 +154,50 @@ local function apply_visibility(reg, state)
         return
     end
     for id, province in pairs(state.provinces) do
-        reg:setVisibilityState(id, province.owner == "SEA" and 2 or 255)
+        local terrain = tostring(province.terrain or ""):lower()
+        if terrain == "terra_incognita" then
+            reg:setVisibilityState(id, 0)
+        else
+            reg:setVisibilityState(id, province.owner == "SEA" and 2 or 255)
+        end
     end
     state.applied_visibility_revision = state.style_revision
+end
+
+local function color_key(state, mode)
+    return table.concat({
+        mode,
+        tostring(state.style_revision or 0),
+        tostring(state.revision or 0),
+    }, ":")
+end
+
+local function apply_mode_colors(reg, state, mode)
+    local key = color_key(state, mode)
+    local colors = mode_cache(state, mode, key)
+    for id, province in pairs(state.provinces) do
+        if not colors[id] then
+            colors[id] = province_color(state, province, mode)
+        end
+    end
+    if not reg.setPoliticalColor then
+        return colors
+    end
+    if state.applied_map_color_key == key then
+        return nil
+    end
+    for id, color in pairs(colors) do
+        reg:setPoliticalColor(id, color[1], color[2], color[3], color[4])
+    end
+    state.applied_map_color_key = key
+    return nil
 end
 
 function M.apply(reg, state, mode)
     state.map_mode = mode
     apply_country_borders(reg, state)
     apply_visibility(reg, state)
-    if mode == "terrain" then
-        return "terrain", nil
-    end
-    local colors = mode_cache(state, mode)
-    for id, province in pairs(state.provinces) do
-        if not colors[id] then
-            colors[id] = province_color(state, province, mode)
-        end
-    end
-    return "political", colors
+    return "political", apply_mode_colors(reg, state, mode)
 end
 
 return M

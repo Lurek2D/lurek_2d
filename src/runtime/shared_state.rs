@@ -23,6 +23,7 @@ use crate::mods::ModSandbox;
 use crate::parallax::ParallaxLayer;
 use crate::particle::ParticleSystem;
 use crate::province::registry::ProvinceRegistry;
+use crate::province::types::ProvinceId;
 use crate::province::ProvinceProperties;
 use crate::raycaster::RaycasterScene;
 use crate::render::gpu_state::RenderStats;
@@ -43,6 +44,28 @@ use std::path::PathBuf;
 use std::rc::Weak;
 use std::sync::Arc;
 use winit::window::Window;
+
+/// Cached texture handle for engine-generated province segment rasters.
+#[derive(Debug, Clone)]
+pub struct ProvinceSegmentTextureCache {
+    /// Texture slot containing the last generated raster.
+    pub texture_key: TextureKey,
+    /// Registry revision used for the cached raster.
+    pub registry_revision: u64,
+    /// Render-option fingerprint used for the cached raster.
+    pub options_fingerprint: u64,
+    /// Cached texture width in pixels.
+    pub width: u32,
+    /// Cached texture height in pixels.
+    pub height: u32,
+    /// Left map cell included in the cached raster.
+    pub map_x: u32,
+    /// Top map cell included in the cached raster.
+    pub map_y: u32,
+    /// Last render-time province tints used to generate this cache.
+    pub province_tints: HashMap<ProvinceId, [f32; 4]>,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Runtime enum for FullscreenType.
 pub enum FullscreenType {
@@ -538,6 +561,8 @@ pub struct SharedState {
     pub active_province_registry: Option<String>,
     /// Generic per-province property store for game-defined key-value data.
     pub province_properties: ProvinceProperties,
+    /// Engine-generated province segment textures keyed by registry name.
+    pub province_segment_texture_cache: HashMap<String, ProvinceSegmentTextureCache>,
 }
 /// Core constructor and frame-lifecycle methods for SharedState.
 impl SharedState {
@@ -637,6 +662,7 @@ impl SharedState {
             province_registries: HashMap::new(),
             active_province_registry: None,
             province_properties: ProvinceProperties::new(),
+            province_segment_texture_cache: HashMap::new(),
         }
     }
     /// Advance the frame clock and update delta time, FPS, and total time.

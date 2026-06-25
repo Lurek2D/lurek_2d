@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-25T09:33:24.499149+00:00",
+    "generated": "2026-06-25T15:01:19.711753+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6271,
-    "marker_covered": 6246,
+    "total_api_functions": 6273,
+    "marker_covered": 6248,
     "describe_covered": 152,
     "describe_coverage_pct": 2.4,
     "heuristic_covered": 0,
-    "total_covered": 6271,
+    "total_covered": 6273,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -41565,14 +41565,14 @@
       ]
     },
     "province": {
-      "total": 60,
-      "marker_covered": 60,
+      "total": 62,
+      "marker_covered": 62,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 60,
+      "covered": 62,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 1.7,
-      "describe_score": 0.017,
+      "describe_coverage_pct": 1.6,
+      "describe_score": 0.016,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_province_unit.lua"
@@ -41780,6 +41780,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LProvinceRegistry:viewportRect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LProvinceRegistry:provinceCount",
           "kind": "method",
           "marker_covered": true,
@@ -41853,6 +41862,15 @@
         },
         {
           "lua_name": "LProvinceRegistry:findRoute",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LProvinceRegistry:drawCapitalPath",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

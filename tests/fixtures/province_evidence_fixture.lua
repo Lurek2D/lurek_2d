@@ -255,9 +255,9 @@ local function draw_border_overlay(canvas, loaded, x, y, scale, all_alpha, count
         local b = state_province(loaded, segment.province_b)
         local sea_edge = a and b and ((a.owner == "SEA") ~= (b.owner == "SEA"))
         local country_edge = a and b and a.owner ~= b.owner and a.owner ~= "SEA" and b.owner ~= "SEA"
-        local r, g, bl, alpha = 30, 34, 42, all_alpha or 130
+        local r, g, bl, alpha = 64, 64, 60, all_alpha or 130
         if sea_edge then
-            r, g, bl, alpha = 255, 224, 110, country_alpha or 230
+            r, g, bl, alpha = 224, 196, 128, country_alpha or 230
         elseif country_edge then
             r, g, bl, alpha = 240, 78, 72, country_alpha or 230
         end
@@ -330,9 +330,9 @@ function Fixture.render_border_segments(loaded)
     local canvas = image_canvas(790, 420, "PROVINCE BORDERS", "internal borders, country borders, and coast/sea borders")
     canvas:paste(scaled_source(loaded.sanitized_path, math.floor(registry:getWidth() * scale), math.floor(registry:getHeight() * scale)), 28, 72)
     draw_border_overlay(canvas, loaded, 28, 72, scale, 128, 245)
-    draw_text(canvas, "GRAY LOCAL", 626, 96, 1, 204, 214, 228)
+    draw_text(canvas, "DARK GRAY LOCAL", 626, 96, 1, 204, 214, 228)
     draw_text(canvas, "RED COUNTRY", 626, 120, 1, 240, 78, 72)
-    draw_text(canvas, "GOLD COAST", 626, 144, 1, 255, 224, 110)
+    draw_text(canvas, "SAND COAST", 626, 144, 1, 224, 196, 128)
     draw_text(canvas, "SEG " .. tostring(#registry:borderSegments()), 626, 190, 1, 238, 242, 248)
     return canvas
 end
@@ -395,6 +395,65 @@ local function draw_route(canvas, loaded, route, x, y, scale, progress)
                 r, g, b = 120, 230, 150
             end
             draw_centroid_marker(canvas, x + math.floor(cx * scale), y + math.floor(cy * scale), r, g, b)
+        end
+    end
+end
+
+local function draw_outline_rect(canvas, x, y, w, h, r, g, b, a)
+    canvas:drawLine(x, y, x + w, y, r, g, b, a)
+    canvas:drawLine(x + w, y, x + w, y + h, r, g, b, a)
+    canvas:drawLine(x + w, y + h, x, y + h, r, g, b, a)
+    canvas:drawLine(x, y + h, x, y, r, g, b, a)
+end
+
+local function draw_thick_line(canvas, x0, y0, x1, y1, r, g, b, a, thickness)
+    local radius = math.max(0, math.floor((thickness or 1) / 2))
+    for offset = -radius, radius do
+        canvas:drawLine(x0 + offset, y0, x1 + offset, y1, r, g, b, a)
+        if offset ~= 0 then
+            canvas:drawLine(x0, y0 + offset, x1, y1 + offset, r, g, b, a)
+        end
+    end
+end
+
+local function pair_key(a, b)
+    if a > b then
+        a, b = b, a
+    end
+    return tostring(a) .. ":" .. tostring(b)
+end
+
+local function draw_curved_route(canvas, loaded, route, x, y, scale, visual_scale)
+    visual_scale = visual_scale or 1
+    for i = 1, #route - 1 do
+        local a = loaded.registry:getProvince(route[i])
+        local b = loaded.registry:getProvince(route[i + 1])
+        local ax, ay = province_centroid(a)
+        local bx, by = province_centroid(b)
+        if ax and ay and bx and by then
+            local dx, dy = bx - ax, by - ay
+            local len = math.max(1, math.sqrt(dx * dx + dy * dy))
+            local cx = (ax + bx) * 0.5 + (-dy / len) * 18
+            local cy = (ay + by) * 0.5 + (dx / len) * 18
+            local last_x = x + math.floor(ax * scale)
+            local last_y = y + math.floor(ay * scale)
+            for step = 1, 12 do
+                local t = step / 12
+                local mt = 1 - t
+                local qx = mt * mt * ax + 2 * mt * t * cx + t * t * bx
+                local qy = mt * mt * ay + 2 * mt * t * cy + t * t * by
+                local px = x + math.floor(qx * scale)
+                local py = y + math.floor(qy * scale)
+                draw_thick_line(canvas, last_x, last_y, px, py, 255, 222, 88, 230, 3 * visual_scale)
+                last_x, last_y = px, py
+            end
+        end
+    end
+    for _, id in ipairs(route) do
+        local snap = loaded.registry:getProvince(id)
+        local cx, cy = province_centroid(snap)
+        if cx and cy then
+            draw_centroid_marker(canvas, x + math.floor(cx * scale), y + math.floor(cy * scale), 255, 222, 88)
         end
     end
 end
@@ -528,6 +587,234 @@ local function prepare_strategy_state(loaded)
             registry:setFogState(id, 0)
         end
     end
+end
+
+local function select_land_adjacencies(loaded, limit)
+    local picked = {}
+    for _, pair in ipairs(loaded.registry:adjacencies()) do
+        local a = state_province(loaded, pair.province_a)
+        local b = state_province(loaded, pair.province_b)
+        if a and b and a.owner ~= "SEA" and b.owner ~= "SEA" then
+            picked[#picked + 1] = pair
+            if limit and #picked >= limit then
+                break
+            end
+        end
+    end
+    return picked
+end
+
+local function prepare_render_plan_state(loaded)
+    prepare_strategy_state(loaded)
+    local registry = loaded.registry
+    local palette = {
+        { 0.74, 0.19, 0.22, 1.0 },
+        { 0.16, 0.43, 0.78, 1.0 },
+        { 0.88, 0.74, 0.20, 1.0 },
+        { 0.36, 0.64, 0.34, 1.0 },
+        { 0.70, 0.38, 0.82, 1.0 },
+    }
+    for i, id in ipairs(interesting_land_ids(loaded, 70)) do
+        local color = palette[((i - 1) % #palette) + 1]
+        registry:setPoliticalColor(id, color[1], color[2], color[3], color[4])
+        registry:setTerrainType(id, 2 + (i % 3))
+    end
+
+    local styled = select_land_adjacencies(loaded, 2)
+    local highlighted = {}
+    if styled[1] then
+        registry:setBorderPairStyle(styled[1].province_a, styled[1].province_b, {
+            color = { 1.0, 0.18, 0.12, 1.0 },
+            thickness = 5.0,
+            flags = { "country" },
+        })
+        highlighted[pair_key(styled[1].province_a, styled[1].province_b)] = { 255, 72, 48, 255, 5 }
+    end
+    if styled[2] then
+        registry:registerBorderType(7, {
+            name = "evidence wide frontier",
+            color = { 44, 132, 255, 255 },
+            thickness = 4.0,
+            draw_priority = 2,
+        })
+        registry:setBorderType(styled[2].province_a, styled[2].province_b, 7)
+        highlighted[pair_key(styled[2].province_a, styled[2].province_b)] = { 44, 132, 255, 245, 4 }
+    end
+    return highlighted
+end
+
+local function draw_runtime_tinted_span_map(canvas, loaded, x, y, scale, tint)
+    tint = tint or { 1, 1, 1 }
+    local row_h = math.max(1, math.floor(scale + 0.5))
+    for _, span in ipairs(loaded.registry:provinceSpans()) do
+        local snap = loaded.registry:getProvince(span.province_id)
+        local color
+        if snap and snap.style and snap.style.political_color then
+            local pc = snap.style.political_color
+            color = {
+                math.floor(clamp(pc[1] * tint[1], 0, 1) * 255),
+                math.floor(clamp(pc[2] * tint[2], 0, 1) * 255),
+                math.floor(clamp(pc[3] * tint[3], 0, 1) * 255),
+            }
+        else
+            local gp = state_province(loaded, span.province_id)
+            color = owner_color(gp and gp.owner)
+        end
+        canvas:drawRect(
+            x + math.floor(span.x0 * scale),
+            y + math.floor(span.y * scale),
+            math.max(1, math.floor((span.x1 - span.x0 + 1) * scale + 0.5)),
+            row_h,
+            color[1],
+            color[2],
+            color[3],
+            255
+        )
+    end
+end
+
+local function draw_terrain_watermark(canvas, loaded, x, y, scale, visual_scale)
+    visual_scale = visual_scale or 1
+    for _, span in ipairs(loaded.registry:provinceSpans()) do
+        local snap = loaded.registry:getProvince(span.province_id)
+        local terrain_type = snap and snap.style and snap.style.terrain_type or 0
+        if terrain_type >= 2 and span.y % 8 == terrain_type % 8 then
+            local px0 = x + math.floor(span.x0 * scale)
+            local px1 = x + math.floor(span.x1 * scale)
+            local py = y + math.floor(span.y * scale)
+            local step = math.max(1, math.floor((terrain_type == 2 and 13 or 17) * visual_scale))
+            for px = px0, px1, step do
+                if terrain_type == 2 then
+                    canvas:drawLine(px, py, px + 4 * visual_scale, py - 4 * visual_scale, 232, 236, 226, 18)
+                    canvas:drawLine(px + 4 * visual_scale, py - 4 * visual_scale, px + 8 * visual_scale, py, 232, 236, 226, 18)
+                elseif terrain_type == 3 then
+                    canvas:drawLine(px, py - 2 * visual_scale, px + 7 * visual_scale, py + 3 * visual_scale, 236, 236, 236, 16)
+                else
+                    canvas:drawRect(px, py, 5 * visual_scale, math.max(1, visual_scale), 232, 236, 226, 14)
+                end
+            end
+        end
+    end
+end
+
+local function draw_styled_runtime_borders(canvas, loaded, x, y, scale, highlighted, visual_scale)
+    visual_scale = visual_scale or 1
+    for _, segment in ipairs(loaded.registry:borderSegments()) do
+        local a = state_province(loaded, segment.province_a)
+        local b = state_province(loaded, segment.province_b)
+        local sea_edge = a and b and ((a.owner == "SEA") ~= (b.owner == "SEA"))
+        local country_edge = a and b and a.owner ~= b.owner and a.owner ~= "SEA" and b.owner ~= "SEA"
+        local r, g, bl, alpha, width = 64, 64, 60, 210, math.max(1, visual_scale)
+        if sea_edge then
+            r, g, bl, alpha, width = 224, 196, 128, 238, math.max(2, visual_scale * 1.4)
+        elseif country_edge then
+            r, g, bl, alpha, width = 230, 48, 44, 245, math.max(2, visual_scale * 1.6)
+        end
+        draw_thick_line(
+            canvas,
+            x + math.floor(segment.x0 * scale),
+            y + math.floor(segment.y0 * scale),
+            x + math.floor(segment.x1 * scale),
+            y + math.floor(segment.y1 * scale),
+            r,
+            g,
+            bl,
+            alpha,
+            width
+        )
+    end
+    for _, segment in ipairs(loaded.registry:borderSegments()) do
+        local style = highlighted[pair_key(segment.province_a, segment.province_b)]
+        if style then
+            local x0 = x + math.floor(segment.x0 * scale)
+            local y0 = y + math.floor(segment.y0 * scale)
+            local x1 = x + math.floor(segment.x1 * scale)
+            local y1 = y + math.floor(segment.y1 * scale)
+            draw_thick_line(canvas, x0, y0, x1, y1, 12, 14, 20, 135, (style[5] + 2) * visual_scale)
+            draw_thick_line(canvas, x0, y0, x1, y1, style[1], style[2], style[3], style[4], style[5] * visual_scale)
+        end
+    end
+end
+
+function Fixture.render_render_plan_overlay(loaded, scale_factor, opts)
+    scale_factor = scale_factor or 1
+    opts = opts or {}
+    local highlighted = prepare_render_plan_state(loaded)
+    local registry = loaded.registry
+    local route = route_between_army_and_target(loaded)
+    loaded.render_plan_path_primitives = registry:drawCapitalPath(route, {
+        mode = "bezier",
+        color = { 1.0, 0.86, 0.22, 1.0 },
+        width = 3.0,
+        curve_offset = 18.0,
+        segments = 12,
+    })
+
+    local canvas = image_canvas(1040 * scale_factor, 620 * scale_factor, "PROVINCE RENDER PLAN", "runtime tint, terrain watermark, styled borders, route, viewport rect")
+    local scale = 0.62 * scale_factor
+    local map_x, map_y = 28 * scale_factor, 80 * scale_factor
+    local text_scale = math.max(1, math.floor(scale_factor + 0.5))
+    draw_runtime_tinted_span_map(canvas, loaded, map_x, map_y, scale, { 0.92, 0.98, 1.02 })
+    local show_watermark = opts.show_watermark
+    if show_watermark == nil then
+        show_watermark = scale_factor <= 1
+    end
+    if show_watermark then
+        draw_terrain_watermark(canvas, loaded, map_x, map_y, scale, scale_factor)
+    end
+    draw_styled_runtime_borders(canvas, loaded, map_x, map_y, scale, highlighted, scale_factor)
+    local show_route = opts.show_route
+    if show_route == nil then
+        show_route = scale_factor <= 1
+    end
+    if show_route then
+        draw_curved_route(canvas, loaded, route, map_x, map_y, scale, scale_factor)
+    end
+
+    local viewport = registry:viewportRect({
+        x = -118,
+        y = -76,
+        zoom = 1.85,
+        pixel_size = 1.0,
+        screen_w = 430,
+        screen_h = 240,
+    })
+    local vx = map_x + math.floor(viewport.x * scale)
+    local vy = map_y + math.floor(viewport.y * scale)
+    local vw = math.floor(viewport.w * scale)
+    local vh = math.floor(viewport.h * scale)
+    local show_viewport = opts.show_viewport
+    if show_viewport == nil then
+        show_viewport = scale_factor <= 1
+    end
+    if show_viewport then
+        draw_outline_rect(canvas, vx - 1, vy - 1, vw + 2, vh + 2, 8, 12, 18, 230)
+        draw_outline_rect(canvas, vx, vy, vw, vh, 84, 232, 255, 255)
+    end
+
+    local inset_x, inset_y, inset_scale = 690 * scale_factor, 104 * scale_factor, 0.30 * scale_factor
+    canvas:drawRect(inset_x - 6 * scale_factor, inset_y - 6 * scale_factor, 284 * scale_factor, 164 * scale_factor, 26, 32, 46, 255)
+    draw_runtime_tinted_span_map(canvas, loaded, inset_x, inset_y, inset_scale, { 0.82, 0.88, 0.92 })
+    draw_styled_runtime_borders(canvas, loaded, inset_x, inset_y, inset_scale, highlighted, scale_factor)
+    draw_outline_rect(
+        canvas,
+        inset_x + math.floor(viewport.x * inset_scale),
+        inset_y + math.floor(viewport.y * inset_scale),
+        math.floor(viewport.w * inset_scale),
+        math.floor(viewport.h * inset_scale),
+        84,
+        232,
+        255,
+        255
+    )
+
+    draw_text(canvas, "UNIFORM TINT", 704 * scale_factor, 304 * scale_factor, text_scale, 238, 242, 248)
+    draw_text(canvas, "8X8 WATERMARK", 704 * scale_factor, 328 * scale_factor, text_scale, 232, 236, 226)
+    draw_text(canvas, "PAIR STYLE RED", 704 * scale_factor, 352 * scale_factor, text_scale, 255, 72, 48)
+    draw_text(canvas, "TYPE WIDTH BLUE", 704 * scale_factor, 376 * scale_factor, text_scale, 44, 132, 255)
+    draw_text(canvas, "CAPITAL BEZIER " .. tostring(loaded.render_plan_path_primitives or 0), 704 * scale_factor, 400 * scale_factor, text_scale, 255, 222, 88)
+    draw_text(canvas, "VIEWPORT " .. tostring(math.floor(viewport.w)) .. "X" .. tostring(math.floor(viewport.h)), 704 * scale_factor, 424 * scale_factor, text_scale, 84, 232, 255)
+    return canvas
 end
 
 function Fixture.render_strategy_modes(loaded)

@@ -115,7 +115,9 @@ fn parse_attrs_table(tbl: LuaTable, label: &str) -> LuaResult<HashMap<String, St
     let mut attrs = HashMap::new();
     for pair in tbl.pairs::<String, String>() {
         let (key, val) = pair.map_err(|err| {
-            LuaError::RuntimeError(format!("lurek.globe: {label} attrs must be string keys and values: {err}"))
+            LuaError::RuntimeError(format!(
+                "lurek.globe: {label} attrs must be string keys and values: {err}"
+            ))
         })?;
         attrs.insert(key, val);
     }
@@ -212,7 +214,10 @@ fn parse_region_table_with_options(
         .map(|tbl| parse_region_parts(tbl, kind, id))
         .transpose()?;
     let vertices = if let Some(parts) = &parts {
-        parts.first().map(|part| part.outer.clone()).unwrap_or_default()
+        parts
+            .first()
+            .map(|part| part.outer.clone())
+            .unwrap_or_default()
     } else {
         match p.get::<_, LuaTable>("vertices") {
             Ok(verts_tbl) => parse_lat_lon_loop(verts_tbl, &format!("{kind} region {id}"))?,
@@ -696,32 +701,35 @@ impl LuaUserData for LuaGlobe {
         /// Samples terrain coverage over equirectangular latitude-longitude space.
         /// @param | opts | table? | Optional `lat_step` and `lon_step` sample spacing in degrees.
         /// @return | table | Coverage report with `ok`, `samples`, `covered_samples`, and `gaps`.
-        methods.add_method("validateTerrainCoverage", |lua, this, opts: Option<LuaTable>| {
-            let lat_step = opts
-                .as_ref()
-                .and_then(|t| t.get::<_, Option<f32>>("lat_step").ok().flatten())
-                .unwrap_or(30.0);
-            let lon_step = opts
-                .as_ref()
-                .and_then(|t| t.get::<_, Option<f32>>("lon_step").ok().flatten())
-                .unwrap_or(30.0);
-            let lat_step = finite_f32(lat_step, "terrain coverage lat_step")?.clamp(1.0, 180.0);
-            let lon_step = finite_f32(lon_step, "terrain coverage lon_step")?.clamp(1.0, 360.0);
-            let report = this.with(|g| g.validate_terrain_coverage(lat_step, lon_step))?;
-            let out = lua.create_table()?;
-            out.set("ok", report.ok)?;
-            out.set("samples", report.samples)?;
-            out.set("covered_samples", report.covered_samples)?;
-            let gaps = lua.create_table()?;
-            for (index, (lat, lon)) in report.gaps.iter().enumerate() {
-                let gap = lua.create_table()?;
-                gap.set("lat", *lat)?;
-                gap.set("lon", *lon)?;
-                gaps.set(index + 1, gap)?;
-            }
-            out.set("gaps", gaps)?;
-            Ok(out)
-        });
+        methods.add_method(
+            "validateTerrainCoverage",
+            |lua, this, opts: Option<LuaTable>| {
+                let lat_step = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("lat_step").ok().flatten())
+                    .unwrap_or(30.0);
+                let lon_step = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("lon_step").ok().flatten())
+                    .unwrap_or(30.0);
+                let lat_step = finite_f32(lat_step, "terrain coverage lat_step")?.clamp(1.0, 180.0);
+                let lon_step = finite_f32(lon_step, "terrain coverage lon_step")?.clamp(1.0, 360.0);
+                let report = this.with(|g| g.validate_terrain_coverage(lat_step, lon_step))?;
+                let out = lua.create_table()?;
+                out.set("ok", report.ok)?;
+                out.set("samples", report.samples)?;
+                out.set("covered_samples", report.covered_samples)?;
+                let gaps = lua.create_table()?;
+                for (index, (lat, lon)) in report.gaps.iter().enumerate() {
+                    let gap = lua.create_table()?;
+                    gap.set("lat", *lat)?;
+                    gap.set("lon", *lon)?;
+                    gaps.set(index + 1, gap)?;
+                }
+                out.set("gaps", gaps)?;
+                Ok(out)
+            },
+        );
         // -- setProvinceSector --
         /// Assigns a province to a named sector.
         /// @param | id | integer | Province id.

@@ -66,7 +66,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Owning tier: `Platform Services`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/render_api.rs`
-- Referenced engine modules: `font`, `image`, `light`, `math`, `runtime`, `sprite`
+- Referenced engine modules: `font`, `image`, `light`, `math`, `province`, `runtime`, `sprite`
 
 ## Imports
 
@@ -74,6 +74,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `light`: Imports or references `src/light/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Platform Services` into `Foundations`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 - `sprite`: Imports or references `src/sprite/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
 

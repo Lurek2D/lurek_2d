@@ -50,7 +50,7 @@ cargo run -- content/games/eu2
 
 ## Structure
 
-- `main.lua` owns the runtime loop, camera, province renderer, and canvas cache.
+- `main.lua` owns the runtime loop, camera, and GPU province renderer setup.
 - `scripts/scenario.lua` defines countries, ownership rules, and starting armies.
 - `scripts/state.lua` owns campaign state, time, economy, army movement, and AI.
 - `scripts/map_modes.lua` maps campaign state back into `lurek.province` styles.
@@ -72,4 +72,5 @@ Manual smoke checklist:
 - pan/zoom works,
 - hover and select province work,
 - `Space`, `+/-`, `1..5`, `R`, `Tab`, `F12`, and RMB movement work,
-- idle map remains cached, while map-mode and ownership changes refresh the map.
+- the base map is rendered by the GPU province path, while map-mode and ownership
+  changes refresh registry colors and border styles.

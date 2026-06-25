@@ -1044,6 +1044,7 @@
       "tests/artifacts/current/province/province_capitals_labels_centroids.png",
       "tests/artifacts/current/province/province_economy_properties_trace.txt",
       "tests/artifacts/current/province/province_registry_topology_trace.txt",
+      "tests/artifacts/current/province/province_render_plan_overlay.png",
       "tests/artifacts/current/province/province_revision_timeline.gif",
       "tests/artifacts/current/province/province_route_trace.png",
       "tests/artifacts/current/province/province_sanitized_map.png",

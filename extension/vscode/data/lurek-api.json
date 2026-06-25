@@ -117237,6 +117237,24 @@
           "objectType": "LProvinceRegistry"
         },
         {
+          "name": "viewportRect",
+          "fullPath": "LProvinceRegistry:viewportRect",
+          "signature": "([opts])",
+          "description": "Computes the province-space viewport rectangle used by province rendering and culling. The returned table can be passed to minimap:setViewportRect(rect.x, rect.y, rect.w, rect.h).",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Camera/render options: x/y translation, zoom, pixel_size, screen_w, screen_h.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
           "name": "provinceCount",
           "fullPath": "LProvinceRegistry:provinceCount",
           "signature": "()",
@@ -117365,6 +117383,30 @@
           ],
           "returns": "table",
           "returnType": "table",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
+          "name": "drawCapitalPath",
+          "fullPath": "LProvinceRegistry:drawCapitalPath",
+          "signature": "(route_tbl, [opts])",
+          "description": "Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode (\"line\"|\"bezier\"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.",
+          "parameters": [
+            {
+              "name": "route",
+              "type": "integer[]",
+              "description": "Array of province ids whose capitals should be connected in order.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table?|Draw options: mode=\"line\"",
+              "description": "\"bezier\", color={r,g,b,a?}, width=number, pixel_size=number, curve_offset=number, segments=integer.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LProvinceRegistry"
         },
@@ -117951,7 +117993,7 @@
           "parameters": [
             {
               "name": "opts",
-              "type": "table?|Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
+              "type": "table?|Render options: backend (\"commands\"|\"gpu\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
               "description": "\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
               "optional": true
             }

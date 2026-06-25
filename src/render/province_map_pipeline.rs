@@ -10,6 +10,34 @@ use wgpu::util::DeviceExt;
 
 const PROVINCE_MAP_SHADER: &str = include_str!("../../assets/shaders/province_map.wgsl");
 
+fn default_province_watermark_rgba() -> [u8; 8 * 8 * 4] {
+    let mut pixels = [0_u8; 8 * 8 * 4];
+    let mark = [
+        (3, 1, 96),
+        (2, 2, 74),
+        (3, 2, 92),
+        (4, 2, 74),
+        (1, 3, 58),
+        (2, 3, 82),
+        (3, 3, 96),
+        (4, 3, 82),
+        (5, 3, 58),
+        (2, 4, 54),
+        (3, 4, 80),
+        (4, 4, 54),
+        (3, 5, 80),
+        (3, 6, 72),
+    ];
+    for (x, y, alpha) in mark {
+        let offset = ((y * 8 + x) * 4) as usize;
+        pixels[offset] = 96;
+        pixels[offset + 1] = 96;
+        pixels[offset + 2] = 88;
+        pixels[offset + 3] = alpha;
+    }
+    pixels
+}
+
 /// Uniforms used by the province map fullscreen shader.
 #[repr(C)]
 #[derive(Debug, Clone, Copy, Pod, Zeroable, PartialEq)]
@@ -24,8 +52,26 @@ pub struct ProvinceMapUniforms {
     pub zoom_mode: u32,
     /// Time in seconds for optional shader animation.
     pub time: f32,
-    /// Padding for 16-byte alignment.
-    pub _pad1: [f32; 2],
+    /// Repeating terrain texture scale in map pixels per tile.
+    pub terrain_texture_scale: f32,
+    /// Strength of the subtle terrain texture watermark, 0 disables it.
+    pub terrain_texture_strength: f32,
+    /// Global fill tint multiplied into all province colors at draw time.
+    pub fill_tint: [f32; 4],
+    /// RGBA color mixed into province interiors near borders by the edge-distance gradient.
+    pub edge_gradient_color: [f32; 4],
+    /// Edge gradient parameters: radius in output pixels, strength, softness, R8 distance decode scale.
+    pub edge_gradient_params: [f32; 4],
+    /// Default same-terrain province border color used when render border palette is enabled.
+    pub province_border_color: [f32; 4],
+    /// Default coast border color used when render border palette is enabled.
+    pub coast_border_color: [f32; 4],
+    /// Default country border color used when render border palette is enabled.
+    pub country_border_color: [f32; 4],
+    /// Border palette parameters: enabled flag, sea darken amount, reserved, reserved.
+    pub border_palette_params: [f32; 4],
+    /// Province highlight ids: selected id, hovered id, reserved, reserved.
+    pub highlight_ids: [u32; 4],
 }
 
 impl ProvinceMapUniforms {
@@ -37,7 +83,16 @@ impl ProvinceMapUniforms {
             screen_size: [screen_w, screen_h],
             zoom_mode: 1,
             time: 0.0,
-            _pad1: [0.0, 0.0],
+            terrain_texture_scale: 32.0,
+            terrain_texture_strength: 0.0,
+            fill_tint: [1.0, 1.0, 1.0, 1.0],
+            edge_gradient_color: [64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 1.0],
+            edge_gradient_params: [16.0, 0.25, 0.45, 255.0],
+            province_border_color: [72.0 / 255.0, 58.0 / 255.0, 32.0 / 255.0, 1.0],
+            coast_border_color: [224.0 / 255.0, 196.0 / 255.0, 128.0 / 255.0, 238.0 / 255.0],
+            country_border_color: [230.0 / 255.0, 48.0 / 255.0, 44.0 / 255.0, 245.0 / 255.0],
+            border_palette_params: [1.0, 0.15, 0.0, 0.0],
+            highlight_ids: [0, 0, 0, 0],
         }
     }
 }
@@ -54,11 +109,39 @@ pub struct ProvinceMapPipeline {
     pub uniform_buffer: wgpu::Buffer,
     /// Uniform bind group bound at group 1.
     pub uniform_bind_group: wgpu::BindGroup,
+    /// Neutral fallback terrain texture kept alive for draws without a supplied terrain image.
+    pub(crate) _default_terrain_texture: wgpu::Texture,
+    /// View for the neutral fallback terrain texture.
+    pub default_terrain_view: wgpu::TextureView,
+    /// Sampler for the neutral fallback terrain texture.
+    pub default_terrain_sampler: wgpu::Sampler,
+}
+
+/// Texture and buffer inputs bound by the province map fullscreen shader.
+pub struct ProvinceMapDataBindings<'a> {
+    /// Province id texture sampled from the imported id map.
+    pub province_id_view: &'a wgpu::TextureView,
+    /// Per-pixel border index texture.
+    pub border_index_view: &'a wgpu::TextureView,
+    /// Edge distance texture used for the configurable interior gradient.
+    pub distance_field_view: &'a wgpu::TextureView,
+    /// Dense per-province color/style buffer.
+    pub province_data_buffer: &'a wgpu::Buffer,
+    /// Per-border style buffer.
+    pub border_style_buffer: &'a wgpu::Buffer,
+    /// Optional terrain/watermark texture view, already resolved to a fallback when needed.
+    pub terrain_texture_view: &'a wgpu::TextureView,
+    /// Sampler for the terrain/watermark texture.
+    pub terrain_texture_sampler: &'a wgpu::Sampler,
 }
 
 impl ProvinceMapPipeline {
     /// Create province map render pipeline and uniform resources.
-    pub fn new(device: &wgpu::Device, target_format: wgpu::TextureFormat) -> Self {
+    pub fn new(
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        target_format: wgpu::TextureFormat,
+    ) -> Self {
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("province_map_shader"),
             source: wgpu::ShaderSource::Wgsl(PROVINCE_MAP_SHADER.into()),
@@ -116,6 +199,22 @@ impl ProvinceMapPipeline {
                             has_dynamic_offset: false,
                             min_binding_size: None,
                         },
+                        count: None,
+                    },
+                    wgpu::BindGroupLayoutEntry {
+                        binding: 5,
+                        visibility: wgpu::ShaderStages::FRAGMENT,
+                        ty: wgpu::BindingType::Texture {
+                            sample_type: wgpu::TextureSampleType::Float { filterable: true },
+                            view_dimension: wgpu::TextureViewDimension::D2,
+                            multisampled: false,
+                        },
+                        count: None,
+                    },
+                    wgpu::BindGroupLayoutEntry {
+                        binding: 6,
+                        visibility: wgpu::ShaderStages::FRAGMENT,
+                        ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
                         count: None,
                     },
                 ],
@@ -190,6 +289,51 @@ impl ProvinceMapPipeline {
                 resource: uniform_buffer.as_entire_binding(),
             }],
         });
+        let default_terrain_texture = device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("province_map_default_terrain_texture"),
+            size: wgpu::Extent3d {
+                width: 8,
+                height: 8,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Rgba8Unorm,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            view_formats: &[],
+        });
+        queue.write_texture(
+            wgpu::ImageCopyTexture {
+                texture: &default_terrain_texture,
+                mip_level: 0,
+                origin: wgpu::Origin3d::ZERO,
+                aspect: wgpu::TextureAspect::All,
+            },
+            &default_province_watermark_rgba(),
+            wgpu::ImageDataLayout {
+                offset: 0,
+                bytes_per_row: Some(8 * 4),
+                rows_per_image: Some(8),
+            },
+            wgpu::Extent3d {
+                width: 8,
+                height: 8,
+                depth_or_array_layers: 1,
+            },
+        );
+        let default_terrain_view =
+            default_terrain_texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let default_terrain_sampler = device.create_sampler(&wgpu::SamplerDescriptor {
+            label: Some("province_map_default_terrain_sampler"),
+            address_mode_u: wgpu::AddressMode::Repeat,
+            address_mode_v: wgpu::AddressMode::Repeat,
+            address_mode_w: wgpu::AddressMode::Repeat,
+            mag_filter: wgpu::FilterMode::Linear,
+            min_filter: wgpu::FilterMode::Linear,
+            mipmap_filter: wgpu::FilterMode::Nearest,
+            ..Default::default()
+        });
 
         Self {
             pipeline,
@@ -197,6 +341,9 @@ impl ProvinceMapPipeline {
             uniform_bind_group_layout,
             uniform_buffer,
             uniform_bind_group,
+            _default_terrain_texture: default_terrain_texture,
+            default_terrain_view,
+            default_terrain_sampler,
         }
     }
 
@@ -204,11 +351,7 @@ impl ProvinceMapPipeline {
     pub fn create_data_bind_group(
         &self,
         device: &wgpu::Device,
-        province_id_view: &wgpu::TextureView,
-        border_index_view: &wgpu::TextureView,
-        distance_field_view: &wgpu::TextureView,
-        province_data_buffer: &wgpu::Buffer,
-        border_style_buffer: &wgpu::Buffer,
+        bindings: ProvinceMapDataBindings<'_>,
     ) -> wgpu::BindGroup {
         device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some("province_map_data_bg"),
@@ -216,23 +359,31 @@ impl ProvinceMapPipeline {
             entries: &[
                 wgpu::BindGroupEntry {
                     binding: 0,
-                    resource: wgpu::BindingResource::TextureView(province_id_view),
+                    resource: wgpu::BindingResource::TextureView(bindings.province_id_view),
                 },
                 wgpu::BindGroupEntry {
                     binding: 1,
-                    resource: wgpu::BindingResource::TextureView(border_index_view),
+                    resource: wgpu::BindingResource::TextureView(bindings.border_index_view),
                 },
                 wgpu::BindGroupEntry {
                     binding: 2,
-                    resource: wgpu::BindingResource::TextureView(distance_field_view),
+                    resource: wgpu::BindingResource::TextureView(bindings.distance_field_view),
                 },
                 wgpu::BindGroupEntry {
                     binding: 3,
-                    resource: province_data_buffer.as_entire_binding(),
+                    resource: bindings.province_data_buffer.as_entire_binding(),
                 },
                 wgpu::BindGroupEntry {
                     binding: 4,
-                    resource: border_style_buffer.as_entire_binding(),
+                    resource: bindings.border_style_buffer.as_entire_binding(),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 5,
+                    resource: wgpu::BindingResource::TextureView(bindings.terrain_texture_view),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 6,
+                    resource: wgpu::BindingResource::Sampler(bindings.terrain_texture_sampler),
                 },
             ],
         })

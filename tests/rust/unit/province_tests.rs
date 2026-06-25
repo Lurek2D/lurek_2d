@@ -13,13 +13,18 @@ use lurek2d::province::import::{
 };
 use lurek2d::province::registry::ProvinceRegistry;
 use lurek2d::province::render::{
-    generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode,
+    generate_capital_path_commands, generate_render_commands, render_segment_raster,
+    viewport_bounds, ProvinceCapitalPathMode, ProvinceCapitalPathOptions, ProvinceRenderOptions,
+    ProvinceSegmentRasterOptions, ProvinceZoomMode,
 };
 use lurek2d::province::types::{BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceId};
 use lurek2d::province::{
-    border_index::{build_border_index_from_registry, dilate_border_index_with_styles},
+    border_index::{
+        build_border_index_from_registry, build_styled_border_index_from_registry,
+        dilate_border_index_with_styles,
+    },
     distance_field::compute_distance_field_from_registry,
-    gpu_bridge::build_border_style_gpu_records,
+    gpu_bridge::{build_border_style_gpu_records, build_dense_gpu_records},
     gpu_upload::{pack_u16_pixels_le, pack_u32_pixels_le},
 };
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
@@ -72,6 +77,54 @@ fn test_registry_from_grid_has_provinces_and_adjacency() {
 
     let neighbors_2 = reg.get_neighbors(ProvinceId(2));
     assert_eq!(neighbors_2, vec![ProvinceId(1)]);
+}
+
+#[test]
+fn test_dense_gpu_records_are_indexed_by_raw_province_id() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    reg.set_political_color(ProvinceId(2), [0.25, 0.5, 0.75, 1.0]);
+
+    let records = build_dense_gpu_records(&reg);
+
+    assert!(records.len() >= 3);
+    assert_eq!(records[2].political_color, [0.25, 0.5, 0.75, 1.0]);
+}
+
+#[test]
+fn test_segment_raster_uses_scaled_border_segments() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    reg.set_political_color(ProvinceId(1), [0.5, 0.5, 0.5, 1.0]);
+    reg.set_political_color(ProvinceId(2), [0.75, 0.0, 0.0, 1.0]);
+    reg.set_terrain_type(ProvinceId(1), 1);
+    reg.set_terrain_type(ProvinceId(2), 1);
+    reg.set_border_pair_style(
+        ProvinceId(1),
+        ProvinceId(2),
+        BorderPairStyle {
+            color: None,
+            thickness: 3.0,
+            flags: BorderPairFlags::from_bits(BorderPairFlags::COUNTRY),
+        },
+    );
+
+    let raster = render_segment_raster(
+        &reg,
+        &ProvinceSegmentRasterOptions {
+            pixel_size: 8,
+            edge_gradient_radius: 16.0,
+            edge_gradient_strength: 0.25,
+            ..ProvinceSegmentRasterOptions::default()
+        },
+    );
+
+    assert_eq!(raster.width, 32);
+    assert_eq!(raster.height, 16);
+    assert!(raster
+        .pixels
+        .chunks_exact(4)
+        .any(|px| px == [230, 46, 42, 255]));
 }
 
 #[test]
@@ -133,6 +186,55 @@ fn test_registry_border_type_config() {
 }
 
 #[test]
+fn test_viewport_bounds_maps_screen_to_visible_province_rect() {
+    let bounds = viewport_bounds(&ProvinceRenderOptions {
+        x: -20.0,
+        y: -10.0,
+        zoom: 2.0,
+        pixel_size: 1.0,
+        screen_w: 200.0,
+        screen_h: 100.0,
+        ..ProvinceRenderOptions::default()
+    });
+
+    assert_eq!(bounds, (10.0, 5.0, 110.0, 55.0));
+}
+
+#[test]
+fn test_render_commands_use_border_type_thickness() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    reg.register_border_type(
+        1,
+        BorderTypeConfig {
+            name: "wide".to_string(),
+            color: [0.2, 0.3, 0.4, 1.0],
+            thickness: 2.5,
+            draw_priority: 0,
+        },
+    );
+    reg.set_border_type(ProvinceId(1), ProvinceId(2), 1);
+
+    let opts = ProvinceRenderOptions {
+        draw_fills: false,
+        draw_borders: true,
+        draw_labels: false,
+        draw_capitals: false,
+        draw_roads: false,
+        zoom_mode: Some(ProvinceZoomMode::Tactical),
+        ..ProvinceRenderOptions::default()
+    };
+
+    let commands = generate_render_commands(&reg, &opts, None);
+    assert!(
+        commands
+            .iter()
+            .any(|cmd| matches!(cmd, RenderCommand::SetLineWidth(width) if *width == 2.5)),
+        "border type thickness should set command-render border width"
+    );
+}
+
+#[test]
 fn test_registry_border_pair_style_roundtrip() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
@@ -187,6 +289,35 @@ fn test_registry_capital_and_label_metadata_roundtrip() {
     assert!(reg.bbox_for(ProvinceId(1)).is_some());
     assert!(reg.spans_for(ProvinceId(1)).is_some());
     assert!(reg.style_for(ProvinceId(1)).is_some());
+}
+
+#[test]
+fn test_capital_path_commands_connect_route_capitals_as_beziers() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_capital(ProvinceId(1), 1.0, 1.0));
+    assert!(reg.set_capital(ProvinceId(2), 3.0, 1.0));
+
+    let commands = generate_capital_path_commands(
+        &reg,
+        &[ProvinceId(1), ProvinceId(2)],
+        &ProvinceCapitalPathOptions {
+            pixel_size: 2.0,
+            width: 3.0,
+            mode: ProvinceCapitalPathMode::Bezier,
+            curve_offset: 4.0,
+            segments: 12,
+            ..ProvinceCapitalPathOptions::default()
+        },
+    );
+
+    assert!(matches!(commands[0], RenderCommand::SetLineWidth(3.0)));
+    assert!(
+        commands
+            .iter()
+            .any(|cmd| matches!(cmd, RenderCommand::DrawQuadBezier { segments: 12, .. })),
+        "bezier capital paths should emit quadratic route hops"
+    );
 }
 
 #[test]
@@ -610,6 +741,94 @@ fn test_border_index_builds_pair_ids_and_dilation_expands_coverage() {
 }
 
 #[test]
+fn test_border_index_keeps_one_cell_border_pairs_at_corner_conflicts() {
+    let mut img = ImageData::new(2, 2);
+    img.set_pixel(0, 0, 255, 0, 0, 255);
+    img.set_pixel(1, 0, 0, 255, 0, 255);
+    img.set_pixel(0, 1, 0, 0, 255, 255);
+    img.set_pixel(1, 1, 0, 0, 255, 255);
+
+    let grid = ProvinceGrid::from_image(&img);
+    let reg = ProvinceRegistry::from_grid(&grid);
+    let index = build_border_index_from_registry(&reg);
+
+    assert!(
+        index.pair_to_id.contains_key(&(ProvinceId(1), ProvinceId(2))),
+        "horizontal one-cell pair should be indexed"
+    );
+    assert!(
+        index.pair_to_id.contains_key(&(ProvinceId(1), ProvinceId(3))),
+        "vertical one-cell pair should not be dropped by right/down conflicts"
+    );
+    assert!(
+        index.pair_to_id.contains_key(&(ProvinceId(2), ProvinceId(3))),
+        "neighboring one-cell pair should be indexed"
+    );
+
+    let pair_13 = index.pair_to_id[&(ProvinceId(1), ProvinceId(3))];
+    assert!(
+        index.data.iter().any(|&id| id == pair_13),
+        "one-cell vertical pair should have a texture slot"
+    );
+}
+
+#[test]
+fn test_styled_border_index_uses_pair_style_thickness() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+
+    let raw = build_border_index_from_registry(&reg);
+    let raw_pixels = raw.data.iter().filter(|&&v| v != 0).count();
+
+    reg.set_border_pair_style(
+        ProvinceId(1),
+        ProvinceId(2),
+        BorderPairStyle {
+            color: None,
+            thickness: 4.0,
+            flags: BorderPairFlags::empty(),
+        },
+    );
+
+    let styled = build_styled_border_index_from_registry(&reg);
+    let styled_pixels = styled.data.iter().filter(|&&v| v != 0).count();
+
+    assert_eq!(styled.id_to_pair, raw.id_to_pair);
+    assert!(
+        styled_pixels > raw_pixels,
+        "pair-style thickness should expand the GPU border index"
+    );
+}
+
+#[test]
+fn test_styled_border_index_uses_border_type_thickness() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+
+    let raw = build_border_index_from_registry(&reg);
+    let raw_pixels = raw.data.iter().filter(|&&v| v != 0).count();
+
+    reg.register_border_type(
+        1,
+        BorderTypeConfig {
+            name: "wide".to_string(),
+            color: [0.2, 0.3, 0.4, 1.0],
+            thickness: 4.0,
+            draw_priority: 0,
+        },
+    );
+    reg.set_border_type(ProvinceId(1), ProvinceId(2), 1);
+
+    let styled = build_styled_border_index_from_registry(&reg);
+    let styled_pixels = styled.data.iter().filter(|&&v| v != 0).count();
+
+    assert!(
+        styled_pixels > raw_pixels,
+        "border-type thickness should expand the GPU border index"
+    );
+}
+
+#[test]
 fn test_gpu_upload_pack_u32_pixels_le_is_little_endian_and_dense() {
     let bytes = pack_u32_pixels_le(&[0x1122_3344, 0xAABB_CCDD]);
     assert_eq!(bytes.len(), 8);
@@ -651,4 +870,60 @@ fn test_gpu_bridge_border_style_records_follow_border_index_pairs() {
     );
     assert_eq!(records[1].thickness, 4.0);
     assert_eq!(records[1].color, [1.0, 0.0, 0.0, 1.0]);
+    assert_eq!(records[1].province_a, 1);
+    assert_eq!(records[1].province_b, 2);
+    assert_eq!(
+        records[1].flags & 0x80,
+        0x80,
+        "explicit pair colors should bypass render-level border palettes"
+    );
+}
+
+#[test]
+fn test_gpu_bridge_border_style_records_use_border_type_thickness() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    let index = build_border_index_from_registry(&reg);
+
+    reg.register_border_type(
+        1,
+        BorderTypeConfig {
+            name: "wide".to_string(),
+            color: [0.2, 0.3, 0.4, 1.0],
+            thickness: 3.5,
+            draw_priority: 0,
+        },
+    );
+    reg.set_border_type(ProvinceId(1), ProvinceId(2), 1);
+
+    let records = build_border_style_gpu_records(&reg, &index);
+    assert_eq!(records[1].thickness, 3.5);
+    assert_eq!(records[1].color, [0.2, 0.3, 0.4, 1.0]);
+    assert_eq!(
+        records[1].flags & 0x80,
+        0x80,
+        "non-semantic custom border types should keep their registered color"
+    );
+}
+
+#[test]
+fn test_gpu_bridge_border_style_records_mark_coast_from_terrain_types() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_terrain_type(ProvinceId(1), 1));
+    assert!(reg.set_terrain_type(ProvinceId(2), 0));
+    let index = build_border_index_from_registry(&reg);
+
+    let records = build_border_style_gpu_records(&reg, &index);
+
+    assert_eq!(
+        records[1].flags & 0x10,
+        0x10,
+        "land-water borders should be marked as coast for render-level palettes"
+    );
+    assert_eq!(
+        records[1].flags & 0x80,
+        0,
+        "terrain-derived coast borders should use the render-level palette"
+    );
 }

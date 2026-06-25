@@ -77,6 +77,26 @@ describe("province camera/view helpers", function()
         expect_equal(nil, id)
     end)
 
+    -- @covers LProvinceRegistry:viewportRect
+    it("computes a map-space viewport rectangle for minimap overlays", function()
+        local reg = lurek.province.newFromPng("test-province-viewport-rect", "content/games/eu2/map.png")
+        local rect = reg:viewportRect({
+            x = -20,
+            y = -10,
+            zoom = 2.0,
+            pixel_size = 1.0,
+            screen_w = 200,
+            screen_h = 100,
+        })
+        expect_type("table", rect)
+        expect_near(10.0, rect.x, 0.001)
+        expect_near(5.0, rect.y, 0.001)
+        expect_near(100.0, rect.w, 0.001)
+        expect_near(50.0, rect.h, 0.001)
+        expect_equal(reg:getWidth(), rect.map_w)
+        expect_equal(reg:getHeight(), rect.map_h)
+    end)
+
 end)
 
 -- @describe province registry extended coverage
@@ -179,10 +199,23 @@ describe("province strict uncovered symbols", function()
 
         local ok_render = pcall(function()
             reg:render({
+                backend = "gpu",
                 tint = { 0.85, 0.9, 1.0, 1.0 },
                 province_tints = {
                     [province_id] = { 0.2, 0.6, 0.95, 1.0 },
                 },
+                edge_gradient_radius = 6.0,
+                edge_gradient_strength = 0.25,
+                edge_gradient_softness = 0.5,
+                edge_gradient_color = { 0.0, 0.0, 0.0, 1.0 },
+                border_palette = {
+                    province_color = { 64 / 255, 64 / 255, 60 / 255, 1.0 },
+                    coast_color = { 224 / 255, 196 / 255, 128 / 255, 1.0 },
+                    country_color = { 230 / 255, 46 / 255, 42 / 255, 1.0 },
+                    sea_darken = 0.15,
+                },
+                terrain_texture_strength = 0.05,
+                terrain_texture_scale = 8.0,
                 draw_borders = false,
                 draw_capitals = false,
             })
@@ -645,6 +678,22 @@ describe("province explicit owner coverage", function()
         local reg = province_registry("set_capital", "content/games/eu2/map.png")
         local id = 1
         expect_type("boolean", reg:setCapital(id, 12.0, 18.0))
+    end)
+
+    -- @covers LProvinceRegistry:drawCapitalPath
+    it("queues a capital route path from existing province capitals", function()
+        local reg = province_registry("draw_capital_path")
+        local a, b = first_border_pair(reg)
+        expect_true(reg:setCapital(a, 4.0, 5.0))
+        expect_true(reg:setCapital(b, 12.0, 6.0))
+        local queued = reg:drawCapitalPath({ a, b }, {
+            mode = "bezier",
+            color = { 1.0, 0.8, 0.2, 0.9 },
+            width = 3.0,
+            curve_offset = 6.0,
+            segments = 8,
+        })
+        expect_equal(1, queued)
     end)
 
     -- @covers LProvinceRegistry:setLabelLine

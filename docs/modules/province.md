@@ -866,6 +866,57 @@ end
 
 ---
 
+#### `LProvinceRegistry:drawCapitalPath`
+
+Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode ("line"|"bezier"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.
+
+```lua
+LProvinceRegistry:drawCapitalPath(route, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `route` | number[] | Array of province ids whose capitals should be connected in order. |
+| `opts?` | table?|Draw | "bezier", color={r,g,b,a?}, width=number, pixel_size=number, curve_offset=number, segments=integer. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of route hop primitives queued. |
+
+**Example**
+
+```lua
+do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
+    local reg = province_registry("draw_capital_path", "content/examples/assets/province/map.png")
+    local ids = reg:provinceIds()
+    local route = (#ids >= 2) and reg:findRoute(ids[1], ids[#ids]) or nil
+    local queued = route and reg:drawCapitalPath(route, {
+        mode = "bezier",
+        color = { 1.0, 0.86, 0.28, 0.95 },
+        width = 3.0,
+        curve_offset = 10.0,
+        segments = 16,
+    }) or 0
+    province_log("capital path queued primitives = " .. tostring(queued))
+end
+```
+
+---
+
 #### `LProvinceRegistry:findIsolatedProvinces`
 
 Returns provinces that have no adjacent province with the same owner attribute.
@@ -2002,7 +2053,13 @@ do
         tints[ids[2]] = { 0.9, 0.35, 0.2, 1.0 }
     end
 
+    local terrain_texture = lurek.render.newImage("content/examples/assets/textures/province_tree_8x8.png")
+    for i = 1, math.min(#ids, 3) do
+        reg:setTerrainType(ids[i], 1)
+    end
+
     reg:render({
+        backend = "gpu",
         map_mode = "political",
         x = cam_x,
         y = cam_y,
@@ -2016,6 +2073,19 @@ do
         draw_capitals = true,
         tint = { 0.92, 0.95, 1.0, 1.0 },
         province_tints = tints,
+        terrain_texture = terrain_texture,
+        terrain_texture_scale = 8,
+        terrain_texture_strength = 0.05,
+        edge_gradient_radius = 16.0,
+        edge_gradient_strength = 0.25,
+        edge_gradient_softness = 0.45,
+        edge_gradient_color = { 0.0, 0.0, 0.0, 1.0 },
+        border_palette = {
+            province_color = { 64 / 255, 64 / 255, 60 / 255, 1.0 },
+            coast_color = { 224 / 255, 196 / 255, 128 / 255, 1.0 },
+            country_color = { 230 / 255, 46 / 255, 42 / 255, 1.0 },
+            sea_darken = 0.15,
+        },
         border_width = 1.5,
         hovered_id = 0,
         selected_id = 0,
@@ -2929,6 +2999,55 @@ do
     local is_camera = reg:typeOf("LCamera")
     local width = reg:getWidth()
     province_log("type guard registry=" .. tostring(is_registry) .. " object=" .. tostring(is_object) .. " camera=" .. tostring(is_camera) .. " width=" .. tostring(width))
+end
+```
+
+---
+
+#### `LProvinceRegistry:viewportRect`
+
+Computes the province-space viewport rectangle used by province rendering and culling. The returned table can be passed to minimap:setViewportRect(rect.x, rect.y, rect.w, rect.h).
+
+```lua
+LProvinceRegistry:viewportRect(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Camera/render options: x/y translation, zoom, pixel_size, screen_w, screen_h. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Viewport table with x, y, w, h, left, top, right, and bottom fields in province map pixels. |
+
+**Example**
+
+```lua
+do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
+    local reg = province_registry("viewport_rect")
+    local rect = reg:viewportRect({
+        x = -24,
+        y = -16,
+        zoom = 2.0,
+        pixel_size = 1.0,
+        screen_w = 320,
+        screen_h = 180,
+    })
+    province_log("viewport rect = " .. tostring(rect.x) .. "," .. tostring(rect.y) .. " size=" .. tostring(rect.w) .. "x" .. tostring(rect.h))
 end
 ```
 

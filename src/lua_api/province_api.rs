@@ -1,11 +1,17 @@
 //! Registers the `lurek.province` Lua API for province maps, markers, tints, borders, and province registries.
 
+use super::render_api::LuaImage;
 use super::SharedState;
 use crate::image::ProvinceGrid;
+use crate::image::TextureColorSpace;
 use crate::province::events::ProvinceChange;
 use crate::province::map_modes::MapModeConfig;
 use crate::province::registry::ProvinceRegistry;
-use crate::province::render::{generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode};
+use crate::province::render::{
+    generate_capital_path_commands, generate_render_commands, render_segment_raster,
+    resolve_zoom_mode, viewport_bounds, ProvinceCapitalPathMode, ProvinceCapitalPathOptions,
+    ProvinceRenderOptions, ProvinceSegmentRasterOptions, ProvinceZoomMode,
+};
 use crate::province::routing;
 use crate::province::types::{BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceId};
 use crate::province::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};
@@ -13,9 +19,12 @@ use crate::province::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
     ProvinceMetadataImportOptions,
 };
+use crate::render::renderer::{RenderCommand, TextureData};
+use crate::runtime::shared_state::ProvinceSegmentTextureCache;
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{hash_map::DefaultHasher, HashMap};
+use std::hash::{Hash, Hasher};
 use std::path::Path;
 use std::rc::Rc;
 /// Resolves a province asset path against the active game directory when the path is relative.
@@ -150,6 +159,75 @@ fn parse_render_color_table(t: LuaTable, field: &str) -> LuaResult<[f32; 4]> {
     ])
 }
 
+#[derive(Debug, Clone, Copy)]
+struct ProvinceRenderBorderPalette {
+    enabled: bool,
+    province_border_color: [f32; 4],
+    coast_border_color: [f32; 4],
+    country_border_color: [f32; 4],
+    sea_border_darken: f32,
+}
+
+impl Default for ProvinceRenderBorderPalette {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            province_border_color: [72.0 / 255.0, 58.0 / 255.0, 32.0 / 255.0, 1.0],
+            coast_border_color: [224.0 / 255.0, 196.0 / 255.0, 128.0 / 255.0, 238.0 / 255.0],
+            country_border_color: [230.0 / 255.0, 48.0 / 255.0, 44.0 / 255.0, 245.0 / 255.0],
+            sea_border_darken: 0.15,
+        }
+    }
+}
+
+fn parse_border_palette_from_lua(
+    opts: Option<&LuaTable>,
+) -> LuaResult<ProvinceRenderBorderPalette> {
+    let mut palette = ProvinceRenderBorderPalette::default();
+    let Some(opts) = opts else {
+        return Ok(palette);
+    };
+    if let Some(t) = opts.get::<_, Option<LuaTable>>("border_palette")? {
+        palette.enabled = t.get::<_, Option<bool>>("enabled")?.unwrap_or(true);
+        if let Some(color) = t.get::<_, Option<LuaTable>>("province_color")? {
+            palette.province_border_color =
+                parse_render_color_table(color, "border_palette.province_color")?;
+        }
+        if let Some(color) = t.get::<_, Option<LuaTable>>("land_color")? {
+            palette.province_border_color =
+                parse_render_color_table(color, "border_palette.land_color")?;
+        }
+        if let Some(color) = t.get::<_, Option<LuaTable>>("coast_color")? {
+            palette.coast_border_color =
+                parse_render_color_table(color, "border_palette.coast_color")?;
+        }
+        if let Some(color) = t.get::<_, Option<LuaTable>>("country_color")? {
+            palette.country_border_color =
+                parse_render_color_table(color, "border_palette.country_color")?;
+        }
+        if let Some(darken) = t.get::<_, Option<f32>>("sea_darken")? {
+            palette.sea_border_darken = darken.clamp(0.0, 1.0);
+        }
+    }
+    if let Some(color) = opts.get::<_, Option<LuaTable>>("province_border_color")? {
+        palette.enabled = true;
+        palette.province_border_color = parse_render_color_table(color, "province_border_color")?;
+    }
+    if let Some(color) = opts.get::<_, Option<LuaTable>>("coast_border_color")? {
+        palette.enabled = true;
+        palette.coast_border_color = parse_render_color_table(color, "coast_border_color")?;
+    }
+    if let Some(color) = opts.get::<_, Option<LuaTable>>("country_border_color")? {
+        palette.enabled = true;
+        palette.country_border_color = parse_render_color_table(color, "country_border_color")?;
+    }
+    if let Some(darken) = opts.get::<_, Option<f32>>("sea_border_darken")? {
+        palette.enabled = true;
+        palette.sea_border_darken = darken.clamp(0.0, 1.0);
+    }
+    Ok(palette)
+}
+
 fn parse_province_tint_key(key: LuaValue) -> LuaResult<ProvinceId> {
     match key {
         LuaValue::Integer(id) if id > 0 && id <= u32::MAX as i64 => Ok(ProvinceId(id as u32)),
@@ -213,6 +291,196 @@ impl LuaProvinceRegistry {
             LuaError::RuntimeError(format!("province registry '{}' not found", self.name))
         })?;
         Ok(f(reg))
+    }
+
+    fn segment_render_fingerprint(opts: &ProvinceSegmentRasterOptions) -> u64 {
+        let mut hasher = DefaultHasher::new();
+        opts.pixel_size.hash(&mut hasher);
+        opts.map_x.hash(&mut hasher);
+        opts.map_y.hash(&mut hasher);
+        opts.map_w.hash(&mut hasher);
+        opts.map_h.hash(&mut hasher);
+        opts.draw_fills.hash(&mut hasher);
+        opts.draw_borders.hash(&mut hasher);
+        opts.edge_gradient_radius.to_bits().hash(&mut hasher);
+        opts.edge_gradient_strength.to_bits().hash(&mut hasher);
+        for value in opts.tint {
+            value.to_bits().hash(&mut hasher);
+        }
+        hasher.finish()
+    }
+
+    fn queue_segment_render(
+        &self,
+        options: &ProvinceRenderOptions,
+        edge_gradient_radius: f32,
+        edge_gradient_strength: f32,
+        reuse_cached_tints: bool,
+    ) -> LuaResult<()> {
+        let scale = if options.pixel_size.is_finite() {
+            options.pixel_size.round().max(1.0).min(64.0) as u32
+        } else {
+            1
+        };
+        let (map_x, map_y, map_w, map_h) = {
+            let st = self.state.borrow();
+            let reg = st.province_registries.get(&self.name).ok_or_else(|| {
+                LuaError::RuntimeError(format!("province registry '{}' not found", self.name))
+            })?;
+            let (left, top, right, bottom) = viewport_bounds(options);
+            let pad = (edge_gradient_radius / scale as f32).ceil() as i32 + 4;
+            let max_x = reg.width() as i32;
+            let max_y = reg.height() as i32;
+            let x0 = (left.floor() as i32 - pad).clamp(0, max_x);
+            let y0 = (top.floor() as i32 - pad).clamp(0, max_y);
+            let mut x1 = (right.ceil() as i32 + pad + 1).clamp(0, max_x);
+            let mut y1 = (bottom.ceil() as i32 + pad + 1).clamp(0, max_y);
+            if x1 <= x0 {
+                x1 = (x0 + 1).min(max_x);
+            }
+            if y1 <= y0 {
+                y1 = (y0 + 1).min(max_y);
+            }
+            (
+                x0 as u32,
+                y0 as u32,
+                x1.saturating_sub(x0) as u32,
+                y1.saturating_sub(y0) as u32,
+            )
+        };
+        let has_new_tints = !options.province_tints.is_empty();
+        let mut segment_opts = ProvinceSegmentRasterOptions {
+            pixel_size: scale,
+            map_x,
+            map_y,
+            map_w,
+            map_h,
+            tint: options.tint.unwrap_or([1.0, 1.0, 1.0, 1.0]),
+            province_tints: if has_new_tints {
+                options.province_tints.clone()
+            } else {
+                HashMap::new()
+            },
+            draw_fills: options.draw_fills,
+            draw_borders: options.draw_borders,
+            edge_gradient_radius,
+            edge_gradient_strength,
+        };
+        let fingerprint = Self::segment_render_fingerprint(&segment_opts);
+        let (registry_revision, should_rebuild, cached_key) = {
+            let st = self.state.borrow();
+            let reg = st.province_registries.get(&self.name).ok_or_else(|| {
+                LuaError::RuntimeError(format!("province registry '{}' not found", self.name))
+            })?;
+            let revision = reg.revision();
+            let cache = st.province_segment_texture_cache.get(&self.name);
+            let cached_key = cache.map(|entry| entry.texture_key);
+            let valid = cache
+                .map(|entry| {
+                    entry.registry_revision == revision
+                        && entry.options_fingerprint == fingerprint
+                        && st.textures.contains_key(entry.texture_key)
+                })
+                .unwrap_or(false);
+            (revision, has_new_tints || !valid, cached_key)
+        };
+
+        if should_rebuild && !has_new_tints && reuse_cached_tints {
+            let st = self.state.borrow();
+            if let Some(cache) = st.province_segment_texture_cache.get(&self.name) {
+                segment_opts.province_tints = cache.province_tints.clone();
+            }
+        }
+
+        let texture_key = if should_rebuild {
+            let registry = {
+                let st = self.state.borrow();
+                st.province_registries
+                    .get(&self.name)
+                    .ok_or_else(|| {
+                        LuaError::RuntimeError(format!(
+                            "province registry '{}' not found",
+                            self.name
+                        ))
+                    })?
+                    .clone()
+            };
+            let raster = render_segment_raster(&registry, &segment_opts);
+            let mut st = self.state.borrow_mut();
+            match cached_key.filter(|key| st.textures.contains_key(*key)) {
+                Some(key) => {
+                    let texture = st.textures.get_mut(key).ok_or_else(|| {
+                        LuaError::RuntimeError(
+                            "LProvinceRegistry:render segment cache texture disappeared"
+                                .to_string(),
+                        )
+                    })?;
+                    texture.pixels = raster.pixels;
+                    texture.width = raster.width;
+                    texture.height = raster.height;
+                    texture.color_space = TextureColorSpace::Srgb;
+                    texture.mark_dirty();
+                    st.province_segment_texture_cache.insert(
+                        self.name.clone(),
+                        ProvinceSegmentTextureCache {
+                            texture_key: key,
+                            registry_revision,
+                            options_fingerprint: fingerprint,
+                            width: raster.width,
+                            height: raster.height,
+                            map_x,
+                            map_y,
+                            province_tints: segment_opts.province_tints.clone(),
+                        },
+                    );
+                    key
+                }
+                None => {
+                    let key = st.textures.insert(TextureData::new(
+                        raster.pixels,
+                        raster.width,
+                        raster.height,
+                        TextureColorSpace::Srgb,
+                    ));
+                    st.province_segment_texture_cache.insert(
+                        self.name.clone(),
+                        ProvinceSegmentTextureCache {
+                            texture_key: key,
+                            registry_revision,
+                            options_fingerprint: fingerprint,
+                            width: raster.width,
+                            height: raster.height,
+                            map_x,
+                            map_y,
+                            province_tints: segment_opts.province_tints.clone(),
+                        },
+                    );
+                    key
+                }
+            }
+        } else {
+            cached_key.ok_or_else(|| {
+                LuaError::RuntimeError(
+                    "LProvinceRegistry:render segment cache key missing".to_string(),
+                )
+            })?
+        };
+
+        self.state
+            .borrow_mut()
+            .render_commands
+            .push(RenderCommand::DrawImageEx {
+                texture_key,
+                x: options.x + map_x as f32 * scale as f32 * options.zoom,
+                y: options.y + map_y as f32 * scale as f32 * options.zoom,
+                rotation: 0.0,
+                sx: options.zoom,
+                sy: options.zoom,
+                ox: 0.0,
+                oy: 0.0,
+                effect: None,
+            });
+        Ok(())
     }
 }
 impl LuaUserData for LuaProvinceRegistry {
@@ -332,6 +600,46 @@ impl LuaUserData for LuaProvinceRegistry {
                 }
             },
         );
+        // -- viewportRect --
+        /// Computes the province-space viewport rectangle used by province rendering and culling. The returned table can be passed to minimap:setViewportRect(rect.x, rect.y, rect.w, rect.h).
+        /// @param | opts | table? | Camera/render options: x/y translation, zoom, pixel_size, screen_w, screen_h.
+        /// @return | table | Viewport table with x, y, w, h, left, top, right, and bottom fields in province map pixels.
+        methods.add_method("viewportRect", |lua, this, opts: Option<LuaTable>| {
+            let mut render_opts = ProvinceRenderOptions::default();
+            if let Some(t) = opts {
+                if let Some(x) = t.get::<_, Option<f32>>("x")? {
+                    render_opts.x = x;
+                }
+                if let Some(y) = t.get::<_, Option<f32>>("y")? {
+                    render_opts.y = y;
+                }
+                if let Some(zoom) = t.get::<_, Option<f32>>("zoom")? {
+                    render_opts.zoom = zoom.max(0.0001);
+                }
+                if let Some(pixel_size) = t.get::<_, Option<f32>>("pixel_size")? {
+                    render_opts.pixel_size = pixel_size.max(0.0001);
+                }
+                if let Some(screen_w) = t.get::<_, Option<f32>>("screen_w")? {
+                    render_opts.screen_w = screen_w.max(0.0001);
+                }
+                if let Some(screen_h) = t.get::<_, Option<f32>>("screen_h")? {
+                    render_opts.screen_h = screen_h.max(0.0001);
+                }
+            }
+            let (left, top, right, bottom) = viewport_bounds(&render_opts);
+            let out = lua.create_table()?;
+            out.set("x", left)?;
+            out.set("y", top)?;
+            out.set("w", right - left)?;
+            out.set("h", bottom - top)?;
+            out.set("left", left)?;
+            out.set("top", top)?;
+            out.set("right", right)?;
+            out.set("bottom", bottom)?;
+            out.set("map_w", this.with_registry(|r| r.width())?)?;
+            out.set("map_h", this.with_registry(|r| r.height())?)?;
+            Ok(out)
+        });
         // -- provinceCount --
         /// Returns the total number of distinct provinces in this registry (excluding ID 0).
         /// @return | integer | Count of provinces.
@@ -551,6 +859,72 @@ impl LuaUserData for LuaProvinceRegistry {
                 } else {
                     Ok(LuaValue::Nil)
                 }
+            },
+        );
+        // -- drawCapitalPath --
+        /// Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode ("line"|"bezier"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.
+        /// @param | route | integer[] | Array of province ids whose capitals should be connected in order.
+        /// @param | opts | table? | Draw options: mode="line"|"bezier", color={r,g,b,a?}, width=number, pixel_size=number, curve_offset=number, segments=integer.
+        /// @return | integer | Number of route hop primitives queued.
+        methods.add_method(
+            "drawCapitalPath",
+            |_, this, (route_tbl, opts): (LuaTable, Option<LuaTable>)| {
+                let mut route = Vec::new();
+                for value in route_tbl.sequence_values::<u32>() {
+                    let id = value?;
+                    if id == 0 {
+                        return Err(LuaError::RuntimeError(
+                            "LProvinceRegistry:drawCapitalPath route ids must be positive"
+                                .to_string(),
+                        ));
+                    }
+                    route.push(ProvinceId(id));
+                }
+
+                let mut path_opts = ProvinceCapitalPathOptions::default();
+                if let Some(t) = opts {
+                    if let Some(pixel_size) = t.get::<_, Option<f32>>("pixel_size")? {
+                        path_opts.pixel_size = pixel_size.max(0.0001);
+                    }
+                    if let Some(width) = t.get::<_, Option<f32>>("width")? {
+                        path_opts.width = width.max(1.0);
+                    }
+                    if let Some(color) = t.get::<_, Option<LuaTable>>("color")? {
+                        path_opts.color = parse_render_color_table(color, "color")?;
+                    }
+                    if let Some(mode) = t.get::<_, Option<String>>("mode")? {
+                        path_opts.mode = match mode.as_str() {
+                            "line" => ProvinceCapitalPathMode::Line,
+                            "bezier" => ProvinceCapitalPathMode::Bezier,
+                            _ => {
+                                return Err(LuaError::RuntimeError(format!(
+                                    "LProvinceRegistry:drawCapitalPath unknown mode '{}'",
+                                    mode
+                                )));
+                            }
+                        };
+                    }
+                    if let Some(curve_offset) = t.get::<_, Option<f32>>("curve_offset")? {
+                        path_opts.curve_offset = curve_offset;
+                    }
+                    if let Some(segments) = t.get::<_, Option<u32>>("segments")? {
+                        path_opts.segments = segments.max(1);
+                    }
+                }
+
+                let commands =
+                    this.with_registry(|r| generate_capital_path_commands(r, &route, &path_opts))?;
+                let primitive_count = commands
+                    .iter()
+                    .filter(|cmd| {
+                        matches!(
+                            cmd,
+                            RenderCommand::Line { .. } | RenderCommand::DrawQuadBezier { .. }
+                        )
+                    })
+                    .count();
+                this.state.borrow_mut().render_commands.extend(commands);
+                Ok(primitive_count)
             },
         );
         // -- findRoutes --
@@ -1040,9 +1414,15 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- render --
         /// Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
-        /// @param | opts | table? | Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic"|"tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
+        /// @param | opts | table? | Render options: backend ("commands"|"gpu"|"segments"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), segment_reuse_cache (boolean?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic"|"tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
         methods.add_method("render", |_, this, opts: Option<LuaTable>| {
             let opts = opts;
+            let backend = if let Some(ref t) = opts {
+                t.get::<_, Option<String>>("backend")?
+                    .unwrap_or_else(|| "commands".to_string())
+            } else {
+                "commands".to_string()
+            };
             let mode = if let Some(ref t) = opts {
                 t.get::<_, Option<String>>("map_mode")?
                     .unwrap_or_else(|| "political".to_string())
@@ -1134,6 +1514,168 @@ impl LuaUserData for LuaProvinceRegistry {
                     .and_then(|t| t.get::<_, Option<u32>>("selected_id").ok().flatten())
                     .map(ProvinceId),
             };
+            if backend == "gpu" {
+                let (left, top, right, bottom) = viewport_bounds(&options);
+                let zoom_mode = match resolve_zoom_mode(&options) {
+                    ProvinceZoomMode::Strategic | ProvinceZoomMode::Auto => 0,
+                    ProvinceZoomMode::Tactical => 1,
+                };
+                let time = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("time").ok().flatten())
+                    .unwrap_or(0.0);
+                let terrain_texture = if let Some(ref t) = opts {
+                    t.get::<_, Option<LuaAnyUserData>>("terrain_texture")?
+                        .map(|ud| {
+                            let image = ud.borrow::<LuaImage>().map_err(|_| {
+                                LuaError::RuntimeError(
+                                    "LProvinceRegistry:render terrain_texture must be LImage from lurek.render.newImage()"
+                                        .to_string(),
+                                )
+                            })?;
+                            LuaResult::Ok(image.key)
+                        })
+                        .transpose()?
+                } else {
+                    None
+                };
+                let terrain_texture_scale = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("terrain_texture_scale").ok().flatten())
+                    .unwrap_or(32.0)
+                    .max(1.0);
+                let terrain_texture_strength = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<f32>>("terrain_texture_strength")
+                            .ok()
+                            .flatten()
+                    })
+                    .unwrap_or(if terrain_texture.is_some() { 0.08 } else { 0.0 })
+                    .clamp(0.0, 1.0);
+                let edge_gradient_color = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<LuaTable>>("edge_gradient_color").ok().flatten())
+                    .map(|t| parse_render_color_table(t, "edge_gradient_color"))
+                    .transpose()?
+                    .unwrap_or([64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 1.0]);
+                let edge_gradient_radius = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("edge_gradient_radius").ok().flatten())
+                    .unwrap_or(16.0)
+                    .clamp(0.0, 32.0);
+                let edge_gradient_strength = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<f32>>("edge_gradient_strength")
+                            .ok()
+                            .flatten()
+                    })
+                    .unwrap_or(0.25)
+                    .clamp(0.0, 1.0);
+                let edge_gradient_softness = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<f32>>("edge_gradient_softness")
+                            .ok()
+                            .flatten()
+                    })
+                    .unwrap_or(0.45)
+                    .clamp(0.05, 2.0);
+                let border_palette = parse_border_palette_from_lua(opts.as_ref())?;
+                this.state
+                    .borrow_mut()
+                    .render_commands
+                    .push(RenderCommand::DrawProvinceMap {
+                        registry_name: this.name.clone(),
+                        viewport: [left, top, right, bottom],
+                        screen_size: [options.screen_w, options.screen_h],
+                        tint: options.tint.unwrap_or([1.0, 1.0, 1.0, 1.0]),
+                        province_tints: options
+                            .province_tints
+                            .iter()
+                            .map(|(id, color)| (id.raw(), *color))
+                            .collect(),
+                        terrain_texture,
+                        terrain_texture_scale,
+                        terrain_texture_strength,
+                        edge_gradient_color,
+                        edge_gradient_radius,
+                        edge_gradient_strength,
+                        edge_gradient_softness,
+                        border_palette_enabled: border_palette.enabled,
+                        province_border_color: border_palette.province_border_color,
+                        coast_border_color: border_palette.coast_border_color,
+                        country_border_color: border_palette.country_border_color,
+                        sea_border_darken: border_palette.sea_border_darken,
+                        selected_id: options.selected_id.map(|id| id.raw()).unwrap_or(0),
+                        hovered_id: options.hovered_id.map(|id| id.raw()).unwrap_or(0),
+                        zoom_mode,
+                        time,
+                    });
+
+                if options.draw_labels || options.draw_capitals || options.draw_roads {
+                    let mut overlay_options = options.clone();
+                    overlay_options.draw_fills = false;
+                    overlay_options.draw_borders = false;
+                    let font_key = {
+                        let st = this.state.borrow();
+                        st.active_font.or(st.default_font)
+                    };
+                    let cmds = this.with_registry(|reg| {
+                        generate_render_commands(reg, &overlay_options, font_key)
+                    })?;
+                    this.state.borrow_mut().render_commands.extend(cmds);
+                }
+                return Ok(());
+            }
+            if backend == "segments" {
+                let segment_reuse_cache = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<bool>>("segment_reuse_cache").ok().flatten())
+                    .unwrap_or(false);
+                let edge_gradient_radius = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("edge_gradient_radius").ok().flatten())
+                    .unwrap_or(16.0)
+                    .clamp(0.0, 128.0);
+                let edge_gradient_strength = opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<f32>>("edge_gradient_strength")
+                            .ok()
+                            .flatten()
+                    })
+                    .unwrap_or(0.25)
+                    .clamp(0.0, 1.0);
+                this.queue_segment_render(
+                    &options,
+                    edge_gradient_radius,
+                    edge_gradient_strength,
+                    segment_reuse_cache,
+                )?;
+
+                if options.draw_labels || options.draw_capitals || options.draw_roads {
+                    let mut overlay_options = options.clone();
+                    overlay_options.draw_fills = false;
+                    overlay_options.draw_borders = false;
+                    let font_key = {
+                        let st = this.state.borrow();
+                        st.active_font.or(st.default_font)
+                    };
+                    let cmds = this.with_registry(|reg| {
+                        generate_render_commands(reg, &overlay_options, font_key)
+                    })?;
+                    this.state.borrow_mut().render_commands.extend(cmds);
+                }
+                return Ok(());
+            }
+            if backend != "commands" {
+                return Err(LuaError::RuntimeError(format!(
+                    "unknown province render backend '{}'",
+                    backend
+                )));
+            }
             let font_key = {
                 let st = this.state.borrow();
                 st.active_font.or(st.default_font)

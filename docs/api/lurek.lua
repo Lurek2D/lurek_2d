@@ -25202,6 +25202,12 @@ function LProvinceRegistry:adjacencies() end
 ---@return LProvinceRegistryBorderSegmentsResult Array of tables with fields: province_a (number), province_b (number), x0 (number), y0 (number), x1 (number), y1 (number).
 function LProvinceRegistry:borderSegments() end
 
+--- Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode ("line"|"bezier"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.
+---@param route number[] Array of province ids whose capitals should be connected in order.
+---@param opts? table?|Draw "bezier", color={r,g,b,a?}, width=number, pixel_size=number, curve_offset=number, segments=integer.
+---@return number Number of route hop primitives queued.
+function LProvinceRegistry:drawCapitalPath(route, opts) end
+
 --- Returns provinces that have no adjacent province with the same owner attribute.
 ---@param owner_attr string Attribute key (for example `faction`).
 ---@return number[] Array of isolated province ids.
@@ -25451,6 +25457,11 @@ function LProvinceRegistry:type() end
 ---@param name string Type name to check.
 ---@return boolean True if the name matches.
 function LProvinceRegistry:typeOf(name) end
+
+--- Computes the province-space viewport rectangle used by province rendering and culling. The returned table can be passed to minimap:setViewportRect(rect.x, rect.y, rect.w, rect.h).
+---@param opts? table Camera/render options: x/y translation, zoom, pixel_size, screen_w, screen_h.
+---@return table Viewport table with x, y, w, h, left, top, right, and bottom fields in province map pixels.
+function LProvinceRegistry:viewportRect(opts) end
 
 --- Removes all properties, attributes, and flags for a province.
 ---@param id number Province ID.

@@ -597,6 +597,57 @@ pub fn validate_render_command(
             }
             validate_color("convex_fan.tint", *tint)
         }
+        DrawProvinceMap {
+            viewport,
+            screen_size,
+            tint,
+            province_tints,
+            terrain_texture_scale,
+            terrain_texture_strength,
+            edge_gradient_color,
+            edge_gradient_radius,
+            edge_gradient_strength,
+            edge_gradient_softness,
+            province_border_color,
+            coast_border_color,
+            country_border_color,
+            sea_border_darken,
+            time,
+            ..
+        } => {
+            validate_finite_slice("province_map.viewport", viewport)?;
+            validate_positive("province_map.screen_w", screen_size[0])?;
+            validate_positive("province_map.screen_h", screen_size[1])?;
+            validate_color("province_map.tint", *tint)?;
+            validate_count(
+                "province_map.province_tints",
+                province_tints.len(),
+                limits.max_vertices_per_command,
+            )?;
+            for (_, color) in province_tints {
+                validate_color("province_map.province_tint", *color)?;
+            }
+            validate_positive("province_map.terrain_texture_scale", *terrain_texture_scale)?;
+            validate_unit_interval(
+                "province_map.terrain_texture_strength",
+                *terrain_texture_strength,
+            )?;
+            validate_color("province_map.edge_gradient_color", *edge_gradient_color)?;
+            validate_non_negative("province_map.edge_gradient_radius", *edge_gradient_radius)?;
+            validate_unit_interval(
+                "province_map.edge_gradient_strength",
+                *edge_gradient_strength,
+            )?;
+            validate_positive(
+                "province_map.edge_gradient_softness",
+                *edge_gradient_softness,
+            )?;
+            validate_color("province_map.province_border_color", *province_border_color)?;
+            validate_color("province_map.coast_border_color", *coast_border_color)?;
+            validate_color("province_map.country_border_color", *country_border_color)?;
+            validate_unit_interval("province_map.sea_border_darken", *sea_border_darken)?;
+            validate_finite("province_map.time", *time)
+        }
         PushTransform
         | PopTransform
         | Origin

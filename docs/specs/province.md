@@ -15,7 +15,7 @@
 - Source path: `src/province`
 - Binding: `src/lua_api/province_api.rs`
 - Namespace: `lurek.province`
-- Lua API surface: `15` functions, `8` types, `45` methods
+- Lua API surface: `15` functions, `8` types, `47` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -43,11 +43,12 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Owning tier: `Feature Systems`
 - Plugin tier: `core_keep`
 - Lua binding owner: `src/lua_api/province_api.rs`
-- Referenced engine modules: `image`, `render`, `runtime`
+- Referenced engine modules: `image`, `math`, `render`, `runtime`
 
 ## Imports
 
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
@@ -252,6 +253,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - `LProvinceRegistry:adjacencies() -> table`: Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.
 - `LProvinceRegistry:borderSegments() -> table`: Returns all border line segments between adjacent provinces. Each segment is a line from (x0,y0) to (x1,y1) separating province_a from province_b.
+- `LProvinceRegistry:drawCapitalPath(route, opts?) -> integer`: Emits render commands for a route by connecting consecutive province capitals. Pass the route table returned by `findRoute`; pathfinding itself stays in the routing helpers. Options: mode ("line"|"bezier"), color ({r,g,b,a?} in 0..1), width, pixel_size, curve_offset, and segments.
 - `LProvinceRegistry:findIsolatedProvinces(owner_attr) -> integer[]`: Returns provinces that have no adjacent province with the same owner attribute.
 - `LProvinceRegistry:findRoute(from_id, to_id, cost_fn?) -> table`: Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.
 - `LProvinceRegistry:findRoutes(pairs, cost_fn?) -> table`: Finds routes for a batch of `{from, to}` pairs.
@@ -276,7 +278,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LProvinceRegistry:provinceSpans() -> table`: Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one province, useful for custom rendering or spatial analysis.
 - `LProvinceRegistry:registerBorderType(type_id, config) -> nil`: Registers a border type config by ID. Defines visual appearance for borders of this type.
 - `LProvinceRegistry:registerMapMode(name, config) -> nil`: Registers a named map mode with display configuration. Overwrites if name exists.
-- `LProvinceRegistry:render(opts?) -> nil`: Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
+- `LProvinceRegistry:render(opts?) -> nil`: Renders the province map to the screen using the current camera and style settings. `backend` accepts `commands`, `gpu`, or `segments`; `segments` rasterizes the visible registry span/border-segment viewport into an engine-owned cached texture. `segment_reuse_cache` lets callers redraw or move the viewport using the last cached tint table without sending all `province_tints` every frame. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
 - `LProvinceRegistry:screenToMap(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size?) -> number, number`: Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.
 - `LProvinceRegistry:screenToProvince(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size?) -> integer`: Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map or over an unowned cell.
 - `LProvinceRegistry:setAttr(id, key, value) -> boolean`: Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.
@@ -295,6 +297,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LProvinceRegistry:totalAttrForOwner(owner_attr, owner_val, sum_attr) -> number`: Sums a numeric attribute for all provinces with matching owner value.
 - `LProvinceRegistry:type() -> string`: Returns the type name string for this userdata object.
 - `LProvinceRegistry:typeOf(name) -> boolean`: Checks whether this object matches the given type name. Returns true for "LProvinceRegistry" and "Object".
+- `LProvinceRegistry:viewportRect(opts?) -> table`: Computes the province-space viewport rectangle used by province rendering and culling. The returned table can be passed to minimap:setViewportRect(rect.x, rect.y, rect.w, rect.h).
 
 #### LProvinceRegistryAdjacenciesResult Type
 
@@ -424,6 +427,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 | Current artifact | `tests/artifacts/current/province/province_capitals_labels_centroids.png` |
 | Current artifact | `tests/artifacts/current/province/province_economy_properties_trace.txt` |
 | Current artifact | `tests/artifacts/current/province/province_registry_topology_trace.txt` |
+| Current artifact | `tests/artifacts/current/province/province_render_plan_overlay.png` |
 | Current artifact | `tests/artifacts/current/province/province_revision_timeline.gif` |
 | Current artifact | `tests/artifacts/current/province/province_route_trace.png` |
 | Current artifact | `tests/artifacts/current/province/province_sanitized_map.png` |

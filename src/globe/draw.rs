@@ -99,9 +99,12 @@ pub fn emit_globe_frame(
         .collect();
     overlays.sort_by_key(|region| region.id);
     for region in overlays {
-        let overlay_color = region
-            .overlay_color
-            .unwrap_or([region.base_color[0], region.base_color[1], region.base_color[2], 0.22]);
+        let overlay_color = region.overlay_color.unwrap_or([
+            region.base_color[0],
+            region.base_color[1],
+            region.base_color[2],
+            0.22,
+        ]);
         if overlay_color[3] <= 0.0 {
             continue;
         }
@@ -336,7 +339,9 @@ fn emit_region_draw(
         }
     }
     let mut base = if use_layers {
-        layers.effective_color(region.id).unwrap_or(region.base_color)
+        layers
+            .effective_color(region.id)
+            .unwrap_or(region.base_color)
     } else {
         region.base_color
     };

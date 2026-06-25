@@ -620,6 +620,30 @@ do
     province_log("screen pick center province=" .. tostring(province_id) .. " map_x=" .. tostring(map_x) .. " map_y=" .. tostring(map_y) .. " visible_terrain=" .. tostring(province and province.style and province.style.terrain_type))
 end
 
+--@api: LProvinceRegistry:viewportRect
+do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
+    local reg = province_registry("viewport_rect")
+    local rect = reg:viewportRect({
+        x = -24,
+        y = -16,
+        zoom = 2.0,
+        pixel_size = 1.0,
+        screen_w = 320,
+        screen_h = 180,
+    })
+    province_log("viewport rect = " .. tostring(rect.x) .. "," .. tostring(rect.y) .. " size=" .. tostring(rect.w) .. "x" .. tostring(rect.h))
+end
+
 --@api: lurek.province.zoomCameraAt
 do
     local function province_log(message)
@@ -687,7 +711,13 @@ do
         tints[ids[2]] = { 0.9, 0.35, 0.2, 1.0 }
     end
 
+    local terrain_texture = lurek.render.newImage("content/examples/assets/textures/province_tree_8x8.png")
+    for i = 1, math.min(#ids, 3) do
+        reg:setTerrainType(ids[i], 1)
+    end
+
     reg:render({
+        backend = "gpu",
         map_mode = "political",
         x = cam_x,
         y = cam_y,
@@ -701,6 +731,19 @@ do
         draw_capitals = true,
         tint = { 0.92, 0.95, 1.0, 1.0 },
         province_tints = tints,
+        terrain_texture = terrain_texture,
+        terrain_texture_scale = 8,
+        terrain_texture_strength = 0.05,
+        edge_gradient_radius = 16.0,
+        edge_gradient_strength = 0.25,
+        edge_gradient_softness = 0.45,
+        edge_gradient_color = { 0.0, 0.0, 0.0, 1.0 },
+        border_palette = {
+            province_color = { 64 / 255, 64 / 255, 60 / 255, 1.0 },
+            coast_color = { 224 / 255, 196 / 255, 128 / 255, 1.0 },
+            country_color = { 230 / 255, 46 / 255, 42 / 255, 1.0 },
+            sea_darken = 0.15,
+        },
         border_width = 1.5,
         hovered_id = 0,
         selected_id = 0,
@@ -1302,6 +1345,31 @@ do
     local route = (from_id and to_id) and reg:findRoute(from_id, to_id, function(a, b) return a == b and 0.5 or 1.0 end) or nil
     local hop_count = route and #route or 0
     province_log("supply route search from=" .. tostring(from_id) .. " to=" .. tostring(to_id) .. " hops=" .. tostring(hop_count) .. " reachable=" .. tostring(route ~= nil))
+end
+
+--@api: LProvinceRegistry:drawCapitalPath
+do
+    local function province_log(message)
+        lurek.log.info("[province.example] " .. tostring(message))
+    end
+    local function province_registry(stem, path)
+        return lurek.province.newFromPng(
+            "province_example_" .. stem,
+            path or "content/examples/assets/textures/province_map.png"
+        )
+    end
+
+    local reg = province_registry("draw_capital_path", "content/examples/assets/province/map.png")
+    local ids = reg:provinceIds()
+    local route = (#ids >= 2) and reg:findRoute(ids[1], ids[#ids]) or nil
+    local queued = route and reg:drawCapitalPath(route, {
+        mode = "bezier",
+        color = { 1.0, 0.86, 0.28, 0.95 },
+        width = 3.0,
+        curve_offset = 10.0,
+        segments = 16,
+    }) or 0
+    province_log("capital path queued primitives = " .. tostring(queued))
 end
 
 --@api: LProvinceRegistry:findRoutes

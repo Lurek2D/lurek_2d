@@ -68,6 +68,40 @@ fn assign_pair_id(
     Some(next)
 }
 
+fn place_pair_id(data: &mut [u16], width: u32, height: u32, x: i32, y: i32, pair_id: u16) -> bool {
+    if x < 0 || y < 0 || x >= width as i32 || y >= height as i32 {
+        return false;
+    }
+    let idx = (y as u32 * width + x as u32) as usize;
+    if data[idx] == 0 || data[idx] == pair_id {
+        data[idx] = pair_id;
+        return true;
+    }
+    false
+}
+
+fn place_horizontal_pair(data: &mut [u16], width: u32, height: u32, x: u32, y: u32, pair_id: u16) {
+    let x = x as i32;
+    let y = y as i32;
+    let _ = place_pair_id(data, width, height, x, y, pair_id)
+        || place_pair_id(data, width, height, x + 1, y, pair_id)
+        || place_pair_id(data, width, height, x, y - 1, pair_id)
+        || place_pair_id(data, width, height, x + 1, y - 1, pair_id)
+        || place_pair_id(data, width, height, x, y + 1, pair_id)
+        || place_pair_id(data, width, height, x + 1, y + 1, pair_id);
+}
+
+fn place_vertical_pair(data: &mut [u16], width: u32, height: u32, x: u32, y: u32, pair_id: u16) {
+    let x = x as i32;
+    let y = y as i32;
+    let _ = place_pair_id(data, width, height, x, y, pair_id)
+        || place_pair_id(data, width, height, x, y + 1, pair_id)
+        || place_pair_id(data, width, height, x - 1, y, pair_id)
+        || place_pair_id(data, width, height, x - 1, y + 1, pair_id)
+        || place_pair_id(data, width, height, x + 1, y, pair_id)
+        || place_pair_id(data, width, height, x + 1, y + 1, pair_id);
+}
+
 /// Build border index map from raw province id grid.
 pub fn build_border_index(grid: &[u32], width: u32, height: u32) -> ProvinceBorderIndex {
     let expected_len = (width as usize).saturating_mul(height as usize);
@@ -82,24 +116,22 @@ pub fn build_border_index(grid: &[u32], width: u32, height: u32) -> ProvinceBord
             let idx = (y * width + x) as usize;
             let id = ProvinceId(grid[idx]);
 
-            let mut assigned = 0_u16;
             if x + 1 < width {
                 let right = ProvinceId(grid[(y * width + (x + 1)) as usize]);
                 if right != id {
                     if let Some(pid) = assign_pair_id(&mut pair_to_id, &mut id_to_pair, id, right) {
-                        assigned = pid;
+                        place_horizontal_pair(&mut data, width, height, x, y, pid);
                     }
                 }
             }
-            if assigned == 0 && y + 1 < height {
+            if y + 1 < height {
                 let down = ProvinceId(grid[((y + 1) * width + x) as usize]);
                 if down != id {
                     if let Some(pid) = assign_pair_id(&mut pair_to_id, &mut id_to_pair, id, down) {
-                        assigned = pid;
+                        place_vertical_pair(&mut data, width, height, x, y, pid);
                     }
                 }
             }
-            data[idx] = assigned;
         }
     }
 
@@ -117,6 +149,41 @@ pub fn dilate_border_index_with_styles(
     index: &mut ProvinceBorderIndex,
     styles: &HashMap<(ProvinceId, ProvinceId), BorderPairStyle>,
 ) {
+    dilate_border_index_by_thickness(index, |a, b| {
+        styles
+            .get(&norm_pair(a, b))
+            .map(|style| style.thickness)
+            .unwrap_or(1.0)
+    });
+}
+
+fn registry_border_thickness(registry: &ProvinceRegistry, a: ProvinceId, b: ProvinceId) -> f32 {
+    if let Some(style) = registry.get_border_pair_style(a, b) {
+        return style.thickness.max(1.0);
+    }
+    registry
+        .get_border_type(a, b)
+        .and_then(|type_id| {
+            registry
+                .get_border_type_config(type_id)
+                .map(|config| config.thickness)
+        })
+        .unwrap_or(1.0)
+        .max(1.0)
+}
+
+/// Expand border pixels using the current registry border-pair or border-type thickness settings.
+pub fn dilate_border_index_with_registry_styles(
+    index: &mut ProvinceBorderIndex,
+    registry: &ProvinceRegistry,
+) {
+    dilate_border_index_by_thickness(index, |a, b| registry_border_thickness(registry, a, b));
+}
+
+fn dilate_border_index_by_thickness<F>(index: &mut ProvinceBorderIndex, mut thickness_for_pair: F)
+where
+    F: FnMut(ProvinceId, ProvinceId) -> f32,
+{
     let width = index.width;
     let height = index.height;
     let src = index.data.clone();
@@ -130,8 +197,7 @@ pub fn dilate_border_index_with_styles(
                 continue;
             }
             let pair = index.id_to_pair[pair_id as usize];
-            let style = styles.get(&pair).copied().unwrap_or_default();
-            let radius = ((style.thickness.max(1.0) - 1.0) * 0.5).ceil() as i32;
+            let radius = ((thickness_for_pair(pair.0, pair.1).max(1.0) - 1.0) * 0.5).ceil() as i32;
             if radius <= 0 {
                 continue;
             }
@@ -168,4 +234,11 @@ pub fn build_border_index_from_registry(registry: &ProvinceRegistry) -> Province
         }
     }
     build_border_index(&ids, width, height)
+}
+
+/// Build a registry border index with border-pair and border-type thickness already baked into pixels.
+pub fn build_styled_border_index_from_registry(registry: &ProvinceRegistry) -> ProvinceBorderIndex {
+    let mut index = build_border_index_from_registry(registry);
+    dilate_border_index_with_registry_styles(&mut index, registry);
+    index
 }
