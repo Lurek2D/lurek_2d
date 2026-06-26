@@ -80,13 +80,47 @@ describe("eu2 playable slice", function()
         assert(mode == "political", "GPU province renderer should consume prepared political colors")
         assert(tints == nil, "EU2 should not send per-frame province_tints for stable map modes")
         assert(colors[1] ~= nil and colors[2] ~= nil, "registry colors should be updated")
-        assert(colors[1][1] < 0.60, "political fill should stay muted; country ownership is carried by borders")
-        assert(colors[2][3] < 0.52, "political fill should not become saturated country color")
+        assert(colors[1][1] == state.countries.POL.color[1], "political fill should use country color")
+        assert(colors[2][3] == state.countries.LIT.color[3], "political fill should distinguish country ownership")
         assert(colors[3][3] > colors[3][1], "sea fill should stay blue")
         assert(border_styles["1:2"].flags[1] == "country", "land owner border should stay a country border")
         assert(border_styles["1:2"].color == nil, "country border color should come from render border_palette")
         assert(border_styles["1:3"].color == nil, "coast border color should come from render border_palette")
-        assert(border_styles["1:3"].thickness == 2.0, "coast borders should keep wider thickness")
+        assert(border_styles["1:3"].thickness == 1.0, "coast borders should use normal palette thickness")
         assert(border_styles["2:4"].color == nil, "local borders should use palette province color")
+    end)
+
+    it("army movement consumes the province route adapter for non-neighbor targets", function()
+        local state_module = load_demo_module("state.lua")
+        local route_requests = 0
+        local state = {
+            log = {},
+            provinces = {
+                [1] = { name = "Krakow", owner = "POL", terrain = "plains", neighbors = { 2 } },
+                [2] = { name = "Mazovia", owner = "POL", terrain = "forest", neighbors = { 1, 3 } },
+                [3] = { name = "Danzig", owner = "TEU", terrain = "plains", neighbors = { 2 } },
+            },
+            armies = {
+                { id = "pol_1", name = "Crown Army", tag = "POL", province_id = 1 },
+            },
+            reg = {
+                findRoute = function(_, from_id, to_id)
+                    route_requests = route_requests + 1
+                    assert(from_id == 1, "route should start at the army province")
+                    assert(to_id == 3, "route should target the clicked province")
+                    return { 1, 2, 3 }
+                end,
+            },
+            date_string = function()
+                return "Jan 1419"
+            end,
+        }
+
+        local ok = state_module.order_move(state, "pol_1", 3)
+
+        assert(ok == true, "movement order should be accepted")
+        assert(route_requests == 1, "non-neighbor movement should query the province route adapter")
+        assert(state.armies[1].target_id == 2, "army should move to the next route hop")
+        assert(state.armies[1].eta == 5, "movement cost should use next-hop terrain")
     end)
 end)

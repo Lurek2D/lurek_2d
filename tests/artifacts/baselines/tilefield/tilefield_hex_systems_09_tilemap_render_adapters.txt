@@ -1,0 +1,6 @@
+map=50x50
+field_topology=hex
+ref_slot=terrain
+projection=flat_hex_staggered
+pixel_width=1067
+pixel_height=636

@@ -753,21 +753,27 @@ fn test_border_index_keeps_one_cell_border_pairs_at_corner_conflicts() {
     let index = build_border_index_from_registry(&reg);
 
     assert!(
-        index.pair_to_id.contains_key(&(ProvinceId(1), ProvinceId(2))),
+        index
+            .pair_to_id
+            .contains_key(&(ProvinceId(1), ProvinceId(2))),
         "horizontal one-cell pair should be indexed"
     );
     assert!(
-        index.pair_to_id.contains_key(&(ProvinceId(1), ProvinceId(3))),
+        index
+            .pair_to_id
+            .contains_key(&(ProvinceId(1), ProvinceId(3))),
         "vertical one-cell pair should not be dropped by right/down conflicts"
     );
     assert!(
-        index.pair_to_id.contains_key(&(ProvinceId(2), ProvinceId(3))),
+        index
+            .pair_to_id
+            .contains_key(&(ProvinceId(2), ProvinceId(3))),
         "neighboring one-cell pair should be indexed"
     );
 
     let pair_13 = index.pair_to_id[&(ProvinceId(1), ProvinceId(3))];
     assert!(
-        index.data.iter().any(|&id| id == pair_13),
+        index.data.contains(&pair_13),
         "one-cell vertical pair should have a texture slot"
     );
 }

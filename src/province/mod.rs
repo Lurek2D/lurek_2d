@@ -31,13 +31,13 @@ pub mod properties;
 pub mod registry;
 /// RenderCommand generation for fills, borders, capitals, and text labels.
 pub mod render;
-/// Province graph routing helpers: shortest path, components, connectivity.
+/// Province routing adapters plus owner-attribute aggregation.
 pub mod routing;
 /// Province adjacency graph built from pixel-scan output.
 pub mod topology;
 /// Core types: ProvinceId, BorderType, BorderTypeConfig, ProvinceStyle, ProvinceSnapshot.
 pub mod types;
-/// Camera/view-transform helpers: fit, screen-to-map, cell lookup, zoom-at-point.
+/// Province-grid view adapter: fit, screen-to-map, cell lookup, zoom-at-point.
 pub mod view_transform;
 
 /// Province-grid extraction and adjacency helpers.

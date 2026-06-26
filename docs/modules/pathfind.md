@@ -12,27 +12,30 @@ Navigates grids, hex layouts, isometric maps, navmeshes, and province graphs.
 
 ## Minimal Example
 
-Example block: `lurek.pathfind.newNavGridFromField`
+Example block: `lurek.pathfind.graphRoute`
 
 ```lua
 do
     local function pathfind_log(message)
         lurek.log.info("[pathfind.example] " .. tostring(message))
     end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local field = lurek.tilefield.new({ width = 6, height = 6 })
-    field:applyProfile(3, 3, 1, "wall")
-    local grid = lurek.pathfind.newNavGridFromField(field, { level = 1, channel = "move" })
-    local blocked = grid:isBlocked(3, 3)
-    local width = grid:getWidth()
-    pathfind_log("field navgrid width=" .. width .. " blocked=" .. tostring(blocked))
+    local edges = {
+        { from = 1, to = 2 },
+        { from = 2, to = 3 },
+        { from = 1, to = 4 },
+        { from = 4, to = 3 },
+    }
+    local route = lurek.pathfind.graphRoute(edges, 1, 3, {
+        algorithm = "dijkstra",
+        cost = function(from, to)
+            if (from == 1 and to == 2) or (from == 2 and to == 3) then
+                return 12
+            end
+            return 1
+        end,
+    })
+    pathfind_log("graph route hops=" .. tostring(route and #route or 0) .. " via=" .. tostring(route and route[2]))
 end
 ```
 
@@ -42,7 +45,7 @@ end
 - Start with `lurek.pathfind.clearAsyncPaths` when exploring this module.
 - Start with `lurek.pathfind.getAsyncPendingCount` when exploring this module.
 - Start with `lurek.pathfind.getThreadCount` when exploring this module.
-- Start with `lurek.pathfind.newContextSteering` when exploring this module.
+- Start with `lurek.pathfind.graphConnected` when exploring this module.
 
 ## API Reference
 
@@ -67,6 +70,7 @@ end
 - That makes `pathfind` a planning layer, not only a shortest-path helper.
 - Debug and visualization helpers matter because navigation bugs usually come from topology, weights, or blocked-space assumptions rather than from the solver implementation alone.
 - `tilemap`, `province`, and related modules define traversable space, but `pathfind` owns how that space is searched, scored, and turned into movement advice.
+- Province-level BFS, weighted Dijkstra/A*, connected-component traversal, and reachability belong here even when `province` exposes convenience methods that adapt registry topology into pathfinding inputs.
 - Read `pathfind` as the reusable navigation and local-movement analysis layer of the engine, not as an animation or physics integration system.
 
 This module primarily collaborates with `flownet`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
@@ -247,6 +251,194 @@ do
     pathfind_log("thread count = " .. tc)
     pathfind_log("pending async jobs = " .. pending)
     pathfind_log("sample grid blocked = " .. tostring(nav:isBlocked(4, 4)))
+end
+```
+
+---
+
+### `lurek.pathfind.graphConnected`
+
+Returns true when a target node is reachable from a start node in an integer-id graph.
+
+```lua
+lurek.pathfind.graphConnected(edges, from, to, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edges` | table | Array of graph edge tables. |
+| `from` | number | Start node id. |
+| `to` | number | Target node id. |
+| `opts?` | table | Options with `directed`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when reachable. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local edges = {
+        { from = 1, to = 2 },
+        { from = 2, to = 3 },
+    }
+    local forward = lurek.pathfind.graphConnected(edges, 1, 3, { directed = true })
+    local backward_directed = lurek.pathfind.graphConnected(edges, 3, 1, { directed = true })
+    local backward_undirected = lurek.pathfind.graphConnected(edges, 3, 1)
+    pathfind_log("graph connected forward=" .. tostring(forward) .. " directed_back=" .. tostring(backward_directed) .. " undirected_back=" .. tostring(backward_undirected))
+end
+```
+
+---
+
+### `lurek.pathfind.graphConnectedComponents`
+
+Returns connected components for an integer-id graph. Pass `nodes` to include isolated node ids.
+
+```lua
+lurek.pathfind.graphConnectedComponents(edges, nodes, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edges` | table | Array of graph edge tables. |
+| `nodes?` | table | Optional array of node ids; omitted nodes are inferred from edge endpoints. |
+| `opts?` | table | Options with `directed`; directed graphs follow outgoing edges. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of node-id arrays, sorted by first node id. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local edges = {
+        { from = 7, to = 8 },
+        { from = 8, to = 9 },
+        { from = 20, to = 21 },
+    }
+    local components = lurek.pathfind.graphConnectedComponents(edges, { 7, 8, 9, 10, 20, 21 })
+    local isolated = components[2] and components[2][1] or nil
+    local largest = components[1] and #components[1] or 0
+    pathfind_log("graph components=" .. tostring(#components) .. " largest=" .. tostring(largest) .. " isolated=" .. tostring(isolated))
+end
+```
+
+---
+
+### `lurek.pathfind.graphRoute`
+
+Finds a route through an integer-id graph. Edges may be `{from,to}`, `{a,b}`, `{province_a,province_b}`, or `{from_id,to_id}` arrays. Options: `directed`, `algorithm` ("bfs"|"dijkstra"), and optional `cost(from, to)`.
+
+```lua
+lurek.pathfind.graphRoute(edges, from, to, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edges` | table | Array of graph edge tables. |
+| `from` | number | Start node id. |
+| `to` | number | Target node id. |
+| `opts?` | table | Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Node id route from start to target, or nil when unreachable. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local edges = {
+        { from = 1, to = 2 },
+        { from = 2, to = 3 },
+        { from = 1, to = 4 },
+        { from = 4, to = 3 },
+    }
+    local route = lurek.pathfind.graphRoute(edges, 1, 3, {
+        algorithm = "dijkstra",
+        cost = function(from, to)
+            if (from == 1 and to == 2) or (from == 2 and to == 3) then
+                return 12
+            end
+            return 1
+        end,
+    })
+    pathfind_log("graph route hops=" .. tostring(route and #route or 0) .. " via=" .. tostring(route and route[2]))
+end
+```
+
+---
+
+### `lurek.pathfind.graphRoutes`
+
+Finds routes for a batch of graph `{from, to}` requests using the same edge table and options as `graphRoute`.
+
+```lua
+lurek.pathfind.graphRoutes(edges, requests, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edges` | table | Array of graph edge tables. |
+| `requests` | table | Array of `{from=integer,to=integer}` or `{from,to}` route requests. |
+| `opts?` | table | Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of route arrays; unreachable entries are nil. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local edges = {
+        { 1, 2 },
+        { 2, 3 },
+        { 4, 5 },
+    }
+    local routes = lurek.pathfind.graphRoutes(edges, {
+        { from = 1, to = 3 },
+        { from = 1, to = 5 },
+        { from = 4, to = 5 },
+    })
+    local first_len = routes[1] and #routes[1] or 0
+    local third_len = routes[3] and #routes[3] or 0
+    pathfind_log("graph route batch first=" .. tostring(first_len) .. " third=" .. tostring(third_len) .. " second_nil=" .. tostring(routes[2] == nil))
 end
 ```
 
@@ -447,6 +639,47 @@ end
 
 ---
 
+### `lurek.pathfind.newHexGridFromField`
+
+Creates a hex navigation grid from a hex tilefield level and movement category.
+
+```lua
+lurek.pathfind.newHexGridFromField(field_ud, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field_ud` | [LTileField](#ltilefield) | Hex tilefield to derive navigation data from. |
+| `opts?` | table | Options with `level`, `category`, `costCategory`, and `layout` (`"flat"` or `"pointy"`). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LHexGrid](#lhexgrid) | New hex grid handle. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local field = lurek.tilefield.new({ width = 6, height = 6, topology = "hex" })
+    field:setBlock(3, 3, 1, "move", true)
+    field:setCost(4, 3, 1, "move", 3)
+    local grid = lurek.pathfind.newHexGridFromField(field, { level = 1, channel = "move", layout = "flat" })
+    local route = grid:findPath(1, 3, 6, 3) or {}
+    local blocked = grid:isBlocked(3, 3)
+    pathfind_log("field hex route nodes=" .. tostring(#route) .. " blocked=" .. tostring(blocked))
+end
+```
+
+---
+
 ### `lurek.pathfind.newInfluenceMap`
 
 Creates a grid influence map with the supplied cell dimensions and world cell size.
@@ -488,6 +721,85 @@ do
   imap:setInfluence("danger", 4, 5, 0.9)
   example_print_log("lurek.pathfind.newInfluenceMap: ok=" .. tostring(imap ~= nil))
   example_print_log("lurek.pathfind.newInfluenceMap: width=" .. tostring(imap:getWidth()))
+end
+```
+
+---
+
+### `lurek.pathfind.newIsoGrid`
+
+Creates an isometric grid with the given dimensions.
+
+```lua
+lurek.pathfind.newIsoGrid(width, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Grid width in cells. |
+| `height` | number | Grid height in cells. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LIsoGrid](#lisogrid) | New isometric grid handle. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(6, 5)
+    grid:setBlocked(3, 3, true)
+    local route = grid:findPath(1, 3, 6, 3) or {}
+    local blocked = grid:isBlocked(3, 3)
+    pathfind_log("iso route nodes=" .. tostring(#route) .. " blocked=" .. tostring(blocked))
+end
+```
+
+---
+
+### `lurek.pathfind.newIsoGridFromField`
+
+Creates an isometric navigation grid from an iso-square tilefield level and movement category.
+
+```lua
+lurek.pathfind.newIsoGridFromField(field_ud, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field_ud` | [LTileField](#ltilefield) | Iso-square tilefield to derive navigation data from. |
+| `opts?` | table | Options with `level`, `category`, and `costCategory`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LIsoGrid](#lisogrid) | New isometric grid handle. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local field = lurek.tilefield.new({ width = 6, height = 5, topology = "iso_square" })
+    field:setBlock(3, 3, 1, "move", true)
+    field:setCost(4, 3, 1, "move", 3)
+    local grid = lurek.pathfind.newIsoGridFromField(field, { level = 1, channel = "move" })
+    local route = grid:findPath(1, 3, 6, 3) or {}
+    pathfind_log("field iso route nodes=" .. tostring(#route) .. " cost=" .. tostring(grid:getCost(4, 3)))
 end
 ```
 
@@ -1323,6 +1635,7 @@ end
 - [LGoalMap](#lgoalmap)
 - [LHexGrid](#lhexgrid)
 - [LInfluenceMap](#linfluencemap)
+- [LIsoGrid](#lisogrid)
 - [LJpsGrid](#ljpsgrid)
 - [LNavGrid](#lnavgrid)
 - [LNavMesh](#lnavmesh)
@@ -4426,6 +4739,280 @@ do
   local map_width = im:getWidth()
     local type_name = im:type()
     example_print_log("is LInfluenceMap = " .. tostring(im:typeOf("LInfluenceMap")))
+end
+```
+
+---
+
+## LIsoGrid
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LIsoGrid:findPath`
+
+Finds a path between one-based isometric cells.
+
+```lua
+LIsoGrid:findPath(fx, fy, tx, ty)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fx` | number | One-based start X coordinate. |
+| `fy` | number | One-based start Y coordinate. |
+| `tx` | number | One-based goal X coordinate. |
+| `ty` | number | One-based goal Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LIsoGridFindPathResult | Array of `{x, y}` cell tables, or nil when no path exists. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(7, 5)
+    grid:setBlocked(4, 1, true)
+    grid:setBlocked(4, 2, true)
+    grid:setBlocked(4, 3, true)
+    local route = grid:findPath(1, 2, 7, 2) or {}
+    local last = route[#route] or { x = 0, y = 0 }
+    pathfind_log("iso path nodes=" .. tostring(#route) .. " last=" .. tostring(last.x) .. "," .. tostring(last.y))
+end
+```
+
+---
+
+#### `LIsoGrid:getCost`
+
+Returns movement cost for a one-based isometric grid cell.
+
+```lua
+LIsoGrid:getCost(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based cell X coordinate. |
+| `y` | number | One-based cell Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Movement cost. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(5, 5)
+    grid:setCost(2, 2, 3.5)
+    grid:setCost(2, 3, 1.5)
+    local bridge = grid:getCost(2, 2)
+    local lane = grid:getCost(2, 3)
+    local plain = grid:getCost(1, 1)
+    pathfind_log("iso costs bridge=" .. tostring(bridge) .. " lane=" .. tostring(lane) .. " plain=" .. tostring(plain))
+end
+```
+
+---
+
+#### `LIsoGrid:isBlocked`
+
+Returns whether a one-based isometric grid cell is blocked.
+
+```lua
+LIsoGrid:isBlocked(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based cell X coordinate. |
+| `y` | number | One-based cell Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when blocked or out of bounds. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(5, 5)
+    grid:setBlocked(4, 2, true)
+    local wall = grid:isBlocked(4, 2)
+    local floor = grid:isBlocked(4, 3)
+    local route = grid:findPath(1, 2, 5, 2) or {}
+    pathfind_log("iso blocked wall=" .. tostring(wall) .. " floor=" .. tostring(floor) .. " route=" .. tostring(#route))
+end
+```
+
+---
+
+#### `LIsoGrid:setBlocked`
+
+Sets blocked state for a one-based isometric grid cell.
+
+```lua
+LIsoGrid:setBlocked(x, y, blocked)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based cell X coordinate. |
+| `y` | number | One-based cell Y coordinate. |
+| `blocked` | boolean | True to block the cell. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(5, 5)
+    grid:setBlocked(2, 3, true)
+    grid:setBlocked(2, 4, true)
+    local first = grid:isBlocked(2, 3)
+    local second = grid:isBlocked(2, 4)
+    pathfind_log("iso blockers first=" .. tostring(first) .. " second=" .. tostring(second))
+end
+```
+
+---
+
+#### `LIsoGrid:setCost`
+
+Sets movement cost for a one-based isometric grid cell.
+
+```lua
+LIsoGrid:setCost(x, y, cost)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based cell X coordinate. |
+| `y` | number | One-based cell Y coordinate. |
+| `cost` | number | Finite positive movement cost. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(5, 5)
+    grid:setCost(3, 2, 2.5)
+    grid:setCost(3, 3, 4.0)
+    local road = grid:getCost(3, 2)
+    local mud = grid:getCost(3, 3)
+    pathfind_log("iso costs road=" .. tostring(road) .. " mud=" .. tostring(mud))
+end
+```
+
+---
+
+#### `LIsoGrid:type`
+
+Returns the Lua-visible type name for this isometric grid handle.
+
+```lua
+LIsoGrid:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LIsoGrid](#lisogrid)`. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(4, 4)
+    grid:setCost(2, 2, 2)
+    local type_name = grid:type()
+    local cost = grid:getCost(2, 2)
+    local route = grid:findPath(1, 1, 4, 4) or {}
+    pathfind_log("iso type=" .. type_name .. " cost=" .. tostring(cost) .. " route=" .. tostring(#route))
+end
+```
+
+---
+
+#### `LIsoGrid:typeOf`
+
+Returns whether this isometric grid handle matches a supported type name.
+
+```lua
+LIsoGrid:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | String value for `name`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+**Example**
+
+```lua
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(4, 4)
+    grid:setBlocked(2, 2, true)
+    local is_iso = grid:typeOf("LIsoGrid")
+    local is_object = grid:typeOf("LObject")
+    local is_hex = grid:typeOf("LHexGrid")
+    pathfind_log("iso typeOf iso=" .. tostring(is_iso) .. " object=" .. tostring(is_object) .. " hex=" .. tostring(is_hex))
 end
 ```
 

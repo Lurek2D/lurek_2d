@@ -461,7 +461,7 @@ end
 function Fixture.render_route_trace(loaded)
     local route, army, target = route_between_army_and_target(loaded)
     local scale = 0.72
-    local canvas = image_canvas(790, 420, "PROVINCE ARMY ROUTE", "findRoute path from campaign army to neighboring territory")
+    local canvas = image_canvas(790, 420, "PROVINCE ARMY ROUTE", "route adapter path from campaign army to neighboring territory")
     draw_span_map(canvas, loaded, 28, 72, scale, "political")
     draw_border_overlay(canvas, loaded, 28, 72, scale, 90, 220)
     draw_route(canvas, loaded, route, 28, 72, scale)
@@ -863,7 +863,7 @@ function Fixture.render_zoom_pick_view(loaded)
     local map_x, map_y = registry:screenToMap(anchor_x, anchor_y, zoom_x, zoom_y, fit_zoom * 2.8, 1.0)
     expect_equal(pick_target, pick_id)
 
-    local canvas = image_canvas(930, 520, "PROVINCE ZOOM PICK", "fitCamera, zoomCameraAt, screenToMap, and screenToProvince")
+    local canvas = image_canvas(930, 520, "PROVINCE ZOOM PICK", "camera fit/zoom adapter, screenToMap, and screenToProvince")
     local full = scaled_source(loaded.sanitized_path, 430, 194)
     canvas:paste(full, 36, 86)
     draw_border_overlay(canvas, loaded, 36, 86, 0.43, 80, 190)

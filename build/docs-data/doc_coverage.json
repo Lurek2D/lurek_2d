@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-25T15:00:52.502461+00:00",
+  "generated_at": "2026-06-26T14:20:29.714729+00:00",
   "summary": {
     "rust": {
-      "total": 8732,
-      "covered": 8727,
+      "total": 8753,
+      "covered": 8748,
       "missing": 5,
       "pct": 99.9
     },
@@ -14,8 +14,8 @@
       "pct": 100.0
     },
     "total": {
-      "total": 8910,
-      "covered": 8905,
+      "total": 8931,
+      "covered": 8926,
       "missing": 5,
       "pct": 99.9
     }
@@ -10414,6 +10414,33 @@
       "module": "camera",
       "file": "src/camera/viewport.rs",
       "line": 52,
+      "kind": "fn",
+      "name": "fit_content_to_screen",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "camera",
+      "file": "src/camera/viewport.rs",
+      "line": 78,
+      "kind": "fn",
+      "name": "screen_to_content",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "camera",
+      "file": "src/camera/viewport.rs",
+      "line": 91,
+      "kind": "fn",
+      "name": "zoom_offset_at",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "camera",
+      "file": "src/camera/viewport.rs",
+      "line": 110,
       "kind": "struct",
       "name": "Viewport",
       "has_doc": true
@@ -10422,7 +10449,7 @@
       "source": "rust",
       "module": "camera",
       "file": "src/camera/viewport.rs",
-      "line": 70,
+      "line": 128,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -10431,7 +10458,7 @@
       "source": "rust",
       "module": "camera",
       "file": "src/camera/viewport.rs",
-      "line": 82,
+      "line": 140,
       "kind": "fn",
       "name": "resize",
       "has_doc": true
@@ -10440,7 +10467,7 @@
       "source": "rust",
       "module": "camera",
       "file": "src/camera/viewport.rs",
-      "line": 95,
+      "line": 153,
       "kind": "fn",
       "name": "get_scale",
       "has_doc": true
@@ -10449,7 +10476,7 @@
       "source": "rust",
       "module": "camera",
       "file": "src/camera/viewport.rs",
-      "line": 99,
+      "line": 157,
       "kind": "fn",
       "name": "get_offset",
       "has_doc": true
@@ -10458,7 +10485,7 @@
       "source": "rust",
       "module": "camera",
       "file": "src/camera/viewport.rs",
-      "line": 103,
+      "line": 161,
       "kind": "fn",
       "name": "get_game_dimensions",
       "has_doc": true
@@ -10467,7 +10494,7 @@
       "source": "rust",
       "module": "camera",
       "file": "src/camera/viewport.rs",
-      "line": 107,
+      "line": 165,
       "kind": "fn",
       "name": "get_scale_mode",
       "has_doc": true
@@ -10476,7 +10503,7 @@
       "source": "rust",
       "module": "camera",
       "file": "src/camera/viewport.rs",
-      "line": 111,
+      "line": 169,
       "kind": "fn",
       "name": "set_scale_mode",
       "has_doc": true
@@ -10485,7 +10512,7 @@
       "source": "rust",
       "module": "camera",
       "file": "src/camera/viewport.rs",
-      "line": 115,
+      "line": 173,
       "kind": "fn",
       "name": "to_game",
       "has_doc": true
@@ -10494,7 +10521,7 @@
       "source": "rust",
       "module": "camera",
       "file": "src/camera/viewport.rs",
-      "line": 122,
+      "line": 180,
       "kind": "fn",
       "name": "to_screen",
       "has_doc": true
@@ -34947,7 +34974,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 212,
+      "line": 382,
       "kind": "struct",
       "name": "LuaNavGrid",
       "has_doc": true
@@ -34956,7 +34983,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 457,
+      "line": 627,
       "kind": "struct",
       "name": "LuaUnitPathfinder",
       "has_doc": true
@@ -34965,7 +34992,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 732,
+      "line": 902,
       "kind": "struct",
       "name": "LuaFlowField",
       "has_doc": true
@@ -34974,7 +35001,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 855,
+      "line": 1025,
       "kind": "struct",
       "name": "LuaPathGrid",
       "has_doc": true
@@ -34983,7 +35010,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 994,
+      "line": 1164,
       "kind": "struct",
       "name": "LuaAiFlowField",
       "has_doc": true
@@ -34992,7 +35019,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1077,
+      "line": 1247,
+      "kind": "struct",
+      "name": "LuaIsoGrid",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/pathfind_api.rs",
+      "line": 1342,
       "kind": "struct",
       "name": "LuaHexGrid",
       "has_doc": true
@@ -35001,7 +35037,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1226,
+      "line": 1491,
       "kind": "struct",
       "name": "LuaJpsGrid",
       "has_doc": true
@@ -35010,7 +35046,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 1300,
+      "line": 1565,
       "kind": "struct",
       "name": "LuaNavMesh",
       "has_doc": true
@@ -35019,7 +35055,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 2264,
+      "line": 2529,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35028,7 +35064,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/pathfind_api.rs",
-      "line": 2858,
+      "line": 3358,
       "kind": "struct",
       "name": "LuaGoalMap",
       "has_doc": true
@@ -35352,7 +35388,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/province_api.rs",
-      "line": 269,
+      "line": 275,
       "kind": "struct",
       "name": "LuaProvinceRegistry",
       "has_doc": true
@@ -35361,7 +35397,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/province_api.rs",
-      "line": 275,
+      "line": 281,
       "kind": "fn",
       "name": "with_registry",
       "has_doc": true
@@ -35370,7 +35406,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/province_api.rs",
-      "line": 1650,
+      "line": 1884,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35523,7 +35559,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1067,
+      "line": 1147,
       "kind": "struct",
       "name": "LuaMesh",
       "has_doc": true
@@ -35532,7 +35568,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1170,
+      "line": 1250,
       "kind": "struct",
       "name": "LuaShader",
       "has_doc": true
@@ -35541,7 +35577,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1235,
+      "line": 1315,
       "kind": "struct",
       "name": "LuaQuad",
       "has_doc": true
@@ -35550,7 +35586,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1352,
+      "line": 1432,
       "kind": "struct",
       "name": "LuaShape",
       "has_doc": true
@@ -35559,7 +35595,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 1747,
+      "line": 1827,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35568,7 +35604,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 4480,
+      "line": 4665,
       "kind": "struct",
       "name": "LuaObjModel",
       "has_doc": true
@@ -46845,7 +46881,97 @@
       "source": "rust",
       "module": "pathfind",
       "file": "src/pathfind/graph_path.rs",
-      "line": 100,
+      "line": 101,
+      "kind": "fn",
+      "name": "build_graph_adjacency_map",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 120,
+      "kind": "fn",
+      "name": "build_province_adjacency_map",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 125,
+      "kind": "fn",
+      "name": "find_graph_route_bfs",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 162,
+      "kind": "fn",
+      "name": "find_province_route_bfs",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 171,
+      "kind": "fn",
+      "name": "find_graph_route_dijkstra",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 232,
+      "kind": "fn",
+      "name": "find_province_route_dijkstra",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 242,
+      "kind": "fn",
+      "name": "graph_connected_components",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 278,
+      "kind": "fn",
+      "name": "province_connected_components",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 286,
+      "kind": "fn",
+      "name": "graph_connected",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 291,
+      "kind": "fn",
+      "name": "provinces_connected",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/graph_path.rs",
+      "line": 296,
       "kind": "fn",
       "name": "find_province_path",
       "has_doc": true
@@ -46854,7 +46980,7 @@
       "source": "rust",
       "module": "pathfind",
       "file": "src/pathfind/graph_path.rs",
-      "line": 183,
+      "line": 379,
       "kind": "fn",
       "name": "province_reachable",
       "has_doc": true
@@ -47351,6 +47477,24 @@
       "file": "src/pathfind/iso_grid.rs",
       "line": 45,
       "kind": "fn",
+      "name": "is_blocked",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/iso_grid.rs",
+      "line": 49,
+      "kind": "fn",
+      "name": "cost",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "pathfind",
+      "file": "src/pathfind/iso_grid.rs",
+      "line": 53,
+      "kind": "fn",
       "name": "find_path",
       "has_doc": true
     },
@@ -47358,7 +47502,7 @@
       "source": "rust",
       "module": "pathfind",
       "file": "src/pathfind/iso_grid.rs",
-      "line": 79,
+      "line": 87,
       "kind": "fn",
       "name": "neighbors",
       "has_doc": true
@@ -55134,7 +55278,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/border_index.rs",
-      "line": 72,
+      "line": 106,
       "kind": "fn",
       "name": "build_border_index",
       "has_doc": true
@@ -55143,7 +55287,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/border_index.rs",
-      "line": 116,
+      "line": 148,
       "kind": "fn",
       "name": "dilate_border_index_with_styles",
       "has_doc": true
@@ -55152,7 +55296,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/border_index.rs",
-      "line": 144,
+      "line": 176,
       "kind": "fn",
       "name": "dilate_border_index_with_registry_styles",
       "has_doc": true
@@ -55161,7 +55305,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/border_index.rs",
-      "line": 195,
+      "line": 227,
       "kind": "fn",
       "name": "build_border_index_from_registry",
       "has_doc": true
@@ -55170,7 +55314,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/border_index.rs",
-      "line": 208,
+      "line": 240,
       "kind": "fn",
       "name": "build_styled_border_index_from_registry",
       "has_doc": true
@@ -56169,18 +56313,18 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/render.rs",
-      "line": 21,
-      "kind": "enum",
-      "name": "ProvinceZoomMode",
+      "line": 20,
+      "kind": "struct",
+      "name": "ProvinceSegmentRaster",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "province",
       "file": "src/province/render.rs",
-      "line": 32,
+      "line": 30,
       "kind": "struct",
-      "name": "ProvinceRenderOptions",
+      "name": "ProvinceSegmentRasterOptions",
       "has_doc": true
     },
     {
@@ -56189,6 +56333,24 @@
       "file": "src/province/render.rs",
       "line": 75,
       "kind": "enum",
+      "name": "ProvinceZoomMode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "province",
+      "file": "src/province/render.rs",
+      "line": 86,
+      "kind": "struct",
+      "name": "ProvinceRenderOptions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "province",
+      "file": "src/province/render.rs",
+      "line": 129,
+      "kind": "enum",
       "name": "ProvinceCapitalPathMode",
       "has_doc": true
     },
@@ -56196,7 +56358,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/render.rs",
-      "line": 84,
+      "line": 138,
       "kind": "struct",
       "name": "ProvinceCapitalPathOptions",
       "has_doc": true
@@ -56205,7 +56367,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/render.rs",
-      "line": 140,
+      "line": 194,
       "kind": "fn",
       "name": "generate_capital_path_commands",
       "has_doc": true
@@ -56214,7 +56376,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/render.rs",
-      "line": 236,
+      "line": 290,
       "kind": "fn",
       "name": "viewport_bounds",
       "has_doc": true
@@ -56223,7 +56385,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/render.rs",
-      "line": 289,
+      "line": 343,
       "kind": "fn",
       "name": "resolve_zoom_mode",
       "has_doc": true
@@ -56232,7 +56394,16 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/render.rs",
-      "line": 311,
+      "line": 557,
+      "kind": "fn",
+      "name": "render_segment_raster",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "province",
+      "file": "src/province/render.rs",
+      "line": 673,
       "kind": "fn",
       "name": "generate_render_commands",
       "has_doc": true
@@ -56241,7 +56412,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/routing.rs",
-      "line": 42,
+      "line": 13,
       "kind": "fn",
       "name": "build_adjacency_map",
       "has_doc": true
@@ -56250,7 +56421,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/routing.rs",
-      "line": 59,
+      "line": 18,
       "kind": "fn",
       "name": "find_route_bfs",
       "has_doc": true
@@ -56259,7 +56430,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/routing.rs",
-      "line": 92,
+      "line": 23,
       "kind": "fn",
       "name": "find_route_dijkstra",
       "has_doc": true
@@ -56268,7 +56439,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/routing.rs",
-      "line": 149,
+      "line": 33,
       "kind": "fn",
       "name": "connected_components",
       "has_doc": true
@@ -56277,7 +56448,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/routing.rs",
-      "line": 182,
+      "line": 38,
       "kind": "fn",
       "name": "is_connected",
       "has_doc": true
@@ -56286,7 +56457,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/routing.rs",
-      "line": 187,
+      "line": 43,
       "kind": "fn",
       "name": "find_isolated_provinces",
       "has_doc": true
@@ -56295,7 +56466,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/routing.rs",
-      "line": 218,
+      "line": 74,
       "kind": "fn",
       "name": "total_numeric_attr_for_owner",
       "has_doc": true
@@ -56547,7 +56718,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/view_transform.rs",
-      "line": 7,
+      "line": 9,
       "kind": "fn",
       "name": "fit_camera_to_screen",
       "has_doc": true
@@ -56556,7 +56727,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/view_transform.rs",
-      "line": 26,
+      "line": 19,
       "kind": "fn",
       "name": "screen_to_map",
       "has_doc": true
@@ -56565,7 +56736,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/view_transform.rs",
-      "line": 38,
+      "line": 30,
       "kind": "fn",
       "name": "map_to_cell",
       "has_doc": true
@@ -56574,7 +56745,7 @@
       "source": "rust",
       "module": "province",
       "file": "src/province/view_transform.rs",
-      "line": 56,
+      "line": 48,
       "kind": "fn",
       "name": "zoom_camera_at",
       "has_doc": true
@@ -58959,7 +59130,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/gpu_renderer.rs",
-      "line": 403,
+      "line": 438,
       "kind": "const",
       "name": "LIGHT_SHADER",
       "has_doc": true
@@ -58968,7 +59139,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/gpu_renderer.rs",
-      "line": 466,
+      "line": 501,
       "kind": "const",
       "name": "SHADOW_COMPUTE_SHADER",
       "has_doc": true
@@ -58977,7 +59148,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/gpu_renderer.rs",
-      "line": 496,
+      "line": 531,
       "kind": "struct",
       "name": "GpuRenderer",
       "has_doc": true
@@ -58986,7 +59157,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/gpu_renderer.rs",
-      "line": 598,
+      "line": 633,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -58995,7 +59166,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/gpu_renderer.rs",
-      "line": 824,
+      "line": 859,
       "kind": "fn",
       "name": "resize",
       "has_doc": true
@@ -59004,7 +59175,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/gpu_renderer.rs",
-      "line": 1006,
+      "line": 1048,
       "kind": "fn",
       "name": "render_frame",
       "has_doc": true
@@ -59895,7 +60066,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/input_validation.rs",
-      "line": 676,
+      "line": 729,
       "kind": "fn",
       "name": "validate_render_command_with_category",
       "has_doc": true
@@ -59904,7 +60075,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/input_validation.rs",
-      "line": 687,
+      "line": 740,
       "kind": "fn",
       "name": "validate_compound_shape",
       "has_doc": true
@@ -60372,7 +60543,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/province_map_pipeline.rs",
-      "line": 77,
+      "line": 79,
       "kind": "fn",
       "name": "full_map",
       "has_doc": true
@@ -60381,7 +60552,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/province_map_pipeline.rs",
-      "line": 98,
+      "line": 101,
       "kind": "struct",
       "name": "ProvinceMapPipeline",
       "has_doc": true
@@ -60390,7 +60561,16 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/province_map_pipeline.rs",
-      "line": 119,
+      "line": 121,
+      "kind": "struct",
+      "name": "ProvinceMapDataBindings",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "render",
+      "file": "src/render/province_map_pipeline.rs",
+      "line": 140,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60399,7 +60579,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/province_map_pipeline.rs",
-      "line": 330,
+      "line": 351,
       "kind": "fn",
       "name": "create_data_bind_group",
       "has_doc": true
@@ -60408,7 +60588,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/province_map_pipeline.rs",
-      "line": 378,
+      "line": 393,
       "kind": "fn",
       "name": "update_uniforms",
       "has_doc": true
@@ -60696,7 +60876,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 591,
+      "line": 618,
       "kind": "enum",
       "name": "RenderCommandCategory",
       "has_doc": true
@@ -60705,7 +60885,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 622,
+      "line": 649,
       "kind": "fn",
       "name": "category",
       "has_doc": true
@@ -60714,7 +60894,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 697,
+      "line": 726,
       "kind": "struct",
       "name": "TextureData",
       "has_doc": true
@@ -60723,7 +60903,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 712,
+      "line": 741,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60732,7 +60912,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 728,
+      "line": 757,
       "kind": "fn",
       "name": "mark_dirty",
       "has_doc": true
@@ -60741,7 +60921,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 734,
+      "line": 763,
       "kind": "enum",
       "name": "ParticleRenderShape",
       "has_doc": true
@@ -60750,7 +60930,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 758,
+      "line": 787,
       "kind": "struct",
       "name": "ParticleInstance",
       "has_doc": true
@@ -60759,7 +60939,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 786,
+      "line": 815,
       "kind": "enum",
       "name": "DrawableKind",
       "has_doc": true
@@ -60768,7 +60948,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 798,
+      "line": 827,
       "kind": "enum",
       "name": "PathSegment",
       "has_doc": true
@@ -60777,7 +60957,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 842,
+      "line": 871,
       "kind": "enum",
       "name": "GradientDirection",
       "has_doc": true
@@ -60786,7 +60966,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 856,
+      "line": 885,
       "kind": "enum",
       "name": "HexOrientation",
       "has_doc": true
@@ -60795,7 +60975,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 864,
+      "line": 893,
       "kind": "enum",
       "name": "BevelStyle",
       "has_doc": true
@@ -60804,7 +60984,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 878,
+      "line": 907,
       "kind": "struct",
       "name": "PhysicsDebugShape",
       "has_doc": true
@@ -60813,7 +60993,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 902,
+      "line": 931,
       "kind": "struct",
       "name": "PhysicsDebugConfig",
       "has_doc": true
@@ -60822,7 +61002,7 @@
       "source": "rust",
       "module": "render",
       "file": "src/render/renderer.rs",
-      "line": 928,
+      "line": 957,
       "kind": "struct",
       "name": "SpineSlotDraw",
       "has_doc": true
@@ -64278,7 +64458,16 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 48,
+      "line": 50,
+      "kind": "struct",
+      "name": "ProvinceSegmentTextureCache",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "runtime",
+      "file": "src/runtime/shared_state.rs",
+      "line": 71,
       "kind": "enum",
       "name": "FullscreenType",
       "has_doc": true
@@ -64287,7 +64476,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 57,
+      "line": 80,
       "kind": "struct",
       "name": "WindowState",
       "has_doc": true
@@ -64296,7 +64485,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 169,
+      "line": 192,
       "kind": "struct",
       "name": "ErrorInfo",
       "has_doc": true
@@ -64305,7 +64494,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 182,
+      "line": 205,
       "kind": "struct",
       "name": "ScreenshotRequest",
       "has_doc": true
@@ -64314,7 +64503,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 189,
+      "line": 212,
       "kind": "struct",
       "name": "FrameProfile",
       "has_doc": true
@@ -64323,7 +64512,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 216,
+      "line": 239,
       "kind": "fn",
       "name": "sanitize_in_place",
       "has_doc": true
@@ -64332,7 +64521,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 255,
+      "line": 278,
       "kind": "struct",
       "name": "ResourceMemoryStats",
       "has_doc": true
@@ -64341,7 +64530,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 284,
+      "line": 307,
       "kind": "struct",
       "name": "ResourceBudgetReport",
       "has_doc": true
@@ -64350,7 +64539,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 305,
+      "line": 328,
       "kind": "struct",
       "name": "ReleasedTextureHandle",
       "has_doc": true
@@ -64359,7 +64548,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 316,
+      "line": 339,
       "kind": "struct",
       "name": "SharedStateValidationReport",
       "has_doc": true
@@ -64368,7 +64557,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 325,
+      "line": 348,
       "kind": "fn",
       "name": "is_clean",
       "has_doc": true
@@ -64377,7 +64566,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 332,
+      "line": 355,
       "kind": "struct",
       "name": "PhysicsRunConfig",
       "has_doc": true
@@ -64386,7 +64575,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 356,
+      "line": 379,
       "kind": "struct",
       "name": "SharedState",
       "has_doc": true
@@ -64395,7 +64584,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 545,
+      "line": 570,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -64404,7 +64593,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 643,
+      "line": 669,
       "kind": "fn",
       "name": "step_timer",
       "has_doc": true
@@ -64413,7 +64602,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 655,
+      "line": 681,
       "kind": "fn",
       "name": "touch_texture",
       "has_doc": true
@@ -64422,7 +64611,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 659,
+      "line": 685,
       "kind": "fn",
       "name": "touch_canvas",
       "has_doc": true
@@ -64431,7 +64620,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 664,
+      "line": 690,
       "kind": "fn",
       "name": "queue_released_texture_handle",
       "has_doc": true
@@ -64440,7 +64629,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 676,
+      "line": 702,
       "kind": "fn",
       "name": "clear_released_texture_handle",
       "has_doc": true
@@ -64449,7 +64638,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 683,
+      "line": 709,
       "kind": "fn",
       "name": "ack_released_texture_handle",
       "has_doc": true
@@ -64458,7 +64647,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 695,
+      "line": 721,
       "kind": "fn",
       "name": "pending_texture_release_count",
       "has_doc": true
@@ -64467,7 +64656,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 700,
+      "line": 726,
       "kind": "fn",
       "name": "release_texture",
       "has_doc": true
@@ -64476,7 +64665,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 710,
+      "line": 736,
       "kind": "fn",
       "name": "evict_lru_resources",
       "has_doc": true
@@ -64485,7 +64674,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 776,
+      "line": 802,
       "kind": "fn",
       "name": "resource_memory_stats",
       "has_doc": true
@@ -64494,7 +64683,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 822,
+      "line": 848,
       "kind": "fn",
       "name": "validate_frame_state",
       "has_doc": true
@@ -64503,7 +64692,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 894,
+      "line": 920,
       "kind": "fn",
       "name": "resource_budget_report",
       "has_doc": true
@@ -64512,7 +64701,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 918,
+      "line": 944,
       "kind": "fn",
       "name": "request_async_load",
       "has_doc": true
@@ -64521,7 +64710,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 933,
+      "line": 959,
       "kind": "fn",
       "name": "request_async_write",
       "has_doc": true
@@ -64530,7 +64719,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 972,
+      "line": 998,
       "kind": "fn",
       "name": "set_configured_default_font",
       "has_doc": true
@@ -64539,7 +64728,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 981,
+      "line": 1007,
       "kind": "fn",
       "name": "set_active_builtin_font",
       "has_doc": true
@@ -64548,7 +64737,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 991,
+      "line": 1017,
       "kind": "fn",
       "name": "load_default_fonts",
       "has_doc": true
@@ -64557,7 +64746,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1011,
+      "line": 1037,
       "kind": "fn",
       "name": "poll_async_load",
       "has_doc": true
@@ -64566,7 +64755,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1027,
+      "line": 1053,
       "kind": "fn",
       "name": "poll_async_write",
       "has_doc": true
@@ -64575,7 +64764,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1043,
+      "line": 1069,
       "kind": "fn",
       "name": "set_active_mod_sandbox",
       "has_doc": true
@@ -64584,7 +64773,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1049,
+      "line": 1075,
       "kind": "fn",
       "name": "clear_active_mod_sandbox",
       "has_doc": true
@@ -64593,7 +64782,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1055,
+      "line": 1081,
       "kind": "fn",
       "name": "active_mod_context",
       "has_doc": true
@@ -64602,7 +64791,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1060,
+      "line": 1086,
       "kind": "fn",
       "name": "restore_active_mod_context",
       "has_doc": true
@@ -64611,7 +64800,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1070,
+      "line": 1096,
       "kind": "fn",
       "name": "ensure_mod_api_allowed",
       "has_doc": true
@@ -64620,7 +64809,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1096,
+      "line": 1122,
       "kind": "fn",
       "name": "ensure_mod_file_read",
       "has_doc": true
@@ -64629,7 +64818,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1111,
+      "line": 1137,
       "kind": "fn",
       "name": "ensure_mod_file_write",
       "has_doc": true
@@ -64638,7 +64827,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1196,
+      "line": 1222,
       "kind": "struct",
       "name": "RendererStats",
       "has_doc": true
@@ -64647,7 +64836,7 @@
       "source": "rust",
       "module": "runtime",
       "file": "src/runtime/shared_state.rs",
-      "line": 1211,
+      "line": 1237,
       "kind": "fn",
       "name": "compute_stats",
       "has_doc": true
@@ -80055,7 +80244,7 @@
       "source": "lua_api",
       "module": "render_api",
       "file": "src/lua_api/render_api.rs",
-      "line": 4007,
+      "line": 4192,
       "kind": "fn",
       "name": "drawColoredPolygon",
       "has_doc": true

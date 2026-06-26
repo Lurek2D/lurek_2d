@@ -1,4 +1,4 @@
-use lurek2d::camera::Camera2D;
+use lurek2d::camera::{fit_content_to_screen, screen_to_content, zoom_offset_at, Camera2D};
 use lurek2d::math::Vec2;
 
 fn assert_near(expected: f32, actual: f32) {
@@ -80,4 +80,20 @@ fn view_matrix_matches_centered_screen_coordinates() {
 
     assert_near(centered.x, transformed.x);
     assert_near(centered.y, transformed.y);
+}
+
+#[test]
+fn viewport_helpers_fit_pick_and_zoom_around_anchor() {
+    let (offset_x, offset_y, zoom) = fit_content_to_screen(100.0, 50.0, 2.0, 500.0, 200.0);
+    assert_near(50.0, offset_x);
+    assert_near(0.0, offset_y);
+    assert_near(2.0, zoom);
+
+    let (content_x, content_y) = screen_to_content(250.0, 100.0, offset_x, offset_y, zoom, 2.0);
+    assert_near(50.0, content_x);
+    assert_near(25.0, content_y);
+
+    let (new_x, new_y) = zoom_offset_at(250.0, 100.0, offset_x, offset_y, 2.0, 4.0);
+    assert_near(-150.0, new_x);
+    assert_near(-100.0, new_y);
 }

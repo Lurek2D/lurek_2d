@@ -124,7 +124,7 @@ describe("lurek.render text functions", function()
     end)
 
     -- @covers lurek.render.printRich
-    it("printRich accepts styled text spans", function()
+    it("printRich accepts styled text spans and optional GPU transform parameters", function()
         local spans = {
             { text = "Hello ", color = { 1, 0, 0, 1 } },
             { text = "Render", color = { 0, 1, 0, 1 } },
@@ -132,7 +132,24 @@ describe("lurek.render text functions", function()
         expect_no_error(function()
             lurek.render.printRich(spans, 10, 20)
         end)
+        local transformed_spans = {
+            { text = "Hot ", r = 255, g = 128, b = 80, a = 255, scale = 1 },
+            { text = "swap", r = 120, g = 220, b = 255, a = 255, scale = 1.2 },
+        }
+        expect_no_error(function()
+            lurek.render.printRich(transformed_spans, 24, 28, -0.2, 1.4, 1.0, 4, 3)
+        end)
     end)
+
+    -- @covers lurek.render.drawText
+    it("drawText accepts GPU transform parameters", function()
+        expect_no_error(function()
+            lurek.render.setColor(0.8, 0.9, 1.0, 0.75)
+            lurek.render.drawText("GPU text", 40, 32, 0.35, 1.5, 1.25, 8, 6)
+            lurek.render.setColor(1, 1, 1, 1)
+        end)
+    end)
+
 end)
 
 -- @describe lurek.render advanced shapes

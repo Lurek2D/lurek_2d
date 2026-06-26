@@ -58,6 +58,73 @@ local function draw_arrow(img, cx, cy, dx, dy, scale, r, g, b)
     img:drawLine(x2, y2, math.floor(x2 + dy * 2), math.floor(y2 - dx * 2), r, g, b, 255)
 end
 
+local function paint_staggered_cell(img, x, y, cell, r, g, b)
+    local row_offset = (y % 2 == 0) and math.floor(cell / 2) or 0
+    local ox = row_offset + (x - 1) * cell
+    local oy = (y - 1) * cell
+    img:drawRect(ox, oy, cell, cell, r, g, b, 255)
+    draw_outline(img, ox, oy, cell, cell, 28, 30, 36, 255)
+end
+
+local function staggered_center(x, y, cell)
+    local row_offset = (y % 2 == 0) and math.floor(cell / 2) or 0
+    return row_offset + math.floor((x - 0.5) * cell), math.floor((y - 0.5) * cell)
+end
+
+local function draw_hex_path_overlay(img, nodes, cell, r, g, b)
+    for i = 1, #nodes - 1 do
+        local a = nodes[i]
+        local c = nodes[i + 1]
+        local ax, ay = staggered_center(a.col, a.row, cell)
+        local bx, by = staggered_center(c.col, c.row, cell)
+        img:drawLine(ax, ay, bx, by, r, g, b, 255)
+    end
+    if nodes[1] then
+        local sx, sy = staggered_center(nodes[1].col, nodes[1].row, cell)
+        img:drawCircle(sx, sy, math.max(2, math.floor(cell / 4)), 60, 220, 90, 255)
+    end
+    if nodes[#nodes] then
+        local gx, gy = staggered_center(nodes[#nodes].col, nodes[#nodes].row, cell)
+        img:drawCircle(gx, gy, math.max(2, math.floor(cell / 4)), 255, 120, 70, 255)
+    end
+end
+
+local function iso_center(x, y, tile_w, tile_h, origin_x, origin_y)
+    return origin_x + math.floor((x - y) * tile_w / 2), origin_y + math.floor((x + y - 2) * tile_h / 2)
+end
+
+local function paint_iso_cell(img, x, y, tile_w, tile_h, origin_x, origin_y, r, g, b)
+    local cx, cy = iso_center(x, y, tile_w, tile_h, origin_x, origin_y)
+    local hw = math.floor(tile_w / 2)
+    local hh = math.floor(tile_h / 2)
+    for dy = -hh, hh do
+        local span = math.floor(hw * (1 - math.abs(dy) / math.max(1, hh)))
+        img:drawLine(cx - span, cy + dy, cx + span, cy + dy, r, g, b, 255)
+    end
+    img:drawLine(cx, cy - hh, cx + hw, cy, 28, 30, 36, 255)
+    img:drawLine(cx + hw, cy, cx, cy + hh, 28, 30, 36, 255)
+    img:drawLine(cx, cy + hh, cx - hw, cy, 28, 30, 36, 255)
+    img:drawLine(cx - hw, cy, cx, cy - hh, 28, 30, 36, 255)
+end
+
+local function draw_iso_path_overlay(img, nodes, tile_w, tile_h, origin_x, origin_y, r, g, b)
+    for i = 1, #nodes - 1 do
+        local a = nodes[i]
+        local c = nodes[i + 1]
+        local ax, ay = iso_center(a.x, a.y, tile_w, tile_h, origin_x, origin_y)
+        local bx, by = iso_center(c.x, c.y, tile_w, tile_h, origin_x, origin_y)
+        img:drawLine(ax, ay, bx, by, r, g, b, 255)
+    end
+    if nodes[1] then
+        local sx, sy = iso_center(nodes[1].x, nodes[1].y, tile_w, tile_h, origin_x, origin_y)
+        img:drawCircle(sx, sy, math.max(3, math.floor(tile_h / 4)), 60, 220, 90, 255)
+    end
+    if nodes[#nodes] then
+        local gx, gy = iso_center(nodes[#nodes].x, nodes[#nodes].y, tile_w, tile_h, origin_x, origin_y)
+        img:drawCircle(gx, gy, math.max(3, math.floor(tile_h / 4)), 255, 120, 70, 255)
+    end
+end
+
 -- @describe evidence: pathfind
 describe("evidence: pathfind", function()
     before_each(function()
@@ -354,6 +421,101 @@ describe("evidence: pathfind", function()
         lurek.pathfind.setThreadCount(old_threads)
         pf:clearCache()
         write_text(OUT .. "pathfind_advanced_api_trace.txt", table.concat(lines, "\n") .. "\n")
+    end)
+    -- Does: Builds a hex tilefield adapter and renders a direct LHexGrid route.
+    -- Shows: Hex topology, field-derived movement blockers/costs, and the path returned by lurek.pathfind.newHexGridFromField.
+    -- Artifact: tests/artifacts/current/pathfind/pathfind_hex_tilefield_route.png
+    -- Why: Hex pathfinding should have a module-owned artifact instead of only appearing inside tilefield system screenshots.
+    it("PNG: hex tilefield route adapter", function()
+        local width, height = 13, 10
+        local cell = 18
+        local field = lurek.tilefield.new({ width = width, height = height, topology = "hex" })
+        for y = 2, 9 do
+            if y ~= 5 then
+                field:setBlock(7, y, 1, "move", true)
+            end
+        end
+        for x = 3, 11 do
+            if x % 2 == 1 then
+                field:setCost(x, 7, 1, "move", 4)
+            end
+        end
+
+        local grid = lurek.pathfind.newHexGridFromField(field, { level = 1, channel = "move", layout = "flat" })
+        local nodes = grid:findPath(2, 5, 12, 5) or {}
+        local img = lurek.image.newImageData(width * cell + math.floor(cell / 2), height * cell)
+        img:fill(14, 16, 20, 255)
+        for y = 1, height do
+            for x = 1, width do
+                if field:blocks(x, y, 1, "move") then
+                    paint_staggered_cell(img, x, y, cell, 86, 38, 50)
+                elseif field:getCost(x, y, 1, "move") > 1 then
+                    paint_staggered_cell(img, x, y, cell, 96, 86, 52)
+                else
+                    paint_staggered_cell(img, x, y, cell, 38, 46, 54)
+                end
+            end
+        end
+        draw_hex_path_overlay(img, nodes, cell, 255, 214, 92)
+        draw_outline(img, 0, 0, width * cell + math.floor(cell / 2), height * cell, 232, 236, 244, 255)
+        save_png(img, OUT .. "pathfind_hex_tilefield_route.png")
+
+        local out = {}
+        for i, n in ipairs(nodes) do
+            out[i] = string.format('{"col":%d,"row":%d}', n.col or 0, n.row or 0)
+        end
+        write_text(
+            OUT .. "pathfind_hex_tilefield_trace.json",
+            '{"count":' .. tostring(#nodes) .. ',"blocked_7_4":' .. tostring(grid:isBlocked(7, 4)) .. ',"nodes":[' .. table.concat(out, ",") .. "]}"
+        )
+    end)
+    -- Does: Builds an iso-square tilefield adapter and renders a direct LIsoGrid route.
+    -- Shows: Isometric projection, field-derived movement blockers/costs, and the path returned by lurek.pathfind.newIsoGridFromField.
+    -- Artifact: tests/artifacts/current/pathfind/pathfind_iso_tilefield_route.png
+    -- Why: Iso pathfinding now has a Lua-visible owner artifact matching the isometric tilemap/tilefield combinations.
+    it("PNG: iso-square tilefield route adapter", function()
+        local width, height = 9, 7
+        local tile_w, tile_h = 34, 18
+        local origin_x, origin_y = 150, 18
+        local field = lurek.tilefield.new({ width = width, height = height, topology = "iso_square" })
+        for y = 1, height do
+            if y ~= 4 then
+                field:setBlock(5, y, 1, "move", true)
+            end
+        end
+        for x = 2, 8 do
+            if x ~= 5 then
+                field:setCost(x, 5, 1, "move", 3)
+            end
+        end
+
+        local grid = lurek.pathfind.newIsoGridFromField(field, { level = 1, channel = "move" })
+        local nodes = grid:findPath(1, 4, 9, 4) or {}
+        local img = lurek.image.newImageData(310, 160)
+        img:fill(14, 16, 20, 255)
+        for y = 1, height do
+            for x = 1, width do
+                if field:blocks(x, y, 1, "move") then
+                    paint_iso_cell(img, x, y, tile_w, tile_h, origin_x, origin_y, 86, 38, 50)
+                elseif field:getCost(x, y, 1, "move") > 1 then
+                    paint_iso_cell(img, x, y, tile_w, tile_h, origin_x, origin_y, 100, 88, 52)
+                else
+                    paint_iso_cell(img, x, y, tile_w, tile_h, origin_x, origin_y, 42, 54, 62)
+                end
+            end
+        end
+        draw_iso_path_overlay(img, nodes, tile_w, tile_h, origin_x, origin_y, 80, 230, 255)
+        draw_outline(img, 0, 0, 310, 160, 232, 236, 244, 255)
+        save_png(img, OUT .. "pathfind_iso_tilefield_route.png")
+
+        local out = {}
+        for i, n in ipairs(nodes) do
+            out[i] = string.format('{"x":%d,"y":%d}', n.x or 0, n.y or 0)
+        end
+        write_text(
+            OUT .. "pathfind_iso_tilefield_trace.json",
+            '{"count":' .. tostring(#nodes) .. ',"blocked_5_3":' .. tostring(grid:isBlocked(5, 3)) .. ',"cost_2_5":' .. tostring(grid:getCost(2, 5)) .. ',"nodes":[' .. table.concat(out, ",") .. "]}"
+        )
     end)
 end)
 test_summary()

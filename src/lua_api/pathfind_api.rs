@@ -10,14 +10,16 @@ use crate::pathfind::hpa::{build_abstract, hpa_star, AbstractGraph};
 use crate::pathfind::pathgrid::PathGrid;
 use crate::pathfind::ContextSteering;
 use crate::pathfind::{
-    bidirectional_astar, AsyncPathEvent, AsyncPathRequest, DiagonalMode, FlowField, NavGrid,
-    NavMesh, ORCAAgent, ORCASolver, PathEventStatus, PathThreadPool, SteeringManager,
-    UnitPathfinder, Waypoint,
+    bidirectional_astar, build_graph_adjacency_map, find_graph_route_bfs,
+    find_graph_route_dijkstra, graph_connected, graph_connected_components, AsyncPathEvent,
+    AsyncPathRequest, DiagonalMode, FlowField, NavGrid, NavMesh, ORCAAgent, ORCASolver,
+    PathEventStatus, PathThreadPool, SteeringManager, UnitPathfinder, Waypoint,
 };
-use crate::pathfind::{HexGrid, HexLayout, InfluenceMap, JpsGrid, RangeMap};
+use crate::pathfind::{HexGrid, HexLayout, InfluenceMap, IsoGrid, JpsGrid, RangeMap};
 use crate::tilefield::CellCoord;
 use mlua::prelude::*;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 use std::sync::{Mutex, OnceLock};
@@ -25,6 +27,8 @@ use std::sync::{Mutex, OnceLock};
 static PATHFIND_THREAD_COUNT: AtomicU32 = AtomicU32::new(1);
 static NEXT_ASYNC_PATH_REQUEST_ID: AtomicU64 = AtomicU64::new(1);
 static PATHFIND_ASYNC_POOL: OnceLock<Mutex<PathThreadPool>> = OnceLock::new();
+
+type GraphEdgesAndNodes = (Vec<(u32, u32)>, Vec<u32>);
 
 fn async_pool() -> &'static Mutex<PathThreadPool> {
     PATHFIND_ASYNC_POOL.get_or_init(|| {
@@ -144,6 +148,16 @@ fn parse_tilefield_level(opts: &LuaTable, api: &str) -> LuaResult<u32> {
     one_based_to_zero_based(level, &format!("{api}.level"))
 }
 
+fn parse_hex_layout(value: Option<String>, api: &str) -> LuaResult<HexLayout> {
+    match value.as_deref().unwrap_or("flat") {
+        "flat" | "flat_top" | "flat-top" => Ok(HexLayout::FlatTop),
+        "pointy" | "pointy_top" | "pointy-top" => Ok(HexLayout::PointyTop),
+        other => Err(LuaError::RuntimeError(format!(
+            "{api}: invalid layout '{other}' (expected flat or pointy)"
+        ))),
+    }
+}
+
 /// Converts zero-based Rust waypoints into one-based Lua point tables.
 fn waypoints_to_lua<'a>(lua: &'a Lua, path: &[Waypoint]) -> LuaResult<LuaTable<'a>> {
     let tbl = lua.create_table()?;
@@ -181,6 +195,162 @@ fn tuple_path_to_lua<'a>(lua: &'a Lua, path: &[(u32, u32)]) -> LuaResult<LuaTabl
         tbl.set(i + 1, entry)?;
     }
     Ok(tbl)
+}
+
+fn graph_path_to_lua<'a>(lua: &'a Lua, path: &[u32]) -> LuaResult<LuaTable<'a>> {
+    let tbl = lua.create_table()?;
+    for (i, id) in path.iter().enumerate() {
+        tbl.set(i + 1, *id)?;
+    }
+    Ok(tbl)
+}
+
+fn parse_graph_edge_id(
+    edge: &LuaTable,
+    keys: &[&str],
+    index: usize,
+    label: &str,
+) -> LuaResult<u32> {
+    for key in keys {
+        if let Some(id) = edge.get::<_, Option<u32>>(*key)? {
+            return require_positive_u32(id, label);
+        }
+    }
+    let id: u32 = edge.get(index)?;
+    require_positive_u32(id, label)
+}
+
+fn parse_graph_edges(edges: &LuaTable) -> LuaResult<GraphEdgesAndNodes> {
+    let mut pairs = Vec::new();
+    let mut nodes = Vec::new();
+    for entry in edges.clone().sequence_values::<LuaTable>() {
+        let edge = entry?;
+        let from = parse_graph_edge_id(&edge, &["from", "a", "province_a"], 1, "from")?;
+        let to = parse_graph_edge_id(&edge, &["to", "b", "province_b"], 2, "to")?;
+        pairs.push((from, to));
+        nodes.push(from);
+        nodes.push(to);
+    }
+    nodes.sort_unstable();
+    nodes.dedup();
+    Ok((pairs, nodes))
+}
+
+fn parse_graph_nodes(value: Option<LuaValue>, fallback: &[u32]) -> LuaResult<Vec<u32>> {
+    let Some(value) = value else {
+        return Ok(fallback.to_vec());
+    };
+    match value {
+        LuaValue::Nil => Ok(fallback.to_vec()),
+        LuaValue::Table(t) => {
+            let mut nodes = Vec::new();
+            for id in t.sequence_values::<u32>() {
+                nodes.push(require_positive_u32(id?, "node id")?);
+            }
+            nodes.sort_unstable();
+            nodes.dedup();
+            Ok(nodes)
+        }
+        _ => Err(LuaError::RuntimeError(
+            "lurek.pathfind.graphConnectedComponents: nodes must be a table or nil".to_string(),
+        )),
+    }
+}
+
+fn parse_graph_pair(pair: &LuaTable) -> LuaResult<(u32, u32)> {
+    let from = parse_graph_edge_id(pair, &["from", "a"], 1, "from")?;
+    let to = parse_graph_edge_id(pair, &["to", "b"], 2, "to")?;
+    Ok((from, to))
+}
+
+fn graph_opts_table(value: Option<LuaValue>) -> LuaResult<Option<LuaTable>> {
+    match value {
+        None | Some(LuaValue::Nil) => Ok(None),
+        Some(LuaValue::Table(t)) => Ok(Some(t)),
+        Some(LuaValue::Function(_)) => Ok(None),
+        Some(_) => Err(LuaError::RuntimeError(
+            "lurek.pathfind graph options must be a table, function, or nil".to_string(),
+        )),
+    }
+}
+
+fn graph_cost_function(value: Option<LuaValue>) -> LuaResult<Option<LuaFunction>> {
+    match value {
+        Some(LuaValue::Function(f)) => Ok(Some(f)),
+        Some(LuaValue::Table(t)) => t.get::<_, Option<LuaFunction>>("cost"),
+        None | Some(LuaValue::Nil) => Ok(None),
+        Some(_) => Err(LuaError::RuntimeError(
+            "lurek.pathfind graph cost option must be a function".to_string(),
+        )),
+    }
+}
+
+fn graph_directed(value: Option<&LuaTable>) -> LuaResult<bool> {
+    match value {
+        Some(t) => Ok(t.get::<_, Option<bool>>("directed")?.unwrap_or(false)),
+        None => Ok(false),
+    }
+}
+
+fn graph_algorithm(value: Option<&LuaTable>, has_cost: bool) -> LuaResult<String> {
+    let default = if has_cost { "dijkstra" } else { "bfs" };
+    let algorithm = match value {
+        Some(t) => t
+            .get::<_, Option<String>>("algorithm")?
+            .unwrap_or_else(|| default.to_string()),
+        None => default.to_string(),
+    };
+    match algorithm.as_str() {
+        "bfs" | "dijkstra" => Ok(algorithm),
+        _ => Err(LuaError::RuntimeError(format!(
+            "lurek.pathfind graph algorithm must be 'bfs' or 'dijkstra', got '{}'",
+            algorithm
+        ))),
+    }
+}
+
+fn graph_edge_costs(
+    pairs: &[(u32, u32)],
+    directed: bool,
+    cost_fn: Option<&LuaFunction>,
+) -> LuaResult<HashMap<(u32, u32), f64>> {
+    let mut out = HashMap::new();
+    let Some(cost_fn) = cost_fn else {
+        return Ok(out);
+    };
+    for &(from, to) in pairs {
+        let cost = cost_fn.call::<_, Option<f64>>((from, to))?.unwrap_or(1.0);
+        out.insert((from, to), cost);
+        if !directed {
+            let reverse = cost_fn.call::<_, Option<f64>>((to, from))?.unwrap_or(1.0);
+            out.insert((to, from), reverse);
+        }
+    }
+    Ok(out)
+}
+
+fn find_lua_graph_route(
+    edges: &LuaTable,
+    from: u32,
+    to: u32,
+    opts_value: Option<LuaValue>,
+) -> LuaResult<Option<Vec<u32>>> {
+    let from = require_positive_u32(from, "from")?;
+    let to = require_positive_u32(to, "to")?;
+    let opts = graph_opts_table(opts_value.clone())?;
+    let cost_fn = graph_cost_function(opts_value)?;
+    let directed = graph_directed(opts.as_ref())?;
+    let algorithm = graph_algorithm(opts.as_ref(), cost_fn.is_some())?;
+    let (pairs, _) = parse_graph_edges(edges)?;
+    let adjacency = build_graph_adjacency_map(&pairs, directed);
+    if algorithm == "dijkstra" {
+        let costs = graph_edge_costs(&pairs, directed, cost_fn.as_ref())?;
+        Ok(find_graph_route_dijkstra(&adjacency, from, to, &|a, b| {
+            costs.get(&(a, b)).copied().unwrap_or(1.0)
+        }))
+    } else {
+        Ok(find_graph_route_bfs(&adjacency, from, to))
+    }
 }
 
 fn path_event_status_name(status: PathEventStatus) -> &'static str {
@@ -1070,6 +1240,101 @@ impl LuaUserData for LuaAiFlowField {
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LAIFlowField" || name == "LObject")
+        });
+    }
+}
+/// Lua-side wrapper for an isometric navigation grid.
+pub struct LuaIsoGrid {
+    /// Shared isometric navigation grid data for this object.
+    inner: Rc<RefCell<IsoGrid>>,
+}
+/// Provides Lua methods for isometric grid blocking, costs, and path queries.
+impl LuaUserData for LuaIsoGrid {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setBlocked --
+        /// Sets blocked state for a one-based isometric grid cell.
+        /// @param | x | integer | One-based cell X coordinate.
+        /// @param | y | integer | One-based cell Y coordinate.
+        /// @param | blocked | boolean | True to block the cell.
+        methods.add_method_mut(
+            "setBlocked",
+            |_, this, (x, y, blocked): (u32, u32, bool)| {
+                let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                this.inner.borrow_mut().set_blocked(x, y, blocked);
+                Ok(())
+            },
+        );
+        // -- setCost --
+        /// Sets movement cost for a one-based isometric grid cell.
+        /// @param | x | integer | One-based cell X coordinate.
+        /// @param | y | integer | One-based cell Y coordinate.
+        /// @param | cost | number | Finite positive movement cost.
+        methods.add_method_mut("setCost", |_, this, (x, y, cost): (u32, u32, f32)| {
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            this.inner
+                .borrow_mut()
+                .set_cost(x, y, require_positive_f32(cost, "cost")?);
+            Ok(())
+        });
+        // -- isBlocked --
+        /// Returns whether a one-based isometric grid cell is blocked.
+        /// @param | x | integer | One-based cell X coordinate.
+        /// @param | y | integer | One-based cell Y coordinate.
+        /// @return | boolean | True when blocked or out of bounds.
+        methods.add_method("isBlocked", |_, this, (x, y): (u32, u32)| {
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            Ok(this.inner.borrow().is_blocked(x, y))
+        });
+        // -- getCost --
+        /// Returns movement cost for a one-based isometric grid cell.
+        /// @param | x | integer | One-based cell X coordinate.
+        /// @param | y | integer | One-based cell Y coordinate.
+        /// @return | number | Movement cost.
+        methods.add_method("getCost", |_, this, (x, y): (u32, u32)| {
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            this.inner.borrow().cost(x, y).ok_or_else(|| {
+                LuaError::RuntimeError("lurek.pathfind.LIsoGrid.getCost: cell out of bounds".into())
+            })
+        });
+        // -- findPath --
+        /// Finds a path between one-based isometric cells.
+        /// @param | fx | integer | One-based start X coordinate.
+        /// @param | fy | integer | One-based start Y coordinate.
+        /// @param | tx | integer | One-based goal X coordinate.
+        /// @param | ty | integer | One-based goal Y coordinate.
+        /// @return | table | Array of `{x, y}` cell tables, or nil when no path exists.
+        /// @field | x | integer | X coordinate.
+        /// @field | y | integer | Y coordinate.
+        methods.add_method(
+            "findPath",
+            |lua, this, (fx, fy, tx, ty): (u32, u32, u32, u32)| {
+                let from = one_based_coords_u32(fx, fy, "fx", "fy")?;
+                let to = one_based_coords_u32(tx, ty, "tx", "ty")?;
+                match this.inner.borrow().find_path(from, to) {
+                    None => Ok(LuaValue::Nil),
+                    Some(path) => {
+                        let t = lua.create_table()?;
+                        for (i, (x, y)) in path.iter().enumerate() {
+                            let cell = lua.create_table()?;
+                            cell.set("x", x + 1)?;
+                            cell.set("y", y + 1)?;
+                            t.set(i + 1, cell)?;
+                        }
+                        Ok(LuaValue::Table(t))
+                    }
+                }
+            },
+        );
+        // -- type --
+        /// Returns the Lua-visible type name for this isometric grid handle.
+        /// @return | string | The string `LIsoGrid`.
+        methods.add_method("type", |_, _, ()| Ok("LIsoGrid"));
+        // -- typeOf --
+        /// Returns whether this isometric grid handle matches a supported type name.
+        /// @param | name | string | String value for `name`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LIsoGrid" || name == "LObject")
         });
     }
 }
@@ -2263,6 +2528,94 @@ fn path_grid_from_provider(provider: LuaTable, api: &str) -> LuaResult<PathGrid>
 /// Registers the `lurek.pathfind` module.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // -- graphRoute --
+    /// Finds a route through an integer-id graph. Edges may be `{from,to}`, `{a,b}`, `{province_a,province_b}`, or `{from_id,to_id}` arrays. Options: `directed`, `algorithm` ("bfs"|"dijkstra"), and optional `cost(from, to)`.
+    /// @param | edges | table | Array of graph edge tables.
+    /// @param | from | integer | Start node id.
+    /// @param | to | integer | Target node id.
+    /// @param | opts | table? | Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.
+    /// @return | integer[] | Node id route from start to target, or nil when unreachable.
+    tbl.set(
+        "graphRoute",
+        lua.create_function(
+            |lua, (edges, from, to, opts): (LuaTable, u32, u32, Option<LuaValue>)| {
+                match find_lua_graph_route(&edges, from, to, opts)? {
+                    Some(path) => Ok(LuaValue::Table(graph_path_to_lua(lua, &path)?)),
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        )?,
+    )?;
+    // -- graphRoutes --
+    /// Finds routes for a batch of graph `{from, to}` requests using the same edge table and options as `graphRoute`.
+    /// @param | edges | table | Array of graph edge tables.
+    /// @param | requests | table | Array of `{from=integer,to=integer}` or `{from,to}` route requests.
+    /// @param | opts | table? | Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.
+    /// @return | table | Array of route arrays; unreachable entries are nil.
+    tbl.set(
+        "graphRoutes",
+        lua.create_function(
+            |lua, (edges, requests, opts): (LuaTable, LuaTable, Option<LuaValue>)| {
+                let out = lua.create_table()?;
+                for (i, request) in requests.sequence_values::<LuaTable>().enumerate() {
+                    let request = request?;
+                    let (from, to) = parse_graph_pair(&request)?;
+                    match find_lua_graph_route(&edges, from, to, opts.clone())? {
+                        Some(path) => {
+                            out.set(i + 1, LuaValue::Table(graph_path_to_lua(lua, &path)?))?
+                        }
+                        None => out.set(i + 1, LuaValue::Nil)?,
+                    }
+                }
+                Ok(out)
+            },
+        )?,
+    )?;
+    // -- graphConnectedComponents --
+    /// Returns connected components for an integer-id graph. Pass `nodes` to include isolated node ids.
+    /// @param | edges | table | Array of graph edge tables.
+    /// @param | nodes | table? | Optional array of node ids; omitted nodes are inferred from edge endpoints.
+    /// @param | opts | table? | Options with `directed`; directed graphs follow outgoing edges.
+    /// @return | table | Array of node-id arrays, sorted by first node id.
+    tbl.set(
+        "graphConnectedComponents",
+        lua.create_function(
+            |lua, (edges, nodes, opts): (LuaTable, Option<LuaValue>, Option<LuaValue>)| {
+                let opts = graph_opts_table(opts)?;
+                let directed = graph_directed(opts.as_ref())?;
+                let (pairs, edge_nodes) = parse_graph_edges(&edges)?;
+                let nodes = parse_graph_nodes(nodes, &edge_nodes)?;
+                let adjacency = build_graph_adjacency_map(&pairs, directed);
+                let comps = graph_connected_components(&adjacency, &nodes);
+                let out = lua.create_table()?;
+                for (i, comp) in comps.into_iter().enumerate() {
+                    out.set(i + 1, graph_path_to_lua(lua, &comp)?)?;
+                }
+                Ok(out)
+            },
+        )?,
+    )?;
+    // -- graphConnected --
+    /// Returns true when a target node is reachable from a start node in an integer-id graph.
+    /// @param | edges | table | Array of graph edge tables.
+    /// @param | from | integer | Start node id.
+    /// @param | to | integer | Target node id.
+    /// @param | opts | table? | Options with `directed`.
+    /// @return | boolean | True when reachable.
+    tbl.set(
+        "graphConnected",
+        lua.create_function(
+            |_, (edges, from, to, opts): (LuaTable, u32, u32, Option<LuaValue>)| {
+                let from = require_positive_u32(from, "from")?;
+                let to = require_positive_u32(to, "to")?;
+                let opts = graph_opts_table(opts)?;
+                let directed = graph_directed(opts.as_ref())?;
+                let (pairs, _) = parse_graph_edges(&edges)?;
+                let adjacency = build_graph_adjacency_map(&pairs, directed);
+                Ok(graph_connected(&adjacency, from, to))
+            },
+        )?,
+    )?;
     // -- newNavGrid --
     /// Creates a navigation grid with the given dimensions.
     /// @param | width | integer | Grid width in cells.
@@ -2658,6 +3011,153 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(LuaNavGrid {
                 inner: Rc::new(RefCell::new(grid)),
                 abstract_graph: Rc::new(RefCell::new(None)),
+            })
+        })?,
+    )?;
+    // -- newIsoGridFromField --
+    /// Creates an isometric navigation grid from an iso-square tilefield level and movement category.
+    /// @param | field_ud | LTileField | Iso-square tilefield to derive navigation data from.
+    /// @param | opts | table? | Options with `level`, `category`, and `costCategory`.
+    /// @return | LIsoGrid | New isometric grid handle.
+    tbl.set(
+        "newIsoGridFromField",
+        lua.create_function(|_, (field_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+            let field_ud = field_ud.borrow::<LuaTileField>()?;
+            let level = match &opts {
+                Some(opts) => parse_tilefield_level(opts, "lurek.pathfind.newIsoGridFromField")?,
+                None => 0,
+            };
+            let category = match &opts {
+                Some(opts) => parse_tilefield_category(opts, "category", "channel", "move")?,
+                None => "move".to_string(),
+            };
+            let cost_category = match &opts {
+                Some(opts) => opts
+                    .get::<_, Option<String>>("costCategory")?
+                    .or(opts.get::<_, Option<String>>("costChannel")?)
+                    .unwrap_or_else(|| category.clone()),
+                None => category.clone(),
+            };
+            let field = field_ud.inner.borrow();
+            if field.topology().as_str() != "iso_square" {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.pathfind.newIsoGridFromField: expected tilefield topology 'iso_square', got '{}'",
+                    field.topology().as_str()
+                )));
+            }
+            let (width, height, levels) = field.size();
+            if level >= levels {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.pathfind.newIsoGridFromField: level {} is out of bounds",
+                    level + 1
+                )));
+            }
+            let mut grid = IsoGrid::new(width, height);
+            for y in 0..height {
+                for x in 0..width {
+                    let coord = CellCoord { x, y, z: level };
+                    let blocked = field.blocks_category(coord, &category);
+                    grid.set_blocked(x, y, blocked);
+                    if !blocked {
+                        let cost = field.category_cost(coord, &cost_category);
+                        if !cost.is_finite() {
+                            return Err(LuaError::RuntimeError(format!(
+                                "lurek.pathfind.newIsoGridFromField: cost at {},{} must be finite",
+                                x + 1,
+                                y + 1
+                            )));
+                        }
+                        grid.set_cost(x, y, cost.max(1.0));
+                    }
+                }
+            }
+            Ok(LuaIsoGrid {
+                inner: Rc::new(RefCell::new(grid)),
+            })
+        })?,
+    )?;
+    // -- newIsoGrid --
+    /// Creates an isometric grid with the given dimensions.
+    /// @param | width | integer | Grid width in cells.
+    /// @param | height | integer | Grid height in cells.
+    /// @return | LIsoGrid | New isometric grid handle.
+    tbl.set(
+        "newIsoGrid",
+        lua.create_function(|_, (width, height): (u32, u32)| {
+            let width = require_positive_u32(width, "width")?;
+            let height = require_positive_u32(height, "height")?;
+            Ok(LuaIsoGrid {
+                inner: Rc::new(RefCell::new(IsoGrid::new(width, height))),
+            })
+        })?,
+    )?;
+    // -- newHexGridFromField --
+    /// Creates a hex navigation grid from a hex tilefield level and movement category.
+    /// @param | field_ud | LTileField | Hex tilefield to derive navigation data from.
+    /// @param | opts | table? | Options with `level`, `category`, `costCategory`, and `layout` (`"flat"` or `"pointy"`).
+    /// @return | LHexGrid | New hex grid handle.
+    tbl.set(
+        "newHexGridFromField",
+        lua.create_function(|_, (field_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+            let field_ud = field_ud.borrow::<LuaTileField>()?;
+            let level = match &opts {
+                Some(opts) => parse_tilefield_level(opts, "lurek.pathfind.newHexGridFromField")?,
+                None => 0,
+            };
+            let category = match &opts {
+                Some(opts) => parse_tilefield_category(opts, "category", "channel", "move")?,
+                None => "move".to_string(),
+            };
+            let cost_category = match &opts {
+                Some(opts) => opts
+                    .get::<_, Option<String>>("costCategory")?
+                    .or(opts.get::<_, Option<String>>("costChannel")?)
+                    .unwrap_or_else(|| category.clone()),
+                None => category.clone(),
+            };
+            let layout = match &opts {
+                Some(opts) => parse_hex_layout(
+                    opts.get::<_, Option<String>>("layout")?
+                        .or(opts.get::<_, Option<String>>("hexLayout")?),
+                    "lurek.pathfind.newHexGridFromField",
+                )?,
+                None => HexLayout::FlatTop,
+            };
+            let field = field_ud.inner.borrow();
+            if field.topology().as_str() != "hex" {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.pathfind.newHexGridFromField: expected tilefield topology 'hex', got '{}'",
+                    field.topology().as_str()
+                )));
+            }
+            let (width, height, levels) = field.size();
+            if level >= levels {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.pathfind.newHexGridFromField: level {} is out of bounds",
+                    level + 1
+                )));
+            }
+            let mut grid = HexGrid::new(width, height, layout);
+            for y in 0..height {
+                for x in 0..width {
+                    let coord = CellCoord { x, y, z: level };
+                    let blocked = field.blocks_category(coord, &category);
+                    grid.set_blocked(x, y, blocked);
+                    if !blocked {
+                        let cost = field.category_cost(coord, &cost_category);
+                        if !cost.is_finite() {
+                            return Err(LuaError::RuntimeError(format!(
+                                "lurek.pathfind.newHexGridFromField: cost at {},{} must be finite",
+                                x + 1,
+                                y + 1
+                            )));
+                        }
+                        grid.set_cost(x, y, cost.max(1.0));
+                    }
+                }
+            }
+            Ok(LuaHexGrid {
+                inner: Rc::new(RefCell::new(grid)),
             })
         })?,
     )?;

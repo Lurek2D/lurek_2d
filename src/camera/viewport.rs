@@ -48,6 +48,64 @@ impl ScaleMode {
     }
 }
 
+/// Return (offset_x, offset_y, zoom) that fits a logical content rectangle inside a screen rectangle.
+pub fn fit_content_to_screen(
+    content_width: f32,
+    content_height: f32,
+    unit_size: f32,
+    screen_width: f32,
+    screen_height: f32,
+) -> (f32, f32, f32) {
+    let safe_unit = unit_size.max(0.0001);
+    let content_screen_w = content_width * safe_unit;
+    let content_screen_h = content_height * safe_unit;
+    if content_screen_w <= 0.0
+        || content_screen_h <= 0.0
+        || screen_width <= 0.0
+        || screen_height <= 0.0
+    {
+        return (0.0, 0.0, 1.0);
+    }
+    let zoom = (screen_width / content_screen_w)
+        .min(screen_height / content_screen_h)
+        .max(0.0001);
+    let offset_x = (screen_width - content_screen_w * zoom) * 0.5;
+    let offset_y = (screen_height - content_screen_h * zoom) * 0.5;
+    (offset_x, offset_y, zoom)
+}
+
+/// Convert screen coordinates into logical content coordinates using offset, zoom, and unit size.
+pub fn screen_to_content(
+    screen_x: f32,
+    screen_y: f32,
+    offset_x: f32,
+    offset_y: f32,
+    zoom: f32,
+    unit_size: f32,
+) -> (f32, f32) {
+    let denom = (zoom * unit_size).max(0.0001);
+    ((screen_x - offset_x) / denom, (screen_y - offset_y) / denom)
+}
+
+/// Return the new view offset after zooming around a screen-space anchor point.
+pub fn zoom_offset_at(
+    anchor_x: f32,
+    anchor_y: f32,
+    offset_x: f32,
+    offset_y: f32,
+    old_zoom: f32,
+    new_zoom: f32,
+) -> (f32, f32) {
+    if old_zoom.abs() < 0.0001 {
+        return (offset_x, offset_y);
+    }
+    let scale = new_zoom / old_zoom;
+    (
+        anchor_x - (anchor_x - offset_x) * scale,
+        anchor_y - (anchor_y - offset_y) * scale,
+    )
+}
+
 /// Stores viewport scaling state used during window resize and conversion.
 pub struct Viewport {
     /// Stores virtual game width in logical units.

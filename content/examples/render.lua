@@ -67,6 +67,28 @@ do
     example_print_log("rotated text drawn")
 end
 
+--@api: lurek.render.drawText
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.setFont(font)
+    lurek.render.setColor(0.65, 0.9, 1.0, 0.9)
+    lurek.render.drawText("GPU transformed text", 260, 92, -0.2, 1.4, 1.1, 20, 8)
+    lurek.render.setColor(1, 1, 1, 1)
+    example_print_log("drawText rotation = -0.2")
+    example_print_log("drawText uses tint from setColor")
+end
+
 --@api: lurek.render.printRich
 do
     local function render_log(message)
@@ -4085,6 +4107,27 @@ do
     local width = lurek.render.getFontWidth(font, "Standard text override")
     local height = lurek.render.getFontHeight(font)
     render_log("printWithFont width=" .. width .. " height=" .. height)
+end
+
+--@api: lurek.render.drawTextWithFont
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.setColor(0.8, 1.0, 0.7, 0.9)
+    lurek.render.drawTextWithFont(font, "Font handle transform", 220, 152, 0.18, 1.25, 1.0, 16, 6)
+    lurek.render.setColor(1, 1, 1, 1)
+    local width = lurek.render.getFontWidth(font, "Font handle transform")
+    render_log("drawTextWithFont width=" .. width .. " rotation=0.18")
 end
 
 --@api: lurek.render.printfWithFont

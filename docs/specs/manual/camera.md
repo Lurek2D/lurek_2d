@@ -18,13 +18,14 @@
 - That same contract helps previews and gameplay stay visually aligned.
 - This shared framing policy is what keeps several view-dependent systems aligned instead of each inventing its own screen-space math.
 - `render` shows the result and world systems choose what to focus, but `camera` owns how that focus is followed, constrained, and transformed into visible space.
+- Generic fit-to-screen, screen/content conversion, viewport scaling, and zoom-anchor math belong here. Domain modules such as `province` may expose adapters for their own coordinate systems, but they should delegate shared camera math to this module.
 - Read `camera` as the authority for framing policy and coordinate conversion between world and screen.
 
 This module primarily collaborates with `math`, `render`, `tilemap`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Notes
 
-- No additional module-specific notes.
+- Domain modules can keep ergonomic helpers such as province picking, but shared viewport and zoom behavior should remain reusable through `camera`.
 
 ## Architecture Links
 

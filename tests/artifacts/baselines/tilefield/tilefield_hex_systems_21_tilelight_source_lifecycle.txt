@@ -1,0 +1,6 @@
+map=50x50
+field_topology=hex
+static_sources=12
+point_id=13
+removed_line=true
+luma_25_25=1.0000

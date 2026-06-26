@@ -1344,7 +1344,7 @@ do
     local to_id = ids[#ids] or from_id
     local route = (from_id and to_id) and reg:findRoute(from_id, to_id, function(a, b) return a == b and 0.5 or 1.0 end) or nil
     local hop_count = route and #route or 0
-    province_log("supply route search from=" .. tostring(from_id) .. " to=" .. tostring(to_id) .. " hops=" .. tostring(hop_count) .. " reachable=" .. tostring(route ~= nil))
+    province_log("province route adapter from=" .. tostring(from_id) .. " to=" .. tostring(to_id) .. " hops=" .. tostring(hop_count) .. " reachable=" .. tostring(route ~= nil))
 end
 
 --@api: LProvinceRegistry:drawCapitalPath
@@ -1389,7 +1389,7 @@ do
     local pairs = { { from = ids[1], to = ids[2] or ids[1] }, { from = ids[1], to = ids[#ids] or ids[1] } }
     local routes = reg:findRoutes(pairs, function(a, b) return a == b and 0.5 or 1.0 end)
     local first_route = routes and routes[1] or nil
-    province_log("batch route plan requests=" .. tostring(#pairs) .. " result_rows=" .. tostring(routes and #routes or 0) .. " first_hops=" .. tostring(first_route and #first_route or 0))
+    province_log("batch route adapter requests=" .. tostring(#pairs) .. " result_rows=" .. tostring(routes and #routes or 0) .. " first_hops=" .. tostring(first_route and #first_route or 0))
 end
 
 --@api: LProvinceRegistry:getConnectedComponents
@@ -1410,7 +1410,7 @@ do
     local province_total = reg:provinceCount()
     local first_size = #first_component
     local covers_all = first_size <= province_total
-    province_log("graph components groups=" .. tostring(#components) .. " first_group_size=" .. tostring(first_size) .. " province_total=" .. tostring(province_total) .. " sane=" .. tostring(covers_all))
+    province_log("province topology components groups=" .. tostring(#components) .. " first_group_size=" .. tostring(first_size) .. " province_total=" .. tostring(province_total) .. " sane=" .. tostring(covers_all))
 end
 
 --@api: LProvinceRegistry:findIsolatedProvinces
@@ -1455,7 +1455,7 @@ do
     local to_id = ids[2] or from_id
     local connected = (from_id and to_id) and reg:isConnected(from_id, to_id) or false
     local route = connected and reg:findRoute(from_id, to_id) or nil
-    province_log("frontline connectivity from=" .. tostring(from_id) .. " to=" .. tostring(to_id) .. " connected=" .. tostring(connected) .. " route_hops=" .. tostring(route and #route or 0))
+    province_log("frontline connectivity adapter from=" .. tostring(from_id) .. " to=" .. tostring(to_id) .. " connected=" .. tostring(connected) .. " route_hops=" .. tostring(route and #route or 0))
 end
 
 --@api: LProvinceRegistry:totalAttrForOwner

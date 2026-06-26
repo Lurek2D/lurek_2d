@@ -529,6 +529,11 @@ LInputAdvancePlaybackResult = {}
 ---@field wasReleased function Returns true on the frame the action was released.
 LInputNewMappingResult = {}
 
+---@class LIsoGridFindPathResult
+---@field x number X coordinate.
+---@field y number Y coordinate.
+LIsoGridFindPathResult = {}
+
 ---@class LJpsGridFindPathResult
 ---@field x number X.
 ---@field y number Y.
@@ -2265,7 +2270,7 @@ LLayeredImage = {}
 ---@class LPaletteLUT
 LPaletteLUT = {}
 
---- Lua-side handle for a province id grid decoded from an image.
+--- Lua-side compatibility handle for a province id grid decoded by the province subsystem.
 ---@class LProvinceGrid
 LProvinceGrid = {}
 
@@ -2541,6 +2546,10 @@ LHexGrid = {}
 --- Lua handle for a grid-based influence map with named layers.
 ---@class LInfluenceMap
 LInfluenceMap = {}
+
+--- Lua-side wrapper for an isometric navigation grid.
+---@class LIsoGrid
+LIsoGrid = {}
 
 --- Lua-side wrapper for a Jump Point Search grid.
 ---@class LJpsGrid
@@ -14873,7 +14882,7 @@ lurek.image.newLayeredImage = function(width, height) end
 ---@return LPaletteLUT New palette lookup table handle.
 lurek.image.newPaletteLut = function() end
 
---- Loads a province id grid from an image file under the current game directory.
+--- Loads a province id grid from an image file under the current game directory. This is a compatibility facade over the province subsystem.
 ---@param filename string Province map image filename relative to game directory.
 ---@return LProvinceGrid New province grid handle.
 lurek.image.newProvinceGrid = function(filename) end
@@ -21373,6 +21382,47 @@ function LInfluenceMap:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LInfluenceMap:typeOf(name) end
 
+--- Finds a path between one-based isometric cells.
+---@param fx number One-based start X coordinate.
+---@param fy number One-based start Y coordinate.
+---@param tx number One-based goal X coordinate.
+---@param ty number One-based goal Y coordinate.
+---@return LIsoGridFindPathResult Array of `{x, y}` cell tables, or nil when no path exists.
+function LIsoGrid:findPath(fx, fy, tx, ty) end
+
+--- Returns movement cost for a one-based isometric grid cell.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@return number Movement cost.
+function LIsoGrid:getCost(x, y) end
+
+--- Returns whether a one-based isometric grid cell is blocked.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@return boolean True when blocked or out of bounds.
+function LIsoGrid:isBlocked(x, y) end
+
+--- Sets blocked state for a one-based isometric grid cell.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@param blocked boolean True to block the cell.
+function LIsoGrid:setBlocked(x, y, blocked) end
+
+--- Sets movement cost for a one-based isometric grid cell.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@param cost number Finite positive movement cost.
+function LIsoGrid:setCost(x, y, cost) end
+
+--- Returns the Lua-visible type name for this isometric grid handle.
+---@return string The string `LIsoGrid`.
+function LIsoGrid:type() end
+
+--- Returns whether this isometric grid handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LIsoGrid:typeOf(name) end
+
 --- Finds a JPS path between one-based grid cells.
 ---@param fx number One-based start column.
 ---@param fy number One-based start row.
@@ -21915,6 +21965,36 @@ lurek.pathfind.getAsyncPendingCount = function() end
 ---@return number Thread count (minimum 1).
 lurek.pathfind.getThreadCount = function() end
 
+--- Returns true when a target node is reachable from a start node in an integer-id graph.
+---@param edges table Array of graph edge tables.
+---@param from number Start node id.
+---@param to number Target node id.
+---@param opts? table Options with `directed`.
+---@return boolean True when reachable.
+lurek.pathfind.graphConnected = function(edges, from, to, opts) end
+
+--- Returns connected components for an integer-id graph. Pass `nodes` to include isolated node ids.
+---@param edges table Array of graph edge tables.
+---@param nodes? table Optional array of node ids; omitted nodes are inferred from edge endpoints.
+---@param opts? table Options with `directed`; directed graphs follow outgoing edges.
+---@return table Array of node-id arrays, sorted by first node id.
+lurek.pathfind.graphConnectedComponents = function(edges, nodes, opts) end
+
+--- Finds a route through an integer-id graph. Edges may be `{from,to}`, `{a,b}`, `{province_a,province_b}`, or `{from_id,to_id}` arrays. Options: `directed`, `algorithm` ("bfs"|"dijkstra"), and optional `cost(from, to)`.
+---@param edges table Array of graph edge tables.
+---@param from number Start node id.
+---@param to number Target node id.
+---@param opts? table Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.
+---@return number[] Node id route from start to target, or nil when unreachable.
+lurek.pathfind.graphRoute = function(edges, from, to, opts) end
+
+--- Finds routes for a batch of graph `{from, to}` requests using the same edge table and options as `graphRoute`.
+---@param edges table Array of graph edge tables.
+---@param requests table Array of `{from=integer,to=integer}` or `{from,to}` route requests.
+---@param opts? table Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.
+---@return table Array of route arrays; unreachable entries are nil.
+lurek.pathfind.graphRoutes = function(edges, requests, opts) end
+
 --- Creates a context steering model with the requested directional slot count.
 ---@param slots number Directional slot count; zero selects the engine default of 16.
 ---@return LContextSteering New context steering handle.
@@ -21938,12 +22018,30 @@ lurek.pathfind.newGoalMap = function(width, height) end
 ---@return LHexGrid New hex grid handle.
 lurek.pathfind.newHexGrid = function(width, height, layout_str) end
 
+--- Creates a hex navigation grid from a hex tilefield level and movement category.
+---@param field_ud LTileField Hex tilefield to derive navigation data from.
+---@param opts? table Options with `level`, `category`, `costCategory`, and `layout` (`"flat"` or `"pointy"`).
+---@return LHexGrid New hex grid handle.
+lurek.pathfind.newHexGridFromField = function(field_ud, opts) end
+
 --- Creates a grid influence map with the supplied cell dimensions and world cell size.
 ---@param w number Map width in cells.
 ---@param h number Map height in cells.
 ---@param cs number World size of one cell.
 ---@return LInfluenceMap New influence map handle.
 lurek.pathfind.newInfluenceMap = function(w, h, cs) end
+
+--- Creates an isometric grid with the given dimensions.
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@return LIsoGrid New isometric grid handle.
+lurek.pathfind.newIsoGrid = function(width, height) end
+
+--- Creates an isometric navigation grid from an iso-square tilefield level and movement category.
+---@param field_ud LTileField Iso-square tilefield to derive navigation data from.
+---@param opts? table Options with `level`, `category`, and `costCategory`.
+---@return LIsoGrid New isometric grid handle.
+lurek.pathfind.newIsoGridFromField = function(field_ud, opts) end
 
 --- Creates a Jump Point Search grid with given dimensions.
 ---@param width number Grid width in cells.
@@ -25213,14 +25311,14 @@ function LProvinceRegistry:drawCapitalPath(route, opts) end
 ---@return number[] Array of isolated province ids.
 function LProvinceRegistry:findIsolatedProvinces(owner_attr) end
 
---- Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.
+--- Finds a route between two provinces by adapting registry adjacency to pathfind graph routing. Uses BFS by default or Dijkstra when `cost_fn` is supplied.
 ---@param from_id number Start province id.
 ---@param to_id number Target province id.
 ---@param cost_fn? function Optional cost callback `fn(from_id, to_id) -> number`.
 ---@return table Array of province ids from start to target; nil when unreachable.
 function LProvinceRegistry:findRoute(from_id, to_id, cost_fn) end
 
---- Finds routes for a batch of `{from, to}` pairs.
+--- Finds routes for a batch of `{from, to}` pairs by adapting registry adjacency to pathfind graph routing.
 ---@param pairs table Array of `{from=integer, to=integer}` tables.
 ---@param cost_fn? function Optional cost callback `fn(from_id, to_id) -> number?`.
 ---@return table Array of route arrays (or nil for unreachable entries).
@@ -25264,7 +25362,7 @@ function LProvinceRegistry:getBorderType(a, b) end
 ---@return LProvinceRegistryGetChangesSinceResult Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).
 function LProvinceRegistry:getChangesSince(revision) end
 
---- Returns connected components in the province adjacency graph.
+--- Returns connected components in the province adjacency graph via pathfind graph traversal.
 ---@return table Array of arrays of province ids.
 function LProvinceRegistry:getConnectedComponents() end
 
@@ -25303,7 +25401,7 @@ function LProvinceRegistry:getWidth() end
 ---@return LProvinceRegistryImportMetadataFromFilesResult Summary with fields: mapped_provinces (number), capitals_set (number), label_lines_set (number), labels_set (number).
 function LProvinceRegistry:importMetadataFromFiles(opts) end
 
---- Returns true when there is at least one route between two provinces.
+--- Returns true when there is at least one pathfind graph route between two provinces.
 ---@param from_id number Start province id.
 ---@param to_id number Target province id.
 ---@return boolean True when connected.
@@ -26924,6 +27022,29 @@ lurek.render.drawPath = function(path, mode, close) end
 ---@param segments? number Number of line segments (default 16).
 lurek.render.drawQuadBezier = function(x1, y1, cx, cy, x2, y2, segments) end
 
+--- Draws text using the active font with image-like transform parameters on the GPU.
+---@param text string Text to render.
+---@param x number X position.
+---@param y number Y position.
+---@param rotation? number Rotation in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor (defaults to sx).
+---@param ox? number Origin offset X in text-local pixels (default 0).
+---@param oy? number Origin offset Y in text-local pixels (default 0).
+lurek.render.drawText = function(text, x, y, rotation, sx, sy, ox, oy) end
+
+--- Draws text using a specific font with image-like transform parameters on the GPU.
+---@param font LFont Font handle to use for this draw.
+---@param text string Text to render.
+---@param x number X position.
+---@param y number Y position.
+---@param rotation? number Rotation in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor (defaults to sx).
+---@param ox? number Origin offset X in text-local pixels (default 0).
+---@param oy? number Origin offset Y in text-local pixels (default 0).
+lurek.render.drawTextWithFont = function(font, text, x, y, rotation, sx, sy, ox, oy) end
+
 --- Draws a sub-region of an image defined by a Quad, with optional transform.
 ---@param image LImage Source image to draw from.
 ---@param quad LQuad Quad defining the source rectangle within the image.
@@ -27223,14 +27344,24 @@ lurek.render.print = function(text, x, y, scale) end
 ---@param spans table Array of span tables, each with fields: text, r, g, b, a, scale.
 ---@param x number X position.
 ---@param y number Y position.
-lurek.render.printRich = function(spans, x, y) end
+---@param rotation? number Rotation in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor (defaults to sx).
+---@param ox? number Origin offset X in text-local pixels (default 0).
+---@param oy? number Origin offset Y in text-local pixels (default 0).
+lurek.render.printRich = function(spans, x, y, rotation, sx, sy, ox, oy) end
 
 --- Draws rich text using a specific font without changing the global active font.
 ---@param font LFont Font handle to use for this draw.
 ---@param spans table Array of span tables, each with fields: text, r, g, b, a, scale.
 ---@param x number X position.
 ---@param y number Y position.
-lurek.render.printRichWithFont = function(font, spans, x, y) end
+---@param rotation? number Rotation in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor (defaults to sx).
+---@param ox? number Origin offset X in text-local pixels (default 0).
+---@param oy? number Origin offset Y in text-local pixels (default 0).
+lurek.render.printRichWithFont = function(font, spans, x, y, rotation, sx, sy, ox, oy) end
 
 --- Draws text centered and rotated around its midpoint.
 ---@param text string Text to render.

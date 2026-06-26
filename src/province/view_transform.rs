@@ -1,7 +1,9 @@
-//! Provides province map camera math for fitting, panning, zoom anchoring, and screen-to-map coordinate conversion.
-//! Owns stateless helpers that convert between screen positions, map space, and province cell coordinates safely.
-//! Forms the boundary between generic input or viewport handling and province-specific grid-space interactions.
-//! Open this file when map interaction math, zoom focus behavior, or screen-to-cell selection rules must change.
+//! Adapts generic camera viewport math to province-grid map coordinates and cell picking.
+//! Owns province-specific conversion from floating map positions into bounded province cell coordinates.
+//! Generic fit, screen/content conversion, and zoom-anchor math live in `camera::viewport`.
+//! Open this file when province map interaction needs a different grid-space adapter.
+
+use crate::camera::{fit_content_to_screen, screen_to_content, zoom_offset_at};
 
 /// Return (cam_x, cam_y, zoom) that fits the full map centred on screen; clamps zoom to ≥ 0.0001.
 pub fn fit_camera_to_screen(
@@ -11,16 +13,7 @@ pub fn fit_camera_to_screen(
     screen_w: f32,
     screen_h: f32,
 ) -> (f32, f32, f32) {
-    let safe_pixel = pixel_size.max(0.0001);
-    let sw = map_w as f32 * safe_pixel;
-    let sh = map_h as f32 * safe_pixel;
-    if sw <= 0.0 || sh <= 0.0 || screen_w <= 0.0 || screen_h <= 0.0 {
-        return (0.0, 0.0, 1.0);
-    }
-    let zoom = (screen_w / sw).min(screen_h / sh).max(0.0001);
-    let cam_x = (screen_w - sw * zoom) * 0.5;
-    let cam_y = (screen_h - sh * zoom) * 0.5;
-    (cam_x, cam_y, zoom)
+    fit_content_to_screen(map_w as f32, map_h as f32, pixel_size, screen_w, screen_h)
 }
 /// Convert a screen pixel coordinate to a floating-point map coordinate using camera offset and zoom; denom clamped to ≥ 0.0001.
 pub fn screen_to_map(
@@ -31,8 +24,7 @@ pub fn screen_to_map(
     zoom: f32,
     pixel_size: f32,
 ) -> (f32, f32) {
-    let denom = (zoom * pixel_size).max(0.0001);
-    ((screen_x - cam_x) / denom, (screen_y - cam_y) / denom)
+    screen_to_content(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size)
 }
 /// Convert a map coordinate to an integer cell (x, y); return None if out-of-bounds or non-finite.
 pub fn map_to_cell(map_x: f32, map_y: f32, map_w: u32, map_h: u32) -> Option<(u32, u32)> {
@@ -61,12 +53,5 @@ pub fn zoom_camera_at(
     old_zoom: f32,
     new_zoom: f32,
 ) -> (f32, f32) {
-    if old_zoom.abs() < 0.0001 {
-        return (cam_x, cam_y);
-    }
-    let scale = new_zoom / old_zoom;
-    (
-        anchor_x - (anchor_x - cam_x) * scale,
-        anchor_y - (anchor_y - cam_y) * scale,
-    )
+    zoom_offset_at(anchor_x, anchor_y, cam_x, cam_y, old_zoom, new_zoom)
 }

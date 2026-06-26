@@ -1,0 +1,3 @@
+level1_blue_luma=0.5224
+level2_red_luma=0.3923
+shadow_column_luma=0.2420

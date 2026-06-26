@@ -30,5 +30,5 @@ pub use walker::CameraWalker;
 
 /// Re-export for backwards compatibility.
 pub use types::CameraEasing as CameraFollowEasing;
-pub use viewport::{ScaleMode, Viewport};
+pub use viewport::{fit_content_to_screen, screen_to_content, zoom_offset_at, ScaleMode, Viewport};
 pub use viewport_scale::ViewportScale;

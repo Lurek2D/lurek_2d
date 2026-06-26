@@ -23,7 +23,8 @@ cargo run -- content/games/eu2
 - Provinces are assigned semi-historically from existing `province.toml`
   metadata, with neutral fallback for unmatched land.
 - Monthly ticks collect treasury and manpower.
-- Armies can be selected and moved through province adjacency.
+- Armies can be selected and moved through province adjacency via the public
+  province route adapter.
 - Occupying neutral or enemy land changes owner and refreshes the political map.
 - AI armies periodically move toward frontier provinces.
 
@@ -52,7 +53,8 @@ cargo run -- content/games/eu2
 
 - `main.lua` owns the runtime loop, camera, and GPU province renderer setup.
 - `scripts/scenario.lua` defines countries, ownership rules, and starting armies.
-- `scripts/state.lua` owns campaign state, time, economy, army movement, and AI.
+- `scripts/state.lua` owns campaign state, time, economy, army movement, and AI;
+  it consumes province adjacency/routes without owning pathfinding internals.
 - `scripts/map_modes.lua` maps campaign state back into `lurek.province` styles.
 - `scripts/ui.lua` owns retained `lurek.ui` widgets and the `lurek.minimap`
   campaign overview.

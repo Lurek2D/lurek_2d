@@ -15,6 +15,14 @@ describe("golden: pathfind evidence comparison", function()
             evidence_output_dir("pathfind") .. "weighted_route.png",
             "tests/artifacts/baselines/pathfind/weighted_route.png"
         )
+        expect_golden_file_match(
+            evidence_output_dir("pathfind") .. "pathfind_hex_tilefield_route.png",
+            "tests/artifacts/baselines/pathfind/pathfind_hex_tilefield_route.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("pathfind") .. "pathfind_iso_tilefield_route.png",
+            "tests/artifacts/baselines/pathfind/pathfind_iso_tilefield_route.png"
+        )
         expect_golden_text_match(
             evidence_output_dir("pathfind") .. "pathfind_astar_gap_trace.json",
             "tests/artifacts/baselines/pathfind/pathfind_astar_gap_trace.json"
@@ -22,6 +30,14 @@ describe("golden: pathfind evidence comparison", function()
         expect_golden_text_match(
             evidence_output_dir("pathfind") .. "pathfind_flow_field_samples.json",
             "tests/artifacts/baselines/pathfind/pathfind_flow_field_samples.json"
+        )
+        expect_golden_text_match(
+            evidence_output_dir("pathfind") .. "pathfind_hex_tilefield_trace.json",
+            "tests/artifacts/baselines/pathfind/pathfind_hex_tilefield_trace.json"
+        )
+        expect_golden_text_match(
+            evidence_output_dir("pathfind") .. "pathfind_iso_tilefield_trace.json",
+            "tests/artifacts/baselines/pathfind/pathfind_iso_tilefield_trace.json"
         )
         expect_golden_text_match(
             evidence_output_dir("pathfind") .. "pathfind_weighted_route_trace.json",

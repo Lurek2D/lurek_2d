@@ -14,7 +14,7 @@
 - Source path: `src/pathfind`
 - Binding: `src/lua_api/pathfind_api.rs`
 - Namespace: `lurek.pathfind`
-- Lua API surface: `26` functions, `26` types, `165` methods
+- Lua API surface: `33` functions, `28` types, `172` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -37,6 +37,7 @@
 - That makes `pathfind` a planning layer, not only a shortest-path helper.
 - Debug and visualization helpers matter because navigation bugs usually come from topology, weights, or blocked-space assumptions rather than from the solver implementation alone.
 - `tilemap`, `province`, and related modules define traversable space, but `pathfind` owns how that space is searched, scored, and turned into movement advice.
+- Province-level BFS, weighted Dijkstra/A*, connected-component traversal, and reachability belong here even when `province` exposes convenience methods that adapt registry topology into pathfinding inputs.
 - Read `pathfind` as the reusable navigation and local-movement analysis layer of the engine, not as an animation or physics integration system.
 
 This module primarily collaborates with `flownet`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
@@ -135,10 +136,10 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ### graph_path.rs
 
 - Runs province-level graph pathfinding over adjacency maps with configurable province and edge-tag move costs.
-- Owns ProvincePath results, ProvinceCostFn rules, blocked-province handling, and centroid-based A* heuristics.
+- Owns ProvincePath results, ProvinceCostFn rules, blocked-province handling, components, and route search.
 - Computes cheapest province routes and budget-limited reachability, keeping graph traversal near cost semantics.
 - Provides the boundary between province topology data and higher-level systems that need traversable region paths.
-- This file matters when province blocking, tag surcharges, or centroid heuristic assumptions need revision.
+- This file matters when province blocking, tag surcharges, or graph traversal semantics need revision.
 - Open this owner before touching province registries when only path cost policy or graph search behavior changed.
 
 ### grid.rs
@@ -299,11 +300,18 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `lurek.pathfind.clearAsyncPaths() -> nil`: Drops all queued async path requests and recreates the worker pool with the configured thread count.
 - `lurek.pathfind.getAsyncPendingCount() -> integer`: Returns the number of async path requests that have not emitted a terminal event.
 - `lurek.pathfind.getThreadCount() -> integer`: Returns the configured pathfinding thread count.
+- `lurek.pathfind.graphConnected(edges, from, to, opts?) -> boolean`: Returns true when a target node is reachable from a start node in an integer-id graph.
+- `lurek.pathfind.graphConnectedComponents(edges, nodes?, opts?) -> table`: Returns connected components for an integer-id graph. Pass `nodes` to include isolated node ids.
+- `lurek.pathfind.graphRoute(edges, from, to, opts?) -> integer[]`: Finds a route through an integer-id graph. Edges may be `{from,to}`, `{a,b}`, `{province_a,province_b}`, or `{from_id,to_id}` arrays. Options: `directed`, `algorithm` ("bfs"|"dijkstra"), and optional `cost(from, to)`.
+- `lurek.pathfind.graphRoutes(edges, requests, opts?) -> table`: Finds routes for a batch of graph `{from, to}` requests using the same edge table and options as `graphRoute`.
 - `lurek.pathfind.newContextSteering(slots) -> LContextSteering`: Creates a context steering model with the requested directional slot count.
 - `lurek.pathfind.newFlowField(grid_ud) -> LFlowField`: Creates a flow field for a navigation grid.
 - `lurek.pathfind.newGoalMap(width, height) -> LGoalMap`: Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.
 - `lurek.pathfind.newHexGrid(width, height, layout_str?) -> LHexGrid`: Creates a hex grid with the given dimensions.
+- `lurek.pathfind.newHexGridFromField(field_ud, opts?) -> LHexGrid`: Creates a hex navigation grid from a hex tilefield level and movement category.
 - `lurek.pathfind.newInfluenceMap(w, h, cs) -> LInfluenceMap`: Creates a grid influence map with the supplied cell dimensions and world cell size.
+- `lurek.pathfind.newIsoGrid(width, height) -> LIsoGrid`: Creates an isometric grid with the given dimensions.
+- `lurek.pathfind.newIsoGridFromField(field_ud, opts?) -> LIsoGrid`: Creates an isometric navigation grid from an iso-square tilefield level and movement category.
 - `lurek.pathfind.newJpsGrid(width, height) -> LJpsGrid`: Creates a Jump Point Search grid with given dimensions.
 - `lurek.pathfind.newNavGrid(width, height) -> LNavGrid`: Creates a navigation grid with the given dimensions.
 - `lurek.pathfind.newNavGridFromField(field_ud, opts?) -> LNavGrid`: Creates a navigation grid from a tilefield level and movement category.
@@ -520,6 +528,37 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff?) -> nil`: Applies a radial influence stamp to a named layer in world coordinates.
 - `LInfluenceMap:type() -> string`: Returns the Lua-visible type name for this influence map handle.
 - `LInfluenceMap:typeOf(name) -> boolean`: Returns whether this influence map handle matches a supported type name.
+
+#### LIsoGrid Type
+
+- Lua-side wrapper for an isometric navigation grid.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LIsoGrid:findPath(fx, fy, tx, ty) -> table`: Finds a path between one-based isometric cells.
+- `LIsoGrid:getCost(x, y) -> number`: Returns movement cost for a one-based isometric grid cell.
+- `LIsoGrid:isBlocked(x, y) -> boolean`: Returns whether a one-based isometric grid cell is blocked.
+- `LIsoGrid:setBlocked(x, y, blocked) -> nil`: Sets blocked state for a one-based isometric grid cell.
+- `LIsoGrid:setCost(x, y, cost) -> nil`: Sets movement cost for a one-based isometric grid cell.
+- `LIsoGrid:type() -> string`: Returns the Lua-visible type name for this isometric grid handle.
+- `LIsoGrid:typeOf(name) -> boolean`: Returns whether this isometric grid handle matches a supported type name.
+
+#### LIsoGridFindPathResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`integer`): X coordinate.
+- `y` (`integer`): Y coordinate.
+
+##### Methods
+
+- No documented methods.
 
 #### LJpsGrid Type
 
@@ -831,6 +870,10 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 | Current artifact | `tests/artifacts/current/pathfind/pathfind_api_surface.png` |
 | Current artifact | `tests/artifacts/current/pathfind/pathfind_astar_gap_trace.json` |
 | Current artifact | `tests/artifacts/current/pathfind/pathfind_flow_field_samples.json` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_hex_tilefield_route.png` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_hex_tilefield_trace.json` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_iso_tilefield_route.png` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_iso_tilefield_trace.json` |
 | Current artifact | `tests/artifacts/current/pathfind/pathfind_movement_surface_snapshot.txt` |
 | Current artifact | `tests/artifacts/current/pathfind/pathfind_weighted_route_trace.json` |
 | Current artifact | `tests/artifacts/current/pathfind/weighted_route.png` |
@@ -838,6 +881,10 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 | Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_api_surface.png` |
 | Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_astar_gap_trace.json` |
 | Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_flow_field_samples.json` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_hex_tilefield_route.png` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_hex_tilefield_trace.json` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_iso_tilefield_route.png` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_iso_tilefield_trace.json` |
 | Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_weighted_route_trace.json` |
 | Baseline artifact | `tests/artifacts/baselines/pathfind/weighted_route.png` |
 
@@ -848,5 +895,6 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ## Notes
 
 - `pathfind` owns movement algorithms, movement range, route search, costs, reachability, influence maps, steering, context steering, and ORCA local avoidance. It does not own line-of-sight, line-of-action, lighting, object-profile semantics, or high-level decision models.
-- `lurek.pathfind.newNavGridFromField(field, opts)` and `lurek.pathfind.rangeMapFromField(field, opts)` are adapters from `lurek.tilefield`; by default they read the `"move"` channel and movement costs from the field.
+- `pathfind::graph_path` owns reusable integer-id graph traversal. Public Lua helpers `lurek.pathfind.graphRoute`, `graphRoutes`, `graphConnectedComponents`, and `graphConnected` accept ordinary edge tables, while territory registries remain in `province` and logistics flow simulation remains in `flownet`.
+- `lurek.pathfind.newNavGridFromField(field, opts)`, `lurek.pathfind.newHexGridFromField(field, opts)`, and `lurek.pathfind.rangeMapFromField(field, opts)` are adapters from `lurek.tilefield`; by default they read the `"move"` channel and movement costs from the field. Use the hex adapter when the field topology is `hex`.
 - `newNavGridFromTileMap` remains a compatibility path for projects that want direct tilemap-to-navigation conversion without adopting `tilefield`.

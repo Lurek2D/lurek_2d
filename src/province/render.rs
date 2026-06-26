@@ -469,10 +469,9 @@ fn draw_thick_segment(
     }
 }
 
-fn draw_segment_shadow(
-    registry: &ProvinceRegistry,
-    pixels: &mut [u8],
-    shadow_alpha: &mut [u8],
+struct SegmentShadowContext<'a> {
+    pixels: &'a mut [u8],
+    shadow_alpha: &'a mut [u8],
     width: u32,
     height: u32,
     scale: u32,
@@ -480,71 +479,76 @@ fn draw_segment_shadow(
     origin_y: u32,
     radius: f32,
     strength: f32,
-) {
-    if radius <= 0.0 || strength <= 0.0 {
+}
+
+fn draw_segment_shadow(registry: &ProvinceRegistry, ctx: &mut SegmentShadowContext<'_>) {
+    if ctx.radius <= 0.0 || ctx.strength <= 0.0 {
         return;
     }
-    let scan_radius = radius.ceil() as i32 + 2;
+    let scan_radius = ctx.radius.ceil() as i32 + 2;
     for &(a, b, x0, y0, x1, y1) in registry.border_segments() {
         let (_, thickness) = segment_border_style(registry, ProvinceId(a), ProvinceId(b));
         let p0 = (
-            (x0 as i64 - origin_x as i64) as f32 * scale as f32,
-            (y0 as i64 - origin_y as i64) as f32 * scale as f32,
+            (x0 as i64 - ctx.origin_x as i64) as f32 * ctx.scale as f32,
+            (y0 as i64 - ctx.origin_y as i64) as f32 * ctx.scale as f32,
         );
         let p1 = (
-            (x1 as i64 - origin_x as i64) as f32 * scale as f32,
-            (y1 as i64 - origin_y as i64) as f32 * scale as f32,
+            (x1 as i64 - ctx.origin_x as i64) as f32 * ctx.scale as f32,
+            (y1 as i64 - ctx.origin_y as i64) as f32 * ctx.scale as f32,
         );
         let half = ((thickness - 1.0) * 0.5).max(0.0);
         let min_x = p0.0.min(p1.0).floor() as i32 - scan_radius;
         let max_x = p0.0.max(p1.0).ceil() as i32 + scan_radius;
         let min_y = p0.1.min(p1.1).floor() as i32 - scan_radius;
         let max_y = p0.1.max(p1.1).ceil() as i32 + scan_radius;
-        if max_x < 0 || max_y < 0 || min_x >= width as i32 || min_y >= height as i32 {
+        if max_x < 0 || max_y < 0 || min_x >= ctx.width as i32 || min_y >= ctx.height as i32 {
             continue;
         }
         for y in min_y..=max_y {
-            if y < 0 || y >= height as i32 {
+            if y < 0 || y >= ctx.height as i32 {
                 continue;
             }
             for x in min_x..=max_x {
-                if x < 0 || x >= width as i32 {
+                if x < 0 || x >= ctx.width as i32 {
                     continue;
                 }
                 let dist =
                     (distance_to_segment(x as f32 + 0.5, y as f32 + 0.5, p0.0, p0.1, p1.0, p1.1)
                         - half)
                         .max(0.0);
-                if dist > radius {
+                if dist > ctx.radius {
                     continue;
                 }
-                let falloff = 1.0 - smoothstep(0.0, radius, dist);
-                let alpha = (255.0 * strength * falloff * falloff).round() as u8;
-                let idx = (y as u32 * width + x as u32) as usize;
-                shadow_alpha[idx] = shadow_alpha[idx].max(alpha);
+                let falloff = 1.0 - smoothstep(0.0, ctx.radius, dist);
+                let alpha = (255.0 * ctx.strength * falloff * falloff).round() as u8;
+                let idx = (y as u32 * ctx.width + x as u32) as usize;
+                ctx.shadow_alpha[idx] = ctx.shadow_alpha[idx].max(alpha);
             }
         }
     }
-    for y in 0..height {
-        for x in 0..width {
-            let alpha = shadow_alpha[(y * width + x) as usize];
+    for y in 0..ctx.height {
+        for x in 0..ctx.width {
+            let alpha = ctx.shadow_alpha[(y * ctx.width + x) as usize];
             if alpha == 0 {
                 continue;
             }
-            let idx = ((y * width + x) * 4) as usize;
-            let province_id =
-                ProvinceId(registry.get_at(origin_x + x / scale, origin_y + y / scale));
+            let idx = ((y * ctx.width + x) * 4) as usize;
+            let province_id = ProvinceId(
+                registry.get_at(ctx.origin_x + x / ctx.scale, ctx.origin_y + y / ctx.scale),
+            );
             let shadow_rgb = if pair_is_water(registry, province_id) {
                 [
-                    (pixels[idx] as f32 * 0.85).round() as u8,
-                    (pixels[idx + 1] as f32 * 0.85).round() as u8,
-                    (pixels[idx + 2] as f32 * 0.85).round() as u8,
+                    (ctx.pixels[idx] as f32 * 0.85).round() as u8,
+                    (ctx.pixels[idx + 1] as f32 * 0.85).round() as u8,
+                    (ctx.pixels[idx + 2] as f32 * 0.85).round() as u8,
                     alpha,
                 ]
             } else {
                 [64, 64, 60, alpha]
             };
-            blend_pixel(pixels, width, height, x as i32, y as i32, shadow_rgb);
+            blend_pixel(
+                ctx.pixels, ctx.width, ctx.height, x as i32, y as i32, shadow_rgb,
+            );
         }
     }
 }
@@ -626,18 +630,18 @@ pub fn render_segment_raster(
 
     if opts.draw_borders {
         let mut shadow_alpha = vec![0u8; (width as usize).saturating_mul(height as usize)];
-        draw_segment_shadow(
-            registry,
-            &mut pixels,
-            &mut shadow_alpha,
+        let mut shadow_ctx = SegmentShadowContext {
+            pixels: &mut pixels,
+            shadow_alpha: &mut shadow_alpha,
             width,
             height,
             scale,
             origin_x,
             origin_y,
-            opts.edge_gradient_radius.max(0.0),
-            opts.edge_gradient_strength.clamp(0.0, 1.0),
-        );
+            radius: opts.edge_gradient_radius.max(0.0),
+            strength: opts.edge_gradient_strength.clamp(0.0, 1.0),
+        };
+        draw_segment_shadow(registry, &mut shadow_ctx);
         for &(a, b, x0, y0, x1, y1) in registry.border_segments() {
             let (color, thickness) = segment_border_style(registry, ProvinceId(a), ProvinceId(b));
             draw_thick_segment(

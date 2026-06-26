@@ -318,7 +318,7 @@ impl LuaProvinceRegistry {
         reuse_cached_tints: bool,
     ) -> LuaResult<()> {
         let scale = if options.pixel_size.is_finite() {
-            options.pixel_size.round().max(1.0).min(64.0) as u32
+            options.pixel_size.round().clamp(1.0, 64.0) as u32
         } else {
             1
         };
@@ -804,7 +804,7 @@ impl LuaUserData for LuaProvinceRegistry {
             Ok(out)
         });
         // -- findRoute --
-        /// Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.
+        /// Finds a route between two provinces by adapting registry adjacency to pathfind graph routing. Uses BFS by default or Dijkstra when `cost_fn` is supplied.
         /// @param | from_id | integer | Start province id.
         /// @param | to_id | integer | Target province id.
         /// @param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number`.
@@ -928,7 +928,7 @@ impl LuaUserData for LuaProvinceRegistry {
             },
         );
         // -- findRoutes --
-        /// Finds routes for a batch of `{from, to}` pairs.
+        /// Finds routes for a batch of `{from, to}` pairs by adapting registry adjacency to pathfind graph routing.
         /// @param | pairs | table | Array of `{from=integer, to=integer}` tables.
         /// @param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number?`.
         /// @return | table | Array of route arrays (or nil for unreachable entries).
@@ -992,7 +992,7 @@ impl LuaUserData for LuaProvinceRegistry {
             },
         );
         // -- getConnectedComponents --
-        /// Returns connected components in the province adjacency graph.
+        /// Returns connected components in the province adjacency graph via pathfind graph traversal.
         /// @return | table | Array of arrays of province ids.
         methods.add_method("getConnectedComponents", |lua, this, ()| {
             let (pairs, ids) = this.with_registry(|r| {
@@ -1053,7 +1053,7 @@ impl LuaUserData for LuaProvinceRegistry {
             Ok(out)
         });
         // -- isConnected --
-        /// Returns true when there is at least one route between two provinces.
+        /// Returns true when there is at least one pathfind graph route between two provinces.
         /// @param | from_id | integer | Start province id.
         /// @param | to_id | integer | Target province id.
         /// @return | boolean | True when connected.

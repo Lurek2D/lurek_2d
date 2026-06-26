@@ -637,6 +637,49 @@ fn collect_numeric_args(args: &LuaMultiValue) -> Vec<f32> {
     args.iter().filter_map(lua_value_as_f32).collect()
 }
 
+type LuaDrawTextArgs = (
+    String,
+    f32,
+    f32,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+);
+type LuaDrawTextWithFontArgs<'lua> = (
+    LuaAnyUserData<'lua>,
+    String,
+    f32,
+    f32,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+);
+type LuaRichTextArgs<'lua> = (
+    LuaTable<'lua>,
+    f32,
+    f32,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+);
+type LuaRichTextWithFontArgs<'lua> = (
+    LuaAnyUserData<'lua>,
+    LuaTable<'lua>,
+    f32,
+    f32,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+    Option<f32>,
+);
+
 fn queue_render_line(st: &mut SharedState, args: LuaMultiValue) {
     let vals = collect_numeric_args(&args);
     if vals.len() == 4 {
@@ -921,8 +964,8 @@ fn centered_text_origin(
         ));
     };
     Ok((
-        -font.text_width(text) * scale * 0.5,
-        -font.line_height() * scale * 0.5,
+        font.text_width(text) * scale * 0.5,
+        font.line_height() * scale * 0.5,
     ))
 }
 
@@ -938,22 +981,18 @@ struct RotatedTextCommand {
 }
 
 fn queue_rotated_text(st: &mut SharedState, command: RotatedTextCommand) {
-    st.render_commands.push(RenderCommand::PushTransform);
-    st.render_commands.push(RenderCommand::Translate {
-        x: command.x,
-        y: command.y,
-    });
-    st.render_commands.push(RenderCommand::Rotate {
-        angle: command.angle,
-    });
-    st.render_commands.push(RenderCommand::Print {
+    st.render_commands.push(RenderCommand::PrintTransformed {
         font_key: command.font_key,
         text: command.text,
-        x: command.origin_x,
-        y: command.origin_y,
+        x: command.x,
+        y: command.y,
+        rotation: command.angle,
+        sx: 1.0,
+        sy: 1.0,
+        ox: command.origin_x,
+        oy: command.origin_y,
         scale: command.scale,
     });
-    st.render_commands.push(RenderCommand::PopTransform);
 }
 
 fn queue_print(st: &mut SharedState, font_key: FontKey, text: String, x: f32, y: f32, scale: f32) {
@@ -963,6 +1002,26 @@ fn queue_print(st: &mut SharedState, font_key: FontKey, text: String, x: f32, y:
         x,
         y,
         scale,
+    });
+}
+
+fn queue_draw_text(
+    st: &mut SharedState,
+    font_key: FontKey,
+    text: String,
+    transform: RenderDrawTransform,
+) {
+    st.render_commands.push(RenderCommand::PrintTransformed {
+        font_key,
+        text,
+        x: transform.x,
+        y: transform.y,
+        rotation: transform.rotation,
+        sx: transform.sx,
+        sy: transform.sy,
+        ox: transform.ox,
+        oy: transform.oy,
+        scale: 1.0,
     });
 }
 
@@ -1009,6 +1068,27 @@ fn queue_rich_text(
             x,
             y,
         });
+}
+
+fn queue_rich_text_transformed(
+    st: &mut SharedState,
+    font_key: FontKey,
+    spans: Vec<crate::render::renderer::TextSpan>,
+    transform: RenderDrawTransform,
+) {
+    st.render_commands.push(
+        crate::render::renderer::RenderCommand::DrawRichTextTransformed {
+            font_key,
+            spans,
+            x: transform.x,
+            y: transform.y,
+            rotation: transform.rotation,
+            sx: transform.sx,
+            sy: transform.sy,
+            ox: transform.ox,
+            oy: transform.oy,
+        },
+    );
 }
 
 fn parse_new_font_args(args: &LuaMultiValue) -> LuaResult<(Option<u32>, Option<String>, f32)> {
@@ -2111,6 +2191,73 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, list: LuaTable| queue_draw_many(&mut s.borrow_mut(), list))?,
     )?;
     let s = state.clone();
+    // -- drawText --
+    /// Draws text using the active font with image-like transform parameters on the GPU.
+    /// @param | text | string | Text to render.
+    /// @param | x | number | X position.
+    /// @param | y | number | Y position.
+    /// @param | rotation | number? | Rotation in radians (default 0).
+    /// @param | sx | number? | X scale factor (default 1).
+    /// @param | sy | number? | Y scale factor (defaults to sx).
+    /// @param | ox | number? | Origin offset X in text-local pixels (default 0).
+    /// @param | oy | number? | Origin offset Y in text-local pixels (default 0).
+    graphics.set(
+        "drawText",
+        lua.create_function(move |_, args: LuaDrawTextArgs| {
+            let (text, x, y, rotation, sx, sy, ox, oy) = args;
+            let font_key = {
+                let st = s.borrow();
+                active_font_key(&st)
+            };
+            let Some(font_key) = font_key else {
+                return Ok(());
+            };
+            let sx = sx.unwrap_or(1.0);
+            let transform = RenderDrawTransform {
+                x,
+                y,
+                rotation: rotation.unwrap_or(0.0),
+                sx,
+                sy: sy.unwrap_or(sx),
+                ox: ox.unwrap_or(0.0),
+                oy: oy.unwrap_or(0.0),
+            };
+            queue_draw_text(&mut s.borrow_mut(), font_key, text, transform);
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- drawTextWithFont --
+    /// Draws text using a specific font with image-like transform parameters on the GPU.
+    /// @param | font | LFont | Font handle to use for this draw.
+    /// @param | text | string | Text to render.
+    /// @param | x | number | X position.
+    /// @param | y | number | Y position.
+    /// @param | rotation | number? | Rotation in radians (default 0).
+    /// @param | sx | number? | X scale factor (default 1).
+    /// @param | sy | number? | Y scale factor (defaults to sx).
+    /// @param | ox | number? | Origin offset X in text-local pixels (default 0).
+    /// @param | oy | number? | Origin offset Y in text-local pixels (default 0).
+    graphics.set(
+        "drawTextWithFont",
+        lua.create_function(move |_, args: LuaDrawTextWithFontArgs<'_>| {
+            let (font_ud, text, x, y, rotation, sx, sy, ox, oy) = args;
+            let key = resolve_font_key(&font_ud)?;
+            let sx = sx.unwrap_or(1.0);
+            let transform = RenderDrawTransform {
+                x,
+                y,
+                rotation: rotation.unwrap_or(0.0),
+                sx,
+                sy: sy.unwrap_or(sx),
+                ox: ox.unwrap_or(0.0),
+                oy: oy.unwrap_or(0.0),
+            };
+            queue_draw_text(&mut s.borrow_mut(), key, text, transform);
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
     // -- printRotated --
     /// Draws text centered and rotated around its midpoint.
     /// @param | text | string | Text to render.
@@ -2317,9 +2464,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | spans | table | Array of span tables, each with fields: text, r, g, b, a, scale.
     /// @param | x | number | X position.
     /// @param | y | number | Y position.
+    /// @param | rotation | number? | Rotation in radians (default 0).
+    /// @param | sx | number? | X scale factor (default 1).
+    /// @param | sy | number? | Y scale factor (defaults to sx).
+    /// @param | ox | number? | Origin offset X in text-local pixels (default 0).
+    /// @param | oy | number? | Origin offset Y in text-local pixels (default 0).
     graphics.set(
         "printRich",
-        lua.create_function(move |_, (spans_table, x, y): (mlua::Table, f32, f32)| {
+        lua.create_function(move |_, args: LuaRichTextArgs<'_>| {
+            let (spans_table, x, y, rotation, sx, sy, ox, oy) = args;
             let font_key_opt = {
                 let st = s.borrow();
                 active_font_key(&st)
@@ -2328,7 +2481,21 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 return Ok(());
             };
             let spans = build_rich_text_spans(&spans_table)?;
-            queue_rich_text(&mut s.borrow_mut(), font_key, spans, x, y);
+            if rotation.is_some() || sx.is_some() || sy.is_some() || ox.is_some() || oy.is_some() {
+                let sx = sx.unwrap_or(1.0);
+                let transform = RenderDrawTransform {
+                    x,
+                    y,
+                    rotation: rotation.unwrap_or(0.0),
+                    sx,
+                    sy: sy.unwrap_or(sx),
+                    ox: ox.unwrap_or(0.0),
+                    oy: oy.unwrap_or(0.0),
+                };
+                queue_rich_text_transformed(&mut s.borrow_mut(), font_key, spans, transform);
+            } else {
+                queue_rich_text(&mut s.borrow_mut(), font_key, spans, x, y);
+            }
             Ok(())
         })?,
     )?;
@@ -2339,16 +2506,34 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | spans | table | Array of span tables, each with fields: text, r, g, b, a, scale.
     /// @param | x | number | X position.
     /// @param | y | number | Y position.
+    /// @param | rotation | number? | Rotation in radians (default 0).
+    /// @param | sx | number? | X scale factor (default 1).
+    /// @param | sy | number? | Y scale factor (defaults to sx).
+    /// @param | ox | number? | Origin offset X in text-local pixels (default 0).
+    /// @param | oy | number? | Origin offset Y in text-local pixels (default 0).
     graphics.set(
         "printRichWithFont",
-        lua.create_function(
-            move |_, (font_ud, spans_table, x, y): (LuaAnyUserData, LuaTable, f32, f32)| {
-                let key = resolve_font_key(&font_ud)?;
-                let spans = build_rich_text_spans(&spans_table)?;
+        lua.create_function(move |_, args: LuaRichTextWithFontArgs<'_>| {
+            let (font_ud, spans_table, x, y, rotation, sx, sy, ox, oy) = args;
+            let key = resolve_font_key(&font_ud)?;
+            let spans = build_rich_text_spans(&spans_table)?;
+            if rotation.is_some() || sx.is_some() || sy.is_some() || ox.is_some() || oy.is_some() {
+                let sx = sx.unwrap_or(1.0);
+                let transform = RenderDrawTransform {
+                    x,
+                    y,
+                    rotation: rotation.unwrap_or(0.0),
+                    sx,
+                    sy: sy.unwrap_or(sx),
+                    ox: ox.unwrap_or(0.0),
+                    oy: oy.unwrap_or(0.0),
+                };
+                queue_rich_text_transformed(&mut s.borrow_mut(), key, spans, transform);
+            } else {
                 queue_rich_text(&mut s.borrow_mut(), key, spans, x, y);
-                Ok(())
-            },
-        )?,
+            }
+            Ok(())
+        })?,
     )?;
     let s = state.clone();
     // -- clear --

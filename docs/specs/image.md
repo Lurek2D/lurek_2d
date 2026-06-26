@@ -5,7 +5,7 @@
 ## TL;DR
 
 - Manages CPU image buffers, compressed textures, layered stacks, palette remapping, and atlases.
-- Supports pixel-level effects, nine-slices, province grids, and graphical debug visualizations.
+- Supports pixel-level effects, nine-slices, compatibility province-grid ingest, and graphical debug visualizations.
 
 ## General Info
 
@@ -28,7 +28,7 @@
 - This makes the module a bridge between authored content and render consumption. `render` eventually uses the resulting textures, but `image` owns the CPU-side transformations that prepare and validate them.
 - Comparison and diff-style helpers turn the module into a testing and evidence surface, and visualization support makes it useful for diagnostics as well as assets.
 - Visualization support is one of the most distinctive capabilities. Audio analysis, graph structures, easing curves, procedural outputs, camera data, and other runtime information can all be turned into inspectable images, making the module useful for debugging as well as for asset work.
-- Province and grid extraction features show that image data can also be a source of gameplay structure. A picture may become region data, mask data, or map guidance rather than only something to display.
+- Image data can be a source of gameplay structure, but `image` owns the pixel-domain side of that pipeline. Province-specific id extraction, topology, spans, and polygons are owned by `province`.
 - That two-way relationship is important: `image` is useful both after a visual asset exists and when visual data is being used as input to another system.
 - Serialization and format conversion keep the module connected to the outside world. The same subsystem can move between files, generated runtime state, debugging artifacts, and exported outputs without pushing those conversions into ad hoc helpers.
 - That flexibility also makes the module useful for tool-driven inspection as well as asset preparation.
@@ -273,7 +273,7 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - `lurek.image.newImageDataFromBytes(w, h, bytes) -> LImageData`: Creates image data from raw RGBA bytes and explicit dimensions.
 - `lurek.image.newLayeredImage(width, height) -> LLayeredImage`: Creates a layered image stack with one or more blank layers.
 - `lurek.image.newPaletteLut() -> LPaletteLUT`: Creates an empty palette lookup table.
-- `lurek.image.newProvinceGrid(filename) -> LProvinceGrid`: Loads a province id grid from an image file under the current game directory.
+- `lurek.image.newProvinceGrid(filename) -> LProvinceGrid`: Loads a province id grid from an image file under the current game directory. This is a compatibility facade over the province subsystem.
 - `lurek.image.saveGIF(frames, filename, opts?) -> nil`: Encodes a sequence of equally sized image frames as an animated GIF.
 - `lurek.image.saveImage(img_ud, filename) -> nil`: Saves an image data object to a path under the current game directory.
 - `lurek.image.savePNG(img_ud, filename) -> nil`: Encodes image data as PNG and writes it under the current game directory.
@@ -410,7 +410,7 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 #### LProvinceGrid Type
 
-- Lua-side handle for a province id grid decoded from an image.
+- Lua-side compatibility handle for a province id grid decoded by the province subsystem.
 
 ##### Fields
 
@@ -590,4 +590,4 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 ## Notes
 
-- No additional module-specific notes.
+- `lurek.image.newProvinceGrid` remains a compatibility facade for image-origin province data. Canonical province region semantics belong to `province`.

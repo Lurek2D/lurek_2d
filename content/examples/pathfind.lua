@@ -4,6 +4,84 @@
 
 --- Pathfinding Module Part 1: grid pathfinding basics (LPathGrid, LNavGrid)
 
+--@api: lurek.pathfind.graphRoute
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local edges = {
+        { from = 1, to = 2 },
+        { from = 2, to = 3 },
+        { from = 1, to = 4 },
+        { from = 4, to = 3 },
+    }
+    local route = lurek.pathfind.graphRoute(edges, 1, 3, {
+        algorithm = "dijkstra",
+        cost = function(from, to)
+            if (from == 1 and to == 2) or (from == 2 and to == 3) then
+                return 12
+            end
+            return 1
+        end,
+    })
+    pathfind_log("graph route hops=" .. tostring(route and #route or 0) .. " via=" .. tostring(route and route[2]))
+end
+
+--@api: lurek.pathfind.graphRoutes
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local edges = {
+        { 1, 2 },
+        { 2, 3 },
+        { 4, 5 },
+    }
+    local routes = lurek.pathfind.graphRoutes(edges, {
+        { from = 1, to = 3 },
+        { from = 1, to = 5 },
+        { from = 4, to = 5 },
+    })
+    local first_len = routes[1] and #routes[1] or 0
+    local third_len = routes[3] and #routes[3] or 0
+    pathfind_log("graph route batch first=" .. tostring(first_len) .. " third=" .. tostring(third_len) .. " second_nil=" .. tostring(routes[2] == nil))
+end
+
+--@api: lurek.pathfind.graphConnectedComponents
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local edges = {
+        { from = 7, to = 8 },
+        { from = 8, to = 9 },
+        { from = 20, to = 21 },
+    }
+    local components = lurek.pathfind.graphConnectedComponents(edges, { 7, 8, 9, 10, 20, 21 })
+    local isolated = components[2] and components[2][1] or nil
+    local largest = components[1] and #components[1] or 0
+    pathfind_log("graph components=" .. tostring(#components) .. " largest=" .. tostring(largest) .. " isolated=" .. tostring(isolated))
+end
+
+--@api: lurek.pathfind.graphConnected
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local edges = {
+        { from = 1, to = 2 },
+        { from = 2, to = 3 },
+    }
+    local forward = lurek.pathfind.graphConnected(edges, 1, 3, { directed = true })
+    local backward_directed = lurek.pathfind.graphConnected(edges, 3, 1, { directed = true })
+    local backward_undirected = lurek.pathfind.graphConnected(edges, 3, 1)
+    pathfind_log("graph connected forward=" .. tostring(forward) .. " directed_back=" .. tostring(backward_directed) .. " undirected_back=" .. tostring(backward_undirected))
+end
+
 
 --@api: lurek.pathfind.newNavGridFromField
 do
@@ -24,6 +102,148 @@ do
     local blocked = grid:isBlocked(3, 3)
     local width = grid:getWidth()
     pathfind_log("field navgrid width=" .. width .. " blocked=" .. tostring(blocked))
+end
+
+--@api: lurek.pathfind.newHexGridFromField
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local field = lurek.tilefield.new({ width = 6, height = 6, topology = "hex" })
+    field:setBlock(3, 3, 1, "move", true)
+    field:setCost(4, 3, 1, "move", 3)
+    local grid = lurek.pathfind.newHexGridFromField(field, { level = 1, channel = "move", layout = "flat" })
+    local route = grid:findPath(1, 3, 6, 3) or {}
+    local blocked = grid:isBlocked(3, 3)
+    pathfind_log("field hex route nodes=" .. tostring(#route) .. " blocked=" .. tostring(blocked))
+end
+
+--@api: lurek.pathfind.newIsoGrid
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(6, 5)
+    grid:setBlocked(3, 3, true)
+    local route = grid:findPath(1, 3, 6, 3) or {}
+    local blocked = grid:isBlocked(3, 3)
+    pathfind_log("iso route nodes=" .. tostring(#route) .. " blocked=" .. tostring(blocked))
+end
+
+--@api: lurek.pathfind.newIsoGridFromField
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local field = lurek.tilefield.new({ width = 6, height = 5, topology = "iso_square" })
+    field:setBlock(3, 3, 1, "move", true)
+    field:setCost(4, 3, 1, "move", 3)
+    local grid = lurek.pathfind.newIsoGridFromField(field, { level = 1, channel = "move" })
+    local route = grid:findPath(1, 3, 6, 3) or {}
+    pathfind_log("field iso route nodes=" .. tostring(#route) .. " cost=" .. tostring(grid:getCost(4, 3)))
+end
+
+--@api: LIsoGrid:setBlocked
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(5, 5)
+    grid:setBlocked(2, 3, true)
+    grid:setBlocked(2, 4, true)
+    local first = grid:isBlocked(2, 3)
+    local second = grid:isBlocked(2, 4)
+    pathfind_log("iso blockers first=" .. tostring(first) .. " second=" .. tostring(second))
+end
+
+--@api: LIsoGrid:setCost
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(5, 5)
+    grid:setCost(3, 2, 2.5)
+    grid:setCost(3, 3, 4.0)
+    local road = grid:getCost(3, 2)
+    local mud = grid:getCost(3, 3)
+    pathfind_log("iso costs road=" .. tostring(road) .. " mud=" .. tostring(mud))
+end
+
+--@api: LIsoGrid:isBlocked
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(5, 5)
+    grid:setBlocked(4, 2, true)
+    local wall = grid:isBlocked(4, 2)
+    local floor = grid:isBlocked(4, 3)
+    local route = grid:findPath(1, 2, 5, 2) or {}
+    pathfind_log("iso blocked wall=" .. tostring(wall) .. " floor=" .. tostring(floor) .. " route=" .. tostring(#route))
+end
+
+--@api: LIsoGrid:getCost
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(5, 5)
+    grid:setCost(2, 2, 3.5)
+    grid:setCost(2, 3, 1.5)
+    local bridge = grid:getCost(2, 2)
+    local lane = grid:getCost(2, 3)
+    local plain = grid:getCost(1, 1)
+    pathfind_log("iso costs bridge=" .. tostring(bridge) .. " lane=" .. tostring(lane) .. " plain=" .. tostring(plain))
+end
+
+--@api: LIsoGrid:findPath
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(7, 5)
+    grid:setBlocked(4, 1, true)
+    grid:setBlocked(4, 2, true)
+    grid:setBlocked(4, 3, true)
+    local route = grid:findPath(1, 2, 7, 2) or {}
+    local last = route[#route] or { x = 0, y = 0 }
+    pathfind_log("iso path nodes=" .. tostring(#route) .. " last=" .. tostring(last.x) .. "," .. tostring(last.y))
+end
+
+--@api: LIsoGrid:type
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(4, 4)
+    grid:setCost(2, 2, 2)
+    local type_name = grid:type()
+    local cost = grid:getCost(2, 2)
+    local route = grid:findPath(1, 1, 4, 4) or {}
+    pathfind_log("iso type=" .. type_name .. " cost=" .. tostring(cost) .. " route=" .. tostring(#route))
+end
+
+--@api: LIsoGrid:typeOf
+do
+    local function pathfind_log(message)
+        lurek.log.info("[pathfind.example] " .. tostring(message))
+    end
+
+    local grid = lurek.pathfind.newIsoGrid(4, 4)
+    grid:setBlocked(2, 2, true)
+    local is_iso = grid:typeOf("LIsoGrid")
+    local is_object = grid:typeOf("LObject")
+    local is_hex = grid:typeOf("LHexGrid")
+    pathfind_log("iso typeOf iso=" .. tostring(is_iso) .. " object=" .. tostring(is_object) .. " hex=" .. tostring(is_hex))
 end
 
 --@api: lurek.pathfind.rangeMapFromField

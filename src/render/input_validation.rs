@@ -309,8 +309,61 @@ pub fn validate_render_command(
             validate_finite_many(&[("print.x", *x), ("print.y", *y)])?;
             validate_positive("print.scale", *scale)
         }
+        PrintTransformed {
+            x,
+            y,
+            rotation,
+            sx,
+            sy,
+            ox,
+            oy,
+            scale,
+            ..
+        } => {
+            validate_transform(
+                "text_transform",
+                TransformInput {
+                    x: *x,
+                    y: *y,
+                    rotation: *rotation,
+                    sx: *sx,
+                    sy: *sy,
+                    ox: *ox,
+                    oy: *oy,
+                },
+            )?;
+            validate_positive("text_transform.scale", *scale)
+        }
         DrawRichText { spans, x, y, .. } => {
             validate_finite_many(&[("rich_text.x", *x), ("rich_text.y", *y)])?;
+            for span in spans {
+                validate_text_span(span)?;
+            }
+            Ok(())
+        }
+        DrawRichTextTransformed {
+            spans,
+            x,
+            y,
+            rotation,
+            sx,
+            sy,
+            ox,
+            oy,
+            ..
+        } => {
+            validate_transform(
+                "rich_text_transform",
+                TransformInput {
+                    x: *x,
+                    y: *y,
+                    rotation: *rotation,
+                    sx: *sx,
+                    sy: *sy,
+                    ox: *ox,
+                    oy: *oy,
+                },
+            )?;
             for span in spans {
                 validate_text_span(span)?;
             }

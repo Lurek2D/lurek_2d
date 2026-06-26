@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-25",
+  "generated": "2026-06-26",
   "modules": [
     {
       "name": "agent",
@@ -11621,7 +11621,7 @@
           "name": "newProvinceGrid",
           "fullPath": "lurek.image.newProvinceGrid",
           "signature": "(filename)",
-          "description": "Loads a province id grid from an image file under the current game directory.",
+          "description": "Loads a province id grid from an image file under the current game directory. This is a compatibility facade over the province subsystem.",
           "parameters": [
             {
               "name": "filename",
@@ -18654,6 +18654,138 @@
       "description": "Registers the `lurek.pathfind` Lua API for path queries, async pools, waypoint conversion, and grid validation.",
       "functions": [
         {
+          "name": "graphRoute",
+          "fullPath": "lurek.pathfind.graphRoute",
+          "signature": "(edges, from, to, [opts])",
+          "description": "Finds a route through an integer-id graph. Edges may be `{from,to}`, `{a,b}`, `{province_a,province_b}`, or `{from_id,to_id}` arrays. Options: `directed`, `algorithm` (\"bfs\"|\"dijkstra\"), and optional `cost(from, to)`.",
+          "parameters": [
+            {
+              "name": "edges",
+              "type": "table",
+              "description": "Array of graph edge tables.",
+              "optional": false
+            },
+            {
+              "name": "from",
+              "type": "integer",
+              "description": "Start node id.",
+              "optional": false
+            },
+            {
+              "name": "to",
+              "type": "integer",
+              "description": "Target node id.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.",
+              "optional": true
+            }
+          ],
+          "returns": "integer[]",
+          "returnType": "integer[]",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "graphRoutes",
+          "fullPath": "lurek.pathfind.graphRoutes",
+          "signature": "(edges, requests, [opts])",
+          "description": "Finds routes for a batch of graph `{from, to}` requests using the same edge table and options as `graphRoute`.",
+          "parameters": [
+            {
+              "name": "edges",
+              "type": "table",
+              "description": "Array of graph edge tables.",
+              "optional": false
+            },
+            {
+              "name": "requests",
+              "type": "table",
+              "description": "Array of `{from=integer,to=integer}` or `{from,to}` route requests.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "graphConnectedComponents",
+          "fullPath": "lurek.pathfind.graphConnectedComponents",
+          "signature": "(edges, [nodes], [opts])",
+          "description": "Returns connected components for an integer-id graph. Pass `nodes` to include isolated node ids.",
+          "parameters": [
+            {
+              "name": "edges",
+              "type": "table",
+              "description": "Array of graph edge tables.",
+              "optional": false
+            },
+            {
+              "name": "nodes",
+              "type": "table",
+              "description": "Optional array of node ids; omitted nodes are inferred from edge endpoints.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `directed`; directed graphs follow outgoing edges.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "graphConnected",
+          "fullPath": "lurek.pathfind.graphConnected",
+          "signature": "(edges, from, to, [opts])",
+          "description": "Returns true when a target node is reachable from a start node in an integer-id graph.",
+          "parameters": [
+            {
+              "name": "edges",
+              "type": "table",
+              "description": "Array of graph edge tables.",
+              "optional": false
+            },
+            {
+              "name": "from",
+              "type": "integer",
+              "description": "Start node id.",
+              "optional": false
+            },
+            {
+              "name": "to",
+              "type": "integer",
+              "description": "Target node id.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `directed`.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newNavGrid",
           "fullPath": "lurek.pathfind.newNavGrid",
           "signature": "(width, height)",
@@ -19029,6 +19161,78 @@
           ],
           "returns": "LNavGrid",
           "returnType": "LNavGrid",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newIsoGridFromField",
+          "fullPath": "lurek.pathfind.newIsoGridFromField",
+          "signature": "(field_ud, [opts])",
+          "description": "Creates an isometric navigation grid from an iso-square tilefield level and movement category.",
+          "parameters": [
+            {
+              "name": "field_ud",
+              "type": "LTileField",
+              "description": "Iso-square tilefield to derive navigation data from.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `level`, `category`, and `costCategory`.",
+              "optional": true
+            }
+          ],
+          "returns": "LIsoGrid",
+          "returnType": "LIsoGrid",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newIsoGrid",
+          "fullPath": "lurek.pathfind.newIsoGrid",
+          "signature": "(width, height)",
+          "description": "Creates an isometric grid with the given dimensions.",
+          "parameters": [
+            {
+              "name": "width",
+              "type": "integer",
+              "description": "Grid width in cells.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "integer",
+              "description": "Grid height in cells.",
+              "optional": false
+            }
+          ],
+          "returns": "LIsoGrid",
+          "returnType": "LIsoGrid",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newHexGridFromField",
+          "fullPath": "lurek.pathfind.newHexGridFromField",
+          "signature": "(field_ud, [opts])",
+          "description": "Creates a hex navigation grid from a hex tilefield level and movement category.",
+          "parameters": [
+            {
+              "name": "field_ud",
+              "type": "LTileField",
+              "description": "Hex tilefield to derive navigation data from.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `level`, `category`, `costCategory`, and `layout` (`\"flat\"` or `\"pointy\"`).",
+              "optional": true
+            }
+          ],
+          "returns": "LHexGrid",
+          "returnType": "LHexGrid",
           "isMethod": false,
           "objectType": null
         },
@@ -23010,6 +23214,132 @@
           "objectType": null
         },
         {
+          "name": "drawText",
+          "fullPath": "lurek.render.drawText",
+          "signature": "(args)",
+          "description": "Draws text using the active font with image-like transform parameters on the GPU.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "Text to render.",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "description": "X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Y position.",
+              "optional": false
+            },
+            {
+              "name": "rotation",
+              "type": "number",
+              "description": "Rotation in radians (default 0).",
+              "optional": true
+            },
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "X scale factor (default 1).",
+              "optional": true
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Y scale factor (defaults to sx).",
+              "optional": true
+            },
+            {
+              "name": "ox",
+              "type": "number",
+              "description": "Origin offset X in text-local pixels (default 0).",
+              "optional": true
+            },
+            {
+              "name": "oy",
+              "type": "number",
+              "description": "Origin offset Y in text-local pixels (default 0).",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "drawTextWithFont",
+          "fullPath": "lurek.render.drawTextWithFont",
+          "signature": "lurek.render.drawTextWithFont(font, text, x, y, [rotation], [sx], [sy], [ox], [oy])",
+          "description": "Draws text using a specific font with image-like transform parameters on the GPU.",
+          "parameters": [
+            {
+              "name": "font",
+              "type": "LFont",
+              "description": "Font handle to use for this draw.",
+              "optional": false
+            },
+            {
+              "name": "text",
+              "type": "string",
+              "description": "Text to render.",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "description": "X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Y position.",
+              "optional": false
+            },
+            {
+              "name": "rotation",
+              "type": "number",
+              "description": "Rotation in radians (default 0).",
+              "optional": true
+            },
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "X scale factor (default 1).",
+              "optional": true
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Y scale factor (defaults to sx).",
+              "optional": true
+            },
+            {
+              "name": "ox",
+              "type": "number",
+              "description": "Origin offset X in text-local pixels (default 0).",
+              "optional": true
+            },
+            {
+              "name": "oy",
+              "type": "number",
+              "description": "Origin offset Y in text-local pixels (default 0).",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "printRotated",
           "fullPath": "lurek.render.printRotated",
           "signature": "(text, x, y, angle, [scale])",
@@ -23270,7 +23600,7 @@
         {
           "name": "printRich",
           "fullPath": "lurek.render.printRich",
-          "signature": "(spans_table, x, y)",
+          "signature": "lurek.render.printRich(spans, x, y, [rotation], [sx], [sy], [ox], [oy])",
           "description": "Draws rich text composed of individually styled spans at the given position.",
           "parameters": [
             {
@@ -23290,6 +23620,36 @@
               "type": "number",
               "description": "Y position.",
               "optional": false
+            },
+            {
+              "name": "rotation",
+              "type": "number",
+              "description": "Rotation in radians (default 0).",
+              "optional": true
+            },
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "X scale factor (default 1).",
+              "optional": true
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Y scale factor (defaults to sx).",
+              "optional": true
+            },
+            {
+              "name": "ox",
+              "type": "number",
+              "description": "Origin offset X in text-local pixels (default 0).",
+              "optional": true
+            },
+            {
+              "name": "oy",
+              "type": "number",
+              "description": "Origin offset Y in text-local pixels (default 0).",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -23300,7 +23660,7 @@
         {
           "name": "printRichWithFont",
           "fullPath": "lurek.render.printRichWithFont",
-          "signature": "(font_ud, spans_table, x, y)",
+          "signature": "lurek.render.printRichWithFont(font, spans, x, y, [rotation], [sx], [sy], [ox], [oy])",
           "description": "Draws rich text using a specific font without changing the global active font.",
           "parameters": [
             {
@@ -23326,6 +23686,36 @@
               "type": "number",
               "description": "Y position.",
               "optional": false
+            },
+            {
+              "name": "rotation",
+              "type": "number",
+              "description": "Rotation in radians (default 0).",
+              "optional": true
+            },
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "X scale factor (default 1).",
+              "optional": true
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Y scale factor (defaults to sx).",
+              "optional": true
+            },
+            {
+              "name": "ox",
+              "type": "number",
+              "description": "Origin offset X in text-local pixels (default 0).",
+              "optional": true
+            },
+            {
+              "name": "oy",
+              "type": "number",
+              "description": "Origin offset Y in text-local pixels (default 0).",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -82462,6 +82852,185 @@
       ]
     },
     {
+      "name": "LIsoGrid",
+      "description": "Lua-side wrapper for an isometric navigation grid.",
+      "methods": [
+        {
+          "name": "setBlocked",
+          "fullPath": "LIsoGrid:setBlocked",
+          "signature": "(x, y, blocked)",
+          "description": "Sets blocked state for a one-based isometric grid cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based cell X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based cell Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "blocked",
+              "type": "boolean",
+              "description": "True to block the cell.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LIsoGrid"
+        },
+        {
+          "name": "setCost",
+          "fullPath": "LIsoGrid:setCost",
+          "signature": "(x, y, cost)",
+          "description": "Sets movement cost for a one-based isometric grid cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based cell X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based cell Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "cost",
+              "type": "number",
+              "description": "Finite positive movement cost.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LIsoGrid"
+        },
+        {
+          "name": "isBlocked",
+          "fullPath": "LIsoGrid:isBlocked",
+          "signature": "(x, y)",
+          "description": "Returns whether a one-based isometric grid cell is blocked.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based cell X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based cell Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LIsoGrid"
+        },
+        {
+          "name": "getCost",
+          "fullPath": "LIsoGrid:getCost",
+          "signature": "(x, y)",
+          "description": "Returns movement cost for a one-based isometric grid cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based cell X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based cell Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LIsoGrid"
+        },
+        {
+          "name": "findPath",
+          "fullPath": "LIsoGrid:findPath",
+          "signature": "(fx, fy, tx, ty)",
+          "description": "Finds a path between one-based isometric cells.",
+          "parameters": [
+            {
+              "name": "fx",
+              "type": "integer",
+              "description": "One-based start X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "fy",
+              "type": "integer",
+              "description": "One-based start Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "tx",
+              "type": "integer",
+              "description": "One-based goal X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "ty",
+              "type": "integer",
+              "description": "One-based goal Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LIsoGrid"
+        },
+        {
+          "name": "type",
+          "fullPath": "LIsoGrid:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this isometric grid handle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LIsoGrid"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LIsoGrid:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this isometric grid handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "String value for `name`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LIsoGrid"
+        }
+      ]
+    },
+    {
       "name": "LIsoMap",
       "description": "Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.",
       "methods": [
@@ -116839,7 +117408,7 @@
     },
     {
       "name": "LProvinceGrid",
-      "description": "Lua-side handle for a province id grid decoded from an image.",
+      "description": "Lua-side compatibility handle for a province id grid decoded by the province subsystem.",
       "methods": [
         {
           "name": "getWidth",
@@ -117360,7 +117929,7 @@
           "name": "findRoute",
           "fullPath": "LProvinceRegistry:findRoute",
           "signature": "(from_id, to_id, [cost_fn])",
-          "description": "Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.",
+          "description": "Finds a route between two provinces by adapting registry adjacency to pathfind graph routing. Uses BFS by default or Dijkstra when `cost_fn` is supplied.",
           "parameters": [
             {
               "name": "from_id",
@@ -117414,7 +117983,7 @@
           "name": "findRoutes",
           "fullPath": "LProvinceRegistry:findRoutes",
           "signature": "(pairs_tbl, [cost_fn])",
-          "description": "Finds routes for a batch of `{from, to}` pairs.",
+          "description": "Finds routes for a batch of `{from, to}` pairs by adapting registry adjacency to pathfind graph routing.",
           "parameters": [
             {
               "name": "pairs",
@@ -117438,7 +118007,7 @@
           "name": "getConnectedComponents",
           "fullPath": "LProvinceRegistry:getConnectedComponents",
           "signature": "()",
-          "description": "Returns connected components in the province adjacency graph.",
+          "description": "Returns connected components in the province adjacency graph via pathfind graph traversal.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -117467,7 +118036,7 @@
           "name": "isConnected",
           "fullPath": "LProvinceRegistry:isConnected",
           "signature": "(from_id, to_id)",
-          "description": "Returns true when there is at least one route between two provinces.",
+          "description": "Returns true when there is at least one pathfind graph route between two provinces.",
           "parameters": [
             {
               "name": "from_id",
@@ -117993,7 +118562,7 @@
           "parameters": [
             {
               "name": "opts",
-              "type": "table?|Render options: backend (\"commands\"|\"gpu\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
+              "type": "table?|Render options: backend (\"commands\"|\"gpu\"|\"segments\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), segment_reuse_cache (boolean?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
               "description": "\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
               "optional": true
             }

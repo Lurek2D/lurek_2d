@@ -25,6 +25,7 @@
 - That makes `pathfind` a planning layer, not only a shortest-path helper.
 - Debug and visualization helpers matter because navigation bugs usually come from topology, weights, or blocked-space assumptions rather than from the solver implementation alone.
 - `tilemap`, `province`, and related modules define traversable space, but `pathfind` owns how that space is searched, scored, and turned into movement advice.
+- Province-level BFS, weighted Dijkstra/A*, connected-component traversal, and reachability belong here even when `province` exposes convenience methods that adapt registry topology into pathfinding inputs.
 - Read `pathfind` as the reusable navigation and local-movement analysis layer of the engine, not as an animation or physics integration system.
 
 This module primarily collaborates with `flownet`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
@@ -32,7 +33,8 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ## Notes
 
 - `pathfind` owns movement algorithms, movement range, route search, costs, reachability, influence maps, steering, context steering, and ORCA local avoidance. It does not own line-of-sight, line-of-action, lighting, object-profile semantics, or high-level decision models.
-- `lurek.pathfind.newNavGridFromField(field, opts)` and `lurek.pathfind.rangeMapFromField(field, opts)` are adapters from `lurek.tilefield`; by default they read the `"move"` channel and movement costs from the field.
+- `pathfind::graph_path` owns reusable integer-id graph traversal. Public Lua helpers `lurek.pathfind.graphRoute`, `graphRoutes`, `graphConnectedComponents`, and `graphConnected` accept ordinary edge tables, while territory registries remain in `province` and logistics flow simulation remains in `flownet`.
+- `lurek.pathfind.newNavGridFromField(field, opts)`, `lurek.pathfind.newHexGridFromField(field, opts)`, and `lurek.pathfind.rangeMapFromField(field, opts)` are adapters from `lurek.tilefield`; by default they read the `"move"` channel and movement costs from the field. Use the hex adapter when the field topology is `hex`.
 - `newNavGridFromTileMap` remains a compatibility path for projects that want direct tilemap-to-navigation conversion without adopting `tilefield`.
 
 ## Architecture Links

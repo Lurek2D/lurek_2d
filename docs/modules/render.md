@@ -973,6 +973,102 @@ end
 
 ---
 
+### `lurek.render.drawText`
+
+Draws text using the active font with image-like transform parameters on the GPU.
+
+```lua
+lurek.render.drawText(text, x, y, rotation, sx, sy, ox, oy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | Text to render. |
+| `x` | number | X position. |
+| `y` | number | Y position. |
+| `rotation?` | number | Rotation in radians (default 0). |
+| `sx?` | number | X scale factor (default 1). |
+| `sy?` | number | Y scale factor (defaults to sx). |
+| `ox?` | number | Origin offset X in text-local pixels (default 0). |
+| `oy?` | number | Origin offset Y in text-local pixels (default 0). |
+
+**Example**
+
+```lua
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.setFont(font)
+    lurek.render.setColor(0.65, 0.9, 1.0, 0.9)
+    lurek.render.drawText("GPU transformed text", 260, 92, -0.2, 1.4, 1.1, 20, 8)
+    lurek.render.setColor(1, 1, 1, 1)
+    example_print_log("drawText rotation = -0.2")
+    example_print_log("drawText uses tint from setColor")
+end
+```
+
+---
+
+### `lurek.render.drawTextWithFont`
+
+Draws text using a specific font with image-like transform parameters on the GPU.
+
+```lua
+lurek.render.drawTextWithFont(font, text, x, y, rotation, sx, sy, ox, oy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `font` | [LFont](#lfont) | Font handle to use for this draw. |
+| `text` | string | Text to render. |
+| `x` | number | X position. |
+| `y` | number | Y position. |
+| `rotation?` | number | Rotation in radians (default 0). |
+| `sx?` | number | X scale factor (default 1). |
+| `sy?` | number | Y scale factor (defaults to sx). |
+| `ox?` | number | Origin offset X in text-local pixels (default 0). |
+| `oy?` | number | Origin offset Y in text-local pixels (default 0). |
+
+**Example**
+
+```lua
+do
+    local function render_log(message)
+        lurek.log.info("[render.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.setColor(0.8, 1.0, 0.7, 0.9)
+    lurek.render.drawTextWithFont(font, "Font handle transform", 220, 152, 0.18, 1.25, 1.0, 16, 6)
+    lurek.render.setColor(1, 1, 1, 1)
+    local width = lurek.render.getFontWidth(font, "Font handle transform")
+    render_log("drawTextWithFont width=" .. width .. " rotation=0.18")
+end
+```
+
+---
+
 ### `lurek.render.drawq`
 
 Draws a sub-region of an image defined by a Quad, with optional transform.
@@ -3367,7 +3463,7 @@ end
 Draws rich text composed of individually styled spans at the given position.
 
 ```lua
-lurek.render.printRich(spans, x, y)
+lurek.render.printRich(spans, x, y, rotation, sx, sy, ox, oy)
 ```
 
 **Parameters**
@@ -3377,6 +3473,11 @@ lurek.render.printRich(spans, x, y)
 | `spans` | table | Array of span tables, each with fields: text, r, g, b, a, scale. |
 | `x` | number | X position. |
 | `y` | number | Y position. |
+| `rotation?` | number | Rotation in radians (default 0). |
+| `sx?` | number | X scale factor (default 1). |
+| `sy?` | number | Y scale factor (defaults to sx). |
+| `ox?` | number | Origin offset X in text-local pixels (default 0). |
+| `oy?` | number | Origin offset Y in text-local pixels (default 0). |
 
 **Example**
 
@@ -3413,7 +3514,7 @@ end
 Draws rich text using a specific font without changing the global active font.
 
 ```lua
-lurek.render.printRichWithFont(font, spans, x, y)
+lurek.render.printRichWithFont(font, spans, x, y, rotation, sx, sy, ox, oy)
 ```
 
 **Parameters**
@@ -3424,6 +3525,11 @@ lurek.render.printRichWithFont(font, spans, x, y)
 | `spans` | table | Array of span tables, each with fields: text, r, g, b, a, scale. |
 | `x` | number | X position. |
 | `y` | number | Y position. |
+| `rotation?` | number | Rotation in radians (default 0). |
+| `sx?` | number | X scale factor (default 1). |
+| `sy?` | number | Y scale factor (defaults to sx). |
+| `ox?` | number | Origin offset X in text-local pixels (default 0). |
+| `oy?` | number | Origin offset Y in text-local pixels (default 0). |
 
 **Example**
 

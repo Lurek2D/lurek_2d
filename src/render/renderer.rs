@@ -290,12 +290,37 @@ pub enum RenderCommand {
         y: f32,
         scale: f32,
     },
+    /// Draw text through an image-like transform while preserving GPU tint and batching.
+    PrintTransformed {
+        font_key: FontKey,
+        text: String,
+        x: f32,
+        y: f32,
+        rotation: f32,
+        sx: f32,
+        sy: f32,
+        ox: f32,
+        oy: f32,
+        scale: f32,
+    },
     /// Draw a sequence of `TextSpan` slices using a shared bitmap font.
     DrawRichText {
         font_key: FontKey,
         spans: Vec<TextSpan>,
         x: f32,
         y: f32,
+    },
+    /// Draw rich text through an image-like transform while preserving per-span styling.
+    DrawRichTextTransformed {
+        font_key: FontKey,
+        spans: Vec<TextSpan>,
+        x: f32,
+        y: f32,
+        rotation: f32,
+        sx: f32,
+        sy: f32,
+        ox: f32,
+        oy: f32,
     },
     /// Set the stroke line width for subsequent outlined shape commands.
     SetLineWidth(f32),
@@ -668,9 +693,11 @@ impl RenderCommand {
             | DrawNineSlice { .. }
             | DrawTexturedQuad { .. }
             | DrawConvexFan { .. } => RenderCommandCategory::Texture,
-            Print { .. } | DrawRichText { .. } | PrintFormatted { .. } => {
-                RenderCommandCategory::Text
-            }
+            Print { .. }
+            | PrintTransformed { .. }
+            | DrawRichText { .. }
+            | DrawRichTextTransformed { .. }
+            | PrintFormatted { .. } => RenderCommandCategory::Text,
             SetCanvas(..) | DrawCanvas { .. } | RegisterCanvas { .. } | ResetCanvas(..) => {
                 RenderCommandCategory::Canvas
             }

@@ -1,0 +1,5 @@
+map=50x50
+teams=blue,red,green,gold
+red_sees_blue_area_before=false
+red_sees_blue_area_after=true
+gold_sees_green_area_after=true

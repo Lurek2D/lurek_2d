@@ -528,6 +528,15 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_hex_neighbors.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_hex_operations_frontier.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_hex_route.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_iso_xcom_final_maptile_render.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_iso_xcom_higher_layers_mask_lower.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_iso_xcom_level_2_cutaway.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_iso_xcom_level_3_cutaway.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_iso_xcom_level_4_cutaway.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_iso_xcom_levels_2_4_occlusion_stack.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_iso_xcom_part_slots.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_iso_xcom_part_slots.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_iso_xcom_render_order_trace.txt` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_isometric.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_isometric_stacked_settlement.png` |
 | Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_layers.png` |

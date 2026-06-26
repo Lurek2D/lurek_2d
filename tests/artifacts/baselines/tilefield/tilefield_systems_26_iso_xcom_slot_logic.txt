@@ -1,0 +1,12 @@
+map=50x50
+topology=iso_square
+base_cell_px=16
+slots=floor,left_top_wall,right_top_wall,object
+right_top_support_rule=upper floor south/front edge (x,y,z) -> lower cell (x,y+1,z-1)
+left_top_support_rule=upper floor east/right edge (x,y,z) -> lower cell (x+1,y,z-1)
+good_right_top_support=21,31,2:93
+bad_right_top_same_cell=21,30,2:nil
+good_left_top_support=33,19,2:83
+bad_left_top_same_cell=32,19,2:nil
+object_lower=25,24,2:44
+object_upper=28,22,3:45

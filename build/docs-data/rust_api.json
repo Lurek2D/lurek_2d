@@ -1,19 +1,19 @@
 {
   "meta": {
-    "generated": "2026-06-25T15:00:15.830039+00:00",
+    "generated": "2026-06-26T14:19:51.973734+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3063,
+      "rust_items": 3081,
       "rust_modules": 728,
-      "rust_tests": 492,
-      "lua_tests": 277
+      "rust_tests": 496,
+      "lua_tests": 281
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3063,
-      "documented": 3060,
+      "total_items": 3081,
+      "documented": 3078,
       "modules": 728
     },
     "modules": {
@@ -3005,11 +3005,32 @@
             "line": 9
           },
           {
+            "name": "fit_content_to_screen",
+            "kind": "fn",
+            "description": "Return (offset_x, offset_y, zoom) that fits a logical content rectangle inside a screen rectangle.",
+            "file": "src/camera/viewport.rs",
+            "line": 52
+          },
+          {
+            "name": "screen_to_content",
+            "kind": "fn",
+            "description": "Convert screen coordinates into logical content coordinates using offset, zoom, and unit size.",
+            "file": "src/camera/viewport.rs",
+            "line": 78
+          },
+          {
+            "name": "zoom_offset_at",
+            "kind": "fn",
+            "description": "Return the new view offset after zooming around a screen-space anchor point.",
+            "file": "src/camera/viewport.rs",
+            "line": 91
+          },
+          {
             "name": "Viewport",
             "kind": "struct",
             "description": "Stores viewport scaling state used during window resize and conversion.",
             "file": "src/camera/viewport.rs",
-            "line": 52
+            "line": 110
           }
         ]
       },
@@ -13968,7 +13989,7 @@
         ]
       },
       "pathfind::graph_path": {
-        "module_doc": "Runs province-level graph pathfinding over adjacency maps with configurable province and edge-tag move costs. Owns ProvincePath results, ProvinceCostFn rules, blocked-province handling, and centroid-based A* heuristics. Computes cheapest province routes and budget-limited reachability, keeping graph traversal near cost semantics. Provides the boundary between province topology data and higher-level systems that need traversable region paths. This file matters when province blocking, tag surcharges, or centroid heuristic assumptions need revision. Open this owner before touching province registries when only path cost policy or graph search behavior changed.",
+        "module_doc": "Runs province-level graph pathfinding over adjacency maps with configurable province and edge-tag move costs. Owns ProvincePath results, ProvinceCostFn rules, blocked-province handling, components, and route search. Computes cheapest province routes and budget-limited reachability, keeping graph traversal near cost semantics. Provides the boundary between province topology data and higher-level systems that need traversable region paths. This file matters when province blocking, tag surcharges, or graph traversal semantics need revision. Open this owner before touching province registries when only path cost policy or graph search behavior changed.",
         "source_file": "src/pathfind/graph_path.rs",
         "items": [
           {
@@ -13986,18 +14007,88 @@
             "line": 20
           },
           {
+            "name": "build_graph_adjacency_map",
+            "kind": "fn",
+            "description": "Build a graph adjacency map from positive integer node-id pairs.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 101
+          },
+          {
+            "name": "build_province_adjacency_map",
+            "kind": "fn",
+            "description": "Build an undirected province adjacency map from `(a, b)` id pairs.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 120
+          },
+          {
+            "name": "find_graph_route_bfs",
+            "kind": "fn",
+            "description": "Find a graph route with the fewest hops by breadth-first search.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 125
+          },
+          {
+            "name": "find_province_route_bfs",
+            "kind": "fn",
+            "description": "Find a province route with the fewest graph hops by breadth-first search.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 162
+          },
+          {
+            "name": "find_graph_route_dijkstra",
+            "kind": "fn",
+            "description": "Find the lowest-cost graph route using Dijkstra and a caller-provided edge cost.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 171
+          },
+          {
+            "name": "find_province_route_dijkstra",
+            "kind": "fn",
+            "description": "Find the lowest-cost province route using Dijkstra and a caller-provided edge cost.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 232
+          },
+          {
+            "name": "graph_connected_components",
+            "kind": "fn",
+            "description": "Return sorted connected components for the supplied graph node ids.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 242
+          },
+          {
+            "name": "province_connected_components",
+            "kind": "fn",
+            "description": "Return sorted connected components for the supplied province ids.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 278
+          },
+          {
+            "name": "graph_connected",
+            "kind": "fn",
+            "description": "Return true when two graph node ids are connected by adjacency.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 286
+          },
+          {
+            "name": "provinces_connected",
+            "kind": "fn",
+            "description": "Return true when two province ids are connected by province adjacency.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 291
+          },
+          {
             "name": "find_province_path",
             "kind": "fn",
             "description": "Run A\\* across province adjacency; return the cheapest path and its cost, or `None` when unreachable.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 100
+            "line": 296
           },
           {
             "name": "province_reachable",
             "kind": "fn",
             "description": "Return all provinces reachable from `start` within `max_cost` as a map of `province_id → cost`.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 183
+            "line": 379
           }
         ]
       },
@@ -14263,35 +14354,35 @@
             "kind": "mod",
             "description": "Graph-based A* and range queries on abstract node networks.",
             "file": "src/pathfind/mod.rs",
-            "line": 67
+            "line": 73
           },
           {
             "name": "hex_grid",
             "kind": "mod",
             "description": "Hexagonal grid with axial coordinates and layout conversion.",
             "file": "src/pathfind/mod.rs",
-            "line": 69
+            "line": 75
           },
           {
             "name": "iso_grid",
             "kind": "mod",
             "description": "Isometric grid for 2D-projected tile maps.",
             "file": "src/pathfind/mod.rs",
-            "line": 71
+            "line": 77
           },
           {
             "name": "jps",
             "kind": "mod",
             "description": "Jump Point Search on uniform-cost grids.",
             "file": "src/pathfind/mod.rs",
-            "line": 73
+            "line": 79
           },
           {
             "name": "range_map",
             "kind": "mod",
             "description": "Range map for distance-bounded area queries.",
             "file": "src/pathfind/mod.rs",
-            "line": 75
+            "line": 81
           }
         ]
       },
@@ -16408,35 +16499,35 @@
             "kind": "fn",
             "description": "Build border index map from raw province id grid.",
             "file": "src/province/border_index.rs",
-            "line": 72
+            "line": 106
           },
           {
             "name": "dilate_border_index_with_styles",
             "kind": "fn",
             "description": "Expand border pixels by radius per pair style thickness.",
             "file": "src/province/border_index.rs",
-            "line": 116
+            "line": 148
           },
           {
             "name": "dilate_border_index_with_registry_styles",
             "kind": "fn",
             "description": "Expand border pixels using the current registry border-pair or border-type thickness settings.",
             "file": "src/province/border_index.rs",
-            "line": 144
+            "line": 176
           },
           {
             "name": "build_border_index_from_registry",
             "kind": "fn",
             "description": "Build border index map directly from current registry pixel grid.",
             "file": "src/province/border_index.rs",
-            "line": 195
+            "line": 227
           },
           {
             "name": "build_styled_border_index_from_registry",
             "kind": "fn",
             "description": "Build a registry border index with border-pair and border-type thickness already baked into pixels.",
             "file": "src/province/border_index.rs",
-            "line": 208
+            "line": 240
           }
         ]
       },
@@ -16775,7 +16866,7 @@
           {
             "name": "routing",
             "kind": "mod",
-            "description": "Province graph routing helpers: shortest path, components, connectivity.",
+            "description": "Province routing adapters plus owner-attribute aggregation.",
             "file": "src/province/mod.rs",
             "line": 35
           },
@@ -16796,7 +16887,7 @@
           {
             "name": "view_transform",
             "kind": "mod",
-            "description": "Camera/view-transform helpers: fit, screen-to-map, cell lookup, zoom-at-point.",
+            "description": "Province-grid view adapter: fit, screen-to-map, cell lookup, zoom-at-point.",
             "file": "src/province/mod.rs",
             "line": 41
           },
@@ -16874,65 +16965,86 @@
         "source_file": "src/province/render.rs",
         "items": [
           {
+            "name": "ProvinceSegmentRaster",
+            "kind": "struct",
+            "description": "CPU raster output for the segment province renderer.",
+            "file": "src/province/render.rs",
+            "line": 20
+          },
+          {
+            "name": "ProvinceSegmentRasterOptions",
+            "kind": "struct",
+            "description": "Options for the segment province renderer.",
+            "file": "src/province/render.rs",
+            "line": 30
+          },
+          {
             "name": "ProvinceZoomMode",
             "kind": "enum",
             "description": "Strategic/tactical map rendering mode.",
             "file": "src/province/render.rs",
-            "line": 21
+            "line": 75
           },
           {
             "name": "ProvinceRenderOptions",
             "kind": "struct",
             "description": "Options controlling what gets rendered and how the province map is projected onto the screen.",
             "file": "src/province/render.rs",
-            "line": 32
+            "line": 86
           },
           {
             "name": "ProvinceCapitalPathMode",
             "kind": "enum",
             "description": "Shape used for capital-to-capital route rendering.",
             "file": "src/province/render.rs",
-            "line": 75
+            "line": 129
           },
           {
             "name": "ProvinceCapitalPathOptions",
             "kind": "struct",
             "description": "Render-command settings for converting a province-id route into capital-to-capital lines.",
             "file": "src/province/render.rs",
-            "line": 84
+            "line": 138
           },
           {
             "name": "generate_capital_path_commands",
             "kind": "fn",
             "description": "Generate render commands for a route by connecting consecutive province capitals.",
             "file": "src/province/render.rs",
-            "line": 140
+            "line": 194
           },
           {
             "name": "viewport_bounds",
             "kind": "fn",
             "description": "Compute the visible province-space bounds (left, top, right, bottom) from the render options.",
             "file": "src/province/render.rs",
-            "line": 236
+            "line": 290
           },
           {
             "name": "resolve_zoom_mode",
             "kind": "fn",
             "description": "Resolve explicit or automatic province zoom mode for render backends.",
             "file": "src/province/render.rs",
-            "line": 289
+            "line": 343
+          },
+          {
+            "name": "render_segment_raster",
+            "kind": "fn",
+            "description": "Rasterize a province map using registry spans and border segments.",
+            "file": "src/province/render.rs",
+            "line": 557
           },
           {
             "name": "generate_render_commands",
             "kind": "fn",
             "description": "Generate a RenderCommand Vec for the province map: fills, borders, capitals, and labels with viewport culling.",
             "file": "src/province/render.rs",
-            "line": 311
+            "line": 673
           }
         ]
       },
       "province::routing": {
-        "module_doc": "Computes province-level traversal data so gameplay systems can ask for paths, components, and neighbor aggregates. Owns adjacency-map builders plus BFS, Dijkstra, connected-component, and isolation helpers over province graphs. Provides the query boundary between raw neighbor relationships and higher-level movement or analytics operations. Also aggregates owner-tagged values across province groups, keeping route analysis close to topology utilities. Use this file when province path cost rules, graph traversal outputs, or connectivity helpers need adjustment. Neighboring edits usually involve ProvinceRegistry adjacency data and gameplay systems that consume path results.",
+        "module_doc": "Adapts province registry data to pathfinding-owned graph traversal helpers. Keeps province-specific owner and attribute aggregation near the registry-facing module. Path search, Dijkstra, connectivity, and component traversal live in `pathfind::graph_path`. Open this file when province-specific routing adapters or owner-attribute analytics need revision.",
         "source_file": "src/province/routing.rs",
         "items": [
           {
@@ -16940,49 +17052,49 @@
             "kind": "fn",
             "description": "Build an adjacency map from undirected `(a, b)` province-id pairs.",
             "file": "src/province/routing.rs",
-            "line": 42
+            "line": 13
           },
           {
             "name": "find_route_bfs",
             "kind": "fn",
             "description": "Find the shortest path by edge count (BFS).",
             "file": "src/province/routing.rs",
-            "line": 59
+            "line": 18
           },
           {
             "name": "find_route_dijkstra",
             "kind": "fn",
             "description": "Find the lowest-cost route using Dijkstra and a per-edge cost callback.",
             "file": "src/province/routing.rs",
-            "line": 92
+            "line": 23
           },
           {
             "name": "connected_components",
             "kind": "fn",
             "description": "Returns all connected components as sorted arrays of province ids.",
             "file": "src/province/routing.rs",
-            "line": 149
+            "line": 33
           },
           {
             "name": "is_connected",
             "kind": "fn",
             "description": "True when `to` is reachable from `from`.",
             "file": "src/province/routing.rs",
-            "line": 182
+            "line": 38
           },
           {
             "name": "find_isolated_provinces",
             "kind": "fn",
             "description": "Returns province ids that have no adjacent province with the same owner value.",
             "file": "src/province/routing.rs",
-            "line": 187
+            "line": 43
           },
           {
             "name": "total_numeric_attr_for_owner",
             "kind": "fn",
             "description": "Sum numeric values for ids owned by `owner_val`.",
             "file": "src/province/routing.rs",
-            "line": 218
+            "line": 74
           }
         ]
       },
@@ -17055,7 +17167,7 @@
         ]
       },
       "province::view_transform": {
-        "module_doc": "Provides province map camera math for fitting, panning, zoom anchoring, and screen-to-map coordinate conversion. Owns stateless helpers that convert between screen positions, map space, and province cell coordinates safely. Forms the boundary between generic input or viewport handling and province-specific grid-space interactions. Open this file when map interaction math, zoom focus behavior, or screen-to-cell selection rules must change.",
+        "module_doc": "Adapts generic camera viewport math to province-grid map coordinates and cell picking. Owns province-specific conversion from floating map positions into bounded province cell coordinates. Generic fit, screen/content conversion, and zoom-anchor math live in `camera::viewport`. Open this file when province map interaction needs a different grid-space adapter.",
         "source_file": "src/province/view_transform.rs",
         "items": [
           {
@@ -17063,28 +17175,28 @@
             "kind": "fn",
             "description": "Return (cam_x, cam_y, zoom) that fits the full map centred on screen; clamps zoom to ≥ 0.0001.",
             "file": "src/province/view_transform.rs",
-            "line": 7
+            "line": 9
           },
           {
             "name": "screen_to_map",
             "kind": "fn",
             "description": "Convert a screen pixel coordinate to a floating-point map coordinate using camera offset and zoom; denom clamped to ≥ 0.0001.",
             "file": "src/province/view_transform.rs",
-            "line": 26
+            "line": 19
           },
           {
             "name": "map_to_cell",
             "kind": "fn",
             "description": "Convert a map coordinate to an integer cell (x, y); return None if out-of-bounds or non-finite.",
             "file": "src/province/view_transform.rs",
-            "line": 38
+            "line": 30
           },
           {
             "name": "zoom_camera_at",
             "kind": "fn",
             "description": "Return the new camera (x, y) after zooming from old_zoom to new_zoom keeping anchor_x/anchor_y stationary.",
             "file": "src/province/view_transform.rs",
-            "line": 56
+            "line": 48
           }
         ]
       },
@@ -18047,7 +18159,7 @@
             "kind": "struct",
             "description": "Concrete hardware-accelerated 2D renderer backing all Lurek2D visual presentation.",
             "file": "src/render/gpu_renderer.rs",
-            "line": 496
+            "line": 531
           }
         ]
       },
@@ -18465,14 +18577,14 @@
             "kind": "fn",
             "description": "Validate one render command and attach its broad owner bucket to any failure.",
             "file": "src/render/input_validation.rs",
-            "line": 676
+            "line": 729
           },
           {
             "name": "validate_compound_shape",
             "kind": "fn",
             "description": "Validate a registered compound shape before replaying its nested commands in a backend.",
             "file": "src/render/input_validation.rs",
-            "line": 687
+            "line": 740
           }
         ]
       },
@@ -18831,7 +18943,14 @@
             "kind": "struct",
             "description": "Province map GPU pipeline and bind-group layouts.",
             "file": "src/render/province_map_pipeline.rs",
-            "line": 98
+            "line": 101
+          },
+          {
+            "name": "ProvinceMapDataBindings",
+            "kind": "struct",
+            "description": "Texture and buffer inputs bound by the province map fullscreen shader.",
+            "file": "src/render/province_map_pipeline.rs",
+            "line": 121
           }
         ]
       },
@@ -18934,84 +19053,84 @@
             "kind": "enum",
             "description": "Broad owner bucket for one `RenderCommand` variant.",
             "file": "src/render/renderer.rs",
-            "line": 591
+            "line": 618
           },
           {
             "name": "TextureData",
             "kind": "struct",
             "description": "Raw CPU-side texture pixel data passed to `GpuRenderer::upload_texture`.",
             "file": "src/render/renderer.rs",
-            "line": 697
+            "line": 726
           },
           {
             "name": "ParticleRenderShape",
             "kind": "enum",
             "description": "Shape used to render a single particle in `DrawParticleSystem`.",
             "file": "src/render/renderer.rs",
-            "line": 734
+            "line": 763
           },
           {
             "name": "ParticleInstance",
             "kind": "struct",
             "description": "A single particle snapshot submitted by `DrawParticleSystem`.",
             "file": "src/render/renderer.rs",
-            "line": 758
+            "line": 787
           },
           {
             "name": "DrawableKind",
             "kind": "enum",
             "description": "A renderable resource handle used by generic draw utilities.",
             "file": "src/render/renderer.rs",
-            "line": 786
+            "line": 815
           },
           {
             "name": "PathSegment",
             "kind": "enum",
             "description": "A single segment in a `DrawPath` command.",
             "file": "src/render/renderer.rs",
-            "line": 798
+            "line": 827
           },
           {
             "name": "GradientDirection",
             "kind": "enum",
             "description": "Direction of the color transition in a `DrawGradientRect` command.",
             "file": "src/render/renderer.rs",
-            "line": 842
+            "line": 871
           },
           {
             "name": "HexOrientation",
             "kind": "enum",
             "description": "Hex tile axis orientation used by `DrawHexTile`.",
             "file": "src/render/renderer.rs",
-            "line": 856
+            "line": 885
           },
           {
             "name": "BevelStyle",
             "kind": "enum",
             "description": "Lighting style for a `DrawBevelRect` command.",
             "file": "src/render/renderer.rs",
-            "line": 864
+            "line": 893
           },
           {
             "name": "PhysicsDebugShape",
             "kind": "struct",
             "description": "A single physics collider shape record used in `DrawPhysicsDebug`.",
             "file": "src/render/renderer.rs",
-            "line": 878
+            "line": 907
           },
           {
             "name": "PhysicsDebugConfig",
             "kind": "struct",
             "description": "Color and line-width settings for `DrawPhysicsDebug`.",
             "file": "src/render/renderer.rs",
-            "line": 902
+            "line": 931
           },
           {
             "name": "SpineSlotDraw",
             "kind": "struct",
             "description": "One Spine animation slot draw record used in `DrawSpineSkeleton`.",
             "file": "src/render/renderer.rs",
-            "line": 928
+            "line": 957
           }
         ]
       },
@@ -21479,88 +21598,95 @@
         "source_file": "src/runtime/shared_state.rs",
         "items": [
           {
+            "name": "ProvinceSegmentTextureCache",
+            "kind": "struct",
+            "description": "Cached texture handle for engine-generated province segment rasters.",
+            "file": "src/runtime/shared_state.rs",
+            "line": 50
+          },
+          {
             "name": "FullscreenType",
             "kind": "enum",
             "description": "Runtime enum for FullscreenType.",
             "file": "src/runtime/shared_state.rs",
-            "line": 48
+            "line": 71
           },
           {
             "name": "WindowState",
             "kind": "struct",
             "description": "Runtime data model for deferred and observed window state shared across Lua bindings and the app loop. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 57
+            "line": 80
           },
           {
             "name": "ErrorInfo",
             "kind": "struct",
             "description": "Runtime data model for the latest engine error snapshot exposed to Lua and diagnostics. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 169
+            "line": 192
           },
           {
             "name": "ScreenshotRequest",
             "kind": "struct",
             "description": "Runtime data model for a deferred screenshot capture request. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 182
+            "line": 205
           },
           {
             "name": "FrameProfile",
             "kind": "struct",
             "description": "Runtime data model for per-frame timing buckets captured by the runtime. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 189
+            "line": 212
           },
           {
             "name": "ResourceMemoryStats",
             "kind": "struct",
             "description": "Runtime data model for aggregate resource memory and object-count statistics. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 255
+            "line": 278
           },
           {
             "name": "ResourceBudgetReport",
             "kind": "struct",
             "description": "Summary of one resource-budget enforcement pass.",
             "file": "src/runtime/shared_state.rs",
-            "line": 284
+            "line": 307
           },
           {
             "name": "ReleasedTextureHandle",
             "kind": "struct",
             "description": "Deferred texture release tracked until a later acknowledgement.",
             "file": "src/runtime/shared_state.rs",
-            "line": 305
+            "line": 328
           },
           {
             "name": "SharedStateValidationReport",
             "kind": "struct",
             "description": "Diagnostics produced by `SharedState::validate_frame_state`.",
             "file": "src/runtime/shared_state.rs",
-            "line": 316
+            "line": 339
           },
           {
             "name": "PhysicsRunConfig",
             "kind": "struct",
             "description": "Runtime data model for fixed-step physics and fixed-update scheduling. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 332
+            "line": 355
           },
           {
             "name": "SharedState",
             "kind": "struct",
             "description": "Runtime data model for the engine's shared mutable runtime container. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 356
+            "line": 379
           },
           {
             "name": "RendererStats",
             "kind": "struct",
             "description": "Runtime data model for aggregate renderer counters derived from the current frame state. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 1196
+            "line": 1222
           }
         ]
       },
@@ -27353,1885 +27479,1913 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_automation_evidence",
+        "name": "lua_evidence_awareness_evidence",
         "description": "",
         "line": 218
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_audio_evidence",
+        "name": "lua_evidence_automation_evidence",
         "description": "",
         "line": 223
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_binary_evidence",
+        "name": "lua_evidence_audio_evidence",
         "description": "",
         "line": 228
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_color_evidence",
+        "name": "lua_evidence_binary_evidence",
         "description": "",
         "line": 233
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_camera_evidence",
+        "name": "lua_evidence_color_evidence",
         "description": "",
         "line": 238
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_charts_evidence",
+        "name": "lua_evidence_camera_evidence",
         "description": "",
         "line": 243
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_cinematic_evidence",
+        "name": "lua_evidence_charts_evidence",
         "description": "",
         "line": 248
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_compute_evidence",
+        "name": "lua_evidence_cinematic_evidence",
         "description": "",
         "line": 253
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_dsp_evidence",
+        "name": "lua_evidence_compute_evidence",
         "description": "",
         "line": 258
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_dataframe_evidence",
+        "name": "lua_evidence_dsp_evidence",
         "description": "",
         "line": 263
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_ecs_evidence",
+        "name": "lua_evidence_dataframe_evidence",
         "description": "",
         "line": 268
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_effect_evidence",
+        "name": "lua_evidence_ecs_evidence",
         "description": "",
         "line": 273
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_globe_evidence",
+        "name": "lua_evidence_effect_evidence",
         "description": "",
         "line": 278
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_image_evidence",
+        "name": "lua_evidence_globe_evidence",
         "description": "",
         "line": 283
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_flownet_evidence",
+        "name": "lua_evidence_image_evidence",
         "description": "",
         "line": 288
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_layout_evidence",
+        "name": "lua_evidence_flownet_evidence",
         "description": "",
         "line": 293
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_light_evidence",
+        "name": "lua_evidence_layout_evidence",
         "description": "",
         "line": 298
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_math_evidence",
+        "name": "lua_evidence_light_evidence",
         "description": "",
         "line": 303
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_mapblock_evidence",
+        "name": "lua_evidence_math_evidence",
         "description": "",
         "line": 308
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_minimap_evidence",
+        "name": "lua_evidence_mapblock_evidence",
         "description": "",
         "line": 313
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_particle_evidence",
+        "name": "lua_evidence_minimap_evidence",
         "description": "",
         "line": 318
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_parallax_evidence",
+        "name": "lua_evidence_particle_evidence",
         "description": "",
         "line": 323
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_overlay_evidence",
+        "name": "lua_evidence_parallax_evidence",
         "description": "",
         "line": 328
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_province_evidence",
+        "name": "lua_evidence_overlay_evidence",
         "description": "",
         "line": 333
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_pathfind_evidence",
+        "name": "lua_evidence_province_evidence",
         "description": "",
         "line": 338
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_physics_evidence",
+        "name": "lua_evidence_pathfind_evidence",
         "description": "",
         "line": 343
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_procgen_evidence",
+        "name": "lua_evidence_physics_evidence",
         "description": "",
         "line": 348
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_raycaster_evidence",
+        "name": "lua_evidence_procgen_evidence",
         "description": "",
         "line": 353
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_repl_evidence",
+        "name": "lua_evidence_raycaster_evidence",
         "description": "",
         "line": 358
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_render_evidence",
+        "name": "lua_evidence_repl_evidence",
         "description": "",
         "line": 363
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_scene_evidence",
+        "name": "lua_evidence_render_evidence",
         "description": "",
         "line": 368
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_spine_evidence",
+        "name": "lua_evidence_scene_evidence",
         "description": "",
         "line": 373
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_sprite_evidence",
+        "name": "lua_evidence_spine_evidence",
         "description": "",
         "line": 378
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_svg_evidence",
+        "name": "lua_evidence_sprite_evidence",
         "description": "",
         "line": 383
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_tilemap_evidence",
+        "name": "lua_evidence_svg_evidence",
         "description": "",
         "line": 388
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_tilefield_evidence",
+        "name": "lua_evidence_tilemap_evidence",
         "description": "",
         "line": 393
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_terminal_evidence",
+        "name": "lua_evidence_tilefield_evidence",
         "description": "",
         "line": 398
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_tween_evidence",
+        "name": "lua_evidence_tilelight_evidence",
         "description": "",
         "line": 403
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_ui_evidence",
+        "name": "lua_evidence_terminal_evidence",
         "description": "",
         "line": 408
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_golden_ai_golden",
+        "name": "lua_evidence_tween_evidence",
         "description": "",
         "line": 413
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
+        "name": "lua_evidence_ui_evidence",
+        "description": "",
+        "line": 418
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_golden_ai_golden",
+        "description": "",
+        "line": 423
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
         "name": "lua_golden_animation_golden",
         "description": "",
-        "line": 421
+        "line": 431
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_agent_golden",
         "description": "",
-        "line": 429
+        "line": 439
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_golden_awareness_golden",
+        "description": "",
+        "line": 447
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_automation_golden",
         "description": "",
-        "line": 437
+        "line": 455
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_audio_golden",
         "description": "",
-        "line": 445
+        "line": 463
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_binary_golden",
         "description": "",
-        "line": 453
+        "line": 471
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_camera_golden",
         "description": "",
-        "line": 461
+        "line": 479
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_charts_golden",
         "description": "",
-        "line": 469
+        "line": 487
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_cinematic_golden",
         "description": "",
-        "line": 477
+        "line": 495
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_color_golden",
         "description": "",
-        "line": 485
+        "line": 503
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_compute_golden",
         "description": "",
-        "line": 493
+        "line": 511
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_dataframe_golden",
         "description": "",
-        "line": 501
+        "line": 519
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_ecs_golden",
         "description": "",
-        "line": 509
+        "line": 527
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_dsp_golden",
         "description": "",
-        "line": 517
+        "line": 535
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_effect_golden",
         "description": "",
-        "line": 525
+        "line": 543
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_globe_golden",
         "description": "",
-        "line": 533
+        "line": 551
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_image_golden",
         "description": "",
-        "line": 541
+        "line": 559
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_flownet_golden",
         "description": "",
-        "line": 549
+        "line": 567
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_layout_golden",
         "description": "",
-        "line": 557
+        "line": 575
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_light_golden",
         "description": "",
-        "line": 565
+        "line": 583
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_math_golden",
         "description": "",
-        "line": 573
+        "line": 591
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_mapblock_golden",
         "description": "",
-        "line": 581
+        "line": 599
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_minimap_golden",
         "description": "",
-        "line": 589
+        "line": 607
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_overlay_golden",
         "description": "",
-        "line": 597
+        "line": 615
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_particle_golden",
         "description": "",
-        "line": 605
+        "line": 623
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_parallax_golden",
         "description": "",
-        "line": 613
+        "line": 631
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_pathfind_golden",
         "description": "",
-        "line": 621
+        "line": 639
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_physics_golden",
         "description": "",
-        "line": 629
+        "line": 647
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_procgen_golden",
         "description": "",
-        "line": 637
+        "line": 655
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_province_golden",
         "description": "",
-        "line": 645
+        "line": 663
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_raycaster_golden",
         "description": "",
-        "line": 653
+        "line": 671
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_repl_golden",
         "description": "",
-        "line": 661
+        "line": 679
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_render_golden",
         "description": "",
-        "line": 669
+        "line": 687
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_scene_golden",
         "description": "",
-        "line": 677
+        "line": 695
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_serialize_golden",
         "description": "",
-        "line": 685
+        "line": 703
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_spine_golden",
         "description": "",
-        "line": 693
+        "line": 711
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_sprite_golden",
         "description": "",
-        "line": 701
+        "line": 719
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_svg_golden",
         "description": "",
-        "line": 709
+        "line": 727
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tilemap_golden",
         "description": "",
-        "line": 717
+        "line": 735
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tilefield_golden",
         "description": "",
-        "line": 725
+        "line": 743
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_golden_tilelight_golden",
+        "description": "",
+        "line": 751
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_terminal_golden",
         "description": "",
-        "line": 733
+        "line": 759
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tween_golden",
         "description": "",
-        "line": 741
+        "line": 767
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_ui_golden",
         "description": "",
-        "line": 749
+        "line": 775
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_ecs_scene_integration",
         "description": "",
-        "line": 757
+        "line": 783
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_pathfind_integration",
         "description": "",
-        "line": 762
+        "line": 788
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_physics_integration",
         "description": "",
-        "line": 767
+        "line": 793
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_scene_camera_integration",
         "description": "",
-        "line": 772
+        "line": 798
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_animation_tween_integration",
         "description": "",
-        "line": 777
+        "line": 803
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_audio_event_integration",
         "description": "",
-        "line": 782
+        "line": 808
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_audio_scene_integration",
         "description": "",
-        "line": 787
+        "line": 813
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_automation_event_integration",
         "description": "",
-        "line": 792
+        "line": 818
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_binary_compute_integration",
         "description": "",
-        "line": 797
+        "line": 823
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_binary_filesystem_integration",
         "description": "",
-        "line": 802
+        "line": 828
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_compute_dataframe_integration",
         "description": "",
-        "line": 807
+        "line": 833
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_ai_integration",
         "description": "",
-        "line": 812
+        "line": 838
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_physics_integration",
         "description": "",
-        "line": 817
+        "line": 843
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_render_integration",
         "description": "",
-        "line": 822
+        "line": 848
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_effect_camera_integration",
         "description": "",
-        "line": 827
+        "line": 853
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_effect_light_integration",
         "description": "",
-        "line": 832
+        "line": 858
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_event_entity_integration",
         "description": "",
-        "line": 837
+        "line": 863
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_i18n_ui_integration",
         "description": "",
-        "line": 842
+        "line": 868
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_image_dataframe_integration",
         "description": "",
-        "line": 847
+        "line": 873
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_math_pathfind_integration",
         "description": "",
-        "line": 852
+        "line": 878
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_math_physics_integration",
         "description": "",
-        "line": 857
+        "line": 883
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_pathfind_integration",
         "description": "",
-        "line": 862
+        "line": 888
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_tilemap_camera_integration",
         "description": "",
-        "line": 867
+        "line": 893
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_mods_filesystem_integration",
         "description": "",
-        "line": 872
+        "line": 898
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_network_save_integration",
         "description": "",
-        "line": 877
+        "line": 903
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_parallax_camera_integration",
         "description": "",
-        "line": 882
+        "line": 908
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_particle_timer_integration",
         "description": "",
-        "line": 887
+        "line": 913
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_pathfind_ecs_integration",
         "description": "",
-        "line": 892
+        "line": 918
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_pathfind_graph_integration",
         "description": "",
-        "line": 897
+        "line": 923
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_postfx_camera_integration",
         "description": "",
-        "line": 902
+        "line": 928
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_procgen_tilemap_integration",
         "description": "",
-        "line": 907
+        "line": 933
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_raycaster_render_integration",
         "description": "",
-        "line": 912
+        "line": 938
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_raycaster_tilemap_integration",
         "description": "",
-        "line": 917
+        "line": 943
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_render_animation_integration",
         "description": "",
-        "line": 922
+        "line": 948
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_render_camera_integration",
         "description": "",
-        "line": 927
+        "line": 953
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_ecs_integration",
         "description": "",
-        "line": 932
+        "line": 958
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_ecs_scene_integration",
         "description": "",
-        "line": 937
+        "line": 963
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_tilemap_integration",
         "description": "",
-        "line": 942
+        "line": 968
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_scene_camera_integration",
         "description": "",
-        "line": 947
+        "line": 973
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_serialize_filesystem_integration",
         "description": "",
-        "line": 952
+        "line": 978
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_terminal_input_integration",
         "description": "",
-        "line": 957
+        "line": 983
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_thread_data_integration",
         "description": "",
-        "line": 962
+        "line": 988
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_camera_integration",
         "description": "",
-        "line": 967
+        "line": 993
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_pathfind_integration",
         "description": "",
-        "line": 972
+        "line": 998
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_pathfind_integration",
         "description": "",
-        "line": 977
+        "line": 1003
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_awareness_integration",
         "description": "",
-        "line": 982
+        "line": 1008
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_raycaster_integration",
         "description": "",
-        "line": 987
+        "line": 1013
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_minimap_integration",
         "description": "",
-        "line": 992
+        "line": 1018
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_systems_integration",
         "description": "",
-        "line": 997
+        "line": 1023
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_procgen_tilefield_integration",
         "description": "",
-        "line": 1002
+        "line": 1028
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_physics_integration",
         "description": "",
-        "line": 1007
+        "line": 1033
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_timer_event_integration",
         "description": "",
-        "line": 1012
+        "line": 1038
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_timer_math_integration",
         "description": "",
-        "line": 1017
+        "line": 1043
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tween_camera_integration",
         "description": "",
-        "line": 1022
+        "line": 1048
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tween_ecs_integration",
         "description": "",
-        "line": 1027
+        "line": 1053
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ui_localization_data_integration",
         "description": "",
-        "line": 1032
+        "line": 1058
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_battle_library",
         "description": "",
-        "line": 1037
+        "line": 1063
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_cardgame_library",
         "description": "",
-        "line": 1042
+        "line": 1068
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_combat_library",
         "description": "",
-        "line": 1047
+        "line": 1073
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_crafting_library",
         "description": "",
-        "line": 1052
+        "line": 1078
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_doll_library",
         "description": "",
-        "line": 1057
+        "line": 1083
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_economy_library",
         "description": "",
-        "line": 1062
+        "line": 1088
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_inventory_library",
         "description": "",
-        "line": 1067
+        "line": 1093
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_item_library",
         "description": "",
-        "line": 1072
+        "line": 1098
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_loot_library",
         "description": "",
-        "line": 1077
+        "line": 1103
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_narrative_library",
         "description": "",
-        "line": 1082
+        "line": 1108
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_province_map_library",
         "description": "",
-        "line": 1087
+        "line": 1113
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_quest_library",
         "description": "",
-        "line": 1092
+        "line": 1118
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_rhythm_library",
         "description": "",
-        "line": 1097
+        "line": 1123
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_roguelike_library",
         "description": "",
-        "line": 1102
+        "line": 1128
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_scene_objects_library",
         "description": "",
-        "line": 1107
+        "line": 1133
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_stats_library",
         "description": "",
-        "line": 1112
+        "line": 1138
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_tilemap_minimap_library",
         "description": "",
-        "line": 1117
+        "line": 1143
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_tilefield_minimap_library",
         "description": "",
-        "line": 1122
+        "line": 1148
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_awareness_minimap_library",
         "description": "",
-        "line": 1127
+        "line": 1153
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_filesystem_security",
         "description": "",
-        "line": 1132
+        "line": 1158
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_network_security",
         "description": "",
-        "line": 1137
+        "line": 1163
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_render_security",
         "description": "",
-        "line": 1142
+        "line": 1168
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_runtime_security",
         "description": "",
-        "line": 1147
+        "line": 1173
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_save_security",
         "description": "",
-        "line": 1152
+        "line": 1178
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_ai_stress",
         "description": "",
-        "line": 1157
+        "line": 1183
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_animation_stress",
         "description": "",
-        "line": 1162
+        "line": 1188
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_binary_stress",
         "description": "",
-        "line": 1167
+        "line": 1193
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_camera_stress",
         "description": "",
-        "line": 1172
+        "line": 1198
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_compute_stress",
         "description": "",
-        "line": 1177
+        "line": 1203
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_dataframe_stress",
         "description": "",
-        "line": 1182
+        "line": 1208
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_ecs_stress",
         "description": "",
-        "line": 1187
+        "line": 1213
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_event_stress",
         "description": "",
-        "line": 1192
+        "line": 1218
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_filesystem_stress",
         "description": "",
-        "line": 1197
+        "line": 1223
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_image_stress",
         "description": "",
-        "line": 1202
+        "line": 1228
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_learning_stress",
         "description": "",
-        "line": 1207
+        "line": 1233
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_light_stress",
         "description": "",
-        "line": 1212
+        "line": 1238
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_math_stress",
         "description": "",
-        "line": 1217
+        "line": 1243
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_particle_stress",
         "description": "",
-        "line": 1222
+        "line": 1248
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_pathfind_stress",
         "description": "",
-        "line": 1227
+        "line": 1253
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_patterns_stress",
         "description": "",
-        "line": 1232
+        "line": 1258
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_physics_stress",
         "description": "",
-        "line": 1237
+        "line": 1263
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_procgen_stress",
         "description": "",
-        "line": 1242
+        "line": 1268
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_render_stress",
         "description": "",
-        "line": 1247
+        "line": 1273
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_save_stress",
         "description": "",
-        "line": 1252
+        "line": 1278
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_scene_stress",
         "description": "",
-        "line": 1257
+        "line": 1283
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_serialize_stress",
         "description": "",
-        "line": 1262
+        "line": 1288
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_thread_stress",
         "description": "",
-        "line": 1267
+        "line": 1293
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tilemap_stress",
         "description": "",
-        "line": 1272
+        "line": 1298
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tilefield_stress",
         "description": "",
-        "line": 1277
+        "line": 1303
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_timer_stress",
         "description": "",
-        "line": 1282
+        "line": 1308
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tween_stress",
         "description": "",
-        "line": 1287
+        "line": 1313
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_agent_unit",
         "description": "",
-        "line": 1292
+        "line": 1318
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_ai_unit",
         "description": "",
-        "line": 1297
+        "line": 1323
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_animation_unit",
         "description": "",
-        "line": 1302
+        "line": 1328
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_asset_unit",
         "description": "",
-        "line": 1307
+        "line": 1333
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_audio_unit",
         "description": "",
-        "line": 1312
+        "line": 1338
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_automation_unit",
         "description": "",
-        "line": 1317
+        "line": 1343
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_beat_clock_unit",
         "description": "",
-        "line": 1322
+        "line": 1348
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_binary_unit",
         "description": "",
-        "line": 1327
+        "line": 1353
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_camera_unit",
         "description": "",
-        "line": 1332
+        "line": 1358
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_charts_unit",
         "description": "",
-        "line": 1337
+        "line": 1363
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_cinematic_unit",
         "description": "",
-        "line": 1342
+        "line": 1368
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_collision_unit",
         "description": "",
-        "line": 1347
+        "line": 1373
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_color_unit",
         "description": "",
-        "line": 1352
+        "line": 1378
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_compute_unit",
         "description": "",
-        "line": 1357
+        "line": 1383
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_cursor_unit",
         "description": "",
-        "line": 1362
+        "line": 1388
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_dataframe_unit",
         "description": "",
-        "line": 1367
+        "line": 1393
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_debugbridge_unit",
         "description": "",
-        "line": 1372
+        "line": 1398
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_devtools_unit",
         "description": "",
-        "line": 1377
+        "line": 1403
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_dialog_unit",
         "description": "",
-        "line": 1382
+        "line": 1408
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_docs_unit",
         "description": "",
-        "line": 1387
+        "line": 1413
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_dsp_unit",
         "description": "",
-        "line": 1392
+        "line": 1418
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_ecs_unit",
         "description": "",
-        "line": 1397
+        "line": 1423
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_effect_unit",
         "description": "",
-        "line": 1402
+        "line": 1428
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_engine_unit",
         "description": "",
-        "line": 1407
+        "line": 1433
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_event_unit",
         "description": "",
-        "line": 1412
+        "line": 1438
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_filesystem_unit",
         "description": "",
-        "line": 1417
+        "line": 1443
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_flownet_unit",
         "description": "",
-        "line": 1422
+        "line": 1448
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_font_unit",
         "description": "",
-        "line": 1427
+        "line": 1453
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_globe_unit",
         "description": "",
-        "line": 1432
+        "line": 1458
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_grep_unit",
         "description": "",
-        "line": 1437
+        "line": 1463
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_i18n_unit",
         "description": "",
-        "line": 1442
+        "line": 1468
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_image_unit",
         "description": "",
-        "line": 1447
+        "line": 1473
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_input_unit",
         "description": "",
-        "line": 1452
+        "line": 1478
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_learning_unit",
         "description": "",
-        "line": 1457
+        "line": 1483
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_layout_unit",
         "description": "",
-        "line": 1462
+        "line": 1488
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_light_unit",
         "description": "",
-        "line": 1467
+        "line": 1493
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_log_unit",
         "description": "",
-        "line": 1472
+        "line": 1498
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_loot_unit",
         "description": "",
-        "line": 1477
+        "line": 1503
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_math_unit",
         "description": "",
-        "line": 1482
+        "line": 1508
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_mapblock_unit",
         "description": "",
-        "line": 1487
+        "line": 1513
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_midi_unit",
         "description": "",
-        "line": 1492
+        "line": 1518
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_minimap_unit",
         "description": "",
-        "line": 1497
+        "line": 1523
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_mods_unit",
         "description": "",
-        "line": 1502
+        "line": 1528
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_net_unit",
         "description": "",
-        "line": 1507
+        "line": 1533
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_network_unit",
         "description": "",
-        "line": 1512
+        "line": 1538
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_overlay_unit",
         "description": "",
-        "line": 1517
+        "line": 1543
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_parallax_unit",
         "description": "",
-        "line": 1522
+        "line": 1548
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_particle_unit",
         "description": "",
-        "line": 1527
+        "line": 1553
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_pathfind_unit",
         "description": "",
-        "line": 1532
+        "line": 1558
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_patterns_unit",
         "description": "",
-        "line": 1537
+        "line": 1563
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_physics_unit",
         "description": "",
-        "line": 1542
+        "line": 1568
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_pipeline_unit",
         "description": "",
-        "line": 1547
+        "line": 1573
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_procgen_unit",
         "description": "",
-        "line": 1552
+        "line": 1578
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_procgen_gap_unit",
         "description": "",
-        "line": 1557
+        "line": 1583
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_province_unit",
         "description": "",
-        "line": 1562
+        "line": 1588
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_raycaster_unit",
         "description": "",
-        "line": 1567
+        "line": 1593
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_render_unit",
         "description": "",
-        "line": 1572
+        "line": 1598
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_repl_unit",
         "description": "",
-        "line": 1577
+        "line": 1603
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_runtime_unit",
         "description": "",
-        "line": 1582
+        "line": 1608
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_save_unit",
         "description": "",
-        "line": 1587
+        "line": 1613
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_scene_unit",
         "description": "",
-        "line": 1592
+        "line": 1618
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_serialize_unit",
         "description": "",
-        "line": 1597
+        "line": 1623
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_shape_unit",
         "description": "",
-        "line": 1602
+        "line": 1628
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_spine_unit",
         "description": "",
-        "line": 1607
+        "line": 1633
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_sprite_unit",
         "description": "",
-        "line": 1612
+        "line": 1638
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_svg_unit",
         "description": "",
-        "line": 1617
+        "line": 1643
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_terminal_unit",
         "description": "",
-        "line": 1622
+        "line": 1648
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_thread_unit",
         "description": "",
-        "line": 1627
+        "line": 1653
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tilemap_unit",
         "description": "",
-        "line": 1632
+        "line": 1658
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tilefield_unit",
         "description": "",
-        "line": 1637
+        "line": 1663
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tilefield_gap_unit",
         "description": "",
-        "line": 1642
+        "line": 1668
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tilelight_unit",
         "description": "",
-        "line": 1647
+        "line": 1673
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tileset_unit",
         "description": "",
-        "line": 1652
+        "line": 1678
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_timer_unit",
         "description": "",
-        "line": 1657
+        "line": 1683
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tween_unit",
         "description": "",
-        "line": 1662
+        "line": 1688
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_ui_unit",
         "description": "",
-        "line": 1667
+        "line": 1693
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_validator_unit",
         "description": "",
-        "line": 1672
+        "line": 1698
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_awareness_unit",
         "description": "",
-        "line": 1677
+        "line": 1703
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_window_unit",
         "description": "",
-        "line": 1682
+        "line": 1708
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_demo_colocated_games",
         "description": "",
-        "line": 1687
+        "line": 1713
       }
     ],
     "lua": [
@@ -29275,6 +29429,13 @@
         "module": "test_automation_evidence",
         "name": "test_automation_evidence",
         "description": "Canonical evidence file for lurek.automation artifacts.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/evidence/test_awareness_evidence.lua",
+        "module": "test_awareness_evidence",
+        "name": "test_awareness_evidence",
+        "description": "Evidence tests: awareness module.",
         "kind": "lua"
       },
       {
@@ -29516,6 +29677,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/evidence/test_tilelight_evidence.lua",
+        "module": "test_tilelight_evidence",
+        "name": "test_tilelight_evidence",
+        "description": "Evidence tests: tilelight module.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/evidence/test_tilemap_evidence.lua",
         "module": "test_tilemap_evidence",
         "name": "test_tilemap_evidence",
@@ -29590,6 +29758,13 @@
         "module": "test_automation_golden",
         "name": "test_automation_golden",
         "description": "Canonical golden file for lurek.automation evidence comparisons.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/golden/test_awareness_golden.lua",
+        "module": "test_awareness_golden",
+        "name": "test_awareness_golden",
+        "description": "Golden test: awareness",
         "kind": "lua"
       },
       {
@@ -29835,6 +30010,13 @@
         "module": "test_tilefield_golden",
         "name": "test_tilefield_golden",
         "description": "Golden test: tilefield evidence comparison.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/golden/test_tilelight_golden.lua",
+        "module": "test_tilelight_golden",
+        "name": "test_tilelight_golden",
+        "description": "Golden test: tilelight",
         "kind": "lua"
       },
       {

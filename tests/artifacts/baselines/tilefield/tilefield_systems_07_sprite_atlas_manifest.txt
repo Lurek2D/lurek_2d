@@ -1,0 +1,5 @@
+map=50x50
+atlas_entries=banner_blue,crate_full,torch_idle
+banner_blue=44,0,16,32
+crate_full=18,0,24,24
+torch_idle=0,0,16,24

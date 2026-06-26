@@ -81,6 +81,16 @@ struct PendingProvinceMapDraw {
     time: f32,
 }
 
+struct GpuDrawTransform {
+    x: f32,
+    y: f32,
+    rotation: f32,
+    sx: f32,
+    sy: f32,
+    ox: f32,
+    oy: f32,
+}
+
 struct ProvinceMapGpuCache {
     textures: crate::province::gpu_upload::ProvinceGpuTextures,
     border_index: crate::province::border_index::ProvinceBorderIndex,
@@ -241,6 +251,23 @@ fn transform_stack_last_mut(stack: &mut Vec<Mat3>) -> &mut Mat3 {
     }
     let last_index = stack.len() - 1;
     &mut stack[last_index]
+}
+
+fn transformed_draw_matrix(parent: &Mat3, transform: GpuDrawTransform) -> Mat3 {
+    *parent
+        * Mat3::from_translation(Vec2 {
+            x: transform.x,
+            y: transform.y,
+        })
+        * Mat3::from_rotation(transform.rotation)
+        * Mat3::from_scale(Vec2 {
+            x: transform.sx,
+            y: transform.sy,
+        })
+        * Mat3::from_translation(Vec2 {
+            x: -transform.ox,
+            y: -transform.oy,
+        })
 }
 
 /// Built-in flat-color vertex + fragment WGSL shader.
@@ -1652,6 +1679,56 @@ impl GpuRenderer {
                         *scale,
                         current_color,
                         t,
+                        current_target,
+                        current_blend_mode,
+                        current_scissor,
+                        color_mask_bits,
+                        active_shader,
+                        stencil_mode,
+                        stencil_reference,
+                        canvases,
+                        shaders,
+                        fonts,
+                        default_filter,
+                        &mut all_tex_verts,
+                        &mut all_tex_idxs,
+                        &mut scratch_tex_verts,
+                        &mut scratch_tex_idxs,
+                        &mut draws,
+                    );
+                }
+                RenderCommand::PrintTransformed {
+                    font_key,
+                    ref text,
+                    x,
+                    y,
+                    rotation,
+                    sx,
+                    sy,
+                    ox,
+                    oy,
+                    scale,
+                } => {
+                    let t = transformed_draw_matrix(
+                        transform_stack_last(&transform_stack),
+                        GpuDrawTransform {
+                            x: *x,
+                            y: *y,
+                            rotation: *rotation,
+                            sx: *sx,
+                            sy: *sy,
+                            ox: *ox,
+                            oy: *oy,
+                        },
+                    );
+                    self.replay_plain_text(
+                        *font_key,
+                        text,
+                        0.0,
+                        0.0,
+                        *scale,
+                        current_color,
+                        &t,
                         current_target,
                         current_blend_mode,
                         current_scissor,
@@ -3607,6 +3684,53 @@ impl GpuRenderer {
                         *x,
                         *y,
                         t,
+                        current_target,
+                        current_blend_mode,
+                        current_scissor,
+                        color_mask_bits,
+                        active_shader,
+                        stencil_mode,
+                        stencil_reference,
+                        canvases,
+                        shaders,
+                        fonts,
+                        default_filter,
+                        &mut all_tex_verts,
+                        &mut all_tex_idxs,
+                        &mut scratch_tex_verts,
+                        &mut scratch_tex_idxs,
+                        &mut draws,
+                    );
+                }
+                RenderCommand::DrawRichTextTransformed {
+                    font_key,
+                    spans,
+                    x,
+                    y,
+                    rotation,
+                    sx,
+                    sy,
+                    ox,
+                    oy,
+                } => {
+                    let t = transformed_draw_matrix(
+                        transform_stack_last(&transform_stack),
+                        GpuDrawTransform {
+                            x: *x,
+                            y: *y,
+                            rotation: *rotation,
+                            sx: *sx,
+                            sy: *sy,
+                            ox: *ox,
+                            oy: *oy,
+                        },
+                    );
+                    self.replay_rich_text(
+                        *font_key,
+                        spans,
+                        0.0,
+                        0.0,
+                        &t,
                         current_target,
                         current_blend_mode,
                         current_scissor,

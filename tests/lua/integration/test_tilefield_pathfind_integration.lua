@@ -22,6 +22,23 @@ describe("integration: tilefield feeds pathfind movement", function()
             expect_true(not (path[i].x == 3 and path[i].y == 2), "path avoids window movement blocker")
         end
     end)
+
+    -- @integration lurek.pathfind.newHexGridFromField
+    -- @integration LHexGrid:findPath
+    it("hex tilefield feeds hex pathfinding without square-grid conversion", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5, topology = "hex" })
+        field:setBlock(3, 3, 1, "move", true)
+        field:setCost(2, 3, 1, "move", 3)
+
+        local grid = lurek.pathfind.newHexGridFromField(field, { level = 1, channel = "move" })
+        local path = grid:findPath(1, 3, 5, 3)
+
+        expect_true(grid:isBlocked(3, 3))
+        expect_not_nil(path)
+        for i = 1, #path do
+            expect_true(not (path[i].col == 3 and path[i].row == 3), "hex path avoids tilefield move blocker")
+        end
+    end)
 end)
 
 test_summary()

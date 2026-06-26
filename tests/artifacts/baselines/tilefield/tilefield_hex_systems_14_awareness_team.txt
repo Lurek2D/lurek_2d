@@ -1,0 +1,4 @@
+map=50x50
+field_topology=hex
+red_sees_blue_before=false
+red_sees_blue_after=true

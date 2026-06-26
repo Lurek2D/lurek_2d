@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated": "2026-06-25T15:00:18.607982+00:00",
+    "generated": "2026-06-26T14:19:55.036196+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 6273,
+      "lua_functions": 6289,
       "lua_modules": 72,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 6273,
-      "documented": 6273,
+      "total_functions": 6289,
+      "documented": 6289,
       "coverage_pct": 100.0,
       "modules": 72
     },
@@ -55359,8 +55359,8 @@
             "lua_name": "lurek.image.newProvinceGrid",
             "kind": "function",
             "owner_type": "",
-            "description": "Loads a province id grid from an image file under the current game directory.",
-            "full_doc": "Loads a province id grid from an image file under the current game directory.\n@param | filename | string | Province map image filename relative to game directory.\n@return | LProvinceGrid | New province grid handle.",
+            "description": "Loads a province id grid from an image file under the current game directory. This is a compatibility facade over the province subsystem.",
+            "full_doc": "Loads a province id grid from an image file under the current game directory. This is a compatibility facade over the province subsystem.\n@param | filename | string | Province map image filename relative to game directory.\n@return | LProvinceGrid | New province grid handle.",
             "params_doc": "- `filename` â€” `string`: Province map image filename relative to game directory.",
             "returns_doc": "LProvinceGrid",
             "inferred_sig": "(filename)",
@@ -55396,7 +55396,7 @@
         ],
         "classes": {
           "LProvinceGrid": {
-            "description": "Lua-side handle for a province id grid decoded from an image.",
+            "description": "Lua-side compatibility handle for a province id grid decoded by the province subsystem.",
             "fields": [],
             "methods": [
               {
@@ -86984,6 +86984,158 @@
         "source_file": "src/lua_api/pathfind_api.rs",
         "functions": [
           {
+            "name": "graphRoute",
+            "lua_name": "lurek.pathfind.graphRoute",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Finds a route through an integer-id graph. Edges may be `{from,to}`, `{a,b}`, `{province_a,province_b}`, or `{from_id,to_id}` arrays. Options: `directed`, `algorithm` (\"bfs\"|\"dijkstra\"), and optional `cost(from, to)`.",
+            "full_doc": "Finds a route through an integer-id graph. Edges may be `{from,to}`, `{a,b}`, `{province_a,province_b}`, or `{from_id,to_id}` arrays. Options: `directed`, `algorithm` (\"bfs\"|\"dijkstra\"), and optional `cost(from, to)`.\n@param | edges | table | Array of graph edge tables.\n@param | from | integer | Start node id.\n@param | to | integer | Target node id.\n@param | opts | table? | Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.\n@return | integer[] | Node id route from start to target, or nil when unreachable.",
+            "params_doc": "- `edges` â€” `table`: Array of graph edge tables.\n- `from` â€” `integer`: Start node id.\n- `to` â€” `integer`: Target node id.\n- `opts` â€” `table?`: Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.",
+            "returns_doc": "integer[]",
+            "inferred_sig": "(edges, from, to, [opts])",
+            "typed_params": [
+              [
+                "edges",
+                "table",
+                false,
+                "Array of graph edge tables."
+              ],
+              [
+                "from",
+                "integer",
+                false,
+                "Start node id."
+              ],
+              [
+                "to",
+                "integer",
+                false,
+                "Target node id."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback."
+              ]
+            ],
+            "inferred_return": "integer[]",
+            "return_description": "Node id route from start to target, or nil when unreachable.",
+            "line": 2538,
+            "file": "src/lua_api/pathfind_api.rs"
+          },
+          {
+            "name": "graphRoutes",
+            "lua_name": "lurek.pathfind.graphRoutes",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Finds routes for a batch of graph `{from, to}` requests using the same edge table and options as `graphRoute`.",
+            "full_doc": "Finds routes for a batch of graph `{from, to}` requests using the same edge table and options as `graphRoute`.\n@param | edges | table | Array of graph edge tables.\n@param | requests | table | Array of `{from=integer,to=integer}` or `{from,to}` route requests.\n@param | opts | table? | Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.\n@return | table | Array of route arrays; unreachable entries are nil.",
+            "params_doc": "- `edges` â€” `table`: Array of graph edge tables.\n- `requests` â€” `table`: Array of `{from=integer,to=integer}` or `{from,to}` route requests.\n- `opts` â€” `table?`: Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback.",
+            "returns_doc": "table",
+            "inferred_sig": "(edges, requests, [opts])",
+            "typed_params": [
+              [
+                "edges",
+                "table",
+                false,
+                "Array of graph edge tables."
+              ],
+              [
+                "requests",
+                "table",
+                false,
+                "Array of `{from=integer,to=integer}` or `{from,to}` route requests."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Options with `directed`, `algorithm`, and `cost` callback; a function may be passed directly as the cost callback."
+              ]
+            ],
+            "inferred_return": "table",
+            "return_description": "Array of route arrays; unreachable entries are nil.",
+            "line": 2555,
+            "file": "src/lua_api/pathfind_api.rs"
+          },
+          {
+            "name": "graphConnectedComponents",
+            "lua_name": "lurek.pathfind.graphConnectedComponents",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns connected components for an integer-id graph. Pass `nodes` to include isolated node ids.",
+            "full_doc": "Returns connected components for an integer-id graph. Pass `nodes` to include isolated node ids.\n@param | edges | table | Array of graph edge tables.\n@param | nodes | table? | Optional array of node ids; omitted nodes are inferred from edge endpoints.\n@param | opts | table? | Options with `directed`; directed graphs follow outgoing edges.\n@return | table | Array of node-id arrays, sorted by first node id.",
+            "params_doc": "- `edges` â€” `table`: Array of graph edge tables.\n- `nodes` â€” `table?`: Optional array of node ids; omitted nodes are inferred from edge endpoints.\n- `opts` â€” `table?`: Options with `directed`; directed graphs follow outgoing edges.",
+            "returns_doc": "table",
+            "inferred_sig": "(edges, [nodes], [opts])",
+            "typed_params": [
+              [
+                "edges",
+                "table",
+                false,
+                "Array of graph edge tables."
+              ],
+              [
+                "nodes",
+                "table?",
+                true,
+                "Optional array of node ids; omitted nodes are inferred from edge endpoints."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Options with `directed`; directed graphs follow outgoing edges."
+              ]
+            ],
+            "inferred_return": "table",
+            "return_description": "Array of node-id arrays, sorted by first node id.",
+            "line": 2580,
+            "file": "src/lua_api/pathfind_api.rs"
+          },
+          {
+            "name": "graphConnected",
+            "lua_name": "lurek.pathfind.graphConnected",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns true when a target node is reachable from a start node in an integer-id graph.",
+            "full_doc": "Returns true when a target node is reachable from a start node in an integer-id graph.\n@param | edges | table | Array of graph edge tables.\n@param | from | integer | Start node id.\n@param | to | integer | Target node id.\n@param | opts | table? | Options with `directed`.\n@return | boolean | True when reachable.",
+            "params_doc": "- `edges` â€” `table`: Array of graph edge tables.\n- `from` â€” `integer`: Start node id.\n- `to` â€” `integer`: Target node id.\n- `opts` â€” `table?`: Options with `directed`.",
+            "returns_doc": "boolean",
+            "inferred_sig": "(edges, from, to, [opts])",
+            "typed_params": [
+              [
+                "edges",
+                "table",
+                false,
+                "Array of graph edge tables."
+              ],
+              [
+                "from",
+                "integer",
+                false,
+                "Start node id."
+              ],
+              [
+                "to",
+                "integer",
+                false,
+                "Target node id."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Options with `directed`."
+              ]
+            ],
+            "inferred_return": "boolean",
+            "return_description": "True when reachable.",
+            "line": 2605,
+            "file": "src/lua_api/pathfind_api.rs"
+          },
+          {
             "name": "newNavGrid",
             "lua_name": "lurek.pathfind.newNavGrid",
             "kind": "function",
@@ -87009,7 +87161,7 @@
             ],
             "inferred_return": "LNavGrid",
             "return_description": "New navigation grid handle.",
-            "line": 2271,
+            "line": 2624,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87032,7 +87184,7 @@
             ],
             "inferred_return": "LNavGrid",
             "return_description": "New navigation grid copied from provider data.",
-            "line": 2287,
+            "line": 2640,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87055,7 +87207,7 @@
             ],
             "inferred_return": "LUnitPathfinder",
             "return_description": "New pathfinder handle.",
-            "line": 2303,
+            "line": 2656,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87078,7 +87230,7 @@
             ],
             "inferred_return": "LFlowField",
             "return_description": "New flow field handle.",
-            "line": 2316,
+            "line": 2669,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87113,7 +87265,7 @@
             ],
             "inferred_return": "LPathGrid",
             "return_description": "New path grid handle.",
-            "line": 2331,
+            "line": 2684,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87136,7 +87288,7 @@
             ],
             "inferred_return": "LPathGrid",
             "return_description": "New path grid copied from provider data.",
-            "line": 2347,
+            "line": 2700,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87159,7 +87311,7 @@
             ],
             "inferred_return": "LAIFlowField",
             "return_description": "New AI flow field handle.",
-            "line": 2362,
+            "line": 2715,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87175,7 +87327,7 @@
             "typed_params": [],
             "inferred_return": "LSteeringManager",
             "return_description": "New steering manager handle.",
-            "line": 2379,
+            "line": 2732,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87210,7 +87362,7 @@
             ],
             "inferred_return": "LInfluenceMap",
             "return_description": "New influence map handle.",
-            "line": 2394,
+            "line": 2747,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87233,7 +87385,7 @@
             ],
             "inferred_return": "LContextSteering",
             "return_description": "New context steering handle.",
-            "line": 2406,
+            "line": 2759,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87256,7 +87408,7 @@
             ],
             "inferred_return": "LORCASolver",
             "return_description": "New ORCA solver handle.",
-            "line": 2419,
+            "line": 2772,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87279,7 +87431,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2430,
+            "line": 2783,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87295,7 +87447,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Thread count (minimum 1).",
-            "line": 2445,
+            "line": 2798,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87324,7 +87476,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Request id for polling and cancellation.",
-            "line": 2461,
+            "line": 2814,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87340,7 +87492,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array of event tables with ids, status, optional path, and completion flags.",
-            "line": 2499,
+            "line": 2852,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87363,7 +87515,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "Always true once the cancel marker is recorded.",
-            "line": 2514,
+            "line": 2867,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87379,7 +87531,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Pending async request count.",
-            "line": 2524,
+            "line": 2877,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87395,7 +87547,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 2530,
+            "line": 2883,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87430,7 +87582,7 @@
             ],
             "inferred_return": "LNavGrid",
             "return_description": "New navigation grid handle.",
-            "line": 2547,
+            "line": 2900,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87459,7 +87611,94 @@
             ],
             "inferred_return": "LNavGrid",
             "return_description": "New navigation grid handle.",
-            "line": 2582,
+            "line": 2935,
+            "file": "src/lua_api/pathfind_api.rs"
+          },
+          {
+            "name": "newIsoGridFromField",
+            "lua_name": "lurek.pathfind.newIsoGridFromField",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates an isometric navigation grid from an iso-square tilefield level and movement category.",
+            "full_doc": "Creates an isometric navigation grid from an iso-square tilefield level and movement category.\n@param | field_ud | LTileField | Iso-square tilefield to derive navigation data from.\n@param | opts | table? | Options with `level`, `category`, and `costCategory`.\n@return | LIsoGrid | New isometric grid handle.",
+            "params_doc": "- `field_ud` â€” `LTileField`: Iso-square tilefield to derive navigation data from.\n- `opts` â€” `table?`: Options with `level`, `category`, and `costCategory`.",
+            "returns_doc": "LIsoGrid",
+            "inferred_sig": "(field_ud, [opts])",
+            "typed_params": [
+              [
+                "field_ud",
+                "LTileField",
+                false,
+                "Iso-square tilefield to derive navigation data from."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Options with `level`, `category`, and `costCategory`."
+              ]
+            ],
+            "inferred_return": "LIsoGrid",
+            "return_description": "New isometric grid handle.",
+            "line": 3022,
+            "file": "src/lua_api/pathfind_api.rs"
+          },
+          {
+            "name": "newIsoGrid",
+            "lua_name": "lurek.pathfind.newIsoGrid",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates an isometric grid with the given dimensions.",
+            "full_doc": "Creates an isometric grid with the given dimensions.\n@param | width | integer | Grid width in cells.\n@param | height | integer | Grid height in cells.\n@return | LIsoGrid | New isometric grid handle.",
+            "params_doc": "- `width` â€” `integer`: Grid width in cells.\n- `height` â€” `integer`: Grid height in cells.",
+            "returns_doc": "LIsoGrid",
+            "inferred_sig": "(width, height)",
+            "typed_params": [
+              [
+                "width",
+                "integer",
+                false,
+                "Grid width in cells."
+              ],
+              [
+                "height",
+                "integer",
+                false,
+                "Grid height in cells."
+              ]
+            ],
+            "inferred_return": "LIsoGrid",
+            "return_description": "New isometric grid handle.",
+            "line": 3084,
+            "file": "src/lua_api/pathfind_api.rs"
+          },
+          {
+            "name": "newHexGridFromField",
+            "lua_name": "lurek.pathfind.newHexGridFromField",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates a hex navigation grid from a hex tilefield level and movement category.",
+            "full_doc": "Creates a hex navigation grid from a hex tilefield level and movement category.\n@param | field_ud | LTileField | Hex tilefield to derive navigation data from.\n@param | opts | table? | Options with `level`, `category`, `costCategory`, and `layout` (`\"flat\"` or `\"pointy\"`).\n@return | LHexGrid | New hex grid handle.",
+            "params_doc": "- `field_ud` â€” `LTileField`: Hex tilefield to derive navigation data from.\n- `opts` â€” `table?`: Options with `level`, `category`, `costCategory`, and `layout` (`\"flat\"` or `\"pointy\"`).",
+            "returns_doc": "LHexGrid",
+            "inferred_sig": "(field_ud, [opts])",
+            "typed_params": [
+              [
+                "field_ud",
+                "LTileField",
+                false,
+                "Hex tilefield to derive navigation data from."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Options with `level`, `category`, `costCategory`, and `layout` (`\"flat\"` or `\"pointy\"`)."
+              ]
+            ],
+            "inferred_return": "LHexGrid",
+            "return_description": "New hex grid handle.",
+            "line": 3099,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87494,7 +87733,7 @@
             ],
             "inferred_return": "LHexGrid",
             "return_description": "New hex grid handle.",
-            "line": 2670,
+            "line": 3170,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87523,7 +87762,7 @@
             ],
             "inferred_return": "LJpsGrid",
             "return_description": "New JPS grid handle.",
-            "line": 2689,
+            "line": 3189,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87539,7 +87778,7 @@
             "typed_params": [],
             "inferred_return": "LNavMesh",
             "return_description": "New navmesh handle.",
-            "line": 2700,
+            "line": 3200,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87562,7 +87801,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Range map result with `cells`, `width`, and `height` fields.",
-            "line": 2715,
+            "line": 3215,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87591,7 +87830,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Range map result with `cells`, `width`, `height`, and `level`.",
-            "line": 2775,
+            "line": 3275,
             "file": "src/lua_api/pathfind_api.rs"
           },
           {
@@ -87620,7 +87859,7 @@
             ],
             "inferred_return": "LGoalMap",
             "return_description": "New goal map ready for source registration and baking.",
-            "line": 2841,
+            "line": 3341,
             "file": "src/lua_api/pathfind_api.rs"
           }
         ],
@@ -87642,7 +87881,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid width.",
-                "line": 224,
+                "line": 394,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87658,7 +87897,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid height.",
-                "line": 230,
+                "line": 400,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87674,7 +87913,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid width.",
-                "line": 237,
+                "line": 407,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87709,7 +87948,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 245,
+                "line": 415,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87738,7 +87977,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Movement cost.",
-                "line": 255,
+                "line": 425,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87773,7 +88012,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 264,
+                "line": 434,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87802,7 +88041,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when blocked.",
-                "line": 277,
+                "line": 447,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87837,7 +88076,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when walkable.",
-                "line": 287,
+                "line": 457,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87860,7 +88099,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 300,
+                "line": 470,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87907,7 +88146,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 311,
+                "line": 481,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87930,7 +88169,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 322,
+                "line": 492,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87946,7 +88185,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Serialized grid bytes.",
-                "line": 331,
+                "line": 501,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87969,7 +88208,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 337,
+                "line": 507,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -87985,7 +88224,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Chunk size.",
-                "line": 344,
+                "line": 514,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88001,7 +88240,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 349,
+                "line": 519,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88048,7 +88287,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y}` waypoint tables, or nil when no path exists.",
-                "line": 364,
+                "line": 534,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88089,7 +88328,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 408,
+                "line": 578,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88105,7 +88344,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 415,
+                "line": 585,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88128,7 +88367,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 422,
+                "line": 592,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88144,7 +88383,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Mode name.",
-                "line": 435,
+                "line": 605,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88160,7 +88399,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LNavGrid`.",
-                "line": 446,
+                "line": 616,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88183,7 +88422,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 451,
+                "line": 621,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -88236,7 +88475,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y}` waypoint tables, or nil when no path exists.",
-                "line": 474,
+                "line": 644,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88283,7 +88522,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y}` waypoint tables, or nil when no path exists.",
-                "line": 501,
+                "line": 671,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88336,7 +88575,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of waypoint tables, or nil when no path exists.",
-                "line": 533,
+                "line": 703,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88359,7 +88598,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Path length.",
-                "line": 579,
+                "line": 749,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88382,7 +88621,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Path cost.",
-                "line": 587,
+                "line": 757,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88435,7 +88674,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y}` waypoint tables forming the found partial path.",
-                "line": 603,
+                "line": 773,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88476,7 +88715,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "One-based column of the nearest walkable cell, or nil.",
-                "line": 634,
+                "line": 804,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88523,7 +88762,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when reachable.",
-                "line": 660,
+                "line": 830,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88564,7 +88803,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Heuristic distance.",
-                "line": 678,
+                "line": 848,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88587,7 +88826,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 689,
+                "line": 859,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88603,7 +88842,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when enabled.",
-                "line": 696,
+                "line": 866,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88619,7 +88858,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 701,
+                "line": 871,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88635,7 +88874,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Cache size.",
-                "line": 708,
+                "line": 878,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88658,7 +88897,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 714,
+                "line": 884,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88674,7 +88913,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LUnitPathfinder`.",
-                "line": 721,
+                "line": 891,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88697,7 +88936,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 726,
+                "line": 896,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -88738,7 +88977,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 744,
+                "line": 914,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88767,7 +89006,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 758,
+                "line": 928,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88796,7 +89035,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Direction X component.",
-                "line": 780,
+                "line": 950,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88825,7 +89064,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Direction angle in radians.",
-                "line": 789,
+                "line": 959,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88854,7 +89093,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Integration cost to the nearest target.",
-                "line": 798,
+                "line": 968,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88870,7 +89109,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when calculated.",
-                "line": 805,
+                "line": 975,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88886,7 +89125,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table of target point tables.",
-                "line": 813,
+                "line": 983,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88933,7 +89172,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Steered X velocity.",
-                "line": 835,
+                "line": 1005,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88949,7 +89188,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LFlowField`.",
-                "line": 844,
+                "line": 1014,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -88972,7 +89211,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 849,
+                "line": 1019,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -88994,7 +89233,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid width.",
-                "line": 865,
+                "line": 1035,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89010,7 +89249,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid height.",
-                "line": 871,
+                "line": 1041,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89026,7 +89265,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Cell size.",
-                "line": 877,
+                "line": 1047,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89061,7 +89300,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 885,
+                "line": 1055,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89090,7 +89329,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when walkable.",
-                "line": 895,
+                "line": 1065,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89125,7 +89364,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 904,
+                "line": 1074,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89154,7 +89393,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Movement cost.",
-                "line": 914,
+                "line": 1084,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89195,7 +89434,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y}` point tables, or nil when no path exists.",
-                "line": 927,
+                "line": 1097,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89236,7 +89475,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y}` point tables, or nil when no path exists.",
-                "line": 958,
+                "line": 1128,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89252,7 +89491,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LPathGrid`.",
-                "line": 983,
+                "line": 1153,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89275,7 +89514,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 988,
+                "line": 1158,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -89297,7 +89536,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width.",
-                "line": 1004,
+                "line": 1174,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89313,7 +89552,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Height.",
-                "line": 1010,
+                "line": 1180,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89329,7 +89568,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when a goal exists.",
-                "line": 1016,
+                "line": 1186,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89358,7 +89597,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1023,
+                "line": 1193,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89374,7 +89613,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "One-based goal column, or nil.",
-                "line": 1032,
+                "line": 1202,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89403,7 +89642,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Direction X component.",
-                "line": 1050,
+                "line": 1220,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89432,7 +89671,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Distance to the goal.",
-                "line": 1059,
+                "line": 1229,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89448,7 +89687,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LAIFlowField`.",
-                "line": 1066,
+                "line": 1236,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89471,7 +89710,221 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1071,
+                "line": 1241,
+                "file": "src/lua_api/pathfind_api.rs"
+              }
+            ]
+          },
+          "LIsoGrid": {
+            "description": "Lua-side wrapper for an isometric navigation grid.",
+            "fields": [],
+            "methods": [
+              {
+                "name": "setBlocked",
+                "lua_name": "LIsoGrid:setBlocked",
+                "kind": "method",
+                "owner_type": "LIsoGrid",
+                "description": "Sets blocked state for a one-based isometric grid cell.",
+                "full_doc": "Sets blocked state for a one-based isometric grid cell.\n@param | x | integer | One-based cell X coordinate.\n@param | y | integer | One-based cell Y coordinate.\n@param | blocked | boolean | True to block the cell.",
+                "params_doc": "- `x` â€” `integer`: One-based cell X coordinate.\n- `y` â€” `integer`: One-based cell Y coordinate.\n- `blocked` â€” `boolean`: True to block the cell.",
+                "returns_doc": "",
+                "inferred_sig": "(x, y, blocked)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "One-based cell X coordinate."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "One-based cell Y coordinate."
+                  ],
+                  [
+                    "blocked",
+                    "boolean",
+                    false,
+                    "True to block the cell."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1259,
+                "file": "src/lua_api/pathfind_api.rs"
+              },
+              {
+                "name": "setCost",
+                "lua_name": "LIsoGrid:setCost",
+                "kind": "method",
+                "owner_type": "LIsoGrid",
+                "description": "Sets movement cost for a one-based isometric grid cell.",
+                "full_doc": "Sets movement cost for a one-based isometric grid cell.\n@param | x | integer | One-based cell X coordinate.\n@param | y | integer | One-based cell Y coordinate.\n@param | cost | number | Finite positive movement cost.",
+                "params_doc": "- `x` â€” `integer`: One-based cell X coordinate.\n- `y` â€” `integer`: One-based cell Y coordinate.\n- `cost` â€” `number`: Finite positive movement cost.",
+                "returns_doc": "",
+                "inferred_sig": "(x, y, cost)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "One-based cell X coordinate."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "One-based cell Y coordinate."
+                  ],
+                  [
+                    "cost",
+                    "number",
+                    false,
+                    "Finite positive movement cost."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1272,
+                "file": "src/lua_api/pathfind_api.rs"
+              },
+              {
+                "name": "isBlocked",
+                "lua_name": "LIsoGrid:isBlocked",
+                "kind": "method",
+                "owner_type": "LIsoGrid",
+                "description": "Returns whether a one-based isometric grid cell is blocked.",
+                "full_doc": "Returns whether a one-based isometric grid cell is blocked.\n@param | x | integer | One-based cell X coordinate.\n@param | y | integer | One-based cell Y coordinate.\n@return | boolean | True when blocked or out of bounds.",
+                "params_doc": "- `x` â€” `integer`: One-based cell X coordinate.\n- `y` â€” `integer`: One-based cell Y coordinate.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(x, y)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "One-based cell X coordinate."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "One-based cell Y coordinate."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when blocked or out of bounds.",
+                "line": 1284,
+                "file": "src/lua_api/pathfind_api.rs"
+              },
+              {
+                "name": "getCost",
+                "lua_name": "LIsoGrid:getCost",
+                "kind": "method",
+                "owner_type": "LIsoGrid",
+                "description": "Returns movement cost for a one-based isometric grid cell.",
+                "full_doc": "Returns movement cost for a one-based isometric grid cell.\n@param | x | integer | One-based cell X coordinate.\n@param | y | integer | One-based cell Y coordinate.\n@return | number | Movement cost.",
+                "params_doc": "- `x` â€” `integer`: One-based cell X coordinate.\n- `y` â€” `integer`: One-based cell Y coordinate.",
+                "returns_doc": "number",
+                "inferred_sig": "(x, y)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "One-based cell X coordinate."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "One-based cell Y coordinate."
+                  ]
+                ],
+                "inferred_return": "number",
+                "return_description": "Movement cost.",
+                "line": 1293,
+                "file": "src/lua_api/pathfind_api.rs"
+              },
+              {
+                "name": "findPath",
+                "lua_name": "LIsoGrid:findPath",
+                "kind": "method",
+                "owner_type": "LIsoGrid",
+                "description": "Finds a path between one-based isometric cells.",
+                "full_doc": "Finds a path between one-based isometric cells.\n@param | fx | integer | One-based start X coordinate.\n@param | fy | integer | One-based start Y coordinate.\n@param | tx | integer | One-based goal X coordinate.\n@param | ty | integer | One-based goal Y coordinate.\n@return | table | Array of `{x, y}` cell tables, or nil when no path exists.\n@field | x | integer | X coordinate.\n@field | y | integer | Y coordinate.",
+                "params_doc": "- `fx` â€” `integer`: One-based start X coordinate.\n- `fy` â€” `integer`: One-based start Y coordinate.\n- `tx` â€” `integer`: One-based goal X coordinate.\n- `ty` â€” `integer`: One-based goal Y coordinate.",
+                "returns_doc": "table",
+                "inferred_sig": "(fx, fy, tx, ty)",
+                "typed_params": [
+                  [
+                    "fx",
+                    "integer",
+                    false,
+                    "One-based start X coordinate."
+                  ],
+                  [
+                    "fy",
+                    "integer",
+                    false,
+                    "One-based start Y coordinate."
+                  ],
+                  [
+                    "tx",
+                    "integer",
+                    false,
+                    "One-based goal X coordinate."
+                  ],
+                  [
+                    "ty",
+                    "integer",
+                    false,
+                    "One-based goal Y coordinate."
+                  ]
+                ],
+                "inferred_return": "table",
+                "return_description": "Array of `{x, y}` cell tables, or nil when no path exists.",
+                "line": 1308,
+                "file": "src/lua_api/pathfind_api.rs"
+              },
+              {
+                "name": "type",
+                "lua_name": "LIsoGrid:type",
+                "kind": "method",
+                "owner_type": "LIsoGrid",
+                "description": "Returns the Lua-visible type name for this isometric grid handle.",
+                "full_doc": "Returns the Lua-visible type name for this isometric grid handle.\n@return | string | The string `LIsoGrid`.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "The string `LIsoGrid`.",
+                "line": 1331,
+                "file": "src/lua_api/pathfind_api.rs"
+              },
+              {
+                "name": "typeOf",
+                "lua_name": "LIsoGrid:typeOf",
+                "kind": "method",
+                "owner_type": "LIsoGrid",
+                "description": "Returns whether this isometric grid handle matches a supported type name.",
+                "full_doc": "Returns whether this isometric grid handle matches a supported type name.\n@param | name | string | String value for `name`.\n@return | boolean | True when the supplied type name matches this handle.",
+                "params_doc": "- `name` â€” `string`: String value for `name`.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(name)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "String value for `name`."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the supplied type name matches this handle.",
+                "line": 1336,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -89512,7 +89965,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1089,
+                "line": 1354,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89547,7 +90000,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1102,
+                "line": 1367,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89576,7 +90029,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when blocked.",
-                "line": 1112,
+                "line": 1377,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89617,7 +90070,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{col, row}` hex cell tables, or nil when no path exists.",
-                "line": 1125,
+                "line": 1390,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89652,7 +90105,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{col, row}` hex cell tables.",
-                "line": 1155,
+                "line": 1420,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89687,7 +90140,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{col, row}` hex cell tables.",
-                "line": 1180,
+                "line": 1445,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89728,7 +90181,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Hex distance.",
-                "line": 1204,
+                "line": 1469,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89744,7 +90197,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LHexGrid`.",
-                "line": 1215,
+                "line": 1480,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89767,7 +90220,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1220,
+                "line": 1485,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -89808,7 +90261,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1238,
+                "line": 1503,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89837,7 +90290,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when blocked.",
-                "line": 1251,
+                "line": 1516,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89878,7 +90331,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y}` point tables, or nil when no path exists.",
-                "line": 1264,
+                "line": 1529,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89894,7 +90347,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LJpsGrid`.",
-                "line": 1289,
+                "line": 1554,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89917,7 +90370,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1294,
+                "line": 1559,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -89946,7 +90399,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "One-based polygon id.",
-                "line": 1311,
+                "line": 1576,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -89981,7 +90434,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the connection was added.",
-                "line": 1332,
+                "line": 1597,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90022,7 +90475,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y}` point tables, or nil when no path exists.",
-                "line": 1351,
+                "line": 1616,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90038,7 +90491,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Polygon count.",
-                "line": 1375,
+                "line": 1640,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90054,7 +90507,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LNavMesh`.",
-                "line": 1381,
+                "line": 1646,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90077,7 +90530,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1386,
+                "line": 1651,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -90118,7 +90571,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1406,
+                "line": 1671,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90159,7 +90612,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1425,
+                "line": 1690,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90200,7 +90653,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1448,
+                "line": 1713,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90241,7 +90694,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1469,
+                "line": 1734,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90270,7 +90723,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1501,
+                "line": 1766,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90299,7 +90752,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1514,
+                "line": 1779,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90346,7 +90799,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1530,
+                "line": 1795,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90362,7 +90815,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Current steering behavior count.",
-                "line": 1555,
+                "line": 1820,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90385,7 +90838,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1561,
+                "line": 1826,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90401,7 +90854,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Combine mode name.",
-                "line": 1568,
+                "line": 1833,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90417,7 +90870,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "X and Y force values from the previous calculation.",
-                "line": 1574,
+                "line": 1839,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90476,7 +90929,7 @@
                 ],
                 "inferred_return": "number, number",
                 "return_description": "X and Y steering force.",
-                "line": 1587,
+                "line": 1852,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90511,7 +90964,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1610,
+                "line": 1875,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90527,7 +90980,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1640,
+                "line": 1905,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90543,7 +90996,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when a path is configured and not complete.",
-                "line": 1647,
+                "line": 1912,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90559,7 +91012,7 @@
                 "typed_params": [],
                 "inferred_return": "integer, integer",
                 "return_description": "Current waypoint index and total waypoint count.",
-                "line": 1653,
+                "line": 1918,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90606,7 +91059,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1664,
+                "line": 1929,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90629,7 +91082,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an entity was removed.",
-                "line": 1679,
+                "line": 1944,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90645,7 +91098,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1684,
+                "line": 1949,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90661,7 +91114,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Entity count.",
-                "line": 1691,
+                "line": 1956,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90677,7 +91130,7 @@
                 "typed_params": [],
                 "inferred_return": "LuaValue",
                 "return_description": "Diagnostic string, or nil when no diagnostic has been recorded.",
-                "line": 1697,
+                "line": 1962,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90693,7 +91146,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LSteeringManager`.",
-                "line": 1703,
+                "line": 1968,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90716,7 +91169,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1708,
+                "line": 1973,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90739,7 +91192,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1714,
+                "line": 1979,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90762,7 +91215,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1721,
+                "line": 1986,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90791,7 +91244,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1729,
+                "line": 1994,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90820,7 +91273,7 @@
                 ],
                 "inferred_return": "number, number",
                 "return_description": "Combined custom X and Y steering force.",
-                "line": 1751,
+                "line": 2016,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -90849,7 +91302,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1812,
+                "line": 2077,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90872,7 +91325,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 1820,
+                "line": 2085,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90913,7 +91366,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1829,
+                "line": 2094,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -90948,7 +91401,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Influence value at the requested cell.",
-                "line": 1847,
+                "line": 2112,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91001,7 +91454,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1865,
+                "line": 2130,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91030,7 +91483,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1881,
+                "line": 2146,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91059,7 +91512,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1894,
+                "line": 2159,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91082,7 +91535,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1901,
+                "line": 2166,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91098,7 +91551,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1907,
+                "line": 2172,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91121,7 +91574,7 @@
                 ],
                 "inferred_return": "integer, integer",
                 "return_description": "One-based X and Y cell coordinates of the maximum value.",
-                "line": 1915,
+                "line": 2180,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91144,7 +91597,7 @@
                 ],
                 "inferred_return": "integer, integer",
                 "return_description": "One-based X and Y cell coordinates of the minimum value.",
-                "line": 1922,
+                "line": 2187,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91191,7 +91644,7 @@
                 ],
                 "inferred_return": "number[]",
                 "return_description": "Array of influence samples from cells inside the rectangle.",
-                "line": 1933,
+                "line": 2198,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91238,7 +91691,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1946,
+                "line": 2211,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91254,7 +91707,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Cell width of the map.",
-                "line": 1954,
+                "line": 2219,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91270,7 +91723,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Cell height of the map.",
-                "line": 1958,
+                "line": 2223,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91286,7 +91739,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Cell size in world units.",
-                "line": 1962,
+                "line": 2227,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91302,7 +91755,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LInfluenceMap`.",
-                "line": 1968,
+                "line": 2233,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91325,7 +91778,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1973,
+                "line": 2238,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -91366,7 +91819,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1992,
+                "line": 2257,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91395,7 +91848,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2003,
+                "line": 2268,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91436,7 +91889,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2013,
+                "line": 2278,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91489,7 +91942,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2030,
+                "line": 2295,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91505,7 +91958,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2036,
+                "line": 2301,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91546,7 +91999,7 @@
                 ],
                 "inferred_return": "number, number",
                 "return_description": "Selected X and Y direction.",
-                "line": 2047,
+                "line": 2312,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91562,7 +92015,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Last chosen magnitude.",
-                "line": 2057,
+                "line": 2322,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91578,7 +92031,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Direction slot count.",
-                "line": 2063,
+                "line": 2328,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91594,7 +92047,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LContextSteering`.",
-                "line": 2069,
+                "line": 2334,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91617,7 +92070,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 2074,
+                "line": 2339,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -91664,7 +92117,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based ORCA agent index.",
-                "line": 2095,
+                "line": 2360,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91699,7 +92152,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2109,
+                "line": 2374,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91734,7 +92187,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2123,
+                "line": 2388,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91757,7 +92210,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2132,
+                "line": 2397,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91780,7 +92233,7 @@
                 ],
                 "inferred_return": "number, number",
                 "return_description": "Safe X and Y velocity, or zero velocity for an invalid index.",
-                "line": 2140,
+                "line": 2405,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91796,7 +92249,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Current ORCA agent count.",
-                "line": 2152,
+                "line": 2417,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91812,7 +92265,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LORCASolver`.",
-                "line": 2158,
+                "line": 2423,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91835,7 +92288,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 2163,
+                "line": 2428,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -91876,7 +92329,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2873,
+                "line": 3373,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91899,7 +92352,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2888,
+                "line": 3388,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91915,7 +92368,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2907,
+                "line": 3407,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91938,7 +92391,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2915,
+                "line": 3415,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91954,7 +92407,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2925,
+                "line": 3425,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91970,7 +92423,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when the field is ready for queries.",
-                "line": 2952,
+                "line": 3452,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -91999,7 +92452,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Distance value; max-int means unreachable.",
-                "line": 2960,
+                "line": 3460,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -92028,7 +92481,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "dx component.",
-                "line": 2972,
+                "line": 3472,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -92063,7 +92516,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "dx component.",
-                "line": 2985,
+                "line": 3485,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -92098,7 +92551,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y}` tables (one-based).",
-                "line": 2997,
+                "line": 3497,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -92114,7 +92567,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Serialised blob.",
-                "line": 3019,
+                "line": 3519,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -92137,7 +92590,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3026,
+                "line": 3526,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -92153,7 +92606,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LGoalMap`.",
-                "line": 3036,
+                "line": 3536,
                 "file": "src/lua_api/pathfind_api.rs"
               },
               {
@@ -92176,7 +92629,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the name matches.",
-                "line": 3042,
+                "line": 3542,
                 "file": "src/lua_api/pathfind_api.rs"
               }
             ]
@@ -107653,7 +108106,7 @@
             ],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The newly created registry handle.",
-            "line": 1658,
+            "line": 1892,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107688,7 +108141,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Summary with fields: replaced_pixels (number), unresolved_pixels (number).",
-            "line": 1684,
+            "line": 1918,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107711,7 +108164,7 @@
             ],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The registry handle, or nil if not found.",
-            "line": 1708,
+            "line": 1942,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107734,7 +108187,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry exists.",
-            "line": 1727,
+            "line": 1961,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107757,7 +108210,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry existed and was removed.",
-            "line": 1738,
+            "line": 1972,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107780,7 +108233,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry was found and activated.",
-            "line": 1754,
+            "line": 1988,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107796,7 +108249,7 @@
             "typed_params": [],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The active registry handle, or nil.",
-            "line": 1770,
+            "line": 2004,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107849,7 +108302,7 @@
             ],
             "inferred_return": "number, number",
             "return_description": "New camera x and y after zoom adjustment.",
-            "line": 1789,
+            "line": 2023,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107884,7 +108337,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1813,
+            "line": 2047,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107913,7 +108366,7 @@
             ],
             "inferred_return": "number",
             "return_description": "The stored value, or nil.",
-            "line": 1828,
+            "line": 2062,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107948,7 +108401,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1840,
+            "line": 2074,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -107977,7 +108430,7 @@
             ],
             "inferred_return": "string",
             "return_description": "The stored value, or nil.",
-            "line": 1855,
+            "line": 2089,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -108012,7 +108465,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1870,
+            "line": 2104,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -108041,7 +108494,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the flag bit is set.",
-            "line": 1883,
+            "line": 2117,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -108064,7 +108517,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1893,
+            "line": 2127,
             "file": "src/lua_api/province_api.rs"
           }
         ],
@@ -108086,7 +108539,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The registry name passed to `newFromPng`.",
-                "line": 295,
+                "line": 491,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108102,7 +108555,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid width in cells.",
-                "line": 299,
+                "line": 495,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108118,7 +108571,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid height in cells.",
-                "line": 303,
+                "line": 499,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108147,7 +108600,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province ID at (x, y), or 0 for unowned cells.",
-                "line": 311,
+                "line": 507,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108182,7 +108635,7 @@
                 ],
                 "inferred_return": "number, number, number",
                 "return_description": "Camera x, camera y, and zoom factor.",
-                "line": 320,
+                "line": 516,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108235,7 +108688,7 @@
                 ],
                 "inferred_return": "number, number",
                 "return_description": "Map-space x and y.",
-                "line": 343,
+                "line": 539,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108288,7 +108741,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province ID under the cursor, or nil if none.",
-                "line": 375,
+                "line": 571,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108311,7 +108764,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Viewport table with x, y, w, h, left, top, right, and bottom fields in province map pixels.",
-                "line": 411,
+                "line": 607,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108327,7 +108780,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Count of provinces.",
-                "line": 450,
+                "line": 646,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108343,7 +108796,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Province ID numbers.",
-                "line": 456,
+                "line": 652,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108359,7 +108812,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with fields: province_a (number), province_b (number).",
-                "line": 469,
+                "line": 665,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108375,7 +108828,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with fields: province_id (number), y (number), x0 (number), x1 (number).",
-                "line": 489,
+                "line": 685,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108391,7 +108844,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with fields: province_a (number), province_b (number), x0 (number), y0 (number), x1 (number), y1 (number).",
-                "line": 515,
+                "line": 711,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108407,7 +108860,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Current revision number.",
-                "line": 539,
+                "line": 735,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108430,7 +108883,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Province snapshot table, or nil if the ID does not exist.",
-                "line": 551,
+                "line": 747,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108453,7 +108906,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of neighboring province IDs.",
-                "line": 602,
+                "line": 798,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108461,8 +108914,8 @@
                 "lua_name": "LProvinceRegistry:findRoute",
                 "kind": "method",
                 "owner_type": "LProvinceRegistry",
-                "description": "Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.",
-                "full_doc": "Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.\n@param | from_id | integer | Start province id.\n@param | to_id | integer | Target province id.\n@param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number`.\n@return | table | Array of province ids from start to target; nil when unreachable.",
+                "description": "Finds a route between two provinces by adapting registry adjacency to pathfind graph routing. Uses BFS by default or Dijkstra when `cost_fn` is supplied.",
+                "full_doc": "Finds a route between two provinces by adapting registry adjacency to pathfind graph routing. Uses BFS by default or Dijkstra when `cost_fn` is supplied.\n@param | from_id | integer | Start province id.\n@param | to_id | integer | Target province id.\n@param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number`.\n@return | table | Array of province ids from start to target; nil when unreachable.",
                 "params_doc": "- `from_id` â€” `integer`: Start province id.\n- `to_id` â€” `integer`: Target province id.\n- `cost_fn` â€” `function?`: Optional cost callback `fn(from_id, to_id) -> number`.",
                 "returns_doc": "table",
                 "inferred_sig": "(from_id, to_id, [cost_fn])",
@@ -108488,7 +108941,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of province ids from start to target; nil when unreachable.",
-                "line": 616,
+                "line": 812,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108517,7 +108970,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of route hop primitives queued.",
-                "line": 673,
+                "line": 869,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108525,8 +108978,8 @@
                 "lua_name": "LProvinceRegistry:findRoutes",
                 "kind": "method",
                 "owner_type": "LProvinceRegistry",
-                "description": "Finds routes for a batch of `{from, to}` pairs.",
-                "full_doc": "Finds routes for a batch of `{from, to}` pairs.\n@param | pairs | table | Array of `{from=integer, to=integer}` tables.\n@param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number?`.\n@return | table | Array of route arrays (or nil for unreachable entries).",
+                "description": "Finds routes for a batch of `{from, to}` pairs by adapting registry adjacency to pathfind graph routing.",
+                "full_doc": "Finds routes for a batch of `{from, to}` pairs by adapting registry adjacency to pathfind graph routing.\n@param | pairs | table | Array of `{from=integer, to=integer}` tables.\n@param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number?`.\n@return | table | Array of route arrays (or nil for unreachable entries).",
                 "params_doc": "- `pairs` â€” `table`: Array of `{from=integer, to=integer}` tables.\n- `cost_fn` â€” `function?`: Optional cost callback `fn(from_id, to_id) -> number?`.",
                 "returns_doc": "table",
                 "inferred_sig": "(pairs_tbl, [cost_fn])",
@@ -108546,7 +108999,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of route arrays (or nil for unreachable entries).",
-                "line": 739,
+                "line": 935,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108554,15 +109007,15 @@
                 "lua_name": "LProvinceRegistry:getConnectedComponents",
                 "kind": "method",
                 "owner_type": "LProvinceRegistry",
-                "description": "Returns connected components in the province adjacency graph.",
-                "full_doc": "Returns connected components in the province adjacency graph.\n@return | table | Array of arrays of province ids.",
+                "description": "Returns connected components in the province adjacency graph via pathfind graph traversal.",
+                "full_doc": "Returns connected components in the province adjacency graph via pathfind graph traversal.\n@return | table | Array of arrays of province ids.",
                 "params_doc": "",
                 "returns_doc": "table",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of arrays of province ids.",
-                "line": 801,
+                "line": 997,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108585,7 +109038,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of isolated province ids.",
-                "line": 827,
+                "line": 1023,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108593,8 +109046,8 @@
                 "lua_name": "LProvinceRegistry:isConnected",
                 "kind": "method",
                 "owner_type": "LProvinceRegistry",
-                "description": "Returns true when there is at least one route between two provinces.",
-                "full_doc": "Returns true when there is at least one route between two provinces.\n@param | from_id | integer | Start province id.\n@param | to_id | integer | Target province id.\n@return | boolean | True when connected.",
+                "description": "Returns true when there is at least one pathfind graph route between two provinces.",
+                "full_doc": "Returns true when there is at least one pathfind graph route between two provinces.\n@param | from_id | integer | Start province id.\n@param | to_id | integer | Target province id.\n@return | boolean | True when connected.",
                 "params_doc": "- `from_id` â€” `integer`: Start province id.\n- `to_id` â€” `integer`: Target province id.",
                 "returns_doc": "boolean",
                 "inferred_sig": "(from_id, to_id)",
@@ -108614,7 +109067,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when connected.",
-                "line": 864,
+                "line": 1060,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108649,7 +109102,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Total numeric sum.",
-                "line": 886,
+                "line": 1082,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108678,7 +109131,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Border type ID, or nil.",
-                "line": 923,
+                "line": 1119,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108713,7 +109166,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 932,
+                "line": 1128,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108742,7 +109195,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Border type ID, or nil.",
-                "line": 946,
+                "line": 1142,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108777,7 +109230,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 955,
+                "line": 1151,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108806,7 +109259,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 968,
+                "line": 1164,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108841,7 +109294,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when style was applied.",
-                "line": 999,
+                "line": 1195,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108870,7 +109323,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Style table or nil.",
-                "line": 1014,
+                "line": 1210,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108917,7 +109370,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1045,
+                "line": 1241,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108946,7 +109399,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1058,
+                "line": 1254,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -108975,7 +109428,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1069,
+                "line": 1265,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109004,7 +109457,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1080,
+                "line": 1276,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109033,7 +109486,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1088,
+                "line": 1284,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109068,7 +109521,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1102,
+                "line": 1298,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109103,7 +109556,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1114,
+                "line": 1310,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109150,7 +109603,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1125,
+                "line": 1321,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109179,7 +109632,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1136,
+                "line": 1332,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109202,7 +109655,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Summary with fields: mapped_provinces (number), capitals_set (number), label_lines_set (number), labels_set (number).",
-                "line": 1147,
+                "line": 1343,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109211,21 +109664,21 @@
                 "kind": "method",
                 "owner_type": "LProvinceRegistry",
                 "description": "Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.",
-                "full_doc": "Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.\n@param | opts | table? | Render options: backend (\"commands\"|\"gpu\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"|\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
-                "params_doc": "- `opts` â€” `table? | Render options: backend (\"commands\"|\"gpu\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"`: \"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
+                "full_doc": "Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.\n@param | opts | table? | Render options: backend (\"commands\"|\"gpu\"|\"segments\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), segment_reuse_cache (boolean?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"|\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
+                "params_doc": "- `opts` â€” `table? | Render options: backend (\"commands\"|\"gpu\"|\"segments\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), segment_reuse_cache (boolean?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"`: \"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
                 "returns_doc": "",
                 "inferred_sig": "([opts])",
                 "typed_params": [
                   [
                     "opts",
-                    "table?|Render options: backend (\"commands\"|\"gpu\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
+                    "table?|Render options: backend (\"commands\"|\"gpu\"|\"segments\"?), map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), segment_reuse_cache (boolean?), terrain_texture (LImage?), terrain_texture_scale/terrain_texture_strength (number?), edge_gradient_radius (output pixels?), edge_gradient_strength/edge_gradient_softness (number?), edge_gradient_color ({r,g,b,a?}?), border_palette ({province_color|land_color,coast_color,country_color,sea_darken}?), province_border_color/coast_border_color/country_border_color ({r,g,b,a?}?), sea_border_darken (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
                     true,
                     "\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?)."
                   ]
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1222,
+                "line": 1418,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109248,7 +109701,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).",
-                "line": 1461,
+                "line": 1695,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109277,7 +109730,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1580,
+                "line": 1814,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109300,7 +109753,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if mode exists and was activated.",
-                "line": 1625,
+                "line": 1859,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109316,7 +109769,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Active mode name.",
-                "line": 1632,
+                "line": 1866,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109332,7 +109785,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LProvinceRegistry\".",
-                "line": 1639,
+                "line": 1873,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -109355,7 +109808,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 1644,
+                "line": 1878,
                 "file": "src/lua_api/province_api.rs"
               }
             ]
@@ -113461,7 +113914,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1756,
+            "line": 1836,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113477,7 +113930,7 @@
             "typed_params": [],
             "inferred_return": "number, number, number, number",
             "return_description": "Red, green, blue, alpha channels (0â€“1).",
-            "line": 1770,
+            "line": 1850,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113512,7 +113965,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1783,
+            "line": 1863,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113528,7 +113981,7 @@
             "typed_params": [],
             "inferred_return": "number, number, number, number",
             "return_description": "Red, green, blue, alpha channels (0â€“1).",
-            "line": 1794,
+            "line": 1874,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113587,7 +114040,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1816,
+            "line": 1896,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113628,7 +114081,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1868,
+            "line": 1948,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113675,7 +114128,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1888,
+            "line": 1968,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113734,7 +114187,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1914,
+            "line": 1994,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113757,7 +114210,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1937,
+            "line": 2017,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113786,7 +114239,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1949,
+            "line": 2029,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113845,7 +114298,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1966,
+            "line": 2046,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113868,7 +114321,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1996,
+            "line": 2076,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113933,7 +114386,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "No return value.",
-            "line": 2015,
+            "line": 2095,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -113956,7 +114409,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "No return value.",
-            "line": 2026,
+            "line": 2106,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114027,7 +114480,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2049,
+            "line": 2129,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114050,7 +114503,143 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2109,
+            "line": 2189,
+            "file": "src/lua_api/render_api.rs"
+          },
+          {
+            "name": "drawText",
+            "lua_name": "lurek.render.drawText",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Draws text using the active font with image-like transform parameters on the GPU.",
+            "full_doc": "Draws text using the active font with image-like transform parameters on the GPU.\n@param | text | string | Text to render.\n@param | x | number | X position.\n@param | y | number | Y position.\n@param | rotation | number? | Rotation in radians (default 0).\n@param | sx | number? | X scale factor (default 1).\n@param | sy | number? | Y scale factor (defaults to sx).\n@param | ox | number? | Origin offset X in text-local pixels (default 0).\n@param | oy | number? | Origin offset Y in text-local pixels (default 0).",
+            "params_doc": "- `text` â€” `string`: Text to render.\n- `x` â€” `number`: X position.\n- `y` â€” `number`: Y position.\n- `rotation` â€” `number?`: Rotation in radians (default 0).\n- `sx` â€” `number?`: X scale factor (default 1).\n- `sy` â€” `number?`: Y scale factor (defaults to sx).\n- `ox` â€” `number?`: Origin offset X in text-local pixels (default 0).\n- `oy` â€” `number?`: Origin offset Y in text-local pixels (default 0).",
+            "returns_doc": "",
+            "inferred_sig": "(args)",
+            "typed_params": [
+              [
+                "text",
+                "string",
+                false,
+                "Text to render."
+              ],
+              [
+                "x",
+                "number",
+                false,
+                "X position."
+              ],
+              [
+                "y",
+                "number",
+                false,
+                "Y position."
+              ],
+              [
+                "rotation",
+                "number?",
+                true,
+                "Rotation in radians (default 0)."
+              ],
+              [
+                "sx",
+                "number?",
+                true,
+                "X scale factor (default 1)."
+              ],
+              [
+                "sy",
+                "number?",
+                true,
+                "Y scale factor (defaults to sx)."
+              ],
+              [
+                "ox",
+                "number?",
+                true,
+                "Origin offset X in text-local pixels (default 0)."
+              ],
+              [
+                "oy",
+                "number?",
+                true,
+                "Origin offset Y in text-local pixels (default 0)."
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 2204,
+            "file": "src/lua_api/render_api.rs"
+          },
+          {
+            "name": "drawTextWithFont",
+            "lua_name": "lurek.render.drawTextWithFont",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Draws text using a specific font with image-like transform parameters on the GPU.",
+            "full_doc": "Draws text using a specific font with image-like transform parameters on the GPU.\n@param | font | LFont | Font handle to use for this draw.\n@param | text | string | Text to render.\n@param | x | number | X position.\n@param | y | number | Y position.\n@param | rotation | number? | Rotation in radians (default 0).\n@param | sx | number? | X scale factor (default 1).\n@param | sy | number? | Y scale factor (defaults to sx).\n@param | ox | number? | Origin offset X in text-local pixels (default 0).\n@param | oy | number? | Origin offset Y in text-local pixels (default 0).",
+            "params_doc": "- `font` â€” `LFont`: Font handle to use for this draw.\n- `text` â€” `string`: Text to render.\n- `x` â€” `number`: X position.\n- `y` â€” `number`: Y position.\n- `rotation` â€” `number?`: Rotation in radians (default 0).\n- `sx` â€” `number?`: X scale factor (default 1).\n- `sy` â€” `number?`: Y scale factor (defaults to sx).\n- `ox` â€” `number?`: Origin offset X in text-local pixels (default 0).\n- `oy` â€” `number?`: Origin offset Y in text-local pixels (default 0).",
+            "returns_doc": "",
+            "inferred_sig": "",
+            "typed_params": [
+              [
+                "font",
+                "LFont",
+                false,
+                "Font handle to use for this draw."
+              ],
+              [
+                "text",
+                "string",
+                false,
+                "Text to render."
+              ],
+              [
+                "x",
+                "number",
+                false,
+                "X position."
+              ],
+              [
+                "y",
+                "number",
+                false,
+                "Y position."
+              ],
+              [
+                "rotation",
+                "number?",
+                true,
+                "Rotation in radians (default 0)."
+              ],
+              [
+                "sx",
+                "number?",
+                true,
+                "X scale factor (default 1)."
+              ],
+              [
+                "sy",
+                "number?",
+                true,
+                "Y scale factor (defaults to sx)."
+              ],
+              [
+                "ox",
+                "number?",
+                true,
+                "Origin offset X in text-local pixels (default 0)."
+              ],
+              [
+                "oy",
+                "number?",
+                true,
+                "Origin offset Y in text-local pixels (default 0)."
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 2241,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114097,7 +114686,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2121,
+            "line": 2268,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114150,7 +114739,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2165,
+            "line": 2312,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114191,7 +114780,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2207,
+            "line": 2354,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114238,7 +114827,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2238,
+            "line": 2385,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114285,7 +114874,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2270,
+            "line": 2417,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114338,7 +114927,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2295,
+            "line": 2442,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114347,10 +114936,10 @@
             "kind": "function",
             "owner_type": "",
             "description": "Draws rich text composed of individually styled spans at the given position.",
-            "full_doc": "Draws rich text composed of individually styled spans at the given position.\n@param | spans | table | Array of span tables, each with fields: text, r, g, b, a, scale.\n@param | x | number | X position.\n@param | y | number | Y position.",
-            "params_doc": "- `spans` â€” `table`: Array of span tables, each with fields: text, r, g, b, a, scale.\n- `x` â€” `number`: X position.\n- `y` â€” `number`: Y position.",
+            "full_doc": "Draws rich text composed of individually styled spans at the given position.\n@param | spans | table | Array of span tables, each with fields: text, r, g, b, a, scale.\n@param | x | number | X position.\n@param | y | number | Y position.\n@param | rotation | number? | Rotation in radians (default 0).\n@param | sx | number? | X scale factor (default 1).\n@param | sy | number? | Y scale factor (defaults to sx).\n@param | ox | number? | Origin offset X in text-local pixels (default 0).\n@param | oy | number? | Origin offset Y in text-local pixels (default 0).",
+            "params_doc": "- `spans` â€” `table`: Array of span tables, each with fields: text, r, g, b, a, scale.\n- `x` â€” `number`: X position.\n- `y` â€” `number`: Y position.\n- `rotation` â€” `number?`: Rotation in radians (default 0).\n- `sx` â€” `number?`: X scale factor (default 1).\n- `sy` â€” `number?`: Y scale factor (defaults to sx).\n- `ox` â€” `number?`: Origin offset X in text-local pixels (default 0).\n- `oy` â€” `number?`: Origin offset Y in text-local pixels (default 0).",
             "returns_doc": "",
-            "inferred_sig": "(spans_table, x, y)",
+            "inferred_sig": "",
             "typed_params": [
               [
                 "spans",
@@ -114369,11 +114958,41 @@
                 "number",
                 false,
                 "Y position."
+              ],
+              [
+                "rotation",
+                "number?",
+                true,
+                "Rotation in radians (default 0)."
+              ],
+              [
+                "sx",
+                "number?",
+                true,
+                "X scale factor (default 1)."
+              ],
+              [
+                "sy",
+                "number?",
+                true,
+                "Y scale factor (defaults to sx)."
+              ],
+              [
+                "ox",
+                "number?",
+                true,
+                "Origin offset X in text-local pixels (default 0)."
+              ],
+              [
+                "oy",
+                "number?",
+                true,
+                "Origin offset Y in text-local pixels (default 0)."
               ]
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2320,
+            "line": 2472,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114382,10 +115001,10 @@
             "kind": "function",
             "owner_type": "",
             "description": "Draws rich text using a specific font without changing the global active font.",
-            "full_doc": "Draws rich text using a specific font without changing the global active font.\n@param | font | LFont | Font handle to use for this draw.\n@param | spans | table | Array of span tables, each with fields: text, r, g, b, a, scale.\n@param | x | number | X position.\n@param | y | number | Y position.",
-            "params_doc": "- `font` â€” `LFont`: Font handle to use for this draw.\n- `spans` â€” `table`: Array of span tables, each with fields: text, r, g, b, a, scale.\n- `x` â€” `number`: X position.\n- `y` â€” `number`: Y position.",
+            "full_doc": "Draws rich text using a specific font without changing the global active font.\n@param | font | LFont | Font handle to use for this draw.\n@param | spans | table | Array of span tables, each with fields: text, r, g, b, a, scale.\n@param | x | number | X position.\n@param | y | number | Y position.\n@param | rotation | number? | Rotation in radians (default 0).\n@param | sx | number? | X scale factor (default 1).\n@param | sy | number? | Y scale factor (defaults to sx).\n@param | ox | number? | Origin offset X in text-local pixels (default 0).\n@param | oy | number? | Origin offset Y in text-local pixels (default 0).",
+            "params_doc": "- `font` â€” `LFont`: Font handle to use for this draw.\n- `spans` â€” `table`: Array of span tables, each with fields: text, r, g, b, a, scale.\n- `x` â€” `number`: X position.\n- `y` â€” `number`: Y position.\n- `rotation` â€” `number?`: Rotation in radians (default 0).\n- `sx` â€” `number?`: X scale factor (default 1).\n- `sy` â€” `number?`: Y scale factor (defaults to sx).\n- `ox` â€” `number?`: Origin offset X in text-local pixels (default 0).\n- `oy` â€” `number?`: Origin offset Y in text-local pixels (default 0).",
             "returns_doc": "",
-            "inferred_sig": "(font_ud, spans_table, x, y)",
+            "inferred_sig": "",
             "typed_params": [
               [
                 "font",
@@ -114410,11 +115029,41 @@
                 "number",
                 false,
                 "Y position."
+              ],
+              [
+                "rotation",
+                "number?",
+                true,
+                "Rotation in radians (default 0)."
+              ],
+              [
+                "sx",
+                "number?",
+                true,
+                "X scale factor (default 1)."
+              ],
+              [
+                "sy",
+                "number?",
+                true,
+                "Y scale factor (defaults to sx)."
+              ],
+              [
+                "ox",
+                "number?",
+                true,
+                "Origin offset X in text-local pixels (default 0)."
+              ],
+              [
+                "oy",
+                "number?",
+                true,
+                "Origin offset Y in text-local pixels (default 0)."
               ]
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2342,
+            "line": 2514,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114449,7 +115098,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2359,
+            "line": 2544,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114472,7 +115121,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2372,
+            "line": 2557,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114488,7 +115137,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Line width in pixels.",
-            "line": 2385,
+            "line": 2570,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114511,7 +115160,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2393,
+            "line": 2578,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114527,7 +115176,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Point diameter in pixels.",
-            "line": 2406,
+            "line": 2591,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114550,7 +115199,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2414,
+            "line": 2599,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114566,7 +115215,7 @@
             "typed_params": [],
             "inferred_return": "string",
             "return_description": "Current blend mode: \"alpha\", \"add\", \"multiply\", \"replace\", or \"screen\".",
-            "line": 2428,
+            "line": 2613,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114595,7 +115244,7 @@
             ],
             "inferred_return": "LFont",
             "return_description": "The created font handle.",
-            "line": 2441,
+            "line": 2626,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114618,7 +115267,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2457,
+            "line": 2642,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114634,7 +115283,7 @@
             "typed_params": [],
             "inferred_return": "LFont",
             "return_description": "The active font handle.",
-            "line": 2475,
+            "line": 2660,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114650,7 +115299,7 @@
             "typed_params": [],
             "inferred_return": "number[]",
             "return_description": "Array of bundled font sizes such as 8, 10, 12, 16, 20, 24, and 30.",
-            "line": 2491,
+            "line": 2676,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114666,7 +115315,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Array of bundled font names such as font_8 and fontb_8.",
-            "line": 2504,
+            "line": 2689,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114695,7 +115344,7 @@
             ],
             "inferred_return": "LFont",
             "return_description": "The built-in font handle.",
-            "line": 2520,
+            "line": 2705,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114724,7 +115373,7 @@
             ],
             "inferred_return": "LFont",
             "return_description": "The selected built-in font handle.",
-            "line": 2550,
+            "line": 2735,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114747,7 +115396,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2573,
+            "line": 2758,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114763,7 +115412,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when bold is active.",
-            "line": 2618,
+            "line": 2803,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114786,7 +115435,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Cell width in pixels.",
-            "line": 2630,
+            "line": 2815,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114815,7 +115464,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Width in pixels.",
-            "line": 2651,
+            "line": 2836,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114838,7 +115487,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Line height in pixels.",
-            "line": 2669,
+            "line": 2854,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114861,7 +115510,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Line height in pixels.",
-            "line": 2689,
+            "line": 2874,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114890,7 +115539,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2709,
+            "line": 2894,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114913,7 +115562,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Ascent in pixels.",
-            "line": 2732,
+            "line": 2917,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114936,7 +115585,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Descent in pixels.",
-            "line": 2752,
+            "line": 2937,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114965,7 +115614,7 @@
             ],
             "inferred_return": "LuaValue, number",
             "return_description": "Wrapped lines as a table when a font is active, or nil otherwise, followed by the widest line width.",
-            "line": 2773,
+            "line": 2958,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -114994,7 +115643,7 @@
             ],
             "inferred_return": "LImage",
             "return_description": "The loaded image handle.",
-            "line": 2803,
+            "line": 2988,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115023,7 +115672,7 @@
             ],
             "inferred_return": "LCanvas",
             "return_description": "The created canvas handle.",
-            "line": 2893,
+            "line": 3078,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115046,7 +115695,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "No return value.",
-            "line": 2919,
+            "line": 3104,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115069,7 +115718,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2939,
+            "line": 3124,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115085,7 +115734,7 @@
             "typed_params": [],
             "inferred_return": "LCanvas",
             "return_description": "The active canvas handle.",
-            "line": 2968,
+            "line": 3153,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115108,7 +115757,7 @@
             ],
             "inferred_return": "number, number",
             "return_description": "Width and height in pixels.",
-            "line": 2983,
+            "line": 3168,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115137,7 +115786,7 @@
             ],
             "inferred_return": "LSpriteBatch",
             "return_description": "The created sprite batch handle.",
-            "line": 3004,
+            "line": 3189,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115166,7 +115815,7 @@
             ],
             "inferred_return": "LMesh",
             "return_description": "The created mesh handle.",
-            "line": 3031,
+            "line": 3216,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115189,7 +115838,7 @@
             ],
             "inferred_return": "LShader",
             "return_description": "The compiled shader handle.",
-            "line": 3076,
+            "line": 3261,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115212,7 +115861,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3102,
+            "line": 3287,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115228,7 +115877,7 @@
             "typed_params": [],
             "inferred_return": "LShader",
             "return_description": "The active shader handle.",
-            "line": 3131,
+            "line": 3316,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115281,7 +115930,7 @@
             ],
             "inferred_return": "LQuad",
             "return_description": "The created quad.",
-            "line": 3154,
+            "line": 3339,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115297,7 +115946,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 3165,
+            "line": 3350,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115313,7 +115962,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 3177,
+            "line": 3362,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115342,7 +115991,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3191,
+            "line": 3376,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115365,7 +116014,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3204,
+            "line": 3389,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115394,7 +116043,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3218,
+            "line": 3403,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115423,7 +116072,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3233,
+            "line": 3418,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115439,7 +116088,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 3245,
+            "line": 3430,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115462,7 +116111,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3256,
+            "line": 3441,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115503,7 +116152,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3278,
+            "line": 3463,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115519,7 +116168,7 @@
             "typed_params": [],
             "inferred_return": "number, number, number, number",
             "return_description": "x, y, w, h of the scissor rect (empty if none).",
-            "line": 3306,
+            "line": 3491,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115560,7 +116209,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3328,
+            "line": 3513,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115601,7 +116250,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3351,
+            "line": 3536,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115617,7 +116266,7 @@
             "typed_params": [],
             "inferred_return": "boolean, boolean, boolean, boolean",
             "return_description": "Red, green, blue, alpha channel write states.",
-            "line": 3376,
+            "line": 3561,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115640,7 +116289,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3384,
+            "line": 3569,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115656,7 +116305,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True if wireframe mode is on.",
-            "line": 3398,
+            "line": 3583,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115685,7 +116334,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3407,
+            "line": 3592,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115714,7 +116363,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3434,
+            "line": 3619,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115749,7 +116398,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3469,
+            "line": 3654,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115765,7 +116414,7 @@
             "typed_params": [],
             "inferred_return": "string, string, number",
             "return_description": "Action name, compare mode name, and reference value.",
-            "line": 3512,
+            "line": 3697,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115781,7 +116430,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 3543,
+            "line": 3728,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115810,7 +116459,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3555,
+            "line": 3740,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115826,7 +116475,7 @@
             "typed_params": [],
             "inferred_return": "string, boolean",
             "return_description": "Depth mode name and whether depth writes are enabled.",
-            "line": 3581,
+            "line": 3766,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115842,7 +116491,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Window width.",
-            "line": 3603,
+            "line": 3788,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115858,7 +116507,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Window height.",
-            "line": 3611,
+            "line": 3796,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115874,7 +116523,7 @@
             "typed_params": [],
             "inferred_return": "number, number",
             "return_description": "Width and height in pixels.",
-            "line": 3619,
+            "line": 3804,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115909,7 +116558,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3632,
+            "line": 3817,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115925,7 +116574,7 @@
             "typed_params": [],
             "inferred_return": "string, string, number",
             "return_description": "Min filter, mag filter, anisotropy level.",
-            "line": 3645,
+            "line": 3830,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115941,7 +116590,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Stats table with rendering counters.",
-            "line": 3671,
+            "line": 3856,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115964,7 +116613,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3706,
+            "line": 3891,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -115987,7 +116636,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3723,
+            "line": 3908,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116034,7 +116683,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3745,
+            "line": 3930,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116050,7 +116699,7 @@
             "typed_params": [],
             "inferred_return": "LShape",
             "return_description": "The created shape handle.",
-            "line": 3780,
+            "line": 3965,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116066,7 +116715,7 @@
             "typed_params": [],
             "inferred_return": "LDrawLayer",
             "return_description": "The created draw layer.",
-            "line": 3793,
+            "line": 3978,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116125,7 +116774,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3812,
+            "line": 3997,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116196,7 +116845,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3849,
+            "line": 4034,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116231,7 +116880,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3883,
+            "line": 4068,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116290,7 +116939,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 3944,
+            "line": 4129,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116325,7 +116974,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4007,
+            "line": 4192,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116372,7 +117021,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4053,
+            "line": 4238,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116419,7 +117068,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4146,
+            "line": 4331,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116442,7 +117091,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4189,
+            "line": 4374,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116465,7 +117114,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4202,
+            "line": 4387,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116488,7 +117137,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4215,
+            "line": 4400,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116547,7 +117196,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4235,
+            "line": 4420,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116582,7 +117231,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4305,
+            "line": 4490,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116605,7 +117254,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4326,
+            "line": 4511,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116634,7 +117283,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4346,
+            "line": 4531,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116657,7 +117306,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4360,
+            "line": 4545,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116673,7 +117322,7 @@
             "typed_params": [],
             "inferred_return": "string",
             "return_description": "Active layer name.",
-            "line": 4373,
+            "line": 4558,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116702,7 +117351,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4382,
+            "line": 4567,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116725,7 +117374,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the layer is visible.",
-            "line": 4394,
+            "line": 4579,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116748,7 +117397,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Z-order value (default 0 if unset).",
-            "line": 4403,
+            "line": 4588,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116777,7 +117426,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4412,
+            "line": 4597,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116800,7 +117449,7 @@
             ],
             "inferred_return": "LObjModel",
             "return_description": "The loaded OBJ model handle.",
-            "line": 4426,
+            "line": 4611,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116823,7 +117472,7 @@
             ],
             "inferred_return": "LObjModel",
             "return_description": "The loaded model handle.",
-            "line": 4449,
+            "line": 4634,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -116839,7 +117488,7 @@
             "typed_params": [],
             "inferred_return": "LDepthSorter",
             "return_description": "A fresh depth sorter with no queued entries.",
-            "line": 4469,
+            "line": 4654,
             "file": "src/lua_api/render_api.rs"
           }
         ],
@@ -117768,7 +118417,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Vertex count.",
-                "line": 1076,
+                "line": 1156,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -117791,7 +118440,7 @@
                 ],
                 "inferred_return": "number, number, number, number, number, number, number, number",
                 "return_description": "x, y, u, v, r, g, b, a.",
-                "line": 1087,
+                "line": 1167,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -117820,7 +118469,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1101,
+                "line": 1181,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -117843,7 +118492,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1133,
+                "line": 1213,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -117859,7 +118508,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the mesh was valid and was released.",
-                "line": 1151,
+                "line": 1231,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -117882,7 +118531,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 1159,
+                "line": 1239,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -117898,7 +118547,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LMesh\".",
-                "line": 1165,
+                "line": 1245,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -117920,7 +118569,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Opaque shader handle identifier.",
-                "line": 1179,
+                "line": 1259,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -117949,7 +118598,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1184,
+                "line": 1264,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -117972,7 +118621,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the uniform exists.",
-                "line": 1199,
+                "line": 1279,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -117988,7 +118637,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the shader was valid and was released.",
-                "line": 1209,
+                "line": 1289,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118011,7 +118660,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 1224,
+                "line": 1304,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118027,7 +118676,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LShader\".",
-                "line": 1230,
+                "line": 1310,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -118049,7 +118698,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number, number, number",
                 "return_description": "x, y, width, height in texture pixels.",
-                "line": 1254,
+                "line": 1334,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118090,7 +118739,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1263,
+                "line": 1343,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118106,7 +118755,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "Source texture width and height.",
-                "line": 1276,
+                "line": 1356,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118129,7 +118778,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 1281,
+                "line": 1361,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118145,7 +118794,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LQuad\".",
-                "line": 1287,
+                "line": 1367,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -118167,7 +118816,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Command count.",
-                "line": 1362,
+                "line": 1442,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118183,7 +118832,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1371,
+                "line": 1451,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118224,7 +118873,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1385,
+                "line": 1465,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118247,7 +118896,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1399,
+                "line": 1479,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118294,7 +118943,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1414,
+                "line": 1494,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118353,7 +119002,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1445,
+                "line": 1525,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118394,7 +119043,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1462,
+                "line": 1542,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118441,7 +119090,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1485,
+                "line": 1565,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118500,7 +119149,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1516,
+                "line": 1596,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118529,7 +119178,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1544,
+                "line": 1624,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118570,7 +119219,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1572,
+                "line": 1652,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118593,7 +119242,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1583,
+                "line": 1663,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118652,7 +119301,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1606,
+                "line": 1686,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118711,7 +119360,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1649,
+                "line": 1729,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118734,7 +119383,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 1682,
+                "line": 1762,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118750,7 +119399,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LShape\".",
-                "line": 1688,
+                "line": 1768,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -118785,7 +119434,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1702,
+                "line": 1782,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118801,7 +119450,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1710,
+                "line": 1790,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118817,7 +119466,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1723,
+                "line": 1803,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118833,7 +119482,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Queue length.",
-                "line": 1732,
+                "line": 1812,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118849,7 +119498,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LDrawLayer\".",
-                "line": 1736,
+                "line": 1816,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118872,7 +119521,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 1741,
+                "line": 1821,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -118894,7 +119543,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Vertex count.",
-                "line": 4491,
+                "line": 4676,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118910,7 +119559,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Face count.",
-                "line": 4497,
+                "line": 4682,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118926,7 +119575,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "UV coordinate count.",
-                "line": 4501,
+                "line": 4686,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118942,7 +119591,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Normal count.",
-                "line": 4505,
+                "line": 4690,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -118977,7 +119626,7 @@
                 ],
                 "inferred_return": "LImage",
                 "return_description": "The rendered image handle.",
-                "line": 4514,
+                "line": 4699,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -119012,7 +119661,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}.",
-                "line": 4556,
+                "line": 4741,
                 "file": "src/lua_api/render_api.rs"
               }
             ]

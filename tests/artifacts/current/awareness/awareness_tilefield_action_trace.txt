@@ -1,0 +1,4 @@
+blue_sight_cells=18
+blue_action_cells=47
+red_shared_sight_cells=18
+line_of_action_blocked=false

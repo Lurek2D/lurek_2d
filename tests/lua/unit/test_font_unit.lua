@@ -341,6 +341,16 @@ describe("lurek.render font functions", function()
     end)
   end)
 
+  -- @covers lurek.render.drawTextWithFont
+  it("drawTextWithFont accepts GPU transform parameters", function()
+    local font = lurek.render.newFont("font_12")
+    expect_no_error(function()
+      lurek.render.setColor(0.7, 1.0, 0.8, 0.9)
+      lurek.render.drawTextWithFont(font, "A", 12, 14, 0.25, 1.5, 1.25, 2, 3)
+      lurek.render.setColor(1, 1, 1, 1)
+    end)
+  end)
+
   -- @covers lurek.render.printfWithFont
   it("printfWithFont is callable", function()
     local font = lurek.render.newFont("font_12")

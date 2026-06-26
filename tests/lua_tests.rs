@@ -215,6 +215,11 @@ fn lua_evidence_agent_evidence() {
 }
 
 #[test]
+fn lua_evidence_awareness_evidence() {
+    run_lua_test("evidence/test_awareness_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_automation_evidence() {
     run_lua_test("evidence/test_automation_evidence.lua");
 }
@@ -395,6 +400,11 @@ fn lua_evidence_tilefield_evidence() {
 }
 
 #[test]
+fn lua_evidence_tilelight_evidence() {
+    run_lua_test("evidence/test_tilelight_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_terminal_evidence() {
     run_lua_test("evidence/test_terminal_evidence.lua");
 }
@@ -430,6 +440,14 @@ fn lua_golden_agent_golden() {
     run_lua_golden_test(
         "golden/test_agent_golden.lua",
         &["evidence/test_agent_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_awareness_golden() {
+    run_lua_golden_test(
+        "golden/test_awareness_golden.lua",
+        &["evidence/test_awareness_evidence.lua"],
     );
 }
 
@@ -726,6 +744,14 @@ fn lua_golden_tilefield_golden() {
     run_lua_golden_test(
         "golden/test_tilefield_golden.lua",
         &["evidence/test_tilefield_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_tilelight_golden() {
+    run_lua_golden_test(
+        "golden/test_tilelight_golden.lua",
+        &["evidence/test_tilelight_evidence.lua"],
     );
 }
 

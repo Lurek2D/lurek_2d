@@ -15,7 +15,7 @@
 - Source path: `src/render`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `116` functions, `14` types, `89` methods
+- Lua API surface: `118` functions, `14` types, `89` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -421,6 +421,8 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.drawNineSlice(slice, x, y, w, h) -> nil`: Draws a 9-slice image stretched to fill the given rectangle, keeping borders unscaled.
 - `lurek.render.drawPath(path, mode?, close?) -> nil`: Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
 - `lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segments?) -> nil`: Draws a quadratic Bezier curve through start, control, and end points.
+- `lurek.render.drawText(text, x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Draws text using the active font with image-like transform parameters on the GPU.
+- `lurek.render.drawTextWithFont(font, text, x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Draws text using a specific font with image-like transform parameters on the GPU.
 - `lurek.render.drawq(image, quad, x?, y?, r?, sx?, sy?, ox?, oy?) -> nil`: Draws a sub-region of an image defined by a Quad, with optional transform.
 - `lurek.render.ellipse(mode, x, y, rx, ry) -> nil`: Draws a filled or outlined ellipse at the given position.
 - `lurek.render.flushSortGroup(id) -> nil`: Ends a sort group and emits all accumulated draw calls in sorted order.
@@ -477,8 +479,8 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.pop() -> nil`: Pops the top transformation matrix from the transform stack, restoring the previous one.
 - `lurek.render.popLayer(id) -> nil`: Ends a compositing layer and composites it with the previous content.
 - `lurek.render.print(text, x?, y?, scale?) -> nil`: Draws text using the active font at the given position.
-- `lurek.render.printRich(spans, x, y) -> nil`: Draws rich text composed of individually styled spans at the given position.
-- `lurek.render.printRichWithFont(font, spans, x, y) -> nil`: Draws rich text using a specific font without changing the global active font.
+- `lurek.render.printRich(spans, x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Draws rich text composed of individually styled spans at the given position.
+- `lurek.render.printRichWithFont(font, spans, x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Draws rich text using a specific font without changing the global active font.
 - `lurek.render.printRotated(text, x, y, angle, scale?) -> nil`: Draws text centered and rotated around its midpoint.
 - `lurek.render.printRotatedWithFont(font, text, x, y, angle, scale?) -> nil`: Draws text centered and rotated around its midpoint using a specific font without changing the global active font.
 - `lurek.render.printWithFont(font, text, x?, y?, scale?) -> nil`: Draws text using a specific font without changing the global active font.

@@ -154,6 +154,84 @@ mod async_pool_tests {
     }
 }
 
+mod graph_path_tests {
+    use lurek2d::pathfind::{
+        build_graph_adjacency_map, build_province_adjacency_map, find_graph_route_bfs,
+        find_graph_route_dijkstra, find_province_route_bfs, find_province_route_dijkstra,
+        graph_connected, graph_connected_components, province_connected_components,
+        provinces_connected,
+    };
+
+    fn sample_adjacency() -> std::collections::HashMap<u32, Vec<u32>> {
+        build_province_adjacency_map(&[(1, 2), (2, 3), (1, 4), (4, 3), (9, 10), (0, 11)])
+    }
+
+    #[test]
+    fn province_adjacency_filters_zero_and_deduplicates_pairs() {
+        let adjacency = build_province_adjacency_map(&[(1, 2), (2, 1), (1, 0), (2, 2)]);
+        assert_eq!(adjacency.get(&1), Some(&vec![2]));
+        assert_eq!(adjacency.get(&2), Some(&vec![1]));
+        assert!(!adjacency.contains_key(&0));
+    }
+
+    #[test]
+    fn province_bfs_returns_fewest_hop_path() {
+        let adjacency = sample_adjacency();
+        let route = find_province_route_bfs(&adjacency, 1, 3).expect("route");
+        assert_eq!(route.len(), 3);
+        assert_eq!(route.first(), Some(&1));
+        assert_eq!(route.last(), Some(&3));
+    }
+
+    #[test]
+    fn province_dijkstra_uses_edge_costs() {
+        let adjacency = sample_adjacency();
+        let route = find_province_route_dijkstra(&adjacency, 1, 3, &|a, b| {
+            if (a, b) == (1, 2) || (a, b) == (2, 3) {
+                50.0
+            } else {
+                1.0
+            }
+        })
+        .expect("route");
+        assert_eq!(route, vec![1, 4, 3]);
+    }
+
+    #[test]
+    fn province_components_include_isolated_supplied_nodes() {
+        let adjacency = sample_adjacency();
+        let components = province_connected_components(&adjacency, &[1, 2, 3, 4, 8, 9, 10]);
+        assert_eq!(components, vec![vec![1, 2, 3, 4], vec![8], vec![9, 10]]);
+        assert!(provinces_connected(&adjacency, 1, 3));
+        assert!(!provinces_connected(&adjacency, 1, 9));
+    }
+
+    #[test]
+    fn generic_graph_routes_support_directed_edges_and_costs() {
+        let adjacency = build_graph_adjacency_map(&[(1, 2), (2, 3), (1, 4), (4, 3)], true);
+        assert_eq!(find_graph_route_bfs(&adjacency, 1, 3), Some(vec![1, 2, 3]));
+        assert_eq!(find_graph_route_bfs(&adjacency, 3, 1), None);
+
+        let route = find_graph_route_dijkstra(&adjacency, 1, 3, &|a, b| {
+            if (a, b) == (1, 2) || (a, b) == (2, 3) {
+                20.0
+            } else {
+                1.0
+            }
+        });
+        assert_eq!(route, Some(vec![1, 4, 3]));
+    }
+
+    #[test]
+    fn generic_graph_components_include_supplied_isolated_nodes() {
+        let adjacency = build_graph_adjacency_map(&[(7, 8), (8, 9), (20, 21)], false);
+        let components = graph_connected_components(&adjacency, &[7, 8, 9, 10, 20, 21]);
+        assert_eq!(components, vec![vec![7, 8, 9], vec![10], vec![20, 21]]);
+        assert!(graph_connected(&adjacency, 7, 9));
+        assert!(!graph_connected(&adjacency, 7, 20));
+    }
+}
+
 #[cfg(feature = "flownet")]
 mod graph_nav_tests {
     use lurek2d::flownet::core::Graph;

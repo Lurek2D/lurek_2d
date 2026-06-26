@@ -1,91 +1,22 @@
-//! Computes province-level traversal data so gameplay systems can ask for paths, components, and neighbor aggregates.
-//! Owns adjacency-map builders plus BFS, Dijkstra, connected-component, and isolation helpers over province graphs.
-//! Provides the query boundary between raw neighbor relationships and higher-level movement or analytics operations.
-//! Also aggregates owner-tagged values across province groups, keeping route analysis close to topology utilities.
-//! Use this file when province path cost rules, graph traversal outputs, or connectivity helpers need adjustment.
-//! Neighboring edits usually involve ProvinceRegistry adjacency data and gameplay systems that consume path results.
+//! Adapts province registry data to pathfinding-owned graph traversal helpers.
+//! Keeps province-specific owner and attribute aggregation near the registry-facing module.
+//! Path search, Dijkstra, connectivity, and component traversal live in `pathfind::graph_path`.
+//! Open this file when province-specific routing adapters or owner-attribute analytics need revision.
 
-use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
-
-#[derive(Copy, Clone, Debug)]
-struct QueueNode {
-    cost: f64,
-    id: u32,
-}
-
-impl PartialEq for QueueNode {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id && self.cost.to_bits() == other.cost.to_bits()
-    }
-}
-
-impl Eq for QueueNode {}
-
-impl PartialOrd for QueueNode {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for QueueNode {
-    fn cmp(&self, other: &Self) -> Ordering {
-        // Reverse ordering so BinaryHeap behaves as min-heap by cost.
-        other
-            .cost
-            .total_cmp(&self.cost)
-            .then_with(|| self.id.cmp(&other.id))
-    }
-}
+use crate::pathfind::graph_path::{
+    build_province_adjacency_map, find_province_route_bfs, find_province_route_dijkstra,
+    province_connected_components, provinces_connected,
+};
+use std::collections::HashMap;
 
 /// Build an adjacency map from undirected `(a, b)` province-id pairs.
 pub fn build_adjacency_map(pairs: &[(u32, u32)]) -> HashMap<u32, Vec<u32>> {
-    let mut out: HashMap<u32, Vec<u32>> = HashMap::new();
-    for &(a, b) in pairs {
-        if a == 0 || b == 0 || a == b {
-            continue;
-        }
-        out.entry(a).or_default().push(b);
-        out.entry(b).or_default().push(a);
-    }
-    for neighbors in out.values_mut() {
-        neighbors.sort_unstable();
-        neighbors.dedup();
-    }
-    out
+    build_province_adjacency_map(pairs)
 }
 
 /// Find the shortest path by edge count (BFS).
 pub fn find_route_bfs(adjacency: &HashMap<u32, Vec<u32>>, from: u32, to: u32) -> Option<Vec<u32>> {
-    if from == 0 || to == 0 {
-        return None;
-    }
-    if from == to {
-        return Some(vec![from]);
-    }
-
-    let mut queue = VecDeque::new();
-    let mut visited: HashSet<u32> = HashSet::new();
-    let mut prev: HashMap<u32, u32> = HashMap::new();
-
-    queue.push_back(from);
-    visited.insert(from);
-
-    while let Some(cur) = queue.pop_front() {
-        if let Some(neighbors) = adjacency.get(&cur) {
-            for &next in neighbors {
-                if visited.insert(next) {
-                    prev.insert(next, cur);
-                    if next == to {
-                        return Some(reconstruct_path(&prev, from, to));
-                    }
-                    queue.push_back(next);
-                }
-            }
-        }
-    }
-
-    None
+    find_province_route_bfs(adjacency, from, to)
 }
 
 /// Find the lowest-cost route using Dijkstra and a per-edge cost callback.
@@ -95,92 +26,17 @@ pub fn find_route_dijkstra(
     to: u32,
     edge_cost: &dyn Fn(u32, u32) -> f64,
 ) -> Option<Vec<u32>> {
-    if from == 0 || to == 0 {
-        return None;
-    }
-    if from == to {
-        return Some(vec![from]);
-    }
-
-    let mut dist: HashMap<u32, f64> = HashMap::new();
-    let mut prev: HashMap<u32, u32> = HashMap::new();
-    let mut heap = BinaryHeap::new();
-
-    dist.insert(from, 0.0);
-    heap.push(QueueNode {
-        cost: 0.0,
-        id: from,
-    });
-
-    while let Some(QueueNode { cost, id }) = heap.pop() {
-        if id == to {
-            return Some(reconstruct_path(&prev, from, to));
-        }
-        if let Some(best) = dist.get(&id) {
-            if cost > *best {
-                continue;
-            }
-        }
-
-        if let Some(neighbors) = adjacency.get(&id) {
-            for &next in neighbors {
-                let w = edge_cost(id, next);
-                if !w.is_finite() || w <= 0.0 {
-                    continue;
-                }
-                let new_cost = cost + w;
-                let old = *dist.get(&next).unwrap_or(&f64::INFINITY);
-                if new_cost < old {
-                    dist.insert(next, new_cost);
-                    prev.insert(next, id);
-                    heap.push(QueueNode {
-                        cost: new_cost,
-                        id: next,
-                    });
-                }
-            }
-        }
-    }
-
-    None
+    find_province_route_dijkstra(adjacency, from, to, edge_cost)
 }
 
 /// Returns all connected components as sorted arrays of province ids.
 pub fn connected_components(adjacency: &HashMap<u32, Vec<u32>>, nodes: &[u32]) -> Vec<Vec<u32>> {
-    let mut out: Vec<Vec<u32>> = Vec::new();
-    let mut visited: HashSet<u32> = HashSet::new();
-
-    for &start in nodes {
-        if start == 0 || !visited.insert(start) {
-            continue;
-        }
-
-        let mut queue = VecDeque::new();
-        let mut comp = Vec::new();
-        queue.push_back(start);
-
-        while let Some(cur) = queue.pop_front() {
-            comp.push(cur);
-            if let Some(neighbors) = adjacency.get(&cur) {
-                for &next in neighbors {
-                    if visited.insert(next) {
-                        queue.push_back(next);
-                    }
-                }
-            }
-        }
-
-        comp.sort_unstable();
-        out.push(comp);
-    }
-
-    out.sort_by_key(|c| c.first().copied().unwrap_or(u32::MAX));
-    out
+    province_connected_components(adjacency, nodes)
 }
 
 /// True when `to` is reachable from `from`.
 pub fn is_connected(adjacency: &HashMap<u32, Vec<u32>>, from: u32, to: u32) -> bool {
-    find_route_bfs(adjacency, from, to).is_some()
+    provinces_connected(adjacency, from, to)
 }
 
 /// Returns province ids that have no adjacent province with the same owner value.
@@ -227,19 +83,4 @@ pub fn total_numeric_attr_for_owner(
         }
     }
     sum
-}
-
-fn reconstruct_path(prev: &HashMap<u32, u32>, from: u32, to: u32) -> Vec<u32> {
-    let mut out = vec![to];
-    let mut cur = to;
-    while cur != from {
-        if let Some(&p) = prev.get(&cur) {
-            cur = p;
-            out.push(cur);
-        } else {
-            break;
-        }
-    }
-    out.reverse();
-    out
 }

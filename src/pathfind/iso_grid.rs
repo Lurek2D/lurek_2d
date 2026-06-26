@@ -41,6 +41,14 @@ impl IsoGrid {
             self.cost[i] = cost;
         }
     }
+    /// Return whether cell `(x, y)` is blocked; out-of-bounds cells are treated as blocked.
+    pub fn is_blocked(&self, x: u32, y: u32) -> bool {
+        self.is_blocked_or_oob(x, y)
+    }
+    /// Return the movement cost for cell `(x, y)`, or `None` when out of bounds.
+    pub fn cost(&self, x: u32, y: u32) -> Option<f32> {
+        self.index(x, y).map(|i| self.cost[i])
+    }
     /// Run A\* from `from` to `to`; return an ordered path or `None` when unreachable.
     pub fn find_path(&self, from: (u32, u32), to: (u32, u32)) -> Option<Vec<(u32, u32)>> {
         if self.is_blocked_or_oob(from.0, from.1) || self.is_blocked_or_oob(to.0, to.1) {

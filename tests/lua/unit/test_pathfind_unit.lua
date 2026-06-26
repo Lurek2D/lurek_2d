@@ -306,6 +306,37 @@ describe("pathfind module functions", function()
         expect_type("userdata", new_hex_grid())
     end)
 
+    -- @covers lurek.pathfind.newIsoGrid
+    it("newIsoGrid creates userdata", function()
+        local grid = lurek.pathfind.newIsoGrid(4, 4)
+        expect_equal("LIsoGrid", grid:type())
+    end)
+
+    -- @covers lurek.pathfind.newIsoGridFromField
+    it("newIsoGridFromField creates an iso grid from an iso tilefield", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4, topology = "iso_square" })
+        field:setBlock(2, 2, 1, "move", true)
+        field:setCost(3, 2, 1, "move", 4)
+
+        local grid = lurek.pathfind.newIsoGridFromField(field, { level = 1, channel = "move" })
+
+        expect_true(grid:isBlocked(2, 2))
+        expect_equal(4, grid:getCost(3, 2))
+        expect_type("table", grid:findPath(1, 1, 4, 4))
+    end)
+
+    -- @covers lurek.pathfind.newHexGridFromField
+    it("newHexGridFromField creates a hex grid from a hex tilefield", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4, topology = "hex" })
+        field:setBlock(2, 2, 1, "move", true)
+        field:setCost(3, 2, 1, "move", 4)
+
+        local grid = lurek.pathfind.newHexGridFromField(field, { level = 1, channel = "move" })
+
+        expect_true(grid:isBlocked(2, 2))
+        expect_type("table", grid:findPath(1, 1, 4, 4))
+    end)
+
     -- @covers lurek.pathfind.newJpsGrid
     it("newJpsGrid creates userdata", function()
         expect_type("userdata", new_jps_grid())
@@ -329,6 +360,75 @@ describe("pathfind module functions", function()
         expect_equal(8, result.height)
         expect_type("table", result.cells)
         expect_true(#result.cells > 0)
+    end)
+
+    -- @covers lurek.pathfind.graphRoute
+    it("graphRoute finds bfs and weighted dijkstra paths over graph ids", function()
+        local edges = {
+            { from = 1, to = 2 },
+            { from = 2, to = 3 },
+            { from = 1, to = 4 },
+            { from = 4, to = 3 },
+        }
+        local bfs = lurek.pathfind.graphRoute(edges, 1, 3)
+        expect_equal(1, bfs[1])
+        expect_equal(3, bfs[#bfs])
+        local weighted = lurek.pathfind.graphRoute(edges, 1, 3, {
+            algorithm = "dijkstra",
+            cost = function(from, to)
+                if (from == 1 and to == 2) or (from == 2 and to == 3) then
+                    return 20
+                end
+                return 1
+            end,
+        })
+        expect_equal(1, weighted[1])
+        expect_equal(4, weighted[2])
+        expect_equal(3, weighted[3])
+    end)
+
+    -- @covers lurek.pathfind.graphRoutes
+    it("graphRoutes batches route requests with shared graph options", function()
+        local edges = {
+            { 1, 2 },
+            { 2, 3 },
+            { 4, 5 },
+        }
+        local routes = lurek.pathfind.graphRoutes(edges, {
+            { from = 1, to = 3 },
+            { from = 1, to = 5 },
+            { from = 4, to = 5 },
+        })
+        expect_equal(1, routes[1][1])
+        expect_equal(3, routes[1][#routes[1]])
+        expect_nil(routes[2])
+        expect_equal(4, routes[3][1])
+        expect_equal(5, routes[3][2])
+    end)
+
+    -- @covers lurek.pathfind.graphConnectedComponents
+    it("graphConnectedComponents includes supplied isolated nodes", function()
+        local components = lurek.pathfind.graphConnectedComponents({
+            { from = 7, to = 8 },
+            { from = 8, to = 9 },
+            { from = 20, to = 21 },
+        }, { 7, 8, 9, 10, 20, 21 })
+        expect_equal(3, #components)
+        expect_equal(7, components[1][1])
+        expect_equal(9, components[1][3])
+        expect_equal(10, components[2][1])
+        expect_equal(20, components[3][1])
+    end)
+
+    -- @covers lurek.pathfind.graphConnected
+    it("graphConnected respects directed graph options", function()
+        local edges = {
+            { from = 1, to = 2 },
+            { from = 2, to = 3 },
+        }
+        expect_true(lurek.pathfind.graphConnected(edges, 1, 3, { directed = true }))
+        expect_false(lurek.pathfind.graphConnected(edges, 3, 1, { directed = true }))
+        expect_true(lurek.pathfind.graphConnected(edges, 3, 1))
     end)
 
     -- @covers lurek.pathfind.newGoalMap

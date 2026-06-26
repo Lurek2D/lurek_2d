@@ -71,7 +71,7 @@ fn parse_save_gif_options(opts: Option<LuaTable>) -> LuaResult<AnimatedGifOption
     Ok(out)
 }
 
-/// Lua-side handle for a province id grid decoded from an image.
+/// Lua-side compatibility handle for a province id grid decoded by the province subsystem.
 pub struct LuaProvinceGrid {
     /// Province grid, color mapping, adjacency, spans, and polygon extraction data.
     inner: ProvinceGrid,
@@ -837,7 +837,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- newProvinceGrid --
-    /// Loads a province id grid from an image file under the current game directory.
+    /// Loads a province id grid from an image file under the current game directory. This is a compatibility facade over the province subsystem.
     /// @param | filename | string | Province map image filename relative to game directory.
     /// @return | LProvinceGrid | New province grid handle.
     tbl.set(

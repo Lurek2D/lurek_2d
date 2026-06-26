@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-25T15:01:19.711753+00:00",
+    "generated": "2026-06-26T14:20:47.337323+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6273,
-    "marker_covered": 6248,
+    "total_api_functions": 6289,
+    "marker_covered": 6257,
     "describe_covered": 152,
     "describe_coverage_pct": 2.4,
-    "heuristic_covered": 0,
-    "total_covered": 6273,
+    "heuristic_covered": 7,
+    "total_covered": 6289,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -34157,11 +34157,11 @@
       ]
     },
     "pathfind": {
-      "total": 191,
-      "marker_covered": 191,
+      "total": 205,
+      "marker_covered": 198,
       "describe_covered": 0,
-      "heuristic_covered": 0,
-      "covered": 191,
+      "heuristic_covered": 7,
+      "covered": 205,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -34171,6 +34171,42 @@
       ],
       "describe_files": [],
       "functions": [
+        {
+          "lua_name": "lurek.pathfind.graphRoute",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.pathfind.graphRoutes",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.pathfind.graphConnectedComponents",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.pathfind.graphConnected",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
         {
           "lua_name": "lurek.pathfind.newNavGrid",
           "kind": "function",
@@ -34344,6 +34380,33 @@
         },
         {
           "lua_name": "lurek.pathfind.newNavGridFromField",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.pathfind.newIsoGridFromField",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.pathfind.newIsoGrid",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.pathfind.newHexGridFromField",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -35014,6 +35077,69 @@
           "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LIsoGrid:setBlocked",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LIsoGrid:setCost",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LIsoGrid:isBlocked",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LIsoGrid:getCost",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LIsoGrid:findPath",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LIsoGrid:type",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LIsoGrid:typeOf",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
           "covered": true,
           "describe_score": 0.0
         },
@@ -43293,11 +43419,11 @@
       ]
     },
     "render": {
-      "total": 205,
-      "marker_covered": 205,
+      "total": 207,
+      "marker_covered": 207,
       "describe_covered": 2,
       "heuristic_covered": 0,
-      "covered": 205,
+      "covered": 207,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 1.0,
       "describe_score": 0.01,
@@ -43450,6 +43576,24 @@
         },
         {
           "lua_name": "lurek.render.drawMany",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.render.drawText",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.render.drawTextWithFont",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,

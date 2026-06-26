@@ -1,0 +1,7 @@
+map=50x50
+typed_refs=25
+probe_1=5,5:crate:crate.png
+probe_2=15,5:torch:torch.png
+probe_3=25,5:banner:banner.png
+probe_4=35,5:glass:smoked_glass.png
+probe_5=45,5:gate:gate.png

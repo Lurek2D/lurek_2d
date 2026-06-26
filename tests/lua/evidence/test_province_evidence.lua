@@ -44,10 +44,10 @@ describe("Evidence: lurek.province fixture-derived artifacts", function()
         save_png(Fixture.render_span_runs(loaded), OUT .. "province_span_runs.png")
     end)
 
-    -- Does: Builds adjacency border segments and finds a strategic route across neighboring provinces.
-    -- Shows: The PNGs overlay province-pair borders and a multi-province route so topology extraction and routing are directly inspectable.
+    -- Does: Builds adjacency border segments and asks the public province route adapter for a strategic path across neighboring provinces.
+    -- Shows: The PNGs overlay province-pair borders and a multi-province route so topology extraction and route-adapter output are directly inspectable.
     -- Artifact: tests/artifacts/current/province/province_border_segments.png, province_route_trace.png
-    -- Why: This is meaningful because borderSegments, adjacencies, and findRoute share the same province graph extracted from the imported registry.
+    -- Why: This is meaningful because province owns the extracted adjacency surface while reusable route search is delegated below the adapter boundary.
     it("PNG: border topology and route trace", function()
         local loaded = Fixture.load_registry(registry_name("borders"), OUT .. "province_sanitized_map.png")
         expect_true(#loaded.registry:borderSegments() > 0)
