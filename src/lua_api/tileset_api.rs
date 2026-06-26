@@ -1,4 +1,4 @@
-//! Registers lurek.lua_api Lua API bindings for tileset api, including validation, conversions, and userdata.
+//! Registers the `lurek.tileset` Lua API, keeping Lua-table conversion at the binding edge.
 
 use super::SharedState;
 use crate::tilefield::{TileObjectCatalog, TileRef};
@@ -134,383 +134,397 @@ fn color4_from_table(table: &LuaTable, api: &str, field: &str) -> LuaResult<[f32
     ])
 }
 
-fn parse_physics_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectPhysics> {
-    let mut physics = TileObjectPhysics::default();
-    physics.shape = shape_kind_from_table(&table, api, physics.shape)?;
-    physics.body_type = table
-        .get::<_, Option<String>>("bodyType")?
-        .or_else(|| table.get::<_, Option<String>>("type").ok().flatten())
-        .unwrap_or(physics.body_type);
-    physics.mass = table
-        .get::<_, Option<f32>>("mass")?
-        .map(|value| positive_f32(value, api, "physics.mass"))
-        .transpose()?;
-    physics.density = positive_f32(
-        table
-            .get::<_, Option<f32>>("density")?
-            .unwrap_or(physics.density),
-        api,
-        "physics.density",
-    )?;
-    physics.friction = unit_f32(
-        table
-            .get::<_, Option<f32>>("friction")?
-            .unwrap_or(physics.friction),
-        api,
-        "physics.friction",
-    )?;
-    physics.restitution = unit_f32(
-        table
-            .get::<_, Option<f32>>("restitution")?
-            .unwrap_or(physics.restitution),
-        api,
-        "physics.restitution",
-    )?;
-    physics.sensor = table
-        .get::<_, Option<bool>>("sensor")?
-        .unwrap_or(physics.sensor);
-    physics.layer = table
-        .get::<_, Option<u32>>("layer")?
-        .unwrap_or(physics.layer);
-    physics.mask = table.get::<_, Option<u32>>("mask")?.unwrap_or(physics.mask);
-    Ok(physics)
-}
+struct TilesetLuaParser;
 
-fn parse_render_light_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectRenderLight> {
-    let mut light = TileObjectRenderLight::default();
-    light.shape = shape_kind_from_table(&table, api, light.shape)?;
-    light.radius = positive_f32(
-        table
-            .get::<_, Option<f32>>("radius")?
-            .unwrap_or(light.radius),
-        api,
-        "renderLight.radius",
-    )?;
-    light.intensity = non_negative_f32(
-        table
-            .get::<_, Option<f32>>("intensity")?
-            .unwrap_or(light.intensity),
-        api,
-        "renderLight.intensity",
-    )?;
-    if let Some(color_tbl) = table.get::<_, Option<LuaTable>>("color")? {
-        light.color = color4_from_table(&color_tbl, api, "renderLight.color")?;
+impl TilesetLuaParser {
+    fn parse_physics_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectPhysics> {
+        let mut physics = TileObjectPhysics::default();
+        physics.shape = shape_kind_from_table(&table, api, physics.shape)?;
+        physics.body_type = table
+            .get::<_, Option<String>>("bodyType")?
+            .or_else(|| table.get::<_, Option<String>>("type").ok().flatten())
+            .unwrap_or(physics.body_type);
+        physics.mass = table
+            .get::<_, Option<f32>>("mass")?
+            .map(|value| positive_f32(value, api, "physics.mass"))
+            .transpose()?;
+        physics.density = positive_f32(
+            table
+                .get::<_, Option<f32>>("density")?
+                .unwrap_or(physics.density),
+            api,
+            "physics.density",
+        )?;
+        physics.friction = unit_f32(
+            table
+                .get::<_, Option<f32>>("friction")?
+                .unwrap_or(physics.friction),
+            api,
+            "physics.friction",
+        )?;
+        physics.restitution = unit_f32(
+            table
+                .get::<_, Option<f32>>("restitution")?
+                .unwrap_or(physics.restitution),
+            api,
+            "physics.restitution",
+        )?;
+        physics.sensor = table
+            .get::<_, Option<bool>>("sensor")?
+            .unwrap_or(physics.sensor);
+        physics.layer = table
+            .get::<_, Option<u32>>("layer")?
+            .unwrap_or(physics.layer);
+        physics.mask = table.get::<_, Option<u32>>("mask")?.unwrap_or(physics.mask);
+        Ok(physics)
     }
-    light.enabled = table
-        .get::<_, Option<bool>>("enabled")?
-        .unwrap_or(light.enabled);
-    light.shadow_enabled = table
-        .get::<_, Option<bool>>("shadowEnabled")?
-        .unwrap_or(light.shadow_enabled);
-    light.light_mask = table
-        .get::<_, Option<u16>>("lightMask")?
-        .unwrap_or(light.light_mask);
-    light.shadow_mask = table
-        .get::<_, Option<u16>>("shadowMask")?
-        .unwrap_or(light.shadow_mask);
-    light.blend_mode = table.get::<_, Option<String>>("blendMode")?;
-    light.falloff = table.get::<_, Option<String>>("falloff")?;
-    light.light_type = table.get::<_, Option<String>>("lightType")?;
-    Ok(light)
-}
 
-fn parse_occluder_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectOccluder> {
-    let mut occluder = TileObjectOccluder::default();
-    occluder.shape = shape_kind_from_table(&table, api, occluder.shape)?;
-    occluder.opacity = unit_f32(
-        table
-            .get::<_, Option<f32>>("opacity")?
-            .unwrap_or(occluder.opacity),
-        api,
-        "occluder.opacity",
-    )?;
-    occluder.light_mask = table
-        .get::<_, Option<u16>>("lightMask")?
-        .unwrap_or(occluder.light_mask);
-    occluder.enabled = table
-        .get::<_, Option<bool>>("enabled")?
-        .unwrap_or(occluder.enabled);
-    Ok(occluder)
-}
-
-fn visual_texture_size_from_table(table: &LuaTable) -> LuaResult<Option<[f32; 2]>> {
-    let Some(size) = table.get::<_, Option<LuaTable>>("textureSize")? else {
-        return Ok(None);
-    };
-    Ok(Some([
-        optional_table_number(&size, "w", 1)?
-            .or_else(|| size.get::<_, Option<f32>>("width").ok().flatten())
-            .unwrap_or(0.0),
-        optional_table_number(&size, "h", 2)?
-            .or_else(|| size.get::<_, Option<f32>>("height").ok().flatten())
-            .unwrap_or(0.0),
-    ]))
-}
-
-fn parse_archetype_semantics(
-    archetype: &mut TileObjectArchetype,
-    object: &LuaTable,
-    api: &str,
-) -> LuaResult<()> {
-    if let Ok(blocks) = object.get::<_, LuaTable>("categoryBlocks") {
-        for pair in blocks.pairs::<String, bool>() {
-            let (name, value) = pair?;
-            archetype.category_blockers.insert(name, value);
+    fn parse_render_light_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectRenderLight> {
+        let mut light = TileObjectRenderLight::default();
+        light.shape = shape_kind_from_table(&table, api, light.shape)?;
+        light.radius = positive_f32(
+            table
+                .get::<_, Option<f32>>("radius")?
+                .unwrap_or(light.radius),
+            api,
+            "renderLight.radius",
+        )?;
+        light.intensity = non_negative_f32(
+            table
+                .get::<_, Option<f32>>("intensity")?
+                .unwrap_or(light.intensity),
+            api,
+            "renderLight.intensity",
+        )?;
+        if let Some(color_tbl) = table.get::<_, Option<LuaTable>>("color")? {
+            light.color = color4_from_table(&color_tbl, api, "renderLight.color")?;
         }
+        light.enabled = table
+            .get::<_, Option<bool>>("enabled")?
+            .unwrap_or(light.enabled);
+        light.shadow_enabled = table
+            .get::<_, Option<bool>>("shadowEnabled")?
+            .unwrap_or(light.shadow_enabled);
+        light.light_mask = table
+            .get::<_, Option<u16>>("lightMask")?
+            .unwrap_or(light.light_mask);
+        light.shadow_mask = table
+            .get::<_, Option<u16>>("shadowMask")?
+            .unwrap_or(light.shadow_mask);
+        light.blend_mode = table.get::<_, Option<String>>("blendMode")?;
+        light.falloff = table.get::<_, Option<String>>("falloff")?;
+        light.light_type = table.get::<_, Option<String>>("lightType")?;
+        Ok(light)
     }
-    if let Ok(costs) = object.get::<_, LuaTable>("categoryCosts") {
-        for pair in costs.pairs::<String, f32>() {
-            let (name, value) = pair?;
-            if !value.is_finite() || value < 0.0 {
-                return Err(LuaError::RuntimeError(format!(
-                    "{api}: category cost values must be finite and >= 0"
-                )));
+
+    fn parse_occluder_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectOccluder> {
+        let mut occluder = TileObjectOccluder::default();
+        occluder.shape = shape_kind_from_table(&table, api, occluder.shape)?;
+        occluder.opacity = unit_f32(
+            table
+                .get::<_, Option<f32>>("opacity")?
+                .unwrap_or(occluder.opacity),
+            api,
+            "occluder.opacity",
+        )?;
+        occluder.light_mask = table
+            .get::<_, Option<u16>>("lightMask")?
+            .unwrap_or(occluder.light_mask);
+        occluder.enabled = table
+            .get::<_, Option<bool>>("enabled")?
+            .unwrap_or(occluder.enabled);
+        Ok(occluder)
+    }
+
+    fn visual_texture_size_from_table(table: &LuaTable) -> LuaResult<Option<[f32; 2]>> {
+        let Some(size) = table.get::<_, Option<LuaTable>>("textureSize")? else {
+            return Ok(None);
+        };
+        Ok(Some([
+            optional_table_number(&size, "w", 1)?
+                .or_else(|| size.get::<_, Option<f32>>("width").ok().flatten())
+                .unwrap_or(0.0),
+            optional_table_number(&size, "h", 2)?
+                .or_else(|| size.get::<_, Option<f32>>("height").ok().flatten())
+                .unwrap_or(0.0),
+        ]))
+    }
+
+    fn parse_archetype_semantics(
+        archetype: &mut TileObjectArchetype,
+        object: &LuaTable,
+        api: &str,
+    ) -> LuaResult<()> {
+        if let Ok(blocks) = object.get::<_, LuaTable>("categoryBlocks") {
+            for pair in blocks.pairs::<String, bool>() {
+                let (name, value) = pair?;
+                archetype.category_blockers.insert(name, value);
             }
-            archetype.category_costs.insert(name, value);
         }
-    }
-    if let Ok(transmission) = object.get::<_, LuaTable>("transmission") {
-        for pair in transmission.pairs::<String, f32>() {
-            let (name, value) = pair?;
-            if !value.is_finite() {
-                return Err(LuaError::RuntimeError(format!(
-                    "{api}: transmission values must be finite"
-                )));
+        if let Ok(costs) = object.get::<_, LuaTable>("categoryCosts") {
+            for pair in costs.pairs::<String, f32>() {
+                let (name, value) = pair?;
+                if !value.is_finite() || value < 0.0 {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{api}: category cost values must be finite and >= 0"
+                    )));
+                }
+                archetype.category_costs.insert(name, value);
             }
-            archetype
-                .category_transmission
-                .insert(name, value.clamp(0.0, 1.0));
         }
-    }
-    if let Ok(filters) = object.get::<_, LuaTable>("filters") {
-        for pair in filters.pairs::<String, LuaTable>() {
-            let (name, value) = pair?;
-            archetype.category_filters.insert(
-                name,
-                [
-                    value
-                        .get::<_, Option<f32>>(1)?
-                        .unwrap_or(1.0)
-                        .clamp(0.0, 1.0),
-                    value
-                        .get::<_, Option<f32>>(2)?
-                        .unwrap_or(1.0)
-                        .clamp(0.0, 1.0),
-                    value
-                        .get::<_, Option<f32>>(3)?
-                        .unwrap_or(1.0)
-                        .clamp(0.0, 1.0),
-                ],
-            );
+        if let Ok(transmission) = object.get::<_, LuaTable>("transmission") {
+            for pair in transmission.pairs::<String, f32>() {
+                let (name, value) = pair?;
+                if !value.is_finite() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{api}: transmission values must be finite"
+                    )));
+                }
+                archetype
+                    .category_transmission
+                    .insert(name, value.clamp(0.0, 1.0));
+            }
         }
+        if let Ok(filters) = object.get::<_, LuaTable>("filters") {
+            for pair in filters.pairs::<String, LuaTable>() {
+                let (name, value) = pair?;
+                archetype.category_filters.insert(
+                    name,
+                    [
+                        value
+                            .get::<_, Option<f32>>(1)?
+                            .unwrap_or(1.0)
+                            .clamp(0.0, 1.0),
+                        value
+                            .get::<_, Option<f32>>(2)?
+                            .unwrap_or(1.0)
+                            .clamp(0.0, 1.0),
+                        value
+                            .get::<_, Option<f32>>(3)?
+                            .unwrap_or(1.0)
+                            .clamp(0.0, 1.0),
+                    ],
+                );
+            }
+        }
+        if let Some(footprint) = object.get::<_, Option<LuaTable>>("footprint")? {
+            let width = footprint
+                .get::<_, Option<u32>>("w")?
+                .or_else(|| footprint.get::<_, Option<u32>>("width").ok().flatten())
+                .unwrap_or(1)
+                .max(1);
+            let height = footprint
+                .get::<_, Option<u32>>("h")?
+                .or_else(|| footprint.get::<_, Option<u32>>("height").ok().flatten())
+                .unwrap_or(width)
+                .max(1);
+            archetype.footprint = Some((width, height));
+        }
+        Ok(())
     }
-    if let Some(footprint) = object.get::<_, Option<LuaTable>>("footprint")? {
-        let width = footprint
-            .get::<_, Option<u32>>("w")?
-            .or_else(|| footprint.get::<_, Option<u32>>("width").ok().flatten())
-            .unwrap_or(1)
-            .max(1);
-        let height = footprint
-            .get::<_, Option<u32>>("h")?
-            .or_else(|| footprint.get::<_, Option<u32>>("height").ok().flatten())
-            .unwrap_or(width)
-            .max(1);
-        archetype.footprint = Some((width, height));
-    }
-    Ok(())
-}
 
-fn u32_from_lua_key(key: LuaValue, api: &str) -> LuaResult<u32> {
-    match key {
-        LuaValue::Integer(value) if value > 0 && value <= u32::MAX as i64 => Ok(value as u32),
-        LuaValue::Number(value)
-            if value > 0.0 && value.fract() == 0.0 && value <= u32::MAX as f64 =>
-        {
-            Ok(value as u32)
+    fn u32_from_lua_key(key: LuaValue, api: &str) -> LuaResult<u32> {
+        match key {
+            LuaValue::Integer(value) if value > 0 && value <= u32::MAX as i64 => Ok(value as u32),
+            LuaValue::Number(value)
+                if value > 0.0 && value.fract() == 0.0 && value <= u32::MAX as f64 =>
+            {
+                Ok(value as u32)
+            }
+            LuaValue::String(value) => value
+                .to_str()?
+                .parse::<u32>()
+                .map_err(|_| LuaError::RuntimeError(format!("{api}: tile key must be >= 1"))),
+            other => Err(LuaError::RuntimeError(format!(
+                "{api}: tile key must be integer/string, got {}",
+                other.type_name()
+            ))),
         }
-        LuaValue::String(value) => value
-            .to_str()?
-            .parse::<u32>()
-            .map_err(|_| LuaError::RuntimeError(format!("{api}: tile key must be >= 1"))),
-        other => Err(LuaError::RuntimeError(format!(
-            "{api}: tile key must be integer/string, got {}",
-            other.type_name()
-        ))),
     }
-}
 
-fn archetype_from_table(
-    name: String,
-    object: LuaTable,
-    api: &str,
-) -> LuaResult<TileObjectArchetype> {
-    let mut archetype = TileObjectArchetype::new(name)
-        .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
-    archetype.slot = object.get::<_, Option<String>>("slot")?;
-    let tile_id = object
-        .get::<_, Option<u32>>("tileId")?
-        .map(|tile_id| one_based_u32(&format!("{api}.tileId"), tile_id))
-        .transpose()?;
-    let mut visual = object
-        .get::<_, Option<LuaTable>>("visual")?
-        .map(|visual_tbl| {
-            Ok::<TileVisual, LuaError>(TileVisual {
-                texture_id: visual_tbl.get::<_, Option<u64>>("textureId")?,
-                atlas: visual_tbl.get::<_, Option<String>>("atlas")?,
-                sprite: visual_tbl.get::<_, Option<String>>("sprite")?,
-                image: visual_tbl.get::<_, Option<String>>("image")?,
-                tile_id: visual_tbl
-                    .get::<_, Option<u32>>("tileId")?
-                    .map(|id| one_based_u32(&format!("{api}.visual.tileId"), id))
-                    .transpose()?,
-                quad: visual_quad_from_table(&visual_tbl, "quad")?,
-                texture_size: visual_texture_size_from_table(&visual_tbl)?,
-                order: visual_tbl.get::<_, Option<i32>>("order")?.unwrap_or(0),
+    fn archetype_from_table(
+        name: String,
+        object: LuaTable,
+        api: &str,
+    ) -> LuaResult<TileObjectArchetype> {
+        let mut archetype = TileObjectArchetype::new(name)
+            .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+        archetype.slot = object.get::<_, Option<String>>("slot")?;
+        let tile_id = object
+            .get::<_, Option<u32>>("tileId")?
+            .map(|tile_id| one_based_u32(&format!("{api}.tileId"), tile_id))
+            .transpose()?;
+        let mut visual = object
+            .get::<_, Option<LuaTable>>("visual")?
+            .map(|visual_tbl| {
+                Ok::<TileVisual, LuaError>(TileVisual {
+                    texture_id: visual_tbl.get::<_, Option<u64>>("textureId")?,
+                    atlas: visual_tbl.get::<_, Option<String>>("atlas")?,
+                    sprite: visual_tbl.get::<_, Option<String>>("sprite")?,
+                    image: visual_tbl.get::<_, Option<String>>("image")?,
+                    tile_id: visual_tbl
+                        .get::<_, Option<u32>>("tileId")?
+                        .map(|id| one_based_u32(&format!("{api}.visual.tileId"), id))
+                        .transpose()?,
+                    quad: visual_quad_from_table(&visual_tbl, "quad")?,
+                    texture_size: Self::visual_texture_size_from_table(&visual_tbl)?,
+                    order: visual_tbl.get::<_, Option<i32>>("order")?.unwrap_or(0),
+                })
             })
-        })
-        .transpose()?;
-    if tile_id.is_some() {
-        visual.get_or_insert_with(TileVisual::default).tile_id = tile_id;
-    }
-    archetype.visual = visual;
-    if let Ok(blocks) = object.get::<_, LuaTable>("blocks") {
-        for pair in blocks.pairs::<String, bool>() {
-            let (name, value) = pair?;
-            let channel = crate::tilefield::TileChannel::parse(&name)
-                .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
-            archetype.blockers.insert(channel, value);
+            .transpose()?;
+        if tile_id.is_some() {
+            visual.get_or_insert_with(TileVisual::default).tile_id = tile_id;
         }
-    }
-    if let Ok(costs) = object.get::<_, LuaTable>("costs") {
-        for pair in costs.pairs::<String, f32>() {
-            let (name, value) = pair?;
-            if !value.is_finite() || value < 0.0 {
-                return Err(LuaError::RuntimeError(format!(
-                    "{api}: cost values must be finite and >= 0"
-                )));
-            }
-            let channel = crate::tilefield::TileChannel::parse(&name)
-                .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
-            archetype.costs.insert(channel, value);
-        }
-    }
-    parse_archetype_semantics(&mut archetype, &object, api)?;
-    archetype.sun_occlusion = object
-        .get::<_, Option<f32>>("sunOcclusion")?
-        .map(|value| value.clamp(0.0, 1.0));
-    if let Ok(light_tbl) = object.get::<_, LuaTable>("light") {
-        let color = light_tbl
-            .get::<_, Option<LuaTable>>("color")?
-            .map(|color_tbl| {
-                Ok::<[f32; 3], LuaError>([
-                    color_tbl.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
-                    color_tbl.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
-                    color_tbl.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
-                ])
-            })
-            .transpose()?
-            .unwrap_or([1.0, 1.0, 1.0]);
-        archetype.light = Some(TileObjectLight {
-            radius: light_tbl.get::<_, Option<f32>>("radius")?.unwrap_or(1.0),
-            intensity: light_tbl.get::<_, Option<f32>>("intensity")?.unwrap_or(1.0),
-            color,
-        });
-    }
-    if let Ok(physics_tbl) = object.get::<_, LuaTable>("physics") {
-        archetype.physics = Some(parse_physics_defaults(physics_tbl, api)?);
-    }
-    if let Ok(light_tbl) = object.get::<_, LuaTable>("renderLight") {
-        archetype.render_light = Some(parse_render_light_defaults(light_tbl, api)?);
-    }
-    if let Ok(occluder_tbl) = object.get::<_, LuaTable>("occluder") {
-        archetype.occluder = Some(parse_occluder_defaults(occluder_tbl, api)?);
-    }
-    if let Ok(properties) = object.get::<_, LuaTable>("properties") {
-        for pair in properties.pairs::<String, LuaValue>() {
-            let (name, value) = pair?;
-            if let Some(value) = property_value_to_string(value)? {
-                archetype.properties.insert(name, value);
+        archetype.visual = visual;
+        if let Ok(blocks) = object.get::<_, LuaTable>("blocks") {
+            for pair in blocks.pairs::<String, bool>() {
+                let (name, value) = pair?;
+                let channel = crate::tilefield::TileChannel::parse(&name)
+                    .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                archetype.blockers.insert(channel, value);
             }
         }
-    }
-    Ok(archetype)
-}
-
-pub(crate) fn tileset_from_provider(provider: LuaTable, api: &str) -> LuaResult<TileSet> {
-    let first_gid: u32 = provider.get::<_, Option<u32>>("firstGid")?.unwrap_or(1);
-    let tile_count: u32 = provider
-        .get::<_, Option<u32>>("tileCount")?
-        .ok_or_else(|| LuaError::RuntimeError(format!("{api}: provider.tileCount is required")))?;
-    let columns: u32 = provider
-        .get::<_, Option<u32>>("columns")?
-        .unwrap_or(tile_count.max(1));
-    let tile_width: u32 = provider
-        .get::<_, Option<u32>>("tileWidth")?
-        .ok_or_else(|| LuaError::RuntimeError(format!("{api}: provider.tileWidth is required")))?;
-    let tile_height: u32 = provider
-        .get::<_, Option<u32>>("tileHeight")?
-        .ok_or_else(|| LuaError::RuntimeError(format!("{api}: provider.tileHeight is required")))?;
-    let spacing: u32 = provider.get::<_, Option<u32>>("spacing")?.unwrap_or(0);
-    let margin: u32 = provider.get::<_, Option<u32>>("margin")?.unwrap_or(0);
-    let mut tileset = TileSet::new(
-        first_gid,
-        tile_count,
-        columns,
-        tile_width,
-        tile_height,
-        spacing,
-        margin,
-    );
-    if let Ok(objects) = provider.get::<_, LuaTable>("objects") {
-        for pair in objects.pairs::<LuaValue, LuaTable>() {
-            let (key, object) = pair?;
-            let name = match key {
-                LuaValue::String(value) => value.to_str()?.to_string(),
-                _ => object.get::<_, String>("name")?,
-            };
-            tileset.set_archetype(archetype_from_table(name, object, api)?);
+        if let Ok(costs) = object.get::<_, LuaTable>("costs") {
+            for pair in costs.pairs::<String, f32>() {
+                let (name, value) = pair?;
+                if !value.is_finite() || value < 0.0 {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{api}: cost values must be finite and >= 0"
+                    )));
+                }
+                let channel = crate::tilefield::TileChannel::parse(&name)
+                    .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                archetype.costs.insert(channel, value);
+            }
         }
-    }
-    if let Ok(tile_objects) = provider.get::<_, LuaTable>("tileObjects") {
-        for pair in tile_objects.pairs::<LuaValue, String>() {
-            let (key, object_name) = pair?;
-            let tile_id = u32_from_lua_key(key, api)?;
-            tileset
-                .set_tile_archetype(tile_id - 1, Some(object_name))
-                .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+        Self::parse_archetype_semantics(&mut archetype, &object, api)?;
+        archetype.sun_occlusion = object
+            .get::<_, Option<f32>>("sunOcclusion")?
+            .map(|value| value.clamp(0.0, 1.0));
+        if let Ok(light_tbl) = object.get::<_, LuaTable>("light") {
+            let color = light_tbl
+                .get::<_, Option<LuaTable>>("color")?
+                .map(|color_tbl| {
+                    Ok::<[f32; 3], LuaError>([
+                        color_tbl.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
+                        color_tbl.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
+                        color_tbl.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
+                    ])
+                })
+                .transpose()?
+                .unwrap_or([1.0, 1.0, 1.0]);
+            archetype.light = Some(TileObjectLight {
+                radius: light_tbl.get::<_, Option<f32>>("radius")?.unwrap_or(1.0),
+                intensity: light_tbl.get::<_, Option<f32>>("intensity")?.unwrap_or(1.0),
+                color,
+            });
         }
-    }
-    if let Ok(properties) = provider.get::<_, LuaTable>("properties") {
-        for pair in properties.pairs::<LuaValue, LuaTable>() {
-            let (key, props) = pair?;
-            let tile_id = u32_from_lua_key(key, api)?;
-            for prop in props.pairs::<String, LuaValue>() {
-                let (name, value) = prop?;
+        if let Ok(physics_tbl) = object.get::<_, LuaTable>("physics") {
+            archetype.physics = Some(Self::parse_physics_defaults(physics_tbl, api)?);
+        }
+        if let Ok(light_tbl) = object.get::<_, LuaTable>("renderLight") {
+            archetype.render_light = Some(Self::parse_render_light_defaults(light_tbl, api)?);
+        }
+        if let Ok(occluder_tbl) = object.get::<_, LuaTable>("occluder") {
+            archetype.occluder = Some(Self::parse_occluder_defaults(occluder_tbl, api)?);
+        }
+        if let Ok(properties) = object.get::<_, LuaTable>("properties") {
+            for pair in properties.pairs::<String, LuaValue>() {
+                let (name, value) = pair?;
                 if let Some(value) = property_value_to_string(value)? {
-                    tileset
-                        .set_property(tile_id - 1, name, Some(value))
-                        .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                    archetype.properties.insert(name, value);
                 }
             }
         }
+        Ok(archetype)
     }
-    if let Ok(animations) = provider.get::<_, LuaTable>("animations") {
-        for pair in animations.pairs::<LuaValue, LuaTable>() {
-            let (key, frames) = pair?;
-            let tile_id = u32_from_lua_key(key, api)?;
-            let mut anim_frames = Vec::new();
-            for frame in frames.sequence_values::<LuaTable>() {
-                let frame = frame?;
-                let frame_tile: u32 = frame.get("tileid").or_else(|_| frame.get("tileId"))?;
-                anim_frames.push(TileAnimFrame {
-                    tile_id: one_based_u32(&format!("{api}.animation.tileid"), frame_tile)?,
-                    duration_ms: frame.get("duration")?,
-                });
+
+    fn tileset_from_provider(provider: LuaTable, api: &str) -> LuaResult<TileSet> {
+        let first_gid: u32 = provider.get::<_, Option<u32>>("firstGid")?.unwrap_or(1);
+        let tile_count: u32 = provider
+            .get::<_, Option<u32>>("tileCount")?
+            .ok_or_else(|| {
+                LuaError::RuntimeError(format!("{api}: provider.tileCount is required"))
+            })?;
+        let columns: u32 = provider
+            .get::<_, Option<u32>>("columns")?
+            .unwrap_or(tile_count.max(1));
+        let tile_width: u32 = provider
+            .get::<_, Option<u32>>("tileWidth")?
+            .ok_or_else(|| {
+                LuaError::RuntimeError(format!("{api}: provider.tileWidth is required"))
+            })?;
+        let tile_height: u32 = provider
+            .get::<_, Option<u32>>("tileHeight")?
+            .ok_or_else(|| {
+                LuaError::RuntimeError(format!("{api}: provider.tileHeight is required"))
+            })?;
+        let spacing: u32 = provider.get::<_, Option<u32>>("spacing")?.unwrap_or(0);
+        let margin: u32 = provider.get::<_, Option<u32>>("margin")?.unwrap_or(0);
+        let mut tileset = TileSet::new(
+            first_gid,
+            tile_count,
+            columns,
+            tile_width,
+            tile_height,
+            spacing,
+            margin,
+        );
+        if let Ok(objects) = provider.get::<_, LuaTable>("objects") {
+            for pair in objects.pairs::<LuaValue, LuaTable>() {
+                let (key, object) = pair?;
+                let name = match key {
+                    LuaValue::String(value) => value.to_str()?.to_string(),
+                    _ => object.get::<_, String>("name")?,
+                };
+                tileset.set_archetype(Self::archetype_from_table(name, object, api)?);
             }
-            tileset.set_animation(tile_id - 1, anim_frames);
         }
+        if let Ok(tile_objects) = provider.get::<_, LuaTable>("tileObjects") {
+            for pair in tile_objects.pairs::<LuaValue, String>() {
+                let (key, object_name) = pair?;
+                let tile_id = Self::u32_from_lua_key(key, api)?;
+                tileset
+                    .set_tile_archetype(tile_id - 1, Some(object_name))
+                    .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+            }
+        }
+        if let Ok(properties) = provider.get::<_, LuaTable>("properties") {
+            for pair in properties.pairs::<LuaValue, LuaTable>() {
+                let (key, props) = pair?;
+                let tile_id = Self::u32_from_lua_key(key, api)?;
+                for prop in props.pairs::<String, LuaValue>() {
+                    let (name, value) = prop?;
+                    if let Some(value) = property_value_to_string(value)? {
+                        tileset
+                            .set_property(tile_id - 1, name, Some(value))
+                            .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                    }
+                }
+            }
+        }
+        if let Ok(animations) = provider.get::<_, LuaTable>("animations") {
+            for pair in animations.pairs::<LuaValue, LuaTable>() {
+                let (key, frames) = pair?;
+                let tile_id = Self::u32_from_lua_key(key, api)?;
+                let mut anim_frames = Vec::new();
+                for frame in frames.sequence_values::<LuaTable>() {
+                    let frame = frame?;
+                    let frame_tile: u32 = frame.get("tileid").or_else(|_| frame.get("tileId"))?;
+                    anim_frames.push(TileAnimFrame {
+                        tile_id: one_based_u32(&format!("{api}.animation.tileid"), frame_tile)?,
+                        duration_ms: frame.get("duration")?,
+                    });
+                }
+                tileset.set_animation(tile_id - 1, anim_frames);
+            }
+        }
+        Ok(tileset)
     }
-    Ok(tileset)
+}
+
+pub(crate) fn tileset_from_provider(provider: LuaTable, api: &str) -> LuaResult<TileSet> {
+    TilesetLuaParser::tileset_from_provider(provider, api)
 }
 
 #[derive(Clone)]
@@ -845,7 +859,9 @@ impl LuaUserData for LuaTileSet {
                                 .map(|id| one_based_u32("setObject.visual.tileId", id))
                                 .transpose()?,
                             quad: visual_quad_from_table(&visual_tbl, "quad")?,
-                            texture_size: visual_texture_size_from_table(&visual_tbl)?,
+                            texture_size: TilesetLuaParser::visual_texture_size_from_table(
+                                &visual_tbl,
+                            )?,
                             order: visual_tbl.get::<_, Option<i32>>("order")?.unwrap_or(0),
                         })
                     })
@@ -876,7 +892,7 @@ impl LuaUserData for LuaTileSet {
                         archetype.costs.insert(channel, value);
                     }
                 }
-                parse_archetype_semantics(&mut archetype, &object, "setObject")?;
+                TilesetLuaParser::parse_archetype_semantics(&mut archetype, &object, "setObject")?;
                 archetype.sun_occlusion = object
                     .get::<_, Option<f32>>("sunOcclusion")?
                     .map(|value| value.clamp(0.0, 1.0));
@@ -899,14 +915,22 @@ impl LuaUserData for LuaTileSet {
                     });
                 }
                 if let Ok(physics_tbl) = object.get::<_, LuaTable>("physics") {
-                    archetype.physics = Some(parse_physics_defaults(physics_tbl, "setObject")?);
+                    archetype.physics = Some(TilesetLuaParser::parse_physics_defaults(
+                        physics_tbl,
+                        "setObject",
+                    )?);
                 }
                 if let Ok(light_tbl) = object.get::<_, LuaTable>("renderLight") {
-                    archetype.render_light =
-                        Some(parse_render_light_defaults(light_tbl, "setObject")?);
+                    archetype.render_light = Some(TilesetLuaParser::parse_render_light_defaults(
+                        light_tbl,
+                        "setObject",
+                    )?);
                 }
                 if let Ok(occluder_tbl) = object.get::<_, LuaTable>("occluder") {
-                    archetype.occluder = Some(parse_occluder_defaults(occluder_tbl, "setObject")?);
+                    archetype.occluder = Some(TilesetLuaParser::parse_occluder_defaults(
+                        occluder_tbl,
+                        "setObject",
+                    )?);
                 }
                 if let Ok(properties) = object.get::<_, LuaTable>("properties") {
                     for pair in properties.pairs::<String, LuaValue>() {
@@ -1359,7 +1383,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "fromProvider",
         lua.create_function(|lua, provider: LuaTable| {
             lua.create_userdata(LuaTileSet {
-                inner: Rc::new(RefCell::new(tileset_from_provider(
+                inner: Rc::new(RefCell::new(TilesetLuaParser::tileset_from_provider(
                     provider,
                     "lurek.tileset.fromProvider",
                 )?)),

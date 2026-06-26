@@ -21,6 +21,54 @@ fn parse_color_table(tbl: LuaTable) -> LuaResult<[u8; 4]> {
     Ok([r, g, b, a])
 }
 /// Resolves a `LuaImage` icon handle and display size for minimap object and marker textures.
+struct MinimapLuaParser;
+
+impl MinimapLuaParser {
+    fn parse_lua_image_icon(
+        image_ud: LuaAnyUserData,
+        default_width: Option<f32>,
+        default_height: Option<f32>,
+        method_name: &str,
+    ) -> LuaResult<(
+        crate::runtime::resource_keys::TextureKey,
+        f32,
+        f32,
+        f32,
+        f32,
+    )> {
+        if default_width.is_some_and(|value| !value.is_finite() || value <= 0.0)
+            || default_height.is_some_and(|value| !value.is_finite() || value <= 0.0)
+        {
+            return Err(LuaError::RuntimeError(format!(
+            "lurek.minimap: {method_name} width and height overrides must be finite positive numbers"
+        )));
+        }
+        let image = image_ud.borrow::<LuaImage>().map_err(|_| {
+            LuaError::RuntimeError(format!(
+                "lurek.minimap: {} expects an LImage from lurek.render.newImage()",
+                method_name
+            ))
+        })?;
+        let (texture_width, texture_height) = {
+            let state = image.state.borrow();
+            let Some(texture) = state.textures.get(image.key) else {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.minimap: {} received an image whose texture is no longer resident",
+                    method_name
+                )));
+            };
+            (texture.width as f32, texture.height as f32)
+        };
+        Ok((
+            image.key,
+            texture_width,
+            texture_height,
+            default_width.unwrap_or(texture_width),
+            default_height.unwrap_or(texture_height),
+        ))
+    }
+}
+
 fn parse_lua_image_icon(
     image_ud: LuaAnyUserData,
     default_width: Option<f32>,
@@ -33,36 +81,7 @@ fn parse_lua_image_icon(
     f32,
     f32,
 )> {
-    if default_width.is_some_and(|value| !value.is_finite() || value <= 0.0)
-        || default_height.is_some_and(|value| !value.is_finite() || value <= 0.0)
-    {
-        return Err(LuaError::RuntimeError(format!(
-            "lurek.minimap: {method_name} width and height overrides must be finite positive numbers"
-        )));
-    }
-    let image = image_ud.borrow::<LuaImage>().map_err(|_| {
-        LuaError::RuntimeError(format!(
-            "lurek.minimap: {} expects an LImage from lurek.render.newImage()",
-            method_name
-        ))
-    })?;
-    let (texture_width, texture_height) = {
-        let state = image.state.borrow();
-        let Some(texture) = state.textures.get(image.key) else {
-            return Err(LuaError::RuntimeError(format!(
-                "lurek.minimap: {} received an image whose texture is no longer resident",
-                method_name
-            )));
-        };
-        (texture.width as f32, texture.height as f32)
-    };
-    Ok((
-        image.key,
-        texture_width,
-        texture_height,
-        default_width.unwrap_or(texture_width),
-        default_height.unwrap_or(texture_height),
-    ))
+    MinimapLuaParser::parse_lua_image_icon(image_ud, default_width, default_height, method_name)
 }
 
 fn minimap_error(err: MinimapError) -> LuaError {

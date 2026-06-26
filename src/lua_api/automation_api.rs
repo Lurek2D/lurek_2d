@@ -65,189 +65,206 @@ fn button_slot(button: u32) -> Option<usize> {
     }
 }
 
+struct AutomationLuaDispatcher;
+
+impl AutomationLuaDispatcher {
+    fn dispatch_automation_event(
+        lua: &Lua,
+        state: &Rc<RefCell<SharedState>>,
+        event: &Event,
+    ) -> LuaResult<()> {
+        let timeout_ms = state.borrow().lua_callback_timeout_ms;
+        match event.name.as_str() {
+            "keypressed" => {
+                let key = event_arg_string(&event.args, 0, "unknown");
+                let scancode = event_arg_string(&event.args, 1, "");
+                let is_repeat = event_arg_bool(&event.args, 2, false);
+                let repeat_enabled = state.borrow().keyboard.has_key_repeat();
+                if !is_repeat || repeat_enabled {
+                    {
+                        let mut st = state.borrow_mut();
+                        if !scancode.is_empty() {
+                            st.keyboard.press_scancode(scancode.clone());
+                        }
+                        st.keys_down.insert(key.clone());
+                        st.keyboard.set_key_down(&key);
+                        refresh_keyboard_modifiers(&mut st);
+                    }
+                    let auto_ui_input = state.borrow().auto_ui_input;
+                    let mut ui_consumed = false;
+                    if auto_ui_input {
+                        ui_consumed = call_lua_ui_bool(lua, "keypressed", key.clone(), timeout_ms)?;
+                    }
+                    if !ui_consumed {
+                        call_lua_callback_checked_with_timeout(
+                            lua,
+                            "keypressed",
+                            (key.clone(), scancode.clone(), is_repeat),
+                            timeout_ms,
+                        )?;
+                    }
+                }
+            }
+            "keyreleased" => {
+                let key = event_arg_string(&event.args, 0, "unknown");
+                let scancode = event_arg_string(&event.args, 1, "");
+                {
+                    let mut st = state.borrow_mut();
+                    if !scancode.is_empty() {
+                        st.keyboard.release_scancode(scancode.clone());
+                    }
+                    st.keys_down.remove(&key);
+                    st.keyboard.set_key_up(&key);
+                    refresh_keyboard_modifiers(&mut st);
+                }
+                call_lua_callback_checked_with_timeout(
+                    lua,
+                    "keyreleased",
+                    (key.clone(), scancode.clone()),
+                    timeout_ms,
+                )?;
+            }
+            "mousemoved" => {
+                let x = event_arg_num(&event.args, 0, 0.0) as f32;
+                let y = event_arg_num(&event.args, 1, 0.0) as f32;
+                let (dx, dy) = {
+                    let mut st = state.borrow_mut();
+                    let dx = x - st.mouse.x;
+                    let dy = y - st.mouse.y;
+                    st.mouse.update_position(x, y);
+                    (dx, dy)
+                };
+                let auto_ui_input = state.borrow().auto_ui_input;
+                let mut ui_consumed = false;
+                if auto_ui_input {
+                    ui_consumed = call_lua_ui_bool(lua, "mousemoved", (x, y), timeout_ms)?;
+                }
+                if !ui_consumed {
+                    call_lua_callback_checked_with_timeout(
+                        lua,
+                        "mousemoved",
+                        (x, y, dx, dy),
+                        timeout_ms,
+                    )?;
+                }
+            }
+            "mousepressed" => {
+                let x = event_arg_num(&event.args, 0, 0.0) as f32;
+                let y = event_arg_num(&event.args, 1, 0.0) as f32;
+                let button = event_arg_num(&event.args, 2, 1.0) as u32;
+                if let Some(slot) = button_slot(button) {
+                    let was_pressed = {
+                        let mut st = state.borrow_mut();
+                        let was_pressed = st.mouse.is_down(slot);
+                        st.mouse.update_position(x, y);
+                        st.mouse.set_button(slot, true);
+                        was_pressed
+                    };
+                    if !was_pressed {
+                        let auto_ui_input = state.borrow().auto_ui_input;
+                        let mut ui_consumed = false;
+                        if auto_ui_input {
+                            ui_consumed =
+                                call_lua_ui_bool(lua, "mousepressed", (x, y, button), timeout_ms)?;
+                        }
+                        if !ui_consumed {
+                            call_lua_callback_checked_with_timeout(
+                                lua,
+                                "mousepressed",
+                                (x, y, button),
+                                timeout_ms,
+                            )?;
+                        }
+                    }
+                }
+            }
+            "mousereleased" => {
+                let x = event_arg_num(&event.args, 0, 0.0) as f32;
+                let y = event_arg_num(&event.args, 1, 0.0) as f32;
+                let button = event_arg_num(&event.args, 2, 1.0) as u32;
+                if let Some(slot) = button_slot(button) {
+                    let was_pressed = {
+                        let mut st = state.borrow_mut();
+                        let was_pressed = st.mouse.is_down(slot);
+                        st.mouse.update_position(x, y);
+                        st.mouse.set_button(slot, false);
+                        was_pressed
+                    };
+                    if was_pressed {
+                        let auto_ui_input = state.borrow().auto_ui_input;
+                        let mut ui_consumed = false;
+                        if auto_ui_input {
+                            ui_consumed =
+                                call_lua_ui_bool(lua, "mousereleased", (x, y, button), timeout_ms)?;
+                        }
+                        if !ui_consumed {
+                            call_lua_callback_checked_with_timeout(
+                                lua,
+                                "mousereleased",
+                                (x, y, button),
+                                timeout_ms,
+                            )?;
+                        }
+                    }
+                }
+            }
+            "wheelmoved" => {
+                let dx = event_arg_num(&event.args, 0, 0.0);
+                let dy = event_arg_num(&event.args, 1, 0.0);
+                {
+                    let mut st = state.borrow_mut();
+                    st.mouse.accumulate_scroll(dx, dy);
+                }
+                let auto_ui_input = state.borrow().auto_ui_input;
+                let mut ui_consumed = false;
+                if auto_ui_input {
+                    ui_consumed = call_lua_ui_bool(lua, "wheelmoved", (dx, dy), timeout_ms)?;
+                }
+                if !ui_consumed {
+                    call_lua_callback_checked_with_timeout(
+                        lua,
+                        "wheelmoved",
+                        (dx, dy),
+                        timeout_ms,
+                    )?;
+                }
+            }
+            "textinput" => {
+                let text = event_arg_string(&event.args, 0, "");
+                let text_enabled = state.borrow().keyboard.has_text_input();
+                if text_enabled {
+                    {
+                        let mut st = state.borrow_mut();
+                        st.keyboard.push_text_input(text.clone());
+                    }
+                    let auto_ui_input = state.borrow().auto_ui_input;
+                    let mut ui_consumed = false;
+                    if auto_ui_input {
+                        ui_consumed = call_lua_ui_bool(lua, "textinput", text.clone(), timeout_ms)?;
+                    }
+                    if !ui_consumed {
+                        call_lua_callback_checked_with_timeout(
+                            lua,
+                            "textinput",
+                            text.clone(),
+                            timeout_ms,
+                        )?;
+                    }
+                }
+            }
+            _ => {}
+        }
+        state.borrow_mut().event_queue.push(event.clone());
+        Ok(())
+    }
+}
+
 fn dispatch_automation_event(
     lua: &Lua,
     state: &Rc<RefCell<SharedState>>,
     event: &Event,
 ) -> LuaResult<()> {
-    let timeout_ms = state.borrow().lua_callback_timeout_ms;
-    match event.name.as_str() {
-        "keypressed" => {
-            let key = event_arg_string(&event.args, 0, "unknown");
-            let scancode = event_arg_string(&event.args, 1, "");
-            let is_repeat = event_arg_bool(&event.args, 2, false);
-            let repeat_enabled = state.borrow().keyboard.has_key_repeat();
-            if !is_repeat || repeat_enabled {
-                {
-                    let mut st = state.borrow_mut();
-                    if !scancode.is_empty() {
-                        st.keyboard.press_scancode(scancode.clone());
-                    }
-                    st.keys_down.insert(key.clone());
-                    st.keyboard.set_key_down(&key);
-                    refresh_keyboard_modifiers(&mut st);
-                }
-                let auto_ui_input = state.borrow().auto_ui_input;
-                let mut ui_consumed = false;
-                if auto_ui_input {
-                    ui_consumed = call_lua_ui_bool(lua, "keypressed", key.clone(), timeout_ms)?;
-                }
-                if !ui_consumed {
-                    call_lua_callback_checked_with_timeout(
-                        lua,
-                        "keypressed",
-                        (key.clone(), scancode.clone(), is_repeat),
-                        timeout_ms,
-                    )?;
-                }
-            }
-        }
-        "keyreleased" => {
-            let key = event_arg_string(&event.args, 0, "unknown");
-            let scancode = event_arg_string(&event.args, 1, "");
-            {
-                let mut st = state.borrow_mut();
-                if !scancode.is_empty() {
-                    st.keyboard.release_scancode(scancode.clone());
-                }
-                st.keys_down.remove(&key);
-                st.keyboard.set_key_up(&key);
-                refresh_keyboard_modifiers(&mut st);
-            }
-            call_lua_callback_checked_with_timeout(
-                lua,
-                "keyreleased",
-                (key.clone(), scancode.clone()),
-                timeout_ms,
-            )?;
-        }
-        "mousemoved" => {
-            let x = event_arg_num(&event.args, 0, 0.0) as f32;
-            let y = event_arg_num(&event.args, 1, 0.0) as f32;
-            let (dx, dy) = {
-                let mut st = state.borrow_mut();
-                let dx = x - st.mouse.x;
-                let dy = y - st.mouse.y;
-                st.mouse.update_position(x, y);
-                (dx, dy)
-            };
-            let auto_ui_input = state.borrow().auto_ui_input;
-            let mut ui_consumed = false;
-            if auto_ui_input {
-                ui_consumed = call_lua_ui_bool(lua, "mousemoved", (x, y), timeout_ms)?;
-            }
-            if !ui_consumed {
-                call_lua_callback_checked_with_timeout(
-                    lua,
-                    "mousemoved",
-                    (x, y, dx, dy),
-                    timeout_ms,
-                )?;
-            }
-        }
-        "mousepressed" => {
-            let x = event_arg_num(&event.args, 0, 0.0) as f32;
-            let y = event_arg_num(&event.args, 1, 0.0) as f32;
-            let button = event_arg_num(&event.args, 2, 1.0) as u32;
-            if let Some(slot) = button_slot(button) {
-                let was_pressed = {
-                    let mut st = state.borrow_mut();
-                    let was_pressed = st.mouse.is_down(slot);
-                    st.mouse.update_position(x, y);
-                    st.mouse.set_button(slot, true);
-                    was_pressed
-                };
-                if !was_pressed {
-                    let auto_ui_input = state.borrow().auto_ui_input;
-                    let mut ui_consumed = false;
-                    if auto_ui_input {
-                        ui_consumed =
-                            call_lua_ui_bool(lua, "mousepressed", (x, y, button), timeout_ms)?;
-                    }
-                    if !ui_consumed {
-                        call_lua_callback_checked_with_timeout(
-                            lua,
-                            "mousepressed",
-                            (x, y, button),
-                            timeout_ms,
-                        )?;
-                    }
-                }
-            }
-        }
-        "mousereleased" => {
-            let x = event_arg_num(&event.args, 0, 0.0) as f32;
-            let y = event_arg_num(&event.args, 1, 0.0) as f32;
-            let button = event_arg_num(&event.args, 2, 1.0) as u32;
-            if let Some(slot) = button_slot(button) {
-                let was_pressed = {
-                    let mut st = state.borrow_mut();
-                    let was_pressed = st.mouse.is_down(slot);
-                    st.mouse.update_position(x, y);
-                    st.mouse.set_button(slot, false);
-                    was_pressed
-                };
-                if was_pressed {
-                    let auto_ui_input = state.borrow().auto_ui_input;
-                    let mut ui_consumed = false;
-                    if auto_ui_input {
-                        ui_consumed =
-                            call_lua_ui_bool(lua, "mousereleased", (x, y, button), timeout_ms)?;
-                    }
-                    if !ui_consumed {
-                        call_lua_callback_checked_with_timeout(
-                            lua,
-                            "mousereleased",
-                            (x, y, button),
-                            timeout_ms,
-                        )?;
-                    }
-                }
-            }
-        }
-        "wheelmoved" => {
-            let dx = event_arg_num(&event.args, 0, 0.0);
-            let dy = event_arg_num(&event.args, 1, 0.0);
-            {
-                let mut st = state.borrow_mut();
-                st.mouse.accumulate_scroll(dx, dy);
-            }
-            let auto_ui_input = state.borrow().auto_ui_input;
-            let mut ui_consumed = false;
-            if auto_ui_input {
-                ui_consumed = call_lua_ui_bool(lua, "wheelmoved", (dx, dy), timeout_ms)?;
-            }
-            if !ui_consumed {
-                call_lua_callback_checked_with_timeout(lua, "wheelmoved", (dx, dy), timeout_ms)?;
-            }
-        }
-        "textinput" => {
-            let text = event_arg_string(&event.args, 0, "");
-            let text_enabled = state.borrow().keyboard.has_text_input();
-            if text_enabled {
-                {
-                    let mut st = state.borrow_mut();
-                    st.keyboard.push_text_input(text.clone());
-                }
-                let auto_ui_input = state.borrow().auto_ui_input;
-                let mut ui_consumed = false;
-                if auto_ui_input {
-                    ui_consumed = call_lua_ui_bool(lua, "textinput", text.clone(), timeout_ms)?;
-                }
-                if !ui_consumed {
-                    call_lua_callback_checked_with_timeout(
-                        lua,
-                        "textinput",
-                        text.clone(),
-                        timeout_ms,
-                    )?;
-                }
-            }
-        }
-        _ => {}
-    }
-    state.borrow_mut().event_queue.push(event.clone());
-    Ok(())
+    AutomationLuaDispatcher::dispatch_automation_event(lua, state, event)
 }
 
 struct AutomationDispatchSink<'a> {

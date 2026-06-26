@@ -190,56 +190,70 @@ fn validate_value(value: LuaValue, schema: LuaValue) -> LuaResult<(bool, Option<
 }
 
 /// Decodes a string or binary payload into a Lua value using the requested serialization format.
+struct SerializeLuaCodec;
+
+impl SerializeLuaCodec {
+    fn decode_payload<'lua>(
+        lua: &'lua Lua,
+        payload: LuaValue<'lua>,
+        format: Option<String>,
+        opts: Option<LuaTable<'lua>>,
+    ) -> LuaResult<LuaValue<'lua>> {
+        let fmt = parse_format_arg("decode", format.as_deref())?;
+        let decode_opts = decode_options_from_table(opts.as_ref())?;
+        let schema = schema_from_table(opts.as_ref())?;
+        let decoded = match (payload, fmt) {
+            (LuaValue::String(bytes), Some(SerialFormat::MsgPack)) => match schema.as_ref() {
+                Some(schema) => decode_bytes_with_schema(
+                    bytes.as_bytes(),
+                    SerialFormat::MsgPack,
+                    schema,
+                    decode_opts.clone(),
+                )
+                .map_err(|err| LuaError::RuntimeError(err.to_string()))?,
+                None => decode_bytes_with_options(
+                    bytes.as_bytes(),
+                    SerialFormat::MsgPack,
+                    decode_opts.clone(),
+                )
+                .map_err(|err| LuaError::RuntimeError(err.to_string()))?,
+            },
+            (LuaValue::String(text), explicit_format) => {
+                let input = text.to_str().map_err(|error| {
+                    let label = if explicit_format.is_some() {
+                        "decode: expected UTF-8 text"
+                    } else {
+                        "decode: expected UTF-8 text for auto-detect"
+                    };
+                    LuaError::RuntimeError(format!("{label}: {error}"))
+                })?;
+                match schema.as_ref() {
+                    Some(schema) => {
+                        decode_text_with_schema(input, explicit_format, schema, decode_opts.clone())
+                            .map_err(|err| LuaError::RuntimeError(err.to_string()))?
+                    }
+                    None => decode_text_detailed(input, explicit_format, decode_opts.clone())
+                        .map_err(|err| LuaError::RuntimeError(err.to_string()))?,
+                }
+            }
+            _ => {
+                return Err(LuaError::RuntimeError(
+                    "decode: payload must be a string".to_string(),
+                ))
+            }
+        };
+        to_lua(lua, &decoded.value)
+    }
+}
+
+/// Decodes a string or binary payload into a Lua value using the requested serialization format.
 fn decode_payload<'lua>(
     lua: &'lua Lua,
     payload: LuaValue<'lua>,
     format: Option<String>,
     opts: Option<LuaTable<'lua>>,
 ) -> LuaResult<LuaValue<'lua>> {
-    let fmt = parse_format_arg("decode", format.as_deref())?;
-    let decode_opts = decode_options_from_table(opts.as_ref())?;
-    let schema = schema_from_table(opts.as_ref())?;
-    let decoded = match (payload, fmt) {
-        (LuaValue::String(bytes), Some(SerialFormat::MsgPack)) => match schema.as_ref() {
-            Some(schema) => decode_bytes_with_schema(
-                bytes.as_bytes(),
-                SerialFormat::MsgPack,
-                schema,
-                decode_opts.clone(),
-            )
-            .map_err(|err| LuaError::RuntimeError(err.to_string()))?,
-            None => decode_bytes_with_options(
-                bytes.as_bytes(),
-                SerialFormat::MsgPack,
-                decode_opts.clone(),
-            )
-            .map_err(|err| LuaError::RuntimeError(err.to_string()))?,
-        },
-        (LuaValue::String(text), explicit_format) => {
-            let input = text.to_str().map_err(|error| {
-                let label = if explicit_format.is_some() {
-                    "decode: expected UTF-8 text"
-                } else {
-                    "decode: expected UTF-8 text for auto-detect"
-                };
-                LuaError::RuntimeError(format!("{label}: {error}"))
-            })?;
-            match schema.as_ref() {
-                Some(schema) => {
-                    decode_text_with_schema(input, explicit_format, schema, decode_opts.clone())
-                        .map_err(|err| LuaError::RuntimeError(err.to_string()))?
-                }
-                None => decode_text_detailed(input, explicit_format, decode_opts.clone())
-                    .map_err(|err| LuaError::RuntimeError(err.to_string()))?,
-            }
-        }
-        _ => {
-            return Err(LuaError::RuntimeError(
-                "decode: payload must be a string".to_string(),
-            ))
-        }
-    };
-    to_lua(lua, &decoded.value)
+    SerializeLuaCodec::decode_payload(lua, payload, format, opts)
 }
 
 /// Encodes a Lua value into the requested serialization format and returns a Lua string.

@@ -185,62 +185,75 @@ fn alpha_options_for_spine(
     Ok(options)
 }
 
+struct SpinePhysicsLuaParser;
+
+impl SpinePhysicsLuaParser {
+    fn shape_from_spine_part(
+        lua: &Lua,
+        part: &LuaTable,
+        defaults: AlphaShapeOptions,
+    ) -> LuaResult<(Shape, f32, f32, f32, bool)> {
+        if let Some(shape_value) = part.get::<_, Option<LuaValue>>("shape")? {
+            if !matches!(shape_value, LuaValue::Nil) {
+                let shape_ud = LuaAnyUserData::from_lua(shape_value, lua)?;
+                let shape = shape_ud.borrow::<LuaPhysicsShape>()?.data();
+                return Ok((
+                    shape.shape,
+                    shape.density,
+                    shape.friction,
+                    shape.restitution,
+                    shape.sensor,
+                ));
+            }
+        }
+
+        if let Some(image_value) = part.get::<_, Option<LuaValue>>("image")? {
+            if !matches!(image_value, LuaValue::Nil) {
+                let image_ud = LuaAnyUserData::from_lua(image_value, lua)?;
+                let image = image_ud.borrow::<ImageData>()?;
+                let options = alpha_options_for_spine(part, defaults)?;
+                let shape = Shape::from_image_alpha(&image, options).map_err(|err| {
+                    LuaError::RuntimeError(format!("LSkeleton:bindPhysics: {err}"))
+                })?;
+                let density = part.get::<_, Option<f32>>("density")?.unwrap_or(1.0);
+                let friction = part.get::<_, Option<f32>>("friction")?.unwrap_or(0.5);
+                let restitution = part.get::<_, Option<f32>>("restitution")?.unwrap_or(0.0);
+                let sensor = part.get::<_, Option<bool>>("sensor")?.unwrap_or(false);
+                return Ok((shape, density, friction, restitution, sensor));
+            }
+        }
+
+        let density = part.get::<_, Option<f32>>("density")?.unwrap_or(1.0);
+        let friction = part.get::<_, Option<f32>>("friction")?.unwrap_or(0.5);
+        let restitution = part.get::<_, Option<f32>>("restitution")?.unwrap_or(0.0);
+        let sensor = part.get::<_, Option<bool>>("sensor")?.unwrap_or(false);
+        if let Some(radius) = part.get::<_, Option<f32>>("radius")? {
+            return Ok((
+                Shape::Circle { radius },
+                density,
+                friction,
+                restitution,
+                sensor,
+            ));
+        }
+        let width = part.get::<_, Option<f32>>("width")?.unwrap_or(16.0);
+        let height = part.get::<_, Option<f32>>("height")?.unwrap_or(16.0);
+        Ok((
+            Shape::Rect { width, height },
+            density,
+            friction,
+            restitution,
+            sensor,
+        ))
+    }
+}
+
 fn shape_from_spine_part(
     lua: &Lua,
     part: &LuaTable,
     defaults: AlphaShapeOptions,
 ) -> LuaResult<(Shape, f32, f32, f32, bool)> {
-    if let Some(shape_value) = part.get::<_, Option<LuaValue>>("shape")? {
-        if !matches!(shape_value, LuaValue::Nil) {
-            let shape_ud = LuaAnyUserData::from_lua(shape_value, lua)?;
-            let shape = shape_ud.borrow::<LuaPhysicsShape>()?.data();
-            return Ok((
-                shape.shape,
-                shape.density,
-                shape.friction,
-                shape.restitution,
-                shape.sensor,
-            ));
-        }
-    }
-
-    if let Some(image_value) = part.get::<_, Option<LuaValue>>("image")? {
-        if !matches!(image_value, LuaValue::Nil) {
-            let image_ud = LuaAnyUserData::from_lua(image_value, lua)?;
-            let image = image_ud.borrow::<ImageData>()?;
-            let options = alpha_options_for_spine(part, defaults)?;
-            let shape = Shape::from_image_alpha(&image, options)
-                .map_err(|err| LuaError::RuntimeError(format!("LSkeleton:bindPhysics: {err}")))?;
-            let density = part.get::<_, Option<f32>>("density")?.unwrap_or(1.0);
-            let friction = part.get::<_, Option<f32>>("friction")?.unwrap_or(0.5);
-            let restitution = part.get::<_, Option<f32>>("restitution")?.unwrap_or(0.0);
-            let sensor = part.get::<_, Option<bool>>("sensor")?.unwrap_or(false);
-            return Ok((shape, density, friction, restitution, sensor));
-        }
-    }
-
-    let density = part.get::<_, Option<f32>>("density")?.unwrap_or(1.0);
-    let friction = part.get::<_, Option<f32>>("friction")?.unwrap_or(0.5);
-    let restitution = part.get::<_, Option<f32>>("restitution")?.unwrap_or(0.0);
-    let sensor = part.get::<_, Option<bool>>("sensor")?.unwrap_or(false);
-    if let Some(radius) = part.get::<_, Option<f32>>("radius")? {
-        return Ok((
-            Shape::Circle { radius },
-            density,
-            friction,
-            restitution,
-            sensor,
-        ));
-    }
-    let width = part.get::<_, Option<f32>>("width")?.unwrap_or(16.0);
-    let height = part.get::<_, Option<f32>>("height")?.unwrap_or(16.0);
-    Ok((
-        Shape::Rect { width, height },
-        density,
-        friction,
-        restitution,
-        sensor,
-    ))
+    SpinePhysicsLuaParser::shape_from_spine_part(lua, part, defaults)
 }
 
 fn body_from_spine_shape(

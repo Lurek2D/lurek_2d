@@ -251,83 +251,95 @@ fn table_color(
     parse_rgba_value(&value, api_name, default)
 }
 
-fn parse_background_value(
-    value: &LuaValue,
-    api_name: &str,
-) -> LuaResult<Option<RaycasterBackground>> {
-    match value {
-        LuaValue::Nil => Ok(None),
-        LuaValue::Table(tbl) => {
-            let kind = tbl
-                .get::<_, Option<String>>("type")?
-                .or(tbl.get::<_, Option<String>>("kind")?)
-                .unwrap_or_else(|| {
-                    if tbl
-                        .get::<_, Option<LuaValue>>("texture")
-                        .ok()
-                        .flatten()
-                        .is_some()
-                        || tbl
-                            .get::<_, Option<LuaValue>>("image")
+struct RaycasterLuaParser;
+
+impl RaycasterLuaParser {
+    fn parse_background_value(
+        value: &LuaValue,
+        api_name: &str,
+    ) -> LuaResult<Option<RaycasterBackground>> {
+        match value {
+            LuaValue::Nil => Ok(None),
+            LuaValue::Table(tbl) => {
+                let kind = tbl
+                    .get::<_, Option<String>>("type")?
+                    .or(tbl.get::<_, Option<String>>("kind")?)
+                    .unwrap_or_else(|| {
+                        if tbl
+                            .get::<_, Option<LuaValue>>("texture")
                             .ok()
                             .flatten()
                             .is_some()
-                    {
-                        "skybox".to_string()
-                    } else {
-                        "gradient".to_string()
+                            || tbl
+                                .get::<_, Option<LuaValue>>("image")
+                                .ok()
+                                .flatten()
+                                .is_some()
+                        {
+                            "skybox".to_string()
+                        } else {
+                            "gradient".to_string()
+                        }
+                    })
+                    .to_ascii_lowercase();
+                match kind.as_str() {
+                    "solid" | "color" => Ok(Some(RaycasterBackground::Solid {
+                        color: table_color(tbl, "color", api_name, [0.0, 0.0, 0.0, 1.0])?,
+                    })),
+                    "gradient" | "verticalgradient" | "vertical_gradient" => {
+                        Ok(Some(RaycasterBackground::VerticalGradient {
+                            top: table_color(tbl, "top", api_name, [0.45, 0.62, 0.86, 1.0])?,
+                            bottom: table_color(tbl, "bottom", api_name, [0.82, 0.90, 1.0, 1.0])?,
+                        }))
                     }
-                })
-                .to_ascii_lowercase();
-            match kind.as_str() {
-                "solid" | "color" => Ok(Some(RaycasterBackground::Solid {
-                    color: table_color(tbl, "color", api_name, [0.0, 0.0, 0.0, 1.0])?,
-                })),
-                "gradient" | "verticalgradient" | "vertical_gradient" => {
-                    Ok(Some(RaycasterBackground::VerticalGradient {
-                        top: table_color(tbl, "top", api_name, [0.45, 0.62, 0.86, 1.0])?,
-                        bottom: table_color(tbl, "bottom", api_name, [0.82, 0.90, 1.0, 1.0])?,
-                    }))
-                }
-                "skybox" | "texture" => {
-                    let texture_value = tbl
-                        .get::<_, Option<LuaValue>>("texture")?
-                        .or(tbl.get::<_, Option<LuaValue>>("image")?)
-                        .or(tbl.get::<_, Option<LuaValue>>("textureId")?)
-                        .unwrap_or(LuaValue::Nil);
-                    let (texture_key, _) = parse_texture_key_value(&texture_value, api_name)?
-                        .ok_or_else(|| {
+                    "skybox" | "texture" => {
+                        let texture_value = tbl
+                            .get::<_, Option<LuaValue>>("texture")?
+                            .or(tbl.get::<_, Option<LuaValue>>("image")?)
+                            .or(tbl.get::<_, Option<LuaValue>>("textureId")?)
+                            .unwrap_or(LuaValue::Nil);
+                        let (texture_key, _) = parse_texture_key_value(&texture_value, api_name)?
+                            .ok_or_else(|| {
                             LuaError::RuntimeError(format!(
                                 "{}: skybox.texture must be an image or texture id",
                                 api_name
                             ))
                         })?;
-                    Ok(Some(RaycasterBackground::Skybox {
-                        texture_key,
-                        tint: table_color(tbl, "tint", api_name, [1.0, 1.0, 1.0, 1.0])?,
-                        offset: tbl.get::<_, Option<f32>>("offset")?.unwrap_or(0.0),
-                    }))
+                        Ok(Some(RaycasterBackground::Skybox {
+                            texture_key,
+                            tint: table_color(tbl, "tint", api_name, [1.0, 1.0, 1.0, 1.0])?,
+                            offset: tbl.get::<_, Option<f32>>("offset")?.unwrap_or(0.0),
+                        }))
+                    }
+                    other => Err(LuaError::RuntimeError(format!(
+                        "{}: unsupported background type {:?}",
+                        api_name, other
+                    ))),
                 }
-                other => Err(LuaError::RuntimeError(format!(
-                    "{}: unsupported background type {:?}",
-                    api_name, other
-                ))),
+            }
+            other => {
+                let (texture_key, _) =
+                    parse_texture_key_value(other, api_name)?.ok_or_else(|| {
+                        LuaError::RuntimeError(format!(
+                            "{}: background must be a table, texture id, LImage, or nil",
+                            api_name
+                        ))
+                    })?;
+                Ok(Some(RaycasterBackground::Skybox {
+                    texture_key,
+                    tint: [1.0, 1.0, 1.0, 1.0],
+                    offset: 0.0,
+                }))
             }
         }
-        other => {
-            let (texture_key, _) = parse_texture_key_value(other, api_name)?.ok_or_else(|| {
-                LuaError::RuntimeError(format!(
-                    "{}: background must be a table, texture id, LImage, or nil",
-                    api_name
-                ))
-            })?;
-            Ok(Some(RaycasterBackground::Skybox {
-                texture_key,
-                tint: [1.0, 1.0, 1.0, 1.0],
-                offset: 0.0,
-            }))
-        }
     }
+}
+
+fn parse_background_value(
+    value: &LuaValue,
+    api_name: &str,
+) -> LuaResult<Option<RaycasterBackground>> {
+    RaycasterLuaParser::parse_background_value(value, api_name)
 }
 
 fn parse_overlay_effect_value(
@@ -772,62 +784,71 @@ fn parse_door_direction(api_name: &str, value: &str) -> LuaResult<DoorDirection>
     }
 }
 
-fn parse_wall_feature_payload(feature_tbl: &LuaTable, api_name: &str) -> LuaResult<WallFeature> {
-    let kind = feature_tbl.get::<_, String>("kind").map_err(|e| {
-        LuaError::RuntimeError(format!("{}: feature.kind is required ({})", api_name, e))
-    })?;
-    match kind.as_str() {
-        "half" | "half_height" => {
-            let height = feature_tbl.get::<_, f32>("height").map_err(|e| {
-                LuaError::RuntimeError(format!(
-                    "{}: feature.height is required for half walls ({})",
-                    api_name, e
-                ))
-            })?;
-            Ok(WallFeature::half_height(height))
-        }
-        "window" => {
-            let sill_height = feature_tbl.get::<_, f32>("sill_height").map_err(|e| {
-                LuaError::RuntimeError(format!(
-                    "{}: feature.sill_height is required for windows ({})",
-                    api_name, e
-                ))
-            })?;
-            let lintel_height = feature_tbl.get::<_, f32>("lintel_height").map_err(|e| {
-                LuaError::RuntimeError(format!(
-                    "{}: feature.lintel_height is required for windows ({})",
-                    api_name, e
-                ))
-            })?;
-            Ok(WallFeature::window(
-                sill_height,
-                lintel_height,
-                feature_tbl.get::<_, Option<f32>>("alpha")?.unwrap_or(0.35),
-            ))
-        }
-        "door" => {
-            let direction = parse_door_direction(
-                &format!("{}: feature.direction", api_name),
-                &feature_tbl.get::<_, String>("direction").map_err(|e| {
+impl RaycasterLuaParser {
+    fn parse_wall_feature_payload(
+        feature_tbl: &LuaTable,
+        api_name: &str,
+    ) -> LuaResult<WallFeature> {
+        let kind = feature_tbl.get::<_, String>("kind").map_err(|e| {
+            LuaError::RuntimeError(format!("{}: feature.kind is required ({})", api_name, e))
+        })?;
+        match kind.as_str() {
+            "half" | "half_height" => {
+                let height = feature_tbl.get::<_, f32>("height").map_err(|e| {
                     LuaError::RuntimeError(format!(
-                        "{}: feature.direction is required for doors ({})",
+                        "{}: feature.height is required for half walls ({})",
                         api_name, e
                     ))
-                })?,
-            )?;
-            Ok(WallFeature::door(
-                direction,
-                feature_tbl
-                    .get::<_, Option<f32>>("open_amount")?
-                    .unwrap_or(0.0),
-                feature_tbl.get::<_, Option<f32>>("alpha")?.unwrap_or(1.0),
-            ))
+                })?;
+                Ok(WallFeature::half_height(height))
+            }
+            "window" => {
+                let sill_height = feature_tbl.get::<_, f32>("sill_height").map_err(|e| {
+                    LuaError::RuntimeError(format!(
+                        "{}: feature.sill_height is required for windows ({})",
+                        api_name, e
+                    ))
+                })?;
+                let lintel_height = feature_tbl.get::<_, f32>("lintel_height").map_err(|e| {
+                    LuaError::RuntimeError(format!(
+                        "{}: feature.lintel_height is required for windows ({})",
+                        api_name, e
+                    ))
+                })?;
+                Ok(WallFeature::window(
+                    sill_height,
+                    lintel_height,
+                    feature_tbl.get::<_, Option<f32>>("alpha")?.unwrap_or(0.35),
+                ))
+            }
+            "door" => {
+                let direction = parse_door_direction(
+                    &format!("{}: feature.direction", api_name),
+                    &feature_tbl.get::<_, String>("direction").map_err(|e| {
+                        LuaError::RuntimeError(format!(
+                            "{}: feature.direction is required for doors ({})",
+                            api_name, e
+                        ))
+                    })?,
+                )?;
+                Ok(WallFeature::door(
+                    direction,
+                    feature_tbl
+                        .get::<_, Option<f32>>("open_amount")?
+                        .unwrap_or(0.0),
+                    feature_tbl.get::<_, Option<f32>>("alpha")?.unwrap_or(1.0),
+                ))
+            }
+            _ => Err(LuaError::RuntimeError(format!(
+                "{}: feature.kind must be \"half\", \"half_height\", \"window\", or \"door\"",
+                api_name
+            ))),
         }
-        _ => Err(LuaError::RuntimeError(format!(
-            "{}: feature.kind must be \"half\", \"half_height\", \"window\", or \"door\"",
-            api_name
-        ))),
     }
+}
+
+fn parse_wall_feature_payload(feature_tbl: &LuaTable, api_name: &str) -> LuaResult<WallFeature> {
+    RaycasterLuaParser::parse_wall_feature_payload(feature_tbl, api_name)
 }
 
 fn parse_wall_feature_descriptor(
@@ -1554,49 +1575,61 @@ fn option_tile_catalog(
     }
 }
 
+struct TileFieldRaycasterLuaAdapter;
+
+impl TileFieldRaycasterLuaAdapter {
+    fn parse_tilefield_raycaster_options(
+        opts: Option<&LuaTable>,
+        api_name: &str,
+    ) -> LuaResult<TileFieldRaycasterOptions> {
+        let channel_name =
+            option_string(opts, "wallChannel")?.unwrap_or_else(|| "vision".to_string());
+        let wall_channel = TileChannel::parse(&channel_name)
+            .map_err(|err| LuaError::RuntimeError(format!("{api_name}: {err}")))?;
+        let door_direction = match option_string(opts, "doorDirection")? {
+            Some(value) => parse_door_direction(api_name, &value)?,
+            None => DoorDirection::Vertical,
+        };
+        Ok(TileFieldRaycasterOptions {
+            wall_channel,
+            catalog: option_tile_catalog(opts, api_name)?,
+            wall_slot: option_string(opts, "wallSlot")?,
+            door_slot: option_string(opts, "doorSlot")?,
+            window_slot: option_string(opts, "windowSlot")?,
+            half_wall_slot: option_string(opts, "halfWallSlot")?,
+            floor_slot: option_string(opts, "floorSlot")?,
+            ceiling_slot: option_string(opts, "ceilingSlot")?,
+            object_slot: option_string(opts, "objectSlot")?,
+            sprite_slot: option_string(opts, "spriteSlot")?,
+            floor_hole_slot: option_string(opts, "floorHoleSlot")?,
+            ceiling_hole_slot: option_string(opts, "ceilingHoleSlot")?,
+            background_slot: option_string(opts, "backgroundSlot")?,
+            skybox_slot: option_string(opts, "skyboxSlot")?,
+            overlay_slot: option_string(opts, "overlaySlot")?,
+            wall_default: option_u32(opts, "wallDefault", 1)?,
+            object_size: option_f32(opts, "objectSize", 1.0)?.max(0.01),
+            object_id_base: option_u32(opts, "objectIdBase", 1_000_000)?,
+            slot_refs_are_textures: option_bool(opts, "slotRefsAreTextures", false)?,
+            include_tile_lights: option_bool(opts, "tileLights", true)?,
+            door_direction,
+            door_open_amount: option_f32(opts, "doorOpenAmount", 0.0)?.clamp(0.0, 1.0),
+            door_alpha: option_f32(opts, "doorAlpha", 1.0)?.clamp(0.0, 1.0),
+            window_sill_height: option_f32(opts, "windowSillHeight", 0.25)?.clamp(0.0, 0.95),
+            window_lintel_height: option_f32(opts, "windowLintelHeight", 0.8)?.clamp(0.05, 1.0),
+            window_alpha: option_f32(opts, "windowAlpha", 0.45)?.clamp(0.0, 1.0),
+            half_wall_height: option_f32(opts, "halfWallHeight", 0.5)?.clamp(0.05, 1.0),
+            floor_textures: option_texture_map(opts, "floorTextures", api_name)?,
+            ceiling_textures: option_texture_map(opts, "ceilingTextures", api_name)?,
+            object_textures: option_texture_map(opts, "objectTextures", api_name)?,
+        })
+    }
+}
+
 fn parse_tilefield_raycaster_options(
     opts: Option<&LuaTable>,
     api_name: &str,
 ) -> LuaResult<TileFieldRaycasterOptions> {
-    let channel_name = option_string(opts, "wallChannel")?.unwrap_or_else(|| "vision".to_string());
-    let wall_channel = TileChannel::parse(&channel_name)
-        .map_err(|err| LuaError::RuntimeError(format!("{api_name}: {err}")))?;
-    let door_direction = match option_string(opts, "doorDirection")? {
-        Some(value) => parse_door_direction(api_name, &value)?,
-        None => DoorDirection::Vertical,
-    };
-    Ok(TileFieldRaycasterOptions {
-        wall_channel,
-        catalog: option_tile_catalog(opts, api_name)?,
-        wall_slot: option_string(opts, "wallSlot")?,
-        door_slot: option_string(opts, "doorSlot")?,
-        window_slot: option_string(opts, "windowSlot")?,
-        half_wall_slot: option_string(opts, "halfWallSlot")?,
-        floor_slot: option_string(opts, "floorSlot")?,
-        ceiling_slot: option_string(opts, "ceilingSlot")?,
-        object_slot: option_string(opts, "objectSlot")?,
-        sprite_slot: option_string(opts, "spriteSlot")?,
-        floor_hole_slot: option_string(opts, "floorHoleSlot")?,
-        ceiling_hole_slot: option_string(opts, "ceilingHoleSlot")?,
-        background_slot: option_string(opts, "backgroundSlot")?,
-        skybox_slot: option_string(opts, "skyboxSlot")?,
-        overlay_slot: option_string(opts, "overlaySlot")?,
-        wall_default: option_u32(opts, "wallDefault", 1)?,
-        object_size: option_f32(opts, "objectSize", 1.0)?.max(0.01),
-        object_id_base: option_u32(opts, "objectIdBase", 1_000_000)?,
-        slot_refs_are_textures: option_bool(opts, "slotRefsAreTextures", false)?,
-        include_tile_lights: option_bool(opts, "tileLights", true)?,
-        door_direction,
-        door_open_amount: option_f32(opts, "doorOpenAmount", 0.0)?.clamp(0.0, 1.0),
-        door_alpha: option_f32(opts, "doorAlpha", 1.0)?.clamp(0.0, 1.0),
-        window_sill_height: option_f32(opts, "windowSillHeight", 0.25)?.clamp(0.0, 0.95),
-        window_lintel_height: option_f32(opts, "windowLintelHeight", 0.8)?.clamp(0.05, 1.0),
-        window_alpha: option_f32(opts, "windowAlpha", 0.45)?.clamp(0.0, 1.0),
-        half_wall_height: option_f32(opts, "halfWallHeight", 0.5)?.clamp(0.05, 1.0),
-        floor_textures: option_texture_map(opts, "floorTextures", api_name)?,
-        ceiling_textures: option_texture_map(opts, "ceilingTextures", api_name)?,
-        object_textures: option_texture_map(opts, "objectTextures", api_name)?,
-    })
+    TileFieldRaycasterLuaAdapter::parse_tilefield_raycaster_options(opts, api_name)
 }
 
 fn typed_ref_cell_value(
@@ -1666,48 +1699,60 @@ fn texture_for_field_ref(
     })
 }
 
+impl TileFieldRaycasterLuaAdapter {
+    fn tilefield_wall_value_and_feature(
+        field: &TileField,
+        coord: CellCoord,
+        options: &TileFieldRaycasterOptions,
+    ) -> (u32, Option<WallFeature>, Option<TextureKey>) {
+        if let Some(value) = field_slot_ref(field, coord, options.door_slot.as_deref(), options) {
+            return (
+                value.value,
+                Some(WallFeature::door(
+                    options.door_direction,
+                    options.door_open_amount,
+                    options.door_alpha,
+                )),
+                value.texture,
+            );
+        }
+        if let Some(value) = field_slot_ref(field, coord, options.window_slot.as_deref(), options) {
+            return (
+                value.value,
+                Some(WallFeature::window(
+                    options.window_sill_height,
+                    options.window_lintel_height,
+                    options.window_alpha,
+                )),
+                value.texture,
+            );
+        }
+        if let Some(value) =
+            field_slot_ref(field, coord, options.half_wall_slot.as_deref(), options)
+        {
+            return (
+                value.value,
+                Some(WallFeature::half_height(options.half_wall_height)),
+                value.texture,
+            );
+        }
+        if let Some(value) = field_slot_ref(field, coord, options.wall_slot.as_deref(), options) {
+            return (value.value, None, value.texture);
+        }
+        if field.blocks(coord, options.wall_channel) {
+            (options.wall_default, None, None)
+        } else {
+            (0, None, None)
+        }
+    }
+}
+
 fn tilefield_wall_value_and_feature(
     field: &TileField,
     coord: CellCoord,
     options: &TileFieldRaycasterOptions,
 ) -> (u32, Option<WallFeature>, Option<TextureKey>) {
-    if let Some(value) = field_slot_ref(field, coord, options.door_slot.as_deref(), options) {
-        return (
-            value.value,
-            Some(WallFeature::door(
-                options.door_direction,
-                options.door_open_amount,
-                options.door_alpha,
-            )),
-            value.texture,
-        );
-    }
-    if let Some(value) = field_slot_ref(field, coord, options.window_slot.as_deref(), options) {
-        return (
-            value.value,
-            Some(WallFeature::window(
-                options.window_sill_height,
-                options.window_lintel_height,
-                options.window_alpha,
-            )),
-            value.texture,
-        );
-    }
-    if let Some(value) = field_slot_ref(field, coord, options.half_wall_slot.as_deref(), options) {
-        return (
-            value.value,
-            Some(WallFeature::half_height(options.half_wall_height)),
-            value.texture,
-        );
-    }
-    if let Some(value) = field_slot_ref(field, coord, options.wall_slot.as_deref(), options) {
-        return (value.value, None, value.texture);
-    }
-    if field.blocks(coord, options.wall_channel) {
-        (options.wall_default, None, None)
-    } else {
-        (0, None, None)
-    }
+    TileFieldRaycasterLuaAdapter::tilefield_wall_value_and_feature(field, coord, options)
 }
 
 fn tilefield_object_slots(options: &TileFieldRaycasterOptions) -> Vec<&str> {
@@ -1737,6 +1782,58 @@ fn tilefield_object_entity_id(
     u32::try_from(value).ok()
 }
 
+impl TileFieldRaycasterLuaAdapter {
+    fn collect_tilefield_object_sprites(
+        field: &TileField,
+        width: u32,
+        height: u32,
+        levels: u32,
+        options: &TileFieldRaycasterOptions,
+    ) -> Vec<LevelSprite> {
+        let slots = tilefield_object_slots(options);
+        if slots.is_empty() {
+            return Vec::new();
+        }
+
+        let mut sprites = Vec::new();
+        for z in 0..levels {
+            for y in 0..height {
+                for x in 0..width {
+                    let coord = CellCoord { x, y, z };
+                    for (slot_index, slot) in slots.iter().enumerate() {
+                        let Some(value) = field_slot_ref(field, coord, Some(*slot), options) else {
+                            continue;
+                        };
+                        let Some(texture_key) = texture_for_field_ref(
+                            Some(value),
+                            &options.object_textures,
+                            options.slot_refs_are_textures,
+                        ) else {
+                            continue;
+                        };
+                        let level_index = z as usize;
+                        sprites.push(LevelSprite {
+                            level_index,
+                            sprite: WorldSprite {
+                                entity_id: tilefield_object_entity_id(
+                                    options, width, height, coord, slot_index,
+                                ),
+                                level_index,
+                                world_x: x as f32 + 0.5,
+                                world_y: y as f32 + 0.5,
+                                texture_key,
+                                directional_textures: None,
+                                size: options.object_size,
+                            },
+                        });
+                    }
+                }
+            }
+        }
+        sprites
+    }
+}
+
 fn collect_tilefield_object_sprites(
     field: &TileField,
     width: u32,
@@ -1744,47 +1841,44 @@ fn collect_tilefield_object_sprites(
     levels: u32,
     options: &TileFieldRaycasterOptions,
 ) -> Vec<LevelSprite> {
-    let slots = tilefield_object_slots(options);
-    if slots.is_empty() {
-        return Vec::new();
-    }
+    TileFieldRaycasterLuaAdapter::collect_tilefield_object_sprites(
+        field, width, height, levels, options,
+    )
+}
 
-    let mut sprites = Vec::new();
-    for z in 0..levels {
+impl TileFieldRaycasterLuaAdapter {
+    fn first_field_ref_for_slot(
+        field: &TileField,
+        width: u32,
+        height: u32,
+        z: u32,
+        slot: Option<&str>,
+        options: &TileFieldRaycasterOptions,
+    ) -> Option<(Option<TileRef>, FieldSlotRef)> {
+        let slot = slot?;
         for y in 0..height {
             for x in 0..width {
                 let coord = CellCoord { x, y, z };
-                for (slot_index, slot) in slots.iter().enumerate() {
-                    let Some(value) = field_slot_ref(field, coord, Some(*slot), options) else {
-                        continue;
-                    };
-                    let Some(texture_key) = texture_for_field_ref(
-                        Some(value),
-                        &options.object_textures,
-                        options.slot_refs_are_textures,
-                    ) else {
-                        continue;
-                    };
-                    let level_index = z as usize;
-                    sprites.push(LevelSprite {
-                        level_index,
-                        sprite: WorldSprite {
-                            entity_id: tilefield_object_entity_id(
-                                options, width, height, coord, slot_index,
-                            ),
-                            level_index,
-                            world_x: x as f32 + 0.5,
-                            world_y: y as f32 + 0.5,
-                            texture_key,
-                            directional_textures: None,
-                            size: options.object_size,
+                if let Some(reference) = field.get_typed_ref(coord, slot) {
+                    return Some((
+                        Some(reference.clone()),
+                        typed_field_slot_ref(reference, options),
+                    ));
+                }
+                if let Some(value) = field.get_ref(coord, slot).filter(|value| *value > 0) {
+                    return Some((
+                        None,
+                        FieldSlotRef {
+                            value,
+                            texture: None,
+                            legacy_numeric: true,
                         },
-                    });
+                    ));
                 }
             }
         }
+        None
     }
-    sprites
 }
 
 fn first_field_ref_for_slot(
@@ -1795,29 +1889,7 @@ fn first_field_ref_for_slot(
     slot: Option<&str>,
     options: &TileFieldRaycasterOptions,
 ) -> Option<(Option<TileRef>, FieldSlotRef)> {
-    let slot = slot?;
-    for y in 0..height {
-        for x in 0..width {
-            let coord = CellCoord { x, y, z };
-            if let Some(reference) = field.get_typed_ref(coord, slot) {
-                return Some((
-                    Some(reference.clone()),
-                    typed_field_slot_ref(reference, options),
-                ));
-            }
-            if let Some(value) = field.get_ref(coord, slot).filter(|value| *value > 0) {
-                return Some((
-                    None,
-                    FieldSlotRef {
-                        value,
-                        texture: None,
-                        legacy_numeric: true,
-                    },
-                ));
-            }
-        }
-    }
-    None
+    TileFieldRaycasterLuaAdapter::first_field_ref_for_slot(field, width, height, z, slot, options)
 }
 
 fn tile_ref_properties(
@@ -1853,48 +1925,58 @@ fn property_f32(properties: &HashMap<String, String>, key: &str, default: f32) -
         .unwrap_or(default)
 }
 
+impl TileFieldRaycasterLuaAdapter {
+    fn background_from_field_slot(
+        value: (Option<TileRef>, FieldSlotRef),
+        options: &TileFieldRaycasterOptions,
+        prefer_texture: bool,
+    ) -> Option<RaycasterBackground> {
+        let (reference, slot_ref) = value;
+        let properties = tile_ref_properties(reference.as_ref(), options);
+        let kind = properties
+            .get("type")
+            .or_else(|| properties.get("kind"))
+            .map(|value| value.to_ascii_lowercase());
+        if prefer_texture {
+            if let Some(texture_key) = texture_for_field_ref(
+                Some(slot_ref),
+                &HashMap::new(),
+                options.slot_refs_are_textures,
+            ) {
+                return Some(RaycasterBackground::Skybox {
+                    texture_key,
+                    tint: property_color(&properties, "tint", [1.0, 1.0, 1.0, 1.0]),
+                    offset: property_f32(&properties, "offset", 0.0),
+                });
+            }
+        }
+        match kind.as_deref() {
+            Some("solid") | Some("color") => Some(RaycasterBackground::Solid {
+                color: property_color(&properties, "color", [0.0, 0.0, 0.0, 1.0]),
+            }),
+            Some("skybox") | Some("texture") => {
+                slot_ref
+                    .texture
+                    .map(|texture_key| RaycasterBackground::Skybox {
+                        texture_key,
+                        tint: property_color(&properties, "tint", [1.0, 1.0, 1.0, 1.0]),
+                        offset: property_f32(&properties, "offset", 0.0),
+                    })
+            }
+            _ => Some(RaycasterBackground::VerticalGradient {
+                top: property_color(&properties, "top", [0.45, 0.62, 0.86, 1.0]),
+                bottom: property_color(&properties, "bottom", [0.82, 0.90, 1.0, 1.0]),
+            }),
+        }
+    }
+}
+
 fn background_from_field_slot(
     value: (Option<TileRef>, FieldSlotRef),
     options: &TileFieldRaycasterOptions,
     prefer_texture: bool,
 ) -> Option<RaycasterBackground> {
-    let (reference, slot_ref) = value;
-    let properties = tile_ref_properties(reference.as_ref(), options);
-    let kind = properties
-        .get("type")
-        .or_else(|| properties.get("kind"))
-        .map(|value| value.to_ascii_lowercase());
-    if prefer_texture {
-        if let Some(texture_key) = texture_for_field_ref(
-            Some(slot_ref),
-            &HashMap::new(),
-            options.slot_refs_are_textures,
-        ) {
-            return Some(RaycasterBackground::Skybox {
-                texture_key,
-                tint: property_color(&properties, "tint", [1.0, 1.0, 1.0, 1.0]),
-                offset: property_f32(&properties, "offset", 0.0),
-            });
-        }
-    }
-    match kind.as_deref() {
-        Some("solid") | Some("color") => Some(RaycasterBackground::Solid {
-            color: property_color(&properties, "color", [0.0, 0.0, 0.0, 1.0]),
-        }),
-        Some("skybox") | Some("texture") => {
-            slot_ref
-                .texture
-                .map(|texture_key| RaycasterBackground::Skybox {
-                    texture_key,
-                    tint: property_color(&properties, "tint", [1.0, 1.0, 1.0, 1.0]),
-                    offset: property_f32(&properties, "offset", 0.0),
-                })
-        }
-        _ => Some(RaycasterBackground::VerticalGradient {
-            top: property_color(&properties, "top", [0.45, 0.62, 0.86, 1.0]),
-            bottom: property_color(&properties, "bottom", [0.82, 0.90, 1.0, 1.0]),
-        }),
-    }
+    TileFieldRaycasterLuaAdapter::background_from_field_slot(value, options, prefer_texture)
 }
 
 fn overlay_from_field_slot(
@@ -1922,6 +2004,55 @@ fn overlay_from_field_slot(
     }
 }
 
+impl TileFieldRaycasterLuaAdapter {
+    fn apply_tilefield_presentation_slots(
+        params: &mut SceneBuildParams,
+        field: &TileField,
+        width: u32,
+        height: u32,
+        active_level: usize,
+        options: &TileFieldRaycasterOptions,
+    ) {
+        let z = active_level as u32;
+        if params.background.is_none() {
+            if let Some(value) = first_field_ref_for_slot(
+                field,
+                width,
+                height,
+                z,
+                options.background_slot.as_deref(),
+                options,
+            ) {
+                params.background = background_from_field_slot(value, options, false);
+            }
+        }
+        if params.background.is_none() {
+            if let Some(value) = first_field_ref_for_slot(
+                field,
+                width,
+                height,
+                z,
+                options.skybox_slot.as_deref(),
+                options,
+            ) {
+                params.background = background_from_field_slot(value, options, true);
+            }
+        }
+        if let Some(value) = first_field_ref_for_slot(
+            field,
+            width,
+            height,
+            z,
+            options.overlay_slot.as_deref(),
+            options,
+        ) {
+            if let Some(overlay) = overlay_from_field_slot(value, options) {
+                params.overlays.push(overlay);
+            }
+        }
+    }
+}
+
 fn apply_tilefield_presentation_slots(
     params: &mut SceneBuildParams,
     field: &TileField,
@@ -1930,43 +2061,14 @@ fn apply_tilefield_presentation_slots(
     active_level: usize,
     options: &TileFieldRaycasterOptions,
 ) {
-    let z = active_level as u32;
-    if params.background.is_none() {
-        if let Some(value) = first_field_ref_for_slot(
-            field,
-            width,
-            height,
-            z,
-            options.background_slot.as_deref(),
-            options,
-        ) {
-            params.background = background_from_field_slot(value, options, false);
-        }
-    }
-    if params.background.is_none() {
-        if let Some(value) = first_field_ref_for_slot(
-            field,
-            width,
-            height,
-            z,
-            options.skybox_slot.as_deref(),
-            options,
-        ) {
-            params.background = background_from_field_slot(value, options, true);
-        }
-    }
-    if let Some(value) = first_field_ref_for_slot(
+    TileFieldRaycasterLuaAdapter::apply_tilefield_presentation_slots(
+        params,
         field,
         width,
         height,
-        z,
-        options.overlay_slot.as_deref(),
+        active_level,
         options,
-    ) {
-        if let Some(overlay) = overlay_from_field_slot(value, options) {
-            params.overlays.push(overlay);
-        }
-    }
+    )
 }
 /// Lua-visible door manager that controls sliding doors within a raycaster map.
 /// Doors can be opened, closed, and animated over time at configurable speeds.

@@ -180,52 +180,63 @@ impl Default for ProvinceRenderBorderPalette {
     }
 }
 
+struct ProvinceLuaParser;
+
+impl ProvinceLuaParser {
+    fn parse_border_palette_from_lua(
+        opts: Option<&LuaTable>,
+    ) -> LuaResult<ProvinceRenderBorderPalette> {
+        let mut palette = ProvinceRenderBorderPalette::default();
+        let Some(opts) = opts else {
+            return Ok(palette);
+        };
+        if let Some(t) = opts.get::<_, Option<LuaTable>>("border_palette")? {
+            palette.enabled = t.get::<_, Option<bool>>("enabled")?.unwrap_or(true);
+            if let Some(color) = t.get::<_, Option<LuaTable>>("province_color")? {
+                palette.province_border_color =
+                    parse_render_color_table(color, "border_palette.province_color")?;
+            }
+            if let Some(color) = t.get::<_, Option<LuaTable>>("land_color")? {
+                palette.province_border_color =
+                    parse_render_color_table(color, "border_palette.land_color")?;
+            }
+            if let Some(color) = t.get::<_, Option<LuaTable>>("coast_color")? {
+                palette.coast_border_color =
+                    parse_render_color_table(color, "border_palette.coast_color")?;
+            }
+            if let Some(color) = t.get::<_, Option<LuaTable>>("country_color")? {
+                palette.country_border_color =
+                    parse_render_color_table(color, "border_palette.country_color")?;
+            }
+            if let Some(darken) = t.get::<_, Option<f32>>("sea_darken")? {
+                palette.sea_border_darken = darken.clamp(0.0, 1.0);
+            }
+        }
+        if let Some(color) = opts.get::<_, Option<LuaTable>>("province_border_color")? {
+            palette.enabled = true;
+            palette.province_border_color =
+                parse_render_color_table(color, "province_border_color")?;
+        }
+        if let Some(color) = opts.get::<_, Option<LuaTable>>("coast_border_color")? {
+            palette.enabled = true;
+            palette.coast_border_color = parse_render_color_table(color, "coast_border_color")?;
+        }
+        if let Some(color) = opts.get::<_, Option<LuaTable>>("country_border_color")? {
+            palette.enabled = true;
+            palette.country_border_color = parse_render_color_table(color, "country_border_color")?;
+        }
+        if let Some(darken) = opts.get::<_, Option<f32>>("sea_border_darken")? {
+            palette.enabled = true;
+            palette.sea_border_darken = darken.clamp(0.0, 1.0);
+        }
+        Ok(palette)
+    }
+}
+
 fn parse_border_palette_from_lua(
     opts: Option<&LuaTable>,
 ) -> LuaResult<ProvinceRenderBorderPalette> {
-    let mut palette = ProvinceRenderBorderPalette::default();
-    let Some(opts) = opts else {
-        return Ok(palette);
-    };
-    if let Some(t) = opts.get::<_, Option<LuaTable>>("border_palette")? {
-        palette.enabled = t.get::<_, Option<bool>>("enabled")?.unwrap_or(true);
-        if let Some(color) = t.get::<_, Option<LuaTable>>("province_color")? {
-            palette.province_border_color =
-                parse_render_color_table(color, "border_palette.province_color")?;
-        }
-        if let Some(color) = t.get::<_, Option<LuaTable>>("land_color")? {
-            palette.province_border_color =
-                parse_render_color_table(color, "border_palette.land_color")?;
-        }
-        if let Some(color) = t.get::<_, Option<LuaTable>>("coast_color")? {
-            palette.coast_border_color =
-                parse_render_color_table(color, "border_palette.coast_color")?;
-        }
-        if let Some(color) = t.get::<_, Option<LuaTable>>("country_color")? {
-            palette.country_border_color =
-                parse_render_color_table(color, "border_palette.country_color")?;
-        }
-        if let Some(darken) = t.get::<_, Option<f32>>("sea_darken")? {
-            palette.sea_border_darken = darken.clamp(0.0, 1.0);
-        }
-    }
-    if let Some(color) = opts.get::<_, Option<LuaTable>>("province_border_color")? {
-        palette.enabled = true;
-        palette.province_border_color = parse_render_color_table(color, "province_border_color")?;
-    }
-    if let Some(color) = opts.get::<_, Option<LuaTable>>("coast_border_color")? {
-        palette.enabled = true;
-        palette.coast_border_color = parse_render_color_table(color, "coast_border_color")?;
-    }
-    if let Some(color) = opts.get::<_, Option<LuaTable>>("country_border_color")? {
-        palette.enabled = true;
-        palette.country_border_color = parse_render_color_table(color, "country_border_color")?;
-    }
-    if let Some(darken) = opts.get::<_, Option<f32>>("sea_border_darken")? {
-        palette.enabled = true;
-        palette.sea_border_darken = darken.clamp(0.0, 1.0);
-    }
-    Ok(palette)
+    ProvinceLuaParser::parse_border_palette_from_lua(opts)
 }
 
 fn parse_province_tint_key(key: LuaValue) -> LuaResult<ProvinceId> {

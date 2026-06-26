@@ -99,61 +99,69 @@ fn light_to_lua<'lua>(lua: &'lua Lua, color: LightColor) -> LuaResult<LuaTable<'
     Ok(table)
 }
 
+struct TileLightLuaParser;
+
+impl TileLightLuaParser {
+    fn modulation_from_table(table: Option<LuaTable>, api: &str) -> LuaResult<LightModulation> {
+        let mut modulation = LightModulation::default();
+        let Some(table) = table else {
+            return Ok(modulation);
+        };
+        if let Some(flicker) = table
+            .get::<_, Option<LuaTable>>("flicker")
+            .map_err(|e| lua_err(api, e))?
+        {
+            modulation.intensity_amplitude = flicker
+                .get::<_, Option<f32>>("amplitude")
+                .map_err(|e| lua_err(api, e))?
+                .unwrap_or(0.0)
+                .clamp(0.0, 1.0);
+            modulation.intensity_frequency_hz = flicker
+                .get::<_, Option<f32>>("frequency")
+                .map_err(|e| lua_err(api, e))?
+                .or_else(|| flicker.get::<_, Option<f32>>("frequencyHz").ok().flatten())
+                .unwrap_or(0.0)
+                .max(0.0);
+            modulation.intensity_phase = flicker
+                .get::<_, Option<f32>>("phase")
+                .map_err(|e| lua_err(api, e))?
+                .unwrap_or(0.0);
+        }
+        if let Some(cycle) = table
+            .get::<_, Option<LuaTable>>("colorCycle")
+            .map_err(|e| lua_err(api, e))?
+        {
+            modulation.color_a = Some(color_from_table(
+                cycle
+                    .get::<_, Option<LuaTable>>("from")
+                    .map_err(|e| lua_err(api, e))?,
+                LightColor::WHITE,
+                api,
+            )?);
+            modulation.color_b = Some(color_from_table(
+                cycle
+                    .get::<_, Option<LuaTable>>("to")
+                    .map_err(|e| lua_err(api, e))?,
+                LightColor::WHITE,
+                api,
+            )?);
+            modulation.color_frequency_hz = cycle
+                .get::<_, Option<f32>>("frequency")
+                .map_err(|e| lua_err(api, e))?
+                .or_else(|| cycle.get::<_, Option<f32>>("frequencyHz").ok().flatten())
+                .unwrap_or(0.0)
+                .max(0.0);
+            modulation.color_phase = cycle
+                .get::<_, Option<f32>>("phase")
+                .map_err(|e| lua_err(api, e))?
+                .unwrap_or(0.0);
+        }
+        Ok(modulation)
+    }
+}
+
 fn modulation_from_table(table: Option<LuaTable>, api: &str) -> LuaResult<LightModulation> {
-    let mut modulation = LightModulation::default();
-    let Some(table) = table else {
-        return Ok(modulation);
-    };
-    if let Some(flicker) = table
-        .get::<_, Option<LuaTable>>("flicker")
-        .map_err(|e| lua_err(api, e))?
-    {
-        modulation.intensity_amplitude = flicker
-            .get::<_, Option<f32>>("amplitude")
-            .map_err(|e| lua_err(api, e))?
-            .unwrap_or(0.0)
-            .clamp(0.0, 1.0);
-        modulation.intensity_frequency_hz = flicker
-            .get::<_, Option<f32>>("frequency")
-            .map_err(|e| lua_err(api, e))?
-            .or_else(|| flicker.get::<_, Option<f32>>("frequencyHz").ok().flatten())
-            .unwrap_or(0.0)
-            .max(0.0);
-        modulation.intensity_phase = flicker
-            .get::<_, Option<f32>>("phase")
-            .map_err(|e| lua_err(api, e))?
-            .unwrap_or(0.0);
-    }
-    if let Some(cycle) = table
-        .get::<_, Option<LuaTable>>("colorCycle")
-        .map_err(|e| lua_err(api, e))?
-    {
-        modulation.color_a = Some(color_from_table(
-            cycle
-                .get::<_, Option<LuaTable>>("from")
-                .map_err(|e| lua_err(api, e))?,
-            LightColor::WHITE,
-            api,
-        )?);
-        modulation.color_b = Some(color_from_table(
-            cycle
-                .get::<_, Option<LuaTable>>("to")
-                .map_err(|e| lua_err(api, e))?,
-            LightColor::WHITE,
-            api,
-        )?);
-        modulation.color_frequency_hz = cycle
-            .get::<_, Option<f32>>("frequency")
-            .map_err(|e| lua_err(api, e))?
-            .or_else(|| cycle.get::<_, Option<f32>>("frequencyHz").ok().flatten())
-            .unwrap_or(0.0)
-            .max(0.0);
-        modulation.color_phase = cycle
-            .get::<_, Option<f32>>("phase")
-            .map_err(|e| lua_err(api, e))?
-            .unwrap_or(0.0);
-    }
-    Ok(modulation)
+    TileLightLuaParser::modulation_from_table(table, api)
 }
 
 fn modulation_patch_from_table(table: LuaTable, api: &str) -> LuaResult<Option<LightModulation>> {
@@ -172,100 +180,114 @@ fn modulation_patch_from_table(table: LuaTable, api: &str) -> LuaResult<Option<L
     }
 }
 
+impl TileLightLuaParser {
+    fn compute_opts(
+        opts: Option<LuaTable>,
+    ) -> LuaResult<(bool, bool, bool, bool, Option<LightColor>, f32)> {
+        if let Some(opts) = opts {
+            let include_point = opts
+                .get::<_, Option<bool>>("includePointLights")
+                .map_err(|e| lua_err("compute", e))?
+                .unwrap_or(true);
+            let include_line = opts
+                .get::<_, Option<bool>>("includeLineLights")
+                .map_err(|e| lua_err("compute", e))?
+                .unwrap_or(true);
+            let include_area = opts
+                .get::<_, Option<bool>>("includeAreaLights")
+                .map_err(|e| lua_err("compute", e))?
+                .or_else(|| {
+                    opts.get::<_, Option<bool>>("includeRectLights")
+                        .ok()
+                        .flatten()
+                })
+                .unwrap_or(true);
+            let include_sun = opts
+                .get::<_, Option<bool>>("includeSunLight")
+                .map_err(|e| lua_err("compute", e))?
+                .unwrap_or(true);
+            let ambient = opts
+                .get::<_, Option<LuaTable>>("ambient")
+                .map_err(|e| lua_err("compute", e))?
+                .map(|table| color_from_table(Some(table), LightColor::BLACK, "compute"))
+                .transpose()?;
+            let time_seconds = opts
+                .get::<_, Option<f32>>("time")
+                .map_err(|e| lua_err("compute", e))?
+                .or_else(|| opts.get::<_, Option<f32>>("timeSeconds").ok().flatten())
+                .unwrap_or(0.0);
+            Ok((
+                include_point,
+                include_line,
+                include_area,
+                include_sun,
+                ambient,
+                time_seconds,
+            ))
+        } else {
+            Ok((true, true, true, true, None, 0.0))
+        }
+    }
+}
+
 fn compute_opts(
     opts: Option<LuaTable>,
 ) -> LuaResult<(bool, bool, bool, bool, Option<LightColor>, f32)> {
-    if let Some(opts) = opts {
-        let include_point = opts
-            .get::<_, Option<bool>>("includePointLights")
-            .map_err(|e| lua_err("compute", e))?
-            .unwrap_or(true);
-        let include_line = opts
-            .get::<_, Option<bool>>("includeLineLights")
-            .map_err(|e| lua_err("compute", e))?
-            .unwrap_or(true);
-        let include_area = opts
-            .get::<_, Option<bool>>("includeAreaLights")
-            .map_err(|e| lua_err("compute", e))?
-            .or_else(|| {
-                opts.get::<_, Option<bool>>("includeRectLights")
-                    .ok()
-                    .flatten()
-            })
-            .unwrap_or(true);
-        let include_sun = opts
-            .get::<_, Option<bool>>("includeSunLight")
-            .map_err(|e| lua_err("compute", e))?
-            .unwrap_or(true);
-        let ambient = opts
-            .get::<_, Option<LuaTable>>("ambient")
-            .map_err(|e| lua_err("compute", e))?
-            .map(|table| color_from_table(Some(table), LightColor::BLACK, "compute"))
-            .transpose()?;
-        let time_seconds = opts
-            .get::<_, Option<f32>>("time")
-            .map_err(|e| lua_err("compute", e))?
-            .or_else(|| opts.get::<_, Option<f32>>("timeSeconds").ok().flatten())
+    TileLightLuaParser::compute_opts(opts)
+}
+
+impl TileLightLuaParser {
+    fn sun_from_table(opts: LuaTable, api: &str) -> LuaResult<SunLight> {
+        let intensity = opts
+            .get::<_, Option<f32>>("intensity")
+            .map_err(|e| lua_err(api, e))?
             .unwrap_or(0.0);
-        Ok((
-            include_point,
-            include_line,
-            include_area,
-            include_sun,
-            ambient,
-            time_seconds,
-        ))
-    } else {
-        Ok((true, true, true, true, None, 0.0))
+        let color = color_from_table(
+            opts.get::<_, Option<LuaTable>>("color")
+                .map_err(|e| lua_err(api, e))?,
+            LightColor::WHITE,
+            api,
+        )?;
+        let kind = opts
+            .get::<_, Option<String>>("kind")
+            .map_err(|e| lua_err(api, e))?
+            .or_else(|| opts.get::<_, Option<String>>("mode").ok().flatten())
+            .unwrap_or_else(|| "top".to_string());
+        let mode = match kind.as_str() {
+            "top" | "vertical" => SunLightMode::Top,
+            "directional" => {
+                let direction = opts
+                    .get::<_, Option<LuaTable>>("direction")
+                    .map_err(|e| lua_err(api, e))?;
+                let dx = direction
+                    .as_ref()
+                    .and_then(|table| table.get::<_, Option<i32>>("x").ok().flatten())
+                    .or_else(|| opts.get::<_, Option<i32>>("dx").ok().flatten())
+                    .unwrap_or(0);
+                let dy = direction
+                    .as_ref()
+                    .and_then(|table| table.get::<_, Option<i32>>("y").ok().flatten())
+                    .or_else(|| opts.get::<_, Option<i32>>("dy").ok().flatten())
+                    .unwrap_or(1);
+                SunLightMode::Directional { dx, dy }
+            }
+            other => {
+                return Err(lua_err(
+                    api,
+                    format!("unknown sun kind '{other}' (expected top or directional)"),
+                ))
+            }
+        };
+        Ok(SunLight {
+            intensity,
+            color,
+            mode,
+        })
     }
 }
 
 fn sun_from_table(opts: LuaTable, api: &str) -> LuaResult<SunLight> {
-    let intensity = opts
-        .get::<_, Option<f32>>("intensity")
-        .map_err(|e| lua_err(api, e))?
-        .unwrap_or(0.0);
-    let color = color_from_table(
-        opts.get::<_, Option<LuaTable>>("color")
-            .map_err(|e| lua_err(api, e))?,
-        LightColor::WHITE,
-        api,
-    )?;
-    let kind = opts
-        .get::<_, Option<String>>("kind")
-        .map_err(|e| lua_err(api, e))?
-        .or_else(|| opts.get::<_, Option<String>>("mode").ok().flatten())
-        .unwrap_or_else(|| "top".to_string());
-    let mode = match kind.as_str() {
-        "top" | "vertical" => SunLightMode::Top,
-        "directional" => {
-            let direction = opts
-                .get::<_, Option<LuaTable>>("direction")
-                .map_err(|e| lua_err(api, e))?;
-            let dx = direction
-                .as_ref()
-                .and_then(|table| table.get::<_, Option<i32>>("x").ok().flatten())
-                .or_else(|| opts.get::<_, Option<i32>>("dx").ok().flatten())
-                .unwrap_or(0);
-            let dy = direction
-                .as_ref()
-                .and_then(|table| table.get::<_, Option<i32>>("y").ok().flatten())
-                .or_else(|| opts.get::<_, Option<i32>>("dy").ok().flatten())
-                .unwrap_or(1);
-            SunLightMode::Directional { dx, dy }
-        }
-        other => {
-            return Err(lua_err(
-                api,
-                format!("unknown sun kind '{other}' (expected top or directional)"),
-            ))
-        }
-    };
-    Ok(SunLight {
-        intensity,
-        color,
-        mode,
-    })
+    TileLightLuaParser::sun_from_table(opts, api)
 }
 
 fn area_size_from_table(opts: &LuaTable, api: &str) -> LuaResult<(u32, u32)> {
@@ -306,59 +328,70 @@ fn add_area_light_from_opts(this: &LuaTileLightMap, opts: LuaTable, api: &str) -
         .map_err(|e| lua_err(api, e))
 }
 
+impl TileLightLuaParser {
+    fn update_area_light_from_opts(
+        this: &LuaTileLightMap,
+        id: u32,
+        opts: LuaTable,
+        api: &str,
+    ) -> LuaResult<()> {
+        let parse_coord = |name: &str| -> LuaResult<Option<u32>> {
+            opts.get::<_, Option<u32>>(name)
+                .map_err(|e| lua_err(api, e))?
+                .map(|v| one_based(v, name))
+                .transpose()
+        };
+        let width = opts
+            .get::<_, Option<u32>>("width")
+            .map_err(|e| lua_err(api, e))?
+            .or_else(|| opts.get::<_, Option<u32>>("w").ok().flatten());
+        let height = opts
+            .get::<_, Option<u32>>("height")
+            .map_err(|e| lua_err(api, e))?
+            .or_else(|| opts.get::<_, Option<u32>>("h").ok().flatten());
+        let radius = opts
+            .get::<_, Option<f32>>("radius")
+            .map_err(|e| lua_err(api, e))?;
+        let intensity = opts
+            .get::<_, Option<f32>>("intensity")
+            .map_err(|e| lua_err(api, e))?;
+        let color = match opts
+            .get::<_, Option<LuaTable>>("color")
+            .map_err(|e| lua_err(api, e))?
+        {
+            Some(table) => Some(color_from_table(Some(table), LightColor::WHITE, api)?),
+            None => None,
+        };
+        let modulation = modulation_patch_from_table(opts.clone(), api)?;
+        let field = this.field.borrow();
+        this.inner
+            .borrow_mut()
+            .update_area_light(
+                &field,
+                id,
+                AreaLightUpdate {
+                    x: parse_coord("x")?,
+                    y: parse_coord("y")?,
+                    z: parse_coord("z")?,
+                    width,
+                    height,
+                    radius,
+                    intensity,
+                    color,
+                    modulation,
+                },
+            )
+            .map_err(|e| lua_err(api, e))
+    }
+}
+
 fn update_area_light_from_opts(
     this: &LuaTileLightMap,
     id: u32,
     opts: LuaTable,
     api: &str,
 ) -> LuaResult<()> {
-    let parse_coord = |name: &str| -> LuaResult<Option<u32>> {
-        opts.get::<_, Option<u32>>(name)
-            .map_err(|e| lua_err(api, e))?
-            .map(|v| one_based(v, name))
-            .transpose()
-    };
-    let width = opts
-        .get::<_, Option<u32>>("width")
-        .map_err(|e| lua_err(api, e))?
-        .or_else(|| opts.get::<_, Option<u32>>("w").ok().flatten());
-    let height = opts
-        .get::<_, Option<u32>>("height")
-        .map_err(|e| lua_err(api, e))?
-        .or_else(|| opts.get::<_, Option<u32>>("h").ok().flatten());
-    let radius = opts
-        .get::<_, Option<f32>>("radius")
-        .map_err(|e| lua_err(api, e))?;
-    let intensity = opts
-        .get::<_, Option<f32>>("intensity")
-        .map_err(|e| lua_err(api, e))?;
-    let color = match opts
-        .get::<_, Option<LuaTable>>("color")
-        .map_err(|e| lua_err(api, e))?
-    {
-        Some(table) => Some(color_from_table(Some(table), LightColor::WHITE, api)?),
-        None => None,
-    };
-    let modulation = modulation_patch_from_table(opts.clone(), api)?;
-    let field = this.field.borrow();
-    this.inner
-        .borrow_mut()
-        .update_area_light(
-            &field,
-            id,
-            AreaLightUpdate {
-                x: parse_coord("x")?,
-                y: parse_coord("y")?,
-                z: parse_coord("z")?,
-                width,
-                height,
-                radius,
-                intensity,
-                color,
-                modulation,
-            },
-        )
-        .map_err(|e| lua_err(api, e))
+    TileLightLuaParser::update_area_light_from_opts(this, id, opts, api)
 }
 
 impl LuaUserData for LuaTileLightMap {

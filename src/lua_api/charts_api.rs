@@ -378,58 +378,66 @@ fn parse_margin(tbl: &LuaTable) -> LuaResult<ChartMargin> {
     })
 }
 
+struct ChartsLuaParser;
+
+impl ChartsLuaParser {
+    fn parse_chart_config(config: Option<LuaTable>) -> LuaResult<ChartConfig> {
+        let mut cfg = ChartConfig::default();
+        let Some(tbl) = config else {
+            return Ok(cfg);
+        };
+
+        if let Some(width) = tbl.get::<_, Option<u32>>("width")? {
+            cfg.width = width.max(1);
+        }
+        if let Some(height) = tbl.get::<_, Option<u32>>("height")? {
+            cfg.height = height.max(1);
+        }
+        cfg.title = tbl.get::<_, Option<String>>("title")?;
+        cfg.x_label = tbl.get::<_, Option<String>>("xLabel")?;
+        cfg.y_label = tbl.get::<_, Option<String>>("yLabel")?;
+        cfg.x_tick_count = tbl
+            .get::<_, Option<u32>>("xTickCount")?
+            .unwrap_or(cfg.x_tick_count)
+            .max(2);
+        cfg.y_tick_count = tbl
+            .get::<_, Option<u32>>("yTickCount")?
+            .unwrap_or(cfg.y_tick_count)
+            .max(2);
+        cfg.show_grid = tbl
+            .get::<_, Option<bool>>("showGrid")?
+            .unwrap_or(cfg.show_grid);
+        cfg.show_legend = tbl
+            .get::<_, Option<bool>>("showLegend")?
+            .unwrap_or(cfg.show_legend);
+        cfg.legend_width = tbl
+            .get::<_, Option<f32>>("legendWidth")?
+            .unwrap_or(cfg.legend_width)
+            .max(40.0);
+        cfg.max_points = tbl.get::<_, Option<usize>>("maxPoints")?;
+
+        if let Ok(Some(color_tbl)) = tbl.get::<_, Option<LuaTable>>("bgColor") {
+            cfg.bg_color = parse_color4(&color_tbl)?;
+        }
+        if let Ok(Some(color_tbl)) = tbl.get::<_, Option<LuaTable>>("axisColor") {
+            cfg.axis_color = parse_color4(&color_tbl)?;
+        }
+        if let Ok(Some(color_tbl)) = tbl.get::<_, Option<LuaTable>>("gridColor") {
+            cfg.grid_color = parse_color4(&color_tbl)?;
+        }
+        if let Ok(Some(color_tbl)) = tbl.get::<_, Option<LuaTable>>("labelColor") {
+            cfg.label_color = parse_color4(&color_tbl)?;
+        }
+        if let Ok(Some(margin_tbl)) = tbl.get::<_, Option<LuaTable>>("margin") {
+            cfg.margin = parse_margin(&margin_tbl)?;
+        }
+
+        Ok(cfg)
+    }
+}
+
 fn parse_chart_config(config: Option<LuaTable>) -> LuaResult<ChartConfig> {
-    let mut cfg = ChartConfig::default();
-    let Some(tbl) = config else {
-        return Ok(cfg);
-    };
-
-    if let Some(width) = tbl.get::<_, Option<u32>>("width")? {
-        cfg.width = width.max(1);
-    }
-    if let Some(height) = tbl.get::<_, Option<u32>>("height")? {
-        cfg.height = height.max(1);
-    }
-    cfg.title = tbl.get::<_, Option<String>>("title")?;
-    cfg.x_label = tbl.get::<_, Option<String>>("xLabel")?;
-    cfg.y_label = tbl.get::<_, Option<String>>("yLabel")?;
-    cfg.x_tick_count = tbl
-        .get::<_, Option<u32>>("xTickCount")?
-        .unwrap_or(cfg.x_tick_count)
-        .max(2);
-    cfg.y_tick_count = tbl
-        .get::<_, Option<u32>>("yTickCount")?
-        .unwrap_or(cfg.y_tick_count)
-        .max(2);
-    cfg.show_grid = tbl
-        .get::<_, Option<bool>>("showGrid")?
-        .unwrap_or(cfg.show_grid);
-    cfg.show_legend = tbl
-        .get::<_, Option<bool>>("showLegend")?
-        .unwrap_or(cfg.show_legend);
-    cfg.legend_width = tbl
-        .get::<_, Option<f32>>("legendWidth")?
-        .unwrap_or(cfg.legend_width)
-        .max(40.0);
-    cfg.max_points = tbl.get::<_, Option<usize>>("maxPoints")?;
-
-    if let Ok(Some(color_tbl)) = tbl.get::<_, Option<LuaTable>>("bgColor") {
-        cfg.bg_color = parse_color4(&color_tbl)?;
-    }
-    if let Ok(Some(color_tbl)) = tbl.get::<_, Option<LuaTable>>("axisColor") {
-        cfg.axis_color = parse_color4(&color_tbl)?;
-    }
-    if let Ok(Some(color_tbl)) = tbl.get::<_, Option<LuaTable>>("gridColor") {
-        cfg.grid_color = parse_color4(&color_tbl)?;
-    }
-    if let Ok(Some(color_tbl)) = tbl.get::<_, Option<LuaTable>>("labelColor") {
-        cfg.label_color = parse_color4(&color_tbl)?;
-    }
-    if let Ok(Some(margin_tbl)) = tbl.get::<_, Option<LuaTable>>("margin") {
-        cfg.margin = parse_margin(&margin_tbl)?;
-    }
-
-    Ok(cfg)
+    ChartsLuaParser::parse_chart_config(config)
 }
 
 fn parse_series_data(data: &LuaTable, api_name: &str) -> LuaResult<Vec<(f32, f32)>> {
@@ -596,6 +604,54 @@ struct NearestPoint<'a> {
     distance: f32,
 }
 
+impl ChartsLuaParser {
+    #[allow(clippy::too_many_arguments)]
+    fn nearest_cartesian_point<'a>(
+        series: &'a [ChartSeries],
+        plot_x: f32,
+        plot_y: f32,
+        plot_w: f32,
+        plot_h: f32,
+        min_x: f32,
+        max_x: f32,
+        min_y: f32,
+        max_y: f32,
+        query_x: f32,
+        query_y: f32,
+    ) -> Option<NearestPoint<'a>> {
+        let mut best: Option<NearestPoint<'a>> = None;
+        for chart_series in series {
+            for (index, &(x, y)) in chart_series.data.iter().enumerate() {
+                if !x.is_finite() || !y.is_finite() {
+                    continue;
+                }
+                let screen_x =
+                    plot_x + crate::charts::render_utils::world_to_screen(x, min_x, max_x, plot_w);
+                let screen_y = plot_y + plot_h
+                    - crate::charts::render_utils::world_to_screen(y, min_y, max_y, plot_h);
+                let distance = ((screen_x - query_x).powi(2) + (screen_y - query_y).powi(2)).sqrt();
+                let candidate = NearestPoint {
+                    series_name: chart_series.name.as_str(),
+                    index,
+                    x,
+                    y,
+                    screen_x,
+                    screen_y,
+                    distance,
+                };
+                if best
+                    .as_ref()
+                    .map(|current| candidate.distance < current.distance)
+                    .unwrap_or(true)
+                {
+                    best = Some(candidate);
+                }
+            }
+        }
+        best
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 fn nearest_cartesian_point<'a>(
     series: &'a [ChartSeries],
@@ -610,36 +666,9 @@ fn nearest_cartesian_point<'a>(
     query_x: f32,
     query_y: f32,
 ) -> Option<NearestPoint<'a>> {
-    let mut best: Option<NearestPoint<'a>> = None;
-    for chart_series in series {
-        for (index, &(x, y)) in chart_series.data.iter().enumerate() {
-            if !x.is_finite() || !y.is_finite() {
-                continue;
-            }
-            let screen_x =
-                plot_x + crate::charts::render_utils::world_to_screen(x, min_x, max_x, plot_w);
-            let screen_y = plot_y + plot_h
-                - crate::charts::render_utils::world_to_screen(y, min_y, max_y, plot_h);
-            let distance = ((screen_x - query_x).powi(2) + (screen_y - query_y).powi(2)).sqrt();
-            let candidate = NearestPoint {
-                series_name: chart_series.name.as_str(),
-                index,
-                x,
-                y,
-                screen_x,
-                screen_y,
-                distance,
-            };
-            if best
-                .as_ref()
-                .map(|current| candidate.distance < current.distance)
-                .unwrap_or(true)
-            {
-                best = Some(candidate);
-            }
-        }
-    }
-    best
+    ChartsLuaParser::nearest_cartesian_point(
+        series, plot_x, plot_y, plot_w, plot_h, min_x, max_x, min_y, max_y, query_x, query_y,
+    )
 }
 
 fn push_nearest_point<'lua>(

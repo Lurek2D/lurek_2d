@@ -192,6 +192,89 @@ fn write_procgen_grid_to_field(
     Ok(())
 }
 
+struct ProcgenTileFieldLuaWriter;
+
+impl ProcgenTileFieldLuaWriter {
+    fn write_procgen_scalar_grid_to_field(
+        field: &mut TileField,
+        width: u32,
+        height: u32,
+        cells: &[f32],
+        z: u32,
+        opts: Option<&LuaTable>,
+        api: &str,
+    ) -> LuaResult<()> {
+        let (field_width, field_height, field_levels) = field.size();
+        if width > field_width || height > field_height || z >= field_levels {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: target tilefield is too small or level is out of bounds"
+            )));
+        }
+
+        let target = procgen_required_string_opt(opts, "target", api)?;
+        let channel_name = opts.and_then(|t| t.get::<_, Option<String>>("channel").ok().flatten());
+        let scale = opts
+            .and_then(|t| t.get::<_, Option<f32>>("scale").ok().flatten())
+            .unwrap_or(1.0);
+        let offset = opts
+            .and_then(|t| t.get::<_, Option<f32>>("offset").ok().flatten())
+            .unwrap_or(0.0);
+        let threshold = opts
+            .and_then(|t| t.get::<_, Option<f32>>("threshold").ok().flatten())
+            .unwrap_or(0.5);
+        let invert = opts
+            .and_then(|t| t.get::<_, Option<bool>>("invert").ok().flatten())
+            .unwrap_or(false);
+
+        let channel = if target == "cost" || target == "block" {
+            let channel_name = channel_name
+                .as_deref()
+                .filter(|value| !value.trim().is_empty())
+                .ok_or_else(|| {
+                    LuaError::RuntimeError(format!("{api}: opts.channel is required"))
+                })?;
+            Some(procgen_channel_from_name(channel_name, api)?)
+        } else {
+            None
+        };
+
+        for y in 0..height {
+            for x in 0..width {
+                let value = cells[(y * width + x) as usize] * scale + offset;
+                let coord = CellCoord { x, y, z };
+                match target.as_str() {
+                    "sunOcclusion" | "sun_occlusion" => {
+                        field
+                            .set_sun_occlusion(coord, value)
+                            .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                    }
+                    "cost" => {
+                        field
+                            .set_cost(coord, channel.unwrap(), value)
+                            .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                    }
+                    "block" => {
+                        let blocked = if invert {
+                            value < threshold
+                        } else {
+                            value >= threshold
+                        };
+                        field
+                            .set_block(coord, channel.unwrap(), blocked)
+                            .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                    }
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                        "{api}: invalid target '{other}' (expected sunOcclusion, cost, or block)"
+                    )));
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
 fn write_procgen_scalar_grid_to_field(
     field: &mut TileField,
     width: u32,
@@ -201,72 +284,9 @@ fn write_procgen_scalar_grid_to_field(
     opts: Option<&LuaTable>,
     api: &str,
 ) -> LuaResult<()> {
-    let (field_width, field_height, field_levels) = field.size();
-    if width > field_width || height > field_height || z >= field_levels {
-        return Err(LuaError::RuntimeError(format!(
-            "{api}: target tilefield is too small or level is out of bounds"
-        )));
-    }
-
-    let target = procgen_required_string_opt(opts, "target", api)?;
-    let channel_name = opts.and_then(|t| t.get::<_, Option<String>>("channel").ok().flatten());
-    let scale = opts
-        .and_then(|t| t.get::<_, Option<f32>>("scale").ok().flatten())
-        .unwrap_or(1.0);
-    let offset = opts
-        .and_then(|t| t.get::<_, Option<f32>>("offset").ok().flatten())
-        .unwrap_or(0.0);
-    let threshold = opts
-        .and_then(|t| t.get::<_, Option<f32>>("threshold").ok().flatten())
-        .unwrap_or(0.5);
-    let invert = opts
-        .and_then(|t| t.get::<_, Option<bool>>("invert").ok().flatten())
-        .unwrap_or(false);
-
-    let channel = if target == "cost" || target == "block" {
-        let channel_name = channel_name
-            .as_deref()
-            .filter(|value| !value.trim().is_empty())
-            .ok_or_else(|| LuaError::RuntimeError(format!("{api}: opts.channel is required")))?;
-        Some(procgen_channel_from_name(channel_name, api)?)
-    } else {
-        None
-    };
-
-    for y in 0..height {
-        for x in 0..width {
-            let value = cells[(y * width + x) as usize] * scale + offset;
-            let coord = CellCoord { x, y, z };
-            match target.as_str() {
-                "sunOcclusion" | "sun_occlusion" => {
-                    field
-                        .set_sun_occlusion(coord, value)
-                        .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
-                }
-                "cost" => {
-                    field
-                        .set_cost(coord, channel.unwrap(), value)
-                        .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
-                }
-                "block" => {
-                    let blocked = if invert {
-                        value < threshold
-                    } else {
-                        value >= threshold
-                    };
-                    field
-                        .set_block(coord, channel.unwrap(), blocked)
-                        .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
-                }
-                other => {
-                    return Err(LuaError::RuntimeError(format!(
-                        "{api}: invalid target '{other}' (expected sunOcclusion, cost, or block)"
-                    )));
-                }
-            }
-        }
-    }
-    Ok(())
+    ProcgenTileFieldLuaWriter::write_procgen_scalar_grid_to_field(
+        field, width, height, cells, z, opts, api,
+    )
 }
 
 impl LuaUserData for LuaProcgenGrid {

@@ -125,86 +125,150 @@ fn property_value_to_string(value: LuaValue) -> LuaResult<Option<String>> {
     }
 }
 
-fn modifier_from_table(name: String, table: LuaTable, api: &str) -> LuaResult<TileModifier> {
-    let mut modifier = TileModifier::new(name).map_err(|e| lua_err(api, e))?;
-    if let Ok(blocks) = table.get::<_, LuaTable>("blocks") {
-        for pair in blocks.pairs::<String, bool>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            modifier
-                .blockers
-                .insert(channel_from_str(name, api)?, value);
+struct TileFieldLuaParser;
+
+impl TileFieldLuaParser {
+    fn modifier_from_table(name: String, table: LuaTable, api: &str) -> LuaResult<TileModifier> {
+        let mut modifier = TileModifier::new(name).map_err(|e| lua_err(api, e))?;
+        if let Ok(blocks) = table.get::<_, LuaTable>("blocks") {
+            for pair in blocks.pairs::<String, bool>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                modifier
+                    .blockers
+                    .insert(channel_from_str(name, api)?, value);
+            }
         }
-    }
-    if let Ok(costs) = table.get::<_, LuaTable>("costAdd") {
-        for pair in costs.pairs::<String, f32>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            modifier
-                .cost_add
-                .insert(channel_from_str(name, api)?, value);
+        if let Ok(costs) = table.get::<_, LuaTable>("costAdd") {
+            for pair in costs.pairs::<String, f32>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                modifier
+                    .cost_add
+                    .insert(channel_from_str(name, api)?, value);
+            }
         }
-    }
-    if let Ok(costs) = table.get::<_, LuaTable>("costMul") {
-        for pair in costs.pairs::<String, f32>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            modifier
-                .cost_mul
-                .insert(channel_from_str(name, api)?, value);
+        if let Ok(costs) = table.get::<_, LuaTable>("costMul") {
+            for pair in costs.pairs::<String, f32>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                modifier
+                    .cost_mul
+                    .insert(channel_from_str(name, api)?, value);
+            }
         }
-    }
-    if let Ok(blocks) = table.get::<_, LuaTable>("categoryBlocks") {
-        for pair in blocks.pairs::<String, bool>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            modifier.category_blockers.insert(name, value);
+        if let Ok(blocks) = table.get::<_, LuaTable>("categoryBlocks") {
+            for pair in blocks.pairs::<String, bool>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                modifier.category_blockers.insert(name, value);
+            }
         }
-    }
-    if let Ok(costs) = table.get::<_, LuaTable>("categoryCostAdd") {
-        for pair in costs.pairs::<String, f32>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            modifier.category_cost_add.insert(name, value);
+        if let Ok(costs) = table.get::<_, LuaTable>("categoryCostAdd") {
+            for pair in costs.pairs::<String, f32>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                modifier.category_cost_add.insert(name, value);
+            }
         }
-    }
-    if let Ok(costs) = table.get::<_, LuaTable>("categoryCostMul") {
-        for pair in costs.pairs::<String, f32>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            modifier.category_cost_mul.insert(name, value);
+        if let Ok(costs) = table.get::<_, LuaTable>("categoryCostMul") {
+            for pair in costs.pairs::<String, f32>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                modifier.category_cost_mul.insert(name, value);
+            }
         }
-    }
-    if let Ok(transmission) = table.get::<_, LuaTable>("transmission") {
-        for pair in transmission.pairs::<String, f32>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            modifier
-                .category_transmission
-                .insert(name, value.clamp(0.0, 1.0));
+        if let Ok(transmission) = table.get::<_, LuaTable>("transmission") {
+            for pair in transmission.pairs::<String, f32>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                modifier
+                    .category_transmission
+                    .insert(name, value.clamp(0.0, 1.0));
+            }
         }
-    }
-    if let Ok(filters) = table.get::<_, LuaTable>("filters") {
-        for pair in filters.pairs::<String, LuaTable>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            modifier.category_filters.insert(
-                name,
-                [
-                    value
-                        .get::<_, Option<f32>>(1)?
-                        .unwrap_or(1.0)
-                        .clamp(0.0, 1.0),
-                    value
-                        .get::<_, Option<f32>>(2)?
-                        .unwrap_or(1.0)
-                        .clamp(0.0, 1.0),
-                    value
-                        .get::<_, Option<f32>>(3)?
-                        .unwrap_or(1.0)
-                        .clamp(0.0, 1.0),
-                ],
-            );
+        if let Ok(filters) = table.get::<_, LuaTable>("filters") {
+            for pair in filters.pairs::<String, LuaTable>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                modifier.category_filters.insert(
+                    name,
+                    [
+                        value
+                            .get::<_, Option<f32>>(1)?
+                            .unwrap_or(1.0)
+                            .clamp(0.0, 1.0),
+                        value
+                            .get::<_, Option<f32>>(2)?
+                            .unwrap_or(1.0)
+                            .clamp(0.0, 1.0),
+                        value
+                            .get::<_, Option<f32>>(3)?
+                            .unwrap_or(1.0)
+                            .clamp(0.0, 1.0),
+                    ],
+                );
+            }
         }
+        modifier.sun_occlusion_add = table
+            .get::<_, Option<f32>>("sunOcclusionAdd")
+            .map_err(|e| lua_err(api, e))?
+            .unwrap_or(0.0);
+        if let Ok(light_tbl) = table.get::<_, LuaTable>("light") {
+            let color = light_tbl
+                .get::<_, Option<LuaTable>>("color")
+                .map_err(|e| lua_err(api, e))?
+                .map(|color_tbl| {
+                    Ok::<[f32; 3], LuaError>([
+                        color_tbl.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
+                        color_tbl.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
+                        color_tbl.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
+                    ])
+                })
+                .transpose()?
+                .unwrap_or([1.0, 1.0, 1.0]);
+            modifier.light = Some(TileLightEmitter {
+                radius: light_tbl
+                    .get::<_, Option<f32>>("radius")
+                    .map_err(|e| lua_err(api, e))?
+                    .unwrap_or(1.0)
+                    .max(0.0),
+                intensity: light_tbl
+                    .get::<_, Option<f32>>("intensity")
+                    .map_err(|e| lua_err(api, e))?
+                    .unwrap_or(1.0)
+                    .max(0.0),
+                color,
+            });
+        }
+        if let Ok(properties) = table.get::<_, LuaTable>("properties") {
+            for pair in properties.pairs::<String, LuaValue>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                if let Some(value) = property_value_to_string(value).map_err(|e| lua_err(api, e))? {
+                    modifier.properties.insert(name, value);
+                }
+            }
+        }
+        Ok(modifier)
     }
-    modifier.sun_occlusion_add = table
-        .get::<_, Option<f32>>("sunOcclusionAdd")
-        .map_err(|e| lua_err(api, e))?
-        .unwrap_or(0.0);
-    if let Ok(light_tbl) = table.get::<_, LuaTable>("light") {
-        let color = light_tbl
+
+    fn profile_modifier_from_table(
+        name: String,
+        table: LuaTable,
+        api: &str,
+    ) -> LuaResult<TileModifier> {
+        let mut modifier = Self::modifier_from_table(name, table.clone(), api)?;
+        if let Ok(costs) = table.get::<_, LuaTable>("costs") {
+            for pair in costs.pairs::<String, f32>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                modifier
+                    .cost_add
+                    .insert(channel_from_str(name, api)?, value - 1.0);
+            }
+        }
+        if let Some(value) = table
+            .get::<_, Option<f32>>("sunOcclusion")
+            .map_err(|e| lua_err(api, e))?
+        {
+            modifier.sun_occlusion_add = value;
+        }
+        Ok(modifier)
+    }
+
+    fn light_emitter_from_table(table: LuaTable, api: &str) -> LuaResult<TileLightEmitter> {
+        let color = table
             .get::<_, Option<LuaTable>>("color")
             .map_err(|e| lua_err(api, e))?
             .map(|color_tbl| {
@@ -216,29 +280,268 @@ fn modifier_from_table(name: String, table: LuaTable, api: &str) -> LuaResult<Ti
             })
             .transpose()?
             .unwrap_or([1.0, 1.0, 1.0]);
-        modifier.light = Some(TileLightEmitter {
-            radius: light_tbl
+        Ok(TileLightEmitter {
+            radius: table
                 .get::<_, Option<f32>>("radius")
                 .map_err(|e| lua_err(api, e))?
                 .unwrap_or(1.0)
                 .max(0.0),
-            intensity: light_tbl
+            intensity: table
                 .get::<_, Option<f32>>("intensity")
                 .map_err(|e| lua_err(api, e))?
                 .unwrap_or(1.0)
                 .max(0.0),
             color,
-        });
+        })
     }
-    if let Ok(properties) = table.get::<_, LuaTable>("properties") {
-        for pair in properties.pairs::<String, LuaValue>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            if let Some(value) = property_value_to_string(value).map_err(|e| lua_err(api, e))? {
-                modifier.properties.insert(name, value);
+
+    fn provider_u32(provider: &LuaTable, name: &str, api: &str) -> LuaResult<u32> {
+        provider
+            .get::<_, Option<u32>>(name)
+            .map_err(|e| lua_err(api, e))?
+            .ok_or_else(|| lua_err(api, format!("provider.{name} is required")))
+    }
+
+    fn provider_string(
+        provider: &LuaTable,
+        name: &str,
+        default: &str,
+        api: &str,
+    ) -> LuaResult<String> {
+        provider
+            .get::<_, Option<String>>(name)
+            .map_err(|e| lua_err(api, e))
+            .map(|value| value.unwrap_or_else(|| default.to_string()))
+    }
+
+    fn apply_provider_cell(
+        field: &mut TileField,
+        coord: CellCoord,
+        cell: LuaTable,
+        api: &str,
+    ) -> LuaResult<()> {
+        if let Ok(blocks) = cell.get::<_, LuaTable>("blocks") {
+            for pair in blocks.pairs::<String, bool>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                field
+                    .set_block(coord, channel_from_str(name, api)?, value)
+                    .map_err(|e| lua_err(api, e))?;
             }
         }
+        if let Ok(costs) = cell.get::<_, LuaTable>("costs") {
+            for pair in costs.pairs::<String, f32>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                field
+                    .set_cost(coord, channel_from_str(name, api)?, value)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        if let Ok(blocks) = cell.get::<_, LuaTable>("categoryBlocks") {
+            for pair in blocks.pairs::<String, bool>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                field
+                    .set_category_block(coord, name, value)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        if let Ok(costs) = cell.get::<_, LuaTable>("categoryCosts") {
+            for pair in costs.pairs::<String, f32>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                field
+                    .set_category_cost(coord, name, value)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        if let Ok(transmission) = cell.get::<_, LuaTable>("transmission") {
+            for pair in transmission.pairs::<String, f32>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                field
+                    .set_category_transmission(coord, name, value)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        if let Ok(filters) = cell.get::<_, LuaTable>("filters") {
+            for pair in filters.pairs::<String, LuaTable>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                field
+                    .set_category_filter(
+                        coord,
+                        name,
+                        [
+                            value.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
+                            value.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
+                            value.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
+                        ],
+                    )
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        if let Some(sun_occlusion) = cell
+            .get::<_, Option<f32>>("sunOcclusion")
+            .map_err(|e| lua_err(api, e))?
+        {
+            field
+                .set_sun_occlusion(coord, sun_occlusion)
+                .map_err(|e| lua_err(api, e))?;
+        }
+        if let Ok(refs) = cell.get::<_, LuaTable>("refs") {
+            for pair in refs.pairs::<String, LuaValue>() {
+                let (slot, value) = pair.map_err(|e| lua_err(api, e))?;
+                if !field.has_slot(&slot) {
+                    field
+                        .define_slot(slot.clone())
+                        .map_err(|e| lua_err(api, e))?;
+                }
+                match value {
+                    LuaValue::Integer(value) if value >= 0 && value <= u32::MAX as i64 => field
+                        .set_ref(coord, slot, value as u32)
+                        .map_err(|e| lua_err(api, e))?,
+                    LuaValue::Table(value) => {
+                        let typed = tile_ref_from_table(value, api)?;
+                        field
+                            .set_typed_ref(coord, slot, typed)
+                            .map_err(|e| lua_err(api, e))?;
+                    }
+                    other => {
+                        return Err(lua_err(
+                            api,
+                            format!(
+                                "ref value must be integer or table, got {}",
+                                other.type_name()
+                            ),
+                        ));
+                    }
+                }
+            }
+        }
+        if let Ok(lights) = cell.get::<_, LuaTable>("lights") {
+            for pair in lights.pairs::<String, LuaTable>() {
+                let (source, light) = pair.map_err(|e| lua_err(api, e))?;
+                let light = Self::light_emitter_from_table(light, api)?;
+                field
+                    .set_light(coord, source, Some(light))
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        if let Ok(modifiers) = cell.get::<_, LuaTable>("modifiers") {
+            for modifier in modifiers.sequence_values::<String>() {
+                let modifier = modifier.map_err(|e| lua_err(api, e))?;
+                field
+                    .apply_modifier(coord, &modifier)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        Ok(())
     }
-    Ok(modifier)
+
+    fn field_from_provider(provider: LuaTable, api: &str) -> LuaResult<TileField> {
+        let width = Self::provider_u32(&provider, "width", api)?;
+        let height = Self::provider_u32(&provider, "height", api)?;
+        let levels = provider
+            .get::<_, Option<u32>>("levels")
+            .map_err(|e| lua_err(api, e))?
+            .unwrap_or(1);
+        let topology_name = Self::provider_string(&provider, "topology", "square", api)?;
+        let topology = TileTopology::parse(&topology_name).map_err(|e| lua_err(api, e))?;
+        let mut field =
+            TileField::new(width, height, levels, topology).map_err(|e| lua_err(api, e))?;
+        if let Ok(categories) = provider.get::<_, LuaTable>("categories") {
+            for pair in categories.pairs::<String, LuaTable>() {
+                let (name, opts) = pair.map_err(|e| lua_err(api, e))?;
+                let kind = category_kind_from_opts(&opts, api)?;
+                let active = opts
+                    .get::<_, Option<bool>>("active")
+                    .map_err(|e| lua_err(api, e))?
+                    .unwrap_or(true);
+                field
+                    .define_category(
+                        TileCategory::new(name, kind, active).map_err(|e| lua_err(api, e))?,
+                    )
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        if let Ok(slots) = provider.get::<_, LuaTable>("slots") {
+            for slot in slots.sequence_values::<String>() {
+                field
+                    .define_slot(slot.map_err(|e| lua_err(api, e))?)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        if let Ok(modifiers) = provider.get::<_, LuaTable>("modifiers") {
+            for pair in modifiers.pairs::<String, LuaTable>() {
+                let (name, value) = pair.map_err(|e| lua_err(api, e))?;
+                let modifier = Self::modifier_from_table(name.clone(), value, api)?;
+                field
+                    .set_modifier(name, modifier)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+        }
+        if let Ok(regions) = provider.get::<_, LuaTable>("regions") {
+            for pair in regions.pairs::<String, LuaTable>() {
+                let (name, region) = pair.map_err(|e| lua_err(api, e))?;
+                if let Ok(cells) = region.get::<_, LuaTable>("cells") {
+                    let mut out = Vec::new();
+                    for cell in cells.sequence_values::<LuaTable>() {
+                        out.push(coord_from_table(cell.map_err(|e| lua_err(api, e))?, api)?);
+                    }
+                    field
+                        .set_region_cells(name, out)
+                        .map_err(|e| lua_err(api, e))?;
+                } else {
+                    let z = one_based(
+                        region
+                            .get::<_, Option<u32>>("z")
+                            .map_err(|e| lua_err(api, e))?
+                            .unwrap_or(1),
+                        "z",
+                    )
+                    .map_err(|e| lua_err(api, e))?;
+                    let a = coord_from_values(
+                        region.get("x1").map_err(|e| lua_err(api, e))?,
+                        region.get("y1").map_err(|e| lua_err(api, e))?,
+                        Some(z + 1),
+                    )
+                    .map_err(|e| lua_err(api, e))?;
+                    let b = coord_from_values(
+                        region.get("x2").map_err(|e| lua_err(api, e))?,
+                        region.get("y2").map_err(|e| lua_err(api, e))?,
+                        Some(z + 1),
+                    )
+                    .map_err(|e| lua_err(api, e))?;
+                    field
+                        .set_region_rect(name, a.x, a.y, b.x, b.y, z)
+                        .map_err(|e| lua_err(api, e))?;
+                }
+            }
+        }
+        let get_cell = provider
+            .get::<_, Option<LuaFunction>>("getCell")
+            .map_err(|e| lua_err(api, e))?;
+        if let Some(get_cell) = get_cell {
+            for z in 0..levels {
+                for y in 0..height {
+                    for x in 0..width {
+                        let value: LuaValue = get_cell
+                            .call((provider.clone(), x + 1, y + 1, z + 1))
+                            .map_err(|e| lua_err(api, e))?;
+                        if let LuaValue::Table(cell) = value {
+                            Self::apply_provider_cell(
+                                &mut field,
+                                CellCoord { x, y, z },
+                                cell,
+                                api,
+                            )?;
+                        }
+                    }
+                }
+            }
+        }
+        Ok(field)
+    }
+}
+
+fn modifier_from_table(name: String, table: LuaTable, api: &str) -> LuaResult<TileModifier> {
+    TileFieldLuaParser::modifier_from_table(name, table, api)
 }
 
 fn profile_modifier_from_table(
@@ -246,283 +549,11 @@ fn profile_modifier_from_table(
     table: LuaTable,
     api: &str,
 ) -> LuaResult<TileModifier> {
-    let mut modifier = modifier_from_table(name, table.clone(), api)?;
-    if let Ok(costs) = table.get::<_, LuaTable>("costs") {
-        for pair in costs.pairs::<String, f32>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            modifier
-                .cost_add
-                .insert(channel_from_str(name, api)?, value - 1.0);
-        }
-    }
-    if let Some(value) = table
-        .get::<_, Option<f32>>("sunOcclusion")
-        .map_err(|e| lua_err(api, e))?
-    {
-        modifier.sun_occlusion_add = value;
-    }
-    Ok(modifier)
-}
-
-fn light_emitter_from_table(table: LuaTable, api: &str) -> LuaResult<TileLightEmitter> {
-    let color = table
-        .get::<_, Option<LuaTable>>("color")
-        .map_err(|e| lua_err(api, e))?
-        .map(|color_tbl| {
-            Ok::<[f32; 3], LuaError>([
-                color_tbl.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
-                color_tbl.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
-                color_tbl.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
-            ])
-        })
-        .transpose()?
-        .unwrap_or([1.0, 1.0, 1.0]);
-    Ok(TileLightEmitter {
-        radius: table
-            .get::<_, Option<f32>>("radius")
-            .map_err(|e| lua_err(api, e))?
-            .unwrap_or(1.0)
-            .max(0.0),
-        intensity: table
-            .get::<_, Option<f32>>("intensity")
-            .map_err(|e| lua_err(api, e))?
-            .unwrap_or(1.0)
-            .max(0.0),
-        color,
-    })
-}
-
-fn provider_u32(provider: &LuaTable, name: &str, api: &str) -> LuaResult<u32> {
-    provider
-        .get::<_, Option<u32>>(name)
-        .map_err(|e| lua_err(api, e))?
-        .ok_or_else(|| lua_err(api, format!("provider.{name} is required")))
-}
-
-fn provider_string(provider: &LuaTable, name: &str, default: &str, api: &str) -> LuaResult<String> {
-    provider
-        .get::<_, Option<String>>(name)
-        .map_err(|e| lua_err(api, e))
-        .map(|value| value.unwrap_or_else(|| default.to_string()))
-}
-
-fn apply_provider_cell(
-    field: &mut TileField,
-    coord: CellCoord,
-    cell: LuaTable,
-    api: &str,
-) -> LuaResult<()> {
-    if let Ok(blocks) = cell.get::<_, LuaTable>("blocks") {
-        for pair in blocks.pairs::<String, bool>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            field
-                .set_block(coord, channel_from_str(name, api)?, value)
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Ok(costs) = cell.get::<_, LuaTable>("costs") {
-        for pair in costs.pairs::<String, f32>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            field
-                .set_cost(coord, channel_from_str(name, api)?, value)
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Ok(blocks) = cell.get::<_, LuaTable>("categoryBlocks") {
-        for pair in blocks.pairs::<String, bool>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            field
-                .set_category_block(coord, name, value)
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Ok(costs) = cell.get::<_, LuaTable>("categoryCosts") {
-        for pair in costs.pairs::<String, f32>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            field
-                .set_category_cost(coord, name, value)
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Ok(transmission) = cell.get::<_, LuaTable>("transmission") {
-        for pair in transmission.pairs::<String, f32>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            field
-                .set_category_transmission(coord, name, value)
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Ok(filters) = cell.get::<_, LuaTable>("filters") {
-        for pair in filters.pairs::<String, LuaTable>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            field
-                .set_category_filter(
-                    coord,
-                    name,
-                    [
-                        value.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
-                        value.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
-                        value.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
-                    ],
-                )
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Some(sun_occlusion) = cell
-        .get::<_, Option<f32>>("sunOcclusion")
-        .map_err(|e| lua_err(api, e))?
-    {
-        field
-            .set_sun_occlusion(coord, sun_occlusion)
-            .map_err(|e| lua_err(api, e))?;
-    }
-    if let Ok(refs) = cell.get::<_, LuaTable>("refs") {
-        for pair in refs.pairs::<String, LuaValue>() {
-            let (slot, value) = pair.map_err(|e| lua_err(api, e))?;
-            if !field.has_slot(&slot) {
-                field
-                    .define_slot(slot.clone())
-                    .map_err(|e| lua_err(api, e))?;
-            }
-            match value {
-                LuaValue::Integer(value) if value >= 0 && value <= u32::MAX as i64 => field
-                    .set_ref(coord, slot, value as u32)
-                    .map_err(|e| lua_err(api, e))?,
-                LuaValue::Table(value) => {
-                    let typed = tile_ref_from_table(value, api)?;
-                    field
-                        .set_typed_ref(coord, slot, typed)
-                        .map_err(|e| lua_err(api, e))?;
-                }
-                other => {
-                    return Err(lua_err(
-                        api,
-                        format!(
-                            "ref value must be integer or table, got {}",
-                            other.type_name()
-                        ),
-                    ));
-                }
-            }
-        }
-    }
-    if let Ok(lights) = cell.get::<_, LuaTable>("lights") {
-        for pair in lights.pairs::<String, LuaTable>() {
-            let (source, light) = pair.map_err(|e| lua_err(api, e))?;
-            let light = light_emitter_from_table(light, api)?;
-            field
-                .set_light(coord, source, Some(light))
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Ok(modifiers) = cell.get::<_, LuaTable>("modifiers") {
-        for modifier in modifiers.sequence_values::<String>() {
-            let modifier = modifier.map_err(|e| lua_err(api, e))?;
-            field
-                .apply_modifier(coord, &modifier)
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    Ok(())
+    TileFieldLuaParser::profile_modifier_from_table(name, table, api)
 }
 
 pub(crate) fn field_from_provider(provider: LuaTable, api: &str) -> LuaResult<TileField> {
-    let width = provider_u32(&provider, "width", api)?;
-    let height = provider_u32(&provider, "height", api)?;
-    let levels = provider
-        .get::<_, Option<u32>>("levels")
-        .map_err(|e| lua_err(api, e))?
-        .unwrap_or(1);
-    let topology_name = provider_string(&provider, "topology", "square", api)?;
-    let topology = TileTopology::parse(&topology_name).map_err(|e| lua_err(api, e))?;
-    let mut field = TileField::new(width, height, levels, topology).map_err(|e| lua_err(api, e))?;
-    if let Ok(categories) = provider.get::<_, LuaTable>("categories") {
-        for pair in categories.pairs::<String, LuaTable>() {
-            let (name, opts) = pair.map_err(|e| lua_err(api, e))?;
-            let kind = category_kind_from_opts(&opts, api)?;
-            let active = opts
-                .get::<_, Option<bool>>("active")
-                .map_err(|e| lua_err(api, e))?
-                .unwrap_or(true);
-            field
-                .define_category(
-                    TileCategory::new(name, kind, active).map_err(|e| lua_err(api, e))?,
-                )
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Ok(slots) = provider.get::<_, LuaTable>("slots") {
-        for slot in slots.sequence_values::<String>() {
-            field
-                .define_slot(slot.map_err(|e| lua_err(api, e))?)
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Ok(modifiers) = provider.get::<_, LuaTable>("modifiers") {
-        for pair in modifiers.pairs::<String, LuaTable>() {
-            let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-            let modifier = modifier_from_table(name.clone(), value, api)?;
-            field
-                .set_modifier(name, modifier)
-                .map_err(|e| lua_err(api, e))?;
-        }
-    }
-    if let Ok(regions) = provider.get::<_, LuaTable>("regions") {
-        for pair in regions.pairs::<String, LuaTable>() {
-            let (name, region) = pair.map_err(|e| lua_err(api, e))?;
-            if let Ok(cells) = region.get::<_, LuaTable>("cells") {
-                let mut out = Vec::new();
-                for cell in cells.sequence_values::<LuaTable>() {
-                    out.push(coord_from_table(cell.map_err(|e| lua_err(api, e))?, api)?);
-                }
-                field
-                    .set_region_cells(name, out)
-                    .map_err(|e| lua_err(api, e))?;
-            } else {
-                let z = one_based(
-                    region
-                        .get::<_, Option<u32>>("z")
-                        .map_err(|e| lua_err(api, e))?
-                        .unwrap_or(1),
-                    "z",
-                )
-                .map_err(|e| lua_err(api, e))?;
-                let a = coord_from_values(
-                    region.get("x1").map_err(|e| lua_err(api, e))?,
-                    region.get("y1").map_err(|e| lua_err(api, e))?,
-                    Some(z + 1),
-                )
-                .map_err(|e| lua_err(api, e))?;
-                let b = coord_from_values(
-                    region.get("x2").map_err(|e| lua_err(api, e))?,
-                    region.get("y2").map_err(|e| lua_err(api, e))?,
-                    Some(z + 1),
-                )
-                .map_err(|e| lua_err(api, e))?;
-                field
-                    .set_region_rect(name, a.x, a.y, b.x, b.y, z)
-                    .map_err(|e| lua_err(api, e))?;
-            }
-        }
-    }
-    let get_cell = provider
-        .get::<_, Option<LuaFunction>>("getCell")
-        .map_err(|e| lua_err(api, e))?;
-    if let Some(get_cell) = get_cell {
-        for z in 0..levels {
-            for y in 0..height {
-                for x in 0..width {
-                    let value: LuaValue = get_cell
-                        .call((provider.clone(), x + 1, y + 1, z + 1))
-                        .map_err(|e| lua_err(api, e))?;
-                    if let LuaValue::Table(cell) = value {
-                        apply_provider_cell(&mut field, CellCoord { x, y, z }, cell, api)?;
-                    }
-                }
-            }
-        }
-    }
-    Ok(field)
+    TileFieldLuaParser::field_from_provider(provider, api)
 }
 
 fn modifier_to_lua<'lua>(lua: &'lua Lua, modifier: &TileModifier) -> LuaResult<LuaTable<'lua>> {
@@ -636,94 +667,6 @@ fn tileset_local_id_from_gid(tilemap: &TileMap, gid: u32) -> Option<(usize, u32)
     None
 }
 
-fn apply_tileset_object_to_field(
-    field: &mut TileField,
-    coord: CellCoord,
-    tileset: &TileSet,
-    local_tile_id: u32,
-    api: &str,
-) -> LuaResult<bool> {
-    let mut applied = false;
-    if let Some(archetype) = tileset.archetype_for_tile(local_tile_id) {
-        for (channel, blocked) in &archetype.blockers {
-            field
-                .set_block(coord, *channel, *blocked)
-                .map_err(|e| lua_err(api, e))?;
-        }
-        for (channel, cost) in &archetype.costs {
-            field
-                .set_cost(coord, *channel, *cost)
-                .map_err(|e| lua_err(api, e))?;
-        }
-        for (category, blocked) in &archetype.category_blockers {
-            field
-                .set_category_block(coord, category.clone(), *blocked)
-                .map_err(|e| lua_err(api, e))?;
-        }
-        for (category, cost) in &archetype.category_costs {
-            field
-                .set_category_cost(coord, category.clone(), *cost)
-                .map_err(|e| lua_err(api, e))?;
-        }
-        for (category, value) in &archetype.category_transmission {
-            field
-                .set_category_transmission(coord, category.clone(), *value)
-                .map_err(|e| lua_err(api, e))?;
-        }
-        for (category, filter) in &archetype.category_filters {
-            field
-                .set_category_filter(coord, category.clone(), *filter)
-                .map_err(|e| lua_err(api, e))?;
-        }
-        if let Some(sun_occlusion) = archetype.sun_occlusion {
-            field
-                .set_sun_occlusion(coord, sun_occlusion)
-                .map_err(|e| lua_err(api, e))?;
-        }
-        let source_name = archetype
-            .slot
-            .as_deref()
-            .unwrap_or(archetype.name.as_str())
-            .to_string();
-        let light = archetype.light.as_ref().map(|light| TileLightEmitter {
-            radius: light.radius,
-            intensity: light.intensity,
-            color: light.color,
-        });
-        field
-            .set_light(coord, source_name, light)
-            .map_err(|e| lua_err(api, e))?;
-        applied = true;
-    }
-    if let Some(properties) = tileset.properties(local_tile_id) {
-        if let Some(value) = properties.get("sunOcclusion") {
-            let parsed = parse_tileset_f32_property(value, api)?;
-            field
-                .set_sun_occlusion(coord, parsed)
-                .map_err(|e| lua_err(api, e))?;
-            applied = true;
-        }
-        for (name, value) in properties {
-            if let Some(channel_name) = name.strip_prefix("block.") {
-                let channel = channel_from_str(channel_name.to_string(), api)?;
-                let blocked = parse_tileset_bool_property(value, api)?;
-                field
-                    .set_block(coord, channel, blocked)
-                    .map_err(|e| lua_err(api, e))?;
-                applied = true;
-            } else if let Some(channel_name) = name.strip_prefix("cost.") {
-                let channel = channel_from_str(channel_name.to_string(), api)?;
-                let cost = parse_tileset_f32_property(value, api)?;
-                field
-                    .set_cost(coord, channel, cost)
-                    .map_err(|e| lua_err(api, e))?;
-                applied = true;
-            }
-        }
-    }
-    Ok(applied)
-}
-
 struct TileMaterializeOptions {
     z: u32,
     ref_is_gid: bool,
@@ -733,124 +676,367 @@ struct TileMaterializeOptions {
     tile_height: f32,
 }
 
+struct TileFieldMaterializer;
+
+impl TileFieldMaterializer {
+    fn apply_tileset_object_to_field(
+        field: &mut TileField,
+        coord: CellCoord,
+        tileset: &TileSet,
+        local_tile_id: u32,
+        api: &str,
+    ) -> LuaResult<bool> {
+        let mut applied = false;
+        if let Some(archetype) = tileset.archetype_for_tile(local_tile_id) {
+            for (channel, blocked) in &archetype.blockers {
+                field
+                    .set_block(coord, *channel, *blocked)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+            for (channel, cost) in &archetype.costs {
+                field
+                    .set_cost(coord, *channel, *cost)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+            for (category, blocked) in &archetype.category_blockers {
+                field
+                    .set_category_block(coord, category.clone(), *blocked)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+            for (category, cost) in &archetype.category_costs {
+                field
+                    .set_category_cost(coord, category.clone(), *cost)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+            for (category, value) in &archetype.category_transmission {
+                field
+                    .set_category_transmission(coord, category.clone(), *value)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+            for (category, filter) in &archetype.category_filters {
+                field
+                    .set_category_filter(coord, category.clone(), *filter)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+            if let Some(sun_occlusion) = archetype.sun_occlusion {
+                field
+                    .set_sun_occlusion(coord, sun_occlusion)
+                    .map_err(|e| lua_err(api, e))?;
+            }
+            let source_name = archetype
+                .slot
+                .as_deref()
+                .unwrap_or(archetype.name.as_str())
+                .to_string();
+            let light = archetype.light.as_ref().map(|light| TileLightEmitter {
+                radius: light.radius,
+                intensity: light.intensity,
+                color: light.color,
+            });
+            field
+                .set_light(coord, source_name, light)
+                .map_err(|e| lua_err(api, e))?;
+            applied = true;
+        }
+        if let Some(properties) = tileset.properties(local_tile_id) {
+            if let Some(value) = properties.get("sunOcclusion") {
+                let parsed = parse_tileset_f32_property(value, api)?;
+                field
+                    .set_sun_occlusion(coord, parsed)
+                    .map_err(|e| lua_err(api, e))?;
+                applied = true;
+            }
+            for (name, value) in properties {
+                if let Some(channel_name) = name.strip_prefix("block.") {
+                    let channel = channel_from_str(channel_name.to_string(), api)?;
+                    let blocked = parse_tileset_bool_property(value, api)?;
+                    field
+                        .set_block(coord, channel, blocked)
+                        .map_err(|e| lua_err(api, e))?;
+                    applied = true;
+                } else if let Some(channel_name) = name.strip_prefix("cost.") {
+                    let channel = channel_from_str(channel_name.to_string(), api)?;
+                    let cost = parse_tileset_f32_property(value, api)?;
+                    field
+                        .set_cost(coord, channel, cost)
+                        .map_err(|e| lua_err(api, e))?;
+                    applied = true;
+                }
+            }
+        }
+        Ok(applied)
+    }
+
+    fn materialize_options(
+        opts: Option<&LuaTable>,
+        tileset: &TileSet,
+        api: &str,
+    ) -> LuaResult<TileMaterializeOptions> {
+        let z = opts
+            .and_then(|table| table.get::<_, Option<u32>>("z").ok().flatten())
+            .or_else(|| opts.and_then(|table| table.get::<_, Option<u32>>("level").ok().flatten()))
+            .unwrap_or(1)
+            .checked_sub(1)
+            .ok_or_else(|| lua_err(api, "z must be >= 1"))?;
+        let ref_is_gid = opts
+            .and_then(|table| table.get::<_, Option<bool>>("refIsGid").ok().flatten())
+            .unwrap_or(false);
+        let origin_x = opts
+            .and_then(|table| table.get::<_, Option<f32>>("originX").ok().flatten())
+            .unwrap_or(0.0);
+        let origin_y = opts
+            .and_then(|table| table.get::<_, Option<f32>>("originY").ok().flatten())
+            .unwrap_or(0.0);
+        let tile_width = opts
+            .and_then(|table| table.get::<_, Option<f32>>("tileWidth").ok().flatten())
+            .unwrap_or_else(|| tileset.get_tile_width() as f32);
+        let tile_height = opts
+            .and_then(|table| table.get::<_, Option<f32>>("tileHeight").ok().flatten())
+            .unwrap_or_else(|| tileset.get_tile_height() as f32);
+        if !origin_x.is_finite()
+            || !origin_y.is_finite()
+            || !tile_width.is_finite()
+            || !tile_height.is_finite()
+            || tile_width <= 0.0
+            || tile_height <= 0.0
+        {
+            return Err(lua_err(
+                api,
+                "originX/originY must be finite and tileWidth/tileHeight must be finite > 0",
+            ));
+        }
+        Ok(TileMaterializeOptions {
+            z,
+            ref_is_gid,
+            origin_x,
+            origin_y,
+            tile_width,
+            tile_height,
+        })
+    }
+
+    fn tile_center(coord: CellCoord, opts: &TileMaterializeOptions) -> (f32, f32) {
+        (
+            opts.origin_x + (coord.x as f32 + 0.5) * opts.tile_width,
+            opts.origin_y + (coord.y as f32 + 0.5) * opts.tile_height,
+        )
+    }
+
+    fn tile_polygon(shape: TileObjectShapeKind, width: f32, height: f32) -> Vec<Vec2> {
+        let hw = width * 0.5;
+        let hh = height * 0.5;
+        match shape {
+            TileObjectShapeKind::Rect => vec![
+                Vec2::new(-hw, -hh),
+                Vec2::new(hw, -hh),
+                Vec2::new(hw, hh),
+                Vec2::new(-hw, hh),
+            ],
+            TileObjectShapeKind::Square => {
+                let hs = width.min(height) * 0.5;
+                vec![
+                    Vec2::new(-hs, -hs),
+                    Vec2::new(hs, -hs),
+                    Vec2::new(hs, hs),
+                    Vec2::new(-hs, hs),
+                ]
+            }
+            TileObjectShapeKind::Diamond => vec![
+                Vec2::new(0.0, -hh),
+                Vec2::new(hw, 0.0),
+                Vec2::new(0.0, hh),
+                Vec2::new(-hw, 0.0),
+            ],
+            TileObjectShapeKind::Triangle => {
+                vec![Vec2::new(0.0, -hh), Vec2::new(hw, hh), Vec2::new(-hw, hh)]
+            }
+            TileObjectShapeKind::Hex => {
+                let qx = hw * 0.5;
+                vec![
+                    Vec2::new(-qx, -hh),
+                    Vec2::new(qx, -hh),
+                    Vec2::new(hw, 0.0),
+                    Vec2::new(qx, hh),
+                    Vec2::new(-qx, hh),
+                    Vec2::new(-hw, 0.0),
+                ]
+            }
+        }
+    }
+
+    fn polygon_area(vertices: &[Vec2]) -> f32 {
+        let mut area = 0.0;
+        for i in 0..vertices.len() {
+            let a = vertices[i];
+            let b = vertices[(i + 1) % vertices.len()];
+            area += a.x * b.y - b.x * a.y;
+        }
+        area.abs() * 0.5
+    }
+
+    fn body_type_from_tileset(value: &str, api: &str) -> LuaResult<BodyType> {
+        match value {
+            "static" => Ok(BodyType::Static),
+            "dynamic" => Ok(BodyType::Dynamic),
+            "kinematic" => Ok(BodyType::Kinematic),
+            "sensor" => Ok(BodyType::Sensor),
+            other => Err(lua_err(
+                api,
+                format!("physics.bodyType '{other}' must be static, dynamic, kinematic, or sensor"),
+            )),
+        }
+    }
+
+    fn physics_body_from_tile(
+        physics: &TileObjectPhysics,
+        coord: CellCoord,
+        opts: &TileMaterializeOptions,
+        api: &str,
+    ) -> LuaResult<Body> {
+        let (x, y) = Self::tile_center(coord, opts);
+        let body_type = if physics.sensor {
+            BodyType::Sensor
+        } else {
+            Self::body_type_from_tileset(&physics.body_type, api)?
+        };
+        let mut body = match physics.shape {
+            TileObjectShapeKind::Rect => {
+                Body::try_new(x, y, opts.tile_width, opts.tile_height, body_type)
+            }
+            TileObjectShapeKind::Square => {
+                let size = opts.tile_width.min(opts.tile_height);
+                Body::try_new(x, y, size, size, body_type)
+            }
+            shape => Body::try_new_polygon(
+                x,
+                y,
+                Self::tile_polygon(shape, opts.tile_width, opts.tile_height),
+                body_type,
+            ),
+        }
+        .map_err(|err| lua_err(api, err))?;
+        let area = match physics.shape {
+            TileObjectShapeKind::Rect => opts.tile_width * opts.tile_height,
+            TileObjectShapeKind::Square => {
+                let size = opts.tile_width.min(opts.tile_height);
+                size * size
+            }
+            shape => Self::polygon_area(&Self::tile_polygon(
+                shape,
+                opts.tile_width,
+                opts.tile_height,
+            )),
+        };
+        body.mass = physics.mass.unwrap_or((area * physics.density).max(0.0001));
+        body.friction = physics.friction;
+        body.restitution = physics.restitution;
+        body.layer = physics.layer;
+        body.mask = physics.mask;
+        Ok(body)
+    }
+
+    fn blend_mode_from_tileset(value: &str, api: &str) -> LuaResult<LightBlendMode> {
+        match value {
+            "add" => Ok(LightBlendMode::Add),
+            "sub" => Ok(LightBlendMode::Sub),
+            "mix" => Ok(LightBlendMode::Mix),
+            other => Err(lua_err(
+                api,
+                format!("renderLight.blendMode '{other}' must be add, sub, or mix"),
+            )),
+        }
+    }
+
+    fn falloff_from_tileset(value: &str, api: &str) -> LuaResult<FalloffMode> {
+        match value {
+            "linear" => Ok(FalloffMode::Linear),
+            "smooth" => Ok(FalloffMode::Smooth),
+            "constant" => Ok(FalloffMode::Constant),
+            other => Err(lua_err(
+                api,
+                format!("renderLight.falloff '{other}' must be linear, smooth, or constant"),
+            )),
+        }
+    }
+
+    fn light_type_from_tileset(value: &str, api: &str) -> LuaResult<LightType> {
+        match value {
+            "point" => Ok(LightType::Point),
+            "directional" => Ok(LightType::Directional),
+            "spot" => Ok(LightType::Spot),
+            other => Err(lua_err(
+                api,
+                format!("renderLight.lightType '{other}' must be point, directional, or spot"),
+            )),
+        }
+    }
+
+    fn render_light_from_tile(
+        render_light: &TileObjectRenderLight,
+        coord: CellCoord,
+        opts: &TileMaterializeOptions,
+        api: &str,
+    ) -> LuaResult<Light2D> {
+        let (x, y) = Self::tile_center(coord, opts);
+        let mut light = Light2D::new(x, y, render_light.radius);
+        light.color = Color::new(
+            render_light.color[0],
+            render_light.color[1],
+            render_light.color[2],
+            render_light.color[3],
+        );
+        light.intensity = render_light.intensity;
+        light.enabled = render_light.enabled;
+        light.shadow_enabled = render_light.shadow_enabled;
+        light.light_mask = render_light.light_mask;
+        light.shadow_mask = render_light.shadow_mask;
+        if let Some(value) = &render_light.blend_mode {
+            light.blend_mode = Self::blend_mode_from_tileset(value, api)?;
+        }
+        if let Some(value) = &render_light.falloff {
+            light.falloff = Self::falloff_from_tileset(value, api)?;
+        }
+        if let Some(value) = &render_light.light_type {
+            light.light_type = Self::light_type_from_tileset(value, api)?;
+        }
+        Ok(light)
+    }
+
+    fn occluder_from_tile(
+        occluder: &TileObjectOccluder,
+        coord: CellCoord,
+        opts: &TileMaterializeOptions,
+    ) -> Occluder {
+        let (x, y) = Self::tile_center(coord, opts);
+        let mut occ = Occluder::new(Self::tile_polygon(
+            occluder.shape,
+            opts.tile_width,
+            opts.tile_height,
+        ));
+        occ.set_position(Vec2::new(x, y));
+        occ.set_opacity(occluder.opacity);
+        occ.set_light_mask(occluder.light_mask);
+        occ.set_enabled(occluder.enabled);
+        occ
+    }
+}
+
+fn apply_tileset_object_to_field(
+    field: &mut TileField,
+    coord: CellCoord,
+    tileset: &TileSet,
+    local_tile_id: u32,
+    api: &str,
+) -> LuaResult<bool> {
+    TileFieldMaterializer::apply_tileset_object_to_field(field, coord, tileset, local_tile_id, api)
+}
+
 fn materialize_options(
     opts: Option<&LuaTable>,
     tileset: &TileSet,
     api: &str,
 ) -> LuaResult<TileMaterializeOptions> {
-    let z = opts
-        .and_then(|table| table.get::<_, Option<u32>>("z").ok().flatten())
-        .or_else(|| opts.and_then(|table| table.get::<_, Option<u32>>("level").ok().flatten()))
-        .unwrap_or(1)
-        .checked_sub(1)
-        .ok_or_else(|| lua_err(api, "z must be >= 1"))?;
-    let ref_is_gid = opts
-        .and_then(|table| table.get::<_, Option<bool>>("refIsGid").ok().flatten())
-        .unwrap_or(false);
-    let origin_x = opts
-        .and_then(|table| table.get::<_, Option<f32>>("originX").ok().flatten())
-        .unwrap_or(0.0);
-    let origin_y = opts
-        .and_then(|table| table.get::<_, Option<f32>>("originY").ok().flatten())
-        .unwrap_or(0.0);
-    let tile_width = opts
-        .and_then(|table| table.get::<_, Option<f32>>("tileWidth").ok().flatten())
-        .unwrap_or_else(|| tileset.get_tile_width() as f32);
-    let tile_height = opts
-        .and_then(|table| table.get::<_, Option<f32>>("tileHeight").ok().flatten())
-        .unwrap_or_else(|| tileset.get_tile_height() as f32);
-    if !origin_x.is_finite()
-        || !origin_y.is_finite()
-        || !tile_width.is_finite()
-        || !tile_height.is_finite()
-        || tile_width <= 0.0
-        || tile_height <= 0.0
-    {
-        return Err(lua_err(
-            api,
-            "originX/originY must be finite and tileWidth/tileHeight must be finite > 0",
-        ));
-    }
-    Ok(TileMaterializeOptions {
-        z,
-        ref_is_gid,
-        origin_x,
-        origin_y,
-        tile_width,
-        tile_height,
-    })
-}
-
-fn tile_center(coord: CellCoord, opts: &TileMaterializeOptions) -> (f32, f32) {
-    (
-        opts.origin_x + (coord.x as f32 + 0.5) * opts.tile_width,
-        opts.origin_y + (coord.y as f32 + 0.5) * opts.tile_height,
-    )
-}
-
-fn tile_polygon(shape: TileObjectShapeKind, width: f32, height: f32) -> Vec<Vec2> {
-    let hw = width * 0.5;
-    let hh = height * 0.5;
-    match shape {
-        TileObjectShapeKind::Rect => vec![
-            Vec2::new(-hw, -hh),
-            Vec2::new(hw, -hh),
-            Vec2::new(hw, hh),
-            Vec2::new(-hw, hh),
-        ],
-        TileObjectShapeKind::Square => {
-            let hs = width.min(height) * 0.5;
-            vec![
-                Vec2::new(-hs, -hs),
-                Vec2::new(hs, -hs),
-                Vec2::new(hs, hs),
-                Vec2::new(-hs, hs),
-            ]
-        }
-        TileObjectShapeKind::Diamond => vec![
-            Vec2::new(0.0, -hh),
-            Vec2::new(hw, 0.0),
-            Vec2::new(0.0, hh),
-            Vec2::new(-hw, 0.0),
-        ],
-        TileObjectShapeKind::Triangle => {
-            vec![Vec2::new(0.0, -hh), Vec2::new(hw, hh), Vec2::new(-hw, hh)]
-        }
-        TileObjectShapeKind::Hex => {
-            let qx = hw * 0.5;
-            vec![
-                Vec2::new(-qx, -hh),
-                Vec2::new(qx, -hh),
-                Vec2::new(hw, 0.0),
-                Vec2::new(qx, hh),
-                Vec2::new(-qx, hh),
-                Vec2::new(-hw, 0.0),
-            ]
-        }
-    }
-}
-
-fn polygon_area(vertices: &[Vec2]) -> f32 {
-    let mut area = 0.0;
-    for i in 0..vertices.len() {
-        let a = vertices[i];
-        let b = vertices[(i + 1) % vertices.len()];
-        area += a.x * b.y - b.x * a.y;
-    }
-    area.abs() * 0.5
-}
-
-fn body_type_from_tileset(value: &str, api: &str) -> LuaResult<BodyType> {
-    match value {
-        "static" => Ok(BodyType::Static),
-        "dynamic" => Ok(BodyType::Dynamic),
-        "kinematic" => Ok(BodyType::Kinematic),
-        "sensor" => Ok(BodyType::Sensor),
-        other => Err(lua_err(
-            api,
-            format!("physics.bodyType '{other}' must be static, dynamic, kinematic, or sensor"),
-        )),
-    }
+    TileFieldMaterializer::materialize_options(opts, tileset, api)
 }
 
 fn physics_body_from_tile(
@@ -859,78 +1045,7 @@ fn physics_body_from_tile(
     opts: &TileMaterializeOptions,
     api: &str,
 ) -> LuaResult<Body> {
-    let (x, y) = tile_center(coord, opts);
-    let body_type = if physics.sensor {
-        BodyType::Sensor
-    } else {
-        body_type_from_tileset(&physics.body_type, api)?
-    };
-    let mut body = match physics.shape {
-        TileObjectShapeKind::Rect => {
-            Body::try_new(x, y, opts.tile_width, opts.tile_height, body_type)
-        }
-        TileObjectShapeKind::Square => {
-            let size = opts.tile_width.min(opts.tile_height);
-            Body::try_new(x, y, size, size, body_type)
-        }
-        shape => Body::try_new_polygon(
-            x,
-            y,
-            tile_polygon(shape, opts.tile_width, opts.tile_height),
-            body_type,
-        ),
-    }
-    .map_err(|err| lua_err(api, err))?;
-    let area = match physics.shape {
-        TileObjectShapeKind::Rect => opts.tile_width * opts.tile_height,
-        TileObjectShapeKind::Square => {
-            let size = opts.tile_width.min(opts.tile_height);
-            size * size
-        }
-        shape => polygon_area(&tile_polygon(shape, opts.tile_width, opts.tile_height)),
-    };
-    body.mass = physics.mass.unwrap_or((area * physics.density).max(0.0001));
-    body.friction = physics.friction;
-    body.restitution = physics.restitution;
-    body.layer = physics.layer;
-    body.mask = physics.mask;
-    Ok(body)
-}
-
-fn blend_mode_from_tileset(value: &str, api: &str) -> LuaResult<LightBlendMode> {
-    match value {
-        "add" => Ok(LightBlendMode::Add),
-        "sub" => Ok(LightBlendMode::Sub),
-        "mix" => Ok(LightBlendMode::Mix),
-        other => Err(lua_err(
-            api,
-            format!("renderLight.blendMode '{other}' must be add, sub, or mix"),
-        )),
-    }
-}
-
-fn falloff_from_tileset(value: &str, api: &str) -> LuaResult<FalloffMode> {
-    match value {
-        "linear" => Ok(FalloffMode::Linear),
-        "smooth" => Ok(FalloffMode::Smooth),
-        "constant" => Ok(FalloffMode::Constant),
-        other => Err(lua_err(
-            api,
-            format!("renderLight.falloff '{other}' must be linear, smooth, or constant"),
-        )),
-    }
-}
-
-fn light_type_from_tileset(value: &str, api: &str) -> LuaResult<LightType> {
-    match value {
-        "point" => Ok(LightType::Point),
-        "directional" => Ok(LightType::Directional),
-        "spot" => Ok(LightType::Spot),
-        other => Err(lua_err(
-            api,
-            format!("renderLight.lightType '{other}' must be point, directional, or spot"),
-        )),
-    }
+    TileFieldMaterializer::physics_body_from_tile(physics, coord, opts, api)
 }
 
 fn render_light_from_tile(
@@ -939,29 +1054,7 @@ fn render_light_from_tile(
     opts: &TileMaterializeOptions,
     api: &str,
 ) -> LuaResult<Light2D> {
-    let (x, y) = tile_center(coord, opts);
-    let mut light = Light2D::new(x, y, render_light.radius);
-    light.color = Color::new(
-        render_light.color[0],
-        render_light.color[1],
-        render_light.color[2],
-        render_light.color[3],
-    );
-    light.intensity = render_light.intensity;
-    light.enabled = render_light.enabled;
-    light.shadow_enabled = render_light.shadow_enabled;
-    light.light_mask = render_light.light_mask;
-    light.shadow_mask = render_light.shadow_mask;
-    if let Some(value) = &render_light.blend_mode {
-        light.blend_mode = blend_mode_from_tileset(value, api)?;
-    }
-    if let Some(value) = &render_light.falloff {
-        light.falloff = falloff_from_tileset(value, api)?;
-    }
-    if let Some(value) = &render_light.light_type {
-        light.light_type = light_type_from_tileset(value, api)?;
-    }
-    Ok(light)
+    TileFieldMaterializer::render_light_from_tile(render_light, coord, opts, api)
 }
 
 fn occluder_from_tile(
@@ -969,17 +1062,7 @@ fn occluder_from_tile(
     coord: CellCoord,
     opts: &TileMaterializeOptions,
 ) -> Occluder {
-    let (x, y) = tile_center(coord, opts);
-    let mut occ = Occluder::new(tile_polygon(
-        occluder.shape,
-        opts.tile_width,
-        opts.tile_height,
-    ));
-    occ.set_position(Vec2::new(x, y));
-    occ.set_opacity(occluder.opacity);
-    occ.set_light_mask(occluder.light_mask);
-    occ.set_enabled(occluder.enabled);
-    occ
+    TileFieldMaterializer::occluder_from_tile(occluder, coord, opts)
 }
 
 fn archetype_for_ref(

@@ -918,6 +918,61 @@ describe("ai flow field", function()
     end)
 end)
 
+-- @describe iso grid
+describe("iso grid", function()
+    -- @covers LIsoGrid:setBlocked
+    it("setBlocked marks an iso cell as blocked", function()
+        local grid = lurek.pathfind.newIsoGrid(4, 4)
+        grid:setBlocked(2, 2, true)
+        expect_true(grid:isBlocked(2, 2))
+    end)
+
+    -- @covers LIsoGrid:setCost
+    it("setCost changes iso movement cost", function()
+        local grid = lurek.pathfind.newIsoGrid(4, 4)
+        grid:setCost(3, 2, 5)
+        expect_equal(5, grid:getCost(3, 2))
+    end)
+
+    -- @covers LIsoGrid:isBlocked
+    it("isBlocked reports iso blockers", function()
+        local grid = lurek.pathfind.newIsoGrid(4, 4)
+        grid:setBlocked(2, 3, true)
+        expect_true(grid:isBlocked(2, 3))
+        expect_false(grid:isBlocked(1, 1))
+    end)
+
+    -- @covers LIsoGrid:getCost
+    it("getCost reports iso movement cost", function()
+        local grid = lurek.pathfind.newIsoGrid(4, 4)
+        grid:setCost(2, 3, 7)
+        expect_equal(7, grid:getCost(2, 3))
+        expect_equal(1, grid:getCost(1, 1))
+    end)
+
+    -- @covers LIsoGrid:findPath
+    it("findPath returns an iso route", function()
+        local grid = lurek.pathfind.newIsoGrid(5, 5)
+        grid:setBlocked(3, 3, true)
+        local path = grid:findPath(1, 1, 5, 5)
+        expect_type("table", path)
+        expect_true(#path >= 2)
+    end)
+
+    -- @covers LIsoGrid:type
+    it("type returns LIsoGrid", function()
+        expect_equal("LIsoGrid", lurek.pathfind.newIsoGrid(4, 4):type())
+    end)
+
+    -- @covers LIsoGrid:typeOf
+    it("typeOf recognizes the iso-grid type", function()
+        local grid = lurek.pathfind.newIsoGrid(4, 4)
+        expect_true(grid:typeOf("LIsoGrid"))
+        expect_true(grid:typeOf("LObject"))
+        expect_false(grid:typeOf("LHexGrid"))
+    end)
+end)
+
 -- @describe hex grid
 describe("hex grid", function()
     -- @covers LHexGrid:setBlocked

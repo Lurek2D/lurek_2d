@@ -74,83 +74,101 @@ fn provider_u32(provider: &LuaTable, name: &str, api: &str) -> LuaResult<u32> {
         .ok_or_else(|| LuaError::RuntimeError(format!("{api}: provider.{name} is required")))
 }
 
+struct TileMapLuaProvider;
+
+impl TileMapLuaProvider {
+    fn tilemap_from_provider(
+        provider: LuaTable,
+        limits: TileMapLimits,
+        api: &str,
+    ) -> LuaResult<TileMap> {
+        let tile_width = provider_u32(&provider, "tileWidth", api)?;
+        let tile_height = provider_u32(&provider, "tileHeight", api)?;
+        let chunk_size = provider.get::<_, Option<u32>>("chunkSize")?.unwrap_or(16);
+        let mut map = TileMap::try_new_with_limits(tile_width, tile_height, chunk_size, limits)
+            .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+        if let Ok(tilesets) = provider.get::<_, LuaTable>("tilesets") {
+            for tileset in tilesets.sequence_values::<LuaValue>() {
+                let tileset = tileset_from_value(tileset?, api)?;
+                map.add_tileset(tileset.borrow().clone());
+            }
+        }
+        let layers = provider
+            .get::<_, Option<LuaTable>>("layers")?
+            .ok_or_else(|| LuaError::RuntimeError(format!("{api}: provider.layers is required")))?;
+        let provider_get_tile = provider.get::<_, Option<LuaFunction>>("getTile")?;
+        for layer_pair in layers.sequence_values::<LuaTable>() {
+            let layer = layer_pair?;
+            let layer_number = map.get_layer_count() + 1;
+            let name = layer
+                .get::<_, Option<String>>("name")?
+                .unwrap_or_else(|| format!("layer{layer_number}"));
+            let width = layer
+                .get::<_, Option<u32>>("width")?
+                .or_else(|| provider.get::<_, Option<u32>>("width").ok().flatten())
+                .ok_or_else(|| LuaError::RuntimeError(format!("{api}: layer.width is required")))?;
+            let height = layer
+                .get::<_, Option<u32>>("height")?
+                .or_else(|| provider.get::<_, Option<u32>>("height").ok().flatten())
+                .ok_or_else(|| {
+                    LuaError::RuntimeError(format!("{api}: layer.height is required"))
+                })?;
+            let layer_index = map
+                .try_add_layer(&name, width, height)
+                .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+            if let Some(visible) = layer.get::<_, Option<bool>>("visible")? {
+                map.set_layer_visible(layer_index, visible);
+            }
+            if let Ok(color) = layer.get::<_, LuaTable>("color") {
+                let r = color.get::<_, Option<f32>>("r")?.unwrap_or(1.0);
+                let g = color.get::<_, Option<f32>>("g")?.unwrap_or(1.0);
+                let b = color.get::<_, Option<f32>>("b")?.unwrap_or(1.0);
+                let a = color.get::<_, Option<f32>>("a")?.unwrap_or(1.0);
+                map.set_layer_color(layer_index, r, g, b, a);
+            }
+            if let Ok(tiles) = layer.get::<_, LuaTable>("tiles") {
+                let mut idx = 1usize;
+                for y in 0..height {
+                    for x in 0..width {
+                        let gid = tiles.get::<_, Option<u32>>(idx)?.unwrap_or(0);
+                        map.set_tile(layer_index, x, y, gid);
+                        idx += 1;
+                    }
+                }
+            } else if let Some(layer_get_tile) = layer.get::<_, Option<LuaFunction>>("getTile")? {
+                for y in 0..height {
+                    for x in 0..width {
+                        let gid: u32 = layer_get_tile.call((layer.clone(), x + 1, y + 1))?;
+                        map.set_tile(layer_index, x, y, gid);
+                    }
+                }
+            } else if let Some(provider_get_tile) = &provider_get_tile {
+                for y in 0..height {
+                    for x in 0..width {
+                        let layer_number = u32::try_from(layer_index + 1).map_err(|_| {
+                            LuaError::RuntimeError(format!("{api}: layer index overflow"))
+                        })?;
+                        let gid: u32 = provider_get_tile.call((
+                            provider.clone(),
+                            layer_number,
+                            x + 1,
+                            y + 1,
+                        ))?;
+                        map.set_tile(layer_index, x, y, gid);
+                    }
+                }
+            }
+        }
+        Ok(map)
+    }
+}
+
 fn tilemap_from_provider(
     provider: LuaTable,
     limits: TileMapLimits,
     api: &str,
 ) -> LuaResult<TileMap> {
-    let tile_width = provider_u32(&provider, "tileWidth", api)?;
-    let tile_height = provider_u32(&provider, "tileHeight", api)?;
-    let chunk_size = provider.get::<_, Option<u32>>("chunkSize")?.unwrap_or(16);
-    let mut map = TileMap::try_new_with_limits(tile_width, tile_height, chunk_size, limits)
-        .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
-    if let Ok(tilesets) = provider.get::<_, LuaTable>("tilesets") {
-        for tileset in tilesets.sequence_values::<LuaValue>() {
-            let tileset = tileset_from_value(tileset?, api)?;
-            map.add_tileset(tileset.borrow().clone());
-        }
-    }
-    let layers = provider
-        .get::<_, Option<LuaTable>>("layers")?
-        .ok_or_else(|| LuaError::RuntimeError(format!("{api}: provider.layers is required")))?;
-    let provider_get_tile = provider.get::<_, Option<LuaFunction>>("getTile")?;
-    for layer_pair in layers.sequence_values::<LuaTable>() {
-        let layer = layer_pair?;
-        let layer_number = map.get_layer_count() + 1;
-        let name = layer
-            .get::<_, Option<String>>("name")?
-            .unwrap_or_else(|| format!("layer{layer_number}"));
-        let width = layer
-            .get::<_, Option<u32>>("width")?
-            .or_else(|| provider.get::<_, Option<u32>>("width").ok().flatten())
-            .ok_or_else(|| LuaError::RuntimeError(format!("{api}: layer.width is required")))?;
-        let height = layer
-            .get::<_, Option<u32>>("height")?
-            .or_else(|| provider.get::<_, Option<u32>>("height").ok().flatten())
-            .ok_or_else(|| LuaError::RuntimeError(format!("{api}: layer.height is required")))?;
-        let layer_index = map
-            .try_add_layer(&name, width, height)
-            .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
-        if let Some(visible) = layer.get::<_, Option<bool>>("visible")? {
-            map.set_layer_visible(layer_index, visible);
-        }
-        if let Ok(color) = layer.get::<_, LuaTable>("color") {
-            let r = color.get::<_, Option<f32>>("r")?.unwrap_or(1.0);
-            let g = color.get::<_, Option<f32>>("g")?.unwrap_or(1.0);
-            let b = color.get::<_, Option<f32>>("b")?.unwrap_or(1.0);
-            let a = color.get::<_, Option<f32>>("a")?.unwrap_or(1.0);
-            map.set_layer_color(layer_index, r, g, b, a);
-        }
-        if let Ok(tiles) = layer.get::<_, LuaTable>("tiles") {
-            let mut idx = 1usize;
-            for y in 0..height {
-                for x in 0..width {
-                    let gid = tiles.get::<_, Option<u32>>(idx)?.unwrap_or(0);
-                    map.set_tile(layer_index, x, y, gid);
-                    idx += 1;
-                }
-            }
-        } else if let Some(layer_get_tile) = layer.get::<_, Option<LuaFunction>>("getTile")? {
-            for y in 0..height {
-                for x in 0..width {
-                    let gid: u32 = layer_get_tile.call((layer.clone(), x + 1, y + 1))?;
-                    map.set_tile(layer_index, x, y, gid);
-                }
-            }
-        } else if let Some(provider_get_tile) = &provider_get_tile {
-            for y in 0..height {
-                for x in 0..width {
-                    let layer_number = u32::try_from(layer_index + 1).map_err(|_| {
-                        LuaError::RuntimeError(format!("{api}: layer index overflow"))
-                    })?;
-                    let gid: u32 =
-                        provider_get_tile.call((provider.clone(), layer_number, x + 1, y + 1))?;
-                    map.set_tile(layer_index, x, y, gid);
-                }
-            }
-        }
-    }
-    Ok(map)
+    TileMapLuaProvider::tilemap_from_provider(provider, limits, api)
 }
 
 fn tilefield_from_value(

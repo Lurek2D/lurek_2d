@@ -129,54 +129,62 @@ fn parse_sandbox_mode(value: &str, field: &str) -> LuaResult<SandboxListMode> {
     })
 }
 
+struct ModsLuaBridge;
+
+impl ModsLuaBridge {
+    fn parse_lua_sandbox(tbl: &LuaTable) -> LuaResult<ModSandbox> {
+        let limits = default_mod_limits();
+        let mut sandbox = ModSandbox::new();
+
+        if let Ok(mode) = tbl.get::<_, String>("api_mode") {
+            sandbox.set_api_mode(parse_sandbox_mode(&mode, "sandbox.api_mode")?);
+        }
+        if let Ok(apis) = tbl.get::<_, LuaTable>("apis") {
+            for api in apis.sequence_values::<String>().flatten() {
+                validate_symbol("sandbox api", &api, limits.max_capability_len)?;
+                sandbox.allow_api(api);
+            }
+        }
+
+        if let Ok(mode) = tbl.get::<_, String>("hook_mode") {
+            sandbox.set_hook_mode(parse_sandbox_mode(&mode, "sandbox.hook_mode")?);
+        }
+        if let Ok(hooks) = tbl.get::<_, LuaTable>("hooks") {
+            for hook_name in hooks.sequence_values::<String>().flatten() {
+                sandbox.allow_hook(parse_hook_point(&hook_name)?);
+            }
+        }
+
+        if let Ok(mode) = tbl.get::<_, String>("read_mode") {
+            sandbox.set_read_mode(parse_sandbox_mode(&mode, "sandbox.read_mode")?);
+        }
+        if let Ok(read_roots) = tbl.get::<_, LuaTable>("read_roots") {
+            for root in read_roots.sequence_values::<String>().flatten() {
+                sandbox.allow_read_root(&root).map_err(lua_error_from_mod)?;
+            }
+        }
+
+        if let Ok(blocked_ops) = tbl.get::<_, LuaTable>("blocked_ops") {
+            for op in blocked_ops.sequence_values::<String>().flatten() {
+                validate_symbol("sandbox blocked op", &op, limits.max_hook_len)?;
+                sandbox.block_op(op);
+            }
+        }
+
+        if let Ok(max_memory) = tbl.get::<_, i64>("max_memory") {
+            sandbox.max_memory = usize::try_from(max_memory).map_err(|_| {
+                LuaError::RuntimeError("sandbox.max_memory must be a non-negative integer".into())
+            })?;
+        }
+        sandbox.allow_network = tbl.get::<_, bool>("allow_network").unwrap_or(false);
+        sandbox.allow_file_write = tbl.get::<_, bool>("allow_file_write").unwrap_or(false);
+
+        Ok(sandbox)
+    }
+}
+
 fn parse_lua_sandbox(tbl: &LuaTable) -> LuaResult<ModSandbox> {
-    let limits = default_mod_limits();
-    let mut sandbox = ModSandbox::new();
-
-    if let Ok(mode) = tbl.get::<_, String>("api_mode") {
-        sandbox.set_api_mode(parse_sandbox_mode(&mode, "sandbox.api_mode")?);
-    }
-    if let Ok(apis) = tbl.get::<_, LuaTable>("apis") {
-        for api in apis.sequence_values::<String>().flatten() {
-            validate_symbol("sandbox api", &api, limits.max_capability_len)?;
-            sandbox.allow_api(api);
-        }
-    }
-
-    if let Ok(mode) = tbl.get::<_, String>("hook_mode") {
-        sandbox.set_hook_mode(parse_sandbox_mode(&mode, "sandbox.hook_mode")?);
-    }
-    if let Ok(hooks) = tbl.get::<_, LuaTable>("hooks") {
-        for hook_name in hooks.sequence_values::<String>().flatten() {
-            sandbox.allow_hook(parse_hook_point(&hook_name)?);
-        }
-    }
-
-    if let Ok(mode) = tbl.get::<_, String>("read_mode") {
-        sandbox.set_read_mode(parse_sandbox_mode(&mode, "sandbox.read_mode")?);
-    }
-    if let Ok(read_roots) = tbl.get::<_, LuaTable>("read_roots") {
-        for root in read_roots.sequence_values::<String>().flatten() {
-            sandbox.allow_read_root(&root).map_err(lua_error_from_mod)?;
-        }
-    }
-
-    if let Ok(blocked_ops) = tbl.get::<_, LuaTable>("blocked_ops") {
-        for op in blocked_ops.sequence_values::<String>().flatten() {
-            validate_symbol("sandbox blocked op", &op, limits.max_hook_len)?;
-            sandbox.block_op(op);
-        }
-    }
-
-    if let Ok(max_memory) = tbl.get::<_, i64>("max_memory") {
-        sandbox.max_memory = usize::try_from(max_memory).map_err(|_| {
-            LuaError::RuntimeError("sandbox.max_memory must be a non-negative integer".into())
-        })?;
-    }
-    sandbox.allow_network = tbl.get::<_, bool>("allow_network").unwrap_or(false);
-    sandbox.allow_file_write = tbl.get::<_, bool>("allow_file_write").unwrap_or(false);
-
-    Ok(sandbox)
+    ModsLuaBridge::parse_lua_sandbox(tbl)
 }
 
 fn sandbox_to_lua_table<'a>(lua: &'a Lua, sandbox: &ModSandbox) -> LuaResult<LuaTable<'a>> {
@@ -231,6 +239,60 @@ fn restore_mod_context(
         .restore_active_mod_context(previous_mod_id, previous_sandbox);
 }
 
+impl ModsLuaBridge {
+    fn call_hook_with_sandbox<'lua>(
+        lua: &'lua Lua,
+        state: &Rc<RefCell<SharedState>>,
+        mod_id: &str,
+        sandbox: Option<ModSandbox>,
+        hook_name: &str,
+        function: LuaFunction<'lua>,
+        args: LuaMultiValue<'lua>,
+    ) -> LuaResult<LuaMultiValue<'lua>> {
+        let policy = LuaExecutionPolicy::with_timeout(state.borrow().lua_callback_timeout_ms);
+        let Some(sandbox) = sandbox else {
+            return call_function_with_policy(lua, hook_name, function, args, policy);
+        };
+        let hook = parse_hook_point(hook_name)?;
+        if !sandbox.is_hook_allowed(&hook) {
+            return Err(lua_error_from_mod(ModError::SandboxDenied {
+                operation: format!("hook '{}'", hook_name),
+                detail: format!("mod '{}' is not allowed to execute this hook", mod_id),
+            }));
+        }
+
+        let (previous_mod_id, previous_sandbox) = state.borrow().active_mod_context();
+        state
+            .borrow_mut()
+            .set_active_mod_sandbox(mod_id.to_string(), sandbox.clone());
+
+        let previous_limit = match lua.set_memory_limit(sandbox.max_memory) {
+            Ok(limit) => Some(limit),
+            Err(LuaError::MemoryLimitNotAvailable) if sandbox.max_memory == 0 => None,
+            Err(LuaError::MemoryLimitNotAvailable) => {
+                restore_mod_context(state, previous_mod_id, previous_sandbox);
+                return Err(LuaError::RuntimeError(format!(
+                "mod '{}' requires sandbox.max_memory enforcement, but Lua memory limits are unavailable",
+                mod_id
+            )));
+            }
+            Err(error) => {
+                restore_mod_context(state, previous_mod_id, previous_sandbox);
+                return Err(error);
+            }
+        };
+
+        let call_result = call_function_with_policy(lua, hook_name, function, args, policy);
+        let restore_limit_result = match previous_limit {
+            Some(limit) => lua.set_memory_limit(limit).map(|_| ()),
+            None => Ok(()),
+        };
+        restore_mod_context(state, previous_mod_id, previous_sandbox);
+        restore_limit_result?;
+        call_result
+    }
+}
+
 fn call_hook_with_sandbox<'lua>(
     lua: &'lua Lua,
     state: &Rc<RefCell<SharedState>>,
@@ -240,94 +302,60 @@ fn call_hook_with_sandbox<'lua>(
     function: LuaFunction<'lua>,
     args: LuaMultiValue<'lua>,
 ) -> LuaResult<LuaMultiValue<'lua>> {
-    let policy = LuaExecutionPolicy::with_timeout(state.borrow().lua_callback_timeout_ms);
-    let Some(sandbox) = sandbox else {
-        return call_function_with_policy(lua, hook_name, function, args, policy);
-    };
-    let hook = parse_hook_point(hook_name)?;
-    if !sandbox.is_hook_allowed(&hook) {
-        return Err(lua_error_from_mod(ModError::SandboxDenied {
-            operation: format!("hook '{}'", hook_name),
-            detail: format!("mod '{}' is not allowed to execute this hook", mod_id),
-        }));
-    }
-
-    let (previous_mod_id, previous_sandbox) = state.borrow().active_mod_context();
-    state
-        .borrow_mut()
-        .set_active_mod_sandbox(mod_id.to_string(), sandbox.clone());
-
-    let previous_limit = match lua.set_memory_limit(sandbox.max_memory) {
-        Ok(limit) => Some(limit),
-        Err(LuaError::MemoryLimitNotAvailable) if sandbox.max_memory == 0 => None,
-        Err(LuaError::MemoryLimitNotAvailable) => {
-            restore_mod_context(state, previous_mod_id, previous_sandbox);
-            return Err(LuaError::RuntimeError(format!(
-                "mod '{}' requires sandbox.max_memory enforcement, but Lua memory limits are unavailable",
-                mod_id
-            )));
-        }
-        Err(error) => {
-            restore_mod_context(state, previous_mod_id, previous_sandbox);
-            return Err(error);
-        }
-    };
-
-    let call_result = call_function_with_policy(lua, hook_name, function, args, policy);
-    let restore_limit_result = match previous_limit {
-        Some(limit) => lua.set_memory_limit(limit).map(|_| ()),
-        None => Ok(()),
-    };
-    restore_mod_context(state, previous_mod_id, previous_sandbox);
-    restore_limit_result?;
-    call_result
+    ModsLuaBridge::call_hook_with_sandbox(lua, state, mod_id, sandbox, hook_name, function, args)
 }
 
 /// Converts a Lua mod metadata table into a Rust `ModInfo` value.
+impl ModsLuaBridge {
+    fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
+        let limits = default_mod_limits();
+        let id: String = tbl
+            .get::<_, String>("id")
+            .map_err(|_| LuaError::RuntimeError("newMod requires 'id' field".into()))?;
+        validate_symbol("mod id", &id, limits.max_id_len)?;
+        let dependencies = lua_string_sequence(tbl, "dependencies");
+        for dependency in &dependencies {
+            validate_symbol("dependency id", dependency, limits.max_id_len)?;
+        }
+        let capabilities = lua_string_sequence(tbl, "capabilities");
+        for capability in &capabilities {
+            validate_symbol("capability", capability, limits.max_capability_len)?;
+        }
+        let config_schema = lua_config_schema(tbl);
+        for (key, type_hint, _) in &config_schema {
+            validate_symbol("config_schema key", key, limits.max_id_len)?;
+            FieldType::parse_config_type_name(type_hint).map_err(LuaError::RuntimeError)?;
+        }
+        let asset_paths = lua_string_sequence(tbl, "assets")
+            .into_iter()
+            .map(|path| normalize_relative_asset_path(&path))
+            .collect::<LuaResult<Vec<_>>>()?;
+        let mut info = ModInfo::from_parts(
+            id,
+            tbl.get::<_, String>("name").ok(),
+            tbl.get::<_, String>("version").ok(),
+            tbl.get::<_, String>("author").ok(),
+            tbl.get::<_, String>("description").ok(),
+            tbl.get::<_, i32>("priority").ok(),
+            dependencies,
+        );
+        info.api_version = tbl.get::<_, String>("api_version").ok();
+        if let Some(api_version) = &info.api_version {
+            validate_version(api_version, limits.max_version_len)?;
+        }
+        info.capabilities = capabilities;
+        info.config_schema = config_schema;
+        info.asset_paths = asset_paths;
+        info.signature = tbl.get::<_, String>("signature").ok();
+        if let Ok(sandbox_tbl) = tbl.get::<_, LuaTable>("sandbox") {
+            info.sandbox = Some(parse_lua_sandbox(&sandbox_tbl)?);
+        }
+        Ok(info)
+    }
+}
+
 fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
-    let limits = default_mod_limits();
-    let id: String = tbl
-        .get::<_, String>("id")
-        .map_err(|_| LuaError::RuntimeError("newMod requires 'id' field".into()))?;
-    validate_symbol("mod id", &id, limits.max_id_len)?;
-    let dependencies = lua_string_sequence(tbl, "dependencies");
-    for dependency in &dependencies {
-        validate_symbol("dependency id", dependency, limits.max_id_len)?;
-    }
-    let capabilities = lua_string_sequence(tbl, "capabilities");
-    for capability in &capabilities {
-        validate_symbol("capability", capability, limits.max_capability_len)?;
-    }
-    let config_schema = lua_config_schema(tbl);
-    for (key, type_hint, _) in &config_schema {
-        validate_symbol("config_schema key", key, limits.max_id_len)?;
-        FieldType::parse_config_type_name(type_hint).map_err(LuaError::RuntimeError)?;
-    }
-    let asset_paths = lua_string_sequence(tbl, "assets")
-        .into_iter()
-        .map(|path| normalize_relative_asset_path(&path))
-        .collect::<LuaResult<Vec<_>>>()?;
-    let mut info = ModInfo::from_parts(
-        id,
-        tbl.get::<_, String>("name").ok(),
-        tbl.get::<_, String>("version").ok(),
-        tbl.get::<_, String>("author").ok(),
-        tbl.get::<_, String>("description").ok(),
-        tbl.get::<_, i32>("priority").ok(),
-        dependencies,
-    );
-    info.api_version = tbl.get::<_, String>("api_version").ok();
-    if let Some(api_version) = &info.api_version {
-        validate_version(api_version, limits.max_version_len)?;
-    }
-    info.capabilities = capabilities;
-    info.config_schema = config_schema;
-    info.asset_paths = asset_paths;
-    info.signature = tbl.get::<_, String>("signature").ok();
-    if let Ok(sandbox_tbl) = tbl.get::<_, LuaTable>("sandbox") {
-        info.sandbox = Some(parse_lua_sandbox(&sandbox_tbl)?);
-    }
-    Ok(info)
+    ModsLuaBridge::mod_info_from_table(tbl)
 }
 /// Converts a Rust `ModInfo` value into a Lua table.
 fn mod_info_to_table<'a>(lua: &'a Lua, info: &ModInfo) -> LuaResult<LuaTable<'a>> {

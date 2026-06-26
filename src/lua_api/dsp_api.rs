@@ -158,62 +158,73 @@ fn helper_spectrogram_to_png(
     .map(|_| true)
 }
 
-fn helper_parse_spectrogram_args(
-    args: LuaMultiValue,
-) -> LuaResult<(String, String, u32, u32, SpectrogramOptions)> {
-    let input = helper_arg_string(&args, 0, "lurek.dsp.spectrogramToPng: input path required")?;
-    let output = helper_arg_string(&args, 1, "lurek.dsp.spectrogramToPng: output path required")?;
-    let width = helper_arg_u32(
-        &args,
-        2,
-        "lurek.dsp.spectrogramToPng: width must be a positive integer",
-    )?;
-    let height = helper_arg_u32(
-        &args,
-        3,
-        "lurek.dsp.spectrogramToPng: height must be a positive integer",
-    )?;
-    let mut options = SpectrogramOptions::default();
-    if let Some(LuaValue::Table(table)) = args.get(4) {
-        if let Ok(window_size) = table.get::<_, usize>("windowSize") {
-            options.window_size = window_size;
-        }
-        if let Ok(window_size) = table.get::<_, usize>("inputWindowSize") {
-            options.window_size = window_size;
-        }
-        if let Ok(fft_size) = table.get::<_, usize>("fftSize") {
-            options.fft_size = fft_size;
-        }
-        if let Ok(fft_size) = table.get::<_, usize>("fftPoints") {
-            options.fft_size = fft_size;
-        }
-        if let Ok(hop_size) = table.get::<_, usize>("hopSize") {
-            options.hop_size = Some(hop_size);
-        }
-        if let Ok(dynamic_range_db) = table.get::<_, f32>("dynamicRangeDb") {
-            options.dynamic_range_db = dynamic_range_db;
-        }
-        if let Ok(log_frequency) = table.get::<_, bool>("logFrequency") {
-            options.log_frequency = log_frequency;
-        }
-        if let Ok(scale) = table.get::<_, String>("frequencyScale") {
-            options.log_frequency = match scale.as_str() {
-                "linear" => false,
-                "log" | "logarithmic" => true,
-                other => {
-                    return Err(LuaError::RuntimeError(format!(
+struct DspLuaParser;
+
+impl DspLuaParser {
+    fn helper_parse_spectrogram_args(
+        args: LuaMultiValue,
+    ) -> LuaResult<(String, String, u32, u32, SpectrogramOptions)> {
+        let input = helper_arg_string(&args, 0, "lurek.dsp.spectrogramToPng: input path required")?;
+        let output =
+            helper_arg_string(&args, 1, "lurek.dsp.spectrogramToPng: output path required")?;
+        let width = helper_arg_u32(
+            &args,
+            2,
+            "lurek.dsp.spectrogramToPng: width must be a positive integer",
+        )?;
+        let height = helper_arg_u32(
+            &args,
+            3,
+            "lurek.dsp.spectrogramToPng: height must be a positive integer",
+        )?;
+        let mut options = SpectrogramOptions::default();
+        if let Some(LuaValue::Table(table)) = args.get(4) {
+            if let Ok(window_size) = table.get::<_, usize>("windowSize") {
+                options.window_size = window_size;
+            }
+            if let Ok(window_size) = table.get::<_, usize>("inputWindowSize") {
+                options.window_size = window_size;
+            }
+            if let Ok(fft_size) = table.get::<_, usize>("fftSize") {
+                options.fft_size = fft_size;
+            }
+            if let Ok(fft_size) = table.get::<_, usize>("fftPoints") {
+                options.fft_size = fft_size;
+            }
+            if let Ok(hop_size) = table.get::<_, usize>("hopSize") {
+                options.hop_size = Some(hop_size);
+            }
+            if let Ok(dynamic_range_db) = table.get::<_, f32>("dynamicRangeDb") {
+                options.dynamic_range_db = dynamic_range_db;
+            }
+            if let Ok(log_frequency) = table.get::<_, bool>("logFrequency") {
+                options.log_frequency = log_frequency;
+            }
+            if let Ok(scale) = table.get::<_, String>("frequencyScale") {
+                options.log_frequency = match scale.as_str() {
+                    "linear" => false,
+                    "log" | "logarithmic" => true,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
                     "lurek.dsp.spectrogramToPng: frequencyScale must be 'log' or 'linear', got {}",
                     other
                 )))
-                }
-            };
+                    }
+                };
+            }
+        } else if args.get(4).is_some() {
+            return Err(LuaError::RuntimeError(
+                "lurek.dsp.spectrogramToPng: options must be a table".into(),
+            ));
         }
-    } else if args.get(4).is_some() {
-        return Err(LuaError::RuntimeError(
-            "lurek.dsp.spectrogramToPng: options must be a table".into(),
-        ));
+        Ok((input, output, width, height, options))
     }
-    Ok((input, output, width, height, options))
+}
+
+fn helper_parse_spectrogram_args(
+    args: LuaMultiValue,
+) -> LuaResult<(String, String, u32, u32, SpectrogramOptions)> {
+    DspLuaParser::helper_parse_spectrogram_args(args)
 }
 
 fn helper_arg_string(args: &LuaMultiValue, index: usize, message: &str) -> LuaResult<String> {

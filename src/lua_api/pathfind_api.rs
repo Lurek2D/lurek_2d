@@ -2478,51 +2478,59 @@ fn nav_grid_from_provider(provider: LuaTable, api: &str) -> LuaResult<NavGrid> {
     Ok(grid)
 }
 
-fn path_grid_from_provider(provider: LuaTable, api: &str) -> LuaResult<PathGrid> {
-    let width = require_positive_usize(
-        provider
-            .get::<_, Option<usize>>("width")?
-            .ok_or_else(|| LuaError::RuntimeError(format!("{api}: provider.width is required")))?,
-        "width",
-    )?;
-    let height = require_positive_usize(
-        provider
-            .get::<_, Option<usize>>("height")?
-            .ok_or_else(|| LuaError::RuntimeError(format!("{api}: provider.height is required")))?,
-        "height",
-    )?;
-    let cell_size = require_positive_f32(
-        provider.get::<_, Option<f32>>("cellSize")?.unwrap_or(1.0),
-        "cellSize",
-    )?;
-    let mut grid = PathGrid::new(width, height, cell_size);
-    let costs = provider.get::<_, Option<LuaTable>>("costs")?;
-    let walkable = provider.get::<_, Option<LuaTable>>("walkable")?;
-    let get_cost = provider.get::<_, Option<LuaFunction>>("getCost")?;
-    let is_walkable = provider.get::<_, Option<LuaFunction>>("isWalkable")?;
-    let mut flat_index = 1usize;
-    for y in 0..height {
-        for x in 0..width {
-            if let Some(costs) = &costs {
-                if let Some(cost) = costs.get::<_, Option<f32>>(flat_index)? {
+struct PathfindLuaProvider;
+
+impl PathfindLuaProvider {
+    fn path_grid_from_provider(provider: LuaTable, api: &str) -> LuaResult<PathGrid> {
+        let width = require_positive_usize(
+            provider.get::<_, Option<usize>>("width")?.ok_or_else(|| {
+                LuaError::RuntimeError(format!("{api}: provider.width is required"))
+            })?,
+            "width",
+        )?;
+        let height = require_positive_usize(
+            provider.get::<_, Option<usize>>("height")?.ok_or_else(|| {
+                LuaError::RuntimeError(format!("{api}: provider.height is required"))
+            })?,
+            "height",
+        )?;
+        let cell_size = require_positive_f32(
+            provider.get::<_, Option<f32>>("cellSize")?.unwrap_or(1.0),
+            "cellSize",
+        )?;
+        let mut grid = PathGrid::new(width, height, cell_size);
+        let costs = provider.get::<_, Option<LuaTable>>("costs")?;
+        let walkable = provider.get::<_, Option<LuaTable>>("walkable")?;
+        let get_cost = provider.get::<_, Option<LuaFunction>>("getCost")?;
+        let is_walkable = provider.get::<_, Option<LuaFunction>>("isWalkable")?;
+        let mut flat_index = 1usize;
+        for y in 0..height {
+            for x in 0..width {
+                if let Some(costs) = &costs {
+                    if let Some(cost) = costs.get::<_, Option<f32>>(flat_index)? {
+                        grid.set_cost(x, y, cost);
+                    }
+                } else if let Some(get_cost) = &get_cost {
+                    let cost: f32 = get_cost.call((provider.clone(), x + 1, y + 1))?;
                     grid.set_cost(x, y, cost);
                 }
-            } else if let Some(get_cost) = &get_cost {
-                let cost: f32 = get_cost.call((provider.clone(), x + 1, y + 1))?;
-                grid.set_cost(x, y, cost);
+                let passable = if let Some(walkable) = &walkable {
+                    walkable.get::<_, Option<bool>>(flat_index)?.unwrap_or(true)
+                } else if let Some(is_walkable) = &is_walkable {
+                    is_walkable.call((provider.clone(), x + 1, y + 1))?
+                } else {
+                    true
+                };
+                grid.set_walkable(x, y, passable);
+                flat_index += 1;
             }
-            let passable = if let Some(walkable) = &walkable {
-                walkable.get::<_, Option<bool>>(flat_index)?.unwrap_or(true)
-            } else if let Some(is_walkable) = &is_walkable {
-                is_walkable.call((provider.clone(), x + 1, y + 1))?
-            } else {
-                true
-            };
-            grid.set_walkable(x, y, passable);
-            flat_index += 1;
         }
+        Ok(grid)
     }
-    Ok(grid)
+}
+
+fn path_grid_from_provider(provider: LuaTable, api: &str) -> LuaResult<PathGrid> {
+    PathfindLuaProvider::path_grid_from_provider(provider, api)
 }
 
 /// Registers the `lurek.pathfind` module.
