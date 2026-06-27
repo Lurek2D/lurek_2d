@@ -4,7 +4,7 @@
 //! `neural_net.rs`, `recurrent.rs`, `conv.rs`, and `attention.rs` implement CPU learning blocks with trainable weights.
 //! `transformer.rs` composes attention, norms, and feed-forward blocks, while `engine.rs` chains heterogeneous blocks.
 //! `genetic.rs`, `neuroevolution.rs`, `bandit.rs`, and `qlearner.rs` cover search and reinforcement loops.
-//! `onnx.rs` bridges external models, and `env.rs` plus `tensor.rs` define the data surfaces consumed by these learners.
+//! `env.rs` plus `tensor.rs` define the data surfaces consumed by these learners.
 //! This file owns visibility and navigation only; actual math, training state, and inference behavior live in siblings.
 
 /// Attention primitives for sequence models.
@@ -29,8 +29,6 @@ pub mod limits;
 pub mod neural_net;
 /// Neuroevolution orchestration.
 pub mod neuroevolution;
-/// ONNX model loading and inference.
-pub mod onnx;
 /// Reinforcement learning with a tabular Q-learner.
 pub mod qlearner;
 /// Recurrent learning layers.
@@ -53,7 +51,6 @@ pub use genetic::{Chromosome, GeneticAlgorithm};
 pub use limits::LearningLimits;
 pub use neural_net::{Activation, NeuralLayer, NeuralNet};
 pub use neuroevolution::Neuroevolution;
-pub use onnx::{OnnxLoadOptions, OnnxModel};
 pub use qlearner::QLearner;
 pub use recurrent::{GruLayer, LstmLayer};
 pub use rng::{LearningRng, LearningRngSnapshot, LEARNING_RNG_VERSION};

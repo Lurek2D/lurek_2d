@@ -27,6 +27,254 @@ do
     ecs_log("universe created count=" .. tostring(count) .. " first_id=" .. tostring(entities[1]) .. " hero_name=" .. tostring(uni:get(hero, "name")))
 end
 
+--@api: lurek.ecs.defineClass
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("GameObject", { defaults = { alive = true }, tags = { "base" } })
+    lurek.ecs.defineClass("Projectile", { extends = "GameObject", defaults = { speed = 360 } })
+    lurek.ecs.defineClass("EnemyBullet", { extends = { "Projectile" }, defaults = { damage = 2 } })
+    ecs_log("defined EnemyBullet class=" .. tostring(lurek.ecs.hasClass("EnemyBullet")))
+end
+
+--@api: lurek.ecs.hasClass
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("HasClassProbe", { defaults = { hp = 1 } })
+    local present = lurek.ecs.hasClass("HasClassProbe")
+    local missing = lurek.ecs.hasClass("MissingClass")
+    ecs_log("hasClass present=" .. tostring(present) .. " missing=" .. tostring(missing))
+end
+
+--@api: lurek.ecs.getClass
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ClassInfoProbe", { tags = { "enemy", "air" } })
+    local info = lurek.ecs.getClass("ClassInfoProbe")
+    local tag = info and info.tags and info.tags[1] or "none"
+    ecs_log("getClass name=" .. tostring(info and info.name) .. " tag=" .. tostring(tag))
+end
+
+--@api: lurek.ecs.classNames
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ClassListA", {})
+    lurek.ecs.defineClass("ClassListB", {})
+    local names = lurek.ecs.classNames()
+    ecs_log("classNames count=" .. tostring(#names) .. " first=" .. tostring(names[1]))
+end
+
+--@api: lurek.ecs.clearClasses
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.defineClass("TemporaryClass", {})
+    local before = lurek.ecs.hasClass("TemporaryClass")
+    lurek.ecs.clearClasses()
+    local after = lurek.ecs.hasClass("TemporaryClass")
+    ecs_log("clearClasses before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+
+--@api: lurek.ecs.newObject
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("Damageable", { properties = { hp = 10 } })
+    local obj = lurek.ecs.newObject("Damageable", { name = "boss_part" })
+    obj:setProperty("hp", 7)
+    ecs_log("newObject type=" .. obj:type() .. " hp=" .. tostring(obj:getProperty("hp")))
+end
+
+--@api: lurek.ecs.getObject
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("LookupObject", {})
+    local obj = lurek.ecs.newObject("LookupObject")
+    local same = lurek.ecs.getObject(obj.__id) == obj
+    ecs_log("getObject id=" .. tostring(obj.__id) .. " same=" .. tostring(same))
+end
+
+--@api: lurek.ecs.hasObject
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("LiveObject", {})
+    local obj = lurek.ecs.newObject("LiveObject")
+    ecs_log("hasObject live=" .. tostring(lurek.ecs.hasObject(obj.__id)) .. " missing=" .. tostring(lurek.ecs.hasObject(999999)))
+end
+
+--@api: lurek.ecs.objectIds
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ListedObject", {})
+    local obj = lurek.ecs.newObject("ListedObject")
+    local ids = lurek.ecs.objectIds()
+    ecs_log("objectIds count=" .. tostring(#ids) .. " first=" .. tostring(ids[1]) .. " object=" .. tostring(obj.__id))
+end
+
+--@api: lurek.ecs.destroyObject
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("DestroyObject", {})
+    local obj = lurek.ecs.newObject("DestroyObject")
+    local removed = lurek.ecs.destroyObject(obj.__id)
+    ecs_log("destroyObject removed=" .. tostring(removed) .. " live=" .. tostring(lurek.ecs.hasObject(obj.__id)))
+end
+
+--@api: lurek.ecs.clearObjects
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ClearObjectsProbe", {})
+    lurek.ecs.newObject("ClearObjectsProbe")
+    lurek.ecs.clearObjects()
+    ecs_log("clearObjects count=" .. tostring(#lurek.ecs.objectIds()))
+end
+
+--@api: LUniverse:spawnObject
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("EnemyBullet", { defaults = { damage = 3 } })
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawnObject("EnemyBullet", { damage = 5 })
+    ecs_log("spawnObject entity=" .. tostring(entity) .. " class=" .. tostring(world:get(entity, "objectClass")) .. " damage=" .. tostring(world:get(entity, "object").damage))
+end
+
+--@api: LUniverse:attachObject
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("AttachedObject", { defaults = { team = "enemy" } })
+    local obj = lurek.ecs.newObject("AttachedObject")
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawn()
+    world:attachObject(entity, obj)
+    ecs_log("attachObject entity=" .. tostring(entity) .. " objectId=" .. tostring(world:get(entity, "objectId")) .. " team=" .. tostring(world:get(entity, "object").team))
+end
+
+--@api: lurek.ecs.type
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("TypedExampleObject", {})
+    local obj = lurek.ecs.newObject("TypedExampleObject")
+    ecs_log("object type=" .. tostring(obj:type()) .. " id=" .. tostring(obj.__id))
+end
+
+--@api: lurek.ecs.typeOf
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("BaseExampleObject", {})
+    lurek.ecs.defineClass("DerivedExampleObject", { extends = "BaseExampleObject" })
+    local obj = lurek.ecs.newObject("DerivedExampleObject")
+    ecs_log("object typeOf base=" .. tostring(obj:typeOf("BaseExampleObject")) .. " object=" .. tostring(obj:typeOf("LObject")))
+end
+
+--@api: lurek.ecs.isA
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ActorExampleObject", {})
+    lurek.ecs.defineClass("EnemyExampleObject", { extends = "ActorExampleObject" })
+    local obj = lurek.ecs.newObject("EnemyExampleObject")
+    ecs_log("object isA actor=" .. tostring(obj:isA("ActorExampleObject")) .. " enemy=" .. tostring(obj:isA("EnemyExampleObject")))
+end
+
+--@api: lurek.ecs.getProperty
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("PropertyReadExample", { properties = { hp = 10, speed = 6 } })
+    local obj = lurek.ecs.newObject("PropertyReadExample")
+    local hp = obj:getProperty("hp")
+    ecs_log("getProperty hp=" .. tostring(hp) .. " speed=" .. tostring(obj:getProperty("speed")))
+end
+
+--@api: lurek.ecs.setProperty
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("PropertyWriteExample", { properties = { hp = 10 } })
+    local obj = lurek.ecs.newObject("PropertyWriteExample")
+    obj:setProperty("hp", 4)
+    ecs_log("setProperty hp=" .. tostring(obj:getProperty("hp")) .. " direct=" .. tostring(obj.hp))
+end
+
 --@api: lurek.ecs.newRelationshipManager
 do
     local function ecs_log(message)

@@ -18,7 +18,6 @@ use crate::input::{
     GamepadMappings, GamepadState, GamepadVibrationRequest, KeyboardState, MouseState, TouchState,
 };
 use crate::light::LightWorld;
-use crate::midi::MidiState;
 use crate::mods::ModSandbox;
 use crate::parallax::ParallaxLayer;
 use crate::particle::ParticleSystem;
@@ -509,8 +508,6 @@ pub struct SharedState {
     pub async_loader: Option<crate::filesystem::AsyncLoader>,
     /// Stores fs state.
     pub fs: GameFS,
-    /// Stores midi_state state.
-    pub midi_state: MidiState,
     /// Stores pending_screenshot state.
     pub pending_screenshot: Option<ScreenshotRequest>,
     /// Stores pending_screen_capture state.
@@ -638,7 +635,6 @@ impl SharedState {
             last_shader_compile_error: None,
             async_loader: None,
             fs,
-            midi_state: MidiState::new(),
             pending_screenshot: None,
             pending_screen_capture: false,
             captured_screen_image: None,

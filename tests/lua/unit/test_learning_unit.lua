@@ -67,10 +67,6 @@ local function new_transformer_decoder()
     return lurek.learning.newTransformerDecoder(4, 2, 8)
 end
 
-local function load_onnx_model()
-    return lurek.learning.loadOnnx("tests/lua/fixtures/minimal_identity.onnx")
-end
-
 local function zeros(count)
     local values = {}
     for i = 1, count do
@@ -913,7 +909,7 @@ describe("lurek.learning", function()
         expect_equal(t:type(), "LTensor")
         expect_true(t:typeOf("LTensor"), "typeOf LTensor")
         expect_true(t:typeOf("LObject"), "typeOf LObject")
-        expect_true(not t:typeOf("LOnnxModel"), "typeOf LOnnxModel false")
+        expect_true(not t:typeOf("LNeuralNet"), "typeOf LNeuralNet false")
         local ok, err = pcall(function()
             return lurek.learning.newTensor({2, 3}, {1, 2, 3})
         end)
@@ -968,16 +964,7 @@ describe("lurek.learning", function()
         local t = lurek.learning.newTensor({1}, {0.0})
         expect_true(t:typeOf("LTensor"))
         expect_true(t:typeOf("LObject"))
-        expect_false(t:typeOf("LOnnxModel"))
-    end)
-
-    -- @covers lurek.learning.loadOnnx
-    it("loadOnnx on missing file returns error", function()
-        local ok, err = pcall(function()
-            return lurek.learning.loadOnnx("nonexistent_does_not_exist.onnx")
-        end)
-        expect_true(not ok, "missing file should return error")
-        expect_true(err ~= nil, "error message not nil")
+        expect_false(t:typeOf("LNeuralNet"))
     end)
 
     -- @covers lurek.learning.newLstm
@@ -1394,42 +1381,6 @@ describe("lurek.learning", function()
         expect_false(dec:typeOf("LTransformerEncoder"))
     end)
 
-    -- @covers LOnnxModel:run
-    it("OnnxModel:run executes inference and returns output tensors", function()
-        local model = load_onnx_model()
-        local input = lurek.learning.newTensor({1}, {42.0})
-        local outputs = model:run({ input })
-        expect_type("table", outputs)
-        expect_equal(1, #outputs)
-        expect_equal("LTensor", outputs[1]:type())
-        expect_near(42.0, outputs[1]:data()[1], 0.001)
-    end)
-
-    -- @covers LOnnxModel:inputCount
-    it("OnnxModel:inputCount reports the number of model inputs", function()
-        local model = load_onnx_model()
-        expect_equal(1, model:inputCount())
-    end)
-
-    -- @covers LOnnxModel:outputCount
-    it("OnnxModel:outputCount reports the number of model outputs", function()
-        local model = load_onnx_model()
-        expect_equal(1, model:outputCount())
-    end)
-
-    -- @covers LOnnxModel:type
-    it("OnnxModel:type returns the userdata type name", function()
-        local model = load_onnx_model()
-        expect_equal("LOnnxModel", model:type())
-    end)
-
-    -- @covers LOnnxModel:typeOf
-    it("OnnxModel:typeOf recognizes model and object inheritance", function()
-        local model = load_onnx_model()
-        expect_true(model:typeOf("LOnnxModel"))
-        expect_true(model:typeOf("LObject"))
-        expect_false(model:typeOf("LTensor"))
-    end)
 end)
 end
 -- END test_learning_core_unit.lua

@@ -1,4 +1,4 @@
-//! This file owns the unified `NetworkError` enum used to surface IO, protocol, address, and thread failures.
+//! This file owns the unified `NetworkError` enum used to surface IO, protocol, and address failures.
 //! It maps transport-specific problems into one error boundary so higher layers do not depend on backend details.
 //! Open it when network failure categories change; host state, runtime flow, and message codecs live elsewhere.
 
@@ -30,19 +30,7 @@ pub enum NetworkError {
     /// Bind address string could not be parsed into a socket address.
     #[error("invalid bind address: {0}")]
     InvalidAddress(String),
-    /// HTTP request or response processing failed; message includes status or reason.
-    #[error("HTTP error: {0}")]
-    Http(String),
-    /// WebSocket handshake or frame processing failed.
-    #[error("WebSocket error: {0}")]
-    WebSocket(String),
-    /// TCP stream read or write failed at the protocol level.
-    #[error("TCP error: {0}")]
-    Tcp(String),
     /// Message encode or decode failed during framing.
     #[error("serialization error: {0}")]
     Serialization(String),
-    /// Background network thread reported a fatal error or panicked.
-    #[error("network thread error: {0}")]
-    Thread(String),
 }

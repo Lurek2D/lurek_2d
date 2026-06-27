@@ -589,6 +589,26 @@ describe("lurek.scene.preload", function()
         lurek.scene.unregisterScene("preload_check")
         lurek.scene.clear()
     end)
+
+    -- @covers lurek.scene.pushRegistered
+    it("pushRegistered creates a registered scene and runs lifecycle hooks in order", function()
+        lurek.scene.clear()
+        local order = {}
+        lurek.scene.registerScene("registered_lifecycle", {
+            create = function(self) table.insert(order, "create") end,
+            before_enter = function(self) table.insert(order, "before_enter") end,
+            enter = function(self, params) table.insert(order, "enter:" .. tostring(params.level)) end,
+            after_enter = function(self) table.insert(order, "after_enter") end,
+        }, { persistence = "freeze" })
+
+        expect_true(lurek.scene.pushRegistered("registered_lifecycle", nil, nil, nil, { level = 4 }))
+        expect_equal("create", order[1])
+        expect_equal("before_enter", order[2])
+        expect_equal("enter:4", order[3])
+        expect_equal("after_enter", order[4])
+        lurek.scene.unregisterScene("registered_lifecycle")
+        lurek.scene.clear()
+    end)
 end)
 
 -- ============================================================
@@ -789,6 +809,33 @@ describe("scene explicit owner coverage", function()
         expect_true(lurek.scene.isEmpty())
         lurek.scene.push({})
         expect_false(lurek.scene.isEmpty())
+        reset_scene_state()
+    end)
+
+    -- @covers lurek.scene.setSceneActive
+    it("setSceneActive disables callbacks for a scene", function()
+        reset_scene_state()
+        local updates = 0
+        local draws = 0
+        lurek.scene.push({
+            update = function(self, dt) updates = updates + 1 end,
+            draw = function(self) draws = draws + 1 end,
+        })
+        lurek.scene.setSceneActive(nil, false)
+        lurek.scene.update(0.016)
+        lurek.scene.draw()
+        expect_equal(0, updates)
+        expect_equal(0, draws)
+        reset_scene_state()
+    end)
+
+    -- @covers lurek.scene.isSceneActive
+    it("isSceneActive reports global active state", function()
+        reset_scene_state()
+        lurek.scene.push({})
+        expect_true(lurek.scene.isSceneActive())
+        lurek.scene.setSceneActive(nil, false)
+        expect_false(lurek.scene.isSceneActive())
         reset_scene_state()
     end)
 
@@ -1090,6 +1137,69 @@ describe("scene explicit owner coverage", function()
         container:add(obj)
         expect_true(container:has(obj))
         expect_false(container:has({ layer = 1 }))
+    end)
+
+    -- @covers LSceneObjectContainer:defineGroup
+    it("defineGroup assigns stable 0-based group bits", function()
+        local container = new_container()
+        local bit = container:defineGroup("physics")
+        expect_equal(bit, container:defineGroup("physics"))
+        expect_equal(bit, container:getGroupBit("physics"))
+    end)
+
+    -- @covers LSceneObjectContainer:getGroupBit
+    it("getGroupBit returns nil for missing groups", function()
+        local container = new_container()
+        expect_nil(container:getGroupBit("missing"))
+        local bit = container:defineGroup("ui")
+        expect_equal(bit, container:getGroupBit("ui"))
+    end)
+
+    -- @covers LSceneObjectContainer:setGroupEnabled
+    it("setGroupEnabled filters update callbacks by group", function()
+        local container = new_container()
+        container:defineGroup("background")
+        local updates = 0
+        container:add({
+            group = "background",
+            update = function(self, dt)
+                updates = updates + 1
+            end,
+        })
+        expect_true(container:setGroupEnabled("background", "update", false))
+        container:update(0.016)
+        expect_equal(0, updates)
+        container:setGroupEnabled("background", "update", true)
+        container:update(0.016)
+        expect_equal(1, updates)
+    end)
+
+    -- @covers LSceneObjectContainer:isGroupEnabled
+    it("isGroupEnabled reports pass state", function()
+        local container = new_container()
+        container:defineGroup("physics")
+        expect_true(container:isGroupEnabled("physics", "physics"))
+        container:setGroupEnabled("physics", "physics", false)
+        expect_false(container:isGroupEnabled("physics", "physics"))
+    end)
+
+    -- @covers LSceneObjectContainer:processPhysics
+    it("processPhysics filters physics callbacks by group", function()
+        local container = new_container()
+        container:defineGroup("physics")
+        local physics = 0
+        container:add({
+            group = "physics",
+            process_physics = function(self, dt)
+                physics = physics + 1
+            end,
+        })
+        container:setGroupEnabled("physics", "physics", false)
+        container:processPhysics(0.016)
+        expect_equal(0, physics)
+        container:setGroupEnabled("physics", "physics", true)
+        container:processPhysics(0.016)
+        expect_equal(1, physics)
     end)
 
     -- @covers LSceneObjectContainer:type

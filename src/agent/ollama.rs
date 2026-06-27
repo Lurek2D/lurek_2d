@@ -233,7 +233,7 @@ impl OllamaManager {
 
     /// Returns `true` if the Ollama HTTP server responds on the base URL within 5 seconds.
     pub fn is_running(&self) -> bool {
-        use crate::network::http::execute_request as http_exec;
+        use crate::agent::local_http::execute_request as http_exec;
         let headers: Vec<(String, String)> = Vec::new();
         let resp = http_exec("GET", &self.base_url, &headers, None, 5);
         resp.error.is_none()
@@ -241,7 +241,7 @@ impl OllamaManager {
 
     /// Returns the Ollama version string from `/api/version`, or an empty string if not reachable.
     pub fn version(&self) -> String {
-        use crate::network::http::execute_request as http_exec;
+        use crate::agent::local_http::execute_request as http_exec;
         let url = format!("{}/api/version", self.base_url);
         let headers: Vec<(String, String)> = Vec::new();
         let resp = http_exec("GET", &url, &headers, None, 5);
@@ -262,7 +262,7 @@ impl OllamaManager {
 
     /// Returns all locally available models from `/api/tags`; empty vec if Ollama is not running.
     pub fn list_models(&self) -> Vec<ModelInfo> {
-        use crate::network::http::execute_request as http_exec;
+        use crate::agent::local_http::execute_request as http_exec;
         let url = format!("{}/api/tags", self.base_url);
         let headers: Vec<(String, String)> = Vec::new();
         let resp = http_exec("GET", &url, &headers, None, 5);
@@ -461,7 +461,7 @@ impl OllamaManager {
             }
         }
 
-        use crate::network::http::execute_request as http_exec;
+        use crate::agent::local_http::execute_request as http_exec;
         let url = format!("{}/api/delete", self.base_url);
         let body_bytes = serde_json::json!({ "name": name }).to_string().into_bytes();
         let headers = vec![("Content-Type".to_string(), "application/json".to_string())];
@@ -593,7 +593,7 @@ fn record_cancelled_pull(diagnostics: &Arc<Mutex<OllamaDiagnosticsState>>, model
 }
 
 fn execute_pull(base_url: &str, name: &str) -> Result<(), String> {
-    use crate::network::http::execute_request as http_exec;
+    use crate::agent::local_http::execute_request as http_exec;
     let url = format!("{}/api/pull", base_url);
     let body_bytes = serde_json::json!({ "name": name, "stream": false })
         .to_string()

@@ -1,7 +1,7 @@
 //! This file owns `GamepadState`, `GamepadVibrationRequest`, and `GamepadMappings`, the runtime gamepad model.
 //! It stores connection flags, per-button hold and transition sets, axis values, GUIDs, names, and rumble capability.
 //! Frame helpers clear transient deltas, while update methods record button and axis changes from backend polling.
-//! Virtual D-pad conversion and gilrs name mappers also live here so backend-specific identities normalize once.
+//! Virtual D-pad conversion also lives here so input-facing helpers stay near the gamepad state model.
 //! The mappings store parses SDL2-style controller database lines, keeps them by GUID, and can read or write files.
 //! The file is the owner for device state and mapping schema, while app-side polling and rumble dispatch live higher.
 //! Open it when gamepad semantics change; combo logic, recording, and window-event orchestration live in siblings.
@@ -29,9 +29,9 @@ pub struct GamepadVibrationRequest {
 
 /// Per-frame state for one physical gamepad slot, including buttons, axes, and connection flags.
 pub struct GamepadState {
-    /// Slot index assigned by gilrs.
+    /// Slot index assigned by the gamepad backend.
     pub id: u32,
-    /// Human-readable controller name from the OS or gilrs database.
+    /// Human-readable controller name from the OS.
     pub name: String,
     /// True when the physical device is connected.
     pub connected: bool,
@@ -171,6 +171,7 @@ impl GamepadState {
     }
 
     /// Set the SDL2-style GUID string; crate-internal, called from the runtime event loop.
+    #[allow(dead_code)]
     pub(crate) fn set_guid(&mut self, guid: impl Into<String>) {
         self.guid = guid.into();
     }
@@ -200,41 +201,6 @@ impl GamepadState {
             (true, false, true, false) => "lu",
             _ => "c",
         }
-    }
-}
-
-/// Map a gilrs `Button` variant to its SDL2-style string name used in mappings.
-pub(crate) fn gilrs_button_to_string(button: gilrs::Button) -> &'static str {
-    match button {
-        gilrs::Button::South => "a",
-        gilrs::Button::East => "b",
-        gilrs::Button::West => "x",
-        gilrs::Button::North => "y",
-        gilrs::Button::LeftTrigger => "leftshoulder",
-        gilrs::Button::RightTrigger => "rightshoulder",
-        gilrs::Button::LeftTrigger2 => "leftstick",
-        gilrs::Button::RightTrigger2 => "rightstick",
-        gilrs::Button::Select => "back",
-        gilrs::Button::Start => "start",
-        gilrs::Button::Mode => "guide",
-        gilrs::Button::DPadUp => "dpup",
-        gilrs::Button::DPadDown => "dpdown",
-        gilrs::Button::DPadLeft => "dpleft",
-        gilrs::Button::DPadRight => "dpright",
-        _ => "unknown",
-    }
-}
-
-/// Map a gilrs `Axis` variant to its SDL2-style string name used in mappings.
-pub(crate) fn gilrs_axis_to_string(axis: gilrs::Axis) -> &'static str {
-    match axis {
-        gilrs::Axis::LeftStickX => "leftx",
-        gilrs::Axis::LeftStickY => "lefty",
-        gilrs::Axis::RightStickX => "rightx",
-        gilrs::Axis::RightStickY => "righty",
-        gilrs::Axis::LeftZ => "triggerleft",
-        gilrs::Axis::RightZ => "triggerright",
-        _ => "unknown",
     }
 }
 

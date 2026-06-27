@@ -7,8 +7,8 @@
 //! Use this file when changing client defaults, lifecycle handling, validation, or data ownership.
 //! Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
 
+use crate::agent::local_http::{execute_request as http_execute, HttpResponse};
 use crate::agent::types::{AgentError, AgentRequest, AgentResponse};
-use crate::network::http::HttpResponse;
 use std::collections::HashSet;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 use std::sync::mpsc::{self, Receiver, SyncSender, TrySendError};
@@ -27,8 +27,6 @@ pub struct HttpAgentTransport;
 
 impl AgentTransport for HttpAgentTransport {
     fn execute(&self, req: &AgentRequest) -> Result<String, AgentError> {
-        use crate::network::http::execute_request as http_execute;
-
         let body = serde_json::json!({
             "model": req.model,
             "prompt": req.prompt,
@@ -456,9 +454,7 @@ fn parse_retry_after(headers: &[(String, String)]) -> Option<u64> {
 }
 
 fn endpoint_host(url: &str) -> Option<String> {
-    let uri: Result<ureq::http::Uri, _> = url.parse();
-    uri.ok()
-        .and_then(|uri| uri.host().map(|host| host.to_string()))
+    crate::agent::local_http::endpoint_host(url)
 }
 
 fn take_cancelled(cancelled: &Arc<Mutex<HashSet<usize>>>, callback_id: usize) -> bool {

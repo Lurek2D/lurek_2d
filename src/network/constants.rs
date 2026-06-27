@@ -1,4 +1,4 @@
-//! This file owns shared numeric limits for peers, channels, timeouts, and socket buffer sizes in networking.
+//! This file owns shared numeric limits for peers and ENet channels in networking.
 //! It centralizes defaults such as `DEFAULT_PEERS`, `DEFAULT_CHANNELS`, and transport buffer capacities.
 //! Open it when protocol ceilings change; host logic, runtime polling, and message framing live in siblings.
 
@@ -10,9 +10,3 @@ pub const DEFAULT_PEERS: usize = 64;
 pub const MAX_CHANNELS: usize = 255;
 /// Default channel count used when the game does not configure channels.
 pub const DEFAULT_CHANNELS: usize = 2;
-/// Seconds before an HTTP request is aborted with a timeout error.
-pub const HTTP_TIMEOUT_SECS: u64 = 30;
-/// Byte capacity of the read/write buffer for each TCP connection.
-pub const TCP_BUFFER_SIZE: usize = 65536;
-/// Byte capacity of the read/write buffer for each WebSocket connection.
-pub const WS_BUFFER_SIZE: usize = 65536;

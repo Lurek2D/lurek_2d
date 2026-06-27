@@ -54,11 +54,6 @@ local function rapid_destroy_cycles(count)
     return completed
 end
 
-local function shutdown_runtime_twice()
-    local rt = lurek.network.newRuntime()
-    rt:shutdown()
-    rt:shutdown()
-end
 
 -- @describe lurek.network security
 describe("lurek.network security", function()
@@ -133,11 +128,5 @@ describe("lurek.network security", function()
         expect_equal(10, completed)
     end)
 
-    -- @security LNetworkRuntime:shutdown
-    it("should handle runtime shutdown idempotently", function()
-        expect_no_error(function()
-            shutdown_runtime_twice()
-        end)
-    end)
 end)
 test_summary()

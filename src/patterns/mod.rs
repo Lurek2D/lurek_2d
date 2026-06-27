@@ -6,6 +6,7 @@
 //! `behavior_tree.rs`, `blackboard.rs`, and `state_machine.rs` cover decision and state orchestration primitives.
 //! `event_bus.rs`, `observer.rs`, `mediator.rs`, and `service_locator.rs` cover decoupled communication surfaces.
 //! `graph.rs`, `trie.rs`, `ring.rs`, and `weighted_random.rs` cover storage and selection helpers for gameplay data.
+//! `deck.rs` covers reusable deck/card ordering and draw/discard workflows for card-like game logic.
 
 /// Behavior tree execution engine with composite and leaf nodes.
 pub mod behavior_tree;
@@ -17,6 +18,8 @@ pub mod blackboard;
 pub mod collections;
 /// Undo/redo command stack with history.
 pub mod command_stack;
+/// Deck/card draw and discard ordering primitive.
+pub mod deck;
 /// Publish-subscribe event bus for decoupled communication.
 pub mod event_bus;
 /// Generic factory for type-keyed object construction.
@@ -54,6 +57,7 @@ pub use bimap::BiMap;
 pub use blackboard::{Blackboard, BlackboardValue};
 pub use collections::{QueueMeta, StackMeta};
 pub use command_stack::{CommandEntry, CommandStack};
+pub use deck::Deck;
 pub use event_bus::{EventBus, Subscription};
 pub use factory::Factory;
 pub use funnel::{Funnel, FunnelEntry};

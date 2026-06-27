@@ -6,6 +6,7 @@
 - Implements behavior trees, finite state machines, event buses, blackboards, and command stacks.
 - Controls execution cadences via throttles, debounces, and reusable object pools.
 - Supports graph structures, bidirectional maps, prefix tries, factories, and service locators.
+- Includes practical game/data structures such as Deck/Card when they are reusable logic patterns rather than entity identity systems.
 
 ## Summary
 
@@ -21,6 +22,8 @@
 - The module also provides utility data structures that keep proving useful across domains: priority queues, ring buffers, tries, weighted selectors, bidirectional maps, graph containers, bounded collections, and pooling helpers.
 - Object reuse and bounded collections matter because several runtime systems need allocation control, limited history, or reusable queues without wanting ad hoc versions hidden inside every feature.
 - Weighted selectors, graph containers, and queue-like helpers show that `patterns` is not only about software architecture in the narrow sense. It also owns practical reusable mechanics that often sit just below game logic and tool logic but above low-level containers.
+- Deck/Card lives here rather than in `ecs` because a deck is reusable game logic: it owns draw order, shuffle determinism, discard/reset behavior, and card payload handling. It does not define object identity, inheritance, components, or world membership.
+- That boundary keeps `patterns` broad and domain-neutral while leaving object/class semantics to `ecs`.
 - The module also helps keep terminology stable across the codebase. Several features can depend on the same ideas of event dispatch, reversible actions, orchestration, and shared state instead of each inventing slightly different local vocabulary.
 - The breadth of the module is deliberate: these pieces are small enough to stay reusable, but substantial enough that reimplementing them repeatedly would fragment the rest of the engine.
 - That makes `patterns` valuable not only as a library shelf, but also as a consistency layer. Several systems can solve similar structural problems without diverging in naming, behavior, or maintenance style.

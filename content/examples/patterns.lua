@@ -6376,3 +6376,136 @@ do
     example_print_log("current = " .. tostring(strat:getCurrent()))
     example_print_log("result = " .. tostring(strat:execute()))
 end
+
+--@api: lurek.patterns.newDeck
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { rank = "A" }, { rank = "K" }, { rank = "Q" } })
+    local top = deck:peek()
+    local count = deck:count()
+    patterns_log("newDeck count=" .. tostring(count) .. " top=" .. tostring(top.rank))
+end
+
+--@api: LDeck:add
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck()
+    local id = deck:add({ rank = "J", suit = "spades" })
+    local top = deck:peek()
+    patterns_log("LDeck:add id=" .. tostring(id) .. " count=" .. tostring(deck:count()) .. " top=" .. tostring(top.rank))
+end
+
+--@api: LDeck:shuffle
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = 1 }, { id = 2 }, { id = 3 }, { id = 4 } })
+    deck:shuffle(42)
+    local cards = deck:toArray()
+    patterns_log("LDeck:shuffle first=" .. tostring(cards[1].id) .. " second=" .. tostring(cards[2].id))
+end
+
+--@api: LDeck:draw
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local card = deck:draw()
+    local remaining = deck:count()
+    patterns_log("LDeck:draw card=" .. tostring(card.id) .. " remaining=" .. tostring(remaining))
+end
+
+--@api: LDeck:peek
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local card = deck:peek()
+    local remaining = deck:count()
+    patterns_log("LDeck:peek card=" .. tostring(card.id) .. " remaining=" .. tostring(remaining))
+end
+
+--@api: LDeck:discard
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local card = deck:draw()
+    local discarded = deck:discard(card)
+    patterns_log("LDeck:discard ok=" .. tostring(discarded) .. " discard_count=" .. tostring(deck:discardCount()))
+end
+
+--@api: LDeck:reset
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local card = deck:draw()
+    deck:discard(card)
+    deck:reset()
+    patterns_log("LDeck:reset count=" .. tostring(deck:count()) .. " first=" .. tostring(deck:peek().id))
+end
+
+--@api: LDeck:count
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = 1 }, { id = 2 }, { id = 3 } })
+    local before = deck:count()
+    deck:draw()
+    patterns_log("LDeck:count before=" .. tostring(before) .. " after=" .. tostring(deck:count()))
+end
+
+--@api: LDeck:discardCount
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = 1 }, { id = 2 } })
+    local card = deck:draw()
+    deck:discard(card)
+    patterns_log("LDeck:discardCount value=" .. tostring(deck:discardCount()) .. " remaining=" .. tostring(deck:count()))
+end
+
+--@api: LDeck:isEmpty
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = 1 } })
+    local before = deck:isEmpty()
+    deck:draw()
+    patterns_log("LDeck:isEmpty before=" .. tostring(before) .. " after=" .. tostring(deck:isEmpty()))
+end
+
+--@api: LDeck:toArray
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local cards = deck:toArray()
+    local first = cards[1] and cards[1].id or "none"
+    patterns_log("LDeck:toArray count=" .. tostring(#cards) .. " first=" .. tostring(first))
+end

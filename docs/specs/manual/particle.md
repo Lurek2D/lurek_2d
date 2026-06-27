@@ -35,7 +35,12 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
   Deferred Lua custom-shape callbacks target stable particle ids instead of raw pool indices, so `bottom` and `random` insert modes cannot retarget pending offsets after later inserts. Failed callbacks leave the particle's existing spawn offset unchanged.
 - Render and collision policy:
   Invalid sprite-sheet quads are removed during config normalization, render extraction skips non-finite or invisible instances, and bounds/attractor strict setters reject non-finite coordinates instead of propagating NaNs into the update loop.
+- GPU path:
+  The current production simulation is CPU-owned and renderer-facing through particle snapshots. A GPU particle path should keep emitter authoring and policy in `particle`, but place storage buffers, compute dispatch, and instanced drawing in `render`; gameplay-critical physics/custom callbacks stay on the CPU path unless a bounded hybrid bridge is explicitly added.
+- Ordering policy:
+  World-space particles participate in normal scene/tilemap/camera ordering. Screen-space weather on the visible camera belongs to `overlay`; particles that must pass behind isometric walls or collide with blocks need a world-space particle/tilemap integration path.
 
 ## Architecture Links
 
-- Intentionally empty.
+- `docs/architecture/module-scope-boundaries.md`
+- `docs/architecture/effects-particles-overlay-plan.md`

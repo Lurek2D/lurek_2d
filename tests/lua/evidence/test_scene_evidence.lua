@@ -352,5 +352,82 @@ describe("Evidence: lurek.scene object container flow", function()
 
         write_text(OUT .. "scene_object_container_layer_trace.txt", table.concat(lines, "\n") .. "\n")
     end)
+    -- Does: Runs "object group mask and transition dual-render trace" and turns the owner-module result into inspectable text and image artifacts.
+    -- Shows: The artifacts should expose group-pass suspension plus outgoing/incoming render ownership during an active transition.
+    -- Artifact: tests/artifacts/current/scene/scene_group_mask_transition_trace.txt and tests/artifacts/current/scene/scene_group_mask_transition.png
+    -- Why: This is meaningful only if the visible/text output comes from LSceneObjectContainer group filters and lurek.scene transition render ownership; export helpers are just the container.
+
+    it("TXT+PNG: object group mask and transition dual-render trace", function()
+        local container = lurek.scene.newObjectContainer()
+        container:defineGroup("physics")
+        container:defineGroup("background")
+
+        local physics_ticks = 0
+        local update_ticks = 0
+        container:add({
+            group = "physics",
+            process_physics = function(_, dt)
+                if dt > 0 then
+                    physics_ticks = physics_ticks + 1
+                end
+            end,
+        })
+        container:add({
+            group = "background",
+            update = function(_, dt)
+                if dt > 0 then
+                    update_ticks = update_ticks + 1
+                end
+            end,
+        })
+
+        container:setGroupEnabled("physics", "physics", false)
+        container:processPhysics(1 / 60)
+        container:update(1 / 60)
+        local physics_paused = physics_ticks
+        local update_running = update_ticks
+
+        container:setGroupEnabled("physics", "physics", true)
+        container:processPhysics(1 / 60)
+        local physics_resumed = physics_ticks
+
+        lurek.scene.clear()
+        local outgoing = { name = "outgoing" }
+        local incoming = { name = "incoming" }
+        lurek.scene.push(outgoing)
+        lurek.scene.switchTo(incoming, "fade", 0.5, "linear")
+        local render_scenes = lurek.scene.getRenderActiveScenes()
+        local dual_render_count = #render_scenes
+
+        local lines = {
+            "physics_paused_ticks=" .. tostring(physics_paused),
+            "physics_resumed_ticks=" .. tostring(physics_resumed),
+            "update_running_ticks=" .. tostring(update_running),
+            "dual_render_count=" .. tostring(dual_render_count),
+            "render_first=" .. tostring(render_scenes[1] and render_scenes[1].name),
+            "render_second=" .. tostring(render_scenes[2] and render_scenes[2].name),
+        }
+        write_text(OUT .. "scene_group_mask_transition_trace.txt", table.concat(lines, "\n") .. "\n")
+
+        local img = lurek.image.newImageData(320, 160)
+        img:fill(16, 18, 24, 255)
+        img:drawRect(18, 24, 120, 36, 58, 70, 92, 255)
+        img:drawRect(18, 76, 120, 36, 82, 130, 92, 255)
+        img:drawRect(180, 24, 48, 84, 88, 112, 190, 255)
+        img:drawRect(216, 42, 48, 84, 190, 104, 92, 220)
+        draw_outline(img, 18, 24, 120, 36, 226, 232, 244, 255)
+        draw_outline(img, 18, 76, 120, 36, 226, 232, 244, 255)
+        draw_outline(img, 180, 24, 48, 84, 226, 232, 244, 255)
+        draw_outline(img, 216, 42, 48, 84, 250, 238, 210, 255)
+        if physics_paused == 0 and physics_resumed > 0 then
+            img:drawRect(28, 34, 100, 16, 110, 220, 154, 255)
+        end
+        if dual_render_count == 2 then
+            img:drawLine(180, 132, 264, 132, 110, 220, 154, 255)
+            img:drawLine(180, 136, 264, 136, 110, 220, 154, 255)
+        end
+        save_png(img, OUT .. "scene_group_mask_transition.png")
+        lurek.scene.clear()
+    end)
 end)
 test_summary()

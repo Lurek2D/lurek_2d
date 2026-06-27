@@ -96,8 +96,6 @@ pub mod lua_api;
 pub mod mapblock;
 /// Exposes the math subsystem module.
 pub mod math;
-/// Exposes the MIDI playback and SoundFont management module.
-pub mod midi;
 /// Exposes the minimap subsystem module.
 pub mod minimap;
 /// Exposes the mod management subsystem module.
@@ -763,33 +761,9 @@ fn show_windows_error_box(msg: &str) {
 fn extract_lurek_archive(
     archive_path: &std::path::Path,
 ) -> Result<tempfile::TempDir, Box<dyn std::error::Error>> {
-    use std::fs;
-    use std::io;
-    let file = fs::File::open(archive_path)?;
-    let mut archive = zip::ZipArchive::new(file)?;
-    let temp_dir = tempfile::tempdir()?;
-    for i in 0..archive.len() {
-        let mut entry = archive.by_index(i)?;
-        let entry_name = entry.name().to_owned();
-        let relative = std::path::Path::new(&entry_name);
-        for component in relative.components() {
-            match component {
-                std::path::Component::Normal(_) | std::path::Component::CurDir => {}
-                _ => {
-                    return Err(format!("Unsafe path in .lurek archive: '{entry_name}'").into());
-                }
-            }
-        }
-        let dest = temp_dir.path().join(relative);
-        if entry.is_dir() {
-            fs::create_dir_all(&dest)?;
-        } else {
-            if let Some(parent) = dest.parent() {
-                fs::create_dir_all(parent)?;
-            }
-            let mut out = fs::File::create(&dest)?;
-            io::copy(&mut entry, &mut out)?;
-        }
-    }
-    Ok(temp_dir)
+    Err(format!(
+        ".lurek archives are not built into this runtime build; pass an extracted game folder instead: {}",
+        archive_path.display()
+    )
+    .into())
 }

@@ -6,7 +6,7 @@
 
 use super::error::LearningError;
 
-/// Shared safety limits for learning tensors, model allocations, and ONNX I/O.
+/// Shared safety limits for learning tensors and model allocations.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LearningLimits {
     /// Maximum elements allowed in a tensor or tensor-shaped output allocation.
@@ -21,14 +21,6 @@ pub struct LearningLimits {
     pub max_population: usize,
     /// Maximum genes allowed in one chromosome.
     pub max_genome_length: usize,
-    /// Maximum ONNX file size accepted by the safe loader.
-    pub max_onnx_file_bytes: u64,
-    /// Maximum ONNX input tensors accepted by the safe loader.
-    pub max_onnx_inputs: usize,
-    /// Maximum ONNX output tensors accepted by the safe loader.
-    pub max_onnx_outputs: usize,
-    /// Maximum elements accepted in one ONNX output tensor.
-    pub max_onnx_output_elements: usize,
 }
 
 impl Default for LearningLimits {
@@ -40,10 +32,6 @@ impl Default for LearningLimits {
             max_params: 16_777_216,
             max_population: 65_536,
             max_genome_length: 4_194_304,
-            max_onnx_file_bytes: 64 * 1024 * 1024,
-            max_onnx_inputs: 64,
-            max_onnx_outputs: 64,
-            max_onnx_output_elements: 16_777_216,
         }
     }
 }

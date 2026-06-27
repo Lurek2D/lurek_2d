@@ -124,13 +124,6 @@ describe("lurek.network constructors and helpers", function()
     server:destroy()
   end)
 
-  -- @covers lurek.network.newRuntime
-  it("creates a network runtime handle", function()
-    local rt = lurek.network.newRuntime()
-    expect_equal("LNetworkRuntime", rt:type())
-    rt:shutdown()
-  end)
-
   -- @covers lurek.network.createLobby
   it("creates a lobby info table", function()
     local lobby = lurek.network.createLobby("My Game", 7777, 1, 4)
@@ -626,84 +619,6 @@ describe("lurek.network.pack / unpack", function()
       expect_equal(3, unpacked and unpacked[3] or nil)
     end)
 
-    -- @covers LNetworkRuntime:poll
-    it("should survive multiple polls", function()
-        local rt = lurek.network.newRuntime()
-        for i = 1, 5 do
-            local results = rt:poll()
-            expect_equal(type(results), "table")
-        end
-        rt:shutdown()
-    end)
-
-    -- @covers LNetworkRuntime:httpGet
-    it("should have httpGet method", function()
-        local rt = lurek.network.newRuntime()
-        expect_equal(type(rt.httpGet), "function")
-        rt:shutdown()
-    end)
-
-    -- @covers LNetworkRuntime:httpPost
-    it("should have httpPost method", function()
-        local rt = lurek.network.newRuntime()
-        expect_equal(type(rt.httpPost), "function")
-        rt:shutdown()
-    end)
-
-    -- @covers LNetworkRuntime:httpRequest
-    it("should have httpRequest method", function()
-        local rt = lurek.network.newRuntime()
-        expect_equal(type(rt.httpRequest), "function")
-        rt:shutdown()
-    end)
-
-    -- @covers LNetworkRuntime:tcpConnect
-    it("should have tcpConnect method", function()
-        local rt = lurek.network.newRuntime()
-        expect_equal(type(rt.tcpConnect), "function")
-        rt:shutdown()
-    end)
-
-    -- @covers LNetworkRuntime:tcpSend
-    it("should have tcpSend method", function()
-        local rt = lurek.network.newRuntime()
-        expect_equal(type(rt.tcpSend), "function")
-        rt:shutdown()
-    end)
-
-    -- @covers LNetworkRuntime:tcpClose
-    it("should have tcpClose method", function()
-        local rt = lurek.network.newRuntime()
-        expect_equal(type(rt.tcpClose), "function")
-        rt:shutdown()
-    end)
-
-    -- @covers LNetworkRuntime:wsConnect
-    it("should have wsConnect method", function()
-        local rt = lurek.network.newRuntime()
-        expect_equal(type(rt.wsConnect), "function")
-        local ok_connect = pcall(function() rt:wsConnect("ws://127.0.0.1:1") end)
-        expect_type("boolean", ok_connect)
-        rt:shutdown()
-    end)
-
-    -- @covers LNetworkRuntime:wsSend
-    it("should have wsSend method", function()
-        local rt = lurek.network.newRuntime()
-        expect_equal(type(rt.wsSend), "function")
-        local ok_send = pcall(function() rt:wsSend(0, "ping") end)
-        expect_type("boolean", ok_send)
-        rt:shutdown()
-    end)
-
-    -- @covers LNetworkRuntime:wsClose
-    it("should have wsClose method", function()
-        local rt = lurek.network.newRuntime()
-        expect_equal(type(rt.wsClose), "function")
-        local ok_close = pcall(function() rt:wsClose(0) end)
-        expect_type("boolean", ok_close)
-        rt:shutdown()
-    end)
 end)
 
 -- @describe NetworkHost:disconnectNow and NetworkHost:disconnectLater
@@ -726,107 +641,8 @@ describe("NetworkHost:disconnectNow and NetworkHost:disconnectLater ", function(
     end)
 end)
 
--- @describe lurek.network.sseConnect
-describe("lurek.network.sseConnect", function()
-  -- @covers lurek.network.sseConnect
-  it("sseConnect is a function", function()
-    expect_equal(type(lurek.network.sseConnect), "function")
-  end)
-
-  -- @covers LSseStream:isOpen
-  it("sseConnect returns LSseStream userdata with isOpen and close", function()
-    -- Connection to a non-listening port will fail quickly; we test the API surface only.
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1", function(_ev) end)
-    expect_equal(type(stream), "userdata")
-    expect_type("boolean", stream:isOpen())
-    expect_no_error(function() stream:close() end)
-  end)
-
-  -- @covers LSseStream:next
-  it("LSseStream:next returns nil when no events are available", function()
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1", function(_ev) end)
-    -- next() must not error and returns nil when the queue is empty or connection failed.
-    local ok, result = pcall(function() return stream:next() end)
-    expect_equal(true, ok)
-    -- result is nil or a table (if a sentinel arrived); both are valid.
-    expect_equal(true, result == nil or type(result) == "table")
-    stream:close()
-  end)
-
-  -- @covers LSseStream:type
-  it("LSseStream type/typeOf return correct values", function()
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1", function(_ev) end)
-    expect_equal("LSseStream", stream:type())
-    expect_equal(true, stream:typeOf("LSseStream"))
-    expect_equal(true, stream:typeOf("LObject"))
-    expect_equal(false, stream:typeOf("LNetworkHost"))
-    stream:close()
-  end)
-end)
-
--- @describe lurek.network missing SSE owner methods
-describe("lurek.network missing SSE owner methods", function()
-  -- @covers LSseStream:close
-  it("closes SSE streams without error", function()
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1", function(_ev) end)
-    expect_no_error(function()
-      stream:close()
-    end)
-  end)
-
-  -- @covers LSseStream:typeOf
-  it("recognizes SSE stream and base object types", function()
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1", function(_ev) end)
-    expect_true(stream:typeOf("LSseStream"))
-    expect_true(stream:typeOf("LObject"))
-    expect_false(stream:typeOf("LNetworkRuntime"))
-    stream:close()
-  end)
-end)
-
--- @describe lurek.network.sseCollect
-describe("lurek.network.sseCollect", function()
-  -- @covers lurek.network.sseCollect
-  it("is exposed and returns tables for explicit or default timeout calls", function()
-    expect_equal(type(lurek.network.sseCollect), "function")
-
-    local events = lurek.network.sseCollect("http://127.0.0.1:1", 5, 0.05)
-    expect_equal(type(events), "table")
-
-    local ok, result = pcall(lurek.network.sseCollect, "http://127.0.0.1:1", 1, 0.05)
-    expect_equal(true, ok)
-    expect_equal(type(result), "table")
-  end)
-end)
-
--- @describe LNetworkRuntime auth and matchmaking methods
-describe("LNetworkRuntime auth and matchmaking methods", function()
-  -- @covers LNetworkRuntime:authBootstrap
-  it("auth methods are callable and manage state", function()
-    local rt = lurek.network.newRuntime()
-    expect_equal("unauthenticated", rt:getAuthStatus())
-    expect_equal(nil, rt:getAuthToken())
-
-    local id = rt:authBootstrap("http://127.0.0.1:9", '{"username":"test"}', "http://127.0.0.1:9")
-    expect_type("number", id)
-    expect_equal("authenticating", rt:getAuthStatus())
-
-    rt:authCancel()
-    expect_equal("unauthenticated", rt:getAuthStatus())
-    expect_equal(nil, rt:getAuthToken())
-    rt:shutdown()
-  end)
-
-  -- @covers LNetworkRuntime:matchmakeStart
-  it("matchmaking methods are callable", function()
-    local rt = lurek.network.newRuntime()
-    local id = rt:matchmakeStart("http://127.0.0.1:9", '{"tier":"ranked"}')
-    expect_type("number", id)
-
-    rt:matchmakeCancel(id)
-    rt:shutdown()
-  end)
-
+-- @describe LNetworkHost reconnect leases and metrics
+describe("LNetworkHost reconnect leases and metrics", function()
   -- @covers LNetworkHost:registerLease
   it("host reconnect leases and metrics are functional", function()
     local host = lurek.network.newHost({ port = 0 })
@@ -855,81 +671,6 @@ describe("LNetworkRuntime auth and matchmaking methods", function()
     host:destroy()
   end)
 
-  -- @covers LNetworkRuntime:getMetrics
-  it("runtime telemetry metrics are functional", function()
-    local rt = lurek.network.newRuntime()
-    local metrics = rt:getMetrics()
-    expect_type("table", metrics)
-    expect_equal(0, metrics.queue_size)
-    expect_equal(0, metrics.reconnect_count)
-    expect_equal(0, metrics.http_active_count)
-    expect_equal(0, metrics.tcp_active_count)
-    expect_equal(0, metrics.ws_active_count)
-    rt:shutdown()
-  end)
-end)
-
--- @describe LNetworkRuntime missing owner methods
-describe("LNetworkRuntime missing owner methods", function()
-  -- @covers LNetworkRuntime:getAuthToken
-  it("returns nil auth token before authentication", function()
-    local rt = lurek.network.newRuntime()
-    expect_nil(rt:getAuthToken())
-    rt:shutdown()
-  end)
-
-  -- @covers LNetworkRuntime:getAuthStatus
-  it("starts in unauthenticated status", function()
-    local rt = lurek.network.newRuntime()
-    expect_equal("unauthenticated", rt:getAuthStatus())
-    rt:shutdown()
-  end)
-
-  -- @covers LNetworkRuntime:authCancel
-  it("cancels auth attempts and restores unauthenticated status", function()
-    local rt = lurek.network.newRuntime()
-    local id = rt:authBootstrap("http://127.0.0.1:9", '{"username":"test"}', "http://127.0.0.1:9")
-    expect_type("number", id)
-    rt:authCancel()
-    expect_equal("unauthenticated", rt:getAuthStatus())
-    expect_nil(rt:getAuthToken())
-    rt:shutdown()
-  end)
-
-  -- @covers LNetworkRuntime:matchmakeCancel
-  it("cancels started matchmaking requests", function()
-    local rt = lurek.network.newRuntime()
-    local id = rt:matchmakeStart("http://127.0.0.1:9", '{"tier":"ranked"}')
-    expect_type("number", id)
-    expect_no_error(function()
-      rt:matchmakeCancel(id)
-    end)
-    rt:shutdown()
-  end)
-
-  -- @covers LNetworkRuntime:shutdown
-  it("shuts down runtime instances cleanly", function()
-    local rt = lurek.network.newRuntime()
-    expect_no_error(function()
-      rt:shutdown()
-    end)
-  end)
-
-  -- @covers LNetworkRuntime:type
-  it("returns the network runtime type name", function()
-    local rt = lurek.network.newRuntime()
-    expect_equal("LNetworkRuntime", rt:type())
-    rt:shutdown()
-  end)
-
-  -- @covers LNetworkRuntime:typeOf
-  it("recognizes runtime and base object types", function()
-    local rt = lurek.network.newRuntime()
-    expect_true(rt:typeOf("LNetworkRuntime"))
-    expect_true(rt:typeOf("LObject"))
-    expect_false(rt:typeOf("LSseStream"))
-    rt:shutdown()
-  end)
 end)
 
 -- @describe lurek.network.packSnapshot / unpackSnapshot / reconcileWithPolicy
@@ -1020,18 +761,6 @@ describe("lurek.network.packSnapshot / unpackSnapshot / reconcileWithPolicy", fu
   end)
 end)
 
--- @describe network HTTP methods
-describe("network HTTP methods", function()
-  -- @covers LNetworkRuntime:httpJson
-  it("LNetworkRuntime:httpJson makes HTTP requests", function()
-      expect_true(true)
-  end)
-
-  -- @covers LNetworkRuntime:httpStream
-  it("LNetworkRuntime:httpStream streams HTTP responses", function()
-      expect_true(true)
-  end)
-end)
 end
 -- END test_network_core_unit.lua
 

@@ -2609,6 +2609,10 @@ LCommandStack = {}
 ---@class LDebounce
 LDebounce = {}
 
+--- Lua-facing reusable deck that stores arbitrary card payloads and delegates pile ordering to Rust.
+---@class LDeck
+LDeck = {}
+
 --- Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 ---@class LEventBus
 LEventBus = {}
@@ -11793,6 +11797,11 @@ function LUniverse:addTag(id, tag) end
 ---@param snapshot table Snapshot table previously produced by `snapshot` or `serialize`.
 function LUniverse:applySnapshot(snapshot) end
 
+--- Attaches an existing ECS object table to an entity as the `object` component.
+---@param entityId number Entity id that receives the object.
+---@param obj table Object table returned by `lurek.ecs.newObject`.
+function LUniverse:attachObject(entityId, obj) end
+
 --- Adds a bitmap tag to an entity, defining the tag if needed.
 ---@param id number Entity id to tag.
 ---@param name string Bitmap tag name.
@@ -12092,6 +12101,12 @@ function LUniverse:spawnBlueprint(name, overrides) end
 ---@return number[] Array table of spawned entity ids.
 function LUniverse:spawnBulk(name, count, overrides) end
 
+--- Creates an ECS object instance from a registered class and attaches it to a new entity.
+---@param className string Registered ECS class name.
+---@param props? table Optional property overrides copied onto the new object.
+---@return number Entity id that received the object component.
+function LUniverse:spawnObject(className, props) end
+
 --- Returns and clears accumulated ECS snapshot diff data.
 ---@return LUniverseTakeSnapshotDiffResult Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays.
 function LUniverse:takeSnapshotDiff() end
@@ -12114,6 +12129,60 @@ function LUniverse:update(dt) end
 ---@param dt number Frame delta time in seconds.
 function LUniverse:updatePhase(phase, dt) end
 
+--- Returns all global ECS class names in deterministic order.
+---@return string[] Registered class names.
+lurek.ecs.classNames = function() end
+
+--- Removes every global ECS class definition.
+lurek.ecs.clearClasses = function() end
+
+--- Removes every live ECS object while keeping class definitions.
+lurek.ecs.clearObjects = function() end
+
+--- Defines or replaces a global ECS class for Lua object instances.
+---@param name string Class name used by `newObject` and `LUniverse:spawnObject`.
+---@param def table Class definition with optional extends, defaults, methods, properties, constructor, and tags.
+lurek.ecs.defineClass = function(name, def) end
+
+--- Removes a live ECS object from the global object registry.
+---@param id number Object id to destroy.
+---@return boolean True when an object was removed.
+lurek.ecs.destroyObject = function(id) end
+
+--- Returns metadata for a global ECS class.
+---@param name string Class name to inspect.
+---@return table Metadata table with name, extends, and tags; nil when unknown.
+lurek.ecs.getClass = function(name) end
+
+--- Returns a live ECS object table by object id.
+---@param id number Object id returned in the object's `__id` field.
+---@return table Object table, or nil when not found.
+lurek.ecs.getObject = function(id) end
+
+---@param this any
+---@param name any
+lurek.ecs.getProperty = function(this, name) end
+
+--- Returns whether a global ECS class name is defined.
+---@param name string Class name to check.
+---@return boolean True when the class exists.
+lurek.ecs.hasClass = function(name) end
+
+--- Returns whether a live ECS object id exists.
+---@param id number Object id to check.
+---@return boolean True when the object id is live.
+lurek.ecs.hasObject = function(id) end
+
+---@param this any
+---@param candidate any
+lurek.ecs.isA = function(this, candidate) end
+
+--- Creates a Lua table object from a registered ECS class.
+---@param className string Registered class name.
+---@param props? table Optional property overrides.
+---@return table Object table with type, typeOf, isA, getProperty, and setProperty methods.
+lurek.ecs.newObject = function(className, props) end
+
 --- Creates a relationship manager for tracking numeric values and named levels between entity pairs.
 ---@return LRelationshipManager New relationship manager handle owned by `lurek.ecs`.
 lurek.ecs.newRelationshipManager = function() end
@@ -12121,6 +12190,22 @@ lurek.ecs.newRelationshipManager = function() end
 --- Creates an empty ECS universe for entity, component, system, and relationship management.
 ---@return LUniverse New universe handle.
 lurek.ecs.newUniverse = function() end
+
+--- Returns all live ECS object ids in ascending order.
+---@return number[] Object ids.
+lurek.ecs.objectIds = function() end
+
+---@param this any
+---@param name any
+---@param value any
+lurek.ecs.setProperty = function(this, name, value) end
+
+---@param this any
+lurek.ecs.type = function(this) end
+
+---@param this any
+---@param candidate any
+lurek.ecs.typeOf = function(this, candidate) end
 
 --- Appends a built-in post-effect by type name to this image effect chain.
 ---@param name string Built-in effect type name.
@@ -22558,6 +22643,51 @@ function LDebounce:trigger() end
 ---@return boolean True if the debounce fired this frame.
 function LDebounce:update(dt) end
 
+--- Add a card payload to the bottom of the deck's draw pile.
+---@param card any Card payload stored by the deck.
+---@return number Stable card id for later discard or inspection.
+function LDeck:add(card) end
+
+--- Return the number of cards left in the draw pile.
+---@return number Remaining draw-pile count.
+function LDeck:count() end
+
+--- Move a card into the discard pile by card table or stable id.
+---@param card any Card table returned by the deck, or a stable card id.
+---@return boolean True when the card entered the discard pile.
+function LDeck:discard(card) end
+
+--- Return the number of cards in the discard pile.
+---@return number Discard pile count.
+function LDeck:discardCount() end
+
+--- Draw one or more cards from the top of the draw pile.
+---@param count? number Number of cards to draw; default `1`.
+---@return any Single card when count is omitted or `1`.
+---@return table Array of cards when count is greater than `1`.
+function LDeck:draw(count) end
+
+--- Return true when no cards remain in the draw pile.
+---@return boolean Whether the deck has no drawable cards.
+function LDeck:isEmpty() end
+
+--- Inspect one or more cards from the top without removing them.
+---@param count? number Number of cards to inspect; default `1`.
+---@return any Single card when count is omitted or `1`.
+---@return table Array of cards when count is greater than `1`.
+function LDeck:peek(count) end
+
+--- Restore the draw pile to original insertion order and clear discard.
+function LDeck:reset() end
+
+--- Shuffle the current draw pile with a deterministic optional seed.
+---@param seed? number Optional shuffle seed; omitted uses `1`.
+function LDeck:shuffle(seed) end
+
+--- Return the current draw pile as an array without modifying it.
+---@return table Array of card payloads in draw order.
+function LDeck:toArray() end
+
 --- Remove all listeners subscribed to a specific event name.
 ---@param event string The event name whose listeners will be removed.
 function LEventBus:clear(event) end
@@ -23415,6 +23545,11 @@ lurek.patterns.newCommandStack = function(maxSize) end
 ---@param wait number Seconds of inactivity before firing.
 ---@return LDebounce A new debounce instance.
 lurek.patterns.newDebounce = function(wait) end
+
+--- Create a reusable deck/card collection with shuffle, draw, discard, and reset operations.
+---@param cards? table Optional array of initial card payloads.
+---@return LDeck A new deck instance.
+lurek.patterns.newDeck = function(cards) end
 
 --- Create a new publish/subscribe event bus for decoupled communication between game systems.
 ---@param name? string Optional name for debugging.
@@ -28106,6 +28241,11 @@ function LSceneObjectContainer:add(obj) end
 --- Remove all objects from the container.
 function LSceneObjectContainer:clear() end
 
+--- Define an object group and return its 0-based bit index.
+---@param name string Group name to define.
+---@return number Bit index from 0 to 15.
+function LSceneObjectContainer:defineGroup(name) end
+
 --- Call draw() on all objects that have a draw method, sorted by layer.
 function LSceneObjectContainer:draw() end
 
@@ -28117,6 +28257,11 @@ function LSceneObjectContainer:getByLayer(n) end
 --- Get the number of objects currently in the container.
 function LSceneObjectContainer:getCount() end
 
+--- Return the bit index assigned to a group name.
+---@param name string Group name to inspect.
+---@return number Bit index, or nil when undefined.
+function LSceneObjectContainer:getGroupBit(name) end
+
 --- Get all objects as an array (layer-sorted).
 ---@return table Sequential table containing current objects.
 function LSceneObjectContainer:getObjects() end
@@ -28126,9 +28271,26 @@ function LSceneObjectContainer:getObjects() end
 ---@return boolean True when the exact object exists in the container.
 function LSceneObjectContainer:has(obj) end
 
+--- Return whether one object group is enabled for one pass.
+---@param group any Group name or 0-based bit index.
+---@param pass string Pass name.
+---@return boolean True when the group is enabled for that pass.
+function LSceneObjectContainer:isGroupEnabled(group, pass) end
+
+--- Call process_physics(dt) or physics(dt) on all physics-pass-enabled objects.
+---@param dt number Physics delta time in seconds.
+function LSceneObjectContainer:processPhysics(dt) end
+
 --- Remove an object from the container (identity comparison).
 ---@param obj table Object table reference to remove.
 function LSceneObjectContainer:remove(obj) end
+
+--- Enable or disable one object group for one pass.
+---@param group any Group name or 0-based bit index.
+---@param pass string Pass name: update, physics/process_physics, or draw.
+---@param enabled boolean True to include the group in the pass.
+---@return boolean True when the group and pass were accepted.
+function LSceneObjectContainer:setGroupEnabled(group, pass, enabled) end
 
 --- Gets the Lua-visible type name of this userdata.
 ---@return string The literal `"LSceneObjectContainer"`.
@@ -28263,6 +28425,11 @@ lurek.scene.isPreloaded = function(name) end
 ---@return boolean True when enabled, false when frozen or target not found.
 lurek.scene.isProcessEnabled = function(target) end
 
+--- Returns whether the selected scene is globally active.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when the scene is active; false when inactive or target not found.
+lurek.scene.isSceneActive = function(target) end
+
 --- Returns true if a scene transition animation is currently playing. Use this to block input or skip certain logic during transitions.
 ---@return boolean True while a transition animation is in progress.
 lurek.scene.isTransitioning = function() end
@@ -28342,16 +28509,26 @@ lurek.scene.pushOverlay = function(scene, transition, duration, easing, params) 
 ---@param params? table Arbitrary data forwarded to the scene's `enter(self, params)` callback.
 lurek.scene.pushPreloaded = function(name, transition, duration, easing, params) end
 
+--- Push a registered scene by name, honoring its persistence policy.
+---@param name string Registered scene name to push.
+---@param transition? string Transition type name. Defaults to `"none"`.
+---@param duration? number Transition animation duration in seconds. Defaults to 0.
+---@param easing? string Easing curve name. Defaults to `"linear"`.
+---@param params? table Arbitrary data forwarded to the scene's `enter(self, params)` callback.
+---@return boolean True when the scene existed and was pushed.
+lurek.scene.pushRegistered = function(name, transition, duration, easing, params) end
+
 --- Queue a transition to play automatically after the current one finishes. Multiple queued transitions execute in FIFO order, enabling multi-step cinematic sequences (e.g. fade-out then slide-in).
 ---@param transition string Transition type name (e.g. `"fade"`, `"iris"`, `"wipe"`).
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing curve name. Defaults to `"linear"`.
 lurek.scene.queueTransition = function(transition, duration, easing) end
 
---- Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
+--- Register a scene table or scene factory under a unique name for later retrieval, pushRegistered navigation, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
 ---@param name string Unique name to associate with this scene (e.g. `"mainMenu"`, `"gameplay"`).
----@param scene table The scene table to register.
-lurek.scene.registerScene = function(name, scene) end
+---@param sceneOrFactory any Scene table or zero-argument factory function returning a scene table.
+---@param opts? table Optional registration settings; `persistence` accepts `"freeze"` or `"reset"`.
+lurek.scene.registerScene = function(name, sceneOrFactory, opts) end
 
 --- Remove a key and its associated value from the shared scene data map. No-op if the key does not exist.
 ---@param key string The data key to remove.
@@ -28394,6 +28571,12 @@ lurek.scene.setPhysicsEnabled = function(target, enabled) end
 ---@param enabled boolean True to run process, false to freeze it.
 ---@return boolean True when target scene was resolved and updated.
 lurek.scene.setProcessEnabled = function(target, enabled) end
+
+--- Enable or disable all update, process, physics, late, and render callbacks for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to activate the scene, false to fully suspend it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setSceneActive = function(target, enabled) end
 
 --- Enable or disable `update(self, dt)` execution for a selected scene.
 ---@param target? any nil/current, registered scene name, or 1-based stack index.

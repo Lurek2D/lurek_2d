@@ -542,13 +542,13 @@ local function make_minimap_subject()
 end
 
 local function make_overlay_subject()
+    if lurek.overlay ~= nil and type(lurek.overlay.new) == "function" then
+        return lurek.overlay.new(64, 64)
+    end
     if lurek.effect ~= nil then
         if type(lurek.effect.newOverlay) == "function" then
             return lurek.effect.newOverlay(64, 64)
         end
-    end
-    if lurek.effect ~= nil and type(lurek.effect.newOverlay) == "function" then
-        return lurek.effect.newOverlay(64, 64)
     end
     error("No usable overlay constructor available for contract test")
 end

@@ -142,6 +142,99 @@ describe("object pool", function()
     end)
 end)
 
+-- @describe deck
+describe("deck", function()
+    -- @covers lurek.patterns.newDeck
+    it("newDeck accepts initial cards", function()
+        local deck = lurek.patterns.newDeck({ { suit = "spades" }, { suit = "hearts" } })
+        expect_equal(2, deck:count())
+    end)
+
+    -- @covers LDeck:add
+    it("add appends a card and returns a stable id", function()
+        local deck = lurek.patterns.newDeck()
+        local id = deck:add({ rank = "A" })
+        expect_type("number", id)
+        expect_equal(1, deck:count())
+    end)
+
+    -- @covers LDeck:shuffle
+    it("shuffle is deterministic with a seed", function()
+        local a = lurek.patterns.newDeck({ { id = 1 }, { id = 2 }, { id = 3 }, { id = 4 } })
+        local b = lurek.patterns.newDeck({ { id = 1 }, { id = 2 }, { id = 3 }, { id = 4 } })
+        a:shuffle(77)
+        b:shuffle(77)
+        local aa = a:toArray()
+        local bb = b:toArray()
+        expect_equal(aa[1].id, bb[1].id)
+        expect_equal(aa[2].id, bb[2].id)
+    end)
+
+    -- @covers LDeck:draw
+    it("draw removes cards from the draw pile", function()
+        local deck = lurek.patterns.newDeck({ { id = "a" }, { id = "b" } })
+        local card = deck:draw()
+        expect_equal("a", card.id)
+        expect_equal(1, deck:count())
+    end)
+
+    -- @covers LDeck:peek
+    it("peek does not remove cards", function()
+        local deck = lurek.patterns.newDeck({ { id = "a" }, { id = "b" } })
+        local card = deck:peek()
+        expect_equal("a", card.id)
+        expect_equal(2, deck:count())
+    end)
+
+    -- @covers LDeck:discard
+    it("discard moves a drawn card to discard pile", function()
+        local deck = lurek.patterns.newDeck({ { id = "a" }, { id = "b" } })
+        local card = deck:draw()
+        expect_true(deck:discard(card))
+        expect_equal(1, deck:discardCount())
+    end)
+
+    -- @covers LDeck:reset
+    it("reset restores original draw order", function()
+        local deck = lurek.patterns.newDeck({ { id = "a" }, { id = "b" } })
+        local card = deck:draw()
+        deck:discard(card)
+        deck:reset()
+        expect_equal(2, deck:count())
+        expect_equal("a", deck:peek().id)
+    end)
+
+    -- @covers LDeck:count
+    it("count reports draw pile size", function()
+        local deck = lurek.patterns.newDeck({ { id = 1 }, { id = 2 } })
+        expect_equal(2, deck:count())
+    end)
+
+    -- @covers LDeck:discardCount
+    it("discardCount reports discarded cards", function()
+        local deck = lurek.patterns.newDeck({ { id = 1 } })
+        local card = deck:draw()
+        deck:discard(card)
+        expect_equal(1, deck:discardCount())
+    end)
+
+    -- @covers LDeck:isEmpty
+    it("isEmpty reports whether the draw pile is empty", function()
+        local deck = lurek.patterns.newDeck({ { id = 1 } })
+        expect_false(deck:isEmpty())
+        deck:draw()
+        expect_true(deck:isEmpty())
+    end)
+
+    -- @covers LDeck:toArray
+    it("toArray returns current draw pile order", function()
+        local deck = lurek.patterns.newDeck({ { id = "a" }, { id = "b" } })
+        local cards = deck:toArray()
+        expect_equal(2, #cards)
+        expect_equal("a", cards[1].id)
+    end)
+end)
+
 -- @describe command stack
 describe("command stack", function()
     -- @covers lurek.patterns.newCommandStack

@@ -4,6 +4,8 @@
 
 - Manages an Entity-Component-System database with generational IDs.
 - Supports hierarchies, relationships, phase-aware systems, and snapshots.
+- Provides a global Lua class/object registry for richer object-oriented gameplay models when plain tables are not enough.
+- Bridges class-backed objects into `LUniverse` entities without replacing component storage or query APIs.
 
 ## Summary
 
@@ -15,6 +17,9 @@
 - Hierarchy and relationship support matter because game worlds are rarely flat; parent-child links, semantic grouping, and layered ownership all need to remain queryable as the world grows.
 - The module also improves feature isolation, because several systems can share the same entities without collapsing their state into one oversized object model.
 - That makes the ECS world a stable meeting point for subsystems that need different views of the same population.
+- The class/object registry is intentionally part of `ecs` because it is foundational object identity and type metadata, not a reusable gameplay pattern. It gives Lua developers inheritance, mixin-style multi-inheritance, defaults, methods, properties, constructors, tags, and a live object registry inside the same VM.
+- Objects created through `lurek.ecs.newObject` remain ordinary Lua tables, but they carry metatable-backed class behavior plus helper methods such as `type`, `typeOf`, `isA`, `getProperty`, and `setProperty`.
+- `LUniverse:spawnObject` and `LUniverse:attachObject` are bridge APIs: they attach an object table to an entity as data so ECS systems can still query and compose it with ordinary components.
 - The model is especially strong when many systems need partial views of the same population without inheriting each other's update logic.
 - That shared world model keeps those views aligned.
 - The ECS world becomes a shared substrate for other systems, but `ecs` owns its organization.

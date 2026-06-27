@@ -35,6 +35,13 @@ function scene_objects.new()
         _objects       = {},   -- array: insertion order
         _dirty         = false, -- true when draw cache needs rebuild
         _draw_cache    = {},   -- sorted copy rebuilt on demand
+        _group_bits    = {},   -- group name -> 0-based bit index
+        _group_names   = {},   -- 1-based list of group names by bit+1
+        _pass_enabled  = {
+            update = {},
+            physics = {},
+            draw = {},
+        },
     }, ObjectContainer)
 end
 
@@ -54,6 +61,54 @@ local function _rebuild_cache(self)
     self._dirty = false
 end
 
+local function _normalize_pass(pass)
+    if pass == "process_physics" then
+        return "physics"
+    end
+    if pass == "process" then
+        return "update"
+    end
+    return pass or "update"
+end
+
+local function _bit_mask(bit)
+    return 2 ^ bit
+end
+
+local function _object_mask(self, obj)
+    local mask = obj.groupMask or obj.mask or 0
+    if type(obj.group) == "string" then
+        local bit = self._group_bits[obj.group]
+        if bit ~= nil then
+            mask = mask + _bit_mask(bit)
+        end
+    end
+    if type(obj.groups) == "table" then
+        for _, name in ipairs(obj.groups) do
+            local bit = self._group_bits[name]
+            if bit ~= nil then
+                mask = mask + _bit_mask(bit)
+            end
+        end
+    end
+    return mask
+end
+
+local function _enabled_for_pass(self, obj, pass)
+    local mask = _object_mask(self, obj)
+    if mask == 0 then
+        return true
+    end
+    local enabled = self._pass_enabled[_normalize_pass(pass)] or {}
+    for bit = 0, 15 do
+        local bit_mask = _bit_mask(bit)
+        if mask % (bit_mask * 2) >= bit_mask and enabled[bit] == false then
+            return false
+        end
+    end
+    return true
+end
+
 -- ── Public API ────────────────────────────────────────────────────────────────
 
 --- Add an object to the container.
@@ -62,6 +117,61 @@ end
 function ObjectContainer:add(obj)
     self._objects[#self._objects + 1] = obj
     self._dirty = true
+end
+
+--- Define an object group and return its 0-based bit index.
+--- @tparam string name Group name.
+--- @treturn number Bit index from 0 to 15.
+function ObjectContainer:defineGroup(name)
+    local existing = self._group_bits[name]
+    if existing ~= nil then
+        return existing
+    end
+    local bit = #self._group_names
+    if bit >= 16 then
+        error("scene object container supports at most 16 groups")
+    end
+    self._group_names[bit + 1] = name
+    self._group_bits[name] = bit
+    self._pass_enabled.update[bit] = true
+    self._pass_enabled.physics[bit] = true
+    self._pass_enabled.draw[bit] = true
+    return bit
+end
+
+--- Return the bit index assigned to a group name, or nil when undefined.
+--- @tparam string name Group name.
+--- @treturn number|nil Bit index.
+function ObjectContainer:getGroupBit(name)
+    return self._group_bits[name]
+end
+
+--- Enable or disable one group for one pass.
+--- @tparam string|number group Group name or 0-based group bit.
+--- @tparam string pass Pass name: update, physics/process_physics, or draw.
+--- @tparam boolean enabled Whether the pass should include the group.
+--- @treturn boolean True when the group and pass were accepted.
+function ObjectContainer:setGroupEnabled(group, pass, enabled)
+    local bit = type(group) == "number" and group or self._group_bits[group]
+    pass = _normalize_pass(pass)
+    if bit == nil or bit < 0 or bit > 15 or self._pass_enabled[pass] == nil then
+        return false
+    end
+    self._pass_enabled[pass][bit] = not not enabled
+    return true
+end
+
+--- Return whether one group is enabled for one pass.
+--- @tparam string|number group Group name or 0-based group bit.
+--- @tparam string pass Pass name.
+--- @treturn boolean Enabled state.
+function ObjectContainer:isGroupEnabled(group, pass)
+    local bit = type(group) == "number" and group or self._group_bits[group]
+    pass = _normalize_pass(pass)
+    if bit == nil or self._pass_enabled[pass] == nil then
+        return false
+    end
+    return self._pass_enabled[pass][bit] ~= false
 end
 
 --- Remove an object from the container (identity comparison).
@@ -92,8 +202,25 @@ function ObjectContainer:update(dt)
     local list = self._objects
     for i = 1, #list do
         local obj = list[i]
-        if type(obj.update) == "function" then
+        if _enabled_for_pass(self, obj, "update") and type(obj.update) == "function" then
             obj:update(dt)
+        end
+    end
+end
+
+--- Call `obj:process_physics(dt)` on objects enabled for the physics pass.
+-- Falls back to `obj:physics(dt)` when present.
+--- @tparam number dt Delta time in seconds.
+function ObjectContainer:processPhysics(dt)
+    local list = self._objects
+    for i = 1, #list do
+        local obj = list[i]
+        if _enabled_for_pass(self, obj, "physics") then
+            if type(obj.process_physics) == "function" then
+                obj:process_physics(dt)
+            elseif type(obj.physics) == "function" then
+                obj:physics(dt)
+            end
         end
     end
 end
@@ -107,7 +234,7 @@ function ObjectContainer:draw()
     local cache = self._draw_cache
     for i = 1, #cache do
         local obj = cache[i]
-        if type(obj.draw) == "function" then
+        if _enabled_for_pass(self, obj, "draw") and type(obj.draw) == "function" then
             obj:draw()
         end
     end

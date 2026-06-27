@@ -316,8 +316,14 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 
 ## Architecture Links
 
-- Intentionally empty.
+- `docs/architecture/module-scope-boundaries.md`
+- `docs/architecture/effects-particles-overlay-plan.md`
 
 ## Notes
 
-- No additional module-specific notes.
+- Ownership boundary:
+  `overlay` owns scene-wide screen presentation policy and temporal orchestration: weather, ambient tint, flash, fade, shake, lightning, accessibility, layer ordering, and diagnostics. It may request post-fx work through explicit descriptors, but it must not own shader catalogs, post-fx stack ordering, or capture lifecycle; those belong to `effect` and `render`.
+- Render boundary:
+  Direct overlay commands are suitable for simple color/shape layers. Shader-backed treatments such as heat haze, water distortion, film grain, cloud shadows, CRT, pixelate, upscale/downscale, or full-frame grading should route through post-fx descriptors and renderer execution.
+- World boundary:
+  Overlay is screen-space after the world. World-space effects such as sparks behind an isometric wall, dust at a tile collision, or object-local trails belong to `particle`/`scene`/`tilemap` depth ordering, not overlay.

@@ -6,6 +6,8 @@ use lurek2d::agent::{
 use lurek2d::runtime::config::Config;
 use serde_json::json;
 use std::collections::HashMap;
+use std::io::{Read, Write};
+use std::net::TcpListener;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
@@ -129,6 +131,63 @@ fn agent_client_rejects_queue_overflow() {
         .expect_err("third request should be rejected by the bounded queue");
 
     assert!(matches!(error, AgentError::QueueFull(_)));
+}
+
+#[test]
+fn local_http_parses_ollama_generate_url() {
+    let parsed = lurek2d::agent::local_http::parse_http_url("http://127.0.0.1:11434/api/generate")
+        .expect("local Ollama URL should parse");
+
+    assert_eq!("http", parsed.scheme);
+    assert_eq!("127.0.0.1", parsed.host);
+    assert_eq!(11434, parsed.port);
+    assert_eq!("/api/generate", parsed.path);
+}
+
+#[test]
+fn local_http_rejects_https_urls() {
+    let error = lurek2d::agent::local_http::parse_http_url("https://127.0.0.1:11434/api/generate")
+        .expect_err("HTTPS should be rejected by the runtime agent client");
+
+    assert!(error.contains(lurek2d::agent::local_http::LOCAL_HTTP_ONLY_MESSAGE));
+}
+
+#[test]
+fn http_agent_transport_classifies_non_200_ollama_response() {
+    let listener = TcpListener::bind("127.0.0.1:0").expect("test listener should bind");
+    let addr = listener.local_addr().expect("listener should have address");
+    let server = std::thread::spawn(move || {
+        let (mut stream, _) = listener.accept().expect("client should connect");
+        let mut request = [0u8; 2048];
+        let _ = stream.read(&mut request);
+        let body = br#"{"error":"model not found"}"#;
+        let response = format!(
+            "HTTP/1.1 404 Not Found\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+            body.len()
+        );
+        stream
+            .write_all(response.as_bytes())
+            .expect("headers should write");
+        stream.write_all(body).expect("body should write");
+    });
+
+    let transport = lurek2d::agent::HttpAgentTransport;
+    let error = transport
+        .execute(&AgentRequest {
+            url: format!("http://{}/api/generate", addr),
+            model: "missing".to_string(),
+            prompt: "hello".to_string(),
+            system: String::new(),
+            format: AgentResponseFormat::Text,
+            options: serde_json::Value::Null,
+            callback_id: 1,
+            max_retries: 0,
+            timeout_secs: 2,
+        })
+        .expect_err("404 Ollama response should classify as an agent error");
+
+    server.join().expect("server thread should finish");
+    assert!(matches!(error, AgentError::Model(message) if message.contains("model not found")));
 }
 
 #[test]

@@ -8,6 +8,7 @@
 - Implements behavior trees, finite state machines, event buses, blackboards, and command stacks.
 - Controls execution cadences via throttles, debounces, and reusable object pools.
 - Supports graph structures, bidirectional maps, prefix tries, factories, and service locators.
+- Includes practical game/data structures such as Deck/Card when they are reusable logic patterns rather than entity identity systems.
 
 ## General Info
 
@@ -15,7 +16,7 @@
 - Source path: `src/patterns`
 - Binding: `src/lua_api/patterns_api.rs`
 - Namespace: `lurek.patterns`
-- Lua API surface: `24` functions, `27` types, `218` methods
+- Lua API surface: `25` functions, `28` types, `228` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -33,6 +34,8 @@
 - The module also provides utility data structures that keep proving useful across domains: priority queues, ring buffers, tries, weighted selectors, bidirectional maps, graph containers, bounded collections, and pooling helpers.
 - Object reuse and bounded collections matter because several runtime systems need allocation control, limited history, or reusable queues without wanting ad hoc versions hidden inside every feature.
 - Weighted selectors, graph containers, and queue-like helpers show that `patterns` is not only about software architecture in the narrow sense. It also owns practical reusable mechanics that often sit just below game logic and tool logic but above low-level containers.
+- Deck/Card lives here rather than in `ecs` because a deck is reusable game logic: it owns draw order, shuffle determinism, discard/reset behavior, and card payload handling. It does not define object identity, inheritance, components, or world membership.
+- That boundary keeps `patterns` broad and domain-neutral while leaving object/class semantics to `ecs`.
 - The module also helps keep terminology stable across the codebase. Several features can depend on the same ideas of event dispatch, reversible actions, orchestration, and shared state instead of each inventing slightly different local vocabulary.
 - The breadth of the module is deliberate: these pieces are small enough to stay reusable, but substantial enough that reimplementing them repeatedly would fragment the rest of the engine.
 - That makes `patterns` valuable not only as a library shelf, but also as a consistency layer. Several systems can solve similar structural problems without diverging in naming, behavior, or maintenance style.
@@ -97,6 +100,14 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Peek and step helpers also belong here since they expose navigation across applied and redoable work without callbacks.
 - Open it when history semantics change; event routing, state machines, and pools live in sibling pattern modules.
 
+### deck.rs
+
+- This file owns the reusable deck/card ordering primitive exposed through `lurek.patterns`.
+- It tracks draw-pile order, discard membership, deterministic shuffling, and reset semantics.
+- Card payload storage stays in the Lua binding because cards may be any Lua value; this Rust
+- type owns only stable card ids and pile transitions so deck behavior remains deterministic.
+- Open it when card draw, discard, reset, or shuffle policy changes.
+
 ### event_bus.rs
 
 - This file owns the named event-subscription store used to route listeners without direct caller-to-callee wiring.
@@ -145,6 +156,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `behavior_tree.rs`, `blackboard.rs`, and `state_machine.rs` cover decision and state orchestration primitives.
 - `event_bus.rs`, `observer.rs`, `mediator.rs`, and `service_locator.rs` cover decoupled communication surfaces.
 - `graph.rs`, `trie.rs`, `ring.rs`, and `weighted_random.rs` cover storage and selection helpers for gameplay data.
+- `deck.rs` covers reusable deck/card ordering and draw/discard workflows for card-like game logic.
 
 ### object_pool.rs
 
@@ -239,6 +251,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.patterns.newBlackboard(name?) -> LBlackboard`: Create a new shared key-value blackboard supporting reactive watchers for game logic variables.
 - `lurek.patterns.newCommandStack(maxSize?) -> LCommandStack`: Create a new undo/redo command stack for recording and reversing player or editor actions.
 - `lurek.patterns.newDebounce(wait) -> LDebounce`: Create a new debounce that delays firing until input stops for a specified wait period.
+- `lurek.patterns.newDeck(cards?) -> LDeck`: Create a reusable deck/card collection with shuffle, draw, discard, and reset operations.
 - `lurek.patterns.newEventBus(name?) -> LEventBus`: Create a new publish/subscribe event bus for decoupled communication between game systems.
 - `lurek.patterns.newFactory() -> LFactory`: Create a new factory for producing typed game objects from registered constructor functions.
 - `lurek.patterns.newFunnel(window, maxEntries?, name?) -> LFunnel`: Create a new batching funnel that collects events over a time window and flushes them together.
@@ -361,6 +374,27 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LDebounce:onFire(f) -> nil`: Set the callback function to invoke when the debounce fires after the wait period.
 - `LDebounce:trigger() -> nil`: Signal input activity. Resets the wait timer so the debounce will fire after the full wait period of inactivity.
 - `LDebounce:update(dt) -> boolean`: Advance the debounce timer. If the wait period elapsed since last trigger, fires the callback and returns true.
+
+#### LDeck Type
+
+- Lua-facing reusable deck that stores arbitrary card payloads and delegates pile ordering to Rust.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LDeck:add(card) -> integer`: Add a card payload to the bottom of the deck's draw pile.
+- `LDeck:count() -> integer`: Return the number of cards left in the draw pile.
+- `LDeck:discard(card) -> boolean`: Move a card into the discard pile by card table or stable id.
+- `LDeck:discardCount() -> integer`: Return the number of cards in the discard pile.
+- `LDeck:draw(count?) -> any`: Draw one or more cards from the top of the draw pile.
+- `LDeck:isEmpty() -> boolean`: Return true when no cards remain in the draw pile.
+- `LDeck:peek(count?) -> any`: Inspect one or more cards from the top without removing them.
+- `LDeck:reset() -> nil`: Restore the draw pile to original insertion order and clear discard.
+- `LDeck:shuffle(seed?) -> nil`: Shuffle the current draw pile with a deterministic optional seed.
+- `LDeck:toArray() -> table`: Return the current draw pile as an array without modifying it.
 
 #### LEventBus Type
 

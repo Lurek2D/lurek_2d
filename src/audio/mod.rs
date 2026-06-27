@@ -36,8 +36,6 @@ pub use crate::dsp::OfflineEffect;
 pub use crate::dsp::{
     AtomicParam, DynamicEffectSource, EffectParams, EffectType, SharedEffectGraph,
 };
-pub use crate::midi::{MidiPlayer, MidiState};
-
 /// Musical beat clock: BPM tracking, tap-tempo, beat scheduling, quantisation.
 pub mod beat_clock;
 pub use beat_clock::BeatClock;

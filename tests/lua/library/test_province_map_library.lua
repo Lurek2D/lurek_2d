@@ -209,14 +209,14 @@ end)
 
 -- @describe EventBus
 describe("EventBus", function()
-    -- @library LNetworkRuntime:poll
+    -- @library lurek.network polling
     it("new starts empty", function()
         local bus = pm.newEventBus()
         expect_equal(bus:isEmpty(), true)
         expect_equal(bus:poll(), nil)
     end)
 
-    -- @library LNetworkRuntime:poll
+    -- @library lurek.network polling
     it("emit and poll events", function()
         local bus = pm.newEventBus()
         bus:emitMapLoaded()

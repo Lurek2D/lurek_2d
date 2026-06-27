@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-27T10:41:51.519984+00:00",
+  "generated_at": "2026-06-27T12:18:07.311011+00:00",
   "summary": {
     "rust": {
-      "total": 8852,
-      "covered": 8847,
+      "total": 8886,
+      "covered": 8881,
       "missing": 5,
       "pct": 99.9
     },
@@ -14,8 +14,8 @@
       "pct": 100.0
     },
     "total": {
-      "total": 9030,
-      "covered": 9025,
+      "total": 9064,
+      "covered": 9059,
       "missing": 5,
       "pct": 99.9
     }
@@ -19070,6 +19070,159 @@
     {
       "source": "rust",
       "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 11,
+      "kind": "struct",
+      "name": "ClassMeta",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 22,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 33,
+      "kind": "struct",
+      "name": "ObjectModel",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 41,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 50,
+      "kind": "fn",
+      "name": "define_class",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 55,
+      "kind": "fn",
+      "name": "has_class",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 60,
+      "kind": "fn",
+      "name": "get_class",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 65,
+      "kind": "fn",
+      "name": "class_names",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 72,
+      "kind": "fn",
+      "name": "clear_classes",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 77,
+      "kind": "fn",
+      "name": "register_object",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 85,
+      "kind": "fn",
+      "name": "has_object",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 90,
+      "kind": "fn",
+      "name": "object_class",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 95,
+      "kind": "fn",
+      "name": "object_ids",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 102,
+      "kind": "fn",
+      "name": "destroy_object",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 107,
+      "kind": "fn",
+      "name": "clear_objects",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 115,
+      "kind": "fn",
+      "name": "linearization",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/object_model.rs",
+      "line": 145,
+      "kind": "fn",
+      "name": "class_is_a",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
       "file": "src/ecs/query_view.rs",
       "line": 10,
       "kind": "struct",
@@ -34461,7 +34614,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ecs_api.rs",
-      "line": 12,
+      "line": 25,
       "kind": "struct",
       "name": "LuaUniverse",
       "has_doc": true
@@ -34470,7 +34623,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ecs_api.rs",
-      "line": 23,
+      "line": 38,
       "kind": "struct",
       "name": "LuaRelationshipManager",
       "has_doc": true
@@ -34479,7 +34632,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ecs_api.rs",
-      "line": 30,
+      "line": 45,
       "kind": "struct",
       "name": "LuaQueryView",
       "has_doc": true
@@ -34488,7 +34641,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ecs_api.rs",
-      "line": 976,
+      "line": 1248,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -35478,7 +35631,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/patterns_api.rs",
-      "line": 3019,
+      "line": 3159,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -36054,7 +36207,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 53,
+      "line": 73,
       "kind": "struct",
       "name": "LuaDepthSorter",
       "has_doc": true
@@ -36063,7 +36216,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 59,
+      "line": 79,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -36072,7 +36225,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 283,
+      "line": 357,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -49728,6 +49881,114 @@
       "line": 118,
       "kind": "fn",
       "name": "end_batch",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 9,
+      "kind": "struct",
+      "name": "Deck",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 18,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 28,
+      "kind": "fn",
+      "name": "add",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 37,
+      "kind": "fn",
+      "name": "shuffle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 49,
+      "kind": "fn",
+      "name": "draw",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 55,
+      "kind": "fn",
+      "name": "peek",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 60,
+      "kind": "fn",
+      "name": "discard",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 70,
+      "kind": "fn",
+      "name": "reset",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 76,
+      "kind": "fn",
+      "name": "draw_ids",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 81,
+      "kind": "fn",
+      "name": "count",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 86,
+      "kind": "fn",
+      "name": "discard_count",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "patterns",
+      "file": "src/patterns/deck.rs",
+      "line": 91,
+      "kind": "fn",
+      "name": "is_empty",
       "has_doc": true
     },
     {
@@ -66114,7 +66375,16 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 20,
+      "line": 21,
+      "kind": "enum",
+      "name": "ScenePersistence",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "scene",
+      "file": "src/scene/stack.rs",
+      "line": 29,
       "kind": "struct",
       "name": "SceneStack",
       "has_doc": true
@@ -66123,7 +66393,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 48,
+      "line": 63,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -66132,7 +66402,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 66,
+      "line": 84,
       "kind": "fn",
       "name": "next_scene_id",
       "has_doc": true
@@ -66141,7 +66411,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 122,
+      "line": 159,
       "kind": "fn",
       "name": "push",
       "has_doc": true
@@ -66150,7 +66420,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 138,
+      "line": 176,
       "kind": "fn",
       "name": "pop",
       "has_doc": true
@@ -66159,7 +66429,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 157,
+      "line": 198,
       "kind": "fn",
       "name": "switch_to",
       "has_doc": true
@@ -66168,7 +66438,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 180,
+      "line": 222,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -66177,7 +66447,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 193,
+      "line": 237,
       "kind": "fn",
       "name": "pop_to",
       "has_doc": true
@@ -66186,7 +66456,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 197,
+      "line": 241,
       "kind": "fn",
       "name": "pop_until",
       "has_doc": true
@@ -66195,7 +66465,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 212,
+      "line": 256,
       "kind": "fn",
       "name": "get_stack_size",
       "has_doc": true
@@ -66204,7 +66474,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 216,
+      "line": 260,
       "kind": "fn",
       "name": "is_empty",
       "has_doc": true
@@ -66213,7 +66483,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 220,
+      "line": 264,
       "kind": "fn",
       "name": "get_current",
       "has_doc": true
@@ -66222,7 +66492,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 224,
+      "line": 268,
       "kind": "fn",
       "name": "get_all",
       "has_doc": true
@@ -66231,7 +66501,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 228,
+      "line": 272,
       "kind": "fn",
       "name": "is_transitioning",
       "has_doc": true
@@ -66240,7 +66510,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 232,
+      "line": 276,
       "kind": "fn",
       "name": "get_transition_progress",
       "has_doc": true
@@ -66249,7 +66519,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 236,
+      "line": 280,
       "kind": "fn",
       "name": "get_transition_progress_eased",
       "has_doc": true
@@ -66258,7 +66528,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 240,
+      "line": 284,
       "kind": "fn",
       "name": "queue_transition",
       "has_doc": true
@@ -66267,7 +66537,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 249,
+      "line": 293,
       "kind": "fn",
       "name": "queued_transition_count",
       "has_doc": true
@@ -66276,7 +66546,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 253,
+      "line": 297,
       "kind": "fn",
       "name": "clear_transition_queue",
       "has_doc": true
@@ -66285,7 +66555,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 257,
+      "line": 301,
       "kind": "fn",
       "name": "update_transition",
       "has_doc": true
@@ -66294,7 +66564,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 271,
+      "line": 316,
       "kind": "fn",
       "name": "push_overlay",
       "has_doc": true
@@ -66303,7 +66573,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 288,
+      "line": 334,
       "kind": "fn",
       "name": "is_overlay",
       "has_doc": true
@@ -66312,7 +66582,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 292,
+      "line": 338,
       "kind": "fn",
       "name": "get_active_ids",
       "has_doc": true
@@ -66321,7 +66591,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 305,
+      "line": 351,
       "kind": "fn",
       "name": "get_render_ids",
       "has_doc": true
@@ -66330,7 +66600,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 312,
+      "line": 363,
       "kind": "fn",
       "name": "set_scene_layer",
       "has_doc": true
@@ -66339,7 +66609,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 316,
+      "line": 367,
       "kind": "fn",
       "name": "get_scene_layer",
       "has_doc": true
@@ -66348,7 +66618,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 320,
+      "line": 371,
       "kind": "fn",
       "name": "get_active_ids_ordered_by_layer",
       "has_doc": true
@@ -66357,7 +66627,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 328,
+      "line": 379,
       "kind": "fn",
       "name": "get_render_ids_ordered_by_layer",
       "has_doc": true
@@ -66366,7 +66636,25 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 336,
+      "line": 387,
+      "kind": "fn",
+      "name": "set_scene_active",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "scene",
+      "file": "src/scene/stack.rs",
+      "line": 392,
+      "kind": "fn",
+      "name": "is_scene_active",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "scene",
+      "file": "src/scene/stack.rs",
+      "line": 397,
       "kind": "fn",
       "name": "set_process_enabled",
       "has_doc": true
@@ -66375,7 +66663,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 341,
+      "line": 402,
       "kind": "fn",
       "name": "is_process_enabled",
       "has_doc": true
@@ -66384,7 +66672,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 346,
+      "line": 407,
       "kind": "fn",
       "name": "set_physics_enabled",
       "has_doc": true
@@ -66393,7 +66681,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 351,
+      "line": 412,
       "kind": "fn",
       "name": "is_physics_enabled",
       "has_doc": true
@@ -66402,7 +66690,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 356,
+      "line": 417,
       "kind": "fn",
       "name": "set_late_enabled",
       "has_doc": true
@@ -66411,7 +66699,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 361,
+      "line": 422,
       "kind": "fn",
       "name": "is_late_enabled",
       "has_doc": true
@@ -66420,7 +66708,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 366,
+      "line": 427,
       "kind": "fn",
       "name": "set_update_enabled",
       "has_doc": true
@@ -66429,7 +66717,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 371,
+      "line": 432,
       "kind": "fn",
       "name": "is_update_enabled",
       "has_doc": true
@@ -66438,7 +66726,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 375,
+      "line": 436,
       "kind": "fn",
       "name": "register_scene",
       "has_doc": true
@@ -66447,7 +66735,25 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 379,
+      "line": 440,
+      "kind": "fn",
+      "name": "set_scene_persistence",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "scene",
+      "file": "src/scene/stack.rs",
+      "line": 445,
+      "kind": "fn",
+      "name": "get_scene_persistence",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "scene",
+      "file": "src/scene/stack.rs",
+      "line": 452,
       "kind": "fn",
       "name": "get_registered",
       "has_doc": true
@@ -66456,7 +66762,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 383,
+      "line": 456,
       "kind": "fn",
       "name": "has_registered",
       "has_doc": true
@@ -66465,7 +66771,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 387,
+      "line": 460,
       "kind": "fn",
       "name": "unregister_scene",
       "has_doc": true
@@ -66474,7 +66780,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 391,
+      "line": 466,
       "kind": "fn",
       "name": "get_registered_names",
       "has_doc": true
@@ -66483,7 +66789,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 395,
+      "line": 470,
       "kind": "fn",
       "name": "set_data",
       "has_doc": true
@@ -66492,7 +66798,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 399,
+      "line": 474,
       "kind": "fn",
       "name": "get_data",
       "has_doc": true
@@ -66501,7 +66807,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 403,
+      "line": 478,
       "kind": "fn",
       "name": "has_data",
       "has_doc": true
@@ -66510,7 +66816,7 @@
       "source": "rust",
       "module": "scene",
       "file": "src/scene/stack.rs",
-      "line": 407,
+      "line": 482,
       "kind": "fn",
       "name": "remove_data",
       "has_doc": true
@@ -81144,7 +81450,7 @@
       "source": "lua_api",
       "module": "scene_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 354,
+      "line": 436,
       "kind": "fn",
       "name": "pop",
       "has_doc": true
@@ -81153,7 +81459,7 @@
       "source": "lua_api",
       "module": "scene_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 1566,
+      "line": 1852,
       "kind": "fn",
       "name": "transitions",
       "has_doc": true

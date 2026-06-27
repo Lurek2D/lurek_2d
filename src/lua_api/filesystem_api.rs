@@ -2,7 +2,6 @@
 
 use super::SharedState;
 use crate::filesystem::watcher::FileWatcher;
-use crate::filesystem::zip_mount::ZipMount;
 use crate::filesystem::{FileData, FileHandle, GameFS};
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -168,60 +167,6 @@ impl LuaUserData for LuaFileHandle {
         });
     }
 }
-/// Lua-side handle for a mounted ZIP archive view.
-struct LuaZipMount {
-    /// ZIP mount index and virtual prefix.
-    inner: ZipMount,
-}
-/// Provides Lua methods for reading files inside a ZIP mount.
-impl LuaUserData for LuaZipMount {
-    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        // -- readFile --
-        /// Reads a file from the ZIP mount by virtual path.
-        /// @param | virtual_path | string | Path inside the mount prefix.
-        /// @return | string | Raw file bytes as a Lua string.
-        methods.add_method("readFile", |_, this, virtual_path: String| {
-            let bytes = this
-                .inner
-                .read_file(&virtual_path)
-                .map_err(LuaError::RuntimeError)?;
-            Ok(bytes)
-        });
-        // -- contains --
-        /// Returns whether a virtual path exists in the ZIP mount.
-        /// @param | virtual_path | string | Path inside the mount prefix.
-        /// @return | boolean | True when the file exists in the archive.
-        methods.add_method("contains", |_, this, virtual_path: String| {
-            Ok(this.inner.contains(&virtual_path))
-        });
-        // -- listFiles --
-        /// Returns every virtual file path in the ZIP mount.
-        /// @return | string[] | Mounted file paths.
-        methods.add_method("listFiles", |lua, this, ()| {
-            let files = this.inner.list_files();
-            let tbl = lua.create_table()?;
-            for (i, f) in files.iter().enumerate() {
-                tbl.set(i + 1, f.clone())?;
-            }
-            Ok(tbl)
-        });
-        // -- prefix --
-        /// Returns the virtual prefix used by this ZIP mount.
-        /// @return | string | Mount prefix.
-        methods.add_method("prefix", |_, this, ()| Ok(this.inner.prefix.clone()));
-        // -- type --
-        /// Returns the Lua-visible type name for this ZIP mount handle.
-        /// @return | string | The string `LZipMount`.
-        methods.add_method("type", |_, _, ()| Ok("LZipMount"));
-        // -- typeOf --
-        /// Returns whether this ZIP mount handle matches a supported type name.
-        /// @param | name | string | Type name to compare against `LZipMount` and `Object`.
-        /// @return | boolean | True when the supplied type name matches this handle.
-        methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LZipMount" || name == "LObject")
-        });
-    }
-}
 /// Registers `lurek.filesystem` file, directory, watcher, mount, async, and path helpers.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -232,9 +177,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LZipMount | New ZIP mount handle.
     tbl.set(
         "mountZip",
-        lua.create_function(|lua, (archive_path, prefix): (String, String)| {
-            let mount = ZipMount::new(&archive_path, &prefix).map_err(LuaError::RuntimeError)?;
-            lua.create_userdata(LuaZipMount { inner: mount })
+        lua.create_function(|_, (archive_path, prefix): (String, String)| {
+            let _ = (archive_path, prefix);
+            Err::<(), _>(LuaError::RuntimeError(
+                "ZIP mounts are not built into this runtime build; mount an extracted directory"
+                    .to_string(),
+            ))
         })?,
     )?;
     let watcher_rc = Rc::new(RefCell::new(FileWatcher::new()));

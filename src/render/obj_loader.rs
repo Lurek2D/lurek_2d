@@ -542,83 +542,12 @@ impl ObjModel {
 pub struct ObjLoader;
 /// File-based and in-memory OBJ/MTL parsing entry points.
 impl ObjLoader {
-    /// Load and triangulate an OBJ file from `path`, using `tobj`; return error on I/O or parse failure.
+    /// Load and triangulate an OBJ file from `path`; return error on I/O or parse failure.
     pub fn load_file(path: impl AsRef<Path>) -> Result<ObjModel, ObjError> {
         let path = path.as_ref();
-        let (models, materials_result) = tobj::load_obj(
-            path,
-            &tobj::LoadOptions {
-                triangulate: true,
-                single_index: true,
-                ignore_lines: true,
-                ignore_points: true,
-            },
-        )
-        .map_err(|e| ObjError::Parse(format!("tobj load failed: {e}")))?;
-        let materials_raw = materials_result.unwrap_or_default();
-        let mut materials = Vec::with_capacity(materials_raw.len());
-        for mat in materials_raw {
-            let kd = mat.diffuse.unwrap_or([1.0, 1.0, 1.0]);
-            materials.push(ObjMaterial {
-                name: mat.name,
-                diffuse_color: kd,
-                diffuse_map: mat.diffuse_texture,
-            });
-        }
-        let mut positions = Vec::new();
-        let mut uvs = Vec::new();
-        let mut normals = Vec::new();
-        let mut faces = Vec::new();
-        for model in models {
-            let mesh = model.mesh;
-            let base_pos = positions.len();
-            let vcount = mesh.positions.len() / 3;
-            for i in 0..vcount {
-                positions.push(Vec3::new(
-                    mesh.positions[i * 3],
-                    mesh.positions[i * 3 + 1],
-                    mesh.positions[i * 3 + 2],
-                ));
-                if mesh.texcoords.len() >= (i + 1) * 2 {
-                    uvs.push(Vec2 {
-                        u: mesh.texcoords[i * 2],
-                        v: mesh.texcoords[i * 2 + 1],
-                    });
-                } else {
-                    uvs.push(Vec2 { u: 0.0, v: 0.0 });
-                }
-                if mesh.normals.len() >= (i + 1) * 3 {
-                    normals.push(Vec3::new(
-                        mesh.normals[i * 3],
-                        mesh.normals[i * 3 + 1],
-                        mesh.normals[i * 3 + 2],
-                    ));
-                } else {
-                    normals.push(Vec3::new(0.0, 1.0, 0.0));
-                }
-            }
-            for tri in mesh.indices.chunks_exact(3) {
-                let a = base_pos + tri[0] as usize;
-                let b = base_pos + tri[1] as usize;
-                let c = base_pos + tri[2] as usize;
-                let material = mesh.material_id;
-                faces.push(ObjFace {
-                    verts: [
-                        (a, Some(a), Some(a)),
-                        (b, Some(b), Some(b)),
-                        (c, Some(c), Some(c)),
-                    ],
-                    material,
-                });
-            }
-        }
-        Ok(ObjModel {
-            positions,
-            uvs,
-            normals,
-            faces,
-            materials,
-        })
+        let src = std::fs::read_to_string(path)?;
+        let base_dir = path.parent().unwrap_or_else(|| Path::new("."));
+        Self::parse_obj(&src, base_dir)
     }
     /// Parse OBJ + MTL text in memory, resolving `mtllib` paths relative to `base_dir`.
     pub fn parse_obj(src: &str, base_dir: &Path) -> Result<ObjModel, ObjError> {

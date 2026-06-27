@@ -109,7 +109,7 @@ use super::splash_screen::{load_splash_branding, make_splash_commands, SplashBra
 use crate::event::EventArg;
 use crate::filesystem::watcher::FileWatcher;
 use crate::input::keyboard::{winit_key_to_string, winit_scancode_to_string};
-use crate::input::{gilrs_axis_to_string, gilrs_button_to_string, SystemCursor};
+use crate::input::SystemCursor;
 #[allow(unused_imports)]
 use crate::log_msg;
 use crate::lua_api::create_lua_vm;
@@ -120,13 +120,12 @@ pub use crate::runtime::config::Config;
 use crate::runtime::log_messages::{
     L003_GAME_LOADED, L006_SPLASH_SCREEN, L007_NO_MAIN_LUA, L010_RENDER_ERROR, L011_LUA_ERROR,
     L016_LUA_VM_INIT_FAIL, L017_MAIN_LUA_READ_FAIL, L021_CLIPBOARD_FAIL, L023_GPU_TEX_TOO_SMALL,
-    L024_SURFACE_LOST, L033_GPU_ADAPTER, L034_GPU_TEX_DIM, L035_GPU_INIT, L036_GAMEPAD_CONNECTED,
-    L037_GAMEPAD_DISCONNECTED, L038_GILRS_UNAVAILABLE, L039_WINDOW_CLOSE, L040_ICON_LOAD_FAIL,
-    L041_ICON_CONV_FAIL, L043_DROP_FILE, L044_DROP_GAME, L070_SURFACE_NO_READBACK,
-    L071_CURSOR_GRAB_FAIL, L072_CURSOR_GRAB_LOCK_FAIL, L073_CURSOR_POS_FAIL,
-    L074_SCREENSHOT_NO_READBACK, L075_SCREENSHOT_SAVE_FAIL, L076_SCREENSHOT_ENCODE_FAIL,
-    L077_DRAG_HOVER, L078_DRAG_HOVER_CANCEL, L079_DRAG_DROP_IGNORED, L080_GAME_DIR, L081_LOG_FILE,
-    L082_LOG_FILE_FAIL, L083_DROP_ARCHIVE, L084_DROP_ARCHIVE_FAIL,
+    L024_SURFACE_LOST, L033_GPU_ADAPTER, L034_GPU_TEX_DIM, L035_GPU_INIT, L039_WINDOW_CLOSE,
+    L040_ICON_LOAD_FAIL, L041_ICON_CONV_FAIL, L043_DROP_FILE, L044_DROP_GAME,
+    L070_SURFACE_NO_READBACK, L071_CURSOR_GRAB_FAIL, L072_CURSOR_GRAB_LOCK_FAIL,
+    L073_CURSOR_POS_FAIL, L074_SCREENSHOT_NO_READBACK, L075_SCREENSHOT_SAVE_FAIL,
+    L076_SCREENSHOT_ENCODE_FAIL, L077_DRAG_HOVER, L078_DRAG_HOVER_CANCEL, L079_DRAG_DROP_IGNORED,
+    L080_GAME_DIR, L081_LOG_FILE, L082_LOG_FILE_FAIL, L083_DROP_ARCHIVE, L084_DROP_ARCHIVE_FAIL,
 };
 use crate::runtime::resource_keys::{
     CanvasKey, FontKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey, TextureKey,
@@ -134,11 +133,6 @@ use crate::runtime::resource_keys::{
 pub use crate::runtime::shared_state::WindowState;
 use crate::runtime::{FullscreenType, SharedState};
 use crate::window::{center_window_on_monitor, move_window_to_display, select_startup_monitor};
-use gilrs::{
-    ff::{BaseEffect, BaseEffectType, Effect, EffectBuilder, Envelope, Repeat, Replay, Ticks},
-    Axis as GilrsAxis, Button as GilrsButton, Event as GilrsEvent, EventType as GilrsEventType,
-    GamepadId as GilrsGamepadId, Gilrs,
-};
 use mlua::prelude::*;
 use slotmap::SlotMap;
 use std::cell::RefCell;
@@ -622,10 +616,6 @@ pub struct LurekApp {
     mouse_x: f32,
     /// Current game-space mouse Y position.
     mouse_y: f32,
-    /// Gamepad input library instance.
-    gilrs: Option<Gilrs>,
-    /// Active force-feedback effects keyed by gamepad ID.
-    gamepad_effects: HashMap<usize, Effect>,
     /// Current run-state: running, error, or restarting.
     pub run_state: RunState,
     /// Debug HUD overlay state.
@@ -765,8 +755,6 @@ impl LurekApp {
             prev_mouse: [false; 5],
             mouse_x: 0.0,
             mouse_y: 0.0,
-            gilrs: None,
-            gamepad_effects: HashMap::new(),
             run_state: RunState::Running,
             debug_overlay: DebugOverlay::new(),
             conf_error,
@@ -927,13 +915,7 @@ impl LurekApp {
     }
     /// Open the native startup folder picker and try to load the selected game directory.
     fn browse_for_startup_game_dir(&mut self) {
-        let Some(path) = rfd::FileDialog::new()
-            .set_title("Select a Lurek2D game folder")
-            .pick_folder()
-        else {
-            return;
-        };
-        self.load_startup_target_path(&path);
+        log::warn!("native startup folder picker is not built into this runtime build");
     }
     /// Load a startup target selected via drag-and-drop or the splash picker.
     fn load_startup_target_path(&mut self, path: &Path) {
@@ -2698,7 +2680,6 @@ impl LurekApp {
         archive_path: &std::path::Path,
         policy: &StartupTargetPolicy,
     ) -> Result<(std::path::PathBuf, tempfile::TempDir), String> {
-        use std::io;
         let metadata = std::fs::metadata(archive_path)
             .map_err(|e| format!("Cannot stat archive '{}': {}", archive_path.display(), e))?;
         if metadata.len() > policy.max_archive_bytes {
@@ -2709,50 +2690,11 @@ impl LurekApp {
                 metadata.len()
             ));
         }
-        let file = std::fs::File::open(archive_path)
-            .map_err(|e| format!("Cannot open archive '{}': {}", archive_path.display(), e))?;
-        let mut archive = zip::ZipArchive::new(file)
-            .map_err(|e| format!("Invalid ZIP archive '{}': {}", archive_path.display(), e))?;
-        let temp_dir =
-            tempfile::tempdir().map_err(|e| format!("Failed to create temp dir: {}", e))?;
-        for i in 0..archive.len() {
-            let mut entry = archive
-                .by_index(i)
-                .map_err(|e| format!("Archive entry {}: {}", i, e))?;
-            let entry_name = entry.name().to_owned();
-            let Some(relative) = entry.enclosed_name().map(|path| path.to_path_buf()) else {
-                return Err(format!(
-                    "Unsafe path in archive: '{}' - extraction rejected",
-                    entry_name
-                ));
-            };
-            if entry
-                .unix_mode()
-                .map(|mode| mode & 0o170000 == 0o120000)
-                .unwrap_or(false)
-            {
-                return Err(format!(
-                    "Unsafe symlink entry in archive: '{}' - extraction rejected",
-                    entry_name
-                ));
-            }
-            let dest = temp_dir.path().join(relative);
-            if entry.is_dir() {
-                std::fs::create_dir_all(&dest)
-                    .map_err(|e| format!("Cannot create dir '{}': {}", dest.display(), e))?;
-            } else {
-                if let Some(parent) = dest.parent() {
-                    std::fs::create_dir_all(parent)
-                        .map_err(|e| format!("Cannot create dir '{}': {}", parent.display(), e))?;
-                }
-                let mut out = std::fs::File::create(&dest)
-                    .map_err(|e| format!("Cannot create file '{}': {}", dest.display(), e))?;
-                io::copy(&mut entry, &mut out)
-                    .map_err(|e| format!("Cannot write '{}': {}", dest.display(), e))?;
-            }
-        }
-        let dir = temp_dir.path().to_path_buf();
-        Ok((dir, temp_dir))
+        let _ = policy;
+        Err(format!(
+            ".lurek archives are not built into this runtime build; pass an extracted game folder instead: {}",
+            archive_path.display()
+        ))
     }
     /// Tear down the current game session and reinitialise from the game directory.
     fn restart_game(&mut self) {
@@ -2901,233 +2843,201 @@ impl LurekApp {
             }
         }
     }
-    /// Poll gilrs for gamepad events and dispatch Lua callbacks.
+    /// Poll gamepad backend events and dispatch Lua callbacks.
     fn poll_gamepads(&mut self) {
-        let callback_timeout_ms = self.callback_timeout_ms();
-        let Some(gilrs) = &mut self.gilrs else { return };
-        let Some(state) = &self.state else { return };
-        let has_game = self.has_game;
-        let lua = self.lua.as_ref();
-        while let Some(GilrsEvent { id, event, .. }) = gilrs.next_event() {
-            let id_usize = usize::from(id);
-            let id_u32 = id_usize as u32;
-            match event {
-                GilrsEventType::ButtonPressed(btn, _) => {
-                    let btn_idx = gilrs_button_to_u32(btn);
-                    let button_name = gilrs_button_to_string(btn).to_string();
-                    {
-                        let mut st = state.borrow_mut();
-                        let gamepad = ensure_gamepad_slot(&mut st.gamepads, id_usize);
-                        gamepad.set_connected(true);
-                        gamepad.update_button(btn_idx, true);
-                    }
-                    if has_game {
-                        if let Some(lua) = lua {
-                            call_lua_callback_with_timeout(
-                                lua,
-                                "gamepadpressed",
-                                (id_u32, button_name),
-                                callback_timeout_ms,
-                            );
-                        }
-                    }
-                }
-                GilrsEventType::ButtonReleased(btn, _) => {
-                    let btn_idx = gilrs_button_to_u32(btn);
-                    let button_name = gilrs_button_to_string(btn).to_string();
-                    {
-                        let mut st = state.borrow_mut();
-                        let gamepad = ensure_gamepad_slot(&mut st.gamepads, id_usize);
-                        gamepad.set_connected(true);
-                        gamepad.update_button(btn_idx, false);
-                    }
-                    if has_game {
-                        if let Some(lua) = lua {
-                            call_lua_callback_with_timeout(
-                                lua,
-                                "gamepadreleased",
-                                (id_u32, button_name),
-                                callback_timeout_ms,
-                            );
-                        }
-                    }
-                }
-                GilrsEventType::AxisChanged(axis, value, _) => {
-                    let axis_idx = gilrs_axis_to_u32(axis);
-                    let axis_name = gilrs_axis_to_string(axis).to_string();
-                    {
-                        let mut st = state.borrow_mut();
-                        let gamepad = ensure_gamepad_slot(&mut st.gamepads, id_usize);
-                        gamepad.set_connected(true);
-                        gamepad.update_axis(axis_idx, value);
-                    }
-                    if has_game {
-                        if let Some(lua) = lua {
-                            call_lua_callback_with_timeout(
-                                lua,
-                                "gamepadaxis",
-                                (id_u32, axis_name, value),
-                                callback_timeout_ms,
-                            );
-                        }
-                    }
-                }
-                GilrsEventType::Connected => {
-                    let gamepad = gilrs.gamepad(id);
-                    let name = gamepad.name().to_string();
-                    let guid = format_gilrs_uuid(gamepad.uuid());
-                    let ff_supported = gamepad.is_ff_supported();
-                    {
-                        let mut st = state.borrow_mut();
-                        let entry = ensure_gamepad_slot(&mut st.gamepads, id_usize);
-                        entry.set_connected(true);
-                        entry.set_vibration_supported(ff_supported);
-                        entry.name = name;
-                        entry.set_guid(guid);
-                    }
-                    log_msg!(info, L036_GAMEPAD_CONNECTED, "id={}", id_usize);
-                    if has_game {
-                        if let Some(lua) = lua {
-                            call_lua_callback_with_timeout(
-                                lua,
-                                "joystickadded",
-                                (id_u32,),
-                                callback_timeout_ms,
-                            );
-                            call_lua_callback_with_timeout(
-                                lua,
-                                "gamepadconnected",
-                                (id_u32,),
-                                callback_timeout_ms,
-                            );
-                        }
-                    }
-                }
-                GilrsEventType::Disconnected => {
-                    if let Some(effect) = self.gamepad_effects.remove(&id_usize) {
-                        let _ = effect.stop();
-                    }
-                    {
-                        let mut st = state.borrow_mut();
-                        let gamepad = ensure_gamepad_slot(&mut st.gamepads, id_usize);
-                        gamepad.set_connected(false);
-                    }
-                    log_msg!(info, L037_GAMEPAD_DISCONNECTED, "id={}", id_usize);
-                    if has_game {
-                        if let Some(lua) = lua {
-                            call_lua_callback_with_timeout(
-                                lua,
-                                "joystickremoved",
-                                (id_u32,),
-                                callback_timeout_ms,
-                            );
-                            call_lua_callback_with_timeout(
-                                lua,
-                                "gamepaddisconnected",
-                                (id_u32,),
-                                callback_timeout_ms,
-                            );
-                        }
-                    }
-                }
-                _ => {}
-            }
-        }
+        self.poll_xinput_gamepads();
         self.process_pending_gamepad_vibration();
     }
-    /// Process queued vibration requests and start force-feedback effects.
-    fn process_pending_gamepad_vibration(&mut self) {
-        let Some(gilrs) = &mut self.gilrs else { return };
-        let Some(state) = &self.state else { return };
-        let requests = {
-            let mut st = state.borrow_mut();
-            std::mem::take(&mut st.gamepad_vibration_requests)
+    /// Poll standard Windows XInput controllers without the gilrs dependency.
+    #[cfg(windows)]
+    fn poll_xinput_gamepads(&mut self) {
+        use windows_sys::Win32::UI::Input::XboxController::{
+            XInputGetState, XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_B, XINPUT_GAMEPAD_BACK,
+            XINPUT_GAMEPAD_DPAD_DOWN, XINPUT_GAMEPAD_DPAD_LEFT, XINPUT_GAMEPAD_DPAD_RIGHT,
+            XINPUT_GAMEPAD_DPAD_UP, XINPUT_GAMEPAD_LEFT_SHOULDER, XINPUT_GAMEPAD_LEFT_THUMB,
+            XINPUT_GAMEPAD_RIGHT_SHOULDER, XINPUT_GAMEPAD_RIGHT_THUMB, XINPUT_GAMEPAD_START,
+            XINPUT_GAMEPAD_X, XINPUT_GAMEPAD_Y, XINPUT_STATE,
         };
-        for req in requests {
-            if let Some(effect) = Self::build_gamepad_vibration_effect(gilrs, req) {
-                if effect.play().is_ok() {
-                    self.gamepad_effects.insert(req.id, effect);
+        let Some(state_rc) = &self.state else { return };
+        let callback_timeout_ms = self.callback_timeout_ms();
+        let mut callbacks: Vec<(&'static str, u32, Option<String>, Option<f32>)> = Vec::new();
+        for id in 0..4usize {
+            let mut xstate = XINPUT_STATE::default();
+            let connected = unsafe { XInputGetState(id as u32, &mut xstate) == 0 };
+            let was_connected = state_rc
+                .borrow()
+                .gamepads
+                .get(id)
+                .map(|gamepad| gamepad.connected)
+                .unwrap_or(false);
+            if !connected {
+                if was_connected {
+                    let mut st = state_rc.borrow_mut();
+                    let gamepad = ensure_gamepad_slot(&mut st.gamepads, id);
+                    gamepad.set_connected(false);
+                    callbacks.push(("joystickremoved", id as u32, None, None));
+                    callbacks.push(("gamepaddisconnected", id as u32, None, None));
+                }
+                continue;
+            }
+
+            if !was_connected {
+                callbacks.push(("joystickadded", id as u32, None, None));
+                callbacks.push(("gamepadconnected", id as u32, None, None));
+            }
+
+            let buttons = [
+                (0, "a", XINPUT_GAMEPAD_A),
+                (1, "b", XINPUT_GAMEPAD_B),
+                (2, "x", XINPUT_GAMEPAD_X),
+                (3, "y", XINPUT_GAMEPAD_Y),
+                (4, "leftshoulder", XINPUT_GAMEPAD_LEFT_SHOULDER),
+                (5, "rightshoulder", XINPUT_GAMEPAD_RIGHT_SHOULDER),
+                (6, "back", XINPUT_GAMEPAD_BACK),
+                (7, "start", XINPUT_GAMEPAD_START),
+                (8, "leftstick", XINPUT_GAMEPAD_LEFT_THUMB),
+                (9, "rightstick", XINPUT_GAMEPAD_RIGHT_THUMB),
+                (10, "dpup", XINPUT_GAMEPAD_DPAD_UP),
+                (11, "dpdown", XINPUT_GAMEPAD_DPAD_DOWN),
+                (12, "dpleft", XINPUT_GAMEPAD_DPAD_LEFT),
+                (13, "dpright", XINPUT_GAMEPAD_DPAD_RIGHT),
+            ];
+            let axes = [
+                (
+                    0,
+                    "leftx",
+                    normalize_xinput_thumb(xstate.Gamepad.sThumbLX, 7849),
+                ),
+                (
+                    1,
+                    "lefty",
+                    -normalize_xinput_thumb(xstate.Gamepad.sThumbLY, 7849),
+                ),
+                (
+                    2,
+                    "rightx",
+                    normalize_xinput_thumb(xstate.Gamepad.sThumbRX, 8689),
+                ),
+                (
+                    3,
+                    "righty",
+                    -normalize_xinput_thumb(xstate.Gamepad.sThumbRY, 8689),
+                ),
+                (4, "triggerleft", xstate.Gamepad.bLeftTrigger as f32 / 255.0),
+                (
+                    5,
+                    "triggerright",
+                    xstate.Gamepad.bRightTrigger as f32 / 255.0,
+                ),
+            ];
+            {
+                let mut st = state_rc.borrow_mut();
+                let gamepad = ensure_gamepad_slot(&mut st.gamepads, id);
+                gamepad.set_connected(true);
+                gamepad.set_vibration_supported(true);
+                gamepad.name = format!("XInput Controller {}", id + 1);
+                gamepad.set_guid(format!("xinput{:02}", id));
+                for (button, name, mask) in buttons {
+                    let pressed = xstate.Gamepad.wButtons & mask != 0;
+                    let was_pressed = gamepad.is_button_pressed(button);
+                    gamepad.update_button(button, pressed);
+                    if pressed && !was_pressed {
+                        callbacks.push(("gamepadpressed", id as u32, Some(name.to_string()), None));
+                    } else if !pressed && was_pressed {
+                        callbacks.push((
+                            "gamepadreleased",
+                            id as u32,
+                            Some(name.to_string()),
+                            None,
+                        ));
+                    }
+                }
+                for (axis, name, value) in axes {
+                    let previous = gamepad.get_axis_value(axis);
+                    gamepad.update_axis(axis, value);
+                    if (previous - value).abs() > 0.01 {
+                        callbacks.push((
+                            "gamepadaxis",
+                            id as u32,
+                            Some(name.to_string()),
+                            Some(value),
+                        ));
+                    }
                 }
             }
         }
-    }
-    /// Build force-feedback effect from queued vibration request when device supports it.
-    fn build_gamepad_vibration_effect(
-        gilrs: &mut Gilrs,
-        request: crate::input::GamepadVibrationRequest,
-    ) -> Option<Effect> {
-        let mut target_id: Option<GilrsGamepadId> = None;
-        let mut ff_supported = false;
-        for (id, gamepad) in gilrs.gamepads() {
-            if usize::from(id) == request.id {
-                target_id = Some(id);
-                ff_supported = gamepad.is_ff_supported();
-                break;
+        if !self.has_game {
+            return;
+        }
+        let Some(lua) = &self.lua else { return };
+        for (callback, id, name, value) in callbacks {
+            match (name, value) {
+                (Some(name), Some(value)) => call_lua_callback_with_timeout(
+                    lua,
+                    callback,
+                    (id, name, value),
+                    callback_timeout_ms,
+                ),
+                (Some(name), None) => {
+                    call_lua_callback_with_timeout(lua, callback, (id, name), callback_timeout_ms)
+                }
+                (None, None) => {
+                    call_lua_callback_with_timeout(lua, callback, (id,), callback_timeout_ms)
+                }
+                (None, Some(_)) => {}
             }
         }
-        let target_id = target_id?;
-        if !ff_supported {
-            return None;
+    }
+    #[cfg(not(windows))]
+    fn poll_xinput_gamepads(&mut self) {}
+    /// Drain queued vibration requests when no native gamepad backend is built in.
+    fn process_pending_gamepad_vibration(&mut self) {
+        let Some(state) = &self.state else { return };
+        let requests = std::mem::take(&mut state.borrow_mut().gamepad_vibration_requests);
+        process_gamepad_vibration_requests(requests);
+    }
+}
+#[cfg(windows)]
+fn normalize_xinput_thumb(value: i16, deadzone: i16) -> f32 {
+    let value = value as f32;
+    let deadzone = deadzone as f32;
+    if value.abs() <= deadzone {
+        0.0
+    } else if value > 0.0 {
+        ((value - deadzone) / (32767.0 - deadzone)).clamp(0.0, 1.0)
+    } else {
+        ((value + deadzone) / (32768.0 - deadzone)).clamp(-1.0, 0.0)
+    }
+}
+#[cfg(windows)]
+fn process_gamepad_vibration_requests(requests: Vec<crate::input::GamepadVibrationRequest>) {
+    use std::thread;
+    use std::time::Duration;
+    use windows_sys::Win32::UI::Input::XboxController::{XInputSetState, XINPUT_VIBRATION};
+    for request in requests {
+        if request.id >= 4 {
+            continue;
         }
-        let low_mag = (request.low_freq.clamp(0.0, 1.0) * u16::MAX as f32) as u16;
-        let high_mag = (request.high_freq.clamp(0.0, 1.0) * u16::MAX as f32) as u16;
-        let play_for = Ticks::from_ms(request.duration_ms.max(1));
-        let scheduling = Replay {
-            after: Ticks::from_ms(0),
-            play_for,
-            with_delay: Ticks::from_ms(0),
+        let vibration = XINPUT_VIBRATION {
+            wLeftMotorSpeed: (request.low_freq.clamp(0.0, 1.0) * u16::MAX as f32) as u16,
+            wRightMotorSpeed: (request.high_freq.clamp(0.0, 1.0) * u16::MAX as f32) as u16,
         };
-        let mut builder = EffectBuilder::new();
-        builder
-            .gamepads(&[target_id])
-            .repeat(Repeat::For(play_for))
-            .add_effect(BaseEffect {
-                kind: BaseEffectType::Strong {
-                    magnitude: high_mag,
-                },
-                scheduling,
-                envelope: Envelope::default(),
-            })
-            .add_effect(BaseEffect {
-                kind: BaseEffectType::Weak { magnitude: low_mag },
-                scheduling,
-                envelope: Envelope::default(),
-            });
-        builder.finish(gilrs).ok()
+        unsafe {
+            let _ = XInputSetState(request.id as u32, &vibration);
+        }
+        let id = request.id as u32;
+        let duration_ms = request.duration_ms;
+        thread::spawn(move || {
+            thread::sleep(Duration::from_millis(duration_ms as u64));
+            let stop = XINPUT_VIBRATION::default();
+            unsafe {
+                let _ = XInputSetState(id, &stop);
+            }
+        });
     }
 }
-/// Map a gilrs button to a numeric index.
-fn gilrs_button_to_u32(btn: GilrsButton) -> u32 {
-    match btn {
-        GilrsButton::South => 0,
-        GilrsButton::East => 1,
-        GilrsButton::West => 2,
-        GilrsButton::North => 3,
-        GilrsButton::LeftTrigger => 4,
-        GilrsButton::RightTrigger => 5,
-        GilrsButton::Select => 6,
-        GilrsButton::Start => 7,
-        GilrsButton::LeftThumb => 8,
-        GilrsButton::RightThumb => 9,
-        GilrsButton::DPadUp => 10,
-        GilrsButton::DPadDown => 11,
-        GilrsButton::DPadLeft => 12,
-        GilrsButton::DPadRight => 13,
-        _ => 255,
-    }
-}
-/// Map a gilrs axis to a numeric index.
-fn gilrs_axis_to_u32(axis: GilrsAxis) -> u32 {
-    match axis {
-        GilrsAxis::LeftStickX => 0,
-        GilrsAxis::LeftStickY => 1,
-        GilrsAxis::RightStickX => 2,
-        GilrsAxis::RightStickY => 3,
-        GilrsAxis::LeftZ => 4,
-        GilrsAxis::RightZ => 5,
-        _ => 255,
-    }
-}
+#[cfg(not(windows))]
+fn process_gamepad_vibration_requests(_requests: Vec<crate::input::GamepadVibrationRequest>) {}
 /// Grow gamepad state vector and return mutable slot for `id_usize`.
 fn ensure_gamepad_slot(
     gamepads: &mut Vec<crate::input::GamepadState>,
@@ -3138,28 +3048,6 @@ fn ensure_gamepad_slot(
         gamepads.push(crate::input::GamepadState::new(new_id));
     }
     &mut gamepads[id_usize]
-}
-/// Format a gilrs UUID byte array as a hyphenated string.
-fn format_gilrs_uuid(uuid_bytes: [u8; 16]) -> String {
-    format!(
-        "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
-        uuid_bytes[0],
-        uuid_bytes[1],
-        uuid_bytes[2],
-        uuid_bytes[3],
-        uuid_bytes[4],
-        uuid_bytes[5],
-        uuid_bytes[6],
-        uuid_bytes[7],
-        uuid_bytes[8],
-        uuid_bytes[9],
-        uuid_bytes[10],
-        uuid_bytes[11],
-        uuid_bytes[12],
-        uuid_bytes[13],
-        uuid_bytes[14],
-        uuid_bytes[15],
-    )
 }
 /// Map a `SystemCursor` variant to a winit `CursorIcon`.
 fn system_cursor_to_winit_cursor(cursor: SystemCursor) -> CursorIcon {
@@ -3175,28 +3063,6 @@ fn system_cursor_to_winit_cursor(cursor: SystemCursor) -> CursorIcon {
         SystemCursor::SizeNS => CursorIcon::NsResize,
         SystemCursor::SizeAll => CursorIcon::Move,
         SystemCursor::No => CursorIcon::NotAllowed,
-    }
-}
-/// Load the embedded application icon from compiled-in PNG bytes.
-fn load_embedded_icon() -> Option<winit::window::Icon> {
-    let image = match ::image::load_from_memory(std::include_bytes!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/assets/icon.png"
-    ))) {
-        Ok(img) => img,
-        Err(e) => {
-            log_msg!(warn, L040_ICON_LOAD_FAIL, "embedded icon: {}", e);
-            return None;
-        }
-    };
-    let rgba = image.to_rgba8();
-    let (w, h) = (rgba.width(), rgba.height());
-    match winit::window::Icon::from_rgba(rgba.into_raw(), w, h) {
-        Ok(icon) => Some(icon),
-        Err(e) => {
-            log_msg!(warn, L041_ICON_CONV_FAIL, "embedded icon: {}", e);
-            None
-        }
     }
 }
 /// Load a custom window icon from the game directory.
@@ -3340,10 +3206,6 @@ impl ApplicationHandler for LurekApp {
             if let Some(icon) = load_window_icon(&self.game_dir, icon_path) {
                 window.set_window_icon(Some(icon));
             }
-        } else {
-            if let Some(icon) = load_embedded_icon() {
-                window.set_window_icon(Some(icon));
-            }
         }
         if let Err(error) = self.try_init_gpu(window.clone()) {
             self.window = Some(window);
@@ -3355,10 +3217,6 @@ impl ApplicationHandler for LurekApp {
             );
             self.run_state = map_startup_error_to_run_state(&error);
             return;
-        }
-        match Gilrs::new() {
-            Ok(g) => self.gilrs = Some(g),
-            Err(e) => log_msg!(warn, L038_GILRS_UNAVAILABLE, "{}", e),
         }
         self.last_frame = Instant::now();
         if let Some(win) = &self.window {
@@ -3483,14 +3341,8 @@ impl ApplicationHandler for LurekApp {
                             if self.ctrl_held && key_str == "c" {
                                 if let RunState::Error(ref screen) = self.run_state {
                                     let text = screen.as_text();
-                                    match arboard::Clipboard::new() {
-                                        Ok(mut cb) => {
-                                            let _ = cb.set_text(text);
-                                        }
-                                        Err(e) => {
-                                            log_msg!(warn, L021_CLIPBOARD_FAIL, "{}", e);
-                                        }
-                                    }
+                                    let _ = text;
+                                    log_msg!(warn, L021_CLIPBOARD_FAIL, "clipboard unavailable");
                                 }
                                 return;
                             }

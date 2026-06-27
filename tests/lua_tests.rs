@@ -840,6 +840,11 @@ fn lua_integration_ecs_ai_integration() {
 }
 
 #[test]
+fn lua_integration_ecs_scene_object_model_integration() {
+    run_lua_test("integration/test_ecs_scene_object_model_integration.lua");
+}
+
+#[test]
 fn lua_integration_ecs_physics_integration() {
     run_lua_test("integration/test_ecs_physics_integration.lua");
 }
@@ -972,6 +977,11 @@ fn lua_integration_save_tilemap_integration() {
 #[test]
 fn lua_integration_scene_camera_integration() {
     run_lua_test("integration/test_scene_camera_integration.lua");
+}
+
+#[test]
+fn lua_integration_scene_physics_activation_integration() {
+    run_lua_test("integration/test_scene_physics_activation_integration.lua");
 }
 
 #[test]

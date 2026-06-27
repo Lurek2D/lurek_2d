@@ -1,0 +1,6 @@
+physics_paused_ticks=0
+physics_resumed_ticks=1
+update_running_ticks=1
+dual_render_count=2
+render_first=outgoing
+render_second=incoming

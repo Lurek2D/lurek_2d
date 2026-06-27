@@ -9,7 +9,7 @@
 pub mod action_def;
 /// Combo gesture detection and multi-step input sequences.
 pub mod combo;
-/// Gamepad device state, axis/button mapping, and vibration requests via gilrs.
+/// Gamepad device state, axis/button mapping, and vibration requests.
 pub mod gamepad;
 /// Keyboard scan-code state and winit key translation.
 pub mod keyboard;
@@ -22,8 +22,6 @@ pub mod touch;
 
 pub use action_def::{ActionDef, ActionMap};
 pub use combo::{ComboDetector, ComboProgress, ComboStep};
-pub(crate) use gamepad::gilrs_axis_to_string;
-pub(crate) use gamepad::gilrs_button_to_string;
 pub use gamepad::virtual_dpad;
 pub use gamepad::GamepadMappings;
 pub use gamepad::GamepadState;

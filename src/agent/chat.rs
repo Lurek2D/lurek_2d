@@ -100,7 +100,7 @@ pub fn ollama_generate(
     system: &str,
     timeout_secs: u64,
 ) -> Result<String, String> {
-    use crate::network::http::execute_request as http_execute;
+    use crate::agent::local_http::execute_request as http_execute;
 
     let body = serde_json::json!({
         "model": model,
@@ -132,7 +132,7 @@ pub fn ollama_generate_json(
     system: &str,
     timeout_secs: u64,
 ) -> Result<serde_json::Value, String> {
-    use crate::network::http::execute_request as http_execute;
+    use crate::agent::local_http::execute_request as http_execute;
 
     let body = serde_json::json!({
         "model": model,
@@ -161,7 +161,7 @@ pub fn ollama_embed(
     text: &str,
     timeout_secs: u64,
 ) -> Result<Vec<f64>, String> {
-    use crate::network::http::execute_request as http_execute;
+    use crate::agent::local_http::execute_request as http_execute;
 
     let body = serde_json::json!({ "model": model, "prompt": text });
     let body_bytes = body.to_string().into_bytes();
@@ -181,7 +181,7 @@ pub fn ollama_embed(
 
 /// Calls the Ollama `/api/tags` endpoint and returns available model names.
 pub fn ollama_list_models(base_url: &str, timeout_secs: u64) -> Vec<String> {
-    use crate::network::http::execute_request as http_execute;
+    use crate::agent::local_http::execute_request as http_execute;
 
     let headers: Vec<(String, String)> = vec![];
     let url = format!("{}/api/tags", base_url);
@@ -209,7 +209,7 @@ pub fn ollama_list_models(base_url: &str, timeout_secs: u64) -> Vec<String> {
 
 /// Probes the Ollama base URL and returns `true` if it responds.
 pub fn ollama_is_available(base_url: &str, timeout_secs: u64) -> bool {
-    use crate::network::http::execute_request as http_execute;
+    use crate::agent::local_http::execute_request as http_execute;
     let headers: Vec<(String, String)> = vec![];
     let resp = http_execute("GET", base_url, &headers, None, timeout_secs);
     resp.error.is_none()
@@ -327,7 +327,7 @@ impl LlmChat {
         model: &str,
         timeout_secs: u64,
     ) -> Result<String, String> {
-        use crate::network::http::execute_request as http_execute;
+        use crate::agent::local_http::execute_request as http_execute;
 
         let mut messages: Vec<serde_json::Value> = Vec::new();
         if !self.system_prompt.is_empty() {

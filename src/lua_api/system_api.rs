@@ -2,9 +2,7 @@
 
 use super::SharedState;
 use crate::log_msg;
-use crate::runtime::log_messages::{
-    self, LA04_CLIPBOARD_WRITE_FAIL, LA05_CLIPBOARD_UNAVAIL, LA06_CLIPBOARD_READ_FAIL,
-};
+use crate::runtime::log_messages::{self, LA05_CLIPBOARD_UNAVAIL};
 use crate::runtime::messages;
 use crate::runtime::os::*;
 use mlua::prelude::*;
@@ -140,16 +138,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     system.set(
         "setClipboardText",
         lua.create_function(|_, text: String| {
-            match arboard::Clipboard::new() {
-                Ok(mut cb) => {
-                    if let Err(e) = cb.set_text(text) {
-                        log_msg!(warn, LA04_CLIPBOARD_WRITE_FAIL, "{}", e);
-                    }
-                }
-                Err(e) => {
-                    log_msg!(warn, LA05_CLIPBOARD_UNAVAIL, "setClipboardText: {}", e);
-                }
-            }
+            let _ = text;
+            log_msg!(warn, LA05_CLIPBOARD_UNAVAIL, "setClipboardText");
             Ok(())
         })?,
     )?;
@@ -159,18 +149,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | string | The clipboard text, or `""` on failure.
     system.set(
         "getClipboardText",
-        lua.create_function(|_, ()| match arboard::Clipboard::new() {
-            Ok(mut cb) => match cb.get_text() {
-                Ok(text) => Ok(text),
-                Err(e) => {
-                    log_msg!(warn, LA06_CLIPBOARD_READ_FAIL, "{}", e);
-                    Ok(String::new())
-                }
-            },
-            Err(e) => {
-                log_msg!(warn, LA05_CLIPBOARD_UNAVAIL, "getClipboardText: {}", e);
-                Ok(String::new())
-            }
+        lua.create_function(|_, ()| {
+            log_msg!(warn, LA05_CLIPBOARD_UNAVAIL, "getClipboardText");
+            Ok(String::new())
         })?,
     )?;
     let state_for_error = state.clone();

@@ -1258,233 +1258,29 @@ do
     server:destroy()
 end
 
---- Network Module Part 2: LNetworkRuntime, rooms, lobbies, pack/unpack, prediction
+--- Network Module Part 2: rooms, lobbies, pack/unpack, prediction
 
---@api: lurek.network.newRuntime
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local metrics = rt:getMetrics()
-    local status = rt:getAuthStatus()
-    local token = rt:getAuthToken()
-    network_log("runtime type=" .. rt:type() .. " typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
-    network_log("queue=" .. metrics.queue_size .. " auth=" .. status .. " token=" .. tostring(token))
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:httpGet
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local req_id = rt:httpGet("http://127.0.0.1:1/status", {Accept = "text/plain"})
-    example_print_log("request_id=" .. req_id)
-    example_print_log("pending_events=" .. #rt:poll())
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:httpPost
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local req_id = rt:httpPost("http://127.0.0.1:1/data", '{"key":"value"}', {["Content-Type"] = "application/json"})
-    example_print_log("request_id=" .. req_id)
-    example_print_log("pending_events=" .. #rt:poll())
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:httpRequest
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local req_id = rt:httpRequest({url = "http://127.0.0.1:1/resource", method = "PUT", body = "updated data", timeout = 0.01})
-    example_print_log("request_id=" .. req_id)
-    example_print_log("pending_events=" .. #rt:poll())
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:poll
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    rt:httpGet("http://127.0.0.1:1/poll")
-    local events = rt:poll()
-    example_print_log("events=" .. #events)
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:tcpConnect
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local id = rt:tcpConnect("127.0.0.1:9")
-    example_print_log("tcp_id=" .. id)
-    example_print_log("pending_events=" .. #rt:poll())
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:tcpSend
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local id = rt:tcpConnect("127.0.0.1:9")
-    rt:tcpSend(id, "PING\n")
-    example_print_log("tcp_id=" .. id)
-    example_print_log("pending_events=" .. #rt:poll())
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:tcpClose
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local id = rt:tcpConnect("127.0.0.1:9")
-    rt:tcpClose(id)
-    example_print_log("tcp_id=" .. id)
-    example_print_log("pending_events=" .. #rt:poll())
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:wsConnect
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local id = rt:wsConnect("ws://127.0.0.1:1/game")
-    example_print_log("ws_id=" .. id)
-    example_print_log("pending_events=" .. #rt:poll())
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:wsSend
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local id = rt:wsConnect("ws://127.0.0.1:1/game")
-    rt:wsSend(id, '{"action":"join","room":"lobby"}')
-    example_print_log("ws_id=" .. id)
-    example_print_log("pending_events=" .. #rt:poll())
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:wsClose
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local id = rt:wsConnect("ws://127.0.0.1:1/game")
-    rt:wsClose(id)
-    example_print_log("ws_id=" .. id)
-    example_print_log("pending_events=" .. #rt:poll())
-    rt:shutdown()
-end
 
 --@api: lurek.network.createRoom
 do
@@ -1906,77 +1702,16 @@ do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     local isHost = host:typeOf("LNetworkHost")
     local isObject = host:typeOf("LObject")
-    local isRuntime = host:typeOf("LNetworkRuntime")
     network_log("typeOf host=" .. tostring(isHost) .. " object=" .. tostring(isObject))
     network_log("runtime check=" .. tostring(isRuntime) .. " type=" .. host:type())
     host:destroy()
 end
 
---@api: LNetworkRuntime:shutdown
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local typeName = rt:type()
-    local status = rt:getAuthStatus()
-    local metrics = rt:getMetrics()
-    rt:shutdown()
-    network_log("runtime type=" .. typeName .. " status=" .. status)
-    network_log("shutdown queue=" .. metrics.queue_size)
-end
 
---@api: LNetworkRuntime:type
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local typeName = rt:type()
-    local status = rt:getAuthStatus()
-    local metrics = rt:getMetrics()
-    network_log("runtime userdata=" .. typeName)
-    network_log("status=" .. status .. " queue=" .. metrics.queue_size)
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:typeOf
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local isRuntime = rt:typeOf("LNetworkRuntime")
-    local isObject = rt:typeOf("LObject")
-    local isStream = rt:typeOf("LSseStream")
-    network_log("runtime check=" .. tostring(isRuntime) .. " object=" .. tostring(isObject))
-    network_log("stream check=" .. tostring(isStream) .. " type=" .. rt:type())
-    rt:shutdown()
-end
 
 --@api: lurek.network.discoverLobbies
 do
@@ -2143,344 +1878,35 @@ do
     network_log("echo tag=" .. echo.tag .. " raw_bytes=" .. #raw)
 end
 
---@api: lurek.network.sseConnect
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(ev)
-        example_print_log("event=" .. tostring(ev.event) .. " data=" .. ev.data)
-    end)
-    -- Poll for events each frame; close when done.
-    local ev = stream:next()
-    if ev then
-        example_print_log("got event: " .. ev.data)
-    end
-    stream:close()
-end
 
---@api: lurek.network.sseCollect
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local events = lurek.network.sseCollect("http://127.0.0.1:1/events", 1, 0.01)
-    local count = #events
-    local firstEvent = events[1]
-    for _, ev in ipairs(events) do
-        network_log("collected event=" .. tostring(ev.event) .. " data=" .. tostring(ev.data))
-    end
-    network_log("sse batch size=" .. count)
-    network_log("first event=" .. tostring(firstEvent and firstEvent.event or "nil"))
-end
 
---@api: LSseStream:next
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
-    local ev = stream:next()
-    if ev then
-        example_print_log("data=" .. ev.data)
-    end
-    stream:close()
-end
 
---@api: LSseStream:close
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
-    local wasOpen = stream:isOpen()
-    local typeName = stream:type()
-    stream:close()
-    local isStream = stream:typeOf("LSseStream")
-    network_log("sse close open_before=" .. tostring(wasOpen))
-    network_log("type=" .. typeName .. " check=" .. tostring(isStream))
-end
 
---@api: LSseStream:isOpen
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
-    local open = stream:isOpen()
-    local typeName = stream:type()
-    local event = stream:next()
-    network_log("sse open=" .. tostring(open))
-    network_log("type=" .. typeName .. " next=" .. tostring(event and event.event or "nil"))
-    stream:close()
-end
 
---@api: LSseStream:type
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
-    local typeName = stream:type()
-    local isStream = stream:typeOf("LSseStream")
-    local open = stream:isOpen()
-    network_log("sse userdata=" .. typeName)
-    network_log("is_stream=" .. tostring(isStream) .. " open=" .. tostring(open))
-    stream:close()
-end
 
---@api: LSseStream:typeOf
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
-    local isStream = stream:typeOf("LSseStream")
-    local isObject = stream:typeOf("LObject")
-    local isRuntime = stream:typeOf("LNetworkRuntime")
-    network_log("sse typeOf stream=" .. tostring(isStream) .. " object=" .. tostring(isObject))
-    network_log("runtime check=" .. tostring(isRuntime) .. " type=" .. stream:type())
-    stream:close()
-end
 
---@api: LNetworkRuntime:httpJson
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local ok, response = pcall(function()
-        return rt:httpJson("http://127.0.0.1:1/api", '{"key":"value"}')
-    end)
-    example_print_log("httpJson ok: " .. tostring(ok))
-    example_print_log("httpJson response: " .. tostring(response))
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:httpStream
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local ok, response = pcall(function()
-        return rt:httpStream("http://127.0.0.1:1/stream")
-    end)
-    example_print_log("httpStream ok: " .. tostring(ok))
-    example_print_log("httpStream response: " .. tostring(response))
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:authBootstrap
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local ok, id = pcall(function()
-        return rt:authBootstrap("http://127.0.0.1:1/auth", '{"user":"test"}', "http://127.0.0.1:1/refresh")
-    end)
-    example_print_log("auth ok: " .. tostring(ok))
-    example_print_log("auth id: " .. tostring(id))
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:getAuthToken
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local token = rt:getAuthToken()
-    local status = rt:getAuthStatus()
-    local metrics = rt:getMetrics()
-    network_log("auth token=" .. tostring(token))
-    network_log("status=" .. status .. " queue=" .. metrics.queue_size)
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:getAuthStatus
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local status = rt:getAuthStatus()
-    local token = rt:getAuthToken()
-    local metrics = rt:getMetrics()
-    network_log("auth status=" .. tostring(status))
-    network_log("token=" .. tostring(token) .. " queue=" .. metrics.queue_size)
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:authCancel
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local before = rt:getAuthStatus()
-    rt:authCancel()
-    local after = rt:getAuthStatus()
-    local token = rt:getAuthToken()
-    network_log("auth cancel before=" .. before .. " after=" .. after)
-    network_log("token after cancel=" .. tostring(token))
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:matchmakeStart
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local ok, id = pcall(function()
-        return rt:matchmakeStart("http://127.0.0.1:1/match", '{"game_mode":"ranked"}')
-    end)
-    example_print_log("matchmake ok: " .. tostring(ok))
-    example_print_log("matchmake id: " .. tostring(id))
-    rt:shutdown()
-end
 
---@api: LNetworkRuntime:matchmakeCancel
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local before = rt:getMetrics()
-    rt:matchmakeCancel(1)
-    local after = rt:getMetrics()
-    network_log("cancelled matchmaking request id=1")
-    network_log("queue before=" .. before.queue_size .. " after=" .. after.queue_size)
-    rt:shutdown()
-end
 
 --@api: LNetworkHost:registerLease
 do
@@ -2586,27 +2012,7 @@ do
     host:destroy()
 end
 
---@api: LNetworkRuntime:getMetrics
-do
-    local function network_log(message)
-        lurek.log.info("[network.example] " .. tostring(message))
-    end
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
 
-    local rt = lurek.network.newRuntime()
-    local metrics = rt:getMetrics()
-    local status = rt:getAuthStatus()
-    local typeName = rt:type()
-    network_log("runtime queue size=" .. tostring(metrics.queue_size))
-    network_log("status=" .. status .. " type=" .. typeName)
-    rt:shutdown()
-end
 
 --@api: lurek.network.packSnapshot
 do

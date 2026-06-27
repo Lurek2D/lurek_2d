@@ -8659,6 +8659,126 @@
       "description": "Registers the `lurek.ecs` Lua API for ECS userdata, entity access, and thin binding helpers over ECS state.",
       "functions": [
         {
+          "name": "isA",
+          "fullPath": "lurek.ecs.isA",
+          "signature": "(this, candidate)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "candidate",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "type",
+          "fullPath": "lurek.ecs.type",
+          "signature": "(this)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "lurek.ecs.typeOf",
+          "signature": "(this, candidate)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "candidate",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getProperty",
+          "fullPath": "lurek.ecs.getProperty",
+          "signature": "(this, name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setProperty",
+          "fullPath": "lurek.ecs.setProperty",
+          "signature": "(this, name, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "this",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newUniverse",
           "fullPath": "lurek.ecs.newUniverse",
           "signature": "()",
@@ -8677,6 +8797,188 @@
           "parameters": [],
           "returns": "LRelationshipManager",
           "returnType": "LRelationshipManager",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "defineClass",
+          "fullPath": "lurek.ecs.defineClass",
+          "signature": "(name, def)",
+          "description": "Defines or replaces a global ECS class for Lua object instances.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Class name used by `newObject` and `LUniverse:spawnObject`.",
+              "optional": false
+            },
+            {
+              "name": "def",
+              "type": "table",
+              "description": "Class definition with optional extends, defaults, methods, properties, constructor, and tags.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "hasClass",
+          "fullPath": "lurek.ecs.hasClass",
+          "signature": "(name)",
+          "description": "Returns whether a global ECS class name is defined.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Class name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getClass",
+          "fullPath": "lurek.ecs.getClass",
+          "signature": "(name)",
+          "description": "Returns metadata for a global ECS class.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Class name to inspect.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "classNames",
+          "fullPath": "lurek.ecs.classNames",
+          "signature": "()",
+          "description": "Returns all global ECS class names in deterministic order.",
+          "parameters": [],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "clearClasses",
+          "fullPath": "lurek.ecs.clearClasses",
+          "signature": "()",
+          "description": "Removes every global ECS class definition.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newObject",
+          "fullPath": "lurek.ecs.newObject",
+          "signature": "(class_name, [props])",
+          "description": "Creates a Lua table object from a registered ECS class.",
+          "parameters": [
+            {
+              "name": "className",
+              "type": "string",
+              "description": "Registered class name.",
+              "optional": false
+            },
+            {
+              "name": "props",
+              "type": "table",
+              "description": "Optional property overrides.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getObject",
+          "fullPath": "lurek.ecs.getObject",
+          "signature": "(id)",
+          "description": "Returns a live ECS object table by object id.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Object id returned in the object's `__id` field.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "hasObject",
+          "fullPath": "lurek.ecs.hasObject",
+          "signature": "(id)",
+          "description": "Returns whether a live ECS object id exists.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Object id to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "objectIds",
+          "fullPath": "lurek.ecs.objectIds",
+          "signature": "()",
+          "description": "Returns all live ECS object ids in ascending order.",
+          "parameters": [],
+          "returns": "integer[]",
+          "returnType": "integer[]",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "destroyObject",
+          "fullPath": "lurek.ecs.destroyObject",
+          "signature": "(id)",
+          "description": "Removes a live ECS object from the global object registry.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Object id to destroy.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "clearObjects",
+          "fullPath": "lurek.ecs.clearObjects",
+          "signature": "()",
+          "description": "Removes every live ECS object while keeping class definitions.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         }
@@ -19636,6 +19938,24 @@
           "objectType": null
         },
         {
+          "name": "newDeck",
+          "fullPath": "lurek.patterns.newDeck",
+          "signature": "([cards])",
+          "description": "Create a reusable deck/card collection with shuffle, draw, discard, and reset operations.",
+          "parameters": [
+            {
+              "name": "cards",
+              "type": "table",
+              "description": "Optional array of initial card payloads.",
+              "optional": true
+            }
+          ],
+          "returns": "LDeck",
+          "returnType": "LDeck",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newCommandStack",
           "fullPath": "lurek.patterns.newCommandStack",
           "signature": "([max_size])",
@@ -26379,8 +26699,8 @@
         {
           "name": "registerScene",
           "fullPath": "lurek.scene.registerScene",
-          "signature": "(name, scene)",
-          "description": "Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.",
+          "signature": "(name, scene_value, [opts])",
+          "description": "Register a scene table or scene factory under a unique name for later retrieval, pushRegistered navigation, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.",
           "parameters": [
             {
               "name": "name",
@@ -26389,10 +26709,16 @@
               "optional": false
             },
             {
-              "name": "scene",
-              "type": "table",
-              "description": "The scene table to register.",
+              "name": "sceneOrFactory",
+              "type": "any",
+              "description": "Scene table or zero-argument factory function returning a scene table.",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional registration settings; `persistence` accepts `\"freeze\"` or `\"reset\"`.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -26415,6 +26741,48 @@
           ],
           "returns": "table|nil",
           "returnType": "table|nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "pushRegistered",
+          "fullPath": "lurek.scene.pushRegistered",
+          "signature": "lurek.scene.pushRegistered(name, [transition], [duration], [easing], [params])",
+          "description": "Push a registered scene by name, honoring its persistence policy.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Registered scene name to push.",
+              "optional": false
+            },
+            {
+              "name": "transition",
+              "type": "string",
+              "description": "Transition type name. Defaults to `\"none\"`.",
+              "optional": true
+            },
+            {
+              "name": "duration",
+              "type": "number",
+              "description": "Transition animation duration in seconds. Defaults to 0.",
+              "optional": true
+            },
+            {
+              "name": "easing",
+              "type": "string",
+              "description": "Easing curve name. Defaults to `\"linear\"`.",
+              "optional": true
+            },
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Arbitrary data forwarded to the scene's `enter(self, params)` callback.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": false,
           "objectType": null
         },
@@ -26691,6 +27059,48 @@
           "parameters": [],
           "returns": "table",
           "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setSceneActive",
+          "fullPath": "lurek.scene.setSceneActive",
+          "signature": "([target], enabled)",
+          "description": "Enable or disable all update, process, physics, late, and render callbacks for a selected scene.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "any",
+              "description": "nil/current, registered scene name, or 1-based stack index.",
+              "optional": true
+            },
+            {
+              "name": "enabled",
+              "type": "boolean",
+              "description": "True to activate the scene, false to fully suspend it.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "isSceneActive",
+          "fullPath": "lurek.scene.isSceneActive",
+          "signature": "([target])",
+          "description": "Returns whether the selected scene is globally active.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "any",
+              "description": "nil/current, registered scene name, or 1-based stack index.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": false,
           "objectType": null
         },
@@ -60467,6 +60877,157 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LDecisionBiasSet"
+        }
+      ]
+    },
+    {
+      "name": "LDeck",
+      "description": "Lua-facing reusable deck that stores arbitrary card payloads and delegates pile ordering to Rust.",
+      "methods": [
+        {
+          "name": "add",
+          "fullPath": "LDeck:add",
+          "signature": "(value)",
+          "description": "Add a card payload to the bottom of the deck's draw pile.",
+          "parameters": [
+            {
+              "name": "card",
+              "type": "any",
+              "description": "Card payload stored by the deck.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LDeck"
+        },
+        {
+          "name": "shuffle",
+          "fullPath": "LDeck:shuffle",
+          "signature": "([seed])",
+          "description": "Shuffle the current draw pile with a deterministic optional seed.",
+          "parameters": [
+            {
+              "name": "seed",
+              "type": "integer",
+              "description": "Optional shuffle seed; omitted uses `1`.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDeck"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LDeck:draw",
+          "signature": "([count])",
+          "description": "Draw one or more cards from the top of the draw pile.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Number of cards to draw; default `1`.",
+              "optional": true
+            }
+          ],
+          "returns": "any",
+          "returnType": "any",
+          "isMethod": true,
+          "objectType": "LDeck"
+        },
+        {
+          "name": "peek",
+          "fullPath": "LDeck:peek",
+          "signature": "([count])",
+          "description": "Inspect one or more cards from the top without removing them.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Number of cards to inspect; default `1`.",
+              "optional": true
+            }
+          ],
+          "returns": "any",
+          "returnType": "any",
+          "isMethod": true,
+          "objectType": "LDeck"
+        },
+        {
+          "name": "discard",
+          "fullPath": "LDeck:discard",
+          "signature": "(value)",
+          "description": "Move a card into the discard pile by card table or stable id.",
+          "parameters": [
+            {
+              "name": "card",
+              "type": "any",
+              "description": "Card table returned by the deck, or a stable card id.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDeck"
+        },
+        {
+          "name": "reset",
+          "fullPath": "LDeck:reset",
+          "signature": "()",
+          "description": "Restore the draw pile to original insertion order and clear discard.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDeck"
+        },
+        {
+          "name": "count",
+          "fullPath": "LDeck:count",
+          "signature": "()",
+          "description": "Return the number of cards left in the draw pile.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LDeck"
+        },
+        {
+          "name": "discardCount",
+          "fullPath": "LDeck:discardCount",
+          "signature": "()",
+          "description": "Return the number of cards in the discard pile.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LDeck"
+        },
+        {
+          "name": "isEmpty",
+          "fullPath": "LDeck:isEmpty",
+          "signature": "()",
+          "description": "Return true when no cards remain in the draw pile.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDeck"
+        },
+        {
+          "name": "toArray",
+          "fullPath": "LDeck:toArray",
+          "signature": "()",
+          "description": "Return the current draw pile as an array without modifying it.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LDeck"
         }
       ]
     },
@@ -127991,6 +128552,96 @@
           "objectType": "LSceneObjectContainer"
         },
         {
+          "name": "defineGroup",
+          "fullPath": "LSceneObjectContainer:defineGroup",
+          "signature": "(name)",
+          "description": "Define an object group and return its 0-based bit index.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Group name to define.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSceneObjectContainer"
+        },
+        {
+          "name": "getGroupBit",
+          "fullPath": "LSceneObjectContainer:getGroupBit",
+          "signature": "(name)",
+          "description": "Return the bit index assigned to a group name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Group name to inspect.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSceneObjectContainer"
+        },
+        {
+          "name": "setGroupEnabled",
+          "fullPath": "LSceneObjectContainer:setGroupEnabled",
+          "signature": "(group, pass, enabled)",
+          "description": "Enable or disable one object group for one pass.",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "any",
+              "description": "Group name or 0-based bit index.",
+              "optional": false
+            },
+            {
+              "name": "pass",
+              "type": "string",
+              "description": "Pass name: update, physics/process_physics, or draw.",
+              "optional": false
+            },
+            {
+              "name": "enabled",
+              "type": "boolean",
+              "description": "True to include the group in the pass.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSceneObjectContainer"
+        },
+        {
+          "name": "isGroupEnabled",
+          "fullPath": "LSceneObjectContainer:isGroupEnabled",
+          "signature": "(group, pass)",
+          "description": "Return whether one object group is enabled for one pass.",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "any",
+              "description": "Group name or 0-based bit index.",
+              "optional": false
+            },
+            {
+              "name": "pass",
+              "type": "string",
+              "description": "Pass name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSceneObjectContainer"
+        },
+        {
           "name": "remove",
           "fullPath": "LSceneObjectContainer:remove",
           "signature": "(obj)",
@@ -128029,6 +128680,24 @@
               "name": "dt",
               "type": "number",
               "description": "Delta time in seconds for this frame.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneObjectContainer"
+        },
+        {
+          "name": "processPhysics",
+          "fullPath": "LSceneObjectContainer:processPhysics",
+          "signature": "(dt)",
+          "description": "Call process_physics(dt) or physics(dt) on all physics-pass-enabled objects.",
+          "parameters": [
+            {
+              "name": "dt",
+              "type": "number",
+              "description": "Physics delta time in seconds.",
               "optional": false
             }
           ],
@@ -172891,6 +173560,54 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "spawnObject",
+          "fullPath": "LUniverse:spawnObject",
+          "signature": "(class_name, [props])",
+          "description": "Creates an ECS object instance from a registered class and attaches it to a new entity.",
+          "parameters": [
+            {
+              "name": "className",
+              "type": "string",
+              "description": "Registered ECS class name.",
+              "optional": false
+            },
+            {
+              "name": "props",
+              "type": "table",
+              "description": "Optional property overrides copied onto the new object.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "attachObject",
+          "fullPath": "LUniverse:attachObject",
+          "signature": "(entity_id, obj)",
+          "description": "Attaches an existing ECS object table to an entity as the `object` component.",
+          "parameters": [
+            {
+              "name": "entityId",
+              "type": "integer",
+              "description": "Entity id that receives the object.",
+              "optional": false
+            },
+            {
+              "name": "obj",
+              "type": "table",
+              "description": "Object table returned by `lurek.ecs.newObject`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LUniverse"
         },

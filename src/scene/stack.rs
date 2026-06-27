@@ -16,6 +16,15 @@ use std::collections::{HashMap, HashSet, VecDeque};
 /// Unique identifier for a scene; assigned by SceneStack::next_scene_id.
 pub type SceneId = u64;
 
+/// Persistence policy for a named registered scene.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ScenePersistence {
+    /// Reuse the existing scene table state when entered again.
+    Freeze,
+    /// Recreate the scene from its registered factory when entered again.
+    Reset,
+}
+
 /// Stack-based scene manager with push/pop/switch, overlay support, transition queuing, and layer ordering.
 pub struct SceneStack {
     /// Active scene order; top element is the current scene.
@@ -28,8 +37,12 @@ pub struct SceneStack {
     transition: Option<ActiveTransition>,
     /// Pending transitions waiting for the active one to complete.
     transition_queue: VecDeque<(TransitionType, f32, EasingType)>,
+    /// Scene ids rendered together while the active transition is running.
+    transition_render_ids: Option<(SceneId, SceneId)>,
     /// Draw layer priority per scene; used by get_active_ids_ordered_by_layer.
     scene_layers: HashMap<SceneId, i32>,
+    /// Named scene persistence policy keyed by registered SceneId.
+    scene_persistence: HashMap<SceneId, ScenePersistence>,
     /// Monotonic counter for SceneId generation; starts at 1.
     next_id: u64,
     /// Set of scene IDs marked as overlays; affects get_active_ids visibility rules.
@@ -42,6 +55,8 @@ pub struct SceneStack {
     late_enabled: HashMap<SceneId, bool>,
     /// Per-scene execution toggle for `update`; defaults to true.
     update_enabled: HashMap<SceneId, bool>,
+    /// Per-scene global active toggle; false suppresses all scene passes.
+    scene_active: HashMap<SceneId, bool>,
 }
 impl SceneStack {
     /// Create an empty SceneStack with no active scenes and no pending transitions.
@@ -53,13 +68,16 @@ impl SceneStack {
             data_keys: HashMap::new(),
             transition: None,
             transition_queue: VecDeque::new(),
+            transition_render_ids: None,
             scene_layers: HashMap::new(),
+            scene_persistence: HashMap::new(),
             next_id: 1,
             overlay_ids: HashSet::new(),
             process_enabled: HashMap::new(),
             physics_enabled: HashMap::new(),
             late_enabled: HashMap::new(),
             update_enabled: HashMap::new(),
+            scene_active: HashMap::new(),
         }
     }
     /// Allocate and return the next monotonically increasing SceneId.
@@ -75,6 +93,7 @@ impl SceneStack {
         self.physics_enabled.entry(scene_id).or_insert(true);
         self.late_enabled.entry(scene_id).or_insert(true);
         self.update_enabled.entry(scene_id).or_insert(true);
+        self.scene_active.entry(scene_id).or_insert(true);
     }
 
     /// Remove execution flags for a scene removed from the stack.
@@ -83,6 +102,7 @@ impl SceneStack {
         self.physics_enabled.remove(&scene_id);
         self.late_enabled.remove(&scene_id);
         self.update_enabled.remove(&scene_id);
+        self.scene_active.remove(&scene_id);
     }
     /// Start transition immediately if none is active; otherwise enqueue it for later.
     fn enqueue_or_start_transition(
@@ -103,6 +123,23 @@ impl SceneStack {
                 duration,
                 easing,
             ));
+        }
+    }
+    /// Remember outgoing and incoming scenes for dual-render transition frames.
+    fn set_transition_render_pair(
+        &mut self,
+        outgoing: Option<SceneId>,
+        incoming: SceneId,
+        transition_type: TransitionType,
+        duration: f32,
+    ) {
+        if transition_type == TransitionType::None || duration <= 0.0 {
+            return;
+        }
+        if let Some(outgoing) = outgoing {
+            if outgoing != incoming {
+                self.transition_render_ids = Some((outgoing, incoming));
+            }
         }
     }
     /// Pop the front item from the transition queue and start it if no transition is active.
@@ -132,6 +169,7 @@ impl SceneStack {
         self.stack.push(scene_id);
         self.scene_layers.entry(scene_id).or_insert(0);
         self.init_execution_flags(scene_id);
+        self.set_transition_render_pair(prev, scene_id, transition_type, duration);
         prev
     }
     /// Pop the top scene, optionally starting a transition; returns (popped_id, newly_revealed_id) or Err when empty.
@@ -151,6 +189,9 @@ impl SceneStack {
         self.remove_execution_flags(popped);
         let revealed = self.stack.last().copied();
         self.enqueue_or_start_transition(transition_type, duration, easing);
+        if let Some(revealed) = revealed {
+            self.set_transition_render_pair(Some(popped), revealed, transition_type, duration);
+        }
         Ok((popped, revealed))
     }
     /// Replace the top scene with scene_id and start the given transition; returns the replaced SceneId.
@@ -174,6 +215,7 @@ impl SceneStack {
         self.stack.push(scene_id);
         self.scene_layers.entry(scene_id).or_insert(0);
         self.init_execution_flags(scene_id);
+        self.set_transition_render_pair(old, scene_id, transition_type, duration);
         old
     }
     /// Clear all scenes, cancel transitions and queue, and return the drained scene IDs.
@@ -181,12 +223,14 @@ impl SceneStack {
         log_msg!(info, SC04_STACK_CLEAR);
         self.transition = None;
         self.transition_queue.clear();
+        self.transition_render_ids = None;
         self.overlay_ids.clear();
         self.scene_layers.clear();
         self.process_enabled.clear();
         self.physics_enabled.clear();
         self.late_enabled.clear();
         self.update_enabled.clear();
+        self.scene_active.clear();
         std::mem::take(&mut self.stack)
     }
     /// Look up registered scene id by name; does not modify the stack.
@@ -259,6 +303,7 @@ impl SceneStack {
             t.update(dt);
             if t.is_complete() {
                 self.transition = None;
+                self.transition_render_ids = None;
                 self.start_next_transition_from_queue();
                 return true;
             }
@@ -282,6 +327,7 @@ impl SceneStack {
         self.stack.push(scene_id);
         self.scene_layers.entry(scene_id).or_insert(100);
         self.init_execution_flags(scene_id);
+        self.set_transition_render_pair(prev, scene_id, transition_type, duration);
         prev
     }
     /// Return true when scene_id was pushed via push_overlay.
@@ -301,11 +347,16 @@ impl SceneStack {
     }
 
     /// Return scene IDs selected for rendering.
-    /// Rendering is single-scene at engine level: only the current top scene is render-active.
-    pub fn get_render_ids(&self) -> &[SceneId] {
+    /// Rendering is normally single-scene; active transitions temporarily render outgoing and incoming scenes.
+    pub fn get_render_ids(&self) -> Vec<SceneId> {
+        if self.transition.is_some() {
+            if let Some((from, to)) = self.transition_render_ids {
+                return vec![from, to];
+            }
+        }
         match self.stack.last() {
-            Some(_) => &self.stack[self.stack.len() - 1..],
-            None => &[],
+            Some(id) => vec![*id],
+            None => Vec::new(),
         }
     }
     /// Set the draw layer priority for scene_id; higher values draw on top of lower values.
@@ -327,9 +378,19 @@ impl SceneStack {
     /// Return render-active scene IDs sorted by (layer, insertion index) ascending.
     pub fn get_render_ids_ordered_by_layer(&self) -> Vec<SceneId> {
         let mut indexed: Vec<(usize, SceneId)> =
-            self.get_render_ids().iter().copied().enumerate().collect();
+            self.get_render_ids().into_iter().enumerate().collect();
         indexed.sort_by_key(|(idx, id)| (self.get_scene_layer(*id), *idx));
         indexed.into_iter().map(|(_, id)| id).collect()
+    }
+
+    /// Enable or disable every pass for a scene id.
+    pub fn set_scene_active(&mut self, scene_id: SceneId, enabled: bool) {
+        self.scene_active.insert(scene_id, enabled);
+    }
+
+    /// Return whether the scene id is globally active.
+    pub fn is_scene_active(&self, scene_id: SceneId) -> bool {
+        self.scene_active.get(&scene_id).copied().unwrap_or(true)
     }
 
     /// Enable/disable `process` execution for a scene id.
@@ -375,6 +436,18 @@ impl SceneStack {
     pub fn register_scene(&mut self, name: String, scene_id: SceneId) {
         self.registry.insert(name, scene_id);
     }
+    /// Set persistence policy for a registered scene id.
+    pub fn set_scene_persistence(&mut self, scene_id: SceneId, persistence: ScenePersistence) {
+        self.scene_persistence.insert(scene_id, persistence);
+    }
+
+    /// Return persistence policy for a scene id; defaults to freeze.
+    pub fn get_scene_persistence(&self, scene_id: SceneId) -> ScenePersistence {
+        self.scene_persistence
+            .get(&scene_id)
+            .copied()
+            .unwrap_or(ScenePersistence::Freeze)
+    }
     /// Look up a SceneId by name; returns None when not registered.
     pub fn get_registered(&self, name: &str) -> Option<SceneId> {
         self.registry.get(name).copied()
@@ -385,7 +458,9 @@ impl SceneStack {
     }
     /// Remove a scene name from the registry; no-op when name is absent.
     pub fn unregister_scene(&mut self, name: &str) {
-        self.registry.remove(name);
+        if let Some(id) = self.registry.remove(name) {
+            self.scene_persistence.remove(&id);
+        }
     }
     /// Return all registered scene names; order is unspecified.
     pub fn get_registered_names(&self) -> Vec<String> {
@@ -458,5 +533,20 @@ mod tests {
         assert!(!stack.is_physics_enabled(id));
         assert!(!stack.is_late_enabled(id));
         assert!(!stack.is_update_enabled(id));
+    }
+
+    #[test]
+    fn transition_render_ids_include_outgoing_and_incoming() {
+        let mut stack = SceneStack::new();
+        let menu = stack.next_scene_id();
+        let game = stack.next_scene_id();
+        stack.push(menu, TransitionType::None, 0.0, EasingType::Linear);
+        stack.push(game, TransitionType::Fade, 1.0, EasingType::Linear);
+
+        let render_ids = stack.get_render_ids();
+        assert_eq!(render_ids, vec![menu, game]);
+
+        stack.update_transition(1.1);
+        assert_eq!(stack.get_render_ids(), vec![game]);
     }
 }

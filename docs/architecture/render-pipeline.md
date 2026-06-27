@@ -64,7 +64,7 @@ Companion documents: [engine-core.md](engine-core.md) Â· [philosophy.md](philo
 **Invariants:**
 - No module outside `src/render/` imports wgpu
 - `RenderCommand` is a data enum â€” no methods, no GPU handles, no trait objects
-- Light and post-FX data flow as structured arguments, not as `RenderCommand` variants
+- Light data flows as structured arguments; post-FX capture/apply flows through explicit command brackets with pass descriptors
 - GPU handles (`wgpu::Buffer`, `wgpu::Texture`) never appear in `SharedState`
 
 ---
@@ -322,7 +322,8 @@ The architecture does not assume one output type per module:
 |--------|----------|----------|----------|
 | `raycaster` | `RaycasterScene` for GPU | `Vec<BillboardSprite>` (depth-sorted) | Testing: `ImageData` via `draw_to_image()` |
 | `minimap` | `Vec<RenderCommand>` (terrain/fog) | Ping animations | Viewport indicator rect |
-| `effect` | `Vec<PostFxEffect>` | Overlay state (ambient, weather, fade, shake) | Per-image `ShaderPassDescriptor` |
+| `effect` | `Vec<PostFxEffect>` / `PostFxStack` | Capture/apply `RenderCommand` brackets | Per-image `ShaderPassDescriptor` |
+| `overlay` | `Vec<RenderCommand>` for direct screen layers | Overlay render-plan diagnostics | Future post-fx/procedural layer requests |
 | `tilemap` | `Vec<RenderCommand>` (tile quads) | Collision data (`Vec<SweepResult>`) | Animation frame updates |
 | `ui` | `Vec<RenderCommand>` (widget primitives) | Hit-test results | Layout data (`computed_rect` per widget) |
 | `physics` | Nothing (simulation only) | Debug: `Vec<RenderCommand>` (wireframe shapes) | â€” |

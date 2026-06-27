@@ -3473,11 +3473,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.learning.frameStack)
     end)
 
-    -- @covers lurek.learning.loadOnnx
-    it("lurek.learning.loadOnnx exists", function()
-        expect_type("function", lurek.learning.loadOnnx)
-    end)
-
     -- @covers lurek.learning.newBandit
     it("lurek.learning.newBandit exists", function()
         expect_type("function", lurek.learning.newBandit)
@@ -4423,10 +4418,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.network.newRpc)
     end)
 
-    -- @covers lurek.network.newRuntime
-    it("lurek.network.newRuntime exists", function()
-        expect_type("function", lurek.network.newRuntime)
-    end)
 
     -- @covers lurek.network.newServer
     it("lurek.network.newServer exists", function()
@@ -4473,15 +4464,7 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.network.setReady)
     end)
 
-    -- @covers lurek.network.sseCollect
-    it("lurek.network.sseCollect exists", function()
-        expect_type("function", lurek.network.sseCollect)
-    end)
 
-    -- @covers lurek.network.sseConnect
-    it("lurek.network.sseConnect exists", function()
-        expect_type("function", lurek.network.sseConnect)
-    end)
 
     -- @covers lurek.network.syncEntity
     it("lurek.network.syncEntity exists", function()

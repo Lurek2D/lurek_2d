@@ -1,8 +1,6 @@
-//! Loads DDS-backed compressed textures and stores format, dimensions, and mip levels without CPU decompression.
-//! Maps DXGI and legacy D3D format markers into Lurek enums so renderer upload code sees stable texture tags.
-//! Validates file signatures and header fields before exposing width, height, mip count, and format metadata.
+//! Keeps the compressed-image API surface stable while the runtime build only accepts PNG image content.
 //! Keeps compressed-image parsing separate from ordinary RGBA image loading and PNG style content workflows.
-//! Open this owner when DDS detection, format mapping, or compressed texture metadata looks incorrect at load.
+//! Open this owner when DDS rejection or compressed texture metadata behavior must change.
 
 use crate::runtime::EngineError;
 /// Compressed texture format recognized from DDS metadata.
@@ -54,28 +52,10 @@ pub struct CompressedImageData {
 }
 impl CompressedImageData {
     /// Decode DDS bytes into compressed image data or return a file-system error.
-    pub fn from_dds(bytes: &[u8]) -> Result<Self, EngineError> {
-        let dds = ddsfile::Dds::read(std::io::Cursor::new(bytes))
-            .map_err(|e| EngineError::FileSystemError(format!("DDS parse error: {e}")))?;
-        let format = detect_format(&dds);
-        let width = dds.get_width();
-        let height = dds.get_height();
-        let mip_count = dds.get_num_mipmap_levels().max(1);
-        let base_data = dds
-            .get_data(0)
-            .map_err(|e| EngineError::FileSystemError(format!("DDS data error: {e}")))?
-            .to_vec();
-        let mut mipmaps = Vec::with_capacity(mip_count as usize);
-        mipmaps.push(base_data);
-        for _ in 1..mip_count {
-            mipmaps.push(vec![]);
-        }
-        Ok(Self {
-            format,
-            width,
-            height,
-            mipmaps,
-        })
+    pub fn from_dds(_bytes: &[u8]) -> Result<Self, EngineError> {
+        Err(EngineError::FileSystemError(
+            "DDS compressed textures are not supported in this runtime build; use PNG".to_string(),
+        ))
     }
     /// Return the base image dimensions.
     pub fn get_dimensions(&self) -> (u32, u32) {
@@ -108,27 +88,4 @@ impl CompressedImageData {
         use std::io::Read;
         f.read_exact(&mut magic).is_ok() && Self::is_dds_magic(&magic)
     }
-}
-/// Detect a compressed format from DDS metadata or return `Unknown`.
-fn detect_format(dds: &ddsfile::Dds) -> CompressedFormat {
-    if let Some(dxgi) = dds.get_dxgi_format() {
-        use ddsfile::DxgiFormat;
-        return match dxgi {
-            DxgiFormat::BC1_UNorm | DxgiFormat::BC1_UNorm_sRGB => CompressedFormat::Dxt1,
-            DxgiFormat::BC2_UNorm | DxgiFormat::BC2_UNorm_sRGB => CompressedFormat::Dxt3,
-            DxgiFormat::BC3_UNorm | DxgiFormat::BC3_UNorm_sRGB => CompressedFormat::Dxt5,
-            DxgiFormat::BC7_UNorm | DxgiFormat::BC7_UNorm_sRGB => CompressedFormat::Bc7,
-            _ => CompressedFormat::Unknown,
-        };
-    }
-    if let Some(d3d) = dds.get_d3d_format() {
-        use ddsfile::D3DFormat;
-        return match d3d {
-            D3DFormat::DXT1 => CompressedFormat::Dxt1,
-            D3DFormat::DXT3 => CompressedFormat::Dxt3,
-            D3DFormat::DXT5 => CompressedFormat::Dxt5,
-            _ => CompressedFormat::Unknown,
-        };
-    }
-    CompressedFormat::Unknown
 }

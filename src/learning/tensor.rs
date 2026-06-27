@@ -8,8 +8,6 @@ use super::{
     error::LearningError,
     limits::{checked_product2, checked_tensor_elements, validate_non_zero_count, LearningLimits},
 };
-use ndarray::ArrayD;
-use tract_onnx::prelude::{IntoTensor, Tensor};
 
 /// Flat f32 tensor with explicit row-major shape metadata.
 #[derive(Debug, Clone)]
@@ -60,11 +58,6 @@ impl LurekTensor {
         })
     }
 
-    /// Create a tensor without validating the shape or data invariants.
-    pub(crate) fn new_unchecked(shape: Vec<usize>, data: Vec<f32>) -> Self {
-        Self { shape, data }
-    }
-
     /// Returns the total number of tensor elements.
     pub fn len(&self) -> usize {
         self.data.len()
@@ -109,13 +102,6 @@ impl LurekTensor {
             shape: vec![self.data.len()],
             data: self.data.clone(),
         }
-    }
-
-    /// Build a tract `Tensor` from this handle for use as a model input.
-    pub fn to_tract_tensor(&self) -> Result<Tensor, String> {
-        let arr = ArrayD::<f32>::from_shape_vec(self.shape.clone(), self.data.clone())
-            .map_err(|e| e.to_string())?;
-        Ok(arr.into_tensor())
     }
 }
 

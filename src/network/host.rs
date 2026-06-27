@@ -5,7 +5,7 @@
 //! Lease registration and cleanup also belong here since reconnect tokens are indexed by peer ownership state.
 //! Bandwidth, channel, address, and connection metrics remain local because they report or tune host-level behavior.
 //! Server and client convenience constructors stay here because role assignment and binding strategy are host concerns.
-//! Open it when ENet peer ownership changes; lobbies, wire values, and background TCP or WebSocket workers do not.
+//! Open it when ENet peer ownership changes; lobbies and wire values do not.
 
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;

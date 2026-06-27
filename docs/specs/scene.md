@@ -7,6 +7,7 @@
 - Manages stack-based scenes, overlays, and metatable factories.
 - Drives lifecycle hooks, lazy preloading, and timed visual transitions.
 - Shares parameters, serializes stack snapshots, and sorts sprite depths.
+- Owns scene activation, lifecycle sequencing, persistence policy, object group masks, and transition-time render ownership.
 
 ## General Info
 
@@ -14,7 +15,7 @@
 - Source path: `src/scene`
 - Binding: `src/lua_api/scene_api.rs`
 - Namespace: `lurek.scene`
-- Lua API surface: `60` functions, `10` types, `21` methods
+- Lua API surface: `63` functions, `10` types, `26` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -24,7 +25,12 @@
 - Scene stacks, shared scene data, lifecycle callbacks, transitions, depth sorting, object containers, and render bridges matter because changing what is active usually affects simulation, UI, rendering, and progression at the same time.
 - Push, pop, replace, and overlay semantics are central to the module's value. They let projects layer pause menus over gameplay, cutscenes over maps, or modal flows over existing screens without destroying the context underneath.
 - Lifecycle hooks make scenes more than labels: entry, exit, pause, resume, preload, and ready-style behavior let logic and resources react cleanly when control moves between states.
+- Lifecycle sequencing includes before/after hooks around enter, leave, pause, and resume, plus create-time setup. That lets a scene freeze, restore, or partially suspend its own contents around flow events instead of scattering those decisions across game code.
 - Shared data, symbolic registration, and transition support extend the feature from visual navigation into game-flow management, so scenes can exchange parameters, re-enter deterministically, and present state changes as unified runtime transitions.
+- Registered scenes can declare persistence intent. Frozen scenes preserve their table state for return flows, while reset-oriented factories can create fresh scene tables when pushed again.
+- Scene activation is separate from camera state. A camera controls a view; a scene controls which callbacks and object groups are allowed to process, simulate, and render.
+- Rendering remains single-scene outside transitions. During an active transition, the outgoing and incoming scenes are temporarily retained together so transition effects can draw both sides of the handoff.
+- Scene object containers provide 16 named group bits with per-pass enable flags for update, physics, and draw. This allows a scene to keep selected background work alive while suspending physics, visuals, or other tagged groups.
 - Stack semantics are one of the hardest recurring problems in game architecture, and this module gives a durable answer to what is active, what is suspended underneath, and how control returns cleanly after an overlay or interruption.
 - That matters for pause flows, inventory layers, tutorials, map screens, cutscenes, modal dialogs, failure states, and tool-driven previews that should temporarily change the foreground without tearing down the underlying gameplay context.
 - Transition support keeps pacing and presentation tied to the same model as logical scene changes. Fades, wipes, slides, or other handoff effects become part of one scene-change contract instead of ad hoc renderer tricks detached from lifecycle state.
@@ -138,6 +144,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.scene.isPhysicsEnabled(target?) -> boolean`: Returns whether `process_physics` is enabled for a selected scene.
 - `lurek.scene.isPreloaded(name) -> boolean`: Returns true if the named preload loader has already been executed at least once. Once a loader runs, subsequent `pushPreloaded` calls skip the loader and push the already-registered scene directly.
 - `lurek.scene.isProcessEnabled(target?) -> boolean`: Returns whether `process` is enabled for a selected scene.
+- `lurek.scene.isSceneActive(target?) -> boolean`: Returns whether the selected scene is globally active.
 - `lurek.scene.isTransitioning() -> boolean`: Returns true if a scene transition animation is currently playing. Use this to block input or skip certain logic during transitions.
 - `lurek.scene.isUpdateEnabled(target?) -> boolean`: Returns whether `update` is enabled for a selected scene.
 - `lurek.scene.new(def?) -> table`: Create a new scene instance from an optional prototype table. Sets up metatables so the instance inherits methods from the prototype. Use this for one-off scene creation; use `define` when you need a reusable scene constructor.
@@ -153,8 +160,9 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.scene.push(scene, transition?, duration?, easing?, params?) -> nil`: Push a new scene onto the stack, making it the active scene. The previously-active scene receives its `pause()` lifecycle callback and the new scene receives `enter(self, params)`. An optional visual transition (fade, slide, iris, etc.) animates between the two scenes over the specified duration.
 - `lurek.scene.pushOverlay(scene, transition?, duration?, easing?, params?) -> nil`: Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused â€” it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
 - `lurek.scene.pushPreloaded(name, transition?, duration?, easing?, params?) -> nil`: Push a preloaded scene onto the stack by name. If the loader registered via `preload` has not yet run, it executes first to create and register the scene. Then the registered scene is pushed with the specified transition. Combines deferred loading with stack navigation in a single call.
+- `lurek.scene.pushRegistered(name, transition?, duration?, easing?, params?) -> boolean`: Push a registered scene by name, honoring its persistence policy.
 - `lurek.scene.queueTransition(transition, duration, easing?) -> nil`: Queue a transition to play automatically after the current one finishes. Multiple queued transitions execute in FIFO order, enabling multi-step cinematic sequences (e.g. fade-out then slide-in).
-- `lurek.scene.registerScene(name, scene) -> nil`: Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
+- `lurek.scene.registerScene(name, sceneOrFactory, opts?) -> nil`: Register a scene table or scene factory under a unique name for later retrieval, pushRegistered navigation, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
 - `lurek.scene.removeData(key) -> nil`: Remove a key and its associated value from the shared scene data map. No-op if the key does not exist.
 - `lurek.scene.render() -> nil`: Call `render(self)` on render-active scenes ordered by layer (lowest first).
 - `lurek.scene.renderUi() -> nil`: Call `render_ui(self)` on render-active scenes ordered by layer (lowest first).
@@ -164,6 +172,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `lurek.scene.setLateEnabled(target?, enabled) -> boolean`: Enable or disable `process_late(self, dt)` execution for a selected scene.
 - `lurek.scene.setPhysicsEnabled(target?, enabled) -> boolean`: Enable or disable `process_physics(self, dt)` execution for a selected scene.
 - `lurek.scene.setProcessEnabled(target?, enabled) -> boolean`: Enable or disable `process(self, dt)` execution for a selected scene.
+- `lurek.scene.setSceneActive(target?, enabled) -> boolean`: Enable or disable all update, process, physics, late, and render callbacks for a selected scene.
 - `lurek.scene.setUpdateEnabled(target?, enabled) -> boolean`: Enable or disable `update(self, dt)` execution for a selected scene.
 - `lurek.scene.switchTo(scene, transition?, duration?, easing?, params?) -> nil`: Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack â€” the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 â†’ level 2).
 - `lurek.scene.transitions.fade(duration?) -> table`: Helper sub-table `lurek.scene.transitions` with convenience factory functions that build transition descriptor tables for use with transition-aware APIs.
@@ -253,12 +262,17 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - `LSceneObjectContainer:add(obj) -> nil`: Adds an object table to the scene container.
 - `LSceneObjectContainer:clear() -> nil`: Remove all objects from the container.
+- `LSceneObjectContainer:defineGroup(name) -> integer`: Define an object group and return its 0-based bit index.
 - `LSceneObjectContainer:draw() -> nil`: Call draw() on all objects that have a draw method, sorted by layer.
 - `LSceneObjectContainer:getByLayer(n) -> table`: Get all objects whose layer equals `n`.
 - `LSceneObjectContainer:getCount() -> nil`: Get the number of objects currently in the container.
+- `LSceneObjectContainer:getGroupBit(name) -> integer`: Return the bit index assigned to a group name.
 - `LSceneObjectContainer:getObjects() -> table`: Get all objects as an array (layer-sorted).
 - `LSceneObjectContainer:has(obj) -> boolean`: Check whether an object is present in the container.
+- `LSceneObjectContainer:isGroupEnabled(group, pass) -> boolean`: Return whether one object group is enabled for one pass.
+- `LSceneObjectContainer:processPhysics(dt) -> nil`: Call process_physics(dt) or physics(dt) on all physics-pass-enabled objects.
 - `LSceneObjectContainer:remove(obj) -> nil`: Remove an object from the container (identity comparison).
+- `LSceneObjectContainer:setGroupEnabled(group, pass, enabled) -> boolean`: Enable or disable one object group for one pass.
 - `LSceneObjectContainer:type() -> string`: Gets the Lua-visible type name of this userdata.
 - `LSceneObjectContainer:typeOf(name) -> boolean`: Checks whether this container matches a type name.
 - `LSceneObjectContainer:update(dt) -> nil`: Call update(dt) on all objects that have an update method.
@@ -347,6 +361,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 | Current artifact | `tests/artifacts/current/scene/scene_depth_sort_bands.png` |
 | Current artifact | `tests/artifacts/current/scene/scene_depth_sort_object_entries.txt` |
 | Current artifact | `tests/artifacts/current/scene/scene_depth_sort_stable_equal_depth.txt` |
+| Current artifact | `tests/artifacts/current/scene/scene_group_mask_transition.png` |
+| Current artifact | `tests/artifacts/current/scene/scene_group_mask_transition_trace.txt` |
 | Current artifact | `tests/artifacts/current/scene/scene_object_container_layer_trace.txt` |
 | Current artifact | `tests/artifacts/current/scene/scene_state_preload_overlay_trace.txt` |
 | Current artifact | `tests/artifacts/current/scene/scene_transition_progress_step01.png` |

@@ -25,7 +25,6 @@ new_key_type! {
     /// Key for audio bus storage entries.
     pub struct BusKey;
     /// Key for MIDI player storage entries.
-    pub struct MidiPlayerKey;
     /// Key for queued-audio playback entries.
     pub struct QueueableKey;
     /// Key for light storage entries.

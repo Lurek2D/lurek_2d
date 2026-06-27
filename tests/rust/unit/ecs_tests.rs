@@ -2,6 +2,7 @@
 
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
+use lurek2d::ecs::object_model::{ClassMeta, ObjectModel};
 use lurek2d::ecs::relationships::RelationshipManager;
 use lurek2d::ecs::universe::Universe;
 use mlua::{Lua, Value as LuaValue};
@@ -135,6 +136,87 @@ mod universe_tests {
 }
 
 // â”€â”€ relationships â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+mod object_model_tests {
+    use super::*;
+
+    #[test]
+    fn class_linearization_keeps_parents_before_child() {
+        let mut model = ObjectModel::new();
+        model.define_class(ClassMeta {
+            name: "GameObject".into(),
+            parents: Vec::new(),
+            tags: vec!["entity".into()],
+        });
+        model.define_class(ClassMeta {
+            name: "Projectile".into(),
+            parents: vec!["GameObject".into()],
+            tags: Vec::new(),
+        });
+        model.define_class(ClassMeta {
+            name: "EnemyBullet".into(),
+            parents: vec!["Projectile".into()],
+            tags: Vec::new(),
+        });
+
+        assert_eq!(
+            model.linearization("EnemyBullet"),
+            vec![
+                "GameObject".to_string(),
+                "Projectile".to_string(),
+                "EnemyBullet".to_string()
+            ]
+        );
+        assert!(model.class_is_a("EnemyBullet", "GameObject"));
+    }
+
+    #[test]
+    fn multi_inheritance_preserves_first_parent_precedence() {
+        let mut model = ObjectModel::new();
+        model.define_class(ClassMeta {
+            name: "Damageable".into(),
+            parents: Vec::new(),
+            tags: Vec::new(),
+        });
+        model.define_class(ClassMeta {
+            name: "Renderable".into(),
+            parents: Vec::new(),
+            tags: Vec::new(),
+        });
+        model.define_class(ClassMeta {
+            name: "EnemyBullet".into(),
+            parents: vec!["Damageable".into(), "Renderable".into()],
+            tags: Vec::new(),
+        });
+
+        assert_eq!(
+            model.linearization("EnemyBullet"),
+            vec![
+                "Damageable".to_string(),
+                "Renderable".to_string(),
+                "EnemyBullet".to_string()
+            ]
+        );
+    }
+
+    #[test]
+    fn object_registry_tracks_and_cleans_objects() {
+        let mut model = ObjectModel::new();
+        model.define_class(ClassMeta {
+            name: "EnemyBullet".into(),
+            parents: Vec::new(),
+            tags: Vec::new(),
+        });
+
+        let id = model.register_object("EnemyBullet");
+        assert!(model.has_object(id));
+        assert_eq!(model.object_class(id), Some("EnemyBullet"));
+        assert_eq!(model.object_ids(), vec![id]);
+
+        assert!(model.destroy_object(id));
+        assert!(!model.has_object(id));
+    }
+}
 
 mod relationships_tests {
     use super::*;

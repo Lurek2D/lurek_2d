@@ -1,19 +1,19 @@
 {
   "meta": {
-    "generated": "2026-06-27T10:41:01.487978+00:00",
+    "generated": "2026-06-27T12:17:43.653765+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 6399,
+      "lua_functions": 6436,
       "lua_modules": 72,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 6399,
-      "documented": 6399,
-      "coverage_pct": 100.0,
+      "total_functions": 6436,
+      "documented": 6431,
+      "coverage_pct": 99.9,
       "modules": 72
     },
     "enums": {},
@@ -41770,6 +41770,151 @@
         "source_file": "src/lua_api/ecs_api.rs",
         "functions": [
           {
+            "name": "isA",
+            "lua_name": "lurek.ecs.isA",
+            "kind": "function",
+            "owner_type": "",
+            "description": "",
+            "full_doc": "",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, candidate)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "candidate",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 164,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "type",
+            "lua_name": "lurek.ecs.type",
+            "kind": "function",
+            "owner_type": "",
+            "description": "",
+            "full_doc": "",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 171,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "typeOf",
+            "lua_name": "lurek.ecs.typeOf",
+            "kind": "function",
+            "owner_type": "",
+            "description": "",
+            "full_doc": "",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, candidate)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "candidate",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 176,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "getProperty",
+            "lua_name": "lurek.ecs.getProperty",
+            "kind": "function",
+            "owner_type": "",
+            "description": "",
+            "full_doc": "",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, name)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "name",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 186,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "setProperty",
+            "lua_name": "lurek.ecs.setProperty",
+            "kind": "function",
+            "owner_type": "",
+            "description": "",
+            "full_doc": "",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, name, value)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "name",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "value",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 212,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
             "name": "newUniverse",
             "lua_name": "lurek.ecs.newUniverse",
             "kind": "function",
@@ -41782,7 +41927,7 @@
             "typed_params": [],
             "inferred_return": "LUniverse",
             "return_description": "New universe handle.",
-            "line": 981,
+            "line": 1255,
             "file": "src/lua_api/ecs_api.rs"
           },
           {
@@ -41798,7 +41943,244 @@
             "typed_params": [],
             "inferred_return": "LRelationshipManager",
             "return_description": "New relationship manager handle owned by `lurek.ecs`.",
-            "line": 994,
+            "line": 1269,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "defineClass",
+            "lua_name": "lurek.ecs.defineClass",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Defines or replaces a global ECS class for Lua object instances.",
+            "full_doc": "Defines or replaces a global ECS class for Lua object instances.\n@param | name | string | Class name used by `newObject` and `LUniverse:spawnObject`.\n@param | def | table | Class definition with optional extends, defaults, methods, properties, constructor, and tags.",
+            "params_doc": "- `name` â€” `string`: Class name used by `newObject` and `LUniverse:spawnObject`.\n- `def` â€” `table`: Class definition with optional extends, defaults, methods, properties, constructor, and tags.",
+            "returns_doc": "",
+            "inferred_sig": "(name, def)",
+            "typed_params": [
+              [
+                "name",
+                "string",
+                false,
+                "Class name used by `newObject` and `LUniverse:spawnObject`."
+              ],
+              [
+                "def",
+                "table",
+                false,
+                "Class definition with optional extends, defaults, methods, properties, constructor, and tags."
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1282,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "hasClass",
+            "lua_name": "lurek.ecs.hasClass",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns whether a global ECS class name is defined.",
+            "full_doc": "Returns whether a global ECS class name is defined.\n@param | name | string | Class name to check.\n@return | boolean | True when the class exists.",
+            "params_doc": "- `name` â€” `string`: Class name to check.",
+            "returns_doc": "boolean",
+            "inferred_sig": "(name)",
+            "typed_params": [
+              [
+                "name",
+                "string",
+                false,
+                "Class name to check."
+              ]
+            ],
+            "inferred_return": "boolean",
+            "return_description": "True when the class exists.",
+            "line": 1304,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "getClass",
+            "lua_name": "lurek.ecs.getClass",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns metadata for a global ECS class.",
+            "full_doc": "Returns metadata for a global ECS class.\n@param | name | string | Class name to inspect.\n@return | table | Metadata table with name, extends, and tags; nil when unknown.",
+            "params_doc": "- `name` â€” `string`: Class name to inspect.",
+            "returns_doc": "table",
+            "inferred_sig": "(name)",
+            "typed_params": [
+              [
+                "name",
+                "string",
+                false,
+                "Class name to inspect."
+              ]
+            ],
+            "inferred_return": "table",
+            "return_description": "Metadata table with name, extends, and tags; nil when unknown.",
+            "line": 1315,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "classNames",
+            "lua_name": "lurek.ecs.classNames",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns all global ECS class names in deterministic order.",
+            "full_doc": "Returns all global ECS class names in deterministic order.\n@return | string[] | Registered class names.",
+            "params_doc": "",
+            "returns_doc": "string[]",
+            "inferred_sig": "()",
+            "typed_params": [],
+            "inferred_return": "string[]",
+            "return_description": "Registered class names.",
+            "line": 1329,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "clearClasses",
+            "lua_name": "lurek.ecs.clearClasses",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Removes every global ECS class definition.",
+            "full_doc": "Removes every global ECS class definition.",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "()",
+            "typed_params": [],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1336,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "newObject",
+            "lua_name": "lurek.ecs.newObject",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates a Lua table object from a registered ECS class.",
+            "full_doc": "Creates a Lua table object from a registered ECS class.\n@param | className | string | Registered class name.\n@param | props | table? | Optional property overrides.\n@return | table | Object table with type, typeOf, isA, getProperty, and setProperty methods.",
+            "params_doc": "- `className` â€” `string`: Registered class name.\n- `props` â€” `table?`: Optional property overrides.",
+            "returns_doc": "table",
+            "inferred_sig": "(class_name, [props])",
+            "typed_params": [
+              [
+                "className",
+                "string",
+                false,
+                "Registered class name."
+              ],
+              [
+                "props",
+                "table?",
+                true,
+                "Optional property overrides."
+              ]
+            ],
+            "inferred_return": "table",
+            "return_description": "Object table with type, typeOf, isA, getProperty, and setProperty methods.",
+            "line": 1358,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "getObject",
+            "lua_name": "lurek.ecs.getObject",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns a live ECS object table by object id.",
+            "full_doc": "Returns a live ECS object table by object id.\n@param | id | integer | Object id returned in the object's `__id` field.\n@return | table | Object table, or nil when not found.",
+            "params_doc": "- `id` â€” `integer`: Object id returned in the object's `__id` field.",
+            "returns_doc": "table",
+            "inferred_sig": "(id)",
+            "typed_params": [
+              [
+                "id",
+                "integer",
+                false,
+                "Object id returned in the object's `__id` field."
+              ]
+            ],
+            "inferred_return": "table",
+            "return_description": "Object table, or nil when not found.",
+            "line": 1369,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "hasObject",
+            "lua_name": "lurek.ecs.hasObject",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns whether a live ECS object id exists.",
+            "full_doc": "Returns whether a live ECS object id exists.\n@param | id | integer | Object id to check.\n@return | boolean | True when the object id is live.",
+            "params_doc": "- `id` â€” `integer`: Object id to check.",
+            "returns_doc": "boolean",
+            "inferred_sig": "(id)",
+            "typed_params": [
+              [
+                "id",
+                "integer",
+                false,
+                "Object id to check."
+              ]
+            ],
+            "inferred_return": "boolean",
+            "return_description": "True when the object id is live.",
+            "line": 1386,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "objectIds",
+            "lua_name": "lurek.ecs.objectIds",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns all live ECS object ids in ascending order.",
+            "full_doc": "Returns all live ECS object ids in ascending order.\n@return | integer[] | Object ids.",
+            "params_doc": "",
+            "returns_doc": "integer[]",
+            "inferred_sig": "()",
+            "typed_params": [],
+            "inferred_return": "integer[]",
+            "return_description": "Object ids.",
+            "line": 1396,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "destroyObject",
+            "lua_name": "lurek.ecs.destroyObject",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Removes a live ECS object from the global object registry.",
+            "full_doc": "Removes a live ECS object from the global object registry.\n@param | id | integer | Object id to destroy.\n@return | boolean | True when an object was removed.",
+            "params_doc": "- `id` â€” `integer`: Object id to destroy.",
+            "returns_doc": "boolean",
+            "inferred_sig": "(id)",
+            "typed_params": [
+              [
+                "id",
+                "integer",
+                false,
+                "Object id to destroy."
+              ]
+            ],
+            "inferred_return": "boolean",
+            "return_description": "True when an object was removed.",
+            "line": 1405,
+            "file": "src/lua_api/ecs_api.rs"
+          },
+          {
+            "name": "clearObjects",
+            "lua_name": "lurek.ecs.clearObjects",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Removes every live ECS object while keeping class definitions.",
+            "full_doc": "Removes every live ECS object while keeping class definitions.",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "()",
+            "typed_params": [],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1418,
             "file": "src/lua_api/ecs_api.rs"
           }
         ],
@@ -41820,7 +42202,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LRelationshipManager`.",
-                "line": 42,
+                "line": 253,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41843,7 +42225,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 47,
+                "line": 258,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41878,7 +42260,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 55,
+                "line": 266,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41901,7 +42283,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 72,
+                "line": 283,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41917,7 +42299,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Array table of registered relationship type names.",
-                "line": 79,
+                "line": 290,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41952,7 +42334,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 87,
+                "line": 298,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -41981,7 +42363,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Numeric value stored for the pair, or zero when unset.",
-                "line": 96,
+                "line": 307,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42016,7 +42398,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 104,
+                "line": 315,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42057,7 +42439,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the type exists and the supplied level is valid for that type.",
-                "line": 115,
+                "line": 326,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42092,7 +42474,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Stored level label or the type default when available, otherwise `nil` if the type is unknown.",
-                "line": 127,
+                "line": 338,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42121,7 +42503,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 137,
+                "line": 348,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42137,7 +42519,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Count of stored relationship pairs.",
-                "line": 144,
+                "line": 355,
                 "file": "src/lua_api/ecs_api.rs"
               }
             ]
@@ -42159,7 +42541,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LQueryView`.",
-                "line": 155,
+                "line": 366,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42182,7 +42564,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 160,
+                "line": 371,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42198,7 +42580,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 166,
+                "line": 377,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42214,7 +42596,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Query-change tick for the cached result set.",
-                "line": 174,
+                "line": 385,
                 "file": "src/lua_api/ecs_api.rs"
               }
             ]
@@ -42236,7 +42618,65 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Numeric entity id for the spawned entity.",
-                "line": 189,
+                "line": 400,
+                "file": "src/lua_api/ecs_api.rs"
+              },
+              {
+                "name": "spawnObject",
+                "lua_name": "LUniverse:spawnObject",
+                "kind": "method",
+                "owner_type": "LUniverse",
+                "description": "Creates an ECS object instance from a registered class and attaches it to a new entity.",
+                "full_doc": "Creates an ECS object instance from a registered class and attaches it to a new entity.\n@param | className | string | Registered ECS class name.\n@param | props | table? | Optional property overrides copied onto the new object.\n@return | integer | Entity id that received the object component.",
+                "params_doc": "- `className` â€” `string`: Registered ECS class name.\n- `props` â€” `table?`: Optional property overrides copied onto the new object.",
+                "returns_doc": "integer",
+                "inferred_sig": "(class_name, [props])",
+                "typed_params": [
+                  [
+                    "className",
+                    "string",
+                    false,
+                    "Registered ECS class name."
+                  ],
+                  [
+                    "props",
+                    "table?",
+                    true,
+                    "Optional property overrides copied onto the new object."
+                  ]
+                ],
+                "inferred_return": "integer",
+                "return_description": "Entity id that received the object component.",
+                "line": 408,
+                "file": "src/lua_api/ecs_api.rs"
+              },
+              {
+                "name": "attachObject",
+                "lua_name": "LUniverse:attachObject",
+                "kind": "method",
+                "owner_type": "LUniverse",
+                "description": "Attaches an existing ECS object table to an entity as the `object` component.",
+                "full_doc": "Attaches an existing ECS object table to an entity as the `object` component.\n@param | entityId | integer | Entity id that receives the object.\n@param | obj | table | Object table returned by `lurek.ecs.newObject`.",
+                "params_doc": "- `entityId` â€” `integer`: Entity id that receives the object.\n- `obj` â€” `table`: Object table returned by `lurek.ecs.newObject`.",
+                "returns_doc": "",
+                "inferred_sig": "(entity_id, obj)",
+                "typed_params": [
+                  [
+                    "entityId",
+                    "integer",
+                    false,
+                    "Entity id that receives the object."
+                  ],
+                  [
+                    "obj",
+                    "table",
+                    false,
+                    "Object table returned by `lurek.ecs.newObject`."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 439,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42259,7 +42699,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 195,
+                "line": 467,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42282,7 +42722,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the entity is alive.",
-                "line": 202,
+                "line": 474,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42317,7 +42757,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 210,
+                "line": 482,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42346,7 +42786,7 @@
                 ],
                 "inferred_return": "table|number|string|boolean|nil",
                 "return_description": "Stored component value, or nil when the entity does not have that component.",
-                "line": 221,
+                "line": 493,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42375,7 +42815,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the component exists on the entity.",
-                "line": 229,
+                "line": 501,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42404,7 +42844,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 236,
+                "line": 508,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42427,7 +42867,7 @@
                 ],
                 "inferred_return": "string[]",
                 "return_description": "Component name strings.",
-                "line": 243,
+                "line": 515,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42450,7 +42890,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 250,
+                "line": 522,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42466,7 +42906,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Monotonic world query-change tick.",
-                "line": 263,
+                "line": 535,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42495,7 +42935,7 @@
                 ],
                 "inferred_return": "LQueryView",
                 "return_description": "Cached query-view handle bound to this universe.",
-                "line": 271,
+                "line": 543,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42524,7 +42964,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 294,
+                "line": 566,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42540,7 +42980,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of live entity ids.",
-                "line": 303,
+                "line": 575,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42556,7 +42996,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Live entity count.",
-                "line": 309,
+                "line": 581,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42585,7 +43025,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 316,
+                "line": 588,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42608,7 +43048,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 348,
+                "line": 620,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42631,7 +43071,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 354,
+                "line": 626,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42647,7 +43087,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 375,
+                "line": 647,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42676,7 +43116,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 401,
+                "line": 673,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42692,7 +43132,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Registered system count.",
-                "line": 434,
+                "line": 706,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42721,7 +43161,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 441,
+                "line": 713,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42737,7 +43177,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of dirty entity ids.",
-                "line": 463,
+                "line": 735,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42766,7 +43206,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 475,
+                "line": 747,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42782,7 +43222,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Snapshot table containing entities and component state.",
-                "line": 492,
+                "line": 764,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42805,7 +43245,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 498,
+                "line": 770,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42821,7 +43261,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays.",
-                "line": 510,
+                "line": 782,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42837,7 +43277,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 551,
+                "line": 823,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42853,7 +43293,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 554,
+                "line": 826,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42882,7 +43322,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 561,
+                "line": 833,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42911,7 +43351,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 569,
+                "line": 841,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42940,7 +43380,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the entity has the tag.",
-                "line": 578,
+                "line": 850,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42963,7 +43403,7 @@
                 ],
                 "inferred_return": "string[]",
                 "return_description": "Tag names.",
-                "line": 585,
+                "line": 857,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -42986,7 +43426,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 592,
+                "line": 864,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43015,7 +43455,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 599,
+                "line": 871,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43038,7 +43478,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Layer value, using the ECS default when no explicit layer exists.",
-                "line": 607,
+                "line": 879,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43061,7 +43501,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 614,
+                "line": 886,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43077,7 +43517,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of sorted entity ids.",
-                "line": 620,
+                "line": 892,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43100,7 +43540,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Bit index assigned to the tag.",
-                "line": 627,
+                "line": 899,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43129,7 +43569,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Bit index used by the bitmap tag.",
-                "line": 635,
+                "line": 907,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43158,7 +43598,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 642,
+                "line": 914,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43187,7 +43627,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the entity has the bitmap tag.",
-                "line": 651,
+                "line": 923,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43210,7 +43650,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 658,
+                "line": 930,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43233,7 +43673,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 665,
+                "line": 937,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43256,7 +43696,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 675,
+                "line": 947,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43279,7 +43719,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Bit index when the tag exists, or nil when the tag is undefined.",
-                "line": 685,
+                "line": 957,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43308,7 +43748,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 692,
+                "line": 964,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43343,7 +43783,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 705,
+                "line": 977,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43372,7 +43812,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Entity id created from the blueprint.",
-                "line": 718,
+                "line": 990,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43395,7 +43835,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the blueprint is registered.",
-                "line": 730,
+                "line": 1002,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43418,7 +43858,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a blueprint was removed.",
-                "line": 737,
+                "line": 1009,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43434,7 +43874,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Blueprint names.",
-                "line": 743,
+                "line": 1015,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43457,7 +43897,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Blueprint component table.",
-                "line": 750,
+                "line": 1022,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43486,7 +43926,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 757,
+                "line": 1029,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43509,7 +43949,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Parent entity id, or nil when the entity has no parent.",
-                "line": 767,
+                "line": 1039,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43532,7 +43972,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of child entity ids.",
-                "line": 774,
+                "line": 1046,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43555,7 +43995,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 780,
+                "line": 1052,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43584,7 +44024,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of matching entity ids.",
-                "line": 788,
+                "line": 1060,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43600,7 +44040,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Snapshot table containing entities and component state.",
-                "line": 807,
+                "line": 1079,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43623,7 +44063,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 813,
+                "line": 1085,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43652,7 +44092,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 822,
+                "line": 1094,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43681,7 +44121,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 838,
+                "line": 1110,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43697,7 +44137,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 852,
+                "line": 1124,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43732,7 +44172,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of spawned entity ids.",
-                "line": 900,
+                "line": 1172,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43767,7 +44207,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 913,
+                "line": 1185,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43796,7 +44236,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of related target entity ids.",
-                "line": 924,
+                "line": 1196,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43831,7 +44271,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 937,
+                "line": 1209,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43860,7 +44300,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 947,
+                "line": 1219,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43895,7 +44335,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the relation exists.",
-                "line": 956,
+                "line": 1228,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43911,7 +44351,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LUniverse`.",
-                "line": 965,
+                "line": 1237,
                 "file": "src/lua_api/ecs_api.rs"
               },
               {
@@ -43934,7 +44374,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 970,
+                "line": 1242,
                 "file": "src/lua_api/ecs_api.rs"
               }
             ]
@@ -93775,7 +94215,7 @@
             ],
             "inferred_return": "LEventBus",
             "return_description": "A new event bus instance.",
-            "line": 3025,
+            "line": 3165,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93791,7 +94231,30 @@
             "typed_params": [],
             "inferred_return": "LObjectPool",
             "return_description": "A new object pool instance.",
-            "line": 3039,
+            "line": 3179,
+            "file": "src/lua_api/patterns_api.rs"
+          },
+          {
+            "name": "newDeck",
+            "lua_name": "lurek.patterns.newDeck",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Create a reusable deck/card collection with shuffle, draw, discard, and reset operations.",
+            "full_doc": "Create a reusable deck/card collection with shuffle, draw, discard, and reset operations.\n@param | cards | table? | Optional array of initial card payloads.\n@return | LDeck | A new deck instance.",
+            "params_doc": "- `cards` â€” `table?`: Optional array of initial card payloads.",
+            "returns_doc": "LDeck",
+            "inferred_sig": "([cards])",
+            "typed_params": [
+              [
+                "cards",
+                "table?",
+                true,
+                "Optional array of initial card payloads."
+              ]
+            ],
+            "inferred_return": "LDeck",
+            "return_description": "A new deck instance.",
+            "line": 3193,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93814,7 +94277,7 @@
             ],
             "inferred_return": "LCommandStack",
             "return_description": "A new command stack instance.",
-            "line": 3053,
+            "line": 3212,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93830,7 +94293,7 @@
             "typed_params": [],
             "inferred_return": "LServiceLocator",
             "return_description": "A new service locator instance.",
-            "line": 3069,
+            "line": 3228,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93846,7 +94309,7 @@
             "typed_params": [],
             "inferred_return": "LFactory",
             "return_description": "A new factory instance.",
-            "line": 3081,
+            "line": 3240,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93862,7 +94325,7 @@
             "typed_params": [],
             "inferred_return": "LSimpleState",
             "return_description": "A new state machine instance.",
-            "line": 3093,
+            "line": 3252,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93885,7 +94348,7 @@
             ],
             "inferred_return": "LBlackboard",
             "return_description": "A new blackboard instance.",
-            "line": 3108,
+            "line": 3267,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93908,7 +94371,7 @@
             ],
             "inferred_return": "LObserver",
             "return_description": "A new observer instance.",
-            "line": 3125,
+            "line": 3284,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93931,7 +94394,7 @@
             ],
             "inferred_return": "LThrottle",
             "return_description": "A new throttle instance.",
-            "line": 3141,
+            "line": 3300,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93954,7 +94417,7 @@
             ],
             "inferred_return": "LDebounce",
             "return_description": "A new debounce instance.",
-            "line": 3154,
+            "line": 3313,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -93977,7 +94440,7 @@
             ],
             "inferred_return": "LPriorityQueue",
             "return_description": "A new priority queue instance.",
-            "line": 3167,
+            "line": 3326,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94006,7 +94469,7 @@
             ],
             "inferred_return": "LRing",
             "return_description": "A new ring buffer instance.",
-            "line": 3183,
+            "line": 3342,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94041,7 +94504,7 @@
             ],
             "inferred_return": "LFunnel",
             "return_description": "A new funnel instance.",
-            "line": 3200,
+            "line": 3359,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94057,7 +94520,7 @@
             "typed_params": [],
             "inferred_return": "LRelationshipManager",
             "return_description": "A new relationship manager instance.",
-            "line": 3219,
+            "line": 3378,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94073,7 +94536,7 @@
             "typed_params": [],
             "inferred_return": "LMediator",
             "return_description": "A new mediator instance.",
-            "line": 3230,
+            "line": 3389,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94089,7 +94552,7 @@
             "typed_params": [],
             "inferred_return": "LStrategy",
             "return_description": "A new strategy instance.",
-            "line": 3242,
+            "line": 3401,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94112,7 +94575,7 @@
             ],
             "inferred_return": "LStack",
             "return_description": "A new stack instance.",
-            "line": 3255,
+            "line": 3414,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94135,7 +94598,7 @@
             ],
             "inferred_return": "LQueue",
             "return_description": "A new queue instance.",
-            "line": 3268,
+            "line": 3427,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94151,7 +94614,7 @@
             "typed_params": [],
             "inferred_return": "LList",
             "return_description": "A new list instance.",
-            "line": 3280,
+            "line": 3439,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94167,7 +94630,7 @@
             "typed_params": [],
             "inferred_return": "LSet",
             "return_description": "A new set instance.",
-            "line": 3291,
+            "line": 3450,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94183,7 +94646,7 @@
             "typed_params": [],
             "inferred_return": "LMap",
             "return_description": "A new map instance.",
-            "line": 3302,
+            "line": 3461,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94199,7 +94662,7 @@
             "typed_params": [],
             "inferred_return": "LWeightedRandom",
             "return_description": "A new weighted random pool instance.",
-            "line": 3313,
+            "line": 3472,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94215,7 +94678,7 @@
             "typed_params": [],
             "inferred_return": "LBehaviorTree",
             "return_description": "A new behavior tree instance.",
-            "line": 3325,
+            "line": 3484,
             "file": "src/lua_api/patterns_api.rs"
           },
           {
@@ -94238,7 +94701,7 @@
             ],
             "inferred_return": "LPatternGraph",
             "return_description": "A new graph instance.",
-            "line": 3339,
+            "line": 3498,
             "file": "src/lua_api/patterns_api.rs"
           }
         ],
@@ -94546,6 +95009,207 @@
               }
             ]
           },
+          "LDeck": {
+            "description": "Lua-facing reusable deck that stores arbitrary card payloads and delegates pile ordering to Rust.",
+            "fields": [],
+            "methods": [
+              {
+                "name": "add",
+                "lua_name": "LDeck:add",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Add a card payload to the bottom of the deck's draw pile.",
+                "full_doc": "Add a card payload to the bottom of the deck's draw pile.\n@param | card | any | Card payload stored by the deck.\n@return | integer | Stable card id for later discard or inspection.",
+                "params_doc": "- `card` â€” `any`: Card payload stored by the deck.",
+                "returns_doc": "integer",
+                "inferred_sig": "(value)",
+                "typed_params": [
+                  [
+                    "card",
+                    "any",
+                    false,
+                    "Card payload stored by the deck."
+                  ]
+                ],
+                "inferred_return": "integer",
+                "return_description": "Stable card id for later discard or inspection.",
+                "line": 259,
+                "file": "src/lua_api/patterns_api.rs"
+              },
+              {
+                "name": "shuffle",
+                "lua_name": "LDeck:shuffle",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Shuffle the current draw pile with a deterministic optional seed.",
+                "full_doc": "Shuffle the current draw pile with a deterministic optional seed.\n@param | seed | integer? | Optional shuffle seed; omitted uses `1`.",
+                "params_doc": "- `seed` â€” `integer?`: Optional shuffle seed; omitted uses `1`.",
+                "returns_doc": "",
+                "inferred_sig": "([seed])",
+                "typed_params": [
+                  [
+                    "seed",
+                    "integer?",
+                    true,
+                    "Optional shuffle seed; omitted uses `1`."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 265,
+                "file": "src/lua_api/patterns_api.rs"
+              },
+              {
+                "name": "draw",
+                "lua_name": "LDeck:draw",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Draw one or more cards from the top of the draw pile.",
+                "full_doc": "Draw one or more cards from the top of the draw pile.\n@param | count | integer? | Number of cards to draw; default `1`.\n@return | any | Single card when count is omitted or `1`.\n@return | table | Array of cards when count is greater than `1`.",
+                "params_doc": "- `count` â€” `integer?`: Number of cards to draw; default `1`.",
+                "returns_doc": "any",
+                "inferred_sig": "([count])",
+                "typed_params": [
+                  [
+                    "count",
+                    "integer?",
+                    true,
+                    "Number of cards to draw; default `1`."
+                  ]
+                ],
+                "inferred_return": "any",
+                "return_description": "Single card when count is omitted or `1`.",
+                "line": 274,
+                "file": "src/lua_api/patterns_api.rs"
+              },
+              {
+                "name": "peek",
+                "lua_name": "LDeck:peek",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Inspect one or more cards from the top without removing them.",
+                "full_doc": "Inspect one or more cards from the top without removing them.\n@param | count | integer? | Number of cards to inspect; default `1`.\n@return | any | Single card when count is omitted or `1`.\n@return | table | Array of cards when count is greater than `1`.",
+                "params_doc": "- `count` â€” `integer?`: Number of cards to inspect; default `1`.",
+                "returns_doc": "any",
+                "inferred_sig": "([count])",
+                "typed_params": [
+                  [
+                    "count",
+                    "integer?",
+                    true,
+                    "Number of cards to inspect; default `1`."
+                  ]
+                ],
+                "inferred_return": "any",
+                "return_description": "Single card when count is omitted or `1`.",
+                "line": 292,
+                "file": "src/lua_api/patterns_api.rs"
+              },
+              {
+                "name": "discard",
+                "lua_name": "LDeck:discard",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Move a card into the discard pile by card table or stable id.",
+                "full_doc": "Move a card into the discard pile by card table or stable id.\n@param | card | any | Card table returned by the deck, or a stable card id.\n@return | boolean | True when the card entered the discard pile.",
+                "params_doc": "- `card` â€” `any`: Card table returned by the deck, or a stable card id.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(value)",
+                "typed_params": [
+                  [
+                    "card",
+                    "any",
+                    false,
+                    "Card table returned by the deck, or a stable card id."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the card entered the discard pile.",
+                "line": 309,
+                "file": "src/lua_api/patterns_api.rs"
+              },
+              {
+                "name": "reset",
+                "lua_name": "LDeck:reset",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Restore the draw pile to original insertion order and clear discard.",
+                "full_doc": "Restore the draw pile to original insertion order and clear discard.",
+                "params_doc": "",
+                "returns_doc": "",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 317,
+                "file": "src/lua_api/patterns_api.rs"
+              },
+              {
+                "name": "count",
+                "lua_name": "LDeck:count",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Return the number of cards left in the draw pile.",
+                "full_doc": "Return the number of cards left in the draw pile.\n@return | integer | Remaining draw-pile count.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Remaining draw-pile count.",
+                "line": 324,
+                "file": "src/lua_api/patterns_api.rs"
+              },
+              {
+                "name": "discardCount",
+                "lua_name": "LDeck:discardCount",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Return the number of cards in the discard pile.",
+                "full_doc": "Return the number of cards in the discard pile.\n@return | integer | Discard pile count.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Discard pile count.",
+                "line": 328,
+                "file": "src/lua_api/patterns_api.rs"
+              },
+              {
+                "name": "isEmpty",
+                "lua_name": "LDeck:isEmpty",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Return true when no cards remain in the draw pile.",
+                "full_doc": "Return true when no cards remain in the draw pile.\n@return | boolean | Whether the deck has no drawable cards.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "Whether the deck has no drawable cards.",
+                "line": 334,
+                "file": "src/lua_api/patterns_api.rs"
+              },
+              {
+                "name": "toArray",
+                "lua_name": "LDeck:toArray",
+                "kind": "method",
+                "owner_type": "LDeck",
+                "description": "Return the current draw pile as an array without modifying it.",
+                "full_doc": "Return the current draw pile as an array without modifying it.\n@return | table | Array of card payloads in draw order.",
+                "params_doc": "",
+                "returns_doc": "table",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "table",
+                "return_description": "Array of card payloads in draw order.",
+                "line": 340,
+                "file": "src/lua_api/patterns_api.rs"
+              }
+            ]
+          },
           "LCommandStack": {
             "description": "Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.",
             "fields": [],
@@ -94582,7 +95246,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 226,
+                "line": 366,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94598,7 +95262,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if undo succeeded, false if nothing to undo or no undo function registered.",
-                "line": 277,
+                "line": 417,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94614,7 +95278,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if redo succeeded, false if nothing to redo.",
-                "line": 308,
+                "line": 448,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94630,7 +95294,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if undo is available.",
-                "line": 330,
+                "line": 470,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94646,7 +95310,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if redo is available.",
-                "line": 340,
+                "line": 480,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94662,7 +95326,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Total history depth.",
-                "line": 346,
+                "line": 486,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94678,7 +95342,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The command name, or nil if history is empty.",
-                "line": 353,
+                "line": 493,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94694,7 +95358,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 361,
+                "line": 501,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -94729,7 +95393,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 391,
+                "line": 531,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94752,7 +95416,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "The service table.",
-                "line": 404,
+                "line": 544,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94775,7 +95439,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the service exists.",
-                "line": 415,
+                "line": 555,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94798,7 +95462,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 421,
+                "line": 561,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94814,7 +95478,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Service name strings.",
-                "line": 431,
+                "line": 571,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94830,7 +95494,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 447,
+                "line": 587,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -94865,7 +95529,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 475,
+                "line": 615,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94894,7 +95558,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "The created object table.",
-                "line": 492,
+                "line": 632,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94917,7 +95581,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if a constructor exists for this type.",
-                "line": 512,
+                "line": 652,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94946,7 +95610,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 519,
+                "line": 659,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94962,7 +95626,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Type name strings.",
-                "line": 529,
+                "line": 669,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -94985,7 +95649,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 546,
+                "line": 686,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95001,7 +95665,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 555,
+                "line": 695,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -95036,7 +95700,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 585,
+                "line": 725,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95059,7 +95723,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the transition happened, false if the target state does not exist.",
-                "line": 627,
+                "line": 767,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95082,7 +95746,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 656,
+                "line": 796,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95098,7 +95762,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Current state name, or nil if no state is set.",
-                "line": 673,
+                "line": 813,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95121,7 +95785,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the state exists.",
-                "line": 680,
+                "line": 820,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95137,7 +95801,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "State name strings.",
-                "line": 686,
+                "line": 826,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95153,7 +95817,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 702,
+                "line": 842,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -95188,7 +95852,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 736,
+                "line": 876,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95211,7 +95875,7 @@
                 ],
                 "inferred_return": "boolean|number|string|nil",
                 "return_description": "The stored value.",
-                "line": 777,
+                "line": 917,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95234,7 +95898,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the key has a stored value.",
-                "line": 791,
+                "line": 931,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95257,7 +95921,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 797,
+                "line": 937,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95273,7 +95937,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Key name strings.",
-                "line": 804,
+                "line": 944,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95302,7 +95966,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "A watcher ID for later removal with `unwatch()`.",
-                "line": 817,
+                "line": 957,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95325,7 +95989,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 835,
+                "line": 975,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95341,7 +96005,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The revision number.",
-                "line": 845,
+                "line": 985,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95357,7 +96021,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "A table mapping key strings to their stored values.",
-                "line": 851,
+                "line": 991,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95373,7 +96037,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 865,
+                "line": 1005,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -95408,7 +96072,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 889,
+                "line": 1029,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95431,7 +96095,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The stored value.",
-                "line": 910,
+                "line": 1050,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95466,7 +96130,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "A subscription ID for later removal with `unsubscribe()`.",
-                "line": 922,
+                "line": 1062,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95489,7 +96153,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 937,
+                "line": 1077,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95505,7 +96169,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Total subscription count.",
-                "line": 947,
+                "line": 1087,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -95534,7 +96198,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 968,
+                "line": 1108,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95557,7 +96221,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the throttle fired this frame.",
-                "line": 979,
+                "line": 1119,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95573,7 +96237,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 991,
+                "line": 1131,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95589,7 +96253,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Progress fraction.",
-                "line": 998,
+                "line": 1138,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95605,7 +96269,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Total fire count.",
-                "line": 1004,
+                "line": 1144,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95628,7 +96292,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1010,
+                "line": 1150,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -95657,7 +96321,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1032,
+                "line": 1172,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95673,7 +96337,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1041,
+                "line": 1181,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95696,7 +96360,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the debounce fired this frame.",
-                "line": 1049,
+                "line": 1189,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95712,7 +96376,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1061,
+                "line": 1201,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95728,7 +96392,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if a fire is pending.",
-                "line": 1068,
+                "line": 1208,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95744,7 +96408,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Total fire count.",
-                "line": 1074,
+                "line": 1214,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -95785,7 +96449,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The internal ID of the enqueued item.",
-                "line": 1098,
+                "line": 1238,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95801,7 +96465,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "The item table.",
-                "line": 1114,
+                "line": 1254,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95817,7 +96481,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "The item table.",
-                "line": 1130,
+                "line": 1270,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95833,7 +96497,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Item count.",
-                "line": 1145,
+                "line": 1285,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95849,7 +96513,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the queue is empty.",
-                "line": 1149,
+                "line": 1289,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95865,7 +96529,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1152,
+                "line": 1292,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -95900,7 +96564,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The internal ID of the new entry.",
-                "line": 1179,
+                "line": 1319,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95916,7 +96580,7 @@
                 "typed_params": [],
                 "inferred_return": "table|nil",
                 "return_description": "Entry table or nil.",
-                "line": 1206,
+                "line": 1346,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95932,7 +96596,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of entry tables with id, tag, value, and text fields.",
-                "line": 1234,
+                "line": 1374,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95948,7 +96612,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Sum of values.",
-                "line": 1257,
+                "line": 1397,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95964,7 +96628,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Average value (0 if empty).",
-                "line": 1261,
+                "line": 1401,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95980,7 +96644,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Entry count.",
-                "line": 1265,
+                "line": 1405,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -95996,7 +96660,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if full.",
-                "line": 1269,
+                "line": 1409,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96012,7 +96676,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1272,
+                "line": 1412,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -96041,7 +96705,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1294,
+                "line": 1434,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96070,7 +96734,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1305,
+                "line": 1445,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96093,7 +96757,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if a flush occurred this frame.",
-                "line": 1316,
+                "line": 1456,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96109,7 +96773,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1326,
+                "line": 1466,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96125,7 +96789,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1329,
+                "line": 1469,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96141,7 +96805,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Pending entry count.",
-                "line": 1336,
+                "line": 1476,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96157,7 +96821,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Total flush count.",
-                "line": 1342,
+                "line": 1482,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -96198,7 +96862,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1386,
+                "line": 1526,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96221,7 +96885,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1403,
+                "line": 1543,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96237,7 +96901,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Type name strings.",
-                "line": 1410,
+                "line": 1550,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96272,7 +96936,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1416,
+                "line": 1556,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96301,7 +96965,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The stored value (0 if not set).",
-                "line": 1425,
+                "line": 1565,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96336,7 +97000,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1433,
+                "line": 1573,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96377,7 +97041,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the level was set successfully.",
-                "line": 1444,
+                "line": 1584,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96412,7 +97076,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The current level name, or nil when no level is assigned.",
-                "line": 1456,
+                "line": 1596,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96441,7 +97105,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1466,
+                "line": 1606,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96457,7 +97121,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Pair count.",
-                "line": 1473,
+                "line": 1613,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -96492,7 +97156,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Handler ID for later removal.",
-                "line": 1496,
+                "line": 1636,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96521,7 +97185,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1509,
+                "line": 1649,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96550,7 +97214,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1520,
+                "line": 1660,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96573,7 +97237,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1541,
+                "line": 1681,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96596,7 +97260,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Handler count.",
-                "line": 1561,
+                "line": 1701,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96612,7 +97276,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Channel name strings.",
-                "line": 1567,
+                "line": 1707,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96635,7 +97299,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1573,
+                "line": 1713,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96651,7 +97315,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1586,
+                "line": 1726,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -96686,7 +97350,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1613,
+                "line": 1753,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96709,7 +97373,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the strategy exists and was set.",
-                "line": 1626,
+                "line": 1766,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96732,7 +97396,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Return value from the strategy function.",
-                "line": 1634,
+                "line": 1774,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96748,7 +97412,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Active strategy name, or nil if none is selected.",
-                "line": 1650,
+                "line": 1790,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96771,7 +97435,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if registered.",
-                "line": 1657,
+                "line": 1797,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96794,7 +97458,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the strategy was found and removed.",
-                "line": 1664,
+                "line": 1804,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96810,7 +97474,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Strategy name strings.",
-                "line": 1686,
+                "line": 1826,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96826,7 +97490,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1689,
+                "line": 1829,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -96855,7 +97519,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if pushed, false if full.",
-                "line": 1716,
+                "line": 1856,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96878,7 +97542,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if pushed, false if full.",
-                "line": 1729,
+                "line": 1869,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96894,7 +97558,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The popped value.",
-                "line": 1742,
+                "line": 1882,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96910,7 +97574,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The popped value.",
-                "line": 1755,
+                "line": 1895,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96933,7 +97597,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Popped values (may be shorter than count).",
-                "line": 1768,
+                "line": 1908,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96949,7 +97613,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The top value.",
-                "line": 1784,
+                "line": 1924,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96965,7 +97629,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The bottom value.",
-                "line": 1796,
+                "line": 1936,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -96988,7 +97652,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The value at that position.",
-                "line": 1809,
+                "line": 1949,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97017,7 +97681,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if inserted, false if full.",
-                "line": 1825,
+                "line": 1965,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97040,7 +97704,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The removed value.",
-                "line": 1843,
+                "line": 1983,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97069,7 +97733,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the move succeeded.",
-                "line": 1857,
+                "line": 1997,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97085,7 +97749,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Item count.",
-                "line": 1870,
+                "line": 2010,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97101,7 +97765,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if empty.",
-                "line": 1874,
+                "line": 2014,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97117,7 +97781,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if full.",
-                "line": 1878,
+                "line": 2018,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97133,7 +97797,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1883,
+                "line": 2023,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97149,7 +97813,7 @@
                 "typed_params": [],
                 "inferred_return": "number[]",
                 "return_description": "Array of all values.",
-                "line": 1893,
+                "line": 2033,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -97178,7 +97842,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if enqueued, false if full.",
-                "line": 1920,
+                "line": 2060,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97201,7 +97865,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if enqueued, false if full.",
-                "line": 1933,
+                "line": 2073,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97217,7 +97881,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The dequeued value.",
-                "line": 1946,
+                "line": 2086,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97233,7 +97897,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The dequeued value.",
-                "line": 1959,
+                "line": 2099,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97249,7 +97913,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The front value.",
-                "line": 1972,
+                "line": 2112,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97265,7 +97929,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The back value.",
-                "line": 1984,
+                "line": 2124,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97288,7 +97952,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The value.",
-                "line": 1997,
+                "line": 2137,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97317,7 +97981,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if inserted, false if full.",
-                "line": 2013,
+                "line": 2153,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97340,7 +98004,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The removed value.",
-                "line": 2031,
+                "line": 2171,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97356,7 +98020,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Item count.",
-                "line": 2046,
+                "line": 2186,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97372,7 +98036,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if empty.",
-                "line": 2050,
+                "line": 2190,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97388,7 +98052,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if full.",
-                "line": 2054,
+                "line": 2194,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97404,7 +98068,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2059,
+                "line": 2199,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97420,7 +98084,7 @@
                 "typed_params": [],
                 "inferred_return": "number[]",
                 "return_description": "Array of all values.",
-                "line": 2069,
+                "line": 2209,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -97449,7 +98113,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2094,
+                "line": 2234,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97472,7 +98136,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2102,
+                "line": 2242,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97495,7 +98159,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2110,
+                "line": 2250,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97518,7 +98182,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The value.",
-                "line": 2120,
+                "line": 2260,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97547,7 +98211,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2136,
+                "line": 2276,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97576,7 +98240,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2153,
+                "line": 2293,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97599,7 +98263,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The removed value.",
-                "line": 2165,
+                "line": 2305,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97615,7 +98279,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The popped value.",
-                "line": 2182,
+                "line": 2322,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97631,7 +98295,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The shifted value.",
-                "line": 2195,
+                "line": 2335,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97654,7 +98318,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The 1-based index, or nil when the value is not found.",
-                "line": 2208,
+                "line": 2348,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97670,7 +98334,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2219,
+                "line": 2359,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97686,7 +98350,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Item count.",
-                "line": 2226,
+                "line": 2366,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97702,7 +98366,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if empty.",
-                "line": 2230,
+                "line": 2370,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97725,7 +98389,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if found.",
-                "line": 2235,
+                "line": 2375,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97741,7 +98405,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2246,
+                "line": 2386,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97757,7 +98421,7 @@
                 "typed_params": [],
                 "inferred_return": "number[]",
                 "return_description": "Array of all values.",
-                "line": 2256,
+                "line": 2396,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -97786,7 +98450,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if newly added, false if already existed.",
-                "line": 2282,
+                "line": 2422,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97809,7 +98473,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if removed, false if not found.",
-                "line": 2289,
+                "line": 2429,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97832,7 +98496,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if present.",
-                "line": 2296,
+                "line": 2436,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97848,7 +98512,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Item count.",
-                "line": 2302,
+                "line": 2442,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97864,7 +98528,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if empty.",
-                "line": 2306,
+                "line": 2446,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97880,7 +98544,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "String values.",
-                "line": 2310,
+                "line": 2450,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97896,7 +98560,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2319,
+                "line": 2459,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97919,7 +98583,7 @@
                 ],
                 "inferred_return": "LSet",
                 "return_description": "A new set with the union of both.",
-                "line": 2327,
+                "line": 2467,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -97942,7 +98606,7 @@
                 ],
                 "inferred_return": "LSet",
                 "return_description": "A new set with only shared items.",
-                "line": 2341,
+                "line": 2481,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -97977,7 +98641,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2368,
+                "line": 2508,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98000,7 +98664,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The value.",
-                "line": 2380,
+                "line": 2520,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98023,7 +98687,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if present.",
-                "line": 2391,
+                "line": 2531,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98046,7 +98710,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if removed, false if not found.",
-                "line": 2398,
+                "line": 2538,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98062,7 +98726,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Entry count.",
-                "line": 2409,
+                "line": 2549,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98078,7 +98742,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if empty.",
-                "line": 2413,
+                "line": 2553,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98094,7 +98758,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Key strings.",
-                "line": 2417,
+                "line": 2557,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98110,7 +98774,7 @@
                 "typed_params": [],
                 "inferred_return": "number[]",
                 "return_description": "Array of values.",
-                "line": 2427,
+                "line": 2567,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98126,7 +98790,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of entry tables.",
-                "line": 2442,
+                "line": 2582,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98149,7 +98813,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2457,
+                "line": 2597,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98165,7 +98829,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2470,
+                "line": 2610,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -98206,7 +98870,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The internal ID of the added entry.",
-                "line": 2498,
+                "line": 2638,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98229,7 +98893,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if removed.",
-                "line": 2514,
+                "line": 2654,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98258,7 +98922,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the entry was found and updated.",
-                "line": 2528,
+                "line": 2668,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98281,7 +98945,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The selected item's value.",
-                "line": 2536,
+                "line": 2676,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98310,7 +98974,7 @@
                 ],
                 "inferred_return": "number[]",
                 "return_description": "Array of picked values.",
-                "line": 2553,
+                "line": 2693,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98326,7 +98990,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Total weight.",
-                "line": 2570,
+                "line": 2710,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98342,7 +99006,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Entry count.",
-                "line": 2576,
+                "line": 2716,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98358,7 +99022,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if empty.",
-                "line": 2580,
+                "line": 2720,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98374,7 +99038,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2583,
+                "line": 2723,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98390,7 +99054,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Revision number.",
-                "line": 2594,
+                "line": 2734,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -98419,7 +99083,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The node ID.",
-                "line": 2615,
+                "line": 2755,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98442,7 +99106,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The node ID.",
-                "line": 2625,
+                "line": 2765,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98471,7 +99135,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The node ID.",
-                "line": 2636,
+                "line": 2776,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98494,7 +99158,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The node ID.",
-                "line": 2649,
+                "line": 2789,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98523,7 +99187,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The node ID.",
-                "line": 2660,
+                "line": 2800,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98552,7 +99216,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The node ID.",
-                "line": 2674,
+                "line": 2814,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98581,7 +99245,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if attached successfully.",
-                "line": 2688,
+                "line": 2828,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98604,7 +99268,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the node exists.",
-                "line": 2695,
+                "line": 2835,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98633,7 +99297,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2702,
+                "line": 2842,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98649,7 +99313,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "One of \"success\", \"failure\", or \"running\".",
-                "line": 2715,
+                "line": 2855,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98665,7 +99329,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2729,
+                "line": 2869,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98681,7 +99345,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Node count.",
-                "line": 2736,
+                "line": 2876,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98697,7 +99361,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2741,
+                "line": 2881,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -98732,7 +99396,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The new node's ID.",
-                "line": 2869,
+                "line": 3009,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98755,7 +99419,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if removed.",
-                "line": 2887,
+                "line": 3027,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98778,7 +99442,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "The payload.",
-                "line": 2901,
+                "line": 3041,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98819,7 +99483,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The new edge's ID.",
-                "line": 2915,
+                "line": 3055,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98842,7 +99506,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if removed.",
-                "line": 2930,
+                "line": 3070,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98865,7 +99529,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of neighbor node IDs.",
-                "line": 2943,
+                "line": 3083,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98888,7 +99552,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of visited node IDs.",
-                "line": 2955,
+                "line": 3095,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98911,7 +99575,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of visited node IDs.",
-                "line": 2967,
+                "line": 3107,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98940,7 +99604,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if a path exists.",
-                "line": 2980,
+                "line": 3120,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98963,7 +99627,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the node exists.",
-                "line": 2987,
+                "line": 3127,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98979,7 +99643,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Node count.",
-                "line": 2993,
+                "line": 3133,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -98995,7 +99659,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Edge count.",
-                "line": 2999,
+                "line": 3139,
                 "file": "src/lua_api/patterns_api.rs"
               },
               {
@@ -99011,7 +99675,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3004,
+                "line": 3144,
                 "file": "src/lua_api/patterns_api.rs"
               }
             ]
@@ -121934,7 +122598,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 301,
+            "line": 376,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -121969,7 +122633,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 354,
+            "line": 436,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122016,7 +122680,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 402,
+            "line": 491,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122032,7 +122696,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 452,
+            "line": 549,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122055,7 +122719,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the named scene was found and is now the active top scene, false if the name was not found.",
-            "line": 479,
+            "line": 576,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122078,7 +122742,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 521,
+            "line": 618,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122101,7 +122765,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 547,
+            "line": 647,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122124,7 +122788,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 592,
+            "line": 692,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122147,7 +122811,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 622,
+            "line": 722,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122163,7 +122827,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 652,
+            "line": 752,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122179,7 +122843,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 678,
+            "line": 782,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122195,7 +122859,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 704,
+            "line": 812,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122211,7 +122875,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "The current stack depth (0 when empty).",
-            "line": 729,
+            "line": 841,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122227,7 +122891,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "The current stack depth (0 when empty).",
-            "line": 737,
+            "line": 849,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122243,7 +122907,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when the stack is empty (depth == 0).",
-            "line": 745,
+            "line": 857,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122259,7 +122923,7 @@
             "typed_params": [],
             "inferred_return": "table|nil",
             "return_description": "The active top scene table, or nil if no scene is on the stack.",
-            "line": 753,
+            "line": 865,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122282,7 +122946,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a scene was on top and the layer was set, false if the stack is empty.",
-            "line": 770,
+            "line": 882,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122298,7 +122962,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "The integer layer value of the top scene, or 0 if empty.",
-            "line": 785,
+            "line": 897,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122314,7 +122978,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True while a transition animation is in progress.",
-            "line": 799,
+            "line": 911,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122330,7 +122994,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Linear progress from 0 (start) to 1 (complete).",
-            "line": 807,
+            "line": 919,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122365,7 +123029,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 817,
+            "line": 929,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122381,7 +123045,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Number of queued (not yet started) transitions.",
-            "line": 835,
+            "line": 947,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122397,7 +123061,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 842,
+            "line": 954,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122405,11 +123069,11 @@
             "lua_name": "lurek.scene.registerScene",
             "kind": "function",
             "owner_type": "",
-            "description": "Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.",
-            "full_doc": "Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.\n@param | name | string | Unique name to associate with this scene (e.g. `\"mainMenu\"`, `\"gameplay\"`).\n@param | scene | table | The scene table to register.",
-            "params_doc": "- `name` â€” `string`: Unique name to associate with this scene (e.g. `\"mainMenu\"`, `\"gameplay\"`).\n- `scene` â€” `table`: The scene table to register.",
+            "description": "Register a scene table or scene factory under a unique name for later retrieval, pushRegistered navigation, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.",
+            "full_doc": "Register a scene table or scene factory under a unique name for later retrieval, pushRegistered navigation, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.\n@param | name | string | Unique name to associate with this scene (e.g. `\"mainMenu\"`, `\"gameplay\"`).\n@param | sceneOrFactory | any | Scene table or zero-argument factory function returning a scene table.\n@param | opts | table? | Optional registration settings; `persistence` accepts `\"freeze\"` or `\"reset\"`.",
+            "params_doc": "- `name` â€” `string`: Unique name to associate with this scene (e.g. `\"mainMenu\"`, `\"gameplay\"`).\n- `sceneOrFactory` â€” `any`: Scene table or zero-argument factory function returning a scene table.\n- `opts` â€” `table?`: Optional registration settings; `persistence` accepts `\"freeze\"` or `\"reset\"`.",
             "returns_doc": "",
-            "inferred_sig": "(name, scene)",
+            "inferred_sig": "(name, scene_value, [opts])",
             "typed_params": [
               [
                 "name",
@@ -122418,15 +123082,21 @@
                 "Unique name to associate with this scene (e.g. `\"mainMenu\"`, `\"gameplay\"`)."
               ],
               [
-                "scene",
-                "table",
+                "sceneOrFactory",
+                "any",
                 false,
-                "The scene table to register."
+                "Scene table or zero-argument factory function returning a scene table."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Optional registration settings; `persistence` accepts `\"freeze\"` or `\"reset\"`."
               ]
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 854,
+            "line": 967,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122449,7 +123119,54 @@
             ],
             "inferred_return": "table|nil",
             "return_description": "The scene table, or nil if not found.",
-            "line": 870,
+            "line": 1008,
+            "file": "src/lua_api/scene_api.rs"
+          },
+          {
+            "name": "pushRegistered",
+            "lua_name": "lurek.scene.pushRegistered",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Push a registered scene by name, honoring its persistence policy.",
+            "full_doc": "Push a registered scene by name, honoring its persistence policy.\nFrozen scenes reuse the registered scene table; reset scenes call their registered factory when available.\n@param | name | string | Registered scene name to push.\n@param | transition | string? | Transition type name. Defaults to `\"none\"`.\n@param | duration | number? | Transition animation duration in seconds. Defaults to 0.\n@param | easing | string? | Easing curve name. Defaults to `\"linear\"`.\n@param | params | table? | Arbitrary data forwarded to the scene's `enter(self, params)` callback.\n@return | boolean | True when the scene existed and was pushed.",
+            "params_doc": "- `name` â€” `string`: Registered scene name to push.\n- `transition` â€” `string?`: Transition type name. Defaults to `\"none\"`.\n- `duration` â€” `number?`: Transition animation duration in seconds. Defaults to 0.\n- `easing` â€” `string?`: Easing curve name. Defaults to `\"linear\"`.\n- `params` â€” `table?`: Arbitrary data forwarded to the scene's `enter(self, params)` callback.",
+            "returns_doc": "boolean",
+            "inferred_sig": "",
+            "typed_params": [
+              [
+                "name",
+                "string",
+                false,
+                "Registered scene name to push."
+              ],
+              [
+                "transition",
+                "string?",
+                true,
+                "Transition type name. Defaults to `\"none\"`."
+              ],
+              [
+                "duration",
+                "number?",
+                true,
+                "Transition animation duration in seconds. Defaults to 0."
+              ],
+              [
+                "easing",
+                "string?",
+                true,
+                "Easing curve name. Defaults to `\"linear\"`."
+              ],
+              [
+                "params",
+                "table?",
+                true,
+                "Arbitrary data forwarded to the scene's `enter(self, params)` callback."
+              ]
+            ],
+            "inferred_return": "boolean",
+            "return_description": "True when the scene existed and was pushed.",
+            "line": 1031,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122472,7 +123189,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a scene is registered with that name.",
-            "line": 888,
+            "line": 1120,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122495,7 +123212,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 896,
+            "line": 1128,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122511,7 +123228,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Lua array of registered name strings.",
-            "line": 907,
+            "line": 1142,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122540,7 +123257,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 916,
+            "line": 1151,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122563,7 +123280,7 @@
             ],
             "inferred_return": "LuaValue",
             "return_description": "The stored value, or nil if the key does not exist.",
-            "line": 932,
+            "line": 1167,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122586,7 +123303,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a value is stored under this key.",
-            "line": 948,
+            "line": 1183,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122609,7 +123326,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 956,
+            "line": 1191,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122625,7 +123342,7 @@
             "typed_params": [],
             "inferred_return": "LDepthSorter",
             "return_description": "A fresh depth sorter with no queued entries.",
-            "line": 969,
+            "line": 1204,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122648,7 +123365,7 @@
             ],
             "inferred_return": "table",
             "return_description": "A new instance table with `def` as its metatable `__index`.",
-            "line": 978,
+            "line": 1213,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122671,7 +123388,7 @@
             ],
             "inferred_return": "table",
             "return_description": "A new instance table with `def` as its metatable `__index`.",
-            "line": 997,
+            "line": 1232,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122694,7 +123411,7 @@
             ],
             "inferred_return": "function",
             "return_description": "A zero-argument factory function that creates new instances inheriting from `def`.",
-            "line": 1015,
+            "line": 1250,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122710,7 +123427,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Eased progress from 0 (start) to 1 (complete).",
-            "line": 1038,
+            "line": 1273,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122757,7 +123474,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1050,
+            "line": 1285,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122773,7 +123490,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True if the top scene is an overlay, false otherwise.",
-            "line": 1093,
+            "line": 1335,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122789,7 +123506,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Lua array of active scene tables sorted by layer.",
-            "line": 1110,
+            "line": 1352,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122805,7 +123522,59 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Lua array of render-active scene tables.",
-            "line": 1135,
+            "line": 1377,
+            "file": "src/lua_api/scene_api.rs"
+          },
+          {
+            "name": "setSceneActive",
+            "lua_name": "lurek.scene.setSceneActive",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Enable or disable all update, process, physics, late, and render callbacks for a selected scene.",
+            "full_doc": "Enable or disable all update, process, physics, late, and render callbacks for a selected scene.\nTarget selector supports nil (current top), registered scene name, or 1-based stack index.\n@param | target | any? | nil/current, registered scene name, or 1-based stack index.\n@param | enabled | boolean | True to activate the scene, false to fully suspend it.\n@return | boolean | True when target scene was resolved and updated.",
+            "params_doc": "- `target` â€” `any?`: nil/current, registered scene name, or 1-based stack index.\n- `enabled` â€” `boolean`: True to activate the scene, false to fully suspend it.",
+            "returns_doc": "boolean",
+            "inferred_sig": "([target], enabled)",
+            "typed_params": [
+              [
+                "target",
+                "any?",
+                true,
+                "nil/current, registered scene name, or 1-based stack index."
+              ],
+              [
+                "enabled",
+                "boolean",
+                false,
+                "True to activate the scene, false to fully suspend it."
+              ]
+            ],
+            "inferred_return": "boolean",
+            "return_description": "True when target scene was resolved and updated.",
+            "line": 1400,
+            "file": "src/lua_api/scene_api.rs"
+          },
+          {
+            "name": "isSceneActive",
+            "lua_name": "lurek.scene.isSceneActive",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns whether the selected scene is globally active.",
+            "full_doc": "Returns whether the selected scene is globally active.\nTarget selector supports nil (current top), registered scene name, or 1-based stack index.\n@param | target | any? | nil/current, registered scene name, or 1-based stack index.\n@return | boolean | True when the scene is active; false when inactive or target not found.",
+            "params_doc": "- `target` â€” `any?`: nil/current, registered scene name, or 1-based stack index.",
+            "returns_doc": "boolean",
+            "inferred_sig": "([target])",
+            "typed_params": [
+              [
+                "target",
+                "any?",
+                true,
+                "nil/current, registered scene name, or 1-based stack index."
+              ]
+            ],
+            "inferred_return": "boolean",
+            "return_description": "True when the scene is active; false when inactive or target not found.",
+            "line": 1418,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122834,7 +123603,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when target scene was resolved and updated.",
-            "line": 1158,
+            "line": 1436,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122863,7 +123632,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when target scene was resolved and updated.",
-            "line": 1177,
+            "line": 1455,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122892,7 +123661,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when target scene was resolved and updated.",
-            "line": 1196,
+            "line": 1474,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122921,7 +123690,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when target scene was resolved and updated.",
-            "line": 1215,
+            "line": 1493,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122944,7 +123713,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when enabled, false when frozen or target not found.",
-            "line": 1233,
+            "line": 1511,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122967,7 +123736,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when enabled, false when frozen or target not found.",
-            "line": 1250,
+            "line": 1528,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -122990,7 +123759,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when enabled, false when frozen or target not found.",
-            "line": 1267,
+            "line": 1545,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123013,7 +123782,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when enabled, false when frozen or target not found.",
-            "line": 1284,
+            "line": 1562,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123042,7 +123811,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1299,
+            "line": 1577,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123065,7 +123834,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the loader has already executed.",
-            "line": 1313,
+            "line": 1591,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123112,7 +123881,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1327,
+            "line": 1605,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123128,7 +123897,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Lua array of strings: `\"none\"`, `\"fade\"`, `\"slideleft\"`, `\"slideright\"`, `\"slideup\"`, `\"slidedown\"`, `\"wipe\"`, `\"iris\"`, `\"zoom\"`, `\"crossfade\"`.",
-            "line": 1396,
+            "line": 1682,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123144,7 +123913,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "A snapshot table with `stack` (array of scene name strings) and `data` (key-value map) fields.",
-            "line": 1424,
+            "line": 1710,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123167,7 +123936,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1459,
+            "line": 1745,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123190,7 +123959,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Transition descriptor `{type=\"fade\", duration=...}` for use with scene functions.",
-            "line": 1485,
+            "line": 1771,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123219,7 +123988,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Transition descriptor `{type=\"slide...\", duration=...}` for use with scene functions.",
-            "line": 1503,
+            "line": 1789,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123242,7 +124011,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Transition descriptor `{type=\"wipe\", duration=...}` for use with scene functions.",
-            "line": 1529,
+            "line": 1815,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123265,7 +124034,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Transition descriptor `{type=\"iris\", duration=...}` for use with scene functions.",
-            "line": 1546,
+            "line": 1832,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -123281,7 +124050,7 @@
             "typed_params": [],
             "inferred_return": "LSceneObjectContainer",
             "return_description": "New container handle.",
-            "line": 1560,
+            "line": 1846,
             "file": "src/lua_api/scene_api.rs"
           }
         ],
@@ -123316,7 +124085,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 77,
+                "line": 97,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123339,7 +124108,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 88,
+                "line": 108,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123355,7 +124124,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 99,
+                "line": 119,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123371,7 +124140,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 105,
+                "line": 125,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123394,7 +124163,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 154,
+                "line": 174,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123410,7 +124179,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if stable sort is enabled.",
-                "line": 161,
+                "line": 181,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123426,7 +124195,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 166,
+                "line": 186,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123442,7 +124211,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Count of pending draw entries.",
-                "line": 174,
+                "line": 194,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123458,7 +124227,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The literal `\"LDepthSorter\"`.",
-                "line": 180,
+                "line": 200,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123481,7 +124250,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 185,
+                "line": 205,
                 "file": "src/lua_api/scene_api.rs"
               }
             ]
@@ -123510,7 +124279,117 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 195,
+                "line": 215,
+                "file": "src/lua_api/scene_api.rs"
+              },
+              {
+                "name": "defineGroup",
+                "lua_name": "LSceneObjectContainer:defineGroup",
+                "kind": "method",
+                "owner_type": "LSceneObjectContainer",
+                "description": "Define an object group and return its 0-based bit index.",
+                "full_doc": "Define an object group and return its 0-based bit index.\n@param | name | string | Group name to define.\n@return | integer | Bit index from 0 to 15.",
+                "params_doc": "- `name` â€” `string`: Group name to define.",
+                "returns_doc": "integer",
+                "inferred_sig": "(name)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "Group name to define."
+                  ]
+                ],
+                "inferred_return": "integer",
+                "return_description": "Bit index from 0 to 15.",
+                "line": 225,
+                "file": "src/lua_api/scene_api.rs"
+              },
+              {
+                "name": "getGroupBit",
+                "lua_name": "LSceneObjectContainer:getGroupBit",
+                "kind": "method",
+                "owner_type": "LSceneObjectContainer",
+                "description": "Return the bit index assigned to a group name.",
+                "full_doc": "Return the bit index assigned to a group name.\n@param | name | string | Group name to inspect.\n@return | integer | Bit index, or nil when undefined.",
+                "params_doc": "- `name` â€” `string`: Group name to inspect.",
+                "returns_doc": "integer",
+                "inferred_sig": "(name)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "Group name to inspect."
+                  ]
+                ],
+                "inferred_return": "integer",
+                "return_description": "Bit index, or nil when undefined.",
+                "line": 234,
+                "file": "src/lua_api/scene_api.rs"
+              },
+              {
+                "name": "setGroupEnabled",
+                "lua_name": "LSceneObjectContainer:setGroupEnabled",
+                "kind": "method",
+                "owner_type": "LSceneObjectContainer",
+                "description": "Enable or disable one object group for one pass.",
+                "full_doc": "Enable or disable one object group for one pass.\n@param | group | any | Group name or 0-based bit index.\n@param | pass | string | Pass name: update, physics/process_physics, or draw.\n@param | enabled | boolean | True to include the group in the pass.\n@return | boolean | True when the group and pass were accepted.",
+                "params_doc": "- `group` â€” `any`: Group name or 0-based bit index.\n- `pass` â€” `string`: Pass name: update, physics/process_physics, or draw.\n- `enabled` â€” `boolean`: True to include the group in the pass.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(group, pass, enabled)",
+                "typed_params": [
+                  [
+                    "group",
+                    "any",
+                    false,
+                    "Group name or 0-based bit index."
+                  ],
+                  [
+                    "pass",
+                    "string",
+                    false,
+                    "Pass name: update, physics/process_physics, or draw."
+                  ],
+                  [
+                    "enabled",
+                    "boolean",
+                    false,
+                    "True to include the group in the pass."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the group and pass were accepted.",
+                "line": 245,
+                "file": "src/lua_api/scene_api.rs"
+              },
+              {
+                "name": "isGroupEnabled",
+                "lua_name": "LSceneObjectContainer:isGroupEnabled",
+                "kind": "method",
+                "owner_type": "LSceneObjectContainer",
+                "description": "Return whether one object group is enabled for one pass.",
+                "full_doc": "Return whether one object group is enabled for one pass.\n@param | group | any | Group name or 0-based bit index.\n@param | pass | string | Pass name.\n@return | boolean | True when the group is enabled for that pass.",
+                "params_doc": "- `group` â€” `any`: Group name or 0-based bit index.\n- `pass` â€” `string`: Pass name.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(group, pass)",
+                "typed_params": [
+                  [
+                    "group",
+                    "any",
+                    false,
+                    "Group name or 0-based bit index."
+                  ],
+                  [
+                    "pass",
+                    "string",
+                    false,
+                    "Pass name."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the group is enabled for that pass.",
+                "line": 258,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123533,7 +124412,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 204,
+                "line": 269,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123549,7 +124428,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 212,
+                "line": 277,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123572,7 +124451,30 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 221,
+                "line": 286,
+                "file": "src/lua_api/scene_api.rs"
+              },
+              {
+                "name": "processPhysics",
+                "lua_name": "LSceneObjectContainer:processPhysics",
+                "kind": "method",
+                "owner_type": "LSceneObjectContainer",
+                "description": "Call process_physics(dt) or physics(dt) on all physics-pass-enabled objects.",
+                "full_doc": "Call process_physics(dt) or physics(dt) on all physics-pass-enabled objects.\n@param | dt | number | Physics delta time in seconds.",
+                "params_doc": "- `dt` â€” `number`: Physics delta time in seconds.",
+                "returns_doc": "",
+                "inferred_sig": "(dt)",
+                "typed_params": [
+                  [
+                    "dt",
+                    "number",
+                    false,
+                    "Physics delta time in seconds."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 295,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123588,7 +124490,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 229,
+                "line": 303,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123604,7 +124506,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 237,
+                "line": 311,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123620,7 +124522,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Sequential table containing current objects.",
-                "line": 245,
+                "line": 319,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123643,7 +124545,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Sequential table of objects on the given layer.",
-                "line": 254,
+                "line": 328,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123666,7 +124568,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the exact object exists in the container.",
-                "line": 263,
+                "line": 337,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123682,7 +124584,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The literal `\"LSceneObjectContainer\"`.",
-                "line": 271,
+                "line": 345,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -123705,7 +124607,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when `name` matches `\"LSceneObjectContainer\"`.",
-                "line": 276,
+                "line": 350,
                 "file": "src/lua_api/scene_api.rs"
               }
             ]

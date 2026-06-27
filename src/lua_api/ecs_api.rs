@@ -1,17 +1,32 @@
 //! Registers the `lurek.ecs` Lua API for ECS userdata, entity access, and thin binding helpers over ECS state.
 
 use super::SharedState;
+use crate::ecs::lua_table::deep_copy_table;
+use crate::ecs::object_model::{ClassMeta, ObjectModel};
 use crate::ecs::query_view::QueryView;
 use crate::ecs::Universe;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+#[derive(Clone, Default)]
+/// Shared Lua-facing ECS class and object registry for one Lua VM.
+struct LuaObjectModelState {
+    /// Rust policy state for class metadata and live object ids.
+    model: Rc<RefCell<ObjectModel>>,
+    /// Original Lua class definition tables keyed by class name.
+    class_refs: Rc<RefCell<HashMap<String, LuaRegistryKey>>>,
+    /// Live object tables keyed by generated object id.
+    object_refs: Rc<RefCell<HashMap<u64, LuaRegistryKey>>>,
+}
+
 #[derive(Clone)]
 /// Lua-side handle for one ECS universe.
 pub struct LuaUniverse {
     /// Shared ECS universe storage used by all cloned Lua handles.
     inner: Rc<RefCell<Universe>>,
+    /// Shared class/object registry used by `spawnObject` and `attachObject`.
+    object_model: LuaObjectModelState,
     /// Registered callbacks keyed by component name for add events.
     add_observers: Rc<RefCell<HashMap<String, Vec<LuaRegistryKey>>>>,
     /// Registered callbacks keyed by component name for remove events.
@@ -32,6 +47,210 @@ pub struct LuaQueryView {
     world: LuaUniverse,
     /// Shared query-view cache state.
     inner: Rc<RefCell<QueryView>>,
+}
+
+fn parse_string_or_sequence(value: LuaValue) -> LuaResult<Vec<String>> {
+    match value {
+        LuaValue::Nil => Ok(Vec::new()),
+        LuaValue::String(s) => Ok(vec![s.to_str()?.to_string()]),
+        LuaValue::Table(t) => t.sequence_values::<String>().collect::<LuaResult<Vec<_>>>(),
+        _ => Err(LuaError::runtime(
+            "lurek.ecs.defineClass expected extends/tags as string or string array",
+        )),
+    }
+}
+
+fn merge_table_fields<'lua>(
+    lua: &'lua Lua,
+    target: &LuaTable<'lua>,
+    source: Option<LuaTable<'lua>>,
+) -> LuaResult<()> {
+    if let Some(source) = source {
+        for pair in source.pairs::<LuaValue, LuaValue>() {
+            let (key, value) = pair?;
+            let value = match value {
+                LuaValue::Table(t) => LuaValue::Table(deep_copy_table(lua, &t)?),
+                other => other,
+            };
+            target.set(key, value)?;
+        }
+    }
+    Ok(())
+}
+
+fn build_class_info_table<'lua>(lua: &'lua Lua, meta: &ClassMeta) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("name", meta.name.as_str())?;
+    let parents = lua.create_table()?;
+    for (i, parent) in meta.parents.iter().enumerate() {
+        parents.set(i + 1, parent.as_str())?;
+    }
+    out.set("extends", parents)?;
+    let tags = lua.create_table()?;
+    for (i, tag) in meta.tags.iter().enumerate() {
+        tags.set(i + 1, tag.as_str())?;
+    }
+    out.set("tags", tags)?;
+    Ok(out)
+}
+
+fn create_ecs_object<'lua>(
+    lua: &'lua Lua,
+    state: &LuaObjectModelState,
+    class_name: &str,
+    props: Option<LuaTable<'lua>>,
+) -> LuaResult<LuaTable<'lua>> {
+    if !state.model.borrow().has_class(class_name) {
+        return Err(LuaError::runtime(format!(
+            "lurek.ecs.newObject: class '{class_name}' is not defined"
+        )));
+    }
+    let linearization = state.model.borrow().linearization(class_name);
+    let object = lua.create_table()?;
+    let methods = lua.create_table()?;
+    let properties = lua.create_table()?;
+    let tags = lua.create_table()?;
+    let ctor_props = props
+        .as_ref()
+        .map(|table| LuaValue::Table(table.clone()))
+        .unwrap_or(LuaValue::Nil);
+    let mut tag_index = 1;
+    for class in &linearization {
+        let class_table = {
+            let refs = state.class_refs.borrow();
+            refs.get(class)
+                .and_then(|key| lua.registry_value::<LuaTable>(key).ok())
+        };
+        if let Some(class_table) = class_table {
+            merge_table_fields(
+                lua,
+                &object,
+                class_table.get::<_, LuaTable>("defaults").ok(),
+            )?;
+            merge_table_fields(
+                lua,
+                &methods,
+                class_table.get::<_, LuaTable>("methods").ok(),
+            )?;
+            merge_table_fields(
+                lua,
+                &properties,
+                class_table.get::<_, LuaTable>("properties").ok(),
+            )?;
+        }
+        if let Some(meta) = state.model.borrow().get_class(class) {
+            for tag in &meta.tags {
+                tags.set(tag_index, tag.as_str())?;
+                tag_index += 1;
+            }
+        }
+    }
+    for pair in properties.clone().pairs::<LuaValue, LuaValue>() {
+        let (key, value) = pair?;
+        if !matches!(value, LuaValue::Table(_)) && object.get::<_, LuaValue>(key.clone())?.is_nil()
+        {
+            let value = match value {
+                LuaValue::Table(t) => LuaValue::Table(deep_copy_table(lua, &t)?),
+                other => other,
+            };
+            object.set(key, value)?;
+        }
+    }
+    if let Some(props) = props {
+        merge_table_fields(lua, &object, Some(props))?;
+    }
+    let object_id = state.model.borrow_mut().register_object(class_name);
+    object.set("__id", object_id)?;
+    object.set("__class", class_name)?;
+    object.set("__tags", tags)?;
+    object.set("__properties", properties.clone())?;
+
+    let state_for_isa = state.clone();
+    object.set(
+        "isA",
+        lua.create_function(move |_, (this, candidate): (LuaTable, String)| {
+            let class: String = this.get("__class")?;
+            Ok(state_for_isa.model.borrow().class_is_a(&class, &candidate))
+        })?,
+    )?;
+    object.set(
+        "type",
+        lua.create_function(|_, this: LuaTable| this.get::<_, String>("__class"))?,
+    )?;
+    let state_for_typeof = state.clone();
+    object.set(
+        "typeOf",
+        lua.create_function(move |_, (this, candidate): (LuaTable, String)| {
+            if candidate == "Object" || candidate == "LObject" {
+                return Ok(true);
+            }
+            let class: String = this.get("__class")?;
+            Ok(state_for_typeof
+                .model
+                .borrow()
+                .class_is_a(&class, &candidate))
+        })?,
+    )?;
+    object.set(
+        "getProperty",
+        lua.create_function(|_, (this, name): (LuaTable, String)| {
+            let properties: LuaTable = this.get("__properties")?;
+            match properties.get::<_, LuaValue>(name.as_str())? {
+                LuaValue::Table(prop) => {
+                    if let Ok(getter) = prop
+                        .get::<_, LuaFunction>("get")
+                        .or_else(|_| prop.get::<_, LuaFunction>("getter"))
+                    {
+                        return getter.call::<_, LuaValue>(this);
+                    }
+                }
+                LuaValue::Nil => {}
+                value => {
+                    let current = this.get::<_, LuaValue>(name.as_str())?;
+                    return if current.is_nil() {
+                        Ok(value)
+                    } else {
+                        Ok(current)
+                    };
+                }
+            }
+            this.get::<_, LuaValue>(name)
+        })?,
+    )?;
+    object.set(
+        "setProperty",
+        lua.create_function(|_, (this, name, value): (LuaTable, String, LuaValue)| {
+            let properties: LuaTable = this.get("__properties")?;
+            if let Ok(prop) = properties.get::<_, LuaTable>(name.as_str()) {
+                if let Ok(setter) = prop
+                    .get::<_, LuaFunction>("set")
+                    .or_else(|_| prop.get::<_, LuaFunction>("setter"))
+                {
+                    setter.call::<_, ()>((this, value))?;
+                    return Ok(());
+                }
+            }
+            this.set(name, value)
+        })?,
+    )?;
+    let metatable = lua.create_table()?;
+    metatable.set("__index", methods)?;
+    object.set_metatable(Some(metatable));
+    for class in &linearization {
+        let class_table = {
+            let refs = state.class_refs.borrow();
+            refs.get(class)
+                .and_then(|key| lua.registry_value::<LuaTable>(key).ok())
+        };
+        if let Some(class_table) = class_table {
+            if let Ok(constructor) = class_table.get::<_, LuaFunction>("constructor") {
+                constructor.call::<_, ()>((object.clone(), ctor_props.clone()))?;
+            }
+        }
+    }
+    let key = lua.create_registry_value(object.clone())?;
+    state.object_refs.borrow_mut().insert(object_id, key);
+    Ok(object)
 }
 
 impl LuaUserData for LuaRelationshipManager {
@@ -189,6 +408,70 @@ impl LuaUserData for LuaUniverse {
         methods.add_method("spawn", |_, this, ()| {
             Ok(this.inner.borrow_mut().spawn().raw())
         });
+        // -- spawnObject --
+        /// Creates an ECS object instance from a registered class and attaches it to a new entity.
+        /// @param | className | string | Registered ECS class name.
+        /// @param | props | table? | Optional property overrides copied onto the new object.
+        /// @return | integer | Entity id that received the object component.
+        methods.add_method(
+            "spawnObject",
+            |lua, this, (class_name, props): (String, Option<LuaTable>)| {
+                let object = create_ecs_object(lua, &this.object_model, &class_name, props)?;
+                let entity = this.inner.borrow_mut().spawn().raw();
+                this.inner.borrow_mut().set_component(
+                    lua,
+                    entity,
+                    "object",
+                    LuaValue::Table(object.clone()),
+                )?;
+                this.inner.borrow_mut().set_component(
+                    lua,
+                    entity,
+                    "objectClass",
+                    LuaValue::String(lua.create_string(class_name.as_str())?),
+                )?;
+                let object_id: u64 = object.get("__id")?;
+                this.inner.borrow_mut().set_component(
+                    lua,
+                    entity,
+                    "objectId",
+                    LuaValue::Integer(object_id as i64),
+                )?;
+                Ok(entity)
+            },
+        );
+        // -- attachObject --
+        /// Attaches an existing ECS object table to an entity as the `object` component.
+        /// @param | entityId | integer | Entity id that receives the object.
+        /// @param | obj | table | Object table returned by `lurek.ecs.newObject`.
+        methods.add_method(
+            "attachObject",
+            |lua, this, (entity_id, obj): (u32, LuaTable)| {
+                this.inner.borrow_mut().set_component(
+                    lua,
+                    entity_id,
+                    "object",
+                    LuaValue::Table(obj.clone()),
+                )?;
+                if let Ok(class_name) = obj.get::<_, String>("__class") {
+                    this.inner.borrow_mut().set_component(
+                        lua,
+                        entity_id,
+                        "objectClass",
+                        LuaValue::String(lua.create_string(class_name.as_str())?),
+                    )?;
+                }
+                if let Ok(object_id) = obj.get::<_, u64>("__id") {
+                    this.inner.borrow_mut().set_component(
+                        lua,
+                        entity_id,
+                        "objectId",
+                        LuaValue::Integer(object_id as i64),
+                    )?;
+                }
+                Ok(())
+            },
+        );
         // -- kill --
         /// Deletes an entity and removes its components from this universe.
         /// @param | id | integer | Entity id to delete.
@@ -975,14 +1258,17 @@ impl LuaUserData for LuaUniverse {
 /// Registers the `lurek.ecs` API table with the Lua VM.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    let object_state = LuaObjectModelState::default();
     // -- newUniverse --
     /// Creates an empty ECS universe for entity, component, system, and relationship management.
     /// @return | LUniverse | New universe handle.
+    let universe_object_state = object_state.clone();
     tbl.set(
         "newUniverse",
-        lua.create_function(|_, ()| {
+        lua.create_function(move |_, ()| {
             Ok(LuaUniverse {
                 inner: Rc::new(RefCell::new(Universe::new())),
+                object_model: universe_object_state.clone(),
                 add_observers: Rc::new(RefCell::new(HashMap::new())),
                 remove_observers: Rc::new(RefCell::new(HashMap::new())),
             })
@@ -997,6 +1283,163 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(LuaRelationshipManager {
                 inner: Rc::new(RefCell::new(crate::ecs::RelationshipManager::new())),
             })
+        })?,
+    )?;
+    // -- defineClass --
+    /// Defines or replaces a global ECS class for Lua object instances.
+    /// @param | name | string | Class name used by `newObject` and `LUniverse:spawnObject`.
+    /// @param | def | table | Class definition with optional extends, defaults, methods, properties, constructor, and tags.
+    let define_state = object_state.clone();
+    tbl.set(
+        "defineClass",
+        lua.create_function(move |lua, (name, def): (String, LuaTable)| {
+            let parents = parse_string_or_sequence(def.get::<_, LuaValue>("extends")?)?;
+            let tags = parse_string_or_sequence(def.get::<_, LuaValue>("tags")?)?;
+            define_state
+                .model
+                .borrow_mut()
+                .define_class(ClassMeta::new(&name, parents, tags));
+            if let Some(old) = define_state.class_refs.borrow_mut().remove(&name) {
+                lua.remove_registry_value(old)?;
+            }
+            let key = lua.create_registry_value(def)?;
+            define_state.class_refs.borrow_mut().insert(name, key);
+            Ok(())
+        })?,
+    )?;
+    // -- hasClass --
+    /// Returns whether a global ECS class name is defined.
+    /// @param | name | string | Class name to check.
+    /// @return | boolean | True when the class exists.
+    let has_class_state = object_state.clone();
+    tbl.set(
+        "hasClass",
+        lua.create_function(move |_, name: String| {
+            Ok(has_class_state.model.borrow().has_class(&name))
+        })?,
+    )?;
+    // -- getClass --
+    /// Returns metadata for a global ECS class.
+    /// @param | name | string | Class name to inspect.
+    /// @return | table | Metadata table with name, extends, and tags; nil when unknown.
+    let get_class_state = object_state.clone();
+    tbl.set(
+        "getClass",
+        lua.create_function(move |lua, name: String| {
+            if let Some(meta) = get_class_state.model.borrow().get_class(&name) {
+                Ok(LuaValue::Table(build_class_info_table(lua, meta)?))
+            } else {
+                Ok(LuaValue::Nil)
+            }
+        })?,
+    )?;
+    // -- classNames --
+    /// Returns all global ECS class names in deterministic order.
+    /// @return | string[] | Registered class names.
+    let class_names_state = object_state.clone();
+    tbl.set(
+        "classNames",
+        lua.create_function(move |_, ()| Ok(class_names_state.model.borrow().class_names()))?,
+    )?;
+    // -- clearClasses --
+    /// Removes every global ECS class definition.
+    let clear_classes_state = object_state.clone();
+    tbl.set(
+        "clearClasses",
+        lua.create_function(move |lua, ()| {
+            clear_classes_state.model.borrow_mut().clear_classes();
+            let refs: Vec<LuaRegistryKey> = clear_classes_state
+                .class_refs
+                .borrow_mut()
+                .drain()
+                .map(|(_, key)| key)
+                .collect();
+            for key in refs {
+                lua.remove_registry_value(key)?;
+            }
+            Ok(())
+        })?,
+    )?;
+    // -- newObject --
+    /// Creates a Lua table object from a registered ECS class.
+    /// @param | className | string | Registered class name.
+    /// @param | props | table? | Optional property overrides.
+    /// @return | table | Object table with type, typeOf, isA, getProperty, and setProperty methods.
+    let new_object_state = object_state.clone();
+    tbl.set(
+        "newObject",
+        lua.create_function(
+            move |lua, (class_name, props): (String, Option<LuaTable>)| {
+                create_ecs_object(lua, &new_object_state, &class_name, props)
+            },
+        )?,
+    )?;
+    // -- getObject --
+    /// Returns a live ECS object table by object id.
+    /// @param | id | integer | Object id returned in the object's `__id` field.
+    /// @return | table | Object table, or nil when not found.
+    let get_object_state = object_state.clone();
+    tbl.set(
+        "getObject",
+        lua.create_function(move |lua, id: u64| {
+            if !get_object_state.model.borrow().has_object(id) {
+                return Ok(LuaValue::Nil);
+            }
+            if let Some(key) = get_object_state.object_refs.borrow().get(&id) {
+                return Ok(LuaValue::Table(lua.registry_value::<LuaTable>(key)?));
+            }
+            Ok(LuaValue::Nil)
+        })?,
+    )?;
+    // -- hasObject --
+    /// Returns whether a live ECS object id exists.
+    /// @param | id | integer | Object id to check.
+    /// @return | boolean | True when the object id is live.
+    let has_object_state = object_state.clone();
+    tbl.set(
+        "hasObject",
+        lua.create_function(move |_, id: u64| Ok(has_object_state.model.borrow().has_object(id)))?,
+    )?;
+    // -- objectIds --
+    /// Returns all live ECS object ids in ascending order.
+    /// @return | integer[] | Object ids.
+    let object_ids_state = object_state.clone();
+    tbl.set(
+        "objectIds",
+        lua.create_function(move |_, ()| Ok(object_ids_state.model.borrow().object_ids()))?,
+    )?;
+    // -- destroyObject --
+    /// Removes a live ECS object from the global object registry.
+    /// @param | id | integer | Object id to destroy.
+    /// @return | boolean | True when an object was removed.
+    let destroy_object_state = object_state.clone();
+    tbl.set(
+        "destroyObject",
+        lua.create_function(move |lua, id: u64| {
+            let existed = destroy_object_state.model.borrow_mut().destroy_object(id);
+            if let Some(key) = destroy_object_state.object_refs.borrow_mut().remove(&id) {
+                lua.remove_registry_value(key)?;
+            }
+            Ok(existed)
+        })?,
+    )?;
+    // -- clearObjects --
+    /// Removes every live ECS object while keeping class definitions.
+    let clear_objects_state = object_state.clone();
+    tbl.set(
+        "clearObjects",
+        lua.create_function(move |lua, ()| {
+            clear_objects_state.model.borrow_mut().clear_objects();
+            let refs: Vec<LuaRegistryKey> = clear_objects_state
+                .object_refs
+                .borrow_mut()
+                .drain()
+                .map(|(_, key)| key)
+                .collect();
+            for key in refs {
+                lua.remove_registry_value(key)?;
+            }
+            Ok(())
         })?,
     )?;
     /// The 'ecs' field value exposed to Lua scripts.

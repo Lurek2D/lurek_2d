@@ -3,8 +3,11 @@
 use super::SharedState;
 use crate::audio::sound_data::SoundData;
 use crate::audio::{BeatClockOpts, Decoder, JudgementResult, JudgementWindows, SourceType};
+#[cfg(any())]
 use crate::log_msg;
+#[cfg(any())]
 use crate::midi::MidiPlayer;
+#[cfg(any())]
 use crate::runtime::log_messages::LA01_API_STUB;
 use crate::runtime::resource_keys::{BusKey, QueueableKey, SoundKey};
 use mlua::prelude::*;
@@ -299,6 +302,7 @@ fn helper_get_source_bus(
     }
 }
 
+#[cfg(any())]
 fn helper_new_midi_player(
     s: Rc<RefCell<SharedState>>,
     path: Option<String>,
@@ -786,11 +790,13 @@ impl LuaUserData for LuaBus {
     }
 }
 /// Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
+#[cfg(any())]
 #[derive(Clone)]
 pub struct LuaMidiPlayer {
     pub(crate) inner: Rc<RefCell<MidiPlayer>>,
     pub(crate) state: Rc<RefCell<SharedState>>,
 }
+#[cfg(any())]
 impl LuaUserData for LuaMidiPlayer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- load --
@@ -2031,15 +2037,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getMeter",
         lua.create_function(move |_, ()| Ok(s.borrow().mixer.master_peak))?,
     )?;
-    // -- newMidiPlayer --
-    /// Creates a new MIDI player instance, optionally loading a file immediately.
-    /// @param | path | string? | Optional relative path to a .mid file to load.
-    /// @return | LMidiPlayer | A new MIDI player ready for playback.
-    let s = state.clone();
-    tbl.set(
-        "newMidiPlayer",
-        lua.create_function(move |_, path| helper_new_midi_player(s.clone(), path))?,
-    )?;
     // -- newSoundData --
     /// Creates a new SoundData object from a file path or blank buffer for procedural audio.
     /// @param | pathOrCount | string|integer | File path to decode, or sample count for blank buffer.
@@ -2056,42 +2053,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let sd = SoundData::from_lua_args(full_path, count, rate, channels)
                 .map_err(LuaError::RuntimeError)?;
             lua.create_userdata(sd)
-        })?,
-    )?;
-    let s = state.clone();
-    /// Sets the SoundFont file used for MIDI synthesis.
-    /// @param | path | string | Relative path to the .sf2 SoundFont file.
-    tbl.set(
-        "setMidiSoundFont",
-        lua.create_function(move |_, path: String| {
-            let mut st = s.borrow_mut();
-            let full_path = st.game_dir.join(&path);
-            let data = std::fs::read(&full_path).map_err(|e| {
-                LuaError::RuntimeError(format!(
-                    "Failed to read SoundFont '{}': {}",
-                    full_path.display(),
-                    e
-                ))
-            })?;
-            st.midi_state
-                .set_soundfont(data, Some(path))
-                .map_err(LuaError::RuntimeError)
-        })?,
-    )?;
-    let s = state.clone();
-    /// Returns whether a SoundFont file has been loaded for MIDI synthesis.
-    /// @return | boolean | True if a SoundFont is loaded.
-    tbl.set(
-        "hasMidiSoundFont",
-        lua.create_function(move |_, ()| Ok(s.borrow().midi_state.has_soundfont()))?,
-    )?;
-    let s = state.clone();
-    /// Clears the loaded SoundFont and reverts MIDI synthesis to default.
-    tbl.set(
-        "clearMidiSoundFont",
-        lua.create_function(move |_, ()| {
-            s.borrow_mut().midi_state.clear_soundfont();
-            Ok(())
         })?,
     )?;
     let s = state.clone();

@@ -203,6 +203,146 @@ impl LuaUserData for LuaObjectPool {
         });
     }
 }
+/// Lua-facing reusable deck that stores arbitrary card payloads and delegates pile ordering to Rust.
+#[derive(Clone)]
+struct LuaDeck {
+    deck: Rc<RefCell<crate::patterns::Deck>>,
+    cards: Rc<RefCell<HashMap<u64, LuaRegistryKey>>>,
+}
+
+impl LurekType for LuaDeck {
+    const TYPE_NAME: &'static str = "LDeck";
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LDeck", "LObject"];
+}
+
+fn lua_deck_add_card(lua: &Lua, deck: &LuaDeck, value: LuaValue) -> LuaResult<u64> {
+    let id = deck.deck.borrow_mut().add();
+    if let LuaValue::Table(table) = &value {
+        table.set("__deck_id", id)?;
+    }
+    let key = lua.create_registry_value(value)?;
+    deck.cards.borrow_mut().insert(id, key);
+    Ok(id)
+}
+
+fn lua_deck_card_id(value: LuaValue) -> LuaResult<Option<u64>> {
+    match value {
+        LuaValue::Integer(id) if id > 0 => Ok(Some(id as u64)),
+        LuaValue::Table(table) => Ok(table.get::<_, Option<u64>>("__deck_id")?),
+        _ => Ok(None),
+    }
+}
+
+fn lua_deck_values<'lua>(
+    lua: &'lua Lua,
+    deck: &LuaDeck,
+    ids: Vec<u64>,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    let cards = deck.cards.borrow();
+    for (index, id) in ids.iter().enumerate() {
+        if let Some(key) = cards.get(id) {
+            let value: LuaValue = lua.registry_value(key)?;
+            table.set(index + 1, value)?;
+        }
+    }
+    Ok(table)
+}
+
+impl LuaUserData for LuaDeck {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        add_type_methods(methods);
+        // -- add --
+        /// Add a card payload to the bottom of the deck's draw pile.
+        /// @param | card | any | Card payload stored by the deck.
+        /// @return | integer | Stable card id for later discard or inspection.
+        methods.add_method("add", |lua, this, value: LuaValue| {
+            lua_deck_add_card(lua, this, value)
+        });
+        // -- shuffle --
+        /// Shuffle the current draw pile with a deterministic optional seed.
+        /// @param | seed | integer? | Optional shuffle seed; omitted uses `1`.
+        methods.add_method("shuffle", |_lua, this, seed: Option<u64>| {
+            this.deck.borrow_mut().shuffle(seed.unwrap_or(1));
+            Ok(())
+        });
+        // -- draw --
+        /// Draw one or more cards from the top of the draw pile.
+        /// @param | count | integer? | Number of cards to draw; default `1`.
+        /// @return | any | Single card when count is omitted or `1`.
+        /// @return | table | Array of cards when count is greater than `1`.
+        methods.add_method("draw", |lua, this, count: Option<usize>| {
+            let count = count.unwrap_or(1).max(1);
+            let ids = this.deck.borrow_mut().draw(count);
+            if count == 1 {
+                if let Some(id) = ids.first() {
+                    if let Some(key) = this.cards.borrow().get(id) {
+                        return lua.registry_value::<LuaValue>(key);
+                    }
+                }
+                return Ok(LuaValue::Nil);
+            }
+            Ok(LuaValue::Table(lua_deck_values(lua, this, ids)?))
+        });
+        // -- peek --
+        /// Inspect one or more cards from the top without removing them.
+        /// @param | count | integer? | Number of cards to inspect; default `1`.
+        /// @return | any | Single card when count is omitted or `1`.
+        /// @return | table | Array of cards when count is greater than `1`.
+        methods.add_method("peek", |lua, this, count: Option<usize>| {
+            let count = count.unwrap_or(1).max(1);
+            let ids = this.deck.borrow().peek(count);
+            if count == 1 {
+                if let Some(id) = ids.first() {
+                    if let Some(key) = this.cards.borrow().get(id) {
+                        return lua.registry_value::<LuaValue>(key);
+                    }
+                }
+                return Ok(LuaValue::Nil);
+            }
+            Ok(LuaValue::Table(lua_deck_values(lua, this, ids)?))
+        });
+        // -- discard --
+        /// Move a card into the discard pile by card table or stable id.
+        /// @param | card | any | Card table returned by the deck, or a stable card id.
+        /// @return | boolean | True when the card entered the discard pile.
+        methods.add_method("discard", |_lua, this, value: LuaValue| {
+            let Some(id) = lua_deck_card_id(value)? else {
+                return Ok(false);
+            };
+            Ok(this.deck.borrow_mut().discard(id))
+        });
+        // -- reset --
+        /// Restore the draw pile to original insertion order and clear discard.
+        methods.add_method("reset", |_lua, this, ()| {
+            this.deck.borrow_mut().reset();
+            Ok(())
+        });
+        // -- count --
+        /// Return the number of cards left in the draw pile.
+        /// @return | integer | Remaining draw-pile count.
+        methods.add_method("count", |_lua, this, ()| Ok(this.deck.borrow().count()));
+        // -- discardCount --
+        /// Return the number of cards in the discard pile.
+        /// @return | integer | Discard pile count.
+        methods.add_method("discardCount", |_lua, this, ()| {
+            Ok(this.deck.borrow().discard_count())
+        });
+        // -- isEmpty --
+        /// Return true when no cards remain in the draw pile.
+        /// @return | boolean | Whether the deck has no drawable cards.
+        methods.add_method("isEmpty", |_lua, this, ()| {
+            Ok(this.deck.borrow().is_empty())
+        });
+        // -- toArray --
+        /// Return the current draw pile as an array without modifying it.
+        /// @return | table | Array of card payloads in draw order.
+        methods.add_method("toArray", |lua, this, ()| {
+            let ids = this.deck.borrow().draw_ids().to_vec();
+            lua_deck_values(lua, this, ids)
+        });
+    }
+}
 /// Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
 #[derive(Clone)]
 struct LuaCommandStack {
@@ -3044,6 +3184,25 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 idle_objects: Rc::new(RefCell::new(HashMap::new())),
                 active_queue: Rc::new(RefCell::new(VecDeque::new())),
             })
+        })?,
+    )?;
+    // -- newDeck --
+    /// Create a reusable deck/card collection with shuffle, draw, discard, and reset operations.
+    /// @param | cards | table? | Optional array of initial card payloads.
+    /// @return | LDeck | A new deck instance.
+    patterns.set(
+        "newDeck",
+        lua.create_function(|lua, cards: Option<LuaTable>| {
+            let deck = LuaDeck {
+                deck: Rc::new(RefCell::new(crate::patterns::Deck::new())),
+                cards: Rc::new(RefCell::new(HashMap::new())),
+            };
+            if let Some(cards) = cards {
+                for value in cards.sequence_values::<LuaValue>() {
+                    lua_deck_add_card(lua, &deck, value?)?;
+                }
+            }
+            Ok(deck)
         })?,
     )?;
     // -- newCommandStack --

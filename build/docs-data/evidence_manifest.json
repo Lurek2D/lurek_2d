@@ -441,6 +441,7 @@
     ],
     "current_artifacts": [
       "tests/artifacts/current/ecs/ecs_blueprint_snapshot.txt",
+      "tests/artifacts/current/ecs/ecs_class_object_registry_trace.txt",
       "tests/artifacts/current/ecs/ecs_component_query_snapshot.txt",
       "tests/artifacts/current/ecs/ecs_entity_lifecycle_snapshot.txt",
       "tests/artifacts/current/ecs/ecs_hierarchy_relation_observer_trace.txt",
@@ -1206,6 +1207,8 @@
       "tests/artifacts/current/scene/scene_depth_sort_bands.png",
       "tests/artifacts/current/scene/scene_depth_sort_object_entries.txt",
       "tests/artifacts/current/scene/scene_depth_sort_stable_equal_depth.txt",
+      "tests/artifacts/current/scene/scene_group_mask_transition.png",
+      "tests/artifacts/current/scene/scene_group_mask_transition_trace.txt",
       "tests/artifacts/current/scene/scene_object_container_layer_trace.txt",
       "tests/artifacts/current/scene/scene_state_preload_overlay_trace.txt",
       "tests/artifacts/current/scene/scene_transition_progress_step01.png",

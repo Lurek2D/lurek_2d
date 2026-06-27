@@ -18,7 +18,7 @@ local function minimal_shader_code()
 end
 
 local function new_overlay(w, h)
-    return lurek.effect.newOverlay(w, h)
+    return lurek.overlay.new(w, h)
 end
 
 local function new_image_effect(spec, params)
@@ -29,7 +29,7 @@ local function new_image_effect(spec, params)
 end
 
 local function new_transition(kind, duration)
-    return lurek.effect.newTransition(kind or "fade", duration or 1.0)
+    return lurek.overlay.newTransition(kind or "fade", duration or 1.0)
 end
 
 -- @describe lurek.effect module

@@ -4,6 +4,52 @@
 
 use lurek2d::patterns::*;
 
+mod deck_tests {
+    use super::*;
+
+    #[test]
+    fn draw_discard_and_reset_track_piles() {
+        let mut deck = Deck::new();
+        let a = deck.add();
+        let b = deck.add();
+        assert_eq!(deck.count(), 2);
+
+        assert_eq!(deck.draw(1), vec![a]);
+        assert_eq!(deck.count(), 1);
+        assert!(deck.discard(a));
+        assert_eq!(deck.discard_count(), 1);
+
+        deck.reset();
+        assert_eq!(deck.count(), 2);
+        assert_eq!(deck.discard_count(), 0);
+        assert_eq!(deck.draw(2), vec![a, b]);
+    }
+
+    #[test]
+    fn shuffle_is_deterministic_for_seed() {
+        let mut a = Deck::new();
+        let mut b = Deck::new();
+        for _ in 0..6 {
+            a.add();
+            b.add();
+        }
+
+        a.shuffle(1234);
+        b.shuffle(1234);
+        assert_eq!(a.draw_ids(), b.draw_ids());
+    }
+
+    #[test]
+    fn peek_does_not_remove_cards() {
+        let mut deck = Deck::new();
+        let first = deck.add();
+        deck.add();
+
+        assert_eq!(deck.peek(1), vec![first]);
+        assert_eq!(deck.count(), 2);
+    }
+}
+
 // â”€â”€ BiMap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod bimap_tests {

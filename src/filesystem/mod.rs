@@ -1,5 +1,5 @@
-//! `src/filesystem/mod.rs` is the module index for virtual paths, file data, handles, watchers, async I/O, and ZIP mounts.
-//! It declares the files that own path resolution, buffered stream access, archive overlays, watch polling, and worker I/O.
+//! `src/filesystem/mod.rs` is the module index for virtual paths, file data, handles, watchers, and async I/O.
+//! It declares the files that own path resolution, buffered stream access, watch polling, and worker I/O.
 //! This file reexports the main filesystem types so callers can use storage services without importing deep internal paths.
 //! No path normalization, mount state, or worker queues live here; it only defines visibility and subsystem boundaries.
 //! Read this index first when tracing filesystem behavior, because it shows where sandboxing, streams, and mounts split.
@@ -15,8 +15,6 @@ pub mod file_handle;
 pub mod vfs;
 /// File modification watcher. This module is publicly re-exported.
 pub mod watcher;
-/// ZIP archive overlay mount. This module is publicly re-exported.
-pub mod zip_mount;
 /// Async file request queue and result tracking.
 pub use async_loader::{AsyncLoader, LoadHandle, LoadResult, LoadStatus, WriteResult, WriteStatus};
 /// Cached file payload helper.

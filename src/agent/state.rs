@@ -474,12 +474,10 @@ impl AISystemState {
 
 /// Validate the outbound agent URL under the given policy.
 pub fn validate_agent_url(url: &str, policy: &AgentNetworkPolicy) -> Result<(), AgentError> {
-    let uri: ureq::http::Uri = url.parse().map_err(|error| {
+    let parsed = crate::agent::local_http::parse_http_url(url).map_err(|error| {
         AgentError::InvalidRequest(format!("invalid agent URL '{}': {}", url, error))
     })?;
-    let scheme = uri.scheme_str().ok_or_else(|| {
-        AgentError::InvalidRequest(format!("agent URL '{}' is missing a scheme", url))
-    })?;
+    let scheme = parsed.scheme.as_str();
     if !policy
         .allowed_schemes
         .iter()
@@ -491,9 +489,7 @@ pub fn validate_agent_url(url: &str, policy: &AgentNetworkPolicy) -> Result<(), 
         )));
     }
 
-    let host = uri.host().ok_or_else(|| {
-        AgentError::InvalidRequest(format!("agent URL '{}' is missing a host", url))
-    })?;
+    let host = parsed.host.as_str();
     if !policy.allow_external_hosts
         && !policy
             .allowed_hosts

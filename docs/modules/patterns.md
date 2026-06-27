@@ -47,7 +47,7 @@ end
 - Start with `lurek.patterns.newBlackboard` when exploring this module.
 - Start with `lurek.patterns.newCommandStack` when exploring this module.
 - Start with `lurek.patterns.newDebounce` when exploring this module.
-- Start with `lurek.patterns.newEventBus` when exploring this module.
+- Start with `lurek.patterns.newDeck` when exploring this module.
 
 ## API Reference
 
@@ -67,6 +67,8 @@ end
 - The module also provides utility data structures that keep proving useful across domains: priority queues, ring buffers, tries, weighted selectors, bidirectional maps, graph containers, bounded collections, and pooling helpers.
 - Object reuse and bounded collections matter because several runtime systems need allocation control, limited history, or reusable queues without wanting ad hoc versions hidden inside every feature.
 - Weighted selectors, graph containers, and queue-like helpers show that `patterns` is not only about software architecture in the narrow sense. It also owns practical reusable mechanics that often sit just below game logic and tool logic but above low-level containers.
+- Deck/Card lives here rather than in `ecs` because a deck is reusable game logic: it owns draw order, shuffle determinism, discard/reset behavior, and card payload handling. It does not define object identity, inheritance, components, or world membership.
+- That boundary keeps `patterns` broad and domain-neutral while leaving object/class semantics to `ecs`.
 - The module also helps keep terminology stable across the codebase. Several features can depend on the same ideas of event dispatch, reversible actions, orchestration, and shared state instead of each inventing slightly different local vocabulary.
 - The breadth of the module is deliberate: these pieces are small enough to stay reusable, but substantial enough that reimplementing them repeatedly would fragment the rest of the engine.
 - That makes `patterns` valuable not only as a library shelf, but also as a consistency layer. Several systems can solve similar structural problems without diverging in naming, behavior, or maintenance style.
@@ -292,6 +294,43 @@ do
     example_print_log("pending = " .. tostring(db:isPending()))
     db:update(0.6)
     example_print_log("fires = " .. db:getFireCount())
+end
+```
+
+---
+
+### `lurek.patterns.newDeck`
+
+Create a reusable deck/card collection with shuffle, draw, discard, and reset operations.
+
+```lua
+lurek.patterns.newDeck(cards)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cards?` | table | Optional array of initial card payloads. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LDeck](#ldeck) | A new deck instance. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { rank = "A" }, { rank = "K" }, { rank = "Q" } })
+    local top = deck:peek()
+    local count = deck:count()
+    patterns_log("newDeck count=" .. tostring(count) .. " top=" .. tostring(top.rank))
 end
 ```
 
@@ -1284,6 +1323,7 @@ end
 - [LBlackboard](#lblackboard)
 - [LCommandStack](#lcommandstack)
 - [LDebounce](#ldebounce)
+- [LDeck](#ldeck)
 - [LEventBus](#leventbus)
 - [LFactory](#lfactory)
 - [LFunnel](#lfunnel)
@@ -3245,6 +3285,345 @@ do
     db:update(0.6)
     example_print_log("pending = " .. tostring(db:isPending()))
     example_print_log("fires = " .. db:getFireCount())
+end
+```
+
+---
+
+## LDeck
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LDeck:add`
+
+Add a card payload to the bottom of the deck's draw pile.
+
+```lua
+LDeck:add(card)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `card` | any | Card payload stored by the deck. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Stable card id for later discard or inspection. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck()
+    local id = deck:add({ rank = "J", suit = "spades" })
+    local top = deck:peek()
+    patterns_log("LDeck:add id=" .. tostring(id) .. " count=" .. tostring(deck:count()) .. " top=" .. tostring(top.rank))
+end
+```
+
+---
+
+#### `LDeck:count`
+
+Return the number of cards left in the draw pile.
+
+```lua
+LDeck:count()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Remaining draw-pile count. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = 1 }, { id = 2 }, { id = 3 } })
+    local before = deck:count()
+    deck:draw()
+    patterns_log("LDeck:count before=" .. tostring(before) .. " after=" .. tostring(deck:count()))
+end
+```
+
+---
+
+#### `LDeck:discard`
+
+Move a card into the discard pile by card table or stable id.
+
+```lua
+LDeck:discard(card)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `card` | any | Card table returned by the deck, or a stable card id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the card entered the discard pile. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local card = deck:draw()
+    local discarded = deck:discard(card)
+    patterns_log("LDeck:discard ok=" .. tostring(discarded) .. " discard_count=" .. tostring(deck:discardCount()))
+end
+```
+
+---
+
+#### `LDeck:discardCount`
+
+Return the number of cards in the discard pile.
+
+```lua
+LDeck:discardCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Discard pile count. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = 1 }, { id = 2 } })
+    local card = deck:draw()
+    deck:discard(card)
+    patterns_log("LDeck:discardCount value=" .. tostring(deck:discardCount()) .. " remaining=" .. tostring(deck:count()))
+end
+```
+
+---
+
+#### `LDeck:draw`
+
+Draw one or more cards from the top of the draw pile.
+
+```lua
+LDeck:draw(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count?` | number | Number of cards to draw; default `1`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| any | Single card when count is omitted or `1`. |
+| table | Array of cards when count is greater than `1`. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local card = deck:draw()
+    local remaining = deck:count()
+    patterns_log("LDeck:draw card=" .. tostring(card.id) .. " remaining=" .. tostring(remaining))
+end
+```
+
+---
+
+#### `LDeck:isEmpty`
+
+Return true when no cards remain in the draw pile.
+
+```lua
+LDeck:isEmpty()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Whether the deck has no drawable cards. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = 1 } })
+    local before = deck:isEmpty()
+    deck:draw()
+    patterns_log("LDeck:isEmpty before=" .. tostring(before) .. " after=" .. tostring(deck:isEmpty()))
+end
+```
+
+---
+
+#### `LDeck:peek`
+
+Inspect one or more cards from the top without removing them.
+
+```lua
+LDeck:peek(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count?` | number | Number of cards to inspect; default `1`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| any | Single card when count is omitted or `1`. |
+| table | Array of cards when count is greater than `1`. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local card = deck:peek()
+    local remaining = deck:count()
+    patterns_log("LDeck:peek card=" .. tostring(card.id) .. " remaining=" .. tostring(remaining))
+end
+```
+
+---
+
+#### `LDeck:reset`
+
+Restore the draw pile to original insertion order and clear discard.
+
+```lua
+LDeck:reset()
+```
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local card = deck:draw()
+    deck:discard(card)
+    deck:reset()
+    patterns_log("LDeck:reset count=" .. tostring(deck:count()) .. " first=" .. tostring(deck:peek().id))
+end
+```
+
+---
+
+#### `LDeck:shuffle`
+
+Shuffle the current draw pile with a deterministic optional seed.
+
+```lua
+LDeck:shuffle(seed)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `seed?` | number | Optional shuffle seed; omitted uses `1`. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = 1 }, { id = 2 }, { id = 3 }, { id = 4 } })
+    deck:shuffle(42)
+    local cards = deck:toArray()
+    patterns_log("LDeck:shuffle first=" .. tostring(cards[1].id) .. " second=" .. tostring(cards[2].id))
+end
+```
+
+---
+
+#### `LDeck:toArray`
+
+Return the current draw pile as an array without modifying it.
+
+```lua
+LDeck:toArray()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of card payloads in draw order. |
+
+**Example**
+
+```lua
+do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+
+    local deck = lurek.patterns.newDeck({ { id = "alpha" }, { id = "beta" } })
+    local cards = deck:toArray()
+    local first = cards[1] and cards[1].id or "none"
+    patterns_log("LDeck:toArray count=" .. tostring(#cards) .. " first=" .. tostring(first))
 end
 ```
 

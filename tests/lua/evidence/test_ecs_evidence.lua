@@ -215,5 +215,47 @@ describe("Evidence: lurek.ecs data outputs", function()
         }, "\n") .. "\n"
         write_text(OUT .. "ecs_hierarchy_relation_observer_trace.txt", text)
     end)
+    -- Does: Runs "writes ecs_class_object_registry_trace.txt" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose the behavior produced by lurek.ecs.defineClass, lurek.ecs.newObject, and related owner calls without needing a special evidence-only renderer.
+    -- Artifact: tests/artifacts/current/ecs/ecs_class_object_registry_trace.txt
+    -- Why: This is meaningful only if the visible/text output comes from the class registry, object registry, inheritance, and Universe object attachment APIs; export helpers are just the container.
+
+    it("writes ecs_class_object_registry_trace.txt", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("GameObject", {
+            defaults = { alive = true },
+            tags = { "base" },
+        })
+        lurek.ecs.defineClass("Projectile", {
+            extends = "GameObject",
+            defaults = { speed = 240 },
+        })
+        lurek.ecs.defineClass("EnemyBullet", {
+            extends = { "Projectile" },
+            defaults = { damage = 3 },
+            properties = { hp = 1 },
+        })
+
+        local world = lurek.ecs.newUniverse()
+        local entity = world:spawnObject("EnemyBullet", { hp = 2, name = "red_ring" })
+        local object = world:get(entity, "object")
+        object:setProperty("hp", 5)
+        local ids = lurek.ecs.objectIds()
+        local classes = lurek.ecs.classNames()
+        local meta = lurek.ecs.getClass("EnemyBullet")
+
+        local text = table.concat({
+            "class_count=" .. tostring(#classes),
+            "first_object_id=" .. tostring(ids[1]),
+            "object_class=" .. tostring(object:type()),
+            "object_is_gameobject=" .. tostring(object:isA("GameObject")),
+            "object_hp=" .. tostring(object:getProperty("hp")),
+            "world_object_id=" .. tostring(world:get(entity, "objectId")),
+            "world_object_class=" .. tostring(world:get(entity, "objectClass")),
+            "enemy_parent=" .. tostring(meta.extends[1]),
+        }, "\n") .. "\n"
+        write_text(OUT .. "ecs_class_object_registry_trace.txt", text)
+    end)
 end)
 test_summary()

@@ -38,8 +38,11 @@ end
 
 ## Common Patterns
 
-- Start with `lurek.ecs.newRelationshipManager` when exploring this module.
-- Start with `lurek.ecs.newUniverse` when exploring this module.
+- Start with `lurek.ecs.classNames` when exploring this module.
+- Start with `lurek.ecs.clearClasses` when exploring this module.
+- Start with `lurek.ecs.clearObjects` when exploring this module.
+- Start with `lurek.ecs.defineClass` when exploring this module.
+- Start with `lurek.ecs.destroyObject` when exploring this module.
 
 ## API Reference
 
@@ -55,6 +58,9 @@ end
 - Hierarchy and relationship support matter because game worlds are rarely flat; parent-child links, semantic grouping, and layered ownership all need to remain queryable as the world grows.
 - The module also improves feature isolation, because several systems can share the same entities without collapsing their state into one oversized object model.
 - That makes the ECS world a stable meeting point for subsystems that need different views of the same population.
+- The class/object registry is intentionally part of `ecs` because it is foundational object identity and type metadata, not a reusable gameplay pattern. It gives Lua developers inheritance, mixin-style multi-inheritance, defaults, methods, properties, constructors, tags, and a live object registry inside the same VM.
+- Objects created through `lurek.ecs.newObject` remain ordinary Lua tables, but they carry metatable-backed class behavior plus helper methods such as `type`, `typeOf`, `isA`, `getProperty`, and `setProperty`.
+- `LUniverse:spawnObject` and `LUniverse:attachObject` are bridge APIs: they attach an object table to an entity as data so ECS systems can still query and compose it with ordinary components.
 - The model is especially strong when many systems need partial views of the same population without inheriting each other's update logic.
 - That shared world model keeps those views aligned.
 - The ECS world becomes a shared substrate for other systems, but `ecs` owns its organization.
@@ -63,6 +69,421 @@ end
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
+
+### `lurek.ecs.classNames`
+
+Returns all global ECS class names in deterministic order.
+
+```lua
+lurek.ecs.classNames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Registered class names. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ClassListA", {})
+    lurek.ecs.defineClass("ClassListB", {})
+    local names = lurek.ecs.classNames()
+    ecs_log("classNames count=" .. tostring(#names) .. " first=" .. tostring(names[1]))
+end
+```
+
+---
+
+### `lurek.ecs.clearClasses`
+
+Removes every global ECS class definition.
+
+```lua
+lurek.ecs.clearClasses()
+```
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.defineClass("TemporaryClass", {})
+    local before = lurek.ecs.hasClass("TemporaryClass")
+    lurek.ecs.clearClasses()
+    local after = lurek.ecs.hasClass("TemporaryClass")
+    ecs_log("clearClasses before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+```
+
+---
+
+### `lurek.ecs.clearObjects`
+
+Removes every live ECS object while keeping class definitions.
+
+```lua
+lurek.ecs.clearObjects()
+```
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ClearObjectsProbe", {})
+    lurek.ecs.newObject("ClearObjectsProbe")
+    lurek.ecs.clearObjects()
+    ecs_log("clearObjects count=" .. tostring(#lurek.ecs.objectIds()))
+end
+```
+
+---
+
+### `lurek.ecs.defineClass`
+
+Defines or replaces a global ECS class for Lua object instances.
+
+```lua
+lurek.ecs.defineClass(name, def)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Class name used by `newObject` and `[LUniverse](#luniverse):spawnObject`. |
+| `def` | table | Class definition with optional extends, defaults, methods, properties, constructor, and tags. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("GameObject", { defaults = { alive = true }, tags = { "base" } })
+    lurek.ecs.defineClass("Projectile", { extends = "GameObject", defaults = { speed = 360 } })
+    lurek.ecs.defineClass("EnemyBullet", { extends = { "Projectile" }, defaults = { damage = 2 } })
+    ecs_log("defined EnemyBullet class=" .. tostring(lurek.ecs.hasClass("EnemyBullet")))
+end
+```
+
+---
+
+### `lurek.ecs.destroyObject`
+
+Removes a live ECS object from the global object registry.
+
+```lua
+lurek.ecs.destroyObject(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Object id to destroy. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when an object was removed. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("DestroyObject", {})
+    local obj = lurek.ecs.newObject("DestroyObject")
+    local removed = lurek.ecs.destroyObject(obj.__id)
+    ecs_log("destroyObject removed=" .. tostring(removed) .. " live=" .. tostring(lurek.ecs.hasObject(obj.__id)))
+end
+```
+
+---
+
+### `lurek.ecs.getClass`
+
+Returns metadata for a global ECS class.
+
+```lua
+lurek.ecs.getClass(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Class name to inspect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Metadata table with name, extends, and tags; nil when unknown. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ClassInfoProbe", { tags = { "enemy", "air" } })
+    local info = lurek.ecs.getClass("ClassInfoProbe")
+    local tag = info and info.tags and info.tags[1] or "none"
+    ecs_log("getClass name=" .. tostring(info and info.name) .. " tag=" .. tostring(tag))
+end
+```
+
+---
+
+### `lurek.ecs.getObject`
+
+Returns a live ECS object table by object id.
+
+```lua
+lurek.ecs.getObject(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Object id returned in the object's `__id` field. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Object table, or nil when not found. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("LookupObject", {})
+    local obj = lurek.ecs.newObject("LookupObject")
+    local same = lurek.ecs.getObject(obj.__id) == obj
+    ecs_log("getObject id=" .. tostring(obj.__id) .. " same=" .. tostring(same))
+end
+```
+
+---
+
+### `lurek.ecs.getProperty`
+
+```lua
+lurek.ecs.getProperty(this, name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `this` | any |  |
+| `name` | any |  |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("PropertyReadExample", { properties = { hp = 10, speed = 6 } })
+    local obj = lurek.ecs.newObject("PropertyReadExample")
+    local hp = obj:getProperty("hp")
+    ecs_log("getProperty hp=" .. tostring(hp) .. " speed=" .. tostring(obj:getProperty("speed")))
+end
+```
+
+---
+
+### `lurek.ecs.hasClass`
+
+Returns whether a global ECS class name is defined.
+
+```lua
+lurek.ecs.hasClass(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Class name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the class exists. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("HasClassProbe", { defaults = { hp = 1 } })
+    local present = lurek.ecs.hasClass("HasClassProbe")
+    local missing = lurek.ecs.hasClass("MissingClass")
+    ecs_log("hasClass present=" .. tostring(present) .. " missing=" .. tostring(missing))
+end
+```
+
+---
+
+### `lurek.ecs.hasObject`
+
+Returns whether a live ECS object id exists.
+
+```lua
+lurek.ecs.hasObject(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Object id to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the object id is live. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("LiveObject", {})
+    local obj = lurek.ecs.newObject("LiveObject")
+    ecs_log("hasObject live=" .. tostring(lurek.ecs.hasObject(obj.__id)) .. " missing=" .. tostring(lurek.ecs.hasObject(999999)))
+end
+```
+
+---
+
+### `lurek.ecs.isA`
+
+```lua
+lurek.ecs.isA(this, candidate)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `this` | any |  |
+| `candidate` | any |  |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ActorExampleObject", {})
+    lurek.ecs.defineClass("EnemyExampleObject", { extends = "ActorExampleObject" })
+    local obj = lurek.ecs.newObject("EnemyExampleObject")
+    ecs_log("object isA actor=" .. tostring(obj:isA("ActorExampleObject")) .. " enemy=" .. tostring(obj:isA("EnemyExampleObject")))
+end
+```
+
+---
+
+### `lurek.ecs.newObject`
+
+Creates a Lua table object from a registered ECS class.
+
+```lua
+lurek.ecs.newObject(className, props)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `className` | string | Registered class name. |
+| `props?` | table | Optional property overrides. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Object table with type, typeOf, isA, getProperty, and setProperty methods. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("Damageable", { properties = { hp = 10 } })
+    local obj = lurek.ecs.newObject("Damageable", { name = "boss_part" })
+    obj:setProperty("hp", 7)
+    ecs_log("newObject type=" .. obj:type() .. " hp=" .. tostring(obj:getProperty("hp")))
+end
+```
+
+---
 
 ### `lurek.ecs.newRelationshipManager`
 
@@ -140,6 +561,134 @@ do
     local entities = uni:getEntities()
     local count = uni:getEntityCount()
     ecs_log("universe created count=" .. tostring(count) .. " first_id=" .. tostring(entities[1]) .. " hero_name=" .. tostring(uni:get(hero, "name")))
+end
+```
+
+---
+
+### `lurek.ecs.objectIds`
+
+Returns all live ECS object ids in ascending order.
+
+```lua
+lurek.ecs.objectIds()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Object ids. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("ListedObject", {})
+    local obj = lurek.ecs.newObject("ListedObject")
+    local ids = lurek.ecs.objectIds()
+    ecs_log("objectIds count=" .. tostring(#ids) .. " first=" .. tostring(ids[1]) .. " object=" .. tostring(obj.__id))
+end
+```
+
+---
+
+### `lurek.ecs.setProperty`
+
+```lua
+lurek.ecs.setProperty(this, name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `this` | any |  |
+| `name` | any |  |
+| `value` | any |  |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("PropertyWriteExample", { properties = { hp = 10 } })
+    local obj = lurek.ecs.newObject("PropertyWriteExample")
+    obj:setProperty("hp", 4)
+    ecs_log("setProperty hp=" .. tostring(obj:getProperty("hp")) .. " direct=" .. tostring(obj.hp))
+end
+```
+
+---
+
+### `lurek.ecs.type`
+
+```lua
+lurek.ecs.type(this)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `this` | any |  |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("TypedExampleObject", {})
+    local obj = lurek.ecs.newObject("TypedExampleObject")
+    ecs_log("object type=" .. tostring(obj:type()) .. " id=" .. tostring(obj.__id))
+end
+```
+
+---
+
+### `lurek.ecs.typeOf`
+
+```lua
+lurek.ecs.typeOf(this, candidate)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `this` | any |  |
+| `candidate` | any |  |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("BaseExampleObject", {})
+    lurek.ecs.defineClass("DerivedExampleObject", { extends = "BaseExampleObject" })
+    local obj = lurek.ecs.newObject("DerivedExampleObject")
+    ecs_log("object typeOf base=" .. tostring(obj:typeOf("BaseExampleObject")) .. " object=" .. tostring(obj:typeOf("LObject")))
 end
 ```
 
@@ -1018,6 +1567,42 @@ do
     u:clear()
     u:applySnapshot(snap)
     example_print_log("entities after apply = " .. u:getEntityCount())
+end
+```
+
+---
+
+#### `LUniverse:attachObject`
+
+Attaches an existing ECS object table to an entity as the `object` component.
+
+```lua
+LUniverse:attachObject(entityId, obj)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entityId` | number | Entity id that receives the object. |
+| `obj` | table | Object table returned by `lurek.ecs.newObject`. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("AttachedObject", { defaults = { team = "enemy" } })
+    local obj = lurek.ecs.newObject("AttachedObject")
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawn()
+    world:attachObject(entity, obj)
+    ecs_log("attachObject entity=" .. tostring(entity) .. " objectId=" .. tostring(world:get(entity, "objectId")) .. " team=" .. tostring(world:get(entity, "object").team))
 end
 ```
 
@@ -3654,6 +4239,46 @@ do
     local first_pos = first and uni:get(first, "pos") or nil
     local count = uni:getEntityCount()
     ecs_log("bulk spawned count=" .. tostring(#ids) .. " first=" .. tostring(first) .. " first_pos_x=" .. tostring(first_pos and first_pos.x) .. " live_count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LUniverse:spawnObject`
+
+Creates an ECS object instance from a registered class and attaches it to a new entity.
+
+```lua
+LUniverse:spawnObject(className, props)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `className` | string | Registered ECS class name. |
+| `props?` | table | Optional property overrides copied onto the new object. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Entity id that received the object component. |
+
+**Example**
+
+```lua
+do
+    local function ecs_log(message)
+        lurek.log.info("[ecs.example] " .. tostring(message))
+    end
+
+    lurek.ecs.clearObjects()
+    lurek.ecs.clearClasses()
+    lurek.ecs.defineClass("EnemyBullet", { defaults = { damage = 3 } })
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawnObject("EnemyBullet", { damage = 5 })
+    ecs_log("spawnObject entity=" .. tostring(entity) .. " class=" .. tostring(world:get(entity, "objectClass")) .. " damage=" .. tostring(world:get(entity, "object").damage))
 end
 ```
 

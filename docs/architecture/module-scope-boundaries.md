@@ -6,7 +6,7 @@
 - Each pair must complement through data, adapters, or explicit orchestration, not duplicate ownership.
 - If a feature fits both sides of a pair, pick the owner below and make the other side consume it through a narrow API.
 
-Companion documents: [engine-core.md](engine-core.md), [modularity-plugins.md](modularity-plugins.md)
+Companion documents: [engine-core.md](engine-core.md), [modularity-plugins.md](modularity-plugins.md), [effects-particles-overlay-plan.md](effects-particles-overlay-plan.md)
 
 ---
 
@@ -57,7 +57,7 @@ Companion documents: [engine-core.md](engine-core.md), [modularity-plugins.md](m
 | `binary` vs `serialize` | Overlap found and fixed. `lurek.binary` previously exposed TOML and MessagePack helpers that duplicated `lurek.serialize`. | `binary` exposes byte buffers, packing, compression, hashing, and byte encodings only. TOML, MessagePack, JSON, CSV, XML, and schema-aware structured value conversion stay in `serialize`. |
 | `ai` vs `learning` | Overlap found and fixed. `lurek.ai` previously exposed Q-learning, neural-net, genetic, bandit, and neuroevolution constructors that duplicated `lurek.learning`. | `ai` exposes game-behavior decision systems only. ML/RL/evolution constructors stay in `learning`; `ai` may consume learned policies through explicit integration points. |
 | `agent` vs `ai` | Terminology risk, not a functional overlap. `ai` has per-actor `Agent` state, while `agent` is the LLM assistant subsystem. | Keep game actor state under `ai`; keep LLM prompt, memory, backend, and async request lifecycle under `agent`. |
-| `agent` vs `learning` | No direct API overlap found. Both can involve "models", but one owns LLM orchestration and the other owns local learning algorithms. | Keep LLM request/memory/tool orchestration in `agent`; keep trainable tensors, RL, bandits, GA, and ONNX in `learning`. |
+| `agent` vs `learning` | No direct API overlap found. Both can involve "models", but one owns LLM orchestration and the other owns local learning algorithms. | Keep LLM request/memory/tool orchestration in `agent`; keep trainable tensors, RL, bandits, and GA in `learning`. |
 | `terminal` vs `ui` | Intentional local overlap in names such as label, button, text box, and panel, but the runtime model is different. | Terminal widgets stay character-grid components; retained, themed, layout-driven widgets stay in `ui`. |
 | `image` vs `sprite` | Shared atlas terminology found, but ownership is split by lifecycle. | `image` may pack and export pixel regions; `sprite` owns runtime sprite instances, sheets, animation-facing regions, and batching. |
 | `overlay` vs `effect` | Presentation/pipeline adjacency found, but no owner collision when screen policy stays in `overlay` and post-fx pass policy stays in `effect`. | `overlay` owns weather, fade, flash, shake, ambient, and water presentation. `effect` owns post-fx stacks, effect kinds, presets, and shader pass descriptors. |

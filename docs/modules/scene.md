@@ -73,7 +73,12 @@ end
 - Scene stacks, shared scene data, lifecycle callbacks, transitions, depth sorting, object containers, and render bridges matter because changing what is active usually affects simulation, UI, rendering, and progression at the same time.
 - Push, pop, replace, and overlay semantics are central to the module's value. They let projects layer pause menus over gameplay, cutscenes over maps, or modal flows over existing screens without destroying the context underneath.
 - Lifecycle hooks make scenes more than labels: entry, exit, pause, resume, preload, and ready-style behavior let logic and resources react cleanly when control moves between states.
+- Lifecycle sequencing includes before/after hooks around enter, leave, pause, and resume, plus create-time setup. That lets a scene freeze, restore, or partially suspend its own contents around flow events instead of scattering those decisions across game code.
 - Shared data, symbolic registration, and transition support extend the feature from visual navigation into game-flow management, so scenes can exchange parameters, re-enter deterministically, and present state changes as unified runtime transitions.
+- Registered scenes can declare persistence intent. Frozen scenes preserve their table state for return flows, while reset-oriented factories can create fresh scene tables when pushed again.
+- Scene activation is separate from camera state. A camera controls a view; a scene controls which callbacks and object groups are allowed to process, simulate, and render.
+- Rendering remains single-scene outside transitions. During an active transition, the outgoing and incoming scenes are temporarily retained together so transition effects can draw both sides of the handoff.
+- Scene object containers provide 16 named group bits with per-pass enable flags for update, physics, and draw. This allows a scene to keep selected background work alive while suspending physics, visuals, or other tagged groups.
 - Stack semantics are one of the hardest recurring problems in game architecture, and this module gives a durable answer to what is active, what is suspended underneath, and how control returns cleanly after an overlay or interruption.
 - That matters for pause flows, inventory layers, tutorials, map screens, cutscenes, modal dialogs, failure states, and tool-driven previews that should temporarily change the foreground without tearing down the underlying gameplay context.
 - Transition support keeps pacing and presentation tied to the same model as logical scene changes. Fades, wipes, slides, or other handoff effects become part of one scene-change contract instead of ad hoc renderer tricks detached from lifecycle state.
@@ -1631,6 +1636,46 @@ end
 
 ---
 
+### `lurek.scene.isSceneActive`
+
+Returns whether the selected scene is globally active.
+
+```lua
+lurek.scene.isSceneActive(target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target?` | any | nil/current, registered scene name, or 1-based stack index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the scene is active; false when inactive or target not found. |
+
+**Example**
+
+```lua
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    lurek.scene.clear()
+    lurek.scene.push({ name = "activity_probe" })
+    local before = lurek.scene.isSceneActive()
+    lurek.scene.setSceneActive(nil, false)
+    local after = lurek.scene.isSceneActive()
+    scene_log("isSceneActive before=" .. tostring(before) .. " after=" .. tostring(after))
+    lurek.scene.clear()
+end
+```
+
+---
+
 ### `lurek.scene.isTransitioning`
 
 Returns true if a scene transition animation is currently playing. Use this to block input or skip certain logic during transitions.
@@ -2607,6 +2652,55 @@ end
 
 ---
 
+### `lurek.scene.pushRegistered`
+
+Push a registered scene by name, honoring its persistence policy.
+
+```lua
+lurek.scene.pushRegistered(name, transition, duration, easing, params)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Registered scene name to push. |
+| `transition?` | string | Transition type name. Defaults to `"none"`. |
+| `duration?` | number | Transition animation duration in seconds. Defaults to 0. |
+| `easing?` | string | Easing curve name. Defaults to `"linear"`. |
+| `params?` | table | Arbitrary data forwarded to the scene's `enter(self, params)` callback. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the scene existed and was pushed. |
+
+**Example**
+
+```lua
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    lurek.scene.clear()
+    local order = {}
+    lurek.scene.registerScene("registered_flow_example", {
+        create = function(self) order[#order + 1] = "create" end,
+        before_enter = function(self) order[#order + 1] = "before_enter" end,
+        enter = function(self, params) order[#order + 1] = "enter:" .. tostring(params.level) end,
+        after_enter = function(self) order[#order + 1] = "after_enter" end,
+    }, { persistence = "freeze" })
+    lurek.scene.pushRegistered("registered_flow_example", nil, nil, nil, { level = 2 })
+    scene_log("pushRegistered order=" .. table.concat(order, ","))
+    lurek.scene.unregisterScene("registered_flow_example")
+    lurek.scene.clear()
+end
+```
+
+---
+
 ### `lurek.scene.queueTransition`
 
 Queue a transition to play automatically after the current one finishes. Multiple queued transitions execute in FIFO order, enabling multi-step cinematic sequences (e.g. fade-out then slide-in).
@@ -2671,10 +2765,10 @@ end
 
 ### `lurek.scene.registerScene`
 
-Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
+Register a scene table or scene factory under a unique name for later retrieval, pushRegistered navigation, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
 
 ```lua
-lurek.scene.registerScene(name, scene)
+lurek.scene.registerScene(name, sceneOrFactory, opts)
 ```
 
 **Parameters**
@@ -2682,7 +2776,8 @@ lurek.scene.registerScene(name, scene)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Unique name to associate with this scene (e.g. `"mainMenu"`, `"gameplay"`). |
-| `scene` | table | The scene table to register. |
+| `sceneOrFactory` | any | Scene table or zero-argument factory function returning a scene table. |
+| `opts?` | table | Optional registration settings; `persistence` accepts `"freeze"` or `"reset"`. |
 
 **Example**
 
@@ -3265,6 +3360,48 @@ do
     example_print_log("disabled ok = " .. tostring(disabled))
     example_print_log("setProcessEnabled = " .. tostring(lurek.scene.isProcessEnabled()))
     example_print_log("enabled ok = " .. tostring(enabled))
+    lurek.scene.clear()
+end
+```
+
+---
+
+### `lurek.scene.setSceneActive`
+
+Enable or disable all update, process, physics, late, and render callbacks for a selected scene.
+
+```lua
+lurek.scene.setSceneActive(target, enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target?` | any | nil/current, registered scene name, or 1-based stack index. |
+| `enabled` | boolean | True to activate the scene, false to fully suspend it. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when target scene was resolved and updated. |
+
+**Example**
+
+```lua
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    lurek.scene.clear()
+    local updates = 0
+    local scene = { update = function(self, dt) updates = updates + 1 end }
+    lurek.scene.push(scene)
+    lurek.scene.setSceneActive(nil, false)
+    lurek.scene.update(1 / 60)
+    scene_log("setSceneActive updates=" .. tostring(updates) .. " active=" .. tostring(lurek.scene.isSceneActive()))
     lurek.scene.clear()
 end
 ```
@@ -4250,6 +4387,44 @@ end
 
 ---
 
+#### `LSceneObjectContainer:defineGroup`
+
+Define an object group and return its 0-based bit index.
+
+```lua
+LSceneObjectContainer:defineGroup(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Group name to define. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Bit index from 0 to 15. |
+
+**Example**
+
+```lua
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    local physics_bit = container:defineGroup("physics")
+    local ui_bit = container:defineGroup("ui")
+    local same = physics_bit == container:defineGroup("physics")
+    scene_log("defineGroup physics=" .. tostring(physics_bit) .. " ui=" .. tostring(ui_bit) .. " stable=" .. tostring(same))
+end
+```
+
+---
+
 #### `LSceneObjectContainer:draw`
 
 Call draw() on all objects that have a draw method, sorted by layer.
@@ -4419,6 +4594,44 @@ end
 
 ---
 
+#### `LSceneObjectContainer:getGroupBit`
+
+Return the bit index assigned to a group name.
+
+```lua
+LSceneObjectContainer:getGroupBit(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Group name to inspect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Bit index, or nil when undefined. |
+
+**Example**
+
+```lua
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    container:defineGroup("projectiles")
+    local bit = container:getGroupBit("projectiles")
+    local missing = container:getGroupBit("missing")
+    scene_log("getGroupBit projectiles=" .. tostring(bit) .. " missing=" .. tostring(missing))
+end
+```
+
+---
+
 #### `LSceneObjectContainer:getObjects`
 
 Get all objects as an array (layer-sorted).
@@ -4542,6 +4755,82 @@ end
 
 ---
 
+#### `LSceneObjectContainer:isGroupEnabled`
+
+Return whether one object group is enabled for one pass.
+
+```lua
+LSceneObjectContainer:isGroupEnabled(group, pass)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | any | Group name or 0-based bit index. |
+| `pass` | string | Pass name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the group is enabled for that pass. |
+
+**Example**
+
+```lua
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    container:defineGroup("physics")
+    local before = container:isGroupEnabled("physics", "physics")
+    container:setGroupEnabled("physics", "physics", false)
+    local after = container:isGroupEnabled("physics", "physics")
+    scene_log("isGroupEnabled before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+```
+
+---
+
+#### `LSceneObjectContainer:processPhysics`
+
+Call process_physics(dt) or physics(dt) on all physics-pass-enabled objects.
+
+```lua
+LSceneObjectContainer:processPhysics(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Physics delta time in seconds. |
+
+**Example**
+
+```lua
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    container:defineGroup("physics")
+    local ticks = 0
+    container:add({ group = "physics", process_physics = function(self, dt) ticks = ticks + 1 end })
+    container:setGroupEnabled("physics", "physics", false)
+    container:processPhysics(1 / 60)
+    container:setGroupEnabled("physics", "physics", true)
+    container:processPhysics(1 / 60)
+    scene_log("processPhysics ticks=" .. tostring(ticks))
+end
+```
+
+---
+
 #### `LSceneObjectContainer:remove`
 
 Remove an object from the container (identity comparison).
@@ -4593,6 +4882,50 @@ do
     container:add(obj)
     container:remove(obj)
     example_print_log("count after remove = " .. container:getCount())
+end
+```
+
+---
+
+#### `LSceneObjectContainer:setGroupEnabled`
+
+Enable or disable one object group for one pass.
+
+```lua
+LSceneObjectContainer:setGroupEnabled(group, pass, enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | any | Group name or 0-based bit index. |
+| `pass` | string | Pass name: update, physics/process_physics, or draw. |
+| `enabled` | boolean | True to include the group in the pass. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the group and pass were accepted. |
+
+**Example**
+
+```lua
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    container:defineGroup("background")
+    local updates = 0
+    container:add({ group = "background", update = function(self, dt) updates = updates + 1 end })
+    container:setGroupEnabled("background", "update", false)
+    container:update(1 / 60)
+    container:setGroupEnabled("background", "update", true)
+    container:update(1 / 60)
+    scene_log("setGroupEnabled updates=" .. tostring(updates))
 end
 ```
 

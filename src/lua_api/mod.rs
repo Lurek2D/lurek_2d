@@ -90,8 +90,6 @@ pub mod lua_types;
 pub mod mapblock_api;
 /// Exposes the `lurek.math` binding module.
 pub mod math_api;
-/// Exposes the `lurek.midi` binding module.
-pub mod midi_api;
 /// Exposes the `lurek.minimap` binding module.
 pub mod minimap_api;
 /// Exposes the `lurek.mods` binding module.

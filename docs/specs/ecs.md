@@ -6,6 +6,8 @@
 
 - Manages an Entity-Component-System database with generational IDs.
 - Supports hierarchies, relationships, phase-aware systems, and snapshots.
+- Provides a global Lua class/object registry for richer object-oriented gameplay models when plain tables are not enough.
+- Bridges class-backed objects into `LUniverse` entities without replacing component storage or query APIs.
 
 ## General Info
 
@@ -13,7 +15,7 @@
 - Source path: `src/ecs`
 - Binding: `src/lua_api/ecs_api.rs`
 - Namespace: `lurek.ecs`
-- Lua API surface: `2` functions, `6` types, `86` methods
+- Lua API surface: `18` functions, `6` types, `88` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -27,6 +29,9 @@
 - Hierarchy and relationship support matter because game worlds are rarely flat; parent-child links, semantic grouping, and layered ownership all need to remain queryable as the world grows.
 - The module also improves feature isolation, because several systems can share the same entities without collapsing their state into one oversized object model.
 - That makes the ECS world a stable meeting point for subsystems that need different views of the same population.
+- The class/object registry is intentionally part of `ecs` because it is foundational object identity and type metadata, not a reusable gameplay pattern. It gives Lua developers inheritance, mixin-style multi-inheritance, defaults, methods, properties, constructors, tags, and a live object registry inside the same VM.
+- Objects created through `lurek.ecs.newObject` remain ordinary Lua tables, but they carry metatable-backed class behavior plus helper methods such as `type`, `typeOf`, `isA`, `getProperty`, and `setProperty`.
+- `LUniverse:spawnObject` and `LUniverse:attachObject` are bridge APIs: they attach an object table to an entity as data so ECS systems can still query and compose it with ordinary components.
 - The model is especially strong when many systems need partial views of the same population without inheriting each other's update logic.
 - That shared world model keeps those views aligned.
 - The ECS world becomes a shared substrate for other systems, but `ecs` owns its organization.
@@ -66,8 +71,17 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - It is the navigation point for identity packing, query caching, hierarchy state, and component row ownership.
 - `universe.rs` owns live entities, components, tags, layers, blueprints, systems, and directed relation helpers.
 - `relationships.rs` owns typed pair records and named links, while `query_view.rs` caches component-set lookups.
+- `object_model.rs` owns class metadata and object id bookkeeping for Lua-facing ECS objects.
 - `types.rs`, `generational_id.rs`, and `lua_table.rs` provide handles, id packing, and recursive table cloning.
 - Change this file when public ECS exports move; change siblings when storage rules or query semantics change.
+
+### object_model.rs
+
+- This file owns ECS class metadata, inheritance linearization, and object id bookkeeping.
+- It is the Rust-side policy layer for Lua-facing class definitions and object registry state.
+- Lua registry handles and metatable assembly stay in `src/lua_api/ecs_api.rs`; this file keeps
+- class names, parent order, tags, object ids, and validation rules independent from mlua.
+- Open it when ECS object model naming, inheritance precedence, or registry cleanup changes.
 
 ### query_view.rs
 
@@ -129,8 +143,24 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### Functions
 
+- `lurek.ecs.classNames() -> string[]`: Returns all global ECS class names in deterministic order.
+- `lurek.ecs.clearClasses() -> nil`: Removes every global ECS class definition.
+- `lurek.ecs.clearObjects() -> nil`: Removes every live ECS object while keeping class definitions.
+- `lurek.ecs.defineClass(name, def) -> nil`: Defines or replaces a global ECS class for Lua object instances.
+- `lurek.ecs.destroyObject(id) -> boolean`: Removes a live ECS object from the global object registry.
+- `lurek.ecs.getClass(name) -> table`: Returns metadata for a global ECS class.
+- `lurek.ecs.getObject(id) -> table`: Returns a live ECS object table by object id.
+- `lurek.ecs.getProperty(this, name) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.ecs.hasClass(name) -> boolean`: Returns whether a global ECS class name is defined.
+- `lurek.ecs.hasObject(id) -> boolean`: Returns whether a live ECS object id exists.
+- `lurek.ecs.isA(this, candidate) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.ecs.newObject(className, props?) -> table`: Creates a Lua table object from a registered ECS class.
 - `lurek.ecs.newRelationshipManager() -> LRelationshipManager`: Creates a relationship manager for tracking numeric values and named levels between entity pairs.
 - `lurek.ecs.newUniverse() -> LUniverse`: Creates an empty ECS universe for entity, component, system, and relationship management.
+- `lurek.ecs.objectIds() -> integer[]`: Returns all live ECS object ids in ascending order.
+- `lurek.ecs.setProperty(this, name, value) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.ecs.type(this) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.ecs.typeOf(this, candidate) -> nil`: Lua-facing function documented in the binding source.
 
 ### Callbacks
 
@@ -197,6 +227,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LUniverse:addSystem(system, opts?) -> nil`: Registers a Lua system table with optional phase, priority, name, and dependency metadata.
 - `LUniverse:addTag(id, tag) -> nil`: Assigns a string tag name to an entity in this universe.
 - `LUniverse:applySnapshot(snapshot) -> nil`: Replaces this universe state from a Lua table snapshot.
+- `LUniverse:attachObject(entityId, obj) -> nil`: Attaches an existing ECS object table to an entity as the `object` component.
 - `LUniverse:bitmapTag(id, name) -> integer`: Adds a bitmap tag to an entity, defining the tag if needed.
 - `LUniverse:bitmapUntag(id, name) -> nil`: Removes a bitmap tag from an entity.
 - `LUniverse:clear() -> nil`: Clears all entities, components, systems, and ECS state from this universe.
@@ -258,6 +289,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LUniverse:spawn() -> integer`: Creates a new entity in this universe.
 - `LUniverse:spawnBlueprint(name, overrides?) -> integer`: Spawns an entity from a named blueprint with optional component overrides.
 - `LUniverse:spawnBulk(name, count, overrides?) -> integer[]`: Spawns multiple entities from a blueprint using shared optional overrides.
+- `LUniverse:spawnObject(className, props?) -> integer`: Creates an ECS object instance from a registered class and attaches it to a new entity.
 - `LUniverse:takeSnapshotDiff() -> table`: Returns and clears accumulated ECS snapshot diff data.
 - `LUniverse:type() -> string`: Returns the Lua-visible type name for this universe handle.
 - `LUniverse:typeOf(name) -> boolean`: Returns whether this universe handle matches a supported type name.
@@ -323,6 +355,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 | Evidence test | `tests/lua/evidence/test_ecs_evidence.lua` |
 | Golden test | `tests/lua/golden/test_ecs_golden.lua` |
 | Current artifact | `tests/artifacts/current/ecs/ecs_blueprint_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/ecs/ecs_class_object_registry_trace.txt` |
 | Current artifact | `tests/artifacts/current/ecs/ecs_component_query_snapshot.txt` |
 | Current artifact | `tests/artifacts/current/ecs/ecs_entity_lifecycle_snapshot.txt` |
 | Current artifact | `tests/artifacts/current/ecs/ecs_hierarchy_relation_observer_trace.txt` |

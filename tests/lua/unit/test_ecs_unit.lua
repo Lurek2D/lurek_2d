@@ -873,6 +873,207 @@ describe("LUniverse snapshots", function()
         expect_equal(0, #drained.dirty_entities)
     end)
 end)
+
+-- @describe ECS class and object registry
+describe("ECS class and object registry", function()
+    -- @covers lurek.ecs.defineClass
+    it("defineClass supports inheritance, defaults, methods, properties, and constructors", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("GameObject", {
+            defaults = { alive = true, hp = 1 },
+            methods = {
+                label = function(self)
+                    return self.name .. ":" .. tostring(self.hp)
+                end,
+            },
+            properties = { speed = 4 },
+            constructor = function(self, props)
+                self.constructed = props and props.name or "unnamed"
+            end,
+            tags = { "base" },
+        })
+        lurek.ecs.defineClass("Projectile", {
+            extends = "GameObject",
+            defaults = { damage = 2 },
+            properties = { speed = 8 },
+            tags = { "projectile" },
+        })
+        local obj = lurek.ecs.newObject("Projectile", { name = "bolt", hp = 5 })
+        expect_equal("bolt:5", obj:label())
+        expect_equal(8, obj:getProperty("speed"))
+        expect_equal("bolt", obj.constructed)
+        expect_true(obj:isA("GameObject"))
+    end)
+
+    -- @covers lurek.ecs.hasClass
+    it("hasClass reports registered classes", function()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("RegistryProbe", {})
+        expect_true(lurek.ecs.hasClass("RegistryProbe"))
+        expect_false(lurek.ecs.hasClass("MissingClass"))
+    end)
+
+    -- @covers lurek.ecs.getClass
+    it("getClass returns class metadata", function()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("TaggedClass", { tags = { "enemy", "flying" } })
+        local meta = lurek.ecs.getClass("TaggedClass")
+        expect_equal("TaggedClass", meta.name)
+        expect_equal("enemy", meta.tags[1])
+        expect_nil(lurek.ecs.getClass("NoSuchClass"))
+    end)
+
+    -- @covers lurek.ecs.classNames
+    it("classNames lists registered class names", function()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("ClassA", {})
+        lurek.ecs.defineClass("ClassB", {})
+        local names = lurek.ecs.classNames()
+        expect_equal("ClassA", names[1])
+        expect_equal("ClassB", names[2])
+    end)
+
+    -- @covers lurek.ecs.clearClasses
+    it("clearClasses removes class metadata", function()
+        lurek.ecs.defineClass("TemporaryClass", {})
+        lurek.ecs.clearClasses()
+        expect_false(lurek.ecs.hasClass("TemporaryClass"))
+    end)
+
+    -- @covers lurek.ecs.newObject
+    it("newObject creates typed objects with property helpers", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("ObjectProbe", { properties = { hp = 10 } })
+        local obj = lurek.ecs.newObject("ObjectProbe")
+        obj:setProperty("hp", 12)
+        expect_equal("ObjectProbe", obj:type())
+        expect_true(obj:typeOf("ObjectProbe"))
+        expect_equal(12, obj:getProperty("hp"))
+    end)
+
+    -- @covers lurek.ecs.type
+    it("object type returns its class name", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("TypedObject", {})
+        local obj = lurek.ecs.newObject("TypedObject")
+        expect_equal("TypedObject", obj:type())
+    end)
+
+    -- @covers lurek.ecs.typeOf
+    it("object typeOf accepts inherited class names", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("BaseObject", {})
+        lurek.ecs.defineClass("DerivedObject", { extends = "BaseObject" })
+        local obj = lurek.ecs.newObject("DerivedObject")
+        expect_true(obj:typeOf("BaseObject"))
+    end)
+
+    -- @covers lurek.ecs.isA
+    it("object isA accepts inherited class names", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("ActorObject", {})
+        lurek.ecs.defineClass("EnemyObject", { extends = "ActorObject" })
+        local obj = lurek.ecs.newObject("EnemyObject")
+        expect_true(obj:isA("ActorObject"))
+    end)
+
+    -- @covers lurek.ecs.getProperty
+    it("object getProperty returns current property state", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("PropertyReadObject", { properties = { hp = 10 } })
+        local obj = lurek.ecs.newObject("PropertyReadObject")
+        expect_equal(10, obj:getProperty("hp"))
+    end)
+
+    -- @covers lurek.ecs.setProperty
+    it("object setProperty updates property state", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("PropertyWriteObject", { properties = { hp = 10 } })
+        local obj = lurek.ecs.newObject("PropertyWriteObject")
+        obj:setProperty("hp", 4)
+        expect_equal(4, obj:getProperty("hp"))
+    end)
+
+    -- @covers lurek.ecs.getObject
+    it("getObject retrieves registered objects by id", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("LookupObject", {})
+        local obj = lurek.ecs.newObject("LookupObject")
+        expect_equal(obj, lurek.ecs.getObject(obj.__id))
+    end)
+
+    -- @covers lurek.ecs.hasObject
+    it("hasObject reports live object ids", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("LiveObject", {})
+        local obj = lurek.ecs.newObject("LiveObject")
+        expect_true(lurek.ecs.hasObject(obj.__id))
+        expect_false(lurek.ecs.hasObject(obj.__id + 100))
+    end)
+
+    -- @covers lurek.ecs.objectIds
+    it("objectIds lists live object ids", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("ListedObject", {})
+        local obj = lurek.ecs.newObject("ListedObject")
+        local ids = lurek.ecs.objectIds()
+        expect_equal(obj.__id, ids[1])
+    end)
+
+    -- @covers lurek.ecs.destroyObject
+    it("destroyObject removes one object", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("DestroyObject", {})
+        local obj = lurek.ecs.newObject("DestroyObject")
+        expect_true(lurek.ecs.destroyObject(obj.__id))
+        expect_false(lurek.ecs.hasObject(obj.__id))
+    end)
+
+    -- @covers lurek.ecs.clearObjects
+    it("clearObjects removes all objects", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("ClearObject", {})
+        lurek.ecs.newObject("ClearObject")
+        lurek.ecs.clearObjects()
+        expect_equal(0, #lurek.ecs.objectIds())
+    end)
+
+    -- @covers LUniverse:spawnObject
+    it("spawnObject creates an entity with object components", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("WorldObject", { defaults = { hp = 3 } })
+        local world = new_world()
+        local entity = world:spawnObject("WorldObject", { hp = 9 })
+        expect_equal("WorldObject", world:get(entity, "objectClass"))
+        expect_equal(9, world:get(entity, "object").hp)
+    end)
+
+    -- @covers LUniverse:attachObject
+    it("attachObject links an existing object to an entity", function()
+        lurek.ecs.clearObjects()
+        lurek.ecs.clearClasses()
+        lurek.ecs.defineClass("AttachedObject", {})
+        local obj = lurek.ecs.newObject("AttachedObject")
+        local world = new_world()
+        local entity = world:spawn()
+        world:attachObject(entity, obj)
+        expect_equal(obj.__id, world:get(entity, "objectId"))
+        expect_equal(obj, world:get(entity, "object"))
+    end)
+end)
 end
 -- END test_ecs_core_unit.lua
 

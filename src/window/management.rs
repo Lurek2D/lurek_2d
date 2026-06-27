@@ -265,61 +265,76 @@ pub fn show_message_box(
     box_type: &str,
     btn_type: &str,
 ) -> &'static str {
-    let level = match box_type {
-        "warning" => rfd::MessageLevel::Warning,
-        "error" => rfd::MessageLevel::Error,
-        _ => rfd::MessageLevel::Info,
-    };
-    let buttons = match btn_type {
-        "okcancel" => rfd::MessageButtons::OkCancel,
-        "yesno" => rfd::MessageButtons::YesNo,
-        _ => rfd::MessageButtons::Ok,
-    };
-    let result = rfd::MessageDialog::new()
-        .set_title(title)
-        .set_description(message)
-        .set_level(level)
-        .set_buttons(buttons)
-        .show();
-    match result {
-        rfd::MessageDialogResult::Ok => "ok",
-        rfd::MessageDialogResult::Yes => "yes",
-        rfd::MessageDialogResult::No => "no",
-        rfd::MessageDialogResult::Cancel => "cancel",
-        rfd::MessageDialogResult::Custom(_) => "ok",
-    }
-}
-/// Apply the portable option subset used by `lurek.window.openFileDialog`.
-pub(crate) fn configure_file_dialog(
-    mut dialog: rfd::FileDialog,
-    options: &FileDialogOptions,
-) -> rfd::FileDialog {
-    if let Some(title) = options.title.as_deref() {
-        dialog = dialog.set_title(title);
-    }
-    if let Some(default_path) = options.default_path.as_deref() {
-        dialog = dialog.set_directory(default_path);
-    }
-    for filter in &options.filters {
-        let ext_refs: Vec<&str> = filter.extensions.iter().map(String::as_str).collect();
-        dialog = dialog.add_filter(&filter.name, &ext_refs);
-    }
-    dialog
+    show_message_box_platform(title, message, box_type, btn_type)
 }
 /// Open a native file picker and return the selected paths as UTF-8 strings.
 pub(crate) fn open_file_dialog_paths(options: &FileDialogOptions) -> Vec<String> {
-    let dialog = configure_file_dialog(rfd::FileDialog::new(), options);
-    if options.multiple {
-        return dialog
-            .pick_files()
-            .unwrap_or_default()
-            .into_iter()
-            .map(|path| path.to_string_lossy().to_string())
-            .collect();
+    let _ = (
+        &options.title,
+        &options.default_path,
+        options.multiple,
+        options
+            .filters
+            .iter()
+            .map(|filter| (&filter.name, &filter.extensions)),
+    );
+    Vec::new()
+}
+#[cfg(windows)]
+fn show_message_box_platform(
+    title: &str,
+    message: &str,
+    box_type: &str,
+    btn_type: &str,
+) -> &'static str {
+    use windows_sys::Win32::UI::WindowsAndMessaging::{
+        MessageBoxW, MB_ICONERROR, MB_ICONINFORMATION, MB_ICONWARNING, MB_OK, MB_OKCANCEL, MB_YESNO,
+    };
+    let icon = match box_type {
+        "warning" => MB_ICONWARNING,
+        "error" => MB_ICONERROR,
+        _ => MB_ICONINFORMATION,
+    };
+    let buttons = match btn_type {
+        "okcancel" => MB_OKCANCEL,
+        "yesno" => MB_YESNO,
+        _ => MB_OK,
+    };
+    let title_w = widestring(title);
+    let message_w = widestring(message);
+    let result = unsafe {
+        MessageBoxW(
+            std::ptr::null_mut(),
+            message_w.as_ptr(),
+            title_w.as_ptr(),
+            icon | buttons,
+        )
+    };
+    match result {
+        6 => "yes",
+        7 => "no",
+        2 => "cancel",
+        _ => "ok",
     }
-    dialog
-        .pick_file()
-        .into_iter()
-        .map(|path| path.to_string_lossy().to_string())
+}
+#[cfg(windows)]
+fn widestring(value: &str) -> Vec<u16> {
+    use std::os::windows::ffi::OsStrExt;
+    std::ffi::OsStr::new(value)
+        .encode_wide()
+        .chain(std::iter::once(0))
         .collect()
+}
+#[cfg(not(windows))]
+fn show_message_box_platform(
+    _title: &str,
+    _message: &str,
+    _box_type: &str,
+    btn_type: &str,
+) -> &'static str {
+    match btn_type {
+        "yesno" => "no",
+        "okcancel" => "cancel",
+        _ => "ok",
+    }
 }

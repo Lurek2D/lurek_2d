@@ -3276,3 +3276,128 @@ do
     container:update(1 / 60)
     example_print_log("updates called = " .. tostring(ticks))
 end
+
+--@api: lurek.scene.pushRegistered
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    lurek.scene.clear()
+    local order = {}
+    lurek.scene.registerScene("registered_flow_example", {
+        create = function(self) order[#order + 1] = "create" end,
+        before_enter = function(self) order[#order + 1] = "before_enter" end,
+        enter = function(self, params) order[#order + 1] = "enter:" .. tostring(params.level) end,
+        after_enter = function(self) order[#order + 1] = "after_enter" end,
+    }, { persistence = "freeze" })
+    lurek.scene.pushRegistered("registered_flow_example", nil, nil, nil, { level = 2 })
+    scene_log("pushRegistered order=" .. table.concat(order, ","))
+    lurek.scene.unregisterScene("registered_flow_example")
+    lurek.scene.clear()
+end
+
+--@api: lurek.scene.setSceneActive
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    lurek.scene.clear()
+    local updates = 0
+    local scene = { update = function(self, dt) updates = updates + 1 end }
+    lurek.scene.push(scene)
+    lurek.scene.setSceneActive(nil, false)
+    lurek.scene.update(1 / 60)
+    scene_log("setSceneActive updates=" .. tostring(updates) .. " active=" .. tostring(lurek.scene.isSceneActive()))
+    lurek.scene.clear()
+end
+
+--@api: lurek.scene.isSceneActive
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    lurek.scene.clear()
+    lurek.scene.push({ name = "activity_probe" })
+    local before = lurek.scene.isSceneActive()
+    lurek.scene.setSceneActive(nil, false)
+    local after = lurek.scene.isSceneActive()
+    scene_log("isSceneActive before=" .. tostring(before) .. " after=" .. tostring(after))
+    lurek.scene.clear()
+end
+
+--@api: LSceneObjectContainer:defineGroup
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    local physics_bit = container:defineGroup("physics")
+    local ui_bit = container:defineGroup("ui")
+    local same = physics_bit == container:defineGroup("physics")
+    scene_log("defineGroup physics=" .. tostring(physics_bit) .. " ui=" .. tostring(ui_bit) .. " stable=" .. tostring(same))
+end
+
+--@api: LSceneObjectContainer:getGroupBit
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    container:defineGroup("projectiles")
+    local bit = container:getGroupBit("projectiles")
+    local missing = container:getGroupBit("missing")
+    scene_log("getGroupBit projectiles=" .. tostring(bit) .. " missing=" .. tostring(missing))
+end
+
+--@api: LSceneObjectContainer:setGroupEnabled
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    container:defineGroup("background")
+    local updates = 0
+    container:add({ group = "background", update = function(self, dt) updates = updates + 1 end })
+    container:setGroupEnabled("background", "update", false)
+    container:update(1 / 60)
+    container:setGroupEnabled("background", "update", true)
+    container:update(1 / 60)
+    scene_log("setGroupEnabled updates=" .. tostring(updates))
+end
+
+--@api: LSceneObjectContainer:isGroupEnabled
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    container:defineGroup("physics")
+    local before = container:isGroupEnabled("physics", "physics")
+    container:setGroupEnabled("physics", "physics", false)
+    local after = container:isGroupEnabled("physics", "physics")
+    scene_log("isGroupEnabled before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+
+--@api: LSceneObjectContainer:processPhysics
+do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. tostring(message))
+    end
+
+    local container = lurek.scene.newObjectContainer()
+    container:defineGroup("physics")
+    local ticks = 0
+    container:add({ group = "physics", process_physics = function(self, dt) ticks = ticks + 1 end })
+    container:setGroupEnabled("physics", "physics", false)
+    container:processPhysics(1 / 60)
+    container:setGroupEnabled("physics", "physics", true)
+    container:processPhysics(1 / 60)
+    scene_log("processPhysics ticks=" .. tostring(ticks))
+end

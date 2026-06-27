@@ -5,11 +5,9 @@
 //! Read it when CLI command set, archive layout, validator invocation, or screenshot-batch behavior needs to change.
 
 use std::env;
-use std::fs::{self, File};
-use std::io::{Seek, Write};
-use std::path::{Path, PathBuf};
+use std::fs;
+use std::path::PathBuf;
 use std::process::{Command, ExitCode};
-use zip::write::FileOptions;
 /// Print CLI usage and supported subcommands.
 fn print_usage() {
     eprintln!("lurek_headless <command> [args]\n");
@@ -34,55 +32,14 @@ fn run_validate(game_dir: Option<String>) -> Result<(), String> {
         Err(format!("validator exited with status {}", status))
     }
 }
-/// Recursively add files from `dir` into ZIP archive using paths relative to `root`.
-fn add_dir_to_zip<W: Write + Seek>(
-    zip: &mut zip::ZipWriter<W>,
-    root: &Path,
-    dir: &Path,
-) -> Result<(), String> {
-    let options: FileOptions<'_, ()> = FileOptions::default()
-        .compression_method(zip::CompressionMethod::Deflated)
-        .unix_permissions(0o644);
-    for entry in fs::read_dir(dir).map_err(|e| format!("read_dir failed: {}", e))? {
-        let entry = entry.map_err(|e| format!("dir entry failed: {}", e))?;
-        let path = entry.path();
-        if path.is_dir() {
-            add_dir_to_zip(zip, root, &path)?;
-            continue;
-        }
-        let rel = path
-            .strip_prefix(root)
-            .map_err(|e| format!("strip_prefix failed: {}", e))?;
-        let name = rel.to_string_lossy().replace('\\', "/");
-        let bytes =
-            fs::read(&path).map_err(|e| format!("read '{}' failed: {}", path.display(), e))?;
-        zip.start_file(name, options)
-            .map_err(|e| format!("zip start_file failed: {}", e))?;
-        zip.write_all(&bytes)
-            .map_err(|e| format!("zip write failed: {}", e))?;
-    }
-    Ok(())
-}
 /// Pack a game directory into a `.lurek` archive after checking for `main.lua`.
 fn run_pack(game_dir: String, output: String) -> Result<(), String> {
     let root = PathBuf::from(&game_dir);
     if !root.join("main.lua").exists() {
         return Err(format!("'{}' does not contain main.lua", root.display()));
     }
-    let out_path = PathBuf::from(output);
-    if let Some(parent) = out_path.parent() {
-        if !parent.as_os_str().is_empty() {
-            fs::create_dir_all(parent)
-                .map_err(|e| format!("failed to create output directory: {}", e))?;
-        }
-    }
-    let file = File::create(&out_path)
-        .map_err(|e| format!("failed to create archive '{}': {}", out_path.display(), e))?;
-    let mut zip = zip::ZipWriter::new(file);
-    add_dir_to_zip(&mut zip, &root, &root)?;
-    zip.finish()
-        .map_err(|e| format!("failed to finalize archive: {}", e))?;
-    Ok(())
+    let _ = output;
+    Err("ZIP/.lurek packing is not built into this binary; use repository packaging tools outside the runtime".to_string())
 }
 /// Run screenshot capture for each valid game folder under `games_root`.
 fn run_screenshot_batch(games_root: String, out_dir: String, frames: u32) -> Result<(), String> {

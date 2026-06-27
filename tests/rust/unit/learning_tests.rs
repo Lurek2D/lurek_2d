@@ -2,15 +2,13 @@
 //!
 //! Public `lurek.learning.*` behaviour remains covered by Lua tests.
 
-use lurek2d::learning::onnx::OnnxLoadOptions;
 use lurek2d::learning::tensor::{gemm, try_gemm, LurekTensor};
 use lurek2d::learning::{
     Activation, EvolutionaryLayer, GeneticAlgorithm, LayerNorm, LurekNeuralEngine,
-    MultiHeadAttention, NeuralBlock, NeuralLayer, NeuralNet, Neuroevolution, OnnxModel,
-    PositionalEncoding, QLearner, TransformerDecoderBlock, TransformerEncoderBlock,
+    MultiHeadAttention, NeuralBlock, NeuralLayer, NeuralNet, Neuroevolution, PositionalEncoding,
+    QLearner, TransformerDecoderBlock, TransformerEncoderBlock,
 };
 use lurek2d::learning::{Conv2D, GruLayer, LstmLayer, MaxPool2D};
-use std::path::PathBuf;
 
 fn assert_slice_near(actual: &[f32], expected: &[f32]) {
     assert_eq!(actual.len(), expected.len());
@@ -267,60 +265,6 @@ mod genetic_tests {
             Err(err) => err,
         };
         assert!(err.to_string().contains("population size"));
-    }
-}
-
-mod onnx_tests {
-    use super::*;
-
-    fn fixture_path() -> String {
-        "tests/lua/fixtures/minimal_identity.onnx".to_string()
-    }
-
-    #[test]
-    fn onnx_load_rejects_path_outside_sandbox() {
-        let options = OnnxLoadOptions {
-            sandbox_root: Some(PathBuf::from("src")),
-            ..OnnxLoadOptions::default()
-        };
-        let err = match OnnxModel::load_with_options(&fixture_path(), &options) {
-            Ok(_) => panic!("fixture path should be outside the src sandbox"),
-            Err(err) => err,
-        };
-        assert!(err.to_string().contains("outside sandbox"));
-    }
-
-    #[test]
-    fn onnx_load_rejects_file_too_large() {
-        let options = OnnxLoadOptions {
-            max_file_bytes: 0,
-            ..OnnxLoadOptions::default()
-        };
-        let err = match OnnxModel::load_with_options(&fixture_path(), &options) {
-            Ok(_) => panic!("fixture model should exceed zero-byte limit"),
-            Err(err) => err,
-        };
-        assert!(err.to_string().contains("exceeding limit"));
-    }
-
-    #[test]
-    fn onnx_run_rejects_input_count_mismatch() {
-        let model = OnnxModel::load(&fixture_path()).expect("fixture model should load");
-        let err = model.try_run(Vec::new()).unwrap_err();
-        assert!(err.to_string().contains("expects 1 input tensor"));
-    }
-
-    #[test]
-    fn onnx_run_rejects_output_limit() {
-        let options = OnnxLoadOptions {
-            max_output_elements: 0,
-            ..OnnxLoadOptions::default()
-        };
-        let model =
-            OnnxModel::load_with_options(&fixture_path(), &options).expect("fixture model loads");
-        let input = LurekTensor::try_new(vec![1], vec![42.0]).unwrap();
-        let err = model.try_run(vec![input]).unwrap_err();
-        assert!(err.to_string().contains("ONNX output tensor"));
     }
 }
 

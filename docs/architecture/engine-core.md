@@ -133,7 +133,7 @@ The binding dependency constraints **T-01 through T-08** are defined in [philoso
 | `window` | Window management: winit integration, fullscreen, cursor | `WindowConfig`, `WindowHandle` |
 | `camera` | Viewport transforms, scale modes, coordinate mapping | `Camera2D`, `ScaleMode` |
 | `light` | 2D lighting data: light descriptors, occluder polygons | `Light2D`, `Occluder`, `ShadowFilter` |
-| `effect` | Post-processing effect descriptors, overlay systems | `PostFxEffect`, `PostFxEffectType`, `ShaderPassDescriptor` |
+| `effect` | Post-processing effect descriptors, stacks, presets, and shader-pass descriptors | `PostFxEffect`, `PostFxEffectType`, `ShaderPassDescriptor` |
 
 ### Feature Systems
 

@@ -50,7 +50,7 @@ pub enum LearningError {
         previous_outputs: usize,
         current_inputs: usize,
     },
-    /// The requested ONNX or model input count did not match the model contract.
+    /// The requested model input count did not match the model contract.
     InputCountMismatch { expected: usize, actual: usize },
     /// A serialized envelope declared a version this runtime does not understand.
     UnsupportedVersion { context: &'static str, version: u32 },

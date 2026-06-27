@@ -6180,6 +6180,29 @@ function library.scene_objects.new() end
 ---@return nil
 function ObjectContainer:add(obj) end
 
+--- Define an object group and return its 0-based bit index.
+---@param name string
+---@return number
+function ObjectContainer:defineGroup(name) end
+
+--- Return the bit index assigned to a group name, or nil when undefined.
+---@param name string
+---@return number|nil
+function ObjectContainer:getGroupBit(name) end
+
+--- Enable or disable one group for one pass.
+---@param group string|number
+---@param pass string
+---@param enabled boolean
+---@return boolean
+function ObjectContainer:setGroupEnabled(group, pass, enabled) end
+
+--- Return whether one group is enabled for one pass.
+---@param group string|number
+---@param pass string
+---@return boolean
+function ObjectContainer:isGroupEnabled(group, pass) end
+
 --- Remove an object from the container (identity comparison). Silently does nothing when the object is not present.
 ---@param obj table
 ---@return nil
@@ -6193,6 +6216,11 @@ function ObjectContainer:clear() end
 ---@param dt number
 ---@return nil
 function ObjectContainer:update(dt) end
+
+--- Call `obj:process_physics(dt)` on objects enabled for the physics pass. Falls back to `obj:physics(dt)` when present.
+---@param dt number
+---@return nil
+function ObjectContainer:processPhysics(dt) end
 
 --- Call `obj:draw()` on every object that has a `draw` method, sorted by `layer` ascending.  Objects with the same layer are drawn in insertion order.
 ---@return nil

@@ -4,8 +4,8 @@ use super::SharedState;
 use crate::learning::{
     Activation, Bandit, BanditStrategy, Conv2D, EvolutionaryLayer, FrameStack, GeneticAlgorithm,
     GruLayer, LstmLayer, LurekNeuralEngine, LurekTensor, MaxPool2D, MultiHeadAttention,
-    NeuralBlock, NeuralLayer, NeuralNet, Neuroevolution, OnnxModel, PositionalEncoding, QLearner,
-    SpaceSpec, TransformerDecoderBlock, TransformerEncoderBlock,
+    NeuralBlock, NeuralLayer, NeuralNet, Neuroevolution, PositionalEncoding, QLearner, SpaceSpec,
+    TransformerDecoderBlock, TransformerEncoderBlock,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -1467,7 +1467,7 @@ impl LuaUserData for LuaTransformerDecoder {
 // LuaTensor â€” flat f32 tensor with shape metadata
 // ---------------------------------------------------------------------------
 
-/// Flat tensor handle exposing shape, element access, and tract conversion to Lua.
+/// Flat tensor handle exposing shape, element access, and flat data to Lua.
 #[derive(Clone)]
 pub(crate) struct LuaTensor(pub(crate) Rc<RefCell<LurekTensor>>);
 
@@ -1528,64 +1528,6 @@ impl LuaUserData for LuaTensor {
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LTensor" || name == "LObject")
-        });
-    }
-}
-
-// ---------------------------------------------------------------------------
-// LuaOnnxModel â€” loaded and optimised ONNX inference model
-// ---------------------------------------------------------------------------
-
-/// ONNX model handle that wraps a tract runnable plan for Lua-driven inference.
-#[derive(Clone)]
-pub(crate) struct LuaOnnxModel(pub(crate) Rc<RefCell<OnnxModel>>);
-
-impl LuaUserData for LuaOnnxModel {
-    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        // -- run --
-        /// Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.
-        /// @param | inputs | table | Array-indexed table of LTensor input values.
-        /// @return | table | Array-indexed table of LTensor output values.
-        methods.add_method("run", |lua, this, inputs_tbl: LuaTable| {
-            let mut tract_inputs: Vec<LurekTensor> = Vec::new();
-            for i in 1..=inputs_tbl.raw_len() {
-                let ud: LuaAnyUserData = inputs_tbl.raw_get(i)?;
-                let lt = ud.borrow::<LuaTensor>()?;
-                tract_inputs.push(lt.0.borrow().clone());
-            }
-            let outputs = this
-                .0
-                .borrow()
-                .run(tract_inputs)
-                .map_err(LuaError::RuntimeError)?;
-            let out_tbl = lua.create_table()?;
-            for (i, tensor) in outputs.into_iter().enumerate() {
-                out_tbl.raw_set(i + 1, LuaTensor(Rc::new(RefCell::new(tensor))))?;
-            }
-            Ok(out_tbl)
-        });
-        // -- inputCount --
-        /// Returns the number of input tensors expected by the model.
-        /// @return | integer | Input tensor count.
-        methods.add_method("inputCount", |_, this, ()| {
-            Ok(this.0.borrow().input_count() as i64)
-        });
-        // -- outputCount --
-        /// Returns the number of output tensors produced by the model.
-        /// @return | integer | Output tensor count.
-        methods.add_method("outputCount", |_, this, ()| {
-            Ok(this.0.borrow().output_count() as i64)
-        });
-        // -- type --
-        /// Returns the type name `"LOnnxModel"`.
-        /// @return | string | The string `LOnnxModel`.
-        methods.add_method("type", |_, _, ()| Ok("LOnnxModel"));
-        // -- typeOf --
-        /// Returns whether this model handle matches a supported type name.
-        /// @param | name | string | Type name to compare against `LOnnxModel` and `Object`.
-        /// @return | boolean | True when the supplied type name matches this handle.
-        methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LOnnxModel" || name == "LObject")
         });
     }
 }
@@ -1839,18 +1781,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // -- loadOnnx --
-    /// Loads and optimises an ONNX model from a file path.
-    /// @param | path | string | Filesystem path to the `.onnx` model file inside the current sandbox root.
-    /// @return | LOnnxModel | Loaded model handle ready for inference.
-    tbl.set(
-        "loadOnnx",
-        lua.create_function(|_, path: String| {
-            OnnxModel::load(&path)
-                .map(|m| LuaOnnxModel(Rc::new(RefCell::new(m))))
-                .map_err(|err| learning_runtime_error("lurek.learning.loadOnnx", err))
-        })?,
-    )?;
     // -- newTensor --
     /// Creates a tensor from a shape (integer array) and flat float data (number array).
     /// @param | shape | integer[] | Dimension sizes in row-major order.

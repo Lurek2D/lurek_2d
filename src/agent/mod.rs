@@ -9,6 +9,8 @@
 pub mod chat;
 /// Background LLM HTTP client and async request orchestration.
 pub mod client;
+/// Minimal local plain-HTTP client for Ollama agent calls.
+pub mod local_http;
 /// Working, episodic, and semantic memory primitives for agents.
 pub mod memory;
 /// Ollama server lifecycle and model-management helpers.

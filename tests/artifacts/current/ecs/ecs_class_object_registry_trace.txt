@@ -1,0 +1,8 @@
+class_count=3
+first_object_id=0
+object_class=EnemyBullet
+object_is_gameobject=true
+object_hp=5
+world_object_id=0
+world_object_class=EnemyBullet
+enemy_parent=Projectile
