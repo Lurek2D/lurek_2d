@@ -6,7 +6,8 @@ use super::SharedState;
 use crate::ui::containers::LayoutDirection;
 use crate::ui::context::{GuiContext, GuiEvent, UiBindingValue, WidgetKind};
 use crate::ui::extras::{
-    AccordionSection, DialogAction, DialogActionRole, TableColumn, TableDataFrameOptions, Toast,
+    AccordionSection, DialogAction, DialogActionRole, PropertyRow, PropertyValueKind, TableColumn,
+    TableDataFrameOptions, Toast,
 };
 use crate::ui::theme::{Theme, ThemeToken, WidgetStyle};
 use crate::ui::widget::{EasingFunction, MouseFilter, WidgetState, WidgetType};
@@ -1730,6 +1731,7 @@ enum TypedWidgetKind {
     Button,
     StatusBar,
     GuiTable,
+    PropertyWidget,
     Label,
     Widget,
 }
@@ -1744,6 +1746,7 @@ fn typed_widget_kind(ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> TypedWidgetKi
         Some(WidgetKind::Button(_)) => TypedWidgetKind::Button,
         Some(WidgetKind::StatusBar(_)) => TypedWidgetKind::StatusBar,
         Some(WidgetKind::GUITable(_)) => TypedWidgetKind::GuiTable,
+        Some(WidgetKind::PropertyWidget(_)) => TypedWidgetKind::PropertyWidget,
         Some(WidgetKind::Label(_)) => TypedWidgetKind::Label,
         _ => TypedWidgetKind::Widget,
     }
@@ -1758,6 +1761,7 @@ fn typed_widget_type_name(kind: TypedWidgetKind) -> &'static str {
         TypedWidgetKind::Button => "LButton",
         TypedWidgetKind::StatusBar => "LStatusBar",
         TypedWidgetKind::GuiTable => "LGuiTable",
+        TypedWidgetKind::PropertyWidget => "LPropertyWidget",
         TypedWidgetKind::Label => "LLabel",
         TypedWidgetKind::Widget => "LWidget",
     }
@@ -1779,6 +1783,7 @@ fn add_typed_widget_methods(
         TypedWidgetKind::Button => add_button_methods(lua, table, ctx, idx),
         TypedWidgetKind::StatusBar => add_status_bar_methods(lua, table, ctx, idx),
         TypedWidgetKind::GuiTable => add_gui_table_methods(lua, table, ctx, idx, cbs),
+        TypedWidgetKind::PropertyWidget => add_property_widget_methods(lua, table, ctx, idx),
         TypedWidgetKind::Label => add_label_methods(lua, table, ctx, idx),
         TypedWidgetKind::Widget => Ok(()),
     }
@@ -6243,6 +6248,289 @@ fn add_gui_table_methods(
     )?;
     Ok(())
 }
+/// Adds property-widget-specific methods to an inspector widget.
+fn add_property_widget_methods(
+    lua: &Lua,
+    t: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+) -> LuaResult<()> {
+    let c = ctx.clone();
+    // -- addGroup --
+    /// Adds a collapsible property group and returns its 1-based index.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | title | string | The group title.
+    /// @param | collapsed | boolean? | Whether the group starts collapsed.
+    /// @return | integer | The 1-based group index.
+    t.set(
+        "addGroup",
+        lua.create_function(
+            move |_, (_self, title, collapsed): (LuaValue, String, Option<bool>)| {
+                let mut g = c.borrow_mut();
+                Ok(match g.widgets.get_mut(idx) {
+                    Some(WidgetKind::PropertyWidget(prop)) => {
+                        let group_idx = prop.add_group(title, collapsed.unwrap_or(false));
+                        g.dirty = true;
+                        group_idx + 1
+                    }
+                    _ => 0,
+                })
+            },
+        )?,
+    )?;
+    let c = ctx.clone();
+    // -- getGroupCount --
+    /// Returns the number of property groups.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @return | integer | The group count.
+    t.set(
+        "getGroupCount",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::PropertyWidget(prop)) => prop.groups.len(),
+                _ => 0,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- toggleGroup --
+    /// Toggles a property group collapsed/expanded state.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | group | integer | The 1-based group index.
+    /// @return | boolean | The new collapsed state, or nil when the index is invalid.
+    t.set(
+        "toggleGroup",
+        lua.create_function(move |_, (_self, group): (LuaValue, usize)| {
+            let mut g = c.borrow_mut();
+            Ok(match g.widgets.get_mut(idx) {
+                Some(WidgetKind::PropertyWidget(prop)) => {
+                    let next = group
+                        .checked_sub(1)
+                        .and_then(|group_idx| prop.toggle_group(group_idx));
+                    if next.is_some() {
+                        g.dirty = true;
+                    }
+                    next
+                }
+                _ => None,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- isGroupCollapsed --
+    /// Returns whether a property group is collapsed.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | group | integer | The 1-based group index.
+    /// @return | boolean | True when collapsed, or nil when the index is invalid.
+    t.set(
+        "isGroupCollapsed",
+        lua.create_function(move |_, (_self, group): (LuaValue, usize)| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::PropertyWidget(prop)) => group
+                    .checked_sub(1)
+                    .and_then(|group_idx| prop.groups.get(group_idx))
+                    .map(|group| group.collapsed),
+                _ => None,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- addProperty --
+    /// Adds a property row to a group.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | group | integer | The 1-based group index.
+    /// @param | name | string | The property label.
+    /// @param | value | any | Scalar value to display.
+    /// @param | valueType | string? | `text`, `number`, `bool`, `select`, or `color`.
+    /// @param | options | table? | Select options for `valueType = "select"`.
+    /// @param | readOnly | boolean? | Whether the row is read-only.
+    /// @return | integer | The 1-based row index in the group, or 0 on failure.
+    t.set(
+        "addProperty",
+        lua.create_function(
+            move |_,
+                  (_self, group, name, value, value_type, options, read_only): (
+                LuaValue,
+                usize,
+                String,
+                LuaValue,
+                Option<String>,
+                Option<LuaTable>,
+                Option<bool>,
+            )| {
+                let value = scalar_value_to_text(value)?;
+                let raw_kind = value_type.as_deref().unwrap_or("text");
+                let value_kind = PropertyValueKind::parse_str(raw_kind).ok_or_else(|| {
+                    LuaError::RuntimeError(format!(
+                        "LPropertyWidget:addProperty: unknown valueType '{raw_kind}'"
+                    ))
+                })?;
+                let mut row = PropertyRow::new(name, value, value_kind);
+                if let Some(options) = options {
+                    row.options = lua_string_array(options)?;
+                }
+                row.read_only = read_only.unwrap_or(false);
+                let mut g = c.borrow_mut();
+                Ok(match g.widgets.get_mut(idx) {
+                    Some(WidgetKind::PropertyWidget(prop)) => {
+                        let Some(group_idx) = group.checked_sub(1) else {
+                            return Ok(0);
+                        };
+                        if !prop.add_property(group_idx, row) {
+                            return Ok(0);
+                        }
+                        let row_count = prop.groups[group_idx].rows.len();
+                        g.dirty = true;
+                        row_count
+                    }
+                    _ => 0,
+                })
+            },
+        )?,
+    )?;
+    let c = ctx.clone();
+    // -- getPropertyCount --
+    /// Returns the row count for a property group.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | group | integer | The 1-based group index.
+    /// @return | integer | The property row count.
+    t.set(
+        "getPropertyCount",
+        lua.create_function(move |_, (_self, group): (LuaValue, usize)| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::PropertyWidget(prop)) => group
+                    .checked_sub(1)
+                    .and_then(|group_idx| prop.groups.get(group_idx))
+                    .map(|group| group.rows.len())
+                    .unwrap_or(0),
+                _ => 0,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getPropertyValue --
+    /// Returns the stringified value of the first property with `name`.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | name | string | Property name.
+    /// @return | string | The value text, or nil when missing.
+    t.set(
+        "getPropertyValue",
+        lua.create_function(move |_, (_self, name): (LuaValue, String)| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::PropertyWidget(prop)) => {
+                    prop.get_property(&name).map(|row| row.value.clone())
+                }
+                _ => None,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setPropertyValue --
+    /// Updates the first property with `name`.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | name | string | Property name.
+    /// @param | value | any | Scalar value to display.
+    /// @return | boolean | True when a row changed.
+    t.set(
+        "setPropertyValue",
+        lua.create_function(
+            move |_, (_self, name, value): (LuaValue, String, LuaValue)| {
+                let value = scalar_value_to_text(value)?;
+                let mut g = c.borrow_mut();
+                Ok(match g.widgets.get_mut(idx) {
+                    Some(WidgetKind::PropertyWidget(prop)) => {
+                        let changed = prop.set_property_value(&name, value);
+                        if changed {
+                            g.dirty = true;
+                        }
+                        changed
+                    }
+                    _ => false,
+                })
+            },
+        )?,
+    )?;
+    let c = ctx.clone();
+    // -- getPropertyType --
+    /// Returns the canonical editor type of the first property with `name`.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | name | string | Property name.
+    /// @return | string | The editor type, or nil when missing.
+    t.set(
+        "getPropertyType",
+        lua.create_function(move |_, (_self, name): (LuaValue, String)| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::PropertyWidget(prop)) => prop
+                    .get_property(&name)
+                    .map(|row| row.value_kind.as_str().to_string()),
+                _ => None,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getPropertyOptions --
+    /// Returns the select options of the first property with `name`.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | name | string | Property name.
+    /// @return | table | Array of option strings.
+    t.set(
+        "getPropertyOptions",
+        lua.create_function(move |lua, (_self, name): (LuaValue, String)| {
+            let options = {
+                let g = c.borrow();
+                match g.widgets.get(idx) {
+                    Some(WidgetKind::PropertyWidget(prop)) => prop
+                        .get_property(&name)
+                        .map(|row| row.options.clone())
+                        .unwrap_or_default(),
+                    _ => Vec::new(),
+                }
+            };
+            let out = lua.create_table()?;
+            for (option_idx, option) in options.into_iter().enumerate() {
+                out.set(option_idx + 1, option)?;
+            }
+            Ok(out)
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setLabelWidth --
+    /// Sets the left label column width in pixels.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @param | width | number | Width in pixels; clamped to at least 1.
+    t.set(
+        "setLabelWidth",
+        lua.create_function(move |_, (_self, width): (LuaValue, f32)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::PropertyWidget(prop)) = g.widgets.get_mut(idx) {
+                prop.label_width = width.max(1.0);
+                g.dirty = true;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getLabelWidth --
+    /// Returns the left label column width in pixels.
+    /// @param | self | LPropertyWidget | The widget instance.
+    /// @return | number | Width in pixels.
+    t.set(
+        "getLabelWidth",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::PropertyWidget(prop)) => prop.label_width,
+                _ => 0.0,
+            })
+        })?,
+    )?;
+    Ok(())
+}
 /// Adds image-widget-specific methods to an image widget table.
 fn add_image_widget_methods(
     lua: &Lua,
@@ -6411,6 +6699,7 @@ fn parse_widget_type(s: &str) -> Option<WidgetType> {
         "tooltippanel" => Some(WidgetType::TooltipPanel),
         "colorpicker" => Some(WidgetType::ColorPicker),
         "guitable" => Some(WidgetType::GUITable),
+        "propertywidget" => Some(WidgetType::PropertyWidget),
         "imagewidget" => Some(WidgetType::ImageWidget),
         _ => None,
     }
@@ -7078,6 +7367,22 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             drop(g);
             let t = create_widget_table(lua, &c, idx, &cbs, "LGuiTable")?;
             add_gui_table_methods(lua, &t, &c, idx, &cbs)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newPropertyWidget --
+    /// Creates a new property inspector widget with collapsible groups and typed value rows.
+    /// @return | LPropertyWidget | The new property widget table.
+    tbl.set(
+        "newPropertyWidget",
+        lua.create_function(move |lua, ()| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_property_widget();
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LPropertyWidget")?;
+            add_property_widget_methods(lua, &t, &c, idx)?;
             Ok(t)
         })?,
     )?;
@@ -8056,6 +8361,7 @@ fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::Widge
     apply_widget_text_layout_fields(&mut def, table);
     apply_widget_container_fields(&mut def, table);
     apply_widget_dialog_fields(&mut def, table);
+    apply_widget_property_fields(&mut def, table)?;
     Ok(def)
 }
 
@@ -8179,6 +8485,84 @@ fn apply_widget_dialog_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Tabl
     def.min_size = table.get("min_size").or_else(|_| table.get("minSize")).ok();
     def.max_size = table.get("max_size").or_else(|_| table.get("maxSize")).ok();
 }
+
+fn lua_string_array(table: mlua::Table) -> mlua::Result<Vec<String>> {
+    let len = table.raw_len();
+    let mut result = Vec::with_capacity(len);
+    for i in 1..=len {
+        result.push(table.get(i)?);
+    }
+    Ok(result)
+}
+
+fn apply_widget_property_fields(
+    def: &mut crate::ui::WidgetDef,
+    table: &mlua::Table,
+) -> mlua::Result<()> {
+    def.property_label_width = table
+        .get("property_label_width")
+        .or_else(|_| table.get("propertyLabelWidth"))
+        .ok();
+    def.property_row_height = table
+        .get("property_row_height")
+        .or_else(|_| table.get("propertyRowHeight"))
+        .ok();
+    def.property_group_header_height = table
+        .get("property_group_header_height")
+        .or_else(|_| table.get("propertyGroupHeaderHeight"))
+        .ok();
+    let groups_table = table
+        .get::<_, Option<mlua::Table>>("property_groups")?
+        .or_else(|| {
+            table
+                .get::<_, Option<mlua::Table>>("propertyGroups")
+                .ok()
+                .flatten()
+        });
+    let Some(groups_table) = groups_table else {
+        return Ok(());
+    };
+    let mut groups = Vec::with_capacity(groups_table.raw_len());
+    for group_idx in 1..=groups_table.raw_len() {
+        let group_table: mlua::Table = groups_table.get(group_idx)?;
+        let rows_table = group_table.get::<_, Option<mlua::Table>>("rows")?;
+        let mut rows = Vec::new();
+        if let Some(rows_table) = rows_table {
+            for row_idx in 1..=rows_table.raw_len() {
+                let row_table: mlua::Table = rows_table.get(row_idx)?;
+                let value = row_table
+                    .get::<_, LuaValue>("value")
+                    .ok()
+                    .map(scalar_value_to_text)
+                    .transpose()?;
+                let options = row_table
+                    .get::<_, Option<mlua::Table>>("options")?
+                    .map(lua_string_array)
+                    .transpose()?;
+                rows.push(crate::ui::layout_loader::PropertyRowDef {
+                    name: row_table.get("name")?,
+                    value,
+                    value_type: row_table
+                        .get("value_type")
+                        .or_else(|_| row_table.get("valueType"))
+                        .ok(),
+                    options,
+                    read_only: row_table
+                        .get("read_only")
+                        .or_else(|_| row_table.get("readOnly"))
+                        .ok(),
+                });
+            }
+        }
+        groups.push(crate::ui::layout_loader::PropertyGroupDef {
+            title: group_table.get("title")?,
+            collapsed: group_table.get("collapsed").ok(),
+            rows: Some(rows),
+        });
+    }
+    def.property_groups = Some(groups);
+    Ok(())
+}
 fn scalar_value_to_text(value: LuaValue) -> LuaResult<String> {
     match value {
         LuaValue::Nil => Ok("nil".to_string()),
@@ -8190,7 +8574,7 @@ fn scalar_value_to_text(value: LuaValue) -> LuaResult<String> {
         LuaValue::Number(value) => Ok(value.to_string()),
         LuaValue::String(value) => Ok(value.to_str()?.to_string()),
         _ => Err(LuaError::RuntimeError(
-            "LGuiTable:setRows expects scalar cell values".to_string(),
+            "UI scalar conversion expects nil, boolean, number, or string".to_string(),
         )),
     }
 }

@@ -1,9 +1,9 @@
-//! Runs province-level graph pathfinding over adjacency maps with configurable province and edge-tag move costs.
-//! Owns ProvincePath results, ProvinceCostFn rules, blocked-province handling, components, and route search.
-//! Computes cheapest province routes and budget-limited reachability, keeping graph traversal near cost semantics.
-//! Provides the boundary between province topology data and higher-level systems that need traversable region paths.
-//! This file matters when province blocking, tag surcharges, or graph traversal semantics need revision.
-//! Open this owner before touching province registries when only path cost policy or graph search behavior changed.
+//! Runs graph pathfinding over adjacency maps with configurable node and edge-tag move costs.
+//! Owns graph path results, cost rules, blocked-node handling, components, and route search.
+//! Computes cheapest graph routes and budget-limited reachability, keeping traversal near cost semantics.
+//! Provides the boundary between topology data and higher-level systems that need traversable graph paths.
+//! This file matters when blocking, tag surcharges, or graph traversal semantics need revision.
+//! Open this owner before touching province or globe registries when only graph search behavior changed.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
@@ -27,6 +27,13 @@ pub struct ProvinceCostFn {
     /// Province ids that cannot be entered; paths will not pass through them.
     pub blocked: HashSet<u32>,
 }
+
+/// Generic graph path result alias kept at the pathfinding ownership boundary.
+pub type GraphPath = ProvincePath;
+
+/// Generic graph cost-function alias kept at the pathfinding ownership boundary.
+pub type GraphCostFn = ProvinceCostFn;
+
 /// Construction and cost helpers for `ProvinceCostFn`.
 impl ProvinceCostFn {
     /// Create a default cost function with `default_cost = 1.0` and no blocked provinces.
@@ -292,15 +299,15 @@ pub fn provinces_connected(adjacency: &HashMap<u32, Vec<u32>>, from: u32, to: u3
     graph_connected(adjacency, from, to)
 }
 
-/// Run A\* across province adjacency; return the cheapest path and its cost, or `None` when unreachable.
-pub fn find_province_path(
+/// Run A* across graph adjacency; return the cheapest path and its cost, or `None` when unreachable.
+pub fn find_graph_path(
     neighbors: &HashMap<u32, Vec<u32>>,
     centroids: &HashMap<u32, (f32, f32)>,
     edge_tags: &HashMap<(u32, u32), HashSet<String>>,
     from: u32,
     to: u32,
-    cost_fn: &ProvinceCostFn,
-) -> Option<ProvincePath> {
+    cost_fn: &GraphCostFn,
+) -> Option<GraphPath> {
     if from == to {
         return Some(ProvincePath {
             provinces: vec![from],
@@ -375,13 +382,25 @@ pub fn find_province_path(
     }
     None
 }
-/// Return all provinces reachable from `start` within `max_cost` as a map of `province_id → cost`.
-pub fn province_reachable(
+/// Run A* across province adjacency; return the cheapest path and its cost, or `None` when unreachable.
+pub fn find_province_path(
+    neighbors: &HashMap<u32, Vec<u32>>,
+    centroids: &HashMap<u32, (f32, f32)>,
+    edge_tags: &HashMap<(u32, u32), HashSet<String>>,
+    from: u32,
+    to: u32,
+    cost_fn: &ProvinceCostFn,
+) -> Option<ProvincePath> {
+    find_graph_path(neighbors, centroids, edge_tags, from, to, cost_fn)
+}
+
+/// Return all graph nodes reachable from `start` within `max_cost` as a node-id cost map.
+pub fn graph_reachable(
     neighbors: &HashMap<u32, Vec<u32>>,
     edge_tags: &HashMap<(u32, u32), HashSet<String>>,
     start: u32,
     max_cost: f64,
-    cost_fn: &ProvinceCostFn,
+    cost_fn: &GraphCostFn,
 ) -> HashMap<u32, f64> {
     let mut dist: HashMap<u32, f64> = HashMap::new();
     let mut heap = BinaryHeap::new();
@@ -431,6 +450,18 @@ pub fn province_reachable(
         .filter(|(id, _)| visited.contains(id))
         .collect()
 }
+
+/// Return all provinces reachable from `start` within `max_cost` as a province-id cost map.
+pub fn province_reachable(
+    neighbors: &HashMap<u32, Vec<u32>>,
+    edge_tags: &HashMap<(u32, u32), HashSet<String>>,
+    start: u32,
+    max_cost: f64,
+    cost_fn: &ProvinceCostFn,
+) -> HashMap<u32, f64> {
+    graph_reachable(neighbors, edge_tags, start, max_cost, cost_fn)
+}
+
 /// Return Euclidean distance between two centroid points.
 fn centroid_distance(a: &(f32, f32), b: &(f32, f32)) -> f64 {
     let dx = (a.0 - b.0) as f64;

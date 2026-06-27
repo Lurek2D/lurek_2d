@@ -345,6 +345,43 @@ do
   example_print_log("lurek.ai.newTraitProfile: courage=" .. tostring(traits:get("courage")))
 end
 
+--@api: lurek.ai.newTraitArchetypes
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local profile = archetypes:createProfile("aggressive")
+  local names = archetypes:names()
+  local count = archetypes:count()
+  example_print_log("lurek.ai.newTraitArchetypes: count=" .. tostring(count))
+  example_print_log("lurek.ai.newTraitArchetypes: aggression=" .. tostring(profile:get("aggression")))
+  example_print_log("lurek.ai.newTraitArchetypes: first=" .. tostring(names[1]))
+end
+
+--@api: lurek.ai.newDecisionBiasSet
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local profile = lurek.ai.newTraitProfile()
+  local bias = lurek.ai.newDecisionBiasSet()
+  profile:set("aggression", 0.8)
+  bias:addRule("aggression", "attack", 0.2, "add")
+  local score = bias:score(profile, "attack", 0.5)
+  example_print_log("lurek.ai.newDecisionBiasSet: score=" .. tostring(score))
+end
+
 --@api: lurek.ai.newStimulusWorld
 do
     local function example_print_log(...)
@@ -916,6 +953,116 @@ do
   npc:setCustomModel(function(agent, bb, dt) called_with_dt = dt end)
   world:update(0.016)
   example_print_log("LBot:setCustomModel: dt=" .. tostring(called_with_dt))
+end
+
+--@api: LBot:setTraitProfile
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  local profile = lurek.ai.newTraitProfile()
+  profile:set("aggression", 0.7)
+  bot:setTraitProfile(profile)
+  local aggression = bot:getTrait("aggression")
+  example_print_log("LBot:setTraitProfile: aggression=" .. tostring(aggression))
+end
+
+--@api: LBot:getTraitProfile
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  bot:setTrait("caution", 0.6)
+  local profile = bot:getTraitProfile()
+  local caution = profile:get("caution")
+  example_print_log("LBot:getTraitProfile: caution=" .. tostring(caution))
+end
+
+--@api: LBot:hasTraitProfile
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  local before = bot:hasTraitProfile()
+  bot:setTrait("caution", 0.6)
+  local after = bot:hasTraitProfile()
+  example_print_log("LBot:hasTraitProfile: before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+
+--@api: LBot:setTrait
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  bot:setTrait("risk_tolerance", 0.8)
+  local risk = bot:getTrait("risk_tolerance")
+  bot:setTrait("risk_tolerance", 0.6)
+  example_print_log("LBot:setTrait: risk=" .. tostring(risk) .. " updated=" .. tostring(bot:getTrait("risk_tolerance")))
+end
+
+--@api: LBot:getTrait
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  bot:setTrait("aggression", 0.75)
+  local aggression = bot:getTrait("aggression")
+  local missing = bot:getTrait("missing")
+  example_print_log("LBot:getTrait: aggression=" .. tostring(aggression) .. " missing=" .. tostring(missing))
+end
+
+--@api: LBot:addTraitModifier
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  bot:setTrait("caution", 0.3)
+  bot:addTraitModifier("caution", 0.4, 1.0, "ambush")
+  local boosted = bot:getTrait("caution")
+  world:update(2.0)
+  example_print_log("LBot:addTraitModifier: boosted=" .. tostring(boosted) .. " now=" .. tostring(bot:getTrait("caution")))
 end
 
 --@api: LBot:addTag
@@ -1746,6 +1893,26 @@ do
     uai:addAction("defend", function() return 0.4 end)
     local chosen = uai:evaluate()
     example_print_log("chosen action = " .. tostring(chosen))
+end
+
+--@api: LUtilityAI:evaluateWithProfile
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local uai = lurek.ai.newUtilityAI()
+  local profile = lurek.ai.newTraitProfile()
+  local bias = lurek.ai.newDecisionBiasSet()
+  uai:addAction("attack", function() return 0.4 end)
+  uai:addAction("defend", function() return 0.5 end)
+  profile:set("aggression", 0.8)
+  bias:addRule("aggression", "attack", 0.3, "add")
+  example_print_log("LUtilityAI:evaluateWithProfile: chosen=" .. tostring(uai:evaluateWithProfile(profile, bias)))
 end
 
 --@api: LUtilityAI:getActionCount
@@ -2649,6 +2816,42 @@ do
     example_print_log("has charm = " .. tostring(tp:has("charm")))
 end
 
+--@api: LTraitProfile:names
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local tp = lurek.ai.newTraitProfile()
+  tp:set("aggression", 0.7)
+  tp:set("caution", 0.2)
+  local names = tp:names()
+  local count = #names
+  example_print_log("LTraitProfile:names: count=" .. tostring(count))
+end
+
+--@api: LTraitProfile:scoreDecision
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local tp = lurek.ai.newTraitProfile()
+  local bias = lurek.ai.newDecisionBiasSet()
+  tp:set("aggression", 0.8)
+  bias:addRule("aggression", "attack", 0.2, "add")
+  local score = tp:scoreDecision(bias, "attack", 0.5)
+  example_print_log("LTraitProfile:scoreDecision: " .. tostring(score))
+end
+
 --@api: LTraitProfile:traitCount
 do
     local function example_print_log(...)
@@ -2720,6 +2923,195 @@ do
   local morale = tp:get("morale")
     local type_name = tp:type()
     example_print_log("is LTraitProfile = " .. tostring(tp:typeOf("LTraitProfile")))
+end
+
+--@api: LTraitArchetypes:register
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  archetypes:register("naval_raider", { aggression = 0.8, naval_focus = 1.0 })
+  local profile = archetypes:createProfile("naval_raider")
+  local focus = profile:get("naval_focus")
+  local count = archetypes:count()
+  example_print_log("LTraitArchetypes:register: focus=" .. tostring(focus) .. " count=" .. tostring(count))
+end
+
+--@api: LTraitArchetypes:createProfile
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local profile = archetypes:createProfile("aggressive")
+  local aggression = profile:get("aggression")
+  local archetype_name = profile:archetype() or "none"
+  example_print_log("LTraitArchetypes:createProfile: " .. archetype_name .. " aggression=" .. tostring(aggression))
+end
+
+--@api: LTraitArchetypes:names
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local names = archetypes:names()
+  local count = #names
+  local first = names[1] or "none"
+  example_print_log("LTraitArchetypes:names: count=" .. tostring(count) .. " first=" .. tostring(first))
+end
+
+--@api: LTraitArchetypes:count
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local before = archetypes:count()
+  archetypes:register("turtle", { defensiveness = 0.9, caution = 0.8 })
+  local after = archetypes:count()
+  example_print_log("LTraitArchetypes:count: before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+
+--@api: LTraitArchetypes:type
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local count = archetypes:count()
+  local type_name = archetypes:type()
+  local is_match = archetypes:typeOf("LTraitArchetypes")
+  example_print_log("LTraitArchetypes:type: " .. type_name .. " match=" .. tostring(is_match))
+end
+
+--@api: LTraitArchetypes:typeOf
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local count = archetypes:count()
+  local is_arch = archetypes:typeOf("LTraitArchetypes")
+  local is_object = archetypes:typeOf("LObject")
+  example_print_log("LTraitArchetypes:typeOf: arch=" .. tostring(is_arch) .. " object=" .. tostring(is_object))
+end
+
+--@api: LDecisionBiasSet:addRule
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local bias = lurek.ai.newDecisionBiasSet()
+  bias:addRule("aggression", "attack", 0.2, "add")
+  bias:addRule("caution", "retreat", 0.3, "multiply")
+  local count = bias:ruleCount()
+  example_print_log("LDecisionBiasSet:addRule: count=" .. tostring(count))
+end
+
+--@api: LDecisionBiasSet:score
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local profile = lurek.ai.newTraitProfile()
+  local bias = lurek.ai.newDecisionBiasSet()
+  profile:set("aggression", 0.8)
+  bias:addRule("aggression", "attack", 0.2, "add")
+  local score = bias:score(profile, "attack", 0.5)
+  example_print_log("LDecisionBiasSet:score: " .. tostring(score))
+end
+
+--@api: LDecisionBiasSet:ruleCount
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local bias = lurek.ai.newDecisionBiasSet()
+  bias:addRule("aggression", "attack", 0.2)
+  bias:addRule("defensiveness", "defend", 0.3)
+  local count = bias:ruleCount()
+  example_print_log("LDecisionBiasSet:ruleCount: " .. tostring(count))
+end
+
+--@api: LDecisionBiasSet:type
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local bias = lurek.ai.newDecisionBiasSet()
+  bias:addRule("aggression", "attack", 0.2)
+  local count = bias:ruleCount()
+  local type_name = bias:type()
+  example_print_log("LDecisionBiasSet:type: " .. type_name .. " count=" .. tostring(count))
+end
+
+--@api: LDecisionBiasSet:typeOf
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local bias = lurek.ai.newDecisionBiasSet()
+  bias:addRule("aggression", "attack", 0.2)
+  local is_bias = bias:typeOf("LDecisionBiasSet")
+  local is_object = bias:typeOf("LObject")
+  example_print_log("LDecisionBiasSet:typeOf: bias=" .. tostring(is_bias) .. " object=" .. tostring(is_object))
 end
 
 --@api: LStimulusWorld:addVisual

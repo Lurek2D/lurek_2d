@@ -99,6 +99,7 @@ The glossary collects terms that appear across module and API pages.
 - `LDataView` ([lurek.binary](https://lurek2d.github.io/lurek_2d/modules/binary.html)) - Creates a DataView over a binary string slice.
 - `LDataWriter` ([lurek.binary](https://lurek2d.github.io/lurek_2d/modules/binary.html)) - Lua-side binary writer for sequential byte construction.
 - `LDebounce` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing debounce that delays firing until input stops for a specified wait period.
+- `LDecisionBiasSet` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for open-ended rules that map traits to action or goal score changes.
 - `LDecoder` ([lurek.audio](https://lurek2d.github.io/lurek_2d/modules/audio.html)) - Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
 - `LDepthSorter` ([lurek.scene](https://lurek2d.github.io/lurek_2d/modules/scene.html)) - Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
 - `LDialog` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds dialog-specific methods to a dialog widget table.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LHeatmapChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a heatmap chart backed by a numeric matrix.
 - `LHeightMap` ([lurek.raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html)) - Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
 - `LHermite` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Hermite spline.
-- `LHexGrid` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a hexagonal grid.

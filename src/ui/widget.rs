@@ -197,6 +197,8 @@ pub enum WidgetType {
     ColorPicker,
     /// Column-row data grid.
     GUITable,
+    /// Inspector-style grouped property list with name/value rows.
+    PropertyWidget,
     /// Static image display.
     ImageWidget,
     /// Numeric step input.
@@ -243,6 +245,7 @@ impl WidgetType {
             Self::TooltipPanel => "tooltippanel",
             Self::ColorPicker => "colorpicker",
             Self::GUITable => "guitable",
+            Self::PropertyWidget => "propertywidget",
             Self::ImageWidget => "imagewidget",
             Self::SpinBox => "spinbox",
             Self::Switch => "switch",
@@ -284,6 +287,7 @@ impl WidgetType {
             "tooltippanel" => Some(Self::TooltipPanel),
             "colorpicker" => Some(Self::ColorPicker),
             "guitable" => Some(Self::GUITable),
+            "propertywidget" => Some(Self::PropertyWidget),
             "imagewidget" => Some(Self::ImageWidget),
             "spinbox" => Some(Self::SpinBox),
             "switch" => Some(Self::Switch),
@@ -326,6 +330,7 @@ impl WidgetType {
             Self::TooltipPanel => (192.0, 64.0),
             Self::ColorPicker => (256.0, 256.0),
             Self::GUITable => (320.0, 256.0),
+            Self::PropertyWidget => (320.0, 240.0),
             Self::ImageWidget => (128.0, 128.0),
             Self::SpinBox => (128.0, 32.0),
             Self::Switch => (64.0, 32.0),
@@ -356,6 +361,7 @@ impl WidgetType {
                 | Self::Accordion
                 | Self::ColorPicker
                 | Self::GUITable
+                | Self::PropertyWidget
                 | Self::ImageWidget
                 | Self::SpinBox
                 | Self::Switch
@@ -402,6 +408,7 @@ impl WidgetType {
             Self::Accordion => "disclosure",
             Self::ColorPicker => "colorwell",
             Self::GUITable => "table",
+            Self::PropertyWidget => "group",
             Self::SpinBox => "spinbutton",
             Self::Switch => "switch",
             Self::Badge => "note",

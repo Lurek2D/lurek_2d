@@ -31,6 +31,42 @@ fn text_scale(style: &WidgetStyle, font: Option<&Font>) -> f32 {
     style.font_size / base_height
 }
 
+fn text_line_advance(style: &WidgetStyle, font: Option<&Font>) -> f32 {
+    font.map(|font| font.line_height() * text_scale(style, Some(font)))
+        .unwrap_or(style.font_size.max(1.0))
+        .max(1.0)
+}
+
+fn text_visual_bounds(text: &str, style: &WidgetStyle, font: Option<&Font>) -> (f32, f32) {
+    let Some(font) = font else {
+        let fallback_h = (style.font_size * (7.0 / 14.0)).max(1.0);
+        return (0.0, fallback_h);
+    };
+    let scale = text_scale(style, Some(font));
+    let font_size = font.size();
+    let mut min_top = f32::MAX;
+    let mut max_bottom = f32::MIN;
+    for glyph in text.chars().filter_map(|ch| font.glyph(ch)) {
+        if glyph.width == 0 || glyph.height == 0 {
+            continue;
+        }
+        let top = (font_size - glyph.offset_y - glyph.height as f32) * scale;
+        let bottom = top + glyph.height as f32 * scale;
+        min_top = min_top.min(top);
+        max_bottom = max_bottom.max(bottom);
+    }
+    if min_top.is_finite() && max_bottom.is_finite() && max_bottom > min_top {
+        (min_top, max_bottom - min_top)
+    } else {
+        (0.0, text_line_advance(style, Some(font)))
+    }
+}
+
+fn text_origin_y(text: &str, y: f32, height: f32, style: &WidgetStyle, font: Option<&Font>) -> f32 {
+    let (visual_top, visual_h) = text_visual_bounds(text, style, font);
+    y + ((height - visual_h) * 0.5).max(0.0) - visual_top
+}
+
 fn measure_text(text: &str, style: &WidgetStyle, font: Option<&Font>) -> f32 {
     match font {
         Some(font) => font.text_width(text) * text_scale(style, Some(font)),
@@ -206,7 +242,7 @@ fn layout_text(
     padding: [f32; 4],
     h_align: &str,
 ) -> Vec<TextLine> {
-    let line_height = style.font_size.max(1.0);
+    let line_height = text_line_advance(style, font);
     let inner_x = rect.x + padding[3];
     let inner_y = rect.y + padding[0];
     let inner_w = (rect.width - padding[1] - padding[3]).max(0.0);
@@ -286,7 +322,8 @@ fn layout_text(
                 "right" => (inner_x + inner_w - line_w - 6.0).max(inner_x),
                 _ => inner_x + ((inner_w - line_w) * 0.5).max(0.0),
             };
-            let ly = start_y + i as f32 * line_height;
+            let line_box_y = start_y + i as f32 * line_height;
+            let ly = text_origin_y(&line, line_box_y, line_height, style, font);
             TextLine {
                 text: line,
                 x: lx,
@@ -295,6 +332,14 @@ fn layout_text(
             }
         })
         .collect()
+}
+
+fn cpu_text_height(font: Option<&crate::font::Font>) -> i32 {
+    font.map(|f| f.size().round() as i32).unwrap_or(7).max(1)
+}
+
+fn cpu_text_center_y(font: Option<&crate::font::Font>, y: i32, h: i32) -> i32 {
+    y + ((h - cpu_text_height(font)) / 2).max(0)
 }
 /// Return the primary display text of text-bearing widget variants, or `None` for all others.
 fn display_text(widget: &WidgetKind) -> Option<&str> {
@@ -355,12 +400,12 @@ fn emit_icon_and_text(
             let text_w = measure_text(text, style, font);
             let total_w = icon_w + gap + text_w;
             let x = base.x + ((base.width - total_w) * 0.5).max(0.0);
-            let y = base.y + (base.height - style.font_size) * 0.5;
+            let y = text_origin_y(text, base.y, base.height, style, font);
             emit_text_at(text, x, y, font_key, font, style, cmds);
             emit_text_at(
                 glyph,
                 x + text_w + gap,
-                base.y + (base.height - icon_h) * 0.5,
+                text_origin_y(glyph, base.y, base.height, &icon_style, font),
                 font_key,
                 font,
                 &icon_style,
@@ -374,7 +419,7 @@ fn emit_icon_and_text(
             emit_text_at(
                 glyph,
                 base.x + ((base.width - icon_w) * 0.5).max(0.0),
-                y,
+                text_origin_y(glyph, y, icon_h, &icon_style, font),
                 font_key,
                 font,
                 &icon_style,
@@ -397,7 +442,7 @@ fn emit_icon_and_text(
             emit_text_at(
                 text,
                 base.x + ((base.width - text_w) * 0.5).max(0.0),
-                y,
+                text_origin_y(text, y, style.font_size, style, font),
                 font_key,
                 font,
                 style,
@@ -420,7 +465,7 @@ fn emit_icon_and_text(
             emit_text_at(
                 glyph,
                 x,
-                base.y + (base.height - icon_h) * 0.5,
+                text_origin_y(glyph, base.y, base.height, &icon_style, font),
                 font_key,
                 font,
                 &icon_style,
@@ -429,7 +474,7 @@ fn emit_icon_and_text(
             emit_text_at(
                 text,
                 x + icon_w + gap,
-                base.y + (base.height - style.font_size) * 0.5,
+                text_origin_y(text, base.y, base.height, style, font),
                 font_key,
                 font,
                 style,
@@ -440,7 +485,7 @@ fn emit_icon_and_text(
             emit_text_at(
                 glyph,
                 base.x + ((base.width - icon_w) * 0.5).max(0.0),
-                base.y + ((base.height - icon_h) * 0.5).max(0.0),
+                text_origin_y(glyph, base.y, base.height, &icon_style, font),
                 font_key,
                 font,
                 &icon_style,
@@ -511,7 +556,7 @@ fn draw_cpu_icon_and_text(
                 "right" => x + w as i32 - approx_w - 6,
                 _ => x + ((w as i32 - approx_w) / 2).max(2),
             };
-            let ty = y + ((h as i32 - 7) / 2).max(1);
+            let ty = cpu_text_center_y(font, y, h as i32);
             draw_cpu_text(img, font, text, tx, ty, r, g, b);
         }
         return;
@@ -523,7 +568,7 @@ fn draw_cpu_icon_and_text(
     let glyph_w = font
         .map(|f| f.text_width(glyph) as i32)
         .unwrap_or((glyph.chars().count() as i32) * 6);
-    let glyph_h = 7;
+    let glyph_h = cpu_text_height(font);
     let gap = if text.is_some() { 6 } else { 0 };
     match (base.icon_position, text) {
         (crate::ui::UiIconPosition::Right, Some(text)) => {
@@ -693,7 +738,7 @@ fn draw_tree_nodes_cpu(
         font,
         &node.text,
         indent + 10,
-        ry + (row_h - 7) / 2,
+        cpu_text_center_y(font, ry, row_h),
         fg[0],
         fg[1],
         fg[2],
@@ -718,6 +763,27 @@ fn draw_tree_nodes_cpu(
         }
     }
     next_y
+}
+
+fn parse_property_hex_color(value: &str) -> Option<(u8, u8, u8)> {
+    let hex = value
+        .trim()
+        .strip_prefix('#')
+        .unwrap_or_else(|| value.trim());
+    if hex.len() != 6 {
+        return None;
+    }
+    let r = u8::from_str_radix(&hex[0..2], 16).ok()?;
+    let g = u8::from_str_radix(&hex[2..4], 16).ok()?;
+    let b = u8::from_str_radix(&hex[4..6], 16).ok()?;
+    Some((r, g, b))
+}
+
+fn property_value_checked(value: &str) -> bool {
+    matches!(
+        value.trim().to_ascii_lowercase().as_str(),
+        "true" | "yes" | "on" | "1" | "checked"
+    )
 }
 /// Emit a filled and optionally bordered background box for `base` using `style`.
 fn emit_box(base: &WidgetBase, style: &WidgetStyle, cmds: &mut Vec<RenderCommand>) {
@@ -1125,7 +1191,7 @@ fn emit_badge(
     cmds.push(RenderCommand::SetColor(fr, fg, fb, fa));
     let scale = text_scale(style, font);
     let tx = base.x + ((base.width - measure_text(text, style, font)) * 0.5).max(0.0);
-    let ty = base.y + (base.height - style.font_size) * 0.5;
+    let ty = text_origin_y(text, base.y, base.height, style, font);
     cmds.push(RenderCommand::Print {
         font_key,
         text: text.to_string(),
@@ -1153,6 +1219,27 @@ fn emit_text_at(
         y,
         scale: text_scale(style, font),
     });
+}
+
+fn emit_text_centered_vertically(
+    text: &str,
+    x: f32,
+    y: f32,
+    height: f32,
+    font_key: FontKey,
+    font: Option<&Font>,
+    style: &WidgetStyle,
+    cmds: &mut Vec<RenderCommand>,
+) {
+    emit_text_at(
+        text,
+        x,
+        text_origin_y(text, y, height, style, font),
+        font_key,
+        font,
+        style,
+        cmds,
+    );
 }
 /// Temporary borrowed context passed through recursive `emit_tree_nodes` calls.
 struct TreeCtx<'a> {
@@ -1496,10 +1583,11 @@ fn render_widget(
         WidgetKind::SpinBox(w) => {
             emit_progress_bar(base, w.value, w.min, w.max, style, cmds);
             emit_spin_box(base, style, cmds);
-            emit_text_at(
+            emit_text_centered_vertically(
                 &format!("{}", w.value),
                 base.x + 8.0,
-                base.y + (base.height - style.font_size) * 0.5,
+                base.y,
+                base.height,
                 font_key,
                 font,
                 style,
@@ -1510,10 +1598,11 @@ fn render_widget(
             emit_progress_bar(base, w.value, w.min, w.max, style, cmds);
             let range = (w.max - w.min).max(1e-6);
             let pct = (((w.value - w.min) / range).clamp(0.0, 1.0) * 100.0).round() as i32;
-            emit_text_at(
+            emit_text_centered_vertically(
                 &format!("{pct}%"),
                 base.x + (base.width - 24.0) * 0.5,
-                base.y + (base.height - style.font_size) * 0.5,
+                base.y,
+                base.height,
                 font_key,
                 font,
                 style,
@@ -1525,10 +1614,11 @@ fn render_widget(
                 emit_checkbox(base, style, cmds);
             }
             if !w.text.is_empty() {
-                emit_text_at(
+                emit_text_centered_vertically(
                     &w.text,
                     base.x + base.height + 6.0,
-                    base.y + (base.height - style.font_size) * 0.5,
+                    base.y,
+                    base.height,
                     font_key,
                     font,
                     style,
@@ -1541,10 +1631,11 @@ fn render_widget(
                 emit_radio_button(base, style, cmds);
             }
             if !w.text.is_empty() {
-                emit_text_at(
+                emit_text_centered_vertically(
                     &w.text,
                     base.x + base.height + 6.0,
-                    base.y + (base.height - style.font_size) * 0.5,
+                    base.y,
+                    base.height,
                     font_key,
                     font,
                     style,
@@ -1592,10 +1683,11 @@ fn render_widget(
                 };
                 let mut text_style = style.clone();
                 text_style.fg_color = [tr, tg, tb, ta];
-                emit_text_at(
+                emit_text_centered_vertically(
                     content,
                     base.x + base.padding[3] + 4.0,
-                    base.y + (base.height - style.font_size) * 0.5,
+                    base.y,
+                    base.height,
                     font_key,
                     font,
                     &text_style,
@@ -1625,10 +1717,11 @@ fn render_widget(
         WidgetKind::ComboBox(w) => {
             emit_combo_box_arrow(base, style, cmds);
             if let Some(text) = w.selected_item() {
-                emit_text_at(
+                emit_text_centered_vertically(
                     text,
                     base.x + 6.0,
-                    base.y + (base.height - style.font_size) * 0.5,
+                    base.y,
+                    base.height,
                     font_key,
                     font,
                     style,
@@ -1663,10 +1756,11 @@ fn render_widget(
                                 h: row_h,
                             });
                         }
-                        emit_text_at(
+                        emit_text_centered_vertically(
                             item,
                             drop_rect.x + 6.0,
-                            row_y + (row_h - style.font_size) * 0.5,
+                            row_y,
+                            row_h,
                             font_key,
                             font,
                             style,
@@ -1703,10 +1797,11 @@ fn render_widget(
                         h: row_h,
                     });
                 }
-                emit_text_at(
+                emit_text_centered_vertically(
                     item,
                     base.x + 6.0,
-                    row_y + (row_h - style.font_size) * 0.5,
+                    row_y,
+                    row_h,
                     font_key,
                     font,
                     style,
@@ -1756,10 +1851,11 @@ fn render_widget(
                             h: 2.0,
                         });
                     }
-                    emit_text_at(
+                    emit_text_centered_vertically(
                         tab,
                         tab_x + (tab_w - measure_text(tab, style, font)) * 0.5,
-                        base.y + (base.height - style.font_size) * 0.5,
+                        base.y,
+                        base.height,
                         font_key,
                         font,
                         style,
@@ -2304,6 +2400,154 @@ fn render_widget(
                 for (cell_idx, cell) in row.iter().enumerate() {
                     emit_text_at(cell, cell_x + 4.0, row_y + 4.0, font_key, font, style, cmds);
                     cell_x += w.columns.get(cell_idx).map(|c| c.width).unwrap_or(80.0);
+                }
+            }
+        }
+        WidgetKind::PropertyWidget(w) => {
+            let header_h = w.group_header_height.max(18.0);
+            let row_h = w.row_height.max(18.0);
+            let label_w = w.label_width.clamp(48.0, base.width.max(48.0));
+            let mut y = base.y;
+            for group in &w.groups {
+                if y + header_h > base.y + base.height {
+                    break;
+                }
+                cmds.push(RenderCommand::SetColor(0.18, 0.20, 0.25, 1.0));
+                cmds.push(RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: base.x,
+                    y,
+                    w: base.width,
+                    h: header_h,
+                });
+                let arrow = if group.collapsed { ">" } else { "v" };
+                emit_text_centered_vertically(
+                    arrow,
+                    base.x + 8.0,
+                    y,
+                    header_h,
+                    font_key,
+                    font,
+                    style,
+                    cmds,
+                );
+                emit_text_centered_vertically(
+                    &group.title,
+                    base.x + 22.0,
+                    y,
+                    header_h,
+                    font_key,
+                    font,
+                    style,
+                    cmds,
+                );
+                y += header_h;
+                if group.collapsed {
+                    continue;
+                }
+                for row in &group.rows {
+                    if y + row_h > base.y + base.height {
+                        break;
+                    }
+                    cmds.push(RenderCommand::SetColor(0.13, 0.14, 0.18, 0.95));
+                    cmds.push(RenderCommand::Rectangle {
+                        mode: DrawMode::Fill,
+                        x: base.x,
+                        y,
+                        w: base.width,
+                        h: row_h,
+                    });
+                    cmds.push(RenderCommand::SetColor(0.25, 0.27, 0.33, 1.0));
+                    cmds.push(RenderCommand::Rectangle {
+                        mode: DrawMode::Fill,
+                        x: base.x + label_w,
+                        y,
+                        w: 1.0,
+                        h: row_h,
+                    });
+                    emit_text_centered_vertically(
+                        &row.name,
+                        base.x + 8.0,
+                        y,
+                        row_h,
+                        font_key,
+                        font,
+                        style,
+                        cmds,
+                    );
+                    let value_x = base.x + label_w + 8.0;
+                    match row.value_kind {
+                        crate::ui::PropertyValueKind::Bool => {
+                            cmds.push(RenderCommand::SetColor(0.08, 0.09, 0.11, 1.0));
+                            cmds.push(RenderCommand::Rectangle {
+                                mode: DrawMode::Fill,
+                                x: value_x,
+                                y: y + (row_h - 12.0) * 0.5,
+                                w: 12.0,
+                                h: 12.0,
+                            });
+                            if property_value_checked(&row.value) {
+                                emit_text_centered_vertically(
+                                    "x",
+                                    value_x + 2.0,
+                                    y,
+                                    row_h,
+                                    font_key,
+                                    font,
+                                    style,
+                                    cmds,
+                                );
+                            }
+                        }
+                        crate::ui::PropertyValueKind::Color => {
+                            if let Some((r, g, b)) = parse_property_hex_color(&row.value) {
+                                cmds.push(RenderCommand::SetColor(
+                                    r as f32 / 255.0,
+                                    g as f32 / 255.0,
+                                    b as f32 / 255.0,
+                                    1.0,
+                                ));
+                                cmds.push(RenderCommand::Rectangle {
+                                    mode: DrawMode::Fill,
+                                    x: value_x,
+                                    y: y + (row_h - 12.0) * 0.5,
+                                    w: 14.0,
+                                    h: 12.0,
+                                });
+                            }
+                            emit_text_centered_vertically(
+                                &row.value,
+                                value_x + 20.0,
+                                y,
+                                row_h,
+                                font_key,
+                                font,
+                                style,
+                                cmds,
+                            );
+                        }
+                        crate::ui::PropertyValueKind::Select => {
+                            emit_text_centered_vertically(
+                                &row.value, value_x, y, row_h, font_key, font, style, cmds,
+                            );
+                            emit_text_centered_vertically(
+                                "v",
+                                base.x + base.width - 16.0,
+                                y,
+                                row_h,
+                                font_key,
+                                font,
+                                style,
+                                cmds,
+                            );
+                        }
+                        _ => {
+                            emit_text_centered_vertically(
+                                &row.value, value_x, y, row_h, font_key, font, style, cmds,
+                            );
+                        }
+                    }
+                    y += row_h;
                 }
             }
         }
@@ -3364,6 +3608,177 @@ impl GuiContext {
                             cx2 += cw;
                         }
                         img.draw_rect(x, ry + row_h - 1, w, 1, 40, 43, 58, 140);
+                    }
+                    skip_text = true;
+                }
+                WidgetKind::PropertyWidget(prop) => {
+                    let header_h = prop.group_header_height.max(18.0) as i32;
+                    let row_h = prop.row_height.max(18.0) as i32;
+                    let label_w = prop.label_width.clamp(48.0, w as f32) as i32;
+                    let mut py = y;
+                    for group in &prop.groups {
+                        if py + header_h > y + h as i32 {
+                            break;
+                        }
+                        img.draw_rect(x, py, w, header_h as u32, 42, 46, 58, 255);
+                        img.draw_rect(x, py + header_h - 1, w, 1, 30, 33, 43, 255);
+                        let arrow = if group.collapsed { ">" } else { "v" };
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            arrow,
+                            x + 8,
+                            cpu_text_center_y(ui_font.as_ref(), py, header_h),
+                            fr,
+                            fg,
+                            fb,
+                        );
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            &group.title,
+                            x + 22,
+                            cpu_text_center_y(ui_font.as_ref(), py, header_h),
+                            fr,
+                            fg,
+                            fb,
+                        );
+                        py += header_h;
+                        if group.collapsed {
+                            continue;
+                        }
+                        for row in &group.rows {
+                            if py + row_h > y + h as i32 {
+                                break;
+                            }
+                            img.draw_rect(x, py, w, row_h as u32, 28, 30, 38, 245);
+                            img.draw_rect(x + label_w, py, 1, row_h as u32, 58, 62, 76, 255);
+                            img.draw_rect(x, py + row_h - 1, w, 1, 42, 45, 56, 180);
+                            draw_cpu_text(
+                                &mut img,
+                                ui_font.as_ref(),
+                                &row.name,
+                                x + 8,
+                                cpu_text_center_y(ui_font.as_ref(), py, row_h),
+                                168,
+                                176,
+                                190,
+                            );
+                            let value_x = x + label_w + 8;
+                            match row.value_kind {
+                                crate::ui::PropertyValueKind::Bool => {
+                                    let control_y = py + ((row_h - 12) / 2).max(0);
+                                    img.draw_rect(value_x, control_y, 12, 12, 14, 16, 20, 255);
+                                    img.draw_rect(value_x, control_y, 12, 1, 94, 100, 118, 255);
+                                    img.draw_rect(
+                                        value_x,
+                                        control_y + 11,
+                                        12,
+                                        1,
+                                        94,
+                                        100,
+                                        118,
+                                        255,
+                                    );
+                                    img.draw_rect(value_x, control_y, 1, 12, 94, 100, 118, 255);
+                                    img.draw_rect(
+                                        value_x + 11,
+                                        control_y,
+                                        1,
+                                        12,
+                                        94,
+                                        100,
+                                        118,
+                                        255,
+                                    );
+                                    if property_value_checked(&row.value) {
+                                        draw_cpu_text(
+                                            &mut img,
+                                            ui_font.as_ref(),
+                                            "x",
+                                            value_x + 3,
+                                            cpu_text_center_y(ui_font.as_ref(), py, row_h),
+                                            fr,
+                                            fg,
+                                            fb,
+                                        );
+                                    }
+                                }
+                                crate::ui::PropertyValueKind::Color => {
+                                    if let Some((r, g, b)) = parse_property_hex_color(&row.value) {
+                                        let control_y = py + ((row_h - 12) / 2).max(0);
+                                        img.draw_rect(value_x, control_y, 14, 12, r, g, b, 255);
+                                        img.draw_rect(value_x, control_y, 14, 1, 95, 100, 116, 255);
+                                        img.draw_rect(
+                                            value_x,
+                                            control_y + 11,
+                                            14,
+                                            1,
+                                            95,
+                                            100,
+                                            116,
+                                            255,
+                                        );
+                                        img.draw_rect(value_x, control_y, 1, 12, 95, 100, 116, 255);
+                                        img.draw_rect(
+                                            value_x + 13,
+                                            control_y,
+                                            1,
+                                            12,
+                                            95,
+                                            100,
+                                            116,
+                                            255,
+                                        );
+                                    }
+                                    draw_cpu_text(
+                                        &mut img,
+                                        ui_font.as_ref(),
+                                        &row.value,
+                                        value_x + 20,
+                                        cpu_text_center_y(ui_font.as_ref(), py, row_h),
+                                        fr,
+                                        fg,
+                                        fb,
+                                    );
+                                }
+                                crate::ui::PropertyValueKind::Select => {
+                                    draw_cpu_text(
+                                        &mut img,
+                                        ui_font.as_ref(),
+                                        &row.value,
+                                        value_x,
+                                        cpu_text_center_y(ui_font.as_ref(), py, row_h),
+                                        fr,
+                                        fg,
+                                        fb,
+                                    );
+                                    draw_cpu_text(
+                                        &mut img,
+                                        ui_font.as_ref(),
+                                        "v",
+                                        x + w as i32 - 16,
+                                        cpu_text_center_y(ui_font.as_ref(), py, row_h),
+                                        fr,
+                                        fg,
+                                        fb,
+                                    );
+                                }
+                                _ => {
+                                    draw_cpu_text(
+                                        &mut img,
+                                        ui_font.as_ref(),
+                                        &row.value,
+                                        value_x,
+                                        cpu_text_center_y(ui_font.as_ref(), py, row_h),
+                                        fr,
+                                        fg,
+                                        fb,
+                                    );
+                                }
+                            }
+                            py += row_h;
+                        }
                     }
                     skip_text = true;
                 }

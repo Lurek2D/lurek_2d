@@ -27,7 +27,7 @@ use crate::ui::controls::{
 use crate::ui::diagnostics::{UiAccessibilityNode, UiDiagnostic};
 use crate::ui::extras::{
     Accordion, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar, MenuItem,
-    Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
+    PropertyWidget, Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
 };
 use crate::ui::theme::Theme;
 use crate::ui::widget::{
@@ -42,6 +42,8 @@ const TABLE_ROW_HEIGHT: f32 = 20.0;
 const TREE_ROW_HEIGHT: f32 = 20.0;
 const ACCORDION_HEADER_HEIGHT: f32 = 24.0;
 const ACCORDION_CONTENT_HEIGHT: f32 = 36.0;
+const PROPERTY_HEADER_HEIGHT: f32 = 24.0;
+const PROPERTY_ROW_HEIGHT: f32 = 22.0;
 const SPIN_BUTTON_ZONE_WIDTH: f32 = 24.0;
 const WINDOW_TITLE_HEIGHT: f32 = 24.0;
 const DIALOG_TITLE_HEIGHT: f32 = 28.0;
@@ -140,6 +142,8 @@ pub enum WidgetKind {
     ColorPicker(ColorPicker),
     /// Column-row data grid.
     GUITable(GUITable),
+    /// Inspector-style grouped property list.
+    PropertyWidget(PropertyWidget),
     /// Static image display widget.
     ImageWidget(ImageWidget),
     /// Integer or float number field with step buttons.
@@ -185,6 +189,7 @@ macro_rules! widget_kind_base_match {
             WidgetKind::TooltipPanel(w) => $map!(w),
             WidgetKind::ColorPicker(w) => $map!(w),
             WidgetKind::GUITable(w) => $map!(w),
+            WidgetKind::PropertyWidget(w) => $map!(w),
             WidgetKind::ImageWidget(w) => $map!(w),
             WidgetKind::SpinBox(w) => $map!(w),
             WidgetKind::Switch(w) => $map!(w),
@@ -910,6 +915,14 @@ impl GuiContext {
     pub fn add_gui_table(&mut self) -> usize {
         let idx = self.widgets.len();
         self.widgets.push(WidgetKind::GUITable(GUITable::new()));
+        idx
+    }
+    /// Add a `PropertyWidget` inspector and return its index; marks dirty.
+    pub fn add_property_widget(&mut self) -> usize {
+        let idx = self.widgets.len();
+        self.widgets
+            .push(WidgetKind::PropertyWidget(PropertyWidget::new()));
+        self.dirty = true;
         idx
     }
     /// Add an `ImageWidget` and return its index; also marks context dirty.
@@ -2067,6 +2080,34 @@ impl GuiContext {
                     max_h + pad_v + DIALOG_TITLE_HEIGHT + 16.0,
                 )
             }
+            WidgetKind::PropertyWidget(property_widget) => {
+                let visible_rows: usize = property_widget
+                    .groups
+                    .iter()
+                    .map(|group| if group.collapsed { 0 } else { group.rows.len() })
+                    .sum();
+                let max_name_width = property_widget
+                    .groups
+                    .iter()
+                    .flat_map(|group| &group.rows)
+                    .map(|row| Self::measure_text_width(&row.name, font))
+                    .fold(0.0_f32, f32::max);
+                let max_value_width = property_widget
+                    .groups
+                    .iter()
+                    .flat_map(|group| &group.rows)
+                    .map(|row| Self::measure_text_width(&row.value, font))
+                    .fold(0.0_f32, f32::max);
+                (
+                    property_widget.label_width.max(max_name_width + 20.0)
+                        + max_value_width
+                        + pad_h
+                        + 32.0,
+                    property_widget.groups.len() as f32 * property_widget.group_header_height
+                        + visible_rows as f32 * property_widget.row_height
+                        + pad_v,
+                )
+            }
             _ => {
                 let (dw, dh) = base.widget_type.default_size();
                 (
@@ -2232,6 +2273,31 @@ impl GuiContext {
         } else {
             Some(Rect::new(base.x, base.y, base.width, base.height))
         }
+    }
+
+    fn property_group_header_at(&self, idx: usize, x: f32, y: f32) -> Option<usize> {
+        let WidgetKind::PropertyWidget(property_widget) = self.widgets.get(idx)? else {
+            return None;
+        };
+        let rect = self.widget_rect(idx)?;
+        if !rect.contains(x, y) {
+            return None;
+        }
+        let header_h = property_widget
+            .group_header_height
+            .max(PROPERTY_HEADER_HEIGHT);
+        let row_h = property_widget.row_height.max(PROPERTY_ROW_HEIGHT);
+        let mut current_y = rect.y;
+        for (group_idx, group) in property_widget.groups.iter().enumerate() {
+            if y >= current_y && y < current_y + header_h {
+                return Some(group_idx);
+            }
+            current_y += header_h;
+            if !group.collapsed {
+                current_y += group.rows.len() as f32 * row_h;
+            }
+        }
+        None
     }
 
     fn widget_accepts_input(&self, idx: usize) -> bool {
@@ -3931,6 +3997,16 @@ impl GuiContext {
                 }
                 WidgetType::ColorPicker => {
                     self.set_color_picker_from_point(idx, x, y);
+                }
+                WidgetType::PropertyWidget => {
+                    if let Some(group_idx) = self.property_group_header_at(idx, x, y) {
+                        if let WidgetKind::PropertyWidget(property_widget) = &mut self.widgets[idx]
+                        {
+                            let _ = property_widget.toggle_group(group_idx);
+                            self.pending_events.push(GuiEvent::Change(idx));
+                            self.dirty = true;
+                        }
+                    }
                 }
                 _ => {}
             }

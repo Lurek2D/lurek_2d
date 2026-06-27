@@ -3545,6 +3545,106 @@ describe("ui utility widget owner coverage", function()
             tbl:setOnSelect(function() end)
         end)
     end)
+
+    -- @covers lurek.ui.newPropertyWidget
+    it("newPropertyWidget creates a property inspector widget", function()
+        local props = lurek.ui.newPropertyWidget()
+        expect_equal("LPropertyWidget", props:type())
+        expect_true(props:typeOf("LPropertyWidget"))
+    end)
+
+    -- @covers LPropertyWidget:addGroup
+    it("property widget addGroup returns a group index", function()
+        local props = lurek.ui.newPropertyWidget()
+        expect_equal(1, props:addGroup("Video", false))
+    end)
+
+    -- @covers LPropertyWidget:getGroupCount
+    it("property widget getGroupCount returns the number of groups", function()
+        local props = lurek.ui.newPropertyWidget()
+        props:addGroup("Video", false)
+        props:addGroup("Audio", true)
+        expect_equal(2, props:getGroupCount())
+    end)
+
+    -- @covers LPropertyWidget:toggleGroup
+    it("property widget toggleGroup toggles collapsed state", function()
+        local props = lurek.ui.newPropertyWidget()
+        props:addGroup("Video", false)
+        expect_true(props:toggleGroup(1))
+    end)
+
+    -- @covers LPropertyWidget:isGroupCollapsed
+    it("property widget isGroupCollapsed reports collapsed state", function()
+        local props = lurek.ui.newPropertyWidget()
+        props:addGroup("Audio", true)
+        expect_true(props:isGroupCollapsed(1))
+    end)
+
+    -- @covers LPropertyWidget:addProperty
+    it("property widget addProperty stores typed rows", function()
+        local props = lurek.ui.newPropertyWidget()
+        local group = props:addGroup("Video", false)
+        expect_equal(1, props:addProperty(group, "Resolution", "UHD", "select", { "HD", "UHD" }))
+    end)
+
+    -- @covers LPropertyWidget:getPropertyCount
+    it("property widget getPropertyCount returns row count", function()
+        local props = lurek.ui.newPropertyWidget()
+        local group = props:addGroup("Video", false)
+        props:addProperty(group, "Bits", 10, "number")
+        props:addProperty(group, "Alpha", false, "bool")
+        expect_equal(2, props:getPropertyCount(group))
+    end)
+
+    -- @covers LPropertyWidget:getPropertyValue
+    it("property widget getPropertyValue returns stringified values", function()
+        local props = lurek.ui.newPropertyWidget()
+        local group = props:addGroup("Audio", false)
+        props:addProperty(group, "Channels", 2, "number")
+        expect_equal("2", props:getPropertyValue("Channels"))
+    end)
+
+    -- @covers LPropertyWidget:setPropertyValue
+    it("property widget setPropertyValue updates a row", function()
+        local props = lurek.ui.newPropertyWidget()
+        local group = props:addGroup("Audio", false)
+        props:addProperty(group, "Delay", 4, "number")
+        expect_true(props:setPropertyValue("Delay", 8))
+        expect_equal("8", props:getPropertyValue("Delay"))
+    end)
+
+    -- @covers LPropertyWidget:getPropertyType
+    it("property widget getPropertyType returns canonical editor type", function()
+        local props = lurek.ui.newPropertyWidget()
+        local group = props:addGroup("Colorimetry", false)
+        props:addProperty(group, "Enabled", true, "boolean")
+        expect_equal("bool", props:getPropertyType("Enabled"))
+    end)
+
+    -- @covers LPropertyWidget:getPropertyOptions
+    it("property widget getPropertyOptions returns select choices", function()
+        local props = lurek.ui.newPropertyWidget()
+        local group = props:addGroup("Video", false)
+        props:addProperty(group, "Mode", "SDI", "select", { "SDI", "HDMI" })
+        local options = props:getPropertyOptions("Mode")
+        expect_equal("SDI", options[1])
+        expect_equal("HDMI", options[2])
+    end)
+
+    -- @covers LPropertyWidget:setLabelWidth
+    it("property widget setLabelWidth updates the label column", function()
+        local props = lurek.ui.newPropertyWidget()
+        props:setLabelWidth(180)
+        expect_equal(180, props:getLabelWidth())
+    end)
+
+    -- @covers LPropertyWidget:getLabelWidth
+    it("property widget getLabelWidth returns the label column", function()
+        local props = lurek.ui.newPropertyWidget()
+        props:setLabelWidth(156)
+        expect_equal(156, props:getLabelWidth())
+    end)
 end)
 end
 -- END test_ui_missing_unit.lua

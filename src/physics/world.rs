@@ -28,6 +28,9 @@ use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 
 type BodySyncState = (f32, f32, f32, f32, f32, f32, BodyType);
+/// Number of low-bit collision groups controlled by the world-level collision matrix.
+pub const COLLISION_GROUP_COUNT: usize = 16;
+const COLLISION_GROUP_MASK: u32 = 0xFFFF;
 
 /// Internal rapier event sink forwarding collision events through a mutex.
 struct LocalEventCollector {
@@ -161,6 +164,7 @@ pub struct PhysicsShapeSnapshot {
 /// # Fields
 /// - `layer`: optional query-side collision layer mask.
 /// - `mask`: optional query-side collision mask.
+/// - `groups`: optional 16-group query-side membership mask.
 /// - `include_sensors`: whether sensor colliders should be returned.
 #[derive(Debug, Clone, Copy)]
 pub struct PhysicsQueryFilter {
@@ -168,6 +172,8 @@ pub struct PhysicsQueryFilter {
     pub layer: Option<u32>,
     /// Query collision mask. `None` leaves groups unrestricted.
     pub mask: Option<u32>,
+    /// Query membership in the world-level 16-group collision matrix.
+    pub groups: Option<u32>,
     /// Include sensor colliders in query results.
     pub include_sensors: bool,
 }
@@ -177,6 +183,7 @@ impl Default for PhysicsQueryFilter {
         Self {
             layer: None,
             mask: None,
+            groups: None,
             include_sensors: true,
         }
     }
@@ -294,6 +301,7 @@ pub struct PhysicsWorldStats {
 /// - `cached_shapes`: cached shape descriptors for rebuild detection.
 /// - `cached_restitutions`: cached restitution values per body.
 /// - `cached_layers`: cached layer/mask pairs per body.
+/// - `collision_group_masks`: world-level 16-group collision matrix rows.
 /// - `cached_frictions`: cached friction values per body.
 /// - `pipeline`: rapier simulation pipeline.
 /// - `gravity`: world gravity vector.
@@ -355,6 +363,8 @@ pub struct World {
     cached_restitutions: Vec<f32>,
     /// Cached `(layer, mask)` pairs per body.
     cached_layers: Vec<(u32, u32)>,
+    /// World-level 16-group collision matrix stored as target masks per source group.
+    collision_group_masks: [u16; COLLISION_GROUP_COUNT],
     /// Cached friction values per body.
     cached_frictions: Vec<f32>,
     /// rapier pipeline — runs the simulation substep.
@@ -714,6 +724,7 @@ impl World {
             cached_shapes: Vec::new(),
             cached_restitutions: Vec::new(),
             cached_layers: Vec::new(),
+            collision_group_masks: [COLLISION_GROUP_MASK as u16; COLLISION_GROUP_COUNT],
             cached_frictions: Vec::new(),
             pipeline: PhysicsPipeline::new(),
             gravity: Vector::new(gx, gy),
@@ -763,25 +774,42 @@ impl World {
             BodyType::Kinematic => RigidBodyType::KinematicPositionBased,
         }
     }
-    /// Build rapier collision groups from lurek layer/mask values.
-    fn collision_groups(layer: u32, mask: u32) -> InteractionGroups {
+    /// Build raw Rapier collision groups from lurek layer/mask values.
+    fn raw_collision_groups(layer: u32, mask: u32) -> InteractionGroups {
         InteractionGroups::new(
             Group::from_bits_truncate(layer),
             Group::from_bits_truncate(mask),
             InteractionTestMode::And,
         )
     }
-    /// Build rapier query filter from optional layer/mask and sensor settings.
-    fn query_filter(filter: PhysicsQueryFilter) -> QueryFilter<'static> {
+    /// Return the low 16 target groups enabled by the world matrix for `layer`.
+    fn allowed_collision_targets(&self, layer: u32) -> u32 {
+        let mut allowed = 0u32;
+        for group in 0..COLLISION_GROUP_COUNT {
+            if layer & (1u32 << group) != 0 {
+                allowed |= u32::from(self.collision_group_masks[group]);
+            }
+        }
+        allowed
+    }
+    /// Combine local body/query masks with the world-level 16-group collision matrix.
+    fn effective_collision_mask(&self, layer: u32, mask: u32) -> u32 {
+        let matrix_mask = self.allowed_collision_targets(layer);
+        (mask & !COLLISION_GROUP_MASK) | ((mask & COLLISION_GROUP_MASK) & matrix_mask)
+    }
+    /// Build Rapier collision groups after applying the world-level collision matrix.
+    fn collision_groups(&self, layer: u32, mask: u32) -> InteractionGroups {
+        Self::raw_collision_groups(layer, self.effective_collision_mask(layer, mask))
+    }
+    /// Build rapier query filter from optional layer/mask/group and sensor settings.
+    fn query_filter(&self, filter: PhysicsQueryFilter) -> QueryFilter<'static> {
         let mut flags = QueryFilterFlags::empty();
         if !filter.include_sensors {
             flags |= QueryFilterFlags::EXCLUDE_SENSORS;
         }
-        let groups = if filter.layer.is_some() || filter.mask.is_some() {
-            Some(Self::collision_groups(
-                filter.layer.unwrap_or(u32::MAX),
-                filter.mask.unwrap_or(u32::MAX),
-            ))
+        let groups = if filter.layer.is_some() || filter.mask.is_some() || filter.groups.is_some() {
+            let layer = filter.groups.or(filter.layer).unwrap_or(u32::MAX);
+            Some(self.collision_groups(layer, filter.mask.unwrap_or(u32::MAX)))
         } else {
             None
         };
@@ -849,6 +877,30 @@ impl World {
         Ok(())
     }
 
+    fn validate_collision_group(group: usize) -> Result<(), PhysicsError> {
+        if group >= COLLISION_GROUP_COUNT {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "collision_group",
+                min: 0.0,
+                max: (COLLISION_GROUP_COUNT - 1) as f64,
+                value: group as f64,
+            });
+        }
+        Ok(())
+    }
+
+    fn validate_collision_group_mask(mask: u32) -> Result<(), PhysicsError> {
+        if mask > COLLISION_GROUP_MASK {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "collision_group_mask",
+                min: 0.0,
+                max: f64::from(COLLISION_GROUP_MASK),
+                value: f64::from(mask),
+            });
+        }
+        Ok(())
+    }
+
     /// Return the cumulative and latest-step diagnostics recorded by the world.
     pub fn get_diagnostics(&self) -> PhysicsDiagnostics {
         self.diagnostics
@@ -889,9 +941,9 @@ impl World {
         jid
     }
     /// Build a rapier `Collider` from a body's shape and filter settings.
-    fn make_collider(body: &Body) -> Collider {
+    fn make_collider(&self, body: &Body) -> Collider {
         let is_sensor = body.body_type == BodyType::Sensor;
-        let groups = Self::collision_groups(body.layer, body.mask);
+        let groups = self.collision_groups(body.layer, body.mask);
         let builder = if let Some(ref shape_ext) = body.shape_ext {
             shape_ext
                 .to_rapier_collider()
@@ -935,7 +987,7 @@ impl World {
         };
         self.rcolliders
             .remove(old_handle, &mut self.islands, &mut self.rbodies, true);
-        let groups = Self::collision_groups(layer, mask);
+        let groups = self.collision_groups(layer, mask);
         let builder = if let Some(ref ext) = shape_ext {
             ext.to_rapier_collider().unwrap_or_else(|| match shape {
                 BodyShape::Rect { width, height } => {
@@ -983,13 +1035,41 @@ impl World {
         let Some(body) = self.bodies.get(id) else {
             return;
         };
-        let groups = Self::collision_groups(body.layer, body.mask);
+        let groups = self.collision_groups(body.layer, body.mask);
         if let Some(extras) = self.extra_collider_handles.get(id) {
             for &handle in extras {
                 if let Some(collider) = self.rcolliders.get_mut(handle) {
                     collider.set_collision_groups(groups);
                 }
             }
+        }
+    }
+    /// Apply the current collision groups to the primary and extra fixtures for `id`.
+    fn sync_body_collision_groups(&mut self, id: usize) {
+        if !self.has_body(id) {
+            return;
+        }
+        let Some(body) = self.bodies.get(id) else {
+            return;
+        };
+        let groups = self.collision_groups(body.layer, body.mask);
+        if let Some(&handle) = self.collider_handles.get(id) {
+            if let Some(collider) = self.rcolliders.get_mut(handle) {
+                collider.set_collision_groups(groups);
+            }
+        }
+        if let Some(extras) = self.extra_collider_handles.get(id) {
+            for &handle in extras {
+                if let Some(collider) = self.rcolliders.get_mut(handle) {
+                    collider.set_collision_groups(groups);
+                }
+            }
+        }
+    }
+    /// Refresh every live collider after world-level collision policy changes.
+    fn sync_all_collision_groups(&mut self) {
+        for id in 0..self.bodies.len() {
+            self.sync_body_collision_groups(id);
         }
     }
     /// Insert a body into the world and return its id.
@@ -1000,7 +1080,7 @@ impl World {
             .linvel(Vector::new(body.velocity.x, body.velocity.y))
             .build();
         let body_handle = self.rbodies.insert(rb);
-        let collider = Self::make_collider(&body);
+        let collider = self.make_collider(&body);
         let collider_handle =
             self.rcolliders
                 .insert_with_parent(collider, body_handle, &mut self.rbodies);
@@ -1057,7 +1137,7 @@ impl World {
             .friction(friction)
             .restitution(restitution)
             .sensor(sensor)
-            .collision_groups(Self::collision_groups(body.layer, body.mask))
+            .collision_groups(self.collision_groups(body.layer, body.mask))
             .active_events(ActiveEvents::COLLISION_EVENTS)
             .build();
         let handle = self
@@ -1245,6 +1325,98 @@ impl World {
         } else {
             None
         }
+    }
+    /// Set a body's collision layer bitmask and immediately refresh its colliders.
+    pub fn set_body_layer(&mut self, id: usize, layer: u32) {
+        if let Some(body) = self.get_body_mut(id) {
+            body.layer = layer;
+            self.sync_body_collision_groups(id);
+        }
+    }
+    /// Set a body's collision mask bitmask and immediately refresh its colliders.
+    pub fn set_body_mask(&mut self, id: usize, mask: u32) {
+        if let Some(body) = self.get_body_mut(id) {
+            body.mask = mask;
+            self.sync_body_collision_groups(id);
+        }
+    }
+    /// Assign `id` to one world-level collision group and allow all 16 group targets locally.
+    pub fn try_set_body_collision_group(
+        &mut self,
+        id: usize,
+        group: usize,
+    ) -> Result<(), PhysicsError> {
+        Self::validate_collision_group(group)?;
+        if !self.has_body(id) {
+            return Err(PhysicsError::InvalidBodyReference { body_id: id });
+        }
+        if let Some(body) = self.get_body_mut(id) {
+            body.layer = 1u32 << group;
+            body.mask = (body.mask & !COLLISION_GROUP_MASK) | COLLISION_GROUP_MASK;
+            self.sync_body_collision_groups(id);
+        }
+        Ok(())
+    }
+    /// Return the single world-level collision group for `id`, or `None` for multi/no group.
+    pub fn get_body_collision_group(&self, id: usize) -> Option<usize> {
+        let layer = self.get_body(id)?.layer & COLLISION_GROUP_MASK;
+        (layer.count_ones() == 1).then(|| layer.trailing_zeros() as usize)
+    }
+    /// Enable or disable a symmetric pair in the world-level 16-group collision matrix.
+    pub fn try_set_collision_pair(
+        &mut self,
+        group_a: usize,
+        group_b: usize,
+        enabled: bool,
+    ) -> Result<(), PhysicsError> {
+        Self::validate_collision_group(group_a)?;
+        Self::validate_collision_group(group_b)?;
+        let bit_a = 1u16 << group_a;
+        let bit_b = 1u16 << group_b;
+        if enabled {
+            self.collision_group_masks[group_a] |= bit_b;
+            self.collision_group_masks[group_b] |= bit_a;
+        } else {
+            self.collision_group_masks[group_a] &= !bit_b;
+            self.collision_group_masks[group_b] &= !bit_a;
+        }
+        self.sync_all_collision_groups();
+        Ok(())
+    }
+    /// Return whether a pair is enabled by both matrix directions.
+    pub fn try_get_collision_pair(
+        &self,
+        group_a: usize,
+        group_b: usize,
+    ) -> Result<bool, PhysicsError> {
+        Self::validate_collision_group(group_a)?;
+        Self::validate_collision_group(group_b)?;
+        let bit_a = 1u16 << group_a;
+        let bit_b = 1u16 << group_b;
+        Ok(self.collision_group_masks[group_a] & bit_b != 0
+            && self.collision_group_masks[group_b] & bit_a != 0)
+    }
+    /// Replace one source row of the world-level collision matrix.
+    pub fn try_set_collision_group_mask(
+        &mut self,
+        group: usize,
+        mask: u32,
+    ) -> Result<(), PhysicsError> {
+        Self::validate_collision_group(group)?;
+        Self::validate_collision_group_mask(mask)?;
+        self.collision_group_masks[group] = mask as u16;
+        self.sync_all_collision_groups();
+        Ok(())
+    }
+    /// Return one source row of the world-level collision matrix.
+    pub fn try_get_collision_group_mask(&self, group: usize) -> Result<u32, PhysicsError> {
+        Self::validate_collision_group(group)?;
+        Ok(u32::from(self.collision_group_masks[group]))
+    }
+    /// Restore all 16 world-level groups to collide with all other groups.
+    pub fn reset_collision_groups(&mut self) {
+        self.collision_group_masks = [COLLISION_GROUP_MASK as u16; COLLISION_GROUP_COUNT];
+        self.sync_all_collision_groups();
     }
     /// Return the total number of bodies in the world.
     pub fn body_count(&self) -> usize {
@@ -2501,7 +2673,7 @@ impl World {
             self.narrow_phase.query_dispatcher(),
             &self.rbodies,
             &self.rcolliders,
-            Self::query_filter(filter),
+            self.query_filter(filter),
         )
     }
     /// Cast a ray from `(x1,y1)` in direction `(dx,dy)` up to `max_dist`; return closest hit.

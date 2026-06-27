@@ -347,6 +347,43 @@ end
 
 ---
 
+### `lurek.ai.newDecisionBiasSet`
+
+Creates an empty set of rules that map profile traits onto named decision scores.
+
+```lua
+lurek.ai.newDecisionBiasSet()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LDecisionBiasSet](#ldecisionbiasset) | New decision bias handle. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local profile = lurek.ai.newTraitProfile()
+  local bias = lurek.ai.newDecisionBiasSet()
+  profile:set("aggression", 0.8)
+  bias:addRule("aggression", "attack", 0.2, "add")
+  local score = bias:score(profile, "attack", 0.5)
+  example_print_log("lurek.ai.newDecisionBiasSet: score=" .. tostring(score))
+end
+```
+
+---
+
 ### `lurek.ai.newDialogueAI`
 
 Creates an empty dialogue selector for weighted topics and branches.
@@ -1019,6 +1056,44 @@ end
 
 ---
 
+### `lurek.ai.newTraitArchetypes`
+
+Creates a trait archetype registry populated with engine-provided commander presets.
+
+```lua
+lurek.ai.newTraitArchetypes()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTraitArchetypes](#ltraitarchetypes) | New archetype registry handle. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local profile = archetypes:createProfile("aggressive")
+  local names = archetypes:names()
+  local count = archetypes:count()
+  example_print_log("lurek.ai.newTraitArchetypes: count=" .. tostring(count))
+  example_print_log("lurek.ai.newTraitArchetypes: aggression=" .. tostring(profile:get("aggression")))
+  example_print_log("lurek.ai.newTraitArchetypes: first=" .. tostring(names[1]))
+end
+```
+
+---
+
 ### `lurek.ai.newTraitProfile`
 
 Creates an empty trait profile with modifier support.
@@ -1152,6 +1227,7 @@ end
 - [LBehaviorTree](#lbehaviortree)
 - [LBot](#lbot)
 - [LCommandQueue](#lcommandqueue)
+- [LDecisionBiasSet](#ldecisionbiasset)
 - [LDialogueAI](#ldialogueai)
 - [LEmotionModel](#lemotionmodel)
 - [LGOAPPlanner](#lgoapplanner)
@@ -1162,6 +1238,7 @@ end
 - [LStateMachine](#lstatemachine)
 - [LStimulusWorld](#lstimulusworld)
 - [LStrategyAI](#lstrategyai)
+- [LTraitArchetypes](#ltraitarchetypes)
 - [LTraitProfile](#ltraitprofile)
 - [LUtilityAI](#lutilityai)
 
@@ -3587,6 +3664,47 @@ end
 
 ---
 
+#### `LBot:addTraitModifier`
+
+Adds a temporary or permanent modifier to one trait on this agent.
+
+```lua
+LBot:addTraitModifier(trait_name, delta, duration, source)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `trait_name` | string | Trait key affected by the modifier. |
+| `delta` | number | Additive value applied while the modifier is active. |
+| `duration?` | number | Modifier lifetime in seconds, or nil for permanent. |
+| `source` | string | Source label used for later removal. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  bot:setTrait("caution", 0.3)
+  bot:addTraitModifier("caution", 0.4, 1.0, "ambush")
+  local boosted = bot:getTrait("caution")
+  world:update(2.0)
+  example_print_log("LBot:addTraitModifier: boosted=" .. tostring(boosted) .. " now=" .. tostring(bot:getTrait("caution")))
+end
+```
+
+---
+
 #### `LBot:getBlackboard`
 
 Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
@@ -3863,6 +3981,86 @@ end
 
 ---
 
+#### `LBot:getTrait`
+
+Returns one effective trait value from this agent's profile.
+
+```lua
+LBot:getTrait(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Trait key to read. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Effective trait value, or zero when unset. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  bot:setTrait("aggression", 0.75)
+  local aggression = bot:getTrait("aggression")
+  local missing = bot:getTrait("missing")
+  example_print_log("LBot:getTrait: aggression=" .. tostring(aggression) .. " missing=" .. tostring(missing))
+end
+```
+
+---
+
+#### `LBot:getTraitProfile`
+
+Returns a snapshot copy of this agent's trait profile when one is assigned.
+
+```lua
+LBot:getTraitProfile()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LuaValue | Trait profile snapshot, or nil when this agent has no profile. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  bot:setTrait("caution", 0.6)
+  local profile = bot:getTraitProfile()
+  local caution = profile:get("caution")
+  example_print_log("LBot:getTraitProfile: caution=" .. tostring(caution))
+end
+```
+
+---
+
 #### `LBot:getVelocity`
 
 Returns this agent's velocity vector or zero velocity when the agent has been removed.
@@ -3944,6 +4142,43 @@ do
   local friendly = npc:hasTag("friendly")
   local hostile = npc:hasTag("hostile")
   example_print_log("LBot:hasTag: friendly=" .. tostring(friendly) .. " hostile=" .. tostring(hostile))
+end
+```
+
+---
+
+#### `LBot:hasTraitProfile`
+
+Returns whether this agent currently has an assigned trait profile.
+
+```lua
+LBot:hasTraitProfile()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a trait profile exists on the agent. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  local before = bot:hasTraitProfile()
+  bot:setTrait("caution", 0.6)
+  local after = bot:hasTraitProfile()
+  example_print_log("LBot:hasTraitProfile: before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -4221,6 +4456,82 @@ do
   npc:setPriority(0.5)
   npc:setPriority(10)
   example_print_log("LBot:setPriority: " .. tostring(npc:getPriority()))
+end
+```
+
+---
+
+#### `LBot:setTrait`
+
+Sets one trait on this agent, creating an empty profile first when needed.
+
+```lua
+LBot:setTrait(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Trait key to create or update. |
+| `value` | number | Base trait value clamped by the engine to `[0, 1]`. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  bot:setTrait("risk_tolerance", 0.8)
+  local risk = bot:getTrait("risk_tolerance")
+  bot:setTrait("risk_tolerance", 0.6)
+  example_print_log("LBot:setTrait: risk=" .. tostring(risk) .. " updated=" .. tostring(bot:getTrait("risk_tolerance")))
+end
+```
+
+---
+
+#### `LBot:setTraitProfile`
+
+Copies a trait profile onto this agent so future agent decisions can read commander personality values.
+
+```lua
+LBot:setTraitProfile(profile)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `profile` | [LTraitProfile](#ltraitprofile) | Trait profile copied into the agent state. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local world = lurek.ai.newWorld()
+  local bot = world:addAgent("commander")
+  local profile = lurek.ai.newTraitProfile()
+  profile:set("aggression", 0.7)
+  bot:setTraitProfile(profile)
+  local aggression = bot:getTrait("aggression")
+  example_print_log("LBot:setTraitProfile: aggression=" .. tostring(aggression))
 end
 ```
 
@@ -4769,6 +5080,212 @@ do
   local queue_count = cq:getCount()
     local type_name = cq:type()
     example_print_log("is LCommandQueue = " .. tostring(cq:typeOf("LCommandQueue")))
+end
+```
+
+---
+
+## LDecisionBiasSet
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LDecisionBiasSet:addRule`
+
+Adds one rule that adjusts a named decision score using one trait.
+
+```lua
+LDecisionBiasSet:addRule(trait_name, decision_key, weight, mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `trait_name` | string | Trait key read from a profile. |
+| `decision_key` | string | Action or goal key affected by this rule; `*` applies to every key. |
+| `weight` | number | Adjustment strength; negative values reduce the score. |
+| `mode?` | string | `add` or `multiply`; defaults to `add`. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local bias = lurek.ai.newDecisionBiasSet()
+  bias:addRule("aggression", "attack", 0.2, "add")
+  bias:addRule("caution", "retreat", 0.3, "multiply")
+  local count = bias:ruleCount()
+  example_print_log("LDecisionBiasSet:addRule: count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LDecisionBiasSet:ruleCount`
+
+Returns the number of stored bias rules.
+
+```lua
+LDecisionBiasSet:ruleCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Rule count. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local bias = lurek.ai.newDecisionBiasSet()
+  bias:addRule("aggression", "attack", 0.2)
+  bias:addRule("defensiveness", "defend", 0.3)
+  local count = bias:ruleCount()
+  example_print_log("LDecisionBiasSet:ruleCount: " .. tostring(count))
+end
+```
+
+---
+
+#### `LDecisionBiasSet:score`
+
+Scores one decision using a profile and this bias set.
+
+```lua
+LDecisionBiasSet:score(profile, decision_key, base_score)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `profile` | [LTraitProfile](#ltraitprofile) | Profile that supplies trait values. |
+| `decision_key` | string | Decision key to score. |
+| `base_score` | number | Base score before bias rules. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Biased score clamped to `[0, 1]`. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local profile = lurek.ai.newTraitProfile()
+  local bias = lurek.ai.newDecisionBiasSet()
+  profile:set("aggression", 0.8)
+  bias:addRule("aggression", "attack", 0.2, "add")
+  local score = bias:score(profile, "attack", 0.5)
+  example_print_log("LDecisionBiasSet:score: " .. tostring(score))
+end
+```
+
+---
+
+#### `LDecisionBiasSet:type`
+
+Returns the Lua-visible type name for this decision bias handle.
+
+```lua
+LDecisionBiasSet:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LDecisionBiasSet](#ldecisionbiasset)`. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local bias = lurek.ai.newDecisionBiasSet()
+  bias:addRule("aggression", "attack", 0.2)
+  local count = bias:ruleCount()
+  local type_name = bias:type()
+  example_print_log("LDecisionBiasSet:type: " .. type_name .. " count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LDecisionBiasSet:typeOf`
+
+Returns whether this decision bias handle matches a supported type name.
+
+```lua
+LDecisionBiasSet:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LDecisionBiasSet](#ldecisionbiasset)` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local bias = lurek.ai.newDecisionBiasSet()
+  bias:addRule("aggression", "attack", 0.2)
+  local is_bias = bias:typeOf("LDecisionBiasSet")
+  local is_object = bias:typeOf("LObject")
+  example_print_log("LDecisionBiasSet:typeOf: bias=" .. tostring(is_bias) .. " object=" .. tostring(is_object))
 end
 ```
 
@@ -8143,6 +8660,245 @@ end
 
 ---
 
+## LTraitArchetypes
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LTraitArchetypes:count`
+
+Returns the number of registered archetypes.
+
+```lua
+LTraitArchetypes:count()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Archetype count. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local before = archetypes:count()
+  archetypes:register("turtle", { defensiveness = 0.9, caution = 0.8 })
+  local after = archetypes:count()
+  example_print_log("LTraitArchetypes:count: before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+```
+
+---
+
+#### `LTraitArchetypes:createProfile`
+
+Creates a trait profile from a registered archetype and optional deterministic variance.
+
+```lua
+LTraitArchetypes:createProfile(name, variance)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Archetype name to copy. |
+| `variance?` | number | Maximum deterministic trait jitter; defaults to zero. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LuaValue | New trait profile, or nil when the archetype is unknown. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local profile = archetypes:createProfile("aggressive")
+  local aggression = profile:get("aggression")
+  local archetype_name = profile:archetype() or "none"
+  example_print_log("LTraitArchetypes:createProfile: " .. archetype_name .. " aggression=" .. tostring(aggression))
+end
+```
+
+---
+
+#### `LTraitArchetypes:names`
+
+Returns registered archetype names.
+
+```lua
+LTraitArchetypes:names()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of archetype names. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local names = archetypes:names()
+  local count = #names
+  local first = names[1] or "none"
+  example_print_log("LTraitArchetypes:names: count=" .. tostring(count) .. " first=" .. tostring(first))
+end
+```
+
+---
+
+#### `LTraitArchetypes:register`
+
+Registers or replaces one named archetype from a table of trait values.
+
+```lua
+LTraitArchetypes:register(name, traits)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Archetype name. |
+| `traits` | table | Map of trait names to numeric values. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  archetypes:register("naval_raider", { aggression = 0.8, naval_focus = 1.0 })
+  local profile = archetypes:createProfile("naval_raider")
+  local focus = profile:get("naval_focus")
+  local count = archetypes:count()
+  example_print_log("LTraitArchetypes:register: focus=" .. tostring(focus) .. " count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LTraitArchetypes:type`
+
+Returns the Lua-visible type name for this archetype registry handle.
+
+```lua
+LTraitArchetypes:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LTraitArchetypes](#ltraitarchetypes)`. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local count = archetypes:count()
+  local type_name = archetypes:type()
+  local is_match = archetypes:typeOf("LTraitArchetypes")
+  example_print_log("LTraitArchetypes:type: " .. type_name .. " match=" .. tostring(is_match))
+end
+```
+
+---
+
+#### `LTraitArchetypes:typeOf`
+
+Returns whether this archetype registry handle matches a supported type name.
+
+```lua
+LTraitArchetypes:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LTraitArchetypes](#ltraitarchetypes)` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local archetypes = lurek.ai.newTraitArchetypes()
+  local count = archetypes:count()
+  local is_arch = archetypes:typeOf("LTraitArchetypes")
+  local is_object = archetypes:typeOf("LObject")
+  example_print_log("LTraitArchetypes:typeOf: arch=" .. tostring(is_arch) .. " object=" .. tostring(is_object))
+end
+```
+
+---
+
 ## LTraitProfile
 
 ### Type Fields
@@ -8360,6 +9116,43 @@ end
 
 ---
 
+#### `LTraitProfile:names`
+
+Returns this profile's trait names.
+
+```lua
+LTraitProfile:names()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of trait names. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local tp = lurek.ai.newTraitProfile()
+  tp:set("aggression", 0.7)
+  tp:set("caution", 0.2)
+  local names = tp:names()
+  local count = #names
+  example_print_log("LTraitProfile:names: count=" .. tostring(count))
+end
+```
+
+---
+
 #### `LTraitProfile:removeModifiers`
 
 Removes all trait modifiers that match a source label.
@@ -8394,6 +9187,51 @@ do
     tp:addModifier("luck", 0.1, 5.0, "charm")
     tp:removeModifiers("charm")
     example_print_log("luck after remove = " .. tp:get("luck"))
+end
+```
+
+---
+
+#### `LTraitProfile:scoreDecision`
+
+Scores one decision by applying a decision bias set to this profile.
+
+```lua
+LTraitProfile:scoreDecision(biases, decision_key, base_score)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `biases` | [LDecisionBiasSet](#ldecisionbiasset) | Bias rules to apply. |
+| `decision_key` | string | Action or goal key to score. |
+| `base_score` | number | Base score before bias rules. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Biased score clamped to `[0, 1]`. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local tp = lurek.ai.newTraitProfile()
+  local bias = lurek.ai.newDecisionBiasSet()
+  tp:set("aggression", 0.8)
+  bias:addRule("aggression", "attack", 0.2, "add")
+  local score = tp:scoreDecision(bias, "attack", 0.5)
+  example_print_log("LTraitProfile:scoreDecision: " .. tostring(score))
 end
 ```
 
@@ -8716,6 +9554,52 @@ do
     uai:addAction("defend", function() return 0.4 end)
     local chosen = uai:evaluate()
     example_print_log("chosen action = " .. tostring(chosen))
+end
+```
+
+---
+
+#### `LUtilityAI:evaluateWithProfile`
+
+Evaluates all actions after applying trait-profile decision bias rules to each action score.
+
+```lua
+LUtilityAI:evaluateWithProfile(profile, biases)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `profile` | [LTraitProfile](#ltraitprofile) | Trait profile that supplies personality values. |
+| `biases` | [LDecisionBiasSet](#ldecisionbiasset) | Bias rules keyed by action name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LuaValue | Winning action name, or nil when no action can be selected. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+  local uai = lurek.ai.newUtilityAI()
+  local profile = lurek.ai.newTraitProfile()
+  local bias = lurek.ai.newDecisionBiasSet()
+  uai:addAction("attack", function() return 0.4 end)
+  uai:addAction("defend", function() return 0.5 end)
+  profile:set("aggression", 0.8)
+  bias:addRule("aggression", "attack", 0.3, "add")
+  example_print_log("LUtilityAI:evaluateWithProfile: chosen=" .. tostring(uai:evaluateWithProfile(profile, bias)))
 end
 ```
 

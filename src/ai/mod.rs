@@ -84,7 +84,10 @@ pub mod simulation {
     pub use super::needs::{Need, NeedAdvertisement, NeedSystem};
     pub use super::perception::{DetectedStimulus, Sensor, Stimulus, StimulusType, StimulusWorld};
     pub use super::squad::{FormationType, Squad};
-    pub use super::traits::{TraitArchetypes, TraitModifier, TraitProfile};
+    pub use super::traits::{
+        DecisionBiasMode, DecisionBiasRule, DecisionBiasSet, TraitArchetypes, TraitModifier,
+        TraitProfile, BUILTIN_TRAITS,
+    };
     pub use super::world::AIWorld;
 }
 
@@ -140,7 +143,10 @@ pub use needs::{Need, NeedAdvertisement, NeedSystem};
 pub use perception::{DetectedStimulus, Sensor, Stimulus, StimulusType, StimulusWorld};
 /// Strategy layer goals and controller.
 pub use strategy::{StrategicGoal, StrategyAI};
-/// Trait profiles, modifiers, and archetypes.
-pub use traits::{TraitArchetypes, TraitModifier, TraitProfile};
+/// Trait profiles, modifiers, archetypes, and decision bias rules.
+pub use traits::{
+    DecisionBiasMode, DecisionBiasRule, DecisionBiasSet, TraitArchetypes, TraitModifier,
+    TraitProfile, BUILTIN_TRAITS,
+};
 /// Shared AI validation limit configuration.
 pub use validation::AiValidationLimits;

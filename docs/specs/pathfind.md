@@ -135,12 +135,12 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### graph_path.rs
 
-- Runs province-level graph pathfinding over adjacency maps with configurable province and edge-tag move costs.
-- Owns ProvincePath results, ProvinceCostFn rules, blocked-province handling, components, and route search.
-- Computes cheapest province routes and budget-limited reachability, keeping graph traversal near cost semantics.
-- Provides the boundary between province topology data and higher-level systems that need traversable region paths.
-- This file matters when province blocking, tag surcharges, or graph traversal semantics need revision.
-- Open this owner before touching province registries when only path cost policy or graph search behavior changed.
+- Runs graph pathfinding over adjacency maps with configurable node and edge-tag move costs.
+- Owns graph path results, cost rules, blocked-node handling, components, and route search.
+- Computes cheapest graph routes and budget-limited reachability, keeping traversal near cost semantics.
+- Provides the boundary between topology data and higher-level systems that need traversable graph paths.
+- This file matters when blocking, tag surcharges, or graph traversal semantics need revision.
+- Open this owner before touching province or globe registries when only graph search behavior changed.
 
 ### grid.rs
 

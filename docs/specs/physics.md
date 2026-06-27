@@ -8,6 +8,7 @@
 - Supports shapes, continuous detection, and motorized mechanical joints.
 - Can infer approximate collision shapes from image alpha masks for asset-driven colliders.
 - Manages override zones, raycast queries, and destructible static terrain.
+- Provides a 16-group world collision matrix layered over per-body layer/mask filters.
 - Provides post-step contact events and colorized visual debug overlays.
 
 ## General Info
@@ -16,7 +17,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `23` functions, `17` types, `188` methods
+- Lua API surface: `23` functions, `17` types, `195` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -34,6 +35,7 @@
 - Terrain support matters because a large share of game physics is really about how actors relate to authored space. Ground, ramps, tile-derived obstacles, one-way behavior, ledges, and sensor volumes all need to participate in the same contact model or movement quickly becomes inconsistent.
 - Joints and constraints extend the feature beyond isolated bodies into coupled systems such as hinges, chains, levers, suspended loads, doors, and puzzle machinery. Without that layer, several gameplay designs would need bespoke approximations instead of sharing engine-owned physical semantics.
 - Filtering rules are equally important because not every shape should collide, trigger, block, or report in the same way. Keeping collision layers and response policy near world state lets projects express interaction rules explicitly rather than hiding them in scattered caller-side checks.
+- The 16-group world collision matrix gives projects a single policy surface for common roles such as player, enemy, projectile, pickup, and terrain while preserving lower-level per-body layer/mask overrides for specialized cases.
 - Debug visualization is not just a convenience but a necessary part of the contract because collision tuning mistakes are difficult to reason about from code alone. Seeing shapes, sensors, normals, joints, and query paths turns the simulation into something inspectable instead of opaque.
 - This makes `physics` especially important for grounded locomotion, projectile travel, hazard interaction, puzzle systems, traversal mechanics, and any design where contact semantics are part of gameplay rather than an incidental backend.
 - The shared step loop gives other systems one trusted spatial authority for grounded movement, projectiles, puzzle machinery, and hazards instead of several drifting approximations.
@@ -235,6 +237,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:getAngle() -> number`: Returns the body's rotation angle in radians.
 - `LBody:getAngularDamping() -> number`: Returns the angular damping factor (rotational decay rate).
 - `LBody:getAngularVelocity() -> number`: Returns the body's angular (rotational) velocity.
+- `LBody:getCollisionGroup() -> integer?`: Returns the single 0..15 collision group for this body, or nil for multi-group masks.
 - `LBody:getFriction() -> number`: Returns the body's friction coefficient.
 - `LBody:getGravityScale() -> number`: Returns the gravity scale multiplier for this body (1.0 = normal gravity).
 - `LBody:getHeight() -> number`: Returns the body's bounding height (from its primary shape).
@@ -259,6 +262,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:setAngularDamping(damping) -> nil`: Sets the angular damping factor (higher = rotation decays faster).
 - `LBody:setAngularVelocity(omega) -> nil`: Sets the body's angular velocity directly.
 - `LBody:setBullet(bullet) -> nil`: Enables or disables continuous collision detection to prevent fast-moving tunneling.
+- `LBody:setCollisionGroup(group) -> nil`: Assigns the body to one collision group and opens its local mask to the 16 group bits.
 - `LBody:setFixedRotation(fixed) -> nil`: Locks or unlocks the body's rotation. Useful for player characters.
 - `LBody:setFriction(friction) -> nil`: Sets the body's friction coefficient.
 - `LBody:setGravityScale(scale) -> nil`: Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).
@@ -395,6 +399,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getBodyOneWay(id) -> number`: Returns the one-way platform normal for a body, or nil,nil if not set.
 - `LWorld:getBodyType(id) -> string`: Returns the type name of a body as a string.
 - `LWorld:getCollisionEvents() -> table`: Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
+- `LWorld:getCollisionGroupMask(group) -> integer`: Returns one row of the 16-group collision matrix.
+- `LWorld:getCollisionPair(groupA, groupB) -> boolean`: Returns whether collisions are enabled between two world-level collision groups.
 - `LWorld:getContacts() -> table`: Returns all currently active contact manifolds with normals and touching state.
 - `LWorld:getEndContactEvents() -> table`: Returns contact-end events from the last step (pairs of bodies that stopped touching).
 - `LWorld:getGravity() -> number`: Returns the current world gravity vector.
@@ -424,12 +430,15 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
 - `LWorld:raycastClosest(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
 - `LWorld:removeGravityVector(id) -> boolean`: Removes one additive gravity vector so it no longer affects future steps.
+- `LWorld:resetCollisionGroups() -> nil`: Restores all 16 collision groups so every group can collide with every other group.
 - `LWorld:resetWorld() -> nil`: Fully resets the world to its post-construction state.
 - `LWorld:setBeginContact(callback) -> nil`: Registers a callback function invoked whenever two bodies begin touching.
 - `LWorld:setBodyCCD(id, enabled) -> nil`: Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
 - `LWorld:setBodyData(id, value) -> nil`: Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
 - `LWorld:setBodyOneWay(id, nx, ny) -> nil`: Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
 - `LWorld:setBodyType(id, bodyType) -> nil`: Changes the type of an existing body (e.g. from "dynamic" to "static").
+- `LWorld:setCollisionGroupMask(group, mask) -> nil`: Replaces one row of the 16-group collision matrix.
+- `LWorld:setCollisionPair(groupA, groupB, enabled) -> nil`: Enables or disables collisions between two world-level collision groups.
 - `LWorld:setEndContact(callback) -> nil`: Registers a callback function invoked whenever two bodies stop touching.
 - `LWorld:setFixtureFriction(bodyId, fixtureIndex, friction) -> nil`: Updates the friction coefficient of a specific fixture on a body.
 - `LWorld:setFixtureRestitution(bodyId, fixtureIndex, restitution) -> nil`: Updates the restitution (bounciness) of a specific fixture on a body.

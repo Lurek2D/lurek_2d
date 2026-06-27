@@ -53,11 +53,11 @@ pub use context_steering::{ContextBehavior, ContextBehaviorKind, ContextSteering
 pub use flow_field::FlowField;
 pub use goal_map::{GoalMap, GoalSource, UNREACHABLE};
 pub use graph_path::{
-    build_graph_adjacency_map, build_province_adjacency_map, find_graph_route_bfs,
+    build_graph_adjacency_map, build_province_adjacency_map, find_graph_path, find_graph_route_bfs,
     find_graph_route_dijkstra, find_province_path, find_province_route_bfs,
-    find_province_route_dijkstra, graph_connected, graph_connected_components,
-    province_connected_components, province_reachable, provinces_connected, ProvinceCostFn,
-    ProvincePath,
+    find_province_route_dijkstra, graph_connected, graph_connected_components, graph_reachable,
+    province_connected_components, province_reachable, provinces_connected, GraphCostFn, GraphPath,
+    ProvinceCostFn, ProvincePath,
 };
 pub use grid::Grid;
 pub use hpa::{build_abstract, is_reachable as hpa_is_reachable, AbstractGraph};

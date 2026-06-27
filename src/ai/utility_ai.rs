@@ -9,6 +9,7 @@
 use crate::ai::diagnostics::{
     CallbackErrorTrace, UtilityActionTrace, UtilityConsiderationTrace, UtilityDecisionTrace,
 };
+use crate::ai::traits::{DecisionBiasSet, TraitProfile};
 use crate::ai::validation::{finite_f64, validate_count, AiValidationLimits};
 use mlua::prelude::*;
 use mlua::RegistryKey;
@@ -181,6 +182,25 @@ impl UtilityAI {
     }
     /// Call all action scorers, apply momentum, and return the best action name.
     pub fn evaluate(&mut self, lua: &Lua) -> LuaResult<Option<String>> {
+        self.evaluate_with_bias(lua, None)
+    }
+
+    /// Call all action scorers, apply profile bias rules, and return the best action name.
+    pub fn evaluate_with_profile(
+        &mut self,
+        lua: &Lua,
+        profile: &TraitProfile,
+        biases: &DecisionBiasSet,
+    ) -> LuaResult<Option<String>> {
+        self.evaluate_with_bias(lua, Some((profile, biases)))
+    }
+
+    /// Shared evaluator used by plain and personality-biased scoring.
+    fn evaluate_with_bias(
+        &mut self,
+        lua: &Lua,
+        bias: Option<(&TraitProfile, &DecisionBiasSet)>,
+    ) -> LuaResult<Option<String>> {
         if self.actions.is_empty() {
             self.last_trace = UtilityDecisionTrace::default();
             return Ok(None);
@@ -275,7 +295,11 @@ impl UtilityAI {
             } else {
                 1.0
             };
-            let final_score = clamped_base * consideration_product * momentum_multiplier;
+            let mut final_score = clamped_base * consideration_product * momentum_multiplier;
+            if let Some((profile, biases)) = bias {
+                final_score =
+                    f64::from(biases.score_decision(profile, &action.name, final_score as f32));
+            }
             scores.push(final_score);
             trace.actions.push(UtilityActionTrace {
                 name: action.name.clone(),

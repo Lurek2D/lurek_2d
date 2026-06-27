@@ -51,10 +51,11 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Owning tier: `Feature Systems`
 - Plugin tier: `core_keep`
 - Lua binding owner: `src/lua_api/tilemap_api.rs`
-- Referenced engine modules: `math`, `render`, `runtime`, `tilefield`, `tileset`
+- Referenced engine modules: `camera`, `math`, `render`, `runtime`, `tilefield`, `tileset`
 
 ## Imports
 
+- `camera`: Imports or references `src/camera/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
@@ -110,7 +111,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - Owns chunk-oriented rendering support for tilemaps that are too large for one monolithic redraw strategy.
 - Partitions the full grid into fixed chunks with dirty tracking so small edits trigger only local refresh work.
-- Uses camera and viewport state to cull at chunk granularity before generating tile-oriented draw output.
+- Delegates camera viewport range math to `camera`, then uses that range for chunk-level tile output.
 - Supports per-tile mutation with automatic invalidation so edits stay localized across large-world scenes.
 - Optionally reduces detail with zoom-aware logic to keep massive maps responsive during interactive viewing.
 - Open this file when chunk invalidation, visible-chunk culling, or large-map redraw performance is wrong.

@@ -4,10 +4,10 @@
 
 use lurek2d::math::Rect;
 use lurek2d::ui::containers::{Layout, LayoutDirection, NinePatch, ScrollPanel};
-use lurek2d::ui::context::{GuiContext, GuiEvent};
+use lurek2d::ui::context::{GuiContext, GuiEvent, WidgetKind};
 use lurek2d::ui::controls::{Slider, Switch, TextInput};
 use lurek2d::ui::extras::{Dialog, DialogAction, DialogActionRole, TreeView};
-use lurek2d::ui::layout_loader::{load_layout_def, render_to_image, WidgetDef};
+use lurek2d::ui::layout_loader::{load_layout_def, load_layout_toml, render_to_image, WidgetDef};
 use lurek2d::ui::theme::{Theme, ThemeToken, WidgetStyle};
 use lurek2d::ui::widget::{MouseFilter, WidgetBase, WidgetState, WidgetType};
 use std::time::Instant;
@@ -216,6 +216,7 @@ fn theme_default_dark_has_normal_style_for_every_widget_type() {
         WidgetType::TooltipPanel,
         WidgetType::ColorPicker,
         WidgetType::GUITable,
+        WidgetType::PropertyWidget,
         WidgetType::ImageWidget,
         WidgetType::SpinBox,
         WidgetType::Switch,
@@ -290,6 +291,15 @@ fn gui_context_add_badge_marks_dirty() {
     ctx.flush_cache();
     ctx.add_badge(0);
     assert!(ctx.dirty, "add_badge must set dirty = true");
+}
+
+#[test]
+fn gui_context_add_property_widget_marks_dirty_and_stores_variant() {
+    let mut ctx = GuiContext::new();
+    ctx.flush_cache();
+    let idx = ctx.add_property_widget();
+    assert!(ctx.dirty, "add_property_widget must set dirty = true");
+    assert!(matches!(ctx.widgets[idx], WidgetKind::PropertyWidget(_)));
 }
 
 #[test]
@@ -767,6 +777,83 @@ fn layout_loader_uses_control_setters_and_rejects_nonfinite_geometry() {
         },
     );
     assert!(invalid.is_err());
+}
+
+#[test]
+fn layout_loader_loads_property_widget_groups_from_toml() {
+    let mut ctx = GuiContext::new();
+    let idx = load_layout_toml(
+        &mut ctx,
+        r##"
+[root]
+widget_type = "propertywidget"
+id = "inspector"
+w = 320
+h = 220
+property_label_width = 128
+
+[[root.property_groups]]
+title = "Video System"
+collapsed = false
+
+[[root.property_groups.rows]]
+name = "Resolution"
+value = "UHD - 2160p"
+value_type = "select"
+options = ["HD", "UHD - 2160p"]
+
+[[root.property_groups.rows]]
+name = "Bits Per Channel"
+value = "10"
+value_type = "number"
+
+[[root.property_groups]]
+title = "Audio Settings"
+collapsed = true
+
+[[root.property_groups.rows]]
+name = "Enable Audio"
+value = "true"
+value_type = "bool"
+"##,
+    )
+    .expect("property widget layout should load");
+
+    let WidgetKind::PropertyWidget(prop) = &ctx.widgets[idx] else {
+        panic!("expected PropertyWidget");
+    };
+    assert_eq!(prop.groups.len(), 2);
+    assert_eq!(prop.groups[0].title, "Video System");
+    assert_eq!(prop.groups[0].rows.len(), 2);
+    assert_eq!(prop.groups[0].rows[0].options[1], "UHD - 2160p");
+    assert!(prop.groups[1].collapsed);
+    assert_eq!(prop.label_width, 128.0);
+}
+
+#[test]
+fn property_value_kind_accepts_standalone_widget_aliases() {
+    use lurek2d::ui::PropertyValueKind;
+
+    assert_eq!(
+        PropertyValueKind::parse_str("textbox"),
+        Some(PropertyValueKind::Text)
+    );
+    assert_eq!(
+        PropertyValueKind::parse_str("textinput"),
+        Some(PropertyValueKind::Text)
+    );
+    assert_eq!(
+        PropertyValueKind::parse_str("checkbox"),
+        Some(PropertyValueKind::Bool)
+    );
+    assert_eq!(
+        PropertyValueKind::parse_str("combobox"),
+        Some(PropertyValueKind::Select)
+    );
+    assert_eq!(
+        PropertyValueKind::parse_str("colorpicker"),
+        Some(PropertyValueKind::Color)
+    );
 }
 
 #[test]

@@ -194,7 +194,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 - Owns the region topology graph that stores regions, cached neighbors, centroids, and tagged region border edges.
 - Provides insert, remove, mutation, and cache rebuild flows so topology lookups stay coherent after region edits.
-- Delegates route and reachability queries to province graph pathfinding while translating results back to RegionId.
+- Delegates route and reachability queries to graph pathfinding while translating results back to RegionId.
 - Acts as the structural boundary between region geometry records and graph-style traversal used by globe gameplay.
 - Also exposes region attrs and edge tags, keeping topology metadata near the adjacency data it qualifies.
 - Open this owner when connectivity, border tags, or region path queries change without altering render policy.

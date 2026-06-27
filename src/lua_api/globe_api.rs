@@ -12,7 +12,7 @@ use crate::globe::types::{
     FogState, GlobeSpec, HeatLayer, LabelStyle, Layer, LodTier, MarkerShape, MarkerStyle, Region,
     RegionId, RegionPart, MAX_REGIONS,
 };
-use crate::pathfind::graph_path::ProvinceCostFn;
+use crate::pathfind::graph_path::GraphCostFn;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
@@ -294,8 +294,8 @@ fn normalize_time_of_day(t: f32) -> LuaResult<f32> {
     Ok(finite_f32(t, "time_of_day")?.rem_euclid(24.0))
 }
 
-fn parse_cost_fn(opts: Option<LuaTable>, label: &str) -> LuaResult<ProvinceCostFn> {
-    let mut cost_fn = ProvinceCostFn::new();
+fn parse_cost_fn(opts: Option<LuaTable>, label: &str) -> LuaResult<GraphCostFn> {
+    let mut cost_fn = GraphCostFn::new();
     let Some(opts) = opts else {
         return Ok(cost_fn);
     };

@@ -778,6 +778,162 @@ impl Default for GUITable {
         Self::new()
     }
 }
+/// Predefined editor kind for one row in a `PropertyWidget`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum PropertyValueKind {
+    /// Free-form text value.
+    Text,
+    /// Numeric value presented as a spinner-like value.
+    Number,
+    /// Boolean value presented as a checkbox.
+    Bool,
+    /// One value selected from a predefined option list.
+    Select,
+    /// Colour value displayed as text plus a swatch.
+    Color,
+}
+impl PropertyValueKind {
+    /// Parse a lowercase editor kind; accepts standalone widget names as editor aliases.
+    pub fn parse_str(value: &str) -> Option<Self> {
+        match value {
+            "text" | "string" | "textbox" | "textinput" => Some(Self::Text),
+            "number" | "float" | "int" | "integer" => Some(Self::Number),
+            "bool" | "boolean" | "checkbox" => Some(Self::Bool),
+            "select" | "choice" | "combo" | "combobox" => Some(Self::Select),
+            "color" | "colour" | "colorpicker" | "colourpicker" => Some(Self::Color),
+            _ => None,
+        }
+    }
+    /// Return the canonical lowercase editor kind.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Text => "text",
+            Self::Number => "number",
+            Self::Bool => "bool",
+            Self::Select => "select",
+            Self::Color => "color",
+        }
+    }
+}
+/// One name/value row inside a property group.
+#[derive(Debug, Clone)]
+pub struct PropertyRow {
+    /// Stable property name displayed in the left column and used for lookup.
+    pub name: String,
+    /// Stringified property value displayed in the right column.
+    pub value: String,
+    /// Predefined editor kind used by render and interaction code.
+    pub value_kind: PropertyValueKind,
+    /// Optional choices for `select` rows.
+    pub options: Vec<String>,
+    /// Whether the row is shown but not editable.
+    pub read_only: bool,
+}
+impl PropertyRow {
+    /// Create a property row with a normalised editor kind and stringified value.
+    pub fn new(
+        name: impl Into<String>,
+        value: impl Into<String>,
+        value_kind: PropertyValueKind,
+    ) -> Self {
+        Self {
+            name: name.into(),
+            value: value.into(),
+            value_kind,
+            options: Vec::new(),
+            read_only: false,
+        }
+    }
+}
+/// Collapsible group of property rows inside a `PropertyWidget`.
+#[derive(Debug, Clone)]
+pub struct PropertyGroup {
+    /// Group header label.
+    pub title: String,
+    /// Whether rows are currently hidden.
+    pub collapsed: bool,
+    /// Ordered property rows.
+    pub rows: Vec<PropertyRow>,
+}
+impl PropertyGroup {
+    /// Create an empty property group.
+    pub fn new(title: impl Into<String>, collapsed: bool) -> Self {
+        Self {
+            title: title.into(),
+            collapsed,
+            rows: Vec::new(),
+        }
+    }
+}
+/// Inspector-style grouped property list with a fixed name column and value editors.
+#[derive(Debug, Clone)]
+pub struct PropertyWidget {
+    /// Shared layout, style, and state fields.
+    pub base: WidgetBase,
+    /// Ordered collapsible groups.
+    pub groups: Vec<PropertyGroup>,
+    /// Width of the left name column in pixels.
+    pub label_width: f32,
+    /// Height of each property row in pixels.
+    pub row_height: f32,
+    /// Height of each group header in pixels.
+    pub group_header_height: f32,
+}
+impl PropertyWidget {
+    /// Create an empty property inspector with practical editor defaults.
+    pub fn new() -> Self {
+        Self {
+            base: WidgetBase::new(WidgetType::PropertyWidget),
+            groups: Vec::new(),
+            label_width: 180.0,
+            row_height: 22.0,
+            group_header_height: 24.0,
+        }
+    }
+    /// Append a group and return its zero-based index.
+    pub fn add_group(&mut self, title: impl Into<String>, collapsed: bool) -> usize {
+        self.groups.push(PropertyGroup::new(title, collapsed));
+        self.groups.len() - 1
+    }
+    /// Append a row to an existing group; returns `false` when the group index is invalid.
+    pub fn add_property(&mut self, group_idx: usize, row: PropertyRow) -> bool {
+        let Some(group) = self.groups.get_mut(group_idx) else {
+            return false;
+        };
+        group.rows.push(row);
+        true
+    }
+    /// Find the first property row by name.
+    pub fn get_property(&self, name: &str) -> Option<&PropertyRow> {
+        self.groups
+            .iter()
+            .flat_map(|group| &group.rows)
+            .find(|row| row.name == name)
+    }
+    /// Update the first property row with `name`; returns whether a row changed.
+    pub fn set_property_value(&mut self, name: &str, value: impl Into<String>) -> bool {
+        let value = value.into();
+        for group in &mut self.groups {
+            if let Some(row) = group.rows.iter_mut().find(|row| row.name == name) {
+                row.value = value;
+                return true;
+            }
+        }
+        false
+    }
+    /// Toggle a group collapsed/expanded state and return the new state.
+    pub fn toggle_group(&mut self, group_idx: usize) -> Option<bool> {
+        let group = self.groups.get_mut(group_idx)?;
+        group.collapsed = !group.collapsed;
+        Some(group.collapsed)
+    }
+}
+/// Provide a default `PropertyWidget` via `Self::new()`.
+impl Default for PropertyWidget {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 /// Static image display widget with configurable scale mode and tint.
 #[derive(Debug, Clone)]
 pub struct ImageWidget {

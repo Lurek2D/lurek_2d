@@ -12533,6 +12533,243 @@ do
     example_print_log("missing glyph = " .. tostring(missing_glyph))
 end
 
+--@api: lurek.ui.newPropertyWidget
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    props:setPosition(16, 16)
+    props:setSize(320, 220)
+    props:setLabelWidth(132)
+    local group = props:addGroup("Video System", false)
+    props:addProperty(group, "Resolution", "UHD - 2160p", "select", { "HD", "UHD - 2160p" })
+    example_print_log("property widget type = " .. props:type())
+end
+
+--@api: LPropertyWidget:addGroup
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    props:setSize(280, 180)
+    local video = props:addGroup("Video", false)
+    local audio = props:addGroup("Audio", true)
+    props:addProperty(video, "Bits", 10, "number")
+    props:addProperty(audio, "Enable Audio", true, "bool")
+    example_print_log("groups = " .. video .. "," .. audio)
+end
+
+--@api: LPropertyWidget:getGroupCount
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    props:addGroup("Video", false)
+    props:addGroup("Audio", false)
+    props:addGroup("Control", true)
+    local count = props:getGroupCount()
+    props:setSize(300, 160)
+    example_print_log("property groups = " .. count)
+end
+
+--@api: LPropertyWidget:toggleGroup
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Output Settings", false)
+    props:addProperty(group, "Source Connector", "SDI IN A", "select", { "SDI IN A", "HDMI" })
+    local collapsed = props:toggleGroup(group)
+    props:setSize(320, 120)
+    example_print_log("collapsed = " .. tostring(collapsed))
+end
+
+--@api: LPropertyWidget:isGroupCollapsed
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Key Settings", true)
+    props:addProperty(group, "Invert Luma", false, "bool")
+    local collapsed = props:isGroupCollapsed(group)
+    props:setSize(260, 120)
+    example_print_log("key collapsed = " .. tostring(collapsed))
+end
+
+--@api: LPropertyWidget:addProperty
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Audio Settings", false)
+    local row = props:addProperty(group, "Audio Channels", "2 Channels", "select", { "2 Channels", "8 Channels" })
+    props:addProperty(group, "Delay DVE", 4, "number")
+    props:addProperty(group, "Enable Audio", true, "bool")
+    example_print_log("added row = " .. row)
+end
+
+--@api: LPropertyWidget:getPropertyCount
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Video", false)
+    props:addProperty(group, "Contains Alpha", false, "bool")
+    props:addProperty(group, "Delay DVE", 1, "number")
+    local count = props:getPropertyCount(group)
+    example_print_log("property rows = " .. count)
+end
+
+--@api: LPropertyWidget:getPropertyValue
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Colorimetry", false)
+    props:addProperty(group, "Colorimetry", "Rec. 709", "select", { "Rec. 709", "P3" })
+    props:addProperty(group, "Tint", "#55AAFF", "color")
+    local value = props:getPropertyValue("Colorimetry")
+    example_print_log("colorimetry = " .. tostring(value))
+end
+
+--@api: LPropertyWidget:setPropertyValue
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("VBI Settings", false)
+    props:addProperty(group, "Delay VBI", 4, "number")
+    local changed = props:setPropertyValue("Delay VBI", 14)
+    local value = props:getPropertyValue("Delay VBI")
+    example_print_log("vbi changed=" .. tostring(changed) .. " value=" .. tostring(value))
+end
+
+--@api: LPropertyWidget:getPropertyType
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Output", false)
+    props:addProperty(group, "Enable Audio", true, "boolean")
+    props:addProperty(group, "Source Connector", "SDI IN A", "select", { "SDI IN A", "HDMI" })
+    local value_type = props:getPropertyType("Enable Audio")
+    example_print_log("type = " .. tostring(value_type))
+end
+
+--@api: LPropertyWidget:getPropertyOptions
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Video System", false)
+    props:addProperty(group, "Resolution", "UHD - 2160p", "select", { "HD - 1080p", "UHD - 2160p" })
+    local options = props:getPropertyOptions("Resolution")
+    local first = options[1] or ""
+    example_print_log("first option = " .. first)
+end
+
+--@api: LPropertyWidget:setLabelWidth
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    props:setLabelWidth(150)
+    props:setSize(340, 180)
+    local group = props:addGroup("Inspector", false)
+    props:addProperty(group, "Name Column", "150 px", "text")
+    example_print_log("label width = " .. props:getLabelWidth())
+end
+
+--@api: LPropertyWidget:getLabelWidth
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local before = props:getLabelWidth()
+    props:setLabelWidth(120)
+    local after = props:getLabelWidth()
+    props:addGroup("Columns", false)
+    example_print_log("label width before=" .. before .. " after=" .. after)
+end
+
 --@api: lurek.ui.newIcon
 do
     local function example_print_log(...)

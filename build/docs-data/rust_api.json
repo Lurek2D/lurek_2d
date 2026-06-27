@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-06-26T14:19:51.973734+00:00",
+    "generated": "2026-06-26T21:56:53.198199+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3081,
+      "rust_items": 3098,
       "rust_modules": 728,
       "rust_tests": 496,
       "lua_tests": 281
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3081,
-      "documented": 3078,
+      "total_items": 3098,
+      "documented": 3095,
       "modules": 728
     },
     "modules": {
@@ -965,7 +965,7 @@
             "kind": "mod",
             "description": "Grouped debug and diagnostics APIs for AI inspection.",
             "file": "src/ai/mod.rs",
-            "line": 92
+            "line": 95
           }
         ]
       },
@@ -1087,25 +1087,53 @@
         "source_file": "src/ai/traits.rs",
         "items": [
           {
+            "name": "BUILTIN_TRAITS",
+            "kind": "const",
+            "description": "Built-in trait keys that engine helpers understand without limiting custom profile keys.",
+            "file": "src/ai/traits.rs",
+            "line": 11
+          },
+          {
             "name": "TraitModifier",
             "kind": "struct",
             "description": "Temporary additive change applied to one named trait.",
             "file": "src/ai/traits.rs",
-            "line": 11
+            "line": 31
           },
           {
             "name": "TraitProfile",
             "kind": "struct",
             "description": "Base trait values plus active temporary modifiers for one agent.",
             "file": "src/ai/traits.rs",
-            "line": 47
+            "line": 67
           },
           {
             "name": "TraitArchetypes",
             "kind": "struct",
             "description": "Registry of named trait archetypes used to initialize agent profiles.",
             "file": "src/ai/traits.rs",
-            "line": 162
+            "line": 187
+          },
+          {
+            "name": "DecisionBiasMode",
+            "kind": "enum",
+            "description": "How one trait bias changes a decision score.",
+            "file": "src/ai/traits.rs",
+            "line": 332
+          },
+          {
+            "name": "DecisionBiasRule",
+            "kind": "struct",
+            "description": "One open-ended rule that maps a profile trait onto a named decision key.",
+            "file": "src/ai/traits.rs",
+            "line": 358
+          },
+          {
+            "name": "DecisionBiasSet",
+            "kind": "struct",
+            "description": "Set of open-ended decision bias rules used to tune action or goal scores from a trait profile.",
+            "file": "src/ai/traits.rs",
+            "line": 382
           }
         ]
       },
@@ -1118,28 +1146,28 @@
             "kind": "enum",
             "description": "Response-curve variant used to transform raw consideration inputs.",
             "file": "src/ai/utility_ai.rs",
-            "line": 17
+            "line": 18
           },
           {
             "name": "Consideration",
             "kind": "struct",
             "description": "One consideration that transforms a raw Lua score into a weighted utility value.",
             "file": "src/ai/utility_ai.rs",
-            "line": 67
+            "line": 68
           },
           {
             "name": "UAAction",
             "kind": "struct",
             "description": "One candidate action scored by the utility-AI system.",
             "file": "src/ai/utility_ai.rs",
-            "line": 84
+            "line": 85
           },
           {
             "name": "UtilityAI",
             "kind": "struct",
             "description": "Utility-AI runtime that stores actions and the latest evaluation results.",
             "file": "src/ai/utility_ai.rs",
-            "line": 95
+            "line": 96
           }
         ]
       },
@@ -1199,7 +1227,7 @@
         ]
       },
       "ai::world": {
-        "module_doc": "Owns the global AI world registry that stores agents, name lookup, and the shared blackboard inherited by new actors. Provides add, remove, index, and mutable access helpers so population-level systems can manage agents coherently. Advances all agents through one broad world pulse, integrating velocity into position inside the central owner. Open this owner when registry integrity or world-wide update flow needs coordinated changes across agents.",
+        "module_doc": "Owns the global AI world registry that stores agents, name lookup, and the shared blackboard inherited by new actors. Provides add, remove, index, and mutable access helpers so population-level systems can manage agents coherently. Advances all agents through one broad world pulse, integrating velocity and per-agent support state inside the central owner. Open this owner when registry integrity or world-wide update flow needs coordinated changes across agents.",
         "source_file": "src/ai/world.rs",
         "items": [
           {
@@ -3026,11 +3054,25 @@
             "line": 91
           },
           {
+            "name": "ChunkViewportRange",
+            "kind": "struct",
+            "description": "Inclusive chunk-coordinate range visible through a camera viewport.",
+            "file": "src/camera/viewport.rs",
+            "line": 111
+          },
+          {
+            "name": "camera_visible_chunk_range",
+            "kind": "fn",
+            "description": "Compute the map chunk range visible through a centered camera viewport.",
+            "file": "src/camera/viewport.rs",
+            "line": 141
+          },
+          {
             "name": "Viewport",
             "kind": "struct",
             "description": "Stores viewport scaling state used during window resize and conversion.",
             "file": "src/camera/viewport.rs",
-            "line": 110
+            "line": 205
           }
         ]
       },
@@ -7824,7 +7866,7 @@
         ]
       },
       "globe::topology": {
-        "module_doc": "Owns the region topology graph that stores regions, cached neighbors, centroids, and tagged region border edges. Provides insert, remove, mutation, and cache rebuild flows so topology lookups stay coherent after region edits. Delegates route and reachability queries to province graph pathfinding while translating results back to RegionId. Acts as the structural boundary between region geometry records and graph-style traversal used by globe gameplay. Also exposes region attrs and edge tags, keeping topology metadata near the adjacency data it qualifies. Open this owner when connectivity, border tags, or region path queries change without altering render policy.",
+        "module_doc": "Owns the region topology graph that stores regions, cached neighbors, centroids, and tagged region border edges. Provides insert, remove, mutation, and cache rebuild flows so topology lookups stay coherent after region edits. Delegates route and reachability queries to graph pathfinding while translating results back to RegionId. Acts as the structural boundary between region geometry records and graph-style traversal used by globe gameplay. Also exposes region attrs and edge tags, keeping topology metadata near the adjacency data it qualifies. Open this owner when connectivity, border tags, or region path queries change without altering render policy.",
         "source_file": "src/globe/topology.rs",
         "items": [
           {
@@ -7839,7 +7881,7 @@
             "kind": "type",
             "description": "Backward compatibility alias.",
             "file": "src/globe/topology.rs",
-            "line": 216
+            "line": 210
           }
         ]
       },
@@ -13989,7 +14031,7 @@
         ]
       },
       "pathfind::graph_path": {
-        "module_doc": "Runs province-level graph pathfinding over adjacency maps with configurable province and edge-tag move costs. Owns ProvincePath results, ProvinceCostFn rules, blocked-province handling, components, and route search. Computes cheapest province routes and budget-limited reachability, keeping graph traversal near cost semantics. Provides the boundary between province topology data and higher-level systems that need traversable region paths. This file matters when province blocking, tag surcharges, or graph traversal semantics need revision. Open this owner before touching province registries when only path cost policy or graph search behavior changed.",
+        "module_doc": "Runs graph pathfinding over adjacency maps with configurable node and edge-tag move costs. Owns graph path results, cost rules, blocked-node handling, components, and route search. Computes cheapest graph routes and budget-limited reachability, keeping traversal near cost semantics. Provides the boundary between topology data and higher-level systems that need traversable graph paths. This file matters when blocking, tag surcharges, or graph traversal semantics need revision. Open this owner before touching province or globe registries when only graph search behavior changed.",
         "source_file": "src/pathfind/graph_path.rs",
         "items": [
           {
@@ -14007,88 +14049,116 @@
             "line": 20
           },
           {
+            "name": "GraphPath",
+            "kind": "type",
+            "description": "Generic graph path result alias kept at the pathfinding ownership boundary.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 32
+          },
+          {
+            "name": "GraphCostFn",
+            "kind": "type",
+            "description": "Generic graph cost-function alias kept at the pathfinding ownership boundary.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 35
+          },
+          {
             "name": "build_graph_adjacency_map",
             "kind": "fn",
             "description": "Build a graph adjacency map from positive integer node-id pairs.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 101
+            "line": 108
           },
           {
             "name": "build_province_adjacency_map",
             "kind": "fn",
             "description": "Build an undirected province adjacency map from `(a, b)` id pairs.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 120
+            "line": 127
           },
           {
             "name": "find_graph_route_bfs",
             "kind": "fn",
             "description": "Find a graph route with the fewest hops by breadth-first search.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 125
+            "line": 132
           },
           {
             "name": "find_province_route_bfs",
             "kind": "fn",
             "description": "Find a province route with the fewest graph hops by breadth-first search.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 162
+            "line": 169
           },
           {
             "name": "find_graph_route_dijkstra",
             "kind": "fn",
             "description": "Find the lowest-cost graph route using Dijkstra and a caller-provided edge cost.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 171
+            "line": 178
           },
           {
             "name": "find_province_route_dijkstra",
             "kind": "fn",
             "description": "Find the lowest-cost province route using Dijkstra and a caller-provided edge cost.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 232
+            "line": 239
           },
           {
             "name": "graph_connected_components",
             "kind": "fn",
             "description": "Return sorted connected components for the supplied graph node ids.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 242
+            "line": 249
           },
           {
             "name": "province_connected_components",
             "kind": "fn",
             "description": "Return sorted connected components for the supplied province ids.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 278
+            "line": 285
           },
           {
             "name": "graph_connected",
             "kind": "fn",
             "description": "Return true when two graph node ids are connected by adjacency.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 286
+            "line": 293
           },
           {
             "name": "provinces_connected",
             "kind": "fn",
             "description": "Return true when two province ids are connected by province adjacency.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 291
+            "line": 298
+          },
+          {
+            "name": "find_graph_path",
+            "kind": "fn",
+            "description": "Run A* across graph adjacency; return the cheapest path and its cost, or `None` when unreachable.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 303
           },
           {
             "name": "find_province_path",
             "kind": "fn",
-            "description": "Run A\\* across province adjacency; return the cheapest path and its cost, or `None` when unreachable.",
+            "description": "Run A* across province adjacency; return the cheapest path and its cost, or `None` when unreachable.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 296
+            "line": 386
+          },
+          {
+            "name": "graph_reachable",
+            "kind": "fn",
+            "description": "Return all graph nodes reachable from `start` within `max_cost` as a node-id cost map.",
+            "file": "src/pathfind/graph_path.rs",
+            "line": 398
           },
           {
             "name": "province_reachable",
             "kind": "fn",
-            "description": "Return all provinces reachable from `start` within `max_cost` as a map of `province_id → cost`.",
+            "description": "Return all provinces reachable from `start` within `max_cost` as a province-id cost map.",
             "file": "src/pathfind/graph_path.rs",
-            "line": 379
+            "line": 455
           }
         ]
       },
@@ -15377,67 +15447,74 @@
         "source_file": "src/physics/world.rs",
         "items": [
           {
+            "name": "COLLISION_GROUP_COUNT",
+            "kind": "const",
+            "description": "Number of low-bit collision groups controlled by the world-level collision matrix.",
+            "file": "src/physics/world.rs",
+            "line": 32
+          },
+          {
             "name": "BodyContact",
             "kind": "struct",
             "description": "A pair of body ids that have started or are overlapping. # Fields - `body_a`: first body id. - `body_b`: second body id.",
             "file": "src/physics/world.rs",
-            "line": 83
+            "line": 86
           },
           {
             "name": "RaycastHit",
             "kind": "struct",
             "description": "The closest raycast intersection result. # Fields - `body_id`: body hit by the ray. - `point`: world-space hit point. - `normal`: outward hit normal. - `toi`: parametric distance along the cast.",
             "file": "src/physics/world.rs",
-            "line": 96
+            "line": 99
           },
           {
             "name": "ContactInfo",
             "kind": "struct",
             "description": "Contact information between two bodies. # Fields - `body_a`: first body id. - `body_b`: second body id. - `normal_x`: contact normal x component. - `normal_y`: contact normal y component. - `is_touching`: whether the bodies are currently touching.",
             "file": "src/physics/world.rs",
-            "line": 114
+            "line": 117
           },
           {
             "name": "PhysicsShapeSnapshot",
             "kind": "struct",
             "description": "Snapshot of a physics shape used for debug rendering. # Fields - `x`: world-space x center. - `y`: world-space y center. - `half_w`: half-width for box-like shapes. - `half_h`: half-height for box-like shapes. - `angle`: rotation in radians. - `is_static`: whether the source body is static. - `is_sleeping`: whether the source body is sleeping. - `is_sensor`: whether the source collider is a sensor. - `is_circle`: whether the shape should be rendered as a circle. - `hull_verts`: polygon hull vertices for non-rectangular shapes.",
             "file": "src/physics/world.rs",
-            "line": 138
+            "line": 141
           },
           {
             "name": "PhysicsQueryFilter",
             "kind": "struct",
-            "description": "Optional filters applied to physics spatial queries. # Fields - `layer`: optional query-side collision layer mask. - `mask`: optional query-side collision mask. - `include_sensors`: whether sensor colliders should be returned.",
+            "description": "Optional filters applied to physics spatial queries. # Fields - `layer`: optional query-side collision layer mask. - `mask`: optional query-side collision mask. - `groups`: optional 16-group query-side membership mask. - `include_sensors`: whether sensor colliders should be returned.",
             "file": "src/physics/world.rs",
-            "line": 166
+            "line": 170
           },
           {
             "name": "GravityVector",
             "kind": "struct",
             "description": "Additive directional gravity vector applied to matching dynamic bodies before the solver step. # Fields - `id`: stable gravity vector identifier. - `gx`: x acceleration in world units per second squared. - `gy`: y acceleration in world units per second squared. - `layer_mask`: body layer mask; bodies with `body.layer & layer_mask == 0` are skipped. - `enabled`: whether the vector participates in the next step.",
             "file": "src/physics/world.rs",
-            "line": 192
+            "line": 199
           },
           {
             "name": "PhysicsDiagnostics",
             "kind": "struct",
             "description": "Runtime diagnostics recorded by the physics world across steps and strict mutators. # Fields - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `last_bodies_scanned`: body slots examined during the most recent step. - `last_colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `last_zone_checks`: body-zone containment checks performed during the most recent step. - `last_contacts`: contact events emitted during the most recent step. - `last_synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 215
+            "line": 222
           },
           {
             "name": "PhysicsWorldStats",
             "kind": "struct",
             "description": "Lightweight world diagnostics for Lua/editor tooling. # Fields - `bodies`: active body count. - `body_slots`: total allocated body slots. - `colliders`: active collider count. - `joints`: active joint count. - `joint_slots`: total allocated joint slots. - `zones`: active zone count. - `gravity_vectors`: active additive gravity vector count. - `sleeping_bodies`: active bodies currently sleeping. - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `bodies_scanned`: body slots examined during the most recent step. - `colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `zone_checks`: body-zone containment checks performed during the most recent step. - `contacts`: contact events emitted during the most recent step. - `synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 252
+            "line": 259
           },
           {
             "name": "World",
             "kind": "struct",
-            "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
+            "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `collision_group_masks`: world-level 16-group collision matrix rows. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
             "file": "src/physics/world.rs",
-            "line": 339
+            "line": 347
           }
         ]
       },
@@ -23812,7 +23889,7 @@
         ]
       },
       "tilemap::large_map_renderer": {
-        "module_doc": "Owns chunk-oriented rendering support for tilemaps that are too large for one monolithic redraw strategy. Partitions the full grid into fixed chunks with dirty tracking so small edits trigger only local refresh work. Uses camera and viewport state to cull at chunk granularity before generating tile-oriented draw output. Supports per-tile mutation with automatic invalidation so edits stay localized across large-world scenes. Optionally reduces detail with zoom-aware logic to keep massive maps responsive during interactive viewing. Open this file when chunk invalidation, visible-chunk culling, or large-map redraw performance is wrong.",
+        "module_doc": "Owns chunk-oriented rendering support for tilemaps that are too large for one monolithic redraw strategy. Partitions the full grid into fixed chunks with dirty tracking so small edits trigger only local refresh work. Delegates camera viewport range math to `camera`, then uses that range for chunk-level tile output. Supports per-tile mutation with automatic invalidation so edits stay localized across large-world scenes. Optionally reduces detail with zoom-aware logic to keep massive maps responsive during interactive viewing. Open this file when chunk invalidation, visible-chunk culling, or large-map redraw performance is wrong.",
         "source_file": "src/tilemap/large_map_renderer.rs",
         "items": [
           {
@@ -23820,14 +23897,14 @@
             "kind": "struct",
             "description": "A single rendered chunk: a region of tile IDs with a dirty flag for incremental updates.",
             "file": "src/tilemap/large_map_renderer.rs",
-            "line": 12
+            "line": 14
           },
           {
             "name": "LargeMapRenderer",
             "kind": "struct",
             "description": "Stateful renderer context for maps too large to render in a single draw pass.",
             "file": "src/tilemap/large_map_renderer.rs",
-            "line": 24
+            "line": 26
           }
         ]
       },
@@ -24636,28 +24713,28 @@
             "kind": "enum",
             "description": "A typed binding value that can be pushed into widgets via `update_bindings`.",
             "file": "src/ui/context.rs",
-            "line": 58
+            "line": 60
           },
           {
             "name": "GuiEvent",
             "kind": "enum",
             "description": "An event emitted by a widget interaction and drained each frame by the Lua binding.",
             "file": "src/ui/context.rs",
-            "line": 68
+            "line": 70
           },
           {
             "name": "WidgetKind",
             "kind": "enum",
             "description": "Discriminated union of all concrete widget types stored in the flat `GuiContext::widgets` list.",
             "file": "src/ui/context.rs",
-            "line": 80
+            "line": 82
           },
           {
             "name": "GuiContext",
             "kind": "struct",
             "description": "Retained-mode GUI context owning all widgets, focus state, animations, drag state, and event queue.",
             "file": "src/ui/context.rs",
-            "line": 278
+            "line": 283
           }
         ]
       },
@@ -24923,25 +25000,53 @@
             "line": 699
           },
           {
+            "name": "PropertyValueKind",
+            "kind": "enum",
+            "description": "Predefined editor kind for one row in a `PropertyWidget`.",
+            "file": "src/ui/extras.rs",
+            "line": 783
+          },
+          {
+            "name": "PropertyRow",
+            "kind": "struct",
+            "description": "One name/value row inside a property group.",
+            "file": "src/ui/extras.rs",
+            "line": 820
+          },
+          {
+            "name": "PropertyGroup",
+            "kind": "struct",
+            "description": "Collapsible group of property rows inside a `PropertyWidget`.",
+            "file": "src/ui/extras.rs",
+            "line": 850
+          },
+          {
+            "name": "PropertyWidget",
+            "kind": "struct",
+            "description": "Inspector-style grouped property list with a fixed name column and value editors.",
+            "file": "src/ui/extras.rs",
+            "line": 870
+          },
+          {
             "name": "ImageWidget",
             "kind": "struct",
             "description": "Static image display widget with configurable scale mode and tint.",
             "file": "src/ui/extras.rs",
-            "line": 783
+            "line": 939
           },
           {
             "name": "Badge",
             "kind": "struct",
             "description": "Numeric count badge overlay shown on top of another widget.",
             "file": "src/ui/extras.rs",
-            "line": 809
+            "line": 965
           },
           {
             "name": "CustomWidget",
             "kind": "struct",
             "description": "Fully user-controlled widget with no built-in drawing logic; callers supply all rendering via callbacks.",
             "file": "src/ui/extras.rs",
-            "line": 841
+            "line": 997
           }
         ]
       },
@@ -25012,39 +25117,53 @@
             "line": 19
           },
           {
+            "name": "PropertyRowDef",
+            "kind": "struct",
+            "description": "Declarative property row loaded into a `PropertyWidget`.",
+            "file": "src/ui/layout_loader.rs",
+            "line": 29
+          },
+          {
+            "name": "PropertyGroupDef",
+            "kind": "struct",
+            "description": "Declarative collapsible property group loaded into a `PropertyWidget`.",
+            "file": "src/ui/layout_loader.rs",
+            "line": 43
+          },
+          {
             "name": "WidgetDef",
             "kind": "struct",
             "description": "Flat description of a single widget produced by TOML deserialisation; children are nested inline.",
             "file": "src/ui/layout_loader.rs",
-            "line": 29
+            "line": 53
           },
           {
             "name": "LayoutDef",
             "kind": "struct",
             "description": "Top-level TOML layout definition containing an optional resolution hint and the root widget tree.",
             "file": "src/ui/layout_loader.rs",
-            "line": 121
+            "line": 153
           },
           {
             "name": "load_layout_def",
             "kind": "fn",
             "description": "Recursively instantiate `def` and all its `children` into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 128
+            "line": 160
           },
           {
             "name": "load_layout_toml",
             "kind": "fn",
             "description": "Parse `toml_src` into a `LayoutDef` and load it into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 279
+            "line": 311
           },
           {
             "name": "render_to_image",
             "kind": "fn",
             "description": "Run the engine UI rasteriser on `ctx` at the given resolution and save the PNG to `path`.",
             "file": "src/ui/layout_loader.rs",
-            "line": 285
+            "line": 317
           }
         ]
       },
@@ -25120,7 +25239,7 @@
             "kind": "mod",
             "description": "TOML-based declarative layout loader and image renderer.",
             "file": "src/ui/mod.rs",
-            "line": 49
+            "line": 50
           }
         ]
       },
@@ -25140,14 +25259,14 @@
             "kind": "fn",
             "description": "Push a scissor rect onto the stack, intersecting with the current topmost scissor.",
             "file": "src/ui/render.rs",
-            "line": 1355
+            "line": 1376
           },
           {
             "name": "pop_scissor",
             "kind": "fn",
             "description": "Pop the topmost scissor rect and restore the previous one (or disable scissor if stack is empty).",
             "file": "src/ui/render.rs",
-            "line": 1376
+            "line": 1397
           }
         ]
       },
@@ -25215,28 +25334,28 @@
             "kind": "enum",
             "description": "Easing function for property animations.",
             "file": "src/ui/widget.rs",
-            "line": 414
+            "line": 421
           },
           {
             "name": "WidgetTransitionKind",
             "kind": "enum",
             "description": "Which property a `WidgetTransition` animates.",
             "file": "src/ui/widget.rs",
-            "line": 495
+            "line": 502
           },
           {
             "name": "WidgetTransition",
             "kind": "struct",
             "description": "Active animation on a `WidgetBase`; evaluated each frame by `GuiContext::update`.",
             "file": "src/ui/widget.rs",
-            "line": 542
+            "line": 549
           },
           {
             "name": "WidgetBase",
             "kind": "struct",
             "description": "Shared layout, identity, and state fields embedded in every concrete widget struct.",
             "file": "src/ui/widget.rs",
-            "line": 623
+            "line": 630
           }
         ]
       },

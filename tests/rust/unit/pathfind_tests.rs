@@ -156,11 +156,12 @@ mod async_pool_tests {
 
 mod graph_path_tests {
     use lurek2d::pathfind::{
-        build_graph_adjacency_map, build_province_adjacency_map, find_graph_route_bfs,
-        find_graph_route_dijkstra, find_province_route_bfs, find_province_route_dijkstra,
-        graph_connected, graph_connected_components, province_connected_components,
-        provinces_connected,
+        build_graph_adjacency_map, build_province_adjacency_map, find_graph_path,
+        find_graph_route_bfs, find_graph_route_dijkstra, find_province_route_bfs,
+        find_province_route_dijkstra, graph_connected, graph_connected_components, graph_reachable,
+        province_connected_components, provinces_connected, GraphCostFn,
     };
+    use std::collections::{HashMap, HashSet};
 
     fn sample_adjacency() -> std::collections::HashMap<u32, Vec<u32>> {
         build_province_adjacency_map(&[(1, 2), (2, 3), (1, 4), (4, 3), (9, 10), (0, 11)])
@@ -229,6 +230,23 @@ mod graph_path_tests {
         assert_eq!(components, vec![vec![7, 8, 9], vec![10], vec![20, 21]]);
         assert!(graph_connected(&adjacency, 7, 9));
         assert!(!graph_connected(&adjacency, 7, 20));
+    }
+
+    #[test]
+    fn generic_graph_path_and_reachable_use_graph_owned_names() {
+        let adjacency = build_graph_adjacency_map(&[(1, 2), (2, 3), (1, 3)], false);
+        let centroids = HashMap::from([(1, (0.0, 0.0)), (2, (1.0, 0.0)), (3, (2.0, 0.0))]);
+        let edge_tags = HashMap::<(u32, u32), HashSet<String>>::new();
+        let mut cost_fn = GraphCostFn::new();
+        cost_fn.province_costs.insert(3, 5.0);
+
+        let path = find_graph_path(&adjacency, &centroids, &edge_tags, 1, 3, &cost_fn)
+            .expect("graph path should exist");
+        assert_eq!(path.provinces, vec![1, 3]);
+
+        let reachable = graph_reachable(&adjacency, &edge_tags, 1, 2.0, &GraphCostFn::new());
+        assert!(reachable.contains_key(&2));
+        assert!(reachable.contains_key(&3));
     }
 }
 

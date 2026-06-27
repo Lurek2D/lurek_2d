@@ -261,6 +261,7 @@ mod world_tests {
         let filter = PhysicsQueryFilter {
             layer: Some(0x1),
             mask: Some(0x2),
+            groups: None,
             include_sensors: false,
         };
         assert_eq!(
@@ -275,6 +276,111 @@ mod world_tests {
         assert_eq!(
             w.query_aabb_filtered(-10.0, -10.0, 60.0, 20.0, with_sensors),
             vec![solid_id.0, sensor_id.0]
+        );
+    }
+
+    #[test]
+    fn collision_group_matrix_disables_one_pair_and_preserves_others() {
+        let mut w = World::new(0.0, 0.0);
+        let a = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        let b = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Static));
+        let c = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        w.try_set_body_collision_group(a.0, 0).unwrap();
+        w.try_set_body_collision_group(b.0, 1).unwrap();
+        w.try_set_body_collision_group(c.0, 2).unwrap();
+
+        w.step(1.0 / 60.0);
+        let default_pairs: HashSet<_> = w
+            .get_begin_contact_events()
+            .iter()
+            .map(|&(left, right)| {
+                if left < right {
+                    (left, right)
+                } else {
+                    (right, left)
+                }
+            })
+            .collect();
+        assert!(default_pairs.contains(&(a.0, b.0)));
+        assert!(default_pairs.contains(&(b.0, c.0)));
+
+        w.clear();
+        let a = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        let b = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Static));
+        let c = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        w.try_set_body_collision_group(a.0, 0).unwrap();
+        w.try_set_body_collision_group(b.0, 1).unwrap();
+        w.try_set_body_collision_group(c.0, 2).unwrap();
+        w.try_set_collision_pair(0, 1, false).unwrap();
+
+        w.step(1.0 / 60.0);
+        let filtered_pairs: HashSet<_> = w
+            .get_begin_contact_events()
+            .iter()
+            .map(|&(left, right)| {
+                if left < right {
+                    (left, right)
+                } else {
+                    (right, left)
+                }
+            })
+            .collect();
+        assert!(!filtered_pairs.contains(&(a.0, b.0)));
+        assert!(filtered_pairs.contains(&(b.0, c.0)));
+    }
+
+    #[test]
+    fn collision_group_matrix_refreshes_extra_fixtures_and_queries() {
+        let mut w = World::new(0.0, 0.0);
+        let body = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Static));
+        w.add_fixture(
+            body.0,
+            Shape::Rect {
+                width: 10.0,
+                height: 10.0,
+            },
+            1.0,
+            0.5,
+            0.0,
+            false,
+        );
+        w.try_set_body_collision_group(body.0, 1).unwrap();
+        w.step(1.0 / 60.0);
+
+        let group_zero_query = PhysicsQueryFilter {
+            groups: Some(0x1),
+            ..PhysicsQueryFilter::default()
+        };
+        assert_eq!(
+            w.query_aabb_filtered(-6.0, -6.0, 12.0, 12.0, group_zero_query),
+            vec![body.0]
+        );
+
+        w.try_set_collision_pair(0, 1, false).unwrap();
+        w.step(1.0 / 60.0);
+        assert!(w
+            .query_aabb_filtered(-6.0, -6.0, 12.0, 12.0, group_zero_query)
+            .is_empty());
+        assert!(w
+            .raycast_filtered(-20.0, 0.0, 20.0, 0.0, group_zero_query)
+            .is_none());
+    }
+
+    #[test]
+    fn collision_group_validation_rejects_out_of_range_values() {
+        let mut w = World::new(0.0, 0.0);
+        let body = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Static));
+        assert!(w.try_set_body_collision_group(body.0, 16).is_err());
+        assert!(w.try_set_collision_pair(0, 16, false).is_err());
+        assert!(w.try_set_collision_group_mask(0, 0x1_0000).is_err());
+        assert_eq!(
+            w.try_get_collision_group_mask(16),
+            Err(PhysicsError::ValueOutOfRange {
+                field: "collision_group",
+                min: 0.0,
+                max: 15.0,
+                value: 16.0,
+            })
         );
     }
 

@@ -1,12 +1,12 @@
 //! Owns the region topology graph that stores regions, cached neighbors, centroids, and tagged region border edges.
 //! Provides insert, remove, mutation, and cache rebuild flows so topology lookups stay coherent after region edits.
-//! Delegates route and reachability queries to province graph pathfinding while translating results back to RegionId.
+//! Delegates route and reachability queries to graph pathfinding while translating results back to RegionId.
 //! Acts as the structural boundary between region geometry records and graph-style traversal used by globe gameplay.
 //! Also exposes region attrs and edge tags, keeping topology metadata near the adjacency data it qualifies.
 //! Open this owner when connectivity, border tags, or region path queries change without altering render policy.
 
 use crate::globe::types::{GlobeError, Region, RegionId, MAX_REGIONS};
-use crate::pathfind::graph_path::{find_province_path, ProvinceCostFn, ProvincePath};
+use crate::pathfind::graph_path::{find_graph_path, graph_reachable, GraphCostFn, GraphPath};
 use std::collections::{HashMap, HashSet};
 
 #[inline]
@@ -86,9 +86,9 @@ impl RegionGraph {
         &self,
         from: RegionId,
         to: RegionId,
-        cost_fn: &ProvinceCostFn,
-    ) -> Result<ProvincePath, GlobeError> {
-        find_province_path(
+        cost_fn: &GraphCostFn,
+    ) -> Result<GraphPath, GlobeError> {
+        find_graph_path(
             &self.neighbors,
             &self.centroids,
             &self.edge_tags,
@@ -103,15 +103,9 @@ impl RegionGraph {
         &self,
         start: RegionId,
         max_cost: f64,
-        cost_fn: &ProvinceCostFn,
+        cost_fn: &GraphCostFn,
     ) -> HashMap<RegionId, f64> {
-        let raw = crate::pathfind::graph_path::province_reachable(
-            &self.neighbors,
-            &self.edge_tags,
-            start.0,
-            max_cost,
-            cost_fn,
-        );
+        let raw = graph_reachable(&self.neighbors, &self.edge_tags, start.0, max_cost, cost_fn);
         raw.into_iter().map(|(k, v)| (RegionId(k), v)).collect()
     }
     /// Return the cached neighbor slice for a region or an empty slice when missing.
@@ -187,13 +181,13 @@ impl RegionGraph {
         out
     }
     /// Find a region path with the default cost function.
-    pub fn find_path_default(&self, from: RegionId, to: RegionId) -> Option<ProvincePath> {
-        let cost_fn = ProvinceCostFn::new();
+    pub fn find_path_default(&self, from: RegionId, to: RegionId) -> Option<GraphPath> {
+        let cost_fn = GraphCostFn::new();
         self.find_path(from, to, &cost_fn).ok()
     }
     /// Return reachable regions with the default cost function.
     pub fn reachable_default(&self, start: RegionId, max_cost: f64) -> HashMap<RegionId, f64> {
-        let cost_fn = ProvinceCostFn::new();
+        let cost_fn = GraphCostFn::new();
         self.reachable(start, max_cost, &cost_fn)
     }
     /// Rebuild all cached adjacency and edge-tag data from the stored regions.

@@ -6,6 +6,7 @@
 
 - Centralized retained-mode UI context with arena storage, automatic layouts, and resolution scaling.
 - Rich control catalog featuring standard inputs, numeric steppers, combo selections, and visual containers.
+- Property inspector widget for grouped name/value rows with collapsible sections and predefined value editors.
 - Supports resizable window shells, modal dialog triggers, and nine-slice border-stretching layouts.
 - Declarative TOML layouts, semantic theme tokens, alpha-aware animations, and drag-and-drop event dispatching.
 - Integrates retained widgets, theme/layout flows, and headless screenshot exports.
@@ -16,7 +17,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `96` functions, `39` types, `346` methods
+- Lua API surface: `97` functions, `40` types, `358` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -27,8 +28,10 @@
 - This retained model matters because large interfaces are rarely redrawn from pure stateless logic. Text inputs need cursors and selection, lists need scroll position, windows need placement, trees need expansion state, and complex panels need to survive temporary data changes without resetting user intent.
 - Container widgets define the structural grammar of the module. Panels, windows, stacks, docks, split regions, scroll containers, frames, and nine-slice shells let projects assemble larger interface layouts from composable blocks rather than hand-managing every rectangle.
 - Basic controls sit on top of that structure as first-class runtime widgets. Buttons, labels, checkboxes, sliders, text boxes, radio groups, combo boxes, lists, tabs, steppers, toggles, and status displays all share the same identity, event, and style model.
+- Property widgets cover editor-style inspector panels where a script or TOML layout needs a left-hand property name, a right-hand value, predefined editor semantics such as text/number/bool/select/color, and collapsible groups that can hide advanced settings without rebuilding the widget tree.
 - The `extras` surface pushes the module past ordinary menus into more tool-like workflows by covering dialogs, menus, tree views, inspectors, status bars, toasts, overlays, and richer dashboard-oriented pieces that are common in internal tools and game editors.
 - Declarative layout loading from TOML is one of the most important user-facing capabilities because it means interface structure can be authored as content. Teams can describe screens in data, instantiate them into live widgets, and still use the same event, style, and binding behavior as hand-written UI.
+- For inspector-style tools, TOML can define property widget groups and rows directly, so configuration panels can live as content while Lua remains responsible for runtime value updates and callbacks.
 - Styling is not a thin afterthought. Themes, classes, semantic colors, spacing, typography, borders, fills, corner treatment, widget states, and transition-friendly variants all live inside one coherent theme system so several screens can share a recognizable visual language.
 - Layout calculation is another central responsibility. The module resolves requested size, parent constraints, alignment, padding, spacing, scrolling, overflow, clipping, stacking order, and viewport-aware placement into concrete geometry so widgets can be reasoned about structurally instead of geometrically line by line.
 - Scroll regions, nested containers, resizable panels, and dock-like arrangements are important examples of why layout belongs here: they require persistent bookkeeping and cross-widget coordination that would become brittle if each feature implemented its own layout rules.
@@ -267,6 +270,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newNinePatch() -> LNinePatch`: Creates a new nine-patch widget for scalable bordered images.
 - `lurek.ui.newPanel() -> LPanel`: Creates a new panel widget (container).
 - `lurek.ui.newProgressBar(min?, max?) -> LProgressBar`: Creates a new progress bar widget with min and max.
+- `lurek.ui.newPropertyWidget() -> LPropertyWidget`: Creates a new property inspector widget with collapsible groups and typed value rows.
 - `lurek.ui.newRadioButton(text?, group?) -> LRadioButton`: Creates a new radio button widget in a named group.
 - `lurek.ui.newScrollBar(vertical?) -> LScrollBar`: Creates a new scroll bar widget for content scrolling.
 - `lurek.ui.newScrollPanel() -> LScrollPanel`: Creates a new scrollable panel widget.
@@ -699,6 +703,29 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LProgressBar:getValue() -> number`: Returns the current value of this progress bar.
 - `LProgressBar:setRange(min, max) -> nil`: Sets the minimum and maximum bounds for this progress bar.
 - `LProgressBar:setValue(v) -> nil`: Sets the current fill value of this progress bar, clamped to its range.
+
+#### LPropertyWidget Type
+
+- Adds property-widget-specific methods to an inspector widget.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LPropertyWidget:addGroup(title, collapsed?) -> integer`: Adds a collapsible property group and returns its 1-based index.
+- `LPropertyWidget:addProperty(group, name, value, valueType?, options?, readOnly?) -> integer`: Adds a property row to a group.
+- `LPropertyWidget:getGroupCount() -> integer`: Returns the number of property groups.
+- `LPropertyWidget:getLabelWidth() -> number`: Returns the left label column width in pixels.
+- `LPropertyWidget:getPropertyCount(group) -> integer`: Returns the row count for a property group.
+- `LPropertyWidget:getPropertyOptions(name) -> table`: Returns the select options of the first property with `name`.
+- `LPropertyWidget:getPropertyType(name) -> string`: Returns the canonical editor type of the first property with `name`.
+- `LPropertyWidget:getPropertyValue(name) -> string`: Returns the stringified value of the first property with `name`.
+- `LPropertyWidget:isGroupCollapsed(group) -> boolean`: Returns whether a property group is collapsed.
+- `LPropertyWidget:setLabelWidth(width) -> nil`: Sets the left label column width in pixels.
+- `LPropertyWidget:setPropertyValue(name, value) -> boolean`: Updates the first property with `name`.
+- `LPropertyWidget:toggleGroup(group) -> boolean`: Toggles a property group collapsed/expanded state.
 
 #### LRadioButton Type
 
@@ -1145,6 +1172,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 | Current artifact | `tests/artifacts/current/ui/popup_widget_toast.png` |
 | Current artifact | `tests/artifacts/current/ui/popup_widget_tooltip.png` |
 | Current artifact | `tests/artifacts/current/ui/popup_widget_window.png` |
+| Current artifact | `tests/artifacts/current/ui/property_widget_inspector.png` |
 | Current artifact | `tests/artifacts/current/ui/range_widgets_panel.png` |
 | Current artifact | `tests/artifacts/current/ui/selection_widgets_panel.png` |
 | Current artifact | `tests/artifacts/current/ui/structured_widget_accordion.png` |

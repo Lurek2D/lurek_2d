@@ -106,6 +106,101 @@ pub fn zoom_offset_at(
     )
 }
 
+/// Inclusive chunk-coordinate range visible through a camera viewport.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ChunkViewportRange {
+    /// Minimum visible chunk X coordinate.
+    pub min_x: i32,
+    /// Maximum visible chunk X coordinate.
+    pub max_x: i32,
+    /// Minimum visible chunk Y coordinate.
+    pub min_y: i32,
+    /// Maximum visible chunk Y coordinate.
+    pub max_y: i32,
+}
+
+impl ChunkViewportRange {
+    /// Return an empty range used when the camera cannot see any chunk.
+    pub fn empty() -> Self {
+        Self {
+            min_x: 0,
+            max_x: -1,
+            min_y: 0,
+            max_y: -1,
+        }
+    }
+
+    /// Return true when the range contains no chunk coordinates.
+    pub fn is_empty(&self) -> bool {
+        self.min_x > self.max_x || self.min_y > self.max_y
+    }
+}
+
+/// Compute the map chunk range visible through a centered camera viewport.
+#[allow(clippy::too_many_arguments)]
+pub fn camera_visible_chunk_range(
+    map_width_tiles: u32,
+    map_height_tiles: u32,
+    tile_width: u32,
+    tile_height: u32,
+    chunk_size_tiles: u32,
+    camera_x: f32,
+    camera_y: f32,
+    camera_zoom: f32,
+    viewport_width: f32,
+    viewport_height: f32,
+) -> ChunkViewportRange {
+    if map_width_tiles == 0
+        || map_height_tiles == 0
+        || tile_width == 0
+        || tile_height == 0
+        || chunk_size_tiles == 0
+    {
+        return ChunkViewportRange::empty();
+    }
+
+    let chunks_x = map_width_tiles.div_ceil(chunk_size_tiles) as i32;
+    let chunks_y = map_height_tiles.div_ceil(chunk_size_tiles) as i32;
+    if viewport_width <= 0.0 || viewport_height <= 0.0 {
+        return ChunkViewportRange {
+            min_x: 0,
+            max_x: chunks_x - 1,
+            min_y: 0,
+            max_y: chunks_y - 1,
+        };
+    }
+
+    let zoom = if camera_zoom.abs() > f32::EPSILON {
+        camera_zoom
+    } else {
+        1.0
+    };
+    let half_w = viewport_width * 0.5 / zoom.abs();
+    let half_h = viewport_height * 0.5 / zoom.abs();
+    let world_left = camera_x - half_w;
+    let world_right = camera_x + half_w;
+    let world_top = camera_y - half_h;
+    let world_bottom = camera_y + half_h;
+    let map_world_w = map_width_tiles as f32 * tile_width as f32;
+    let map_world_h = map_height_tiles as f32 * tile_height as f32;
+    if world_right < 0.0
+        || world_bottom < 0.0
+        || world_left > map_world_w
+        || world_top > map_world_h
+    {
+        return ChunkViewportRange::empty();
+    }
+
+    let chunk_w = chunk_size_tiles as f32 * tile_width as f32;
+    let chunk_h = chunk_size_tiles as f32 * tile_height as f32;
+    ChunkViewportRange {
+        min_x: ((world_left / chunk_w).floor() as i32).clamp(0, chunks_x - 1),
+        max_x: ((world_right / chunk_w).floor() as i32).clamp(0, chunks_x - 1),
+        min_y: ((world_top / chunk_h).floor() as i32).clamp(0, chunks_y - 1),
+        max_y: ((world_bottom / chunk_h).floor() as i32).clamp(0, chunks_y - 1),
+    }
+}
+
 /// Stores viewport scaling state used during window resize and conversion.
 pub struct Viewport {
     /// Stores virtual game width in logical units.

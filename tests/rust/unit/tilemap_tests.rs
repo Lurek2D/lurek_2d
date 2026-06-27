@@ -517,6 +517,34 @@ mod chunk_tests {
     }
 }
 
+mod large_map_renderer_tests {
+    use super::*;
+
+    fn make_renderer() -> LargeMapRenderer {
+        let mut renderer = LargeMapRenderer::new(16, 16);
+        renderer.set_chunk_size(8);
+        renderer.set_map_data(vec![1; 32 * 32], 32, 32);
+        renderer
+    }
+
+    #[test]
+    fn zero_sized_viewport_counts_all_cached_chunks() {
+        let renderer = make_renderer();
+
+        assert_eq!(renderer.get_total_chunks(), 16);
+        assert_eq!(renderer.get_visible_chunks(), 16);
+    }
+
+    #[test]
+    fn camera_view_outside_map_counts_no_visible_chunks() {
+        let mut renderer = make_renderer();
+        renderer.set_viewport(64.0, 64.0);
+        renderer.set_camera(-512.0, -512.0, 1.0);
+
+        assert_eq!(renderer.get_visible_chunks(), 0);
+    }
+}
+
 mod autotile_sheet_tests {
     use super::*;
     use lurek2d::tilemap::autotile_sheet::{AutoTileLayout, AutoTileSheet};

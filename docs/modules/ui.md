@@ -52,8 +52,10 @@ end
 - This retained model matters because large interfaces are rarely redrawn from pure stateless logic. Text inputs need cursors and selection, lists need scroll position, windows need placement, trees need expansion state, and complex panels need to survive temporary data changes without resetting user intent.
 - Container widgets define the structural grammar of the module. Panels, windows, stacks, docks, split regions, scroll containers, frames, and nine-slice shells let projects assemble larger interface layouts from composable blocks rather than hand-managing every rectangle.
 - Basic controls sit on top of that structure as first-class runtime widgets. Buttons, labels, checkboxes, sliders, text boxes, radio groups, combo boxes, lists, tabs, steppers, toggles, and status displays all share the same identity, event, and style model.
+- Property widgets cover editor-style inspector panels where a script or TOML layout needs a left-hand property name, a right-hand value, predefined editor semantics such as text/number/bool/select/color, and collapsible groups that can hide advanced settings without rebuilding the widget tree.
 - The `extras` surface pushes the module past ordinary menus into more tool-like workflows by covering dialogs, menus, tree views, inspectors, status bars, toasts, overlays, and richer dashboard-oriented pieces that are common in internal tools and game editors.
 - Declarative layout loading from TOML is one of the most important user-facing capabilities because it means interface structure can be authored as content. Teams can describe screens in data, instantiate them into live widgets, and still use the same event, style, and binding behavior as hand-written UI.
+- For inspector-style tools, TOML can define property widget groups and rows directly, so configuration panels can live as content while Lua remains responsible for runtime value updates and callbacks.
 - Styling is not a thin afterthought. Themes, classes, semantic colors, spacing, typography, borders, fills, corner treatment, widget states, and transition-friendly variants all live inside one coherent theme system so several screens can share a recognizable visual language.
 - Layout calculation is another central responsibility. The module resolves requested size, parent constraints, alignment, padding, spacing, scrolling, overflow, clipping, stacking order, and viewport-aware placement into concrete geometry so widgets can be reasoned about structurally instead of geometrically line by line.
 - Scroll regions, nested containers, resizable panels, and dock-like arrangements are important examples of why layout belongs here: they require persistent bookkeeping and cross-widget coordination that would become brittle if each feature implemented its own layout rules.
@@ -2498,6 +2500,44 @@ end
 
 ---
 
+### `lurek.ui.newPropertyWidget`
+
+Creates a new property inspector widget with collapsible groups and typed value rows.
+
+```lua
+lurek.ui.newPropertyWidget()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LPropertyWidget](#lpropertywidget) | The new property widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    props:setPosition(16, 16)
+    props:setSize(320, 220)
+    props:setLabelWidth(132)
+    local group = props:addGroup("Video System", false)
+    props:addProperty(group, "Resolution", "UHD - 2160p", "select", { "HD", "UHD - 2160p" })
+    example_print_log("property widget type = " .. props:type())
+end
+```
+
+---
+
 ### `lurek.ui.newRadioButton`
 
 Creates a new radio button widget in a named group.
@@ -4050,6 +4090,7 @@ end
 - [LNinePatch](#lninepatch)
 - [LPanel](#lpanel)
 - [LProgressBar](#lprogressbar)
+- [LPropertyWidget](#lpropertywidget)
 - [LRadioButton](#lradiobutton)
 - [LScrollBar](#lscrollbar)
 - [LScrollPanel](#lscrollpanel)
@@ -11375,6 +11416,521 @@ do
     example_print_log("progress=" .. pb:getProgress())
     pb:setRange(0, 200)
     example_print_log("max_after=" .. pb:getMax())
+end
+```
+
+---
+
+## LPropertyWidget
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LPropertyWidget:addGroup`
+
+Adds a collapsible property group and returns its 1-based index.
+
+```lua
+LPropertyWidget:addGroup(title, collapsed)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `title` | string | The group title. |
+| `collapsed?` | boolean | Whether the group starts collapsed. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The 1-based group index. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    props:setSize(280, 180)
+    local video = props:addGroup("Video", false)
+    local audio = props:addGroup("Audio", true)
+    props:addProperty(video, "Bits", 10, "number")
+    props:addProperty(audio, "Enable Audio", true, "bool")
+    example_print_log("groups = " .. video .. "," .. audio)
+end
+```
+
+---
+
+#### `LPropertyWidget:addProperty`
+
+Adds a property row to a group.
+
+```lua
+LPropertyWidget:addProperty(group, name, value, valueType, options, readOnly)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | The 1-based group index. |
+| `name` | string | The property label. |
+| `value` | any | Scalar value to display. |
+| `valueType?` | string | `text`, `number`, `bool`, `select`, or `color`. |
+| `options?` | table | Select options for `valueType = "select"`. |
+| `readOnly?` | boolean | Whether the row is read-only. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The 1-based row index in the group, or 0 on failure. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Audio Settings", false)
+    local row = props:addProperty(group, "Audio Channels", "2 Channels", "select", { "2 Channels", "8 Channels" })
+    props:addProperty(group, "Delay DVE", 4, "number")
+    props:addProperty(group, "Enable Audio", true, "bool")
+    example_print_log("added row = " .. row)
+end
+```
+
+---
+
+#### `LPropertyWidget:getGroupCount`
+
+Returns the number of property groups.
+
+```lua
+LPropertyWidget:getGroupCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The group count. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    props:addGroup("Video", false)
+    props:addGroup("Audio", false)
+    props:addGroup("Control", true)
+    local count = props:getGroupCount()
+    props:setSize(300, 160)
+    example_print_log("property groups = " .. count)
+end
+```
+
+---
+
+#### `LPropertyWidget:getLabelWidth`
+
+Returns the left label column width in pixels.
+
+```lua
+LPropertyWidget:getLabelWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local before = props:getLabelWidth()
+    props:setLabelWidth(120)
+    local after = props:getLabelWidth()
+    props:addGroup("Columns", false)
+    example_print_log("label width before=" .. before .. " after=" .. after)
+end
+```
+
+---
+
+#### `LPropertyWidget:getPropertyCount`
+
+Returns the row count for a property group.
+
+```lua
+LPropertyWidget:getPropertyCount(group)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | The 1-based group index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The property row count. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Video", false)
+    props:addProperty(group, "Contains Alpha", false, "bool")
+    props:addProperty(group, "Delay DVE", 1, "number")
+    local count = props:getPropertyCount(group)
+    example_print_log("property rows = " .. count)
+end
+```
+
+---
+
+#### `LPropertyWidget:getPropertyOptions`
+
+Returns the select options of the first property with `name`.
+
+```lua
+LPropertyWidget:getPropertyOptions(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Property name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of option strings. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Video System", false)
+    props:addProperty(group, "Resolution", "UHD - 2160p", "select", { "HD - 1080p", "UHD - 2160p" })
+    local options = props:getPropertyOptions("Resolution")
+    local first = options[1] or ""
+    example_print_log("first option = " .. first)
+end
+```
+
+---
+
+#### `LPropertyWidget:getPropertyType`
+
+Returns the canonical editor type of the first property with `name`.
+
+```lua
+LPropertyWidget:getPropertyType(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Property name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The editor type, or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Output", false)
+    props:addProperty(group, "Enable Audio", true, "boolean")
+    props:addProperty(group, "Source Connector", "SDI IN A", "select", { "SDI IN A", "HDMI" })
+    local value_type = props:getPropertyType("Enable Audio")
+    example_print_log("type = " .. tostring(value_type))
+end
+```
+
+---
+
+#### `LPropertyWidget:getPropertyValue`
+
+Returns the stringified value of the first property with `name`.
+
+```lua
+LPropertyWidget:getPropertyValue(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Property name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The value text, or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Colorimetry", false)
+    props:addProperty(group, "Colorimetry", "Rec. 709", "select", { "Rec. 709", "P3" })
+    props:addProperty(group, "Tint", "#55AAFF", "color")
+    local value = props:getPropertyValue("Colorimetry")
+    example_print_log("colorimetry = " .. tostring(value))
+end
+```
+
+---
+
+#### `LPropertyWidget:isGroupCollapsed`
+
+Returns whether a property group is collapsed.
+
+```lua
+LPropertyWidget:isGroupCollapsed(group)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | The 1-based group index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when collapsed, or nil when the index is invalid. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Key Settings", true)
+    props:addProperty(group, "Invert Luma", false, "bool")
+    local collapsed = props:isGroupCollapsed(group)
+    props:setSize(260, 120)
+    example_print_log("key collapsed = " .. tostring(collapsed))
+end
+```
+
+---
+
+#### `LPropertyWidget:setLabelWidth`
+
+Sets the left label column width in pixels.
+
+```lua
+LPropertyWidget:setLabelWidth(width)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Width in pixels; clamped to at least 1. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    props:setLabelWidth(150)
+    props:setSize(340, 180)
+    local group = props:addGroup("Inspector", false)
+    props:addProperty(group, "Name Column", "150 px", "text")
+    example_print_log("label width = " .. props:getLabelWidth())
+end
+```
+
+---
+
+#### `LPropertyWidget:setPropertyValue`
+
+Updates the first property with `name`.
+
+```lua
+LPropertyWidget:setPropertyValue(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Property name. |
+| `value` | any | Scalar value to display. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a row changed. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("VBI Settings", false)
+    props:addProperty(group, "Delay VBI", 4, "number")
+    local changed = props:setPropertyValue("Delay VBI", 14)
+    local value = props:getPropertyValue("Delay VBI")
+    example_print_log("vbi changed=" .. tostring(changed) .. " value=" .. tostring(value))
+end
+```
+
+---
+
+#### `LPropertyWidget:toggleGroup`
+
+Toggles a property group collapsed/expanded state.
+
+```lua
+LPropertyWidget:toggleGroup(group)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | The 1-based group index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | The new collapsed state, or nil when the index is invalid. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local props = lurek.ui.newPropertyWidget()
+    local group = props:addGroup("Output Settings", false)
+    props:addProperty(group, "Source Connector", "SDI IN A", "select", { "SDI IN A", "HDMI" })
+    local collapsed = props:toggleGroup(group)
+    props:setSize(320, 120)
+    example_print_log("collapsed = " .. tostring(collapsed))
 end
 ```
 

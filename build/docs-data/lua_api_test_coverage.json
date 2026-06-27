@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-26T14:20:47.337323+00:00",
+    "generated": "2026-06-26T21:57:37.586425+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6289,
-    "marker_covered": 6257,
+    "total_api_functions": 6331,
+    "marker_covered": 6306,
     "describe_covered": 152,
     "describe_coverage_pct": 2.4,
-    "heuristic_covered": 7,
-    "total_covered": 6289,
+    "heuristic_covered": 0,
+    "total_covered": 6331,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -1039,11 +1039,11 @@
       ]
     },
     "ai": {
-      "total": 211,
-      "marker_covered": 211,
+      "total": 233,
+      "marker_covered": 233,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 211,
+      "covered": 233,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -1217,6 +1217,24 @@
         },
         {
           "lua_name": "lurek.ai.newTraitProfile",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ai.newTraitArchetypes",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ai.newDecisionBiasSet",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -1496,6 +1514,60 @@
         },
         {
           "lua_name": "LBot:setCustomModel",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBot:setTraitProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBot:getTraitProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBot:hasTraitProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBot:setTrait",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBot:getTrait",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBot:addTraitModifier",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -1909,6 +1981,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LUtilityAI:evaluateWithProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LUtilityAI:getActionCount",
           "kind": "method",
           "marker_covered": true,
@@ -2314,6 +2395,105 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LTraitArchetypes:register",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTraitArchetypes:createProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTraitArchetypes:names",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTraitArchetypes:count",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTraitArchetypes:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTraitArchetypes:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDecisionBiasSet:addRule",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDecisionBiasSet:score",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDecisionBiasSet:ruleCount",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDecisionBiasSet:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LDecisionBiasSet:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LTraitProfile:set",
           "kind": "method",
           "marker_covered": true,
@@ -2369,6 +2549,24 @@
         },
         {
           "lua_name": "LTraitProfile:has",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTraitProfile:names",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTraitProfile:scoreDecision",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -34158,9 +34356,9 @@
     },
     "pathfind": {
       "total": 205,
-      "marker_covered": 198,
+      "marker_covered": 205,
       "describe_covered": 0,
-      "heuristic_covered": 7,
+      "heuristic_covered": 0,
       "covered": 205,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
@@ -35083,63 +35281,63 @@
         {
           "lua_name": "LIsoGrid:setBlocked",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LIsoGrid:setCost",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LIsoGrid:isBlocked",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LIsoGrid:getCost",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LIsoGrid:findPath",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LIsoGrid:type",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
         {
           "lua_name": "LIsoGrid:typeOf",
           "kind": "method",
-          "marker_covered": false,
+          "marker_covered": true,
           "describe_covered": false,
-          "heuristic_covered": true,
+          "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
         },
@@ -38215,11 +38413,11 @@
       ]
     },
     "physics": {
-      "total": 211,
-      "marker_covered": 211,
+      "total": 218,
+      "marker_covered": 218,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 211,
+      "covered": 218,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -38466,6 +38664,51 @@
         },
         {
           "lua_name": "LWorld:resetWorld",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:setCollisionPair",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:getCollisionPair",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:setCollisionGroupMask",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:getCollisionGroupMask",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LWorld:resetCollisionGroups",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -39807,6 +40050,24 @@
         },
         {
           "lua_name": "LBody:setMask",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:getCollisionGroup",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LBody:setCollisionGroup",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -53278,11 +53539,11 @@
       ]
     },
     "ui": {
-      "total": 442,
-      "marker_covered": 442,
+      "total": 455,
+      "marker_covered": 455,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 442,
+      "covered": 455,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -53636,6 +53897,15 @@
         },
         {
           "lua_name": "lurek.ui.newTable",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newPropertyWidget",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -57200,6 +57470,114 @@
         },
         {
           "lua_name": "LGuiTable:setOnSelect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:addGroup",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:getGroupCount",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:toggleGroup",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:isGroupCollapsed",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:addProperty",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:getPropertyCount",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:getPropertyValue",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:setPropertyValue",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:getPropertyType",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:getPropertyOptions",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:setLabelWidth",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPropertyWidget:getLabelWidth",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

@@ -430,6 +430,36 @@ describe("Evidence: lurek.ui layouts and widgets", function()
             lurek.ui.addToast(toast)
         end)
     end)
+    -- Does: Runs "property widget inspector scene" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose collapsible groups, left-side property names, right-side typed values, select arrows, boolean checks, and color swatches produced by lurek.ui.newPropertyWidget.
+    -- Artifact: tests/artifacts/current/ui/property_widget_inspector.png
+    -- Why: This is meaningful only if the visible inspector comes from the retained property widget rather than hand-drawn evidence plumbing.
+
+    it("PNG: property widget inspector scene", function()
+        save_scene("property_widget_inspector.png", 420, 360, function()
+            local root = lurek.ui.getRoot()
+            local props = attach(root, place(lurek.ui.newPropertyWidget(), 20, 20, 380, 320, 20))
+            props:setLabelWidth(200)
+
+            local video = props:addGroup("Video System", false)
+            props:addProperty(video, "Resolution", "UHD - 2160p", "select", { "HD - 1080p", "UHD - 2160p" })
+            props:addProperty(video, "Colorimetry", "Rec. 709", "select", { "Rec. 601", "Rec. 709" })
+            props:addProperty(video, "Bits Per Channel", 10, "number")
+
+            local settings = props:addGroup("Video Settings", false)
+            props:addProperty(settings, "Contains Alpha", false, "bool")
+            props:addProperty(settings, "Delay DVE", 1, "number")
+            props:addProperty(settings, "Overlay Tint", "#55AAFF", "color")
+
+            local audio = props:addGroup("Audio Settings", false)
+            props:addProperty(audio, "Enable Audio", true, "bool")
+            props:addProperty(audio, "Audio Channels", "2 Channels", "select", { "2 Channels", "8 Channels" })
+            props:addProperty(audio, "Notes", "Preview bus", "text")
+
+            local key = props:addGroup("Key Settings", true)
+            props:addProperty(key, "Chroma Clipping", false, "bool")
+        end)
+    end)
     -- Does: Runs "structured data widget scenes" and turns the owner-module result into inspectable artifacts.
     -- Shows: The artifacts should expose the behavior produced by lurek.ui.newAccordion, lurek.ui.newTreeView, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/ui/structured_widget_accordion.png, tests/artifacts/current/ui/structured_widget_color_picker.png, tests/artifacts/current/ui/structured_widget_custom_surface.png, tests/artifacts/current/ui/structured_widget_table.png, tests/artifacts/current/ui/structured_widget_tree_view.png

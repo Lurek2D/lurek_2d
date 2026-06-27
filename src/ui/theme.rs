@@ -1152,6 +1152,23 @@ impl Theme {
             ),
         );
         t.set_style(
+            WidgetType::PropertyWidget,
+            WidgetState::Normal,
+            mk(
+                [0.11, 0.12, 0.15, 1.0],
+                [0.86, 0.88, 0.92, 1.0],
+                [0.30, 0.32, 0.38, 1.0],
+                1.0,
+                2.0,
+                12.0,
+                none_shadow,
+                [0.0, 0.0],
+                0.0,
+                None,
+                "left",
+            ),
+        );
+        t.set_style(
             WidgetType::Custom,
             WidgetState::Normal,
             mk(

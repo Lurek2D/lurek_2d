@@ -400,6 +400,24 @@ describe("body userdata methods", function()
         expect_equal(3, body:getLayer())
     end)
 
+    -- @covers LBody:getCollisionGroup
+    it("getCollisionGroup returns a single 16-way collision group", function()
+        local body = new_dynamic_body(new_world(0, 0))
+        body:setCollisionGroup(3)
+        expect_equal(3, body:getCollisionGroup())
+        body:setLayer(0x3)
+        expect_nil(body:getCollisionGroup())
+    end)
+
+    -- @covers LBody:setCollisionGroup
+    it("setCollisionGroup assigns the body layer bit", function()
+        local body = new_dynamic_body(new_world(0, 0))
+        body:setCollisionGroup(3)
+        expect_equal(0x8, body:getLayer())
+        expect_equal(0xFFFF, body:getMask())
+        expect_equal(3, body:getCollisionGroup())
+    end)
+
     -- @covers LBody:getGravityScale
     it("getGravityScale returns a numeric scale", function()
         expect_type("number", new_circle_body(new_world(0, 0)):getGravityScale())
@@ -728,6 +746,83 @@ describe("world userdata methods", function()
         expect_equal(96, world:getMeter())
         expect_equal(12, world:getSolverIterations())
         expect_equal(0, world:getStats().zones)
+    end)
+
+    -- @covers LWorld:getCollisionPair
+    it("getCollisionPair reads symmetric collision group pairs", function()
+        local world = new_world(0, 0)
+        expect_true(world:getCollisionPair(0, 1))
+        world:setCollisionPair(0, 1, false)
+        expect_false(world:getCollisionPair(0, 1))
+        expect_false(world:getCollisionPair(1, 0))
+    end)
+
+    -- @covers LWorld:setCollisionGroupMask
+    it("setCollisionGroupMask changes one matrix row", function()
+        local world = new_world(0, 0)
+        world:setCollisionGroupMask(2, 0x4)
+        expect_equal(0x4, world:getCollisionGroupMask(2))
+        local ok, err = pcall(function()
+            world:setCollisionGroupMask(0, 0x10000)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "setCollisionGroupMask", 1, true) ~= nil)
+    end)
+
+    -- @covers LWorld:getCollisionGroupMask
+    it("getCollisionGroupMask returns the configured row", function()
+        local world = new_world(0, 0)
+        expect_equal(0xFFFF, world:getCollisionGroupMask(2))
+        world:setCollisionGroupMask(2, 0x4)
+        expect_equal(0x4, world:getCollisionGroupMask(2))
+    end)
+
+    -- @covers LWorld:resetCollisionGroups
+    it("resetCollisionGroups restores the full matrix", function()
+        local world = new_world(0, 0)
+        world:setCollisionPair(0, 1, false)
+        world:setCollisionGroupMask(2, 0x4)
+        world:resetCollisionGroups()
+        expect_true(world:getCollisionPair(0, 1))
+        expect_equal(0xFFFF, world:getCollisionGroupMask(2))
+    end)
+
+    -- @covers LWorld:setCollisionPair
+    it("collision group pairs filter world contacts", function()
+        local world = new_world(0, 0)
+        local a = world:newCircleBody(0, 0, 10, "dynamic")
+        local b = world:newCircleBody(0, 0, 10, "static")
+        local c = world:newCircleBody(0, 0, 10, "dynamic")
+        a:setCollisionGroup(0)
+        b:setCollisionGroup(1)
+        c:setCollisionGroup(2)
+        world:setCollisionPair(0, 1, false)
+        world:step(1 / 60)
+        local events = world:getBeginContactEvents()
+        local saw_ab = false
+        local saw_bc = false
+        for _, event in ipairs(events) do
+            local low = math.min(event.bodyA, event.bodyB)
+            local high = math.max(event.bodyA, event.bodyB)
+            if low == math.min(a:getId(), b:getId()) and high == math.max(a:getId(), b:getId()) then
+                saw_ab = true
+            end
+            if low == math.min(b:getId(), c:getId()) and high == math.max(b:getId(), c:getId()) then
+                saw_bc = true
+            end
+        end
+        expect_false(saw_ab)
+        expect_true(saw_bc)
+        local ok, err = pcall(function()
+            world:setCollisionPair(0, 16, false)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "setCollisionPair", 1, true) ~= nil)
+        ok, err = pcall(function()
+            world:setCollisionGroupMask(0, 0x10000)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "setCollisionGroupMask", 1, true) ~= nil)
     end)
 
     -- @covers LWorld:step
@@ -1186,6 +1281,14 @@ describe("world userdata methods", function()
         expect_type("table", world:queryAABB(0, 0, 8, 8))
         expect_equal(0, #world:queryAABB(0, 0, 8, 8, { layer = 0x1, mask = 0x4 }))
         expect_equal(1, #world:queryAABB(0, 0, 8, 8, { layer = 0x1, mask = 0x2 }))
+
+        body:setCollisionGroup(1)
+        world:step(1 / 60)
+        expect_equal(1, #world:queryAABB(0, 0, 8, 8, { group = 0 }))
+        world:setCollisionPair(0, 1, false)
+        world:step(1 / 60)
+        expect_equal(0, #world:queryAABB(0, 0, 8, 8, { group = 0 }))
+        expect_equal(1, #world:queryAABB(0, 0, 8, 8, { groups = 0x2 }))
     end)
 
     -- @covers LWorld:raycastClosest

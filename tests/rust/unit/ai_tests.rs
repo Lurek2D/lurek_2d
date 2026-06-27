@@ -1,5 +1,6 @@
 use lurek2d::ai::{
-    BTNode, BehaviorTree, GOAPPlanner, MCTSConfig, MCTSEngine, PlanFailureReason, UtilityAI,
+    AIWorld, BTNode, BehaviorTree, DecisionBiasSet, GOAPPlanner, MCTSConfig, MCTSEngine,
+    PlanFailureReason, TraitArchetypes, TraitProfile, UtilityAI,
 };
 use lurek2d::pathfind::SteeringManager;
 use mlua::Lua;
@@ -137,6 +138,87 @@ fn utility_ai_considerations_affect_score() {
     assert_eq!(ai.last_trace.chosen_action.as_deref(), Some("heal"));
     assert_eq!(ai.last_trace.actions[0].considerations.len(), 1);
     assert_eq!(ai.last_trace.actions[1].considerations.len(), 1);
+}
+
+#[test]
+fn trait_archetypes_create_builtin_and_custom_profiles() {
+    let mut archetypes = TraitArchetypes::with_builtins();
+    archetypes.register(
+        "naval_raider",
+        std::collections::HashMap::from([
+            ("aggression".to_string(), 0.8),
+            ("naval_focus".to_string(), 1.2),
+        ]),
+    );
+
+    let profile = TraitProfile::from_archetype(&archetypes, "naval_raider", 0.0).unwrap();
+
+    assert!(archetypes.count() >= 11);
+    assert_eq!(profile.archetype(), Some("naval_raider"));
+    near(profile.get("aggression"), 0.8);
+    near(profile.get("naval_focus"), 1.0);
+}
+
+#[test]
+fn decision_bias_set_scores_open_decision_keys() {
+    let mut profile = TraitProfile::new();
+    profile.set("aggression", 0.8);
+    profile.set("caution", 0.2);
+    let mut biases = DecisionBiasSet::new();
+    biases.add_rule("aggression", "attack", 0.4, "add");
+    biases.add_rule("caution", "attack", -0.2, "add");
+    biases.add_rule("aggression", "raid", 0.5, "multiply");
+
+    near(biases.score_decision(&profile, "attack", 0.4), 0.68);
+    near(biases.score_decision(&profile, "defend", 0.4), 0.4);
+    near(biases.score_decision(&profile, "raid", 0.5), 0.7);
+}
+
+#[test]
+fn ai_world_update_ticks_agent_trait_modifiers() {
+    let mut world = AIWorld::new();
+    world.add_agent("commander").unwrap();
+    let agent = world.agent_mut("commander").unwrap();
+    agent.trait_profile = Some(TraitProfile::new());
+    agent.trait_profile.as_mut().unwrap().set("caution", 0.4);
+    agent
+        .trait_profile
+        .as_mut()
+        .unwrap()
+        .add_modifier("caution", 0.5, Some(1.0), "panic");
+
+    world.update(2.0);
+
+    let profile = world
+        .agent("commander")
+        .unwrap()
+        .trait_profile
+        .as_ref()
+        .unwrap();
+    near(profile.get("caution"), 0.4);
+}
+
+#[test]
+fn utility_ai_profile_bias_can_change_winning_action() {
+    let lua = Lua::new();
+    let mut ai = UtilityAI::new();
+    let attack = lua
+        .create_registry_value(lua.create_function(|_, ()| Ok(0.4f64)).unwrap())
+        .unwrap();
+    let defend = lua
+        .create_registry_value(lua.create_function(|_, ()| Ok(0.5f64)).unwrap())
+        .unwrap();
+    ai.add_action("attack".to_string(), attack, 1.0).unwrap();
+    ai.add_action("defend".to_string(), defend, 1.0).unwrap();
+    let mut profile = TraitProfile::new();
+    profile.set("aggression", 0.8);
+    let mut biases = DecisionBiasSet::new();
+    biases.add_rule("aggression", "attack", 0.3, "add");
+
+    let chosen = ai.evaluate_with_profile(&lua, &profile, &biases).unwrap();
+
+    assert_eq!(chosen.as_deref(), Some("attack"));
+    assert_eq!(ai.last_trace.chosen_action.as_deref(), Some("attack"));
 }
 
 #[test]

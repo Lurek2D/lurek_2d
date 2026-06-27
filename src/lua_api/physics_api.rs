@@ -3,7 +3,7 @@
 use super::SharedState;
 use crate::image::ImageData;
 use crate::math::Vec2;
-use crate::physics::world::BodyContact;
+use crate::physics::world::{BodyContact, COLLISION_GROUP_COUNT};
 use crate::physics::{
     AlphaShapeOptions, Body, BodyId, BodyType, PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone,
     RaycastHit, Shape, TerrainMap, World,
@@ -29,6 +29,26 @@ fn parse_body_type(s: &str) -> LuaResult<BodyType> {
 
 fn physics_runtime_error(method: &str, message: impl std::fmt::Display) -> LuaError {
     LuaError::RuntimeError(format!("lurek.physics.{}: {}", method, message))
+}
+
+fn lua_collision_group(method: &str, group: i64) -> LuaResult<usize> {
+    if !(0..COLLISION_GROUP_COUNT as i64).contains(&group) {
+        return Err(physics_runtime_error(
+            method,
+            format!("collision group must be in 0..15, got {}", group),
+        ));
+    }
+    Ok(group as usize)
+}
+
+fn lua_collision_group_mask(method: &str, mask: u32) -> LuaResult<u32> {
+    if mask > 0xFFFF {
+        return Err(physics_runtime_error(
+            method,
+            format!("collision group mask must be in 0..0xFFFF, got {}", mask),
+        ));
+    }
+    Ok(mask)
 }
 
 /// Converts Lua shape constructor arguments into an engine physics shape definition.
@@ -76,7 +96,7 @@ fn raycast_hit_to_table<'lua>(lua: &'lua Lua, hit: &RaycastHit) -> LuaResult<Lua
 }
 
 /// Parses an optional Lua query-filter table.
-fn query_filter_from_lua(value: Option<LuaValue>) -> LuaResult<PhysicsQueryFilter> {
+fn query_filter_from_lua(method: &str, value: Option<LuaValue>) -> LuaResult<PhysicsQueryFilter> {
     let mut filter = PhysicsQueryFilter::default();
     let Some(value) = value else {
         return Ok(filter);
@@ -91,6 +111,26 @@ fn query_filter_from_lua(value: Option<LuaValue>) -> LuaResult<PhysicsQueryFilte
     };
     filter.layer = tbl.get::<_, Option<u32>>("layer")?;
     filter.mask = tbl.get::<_, Option<u32>>("mask")?;
+    let group = tbl.get::<_, Option<i64>>("group")?;
+    let groups = tbl.get::<_, Option<u32>>("groups")?;
+    if group.is_some() && groups.is_some() {
+        return Err(physics_runtime_error(
+            method,
+            "query filter accepts either group or groups, not both",
+        ));
+    }
+    if (group.is_some() || groups.is_some()) && filter.layer.is_some() {
+        return Err(physics_runtime_error(
+            method,
+            "query filter accepts either layer or group/groups, not both",
+        ));
+    }
+    if let Some(group) = group {
+        filter.groups = Some(1u32 << lua_collision_group(method, group)?);
+    }
+    if let Some(groups) = groups {
+        filter.groups = Some(lua_collision_group_mask(method, groups)?);
+    }
     if let Some(include_sensors) = tbl.get::<_, Option<bool>>("includeSensors")? {
         filter.include_sensors = include_sensors;
     }
@@ -414,6 +454,72 @@ impl LuaUserData for LuaWorld {
         /// This clears runtime state and restores constructor-owned settings such as gravity and solver configuration.
         methods.add_method("resetWorld", |_, this, ()| {
             this.world.borrow_mut().reset_world();
+            Ok(())
+        });
+        // -- setCollisionPair --
+        /// Enables or disables collisions between two world-level collision groups.
+        /// @param | groupA | integer | First collision group index, 0..15.
+        /// @param | groupB | integer | Second collision group index, 0..15.
+        /// @param | enabled | boolean | True to allow collisions, false to block them.
+        methods.add_method(
+            "setCollisionPair",
+            |_, this, (group_a, group_b, enabled): (i64, i64, bool)| {
+                let group_a = lua_collision_group("setCollisionPair", group_a)?;
+                let group_b = lua_collision_group("setCollisionPair", group_b)?;
+                this.world
+                    .borrow_mut()
+                    .try_set_collision_pair(group_a, group_b, enabled)
+                    .map_err(|err| physics_runtime_error("setCollisionPair", err))?;
+                Ok(())
+            },
+        );
+        // -- getCollisionPair --
+        /// Returns whether collisions are enabled between two world-level collision groups.
+        /// @param | groupA | integer | First collision group index, 0..15.
+        /// @param | groupB | integer | Second collision group index, 0..15.
+        /// @return | boolean | True when the pair is enabled in both matrix directions.
+        methods.add_method(
+            "getCollisionPair",
+            |_, this, (group_a, group_b): (i64, i64)| {
+                let group_a = lua_collision_group("getCollisionPair", group_a)?;
+                let group_b = lua_collision_group("getCollisionPair", group_b)?;
+                this.world
+                    .borrow()
+                    .try_get_collision_pair(group_a, group_b)
+                    .map_err(|err| physics_runtime_error("getCollisionPair", err))
+            },
+        );
+        // -- setCollisionGroupMask --
+        /// Replaces one row of the 16-group collision matrix.
+        /// @param | group | integer | Source collision group index, 0..15.
+        /// @param | mask | integer | Target group bitmask in 0..0xFFFF.
+        methods.add_method(
+            "setCollisionGroupMask",
+            |_, this, (group, mask): (i64, u32)| {
+                let group = lua_collision_group("setCollisionGroupMask", group)?;
+                let mask = lua_collision_group_mask("setCollisionGroupMask", mask)?;
+                this.world
+                    .borrow_mut()
+                    .try_set_collision_group_mask(group, mask)
+                    .map_err(|err| physics_runtime_error("setCollisionGroupMask", err))?;
+                Ok(())
+            },
+        );
+        // -- getCollisionGroupMask --
+        /// Returns one row of the 16-group collision matrix.
+        /// @param | group | integer | Source collision group index, 0..15.
+        /// @return | integer | Target group bitmask.
+        methods.add_method("getCollisionGroupMask", |_, this, group: i64| {
+            let group = lua_collision_group("getCollisionGroupMask", group)?;
+            this.world
+                .borrow()
+                .try_get_collision_group_mask(group)
+                .map_err(|err| physics_runtime_error("getCollisionGroupMask", err))
+        });
+        // -- resetCollisionGroups --
+        /// Restores all 16 collision groups so every group can collide with every other group.
+        methods.add_method("resetCollisionGroups", |_, this, ()| {
+            this.world.borrow_mut().reset_collision_groups();
             Ok(())
         });
         // -- getGravity --
@@ -1111,7 +1217,7 @@ impl LuaUserData for LuaWorld {
         /// @param | y1 | number | Ray origin Y.
         /// @param | x2 | number | Ray end X.
         /// @param | y2 | number | Ray end Y.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
         /// @return | table | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
         /// @field | bodyId | integer | BodyId.
         /// @field | x | number | X.
@@ -1125,7 +1231,7 @@ impl LuaUserData for LuaWorld {
             let y1 = required_f32(lua, &vals, 1, "y1")?;
             let x2 = required_f32(lua, &vals, 2, "x2")?;
             let y2 = required_f32(lua, &vals, 3, "y2")?;
-            let filter = query_filter_from_lua(vals.get(4).cloned())?;
+            let filter = query_filter_from_lua("raycast", vals.get(4).cloned())?;
             match this.world.borrow().raycast_filtered(x1, y1, x2, y2, filter) {
                 Some(hit) => Ok(LuaValue::Table(raycast_hit_to_table(lua, &hit)?)),
                 None => Ok(LuaValue::Nil),
@@ -1138,7 +1244,7 @@ impl LuaUserData for LuaWorld {
         /// @param | dx | number | Ray direction X (does not need to be normalized).
         /// @param | dy | number | Ray direction Y.
         /// @param | maxDist | number | Maximum ray travel distance.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
         /// @return | table | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
         /// @field | bodyId | integer | BodyId.
         /// @field | x | number | X.
@@ -1153,7 +1259,7 @@ impl LuaUserData for LuaWorld {
             let dx = required_f32(lua, &vals, 2, "dx")?;
             let dy = required_f32(lua, &vals, 3, "dy")?;
             let max_dist = required_f32(lua, &vals, 4, "maxDist")?;
-            let filter = query_filter_from_lua(vals.get(5).cloned())?;
+            let filter = query_filter_from_lua("raycastClosest", vals.get(5).cloned())?;
             match this
                 .world
                 .borrow()
@@ -1170,7 +1276,7 @@ impl LuaUserData for LuaWorld {
         /// @param | dx | number | Ray direction X.
         /// @param | dy | number | Ray direction Y.
         /// @param | maxDist | number | Maximum ray travel distance.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
         /// @return | table | Array of hit tables {bodyId, x, y, normalX, normalY, toi}.
         /// @field | bodyId | integer | BodyId.
         /// @field | x | number | X.
@@ -1185,7 +1291,7 @@ impl LuaUserData for LuaWorld {
             let dx = required_f32(lua, &vals, 2, "dx")?;
             let dy = required_f32(lua, &vals, 3, "dy")?;
             let max_dist = required_f32(lua, &vals, 4, "maxDist")?;
-            let filter = query_filter_from_lua(vals.get(5).cloned())?;
+            let filter = query_filter_from_lua("raycastAll", vals.get(5).cloned())?;
             let hits = this
                 .world
                 .borrow()
@@ -1202,7 +1308,7 @@ impl LuaUserData for LuaWorld {
         /// @param | y | number | Query rectangle top Y.
         /// @param | w | number | Query rectangle width.
         /// @param | h | number | Query rectangle height.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
         /// @return | integer[] | Body ID numbers found in the region.
         methods.add_method("queryAABB", |lua, this, args: LuaMultiValue| {
             let vals: Vec<LuaValue> = args.into_iter().collect();
@@ -1210,20 +1316,20 @@ impl LuaUserData for LuaWorld {
             let y = required_f32(lua, &vals, 1, "y")?;
             let w = required_f32(lua, &vals, 2, "w")?;
             let h = required_f32(lua, &vals, 3, "h")?;
-            let filter = query_filter_from_lua(vals.get(4).cloned())?;
+            let filter = query_filter_from_lua("queryAABB", vals.get(4).cloned())?;
             Ok(this.world.borrow().query_aabb_filtered(x, y, w, h, filter))
         });
         // -- getBodyAtPoint --
         /// Returns the body ID at a specific world point, or nil if no body is there.
         /// @param | x | number | Query point X.
         /// @param | y | number | Query point Y.
-        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
         /// @return | integer | Body ID at the point, or nil.
         methods.add_method("getBodyAtPoint", |lua, this, args: LuaMultiValue| {
             let vals: Vec<LuaValue> = args.into_iter().collect();
             let x = required_f32(lua, &vals, 0, "x")?;
             let y = required_f32(lua, &vals, 1, "y")?;
-            let filter = query_filter_from_lua(vals.get(2).cloned())?;
+            let filter = query_filter_from_lua("getBodyAtPoint", vals.get(2).cloned())?;
             Ok(this.world.borrow().get_body_at_point_filtered(x, y, filter))
         });
         // -- getCollisionEvents --
@@ -2197,10 +2303,7 @@ impl LuaUserData for LuaBody {
         /// Sets the body's collision layer bitmask (which layers this body belongs to).
         /// @param | layer | integer | Layer bitmask.
         methods.add_method("setLayer", |_, this, layer: u32| {
-            let mut w = this.world.borrow_mut();
-            if let Some(b) = w.get_body_mut(this.id.0) {
-                b.layer = layer;
-            }
+            this.world.borrow_mut().set_body_layer(this.id.0, layer);
             Ok(())
         });
         // -- getMask --
@@ -2214,10 +2317,24 @@ impl LuaUserData for LuaBody {
         /// Sets the body's collision mask (which layers this body can collide with).
         /// @param | mask | integer | Collision mask bitmask.
         methods.add_method("setMask", |_, this, mask: u32| {
-            let mut w = this.world.borrow_mut();
-            if let Some(b) = w.get_body_mut(this.id.0) {
-                b.mask = mask;
-            }
+            this.world.borrow_mut().set_body_mask(this.id.0, mask);
+            Ok(())
+        });
+        // -- getCollisionGroup --
+        /// Returns the single 0..15 collision group for this body, or nil for multi-group masks.
+        /// @return | integer? | Collision group index, or nil.
+        methods.add_method("getCollisionGroup", |_, this, ()| {
+            Ok(this.world.borrow().get_body_collision_group(this.id.0))
+        });
+        // -- setCollisionGroup --
+        /// Assigns the body to one collision group and opens its local mask to the 16 group bits.
+        /// @param | group | integer | Collision group index, 0..15.
+        methods.add_method("setCollisionGroup", |_, this, group: i64| {
+            let group = lua_collision_group("setCollisionGroup", group)?;
+            this.world
+                .borrow_mut()
+                .try_set_body_collision_group(this.id.0, group)
+                .map_err(|err| physics_runtime_error("setCollisionGroup", err))?;
             Ok(())
         });
         // -- applyImpulse --

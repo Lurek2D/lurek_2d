@@ -483,6 +483,22 @@ LBody:getAngularVelocity()
 
 ---
 
+#### `LBody:getCollisionGroup`
+
+Returns the single 0..15 collision group for this body, or nil for multi-group masks.
+
+```lua
+LBody:getCollisionGroup()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number? | Collision group index, or nil. |
+
+---
+
 #### `LBody:getFriction`
 
 Returns the body's friction coefficient.
@@ -866,6 +882,22 @@ LBody:setBullet(bullet)
 | Name | Type | Description |
 |------|------|-------------|
 | `bullet` | boolean | True to enable CCD. |
+
+---
+
+#### `LBody:setCollisionGroup`
+
+Assigns the body to one collision group and opens its local mask to the 16 group bits.
+
+```lua
+LBody:setCollisionGroup(group)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | Collision group index, 0..15. |
 
 ---
 
@@ -6520,7 +6552,7 @@ LWorld:getBodyAtPoint(x, y, filter)
 |------|------|-------------|
 | `x` | number | Query point X. |
 | `y` | number | Query point Y. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -6686,6 +6718,51 @@ LWorld:getCollisionEvents()
 | Type | Description |
 |------|-------------|
 | LWorldGetCollisionEventsResult | Array of collision event tables. |
+
+---
+
+#### `LWorld:getCollisionGroupMask`
+
+Returns one row of the 16-group collision matrix.
+
+```lua
+LWorld:getCollisionGroupMask(group)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | Source collision group index, 0..15. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Target group bitmask. |
+
+---
+
+#### `LWorld:getCollisionPair`
+
+Returns whether collisions are enabled between two world-level collision groups.
+
+```lua
+LWorld:getCollisionPair(groupA, groupB)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `groupA` | number | First collision group index, 0..15. |
+| `groupB` | number | Second collision group index, 0..15. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the pair is enabled in both matrix directions. |
 
 ---
 
@@ -7200,7 +7277,7 @@ LWorld:queryAABB(x, y, w, h, filter)
 | `y` | number | Query rectangle top Y. |
 | `w` | number | Query rectangle width. |
 | `h` | number | Query rectangle height. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -7226,7 +7303,7 @@ LWorld:raycast(x1, y1, x2, y2, filter)
 | `y1` | number | Ray origin Y. |
 | `x2` | number | Ray end X. |
 | `y2` | number | Ray end Y. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -7253,7 +7330,7 @@ LWorld:raycastAll(x, y, dx, dy, maxDist, filter)
 | `dx` | number | Ray direction X. |
 | `dy` | number | Ray direction Y. |
 | `maxDist` | number | Maximum ray travel distance. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -7280,7 +7357,7 @@ LWorld:raycastClosest(x, y, dx, dy, maxDist, filter)
 | `dx` | number | Ray direction X (does not need to be normalized). |
 | `dy` | number | Ray direction Y. |
 | `maxDist` | number | Maximum ray travel distance. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -7309,6 +7386,16 @@ LWorld:removeGravityVector(id)
 | Type | Description |
 |------|-------------|
 | boolean | True if an active vector was removed. |
+
+---
+
+#### `LWorld:resetCollisionGroups`
+
+Restores all 16 collision groups so every group can collide with every other group.
+
+```lua
+LWorld:resetCollisionGroups()
+```
 
 ---
 
@@ -7404,6 +7491,41 @@ LWorld:setBodyType(id, bodyType)
 |------|------|-------------|
 | `id` | number | The body ID. |
 | `bodyType` | string | New type: "static", "dynamic", "kinematic", or "sensor". |
+
+---
+
+#### `LWorld:setCollisionGroupMask`
+
+Replaces one row of the 16-group collision matrix.
+
+```lua
+LWorld:setCollisionGroupMask(group, mask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | Source collision group index, 0..15. |
+| `mask` | number | Target group bitmask in 0..0xFFFF. |
+
+---
+
+#### `LWorld:setCollisionPair`
+
+Enables or disables collisions between two world-level collision groups.
+
+```lua
+LWorld:setCollisionPair(groupA, groupB, enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `groupA` | number | First collision group index, 0..15. |
+| `groupB` | number | Second collision group index, 0..15. |
+| `enabled` | boolean | True to allow collisions, false to block them. |
 
 ---
 

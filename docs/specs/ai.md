@@ -16,7 +16,7 @@
 - Source path: `src/ai`
 - Binding: `src/lua_api/ai_api.rs`
 - Namespace: `lurek.ai`
-- Lua API surface: `27` functions, `20` types, `184` methods
+- Lua API surface: `29` functions, `22` types, `204` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -253,7 +253,7 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 - Owns the global AI world registry that stores agents, name lookup, and the shared blackboard inherited by new actors.
 - Provides add, remove, index, and mutable access helpers so population-level systems can manage agents coherently.
-- Advances all agents through one broad world pulse, integrating velocity into position inside the central owner.
+- Advances all agents through one broad world pulse, integrating velocity and per-agent support state inside the central owner.
 - Open this owner when registry integrity or world-wide update flow needs coordinated changes across agents.
 
 
@@ -269,6 +269,7 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `lurek.ai.newBlackboard() -> LAIBlackboard`: Creates an empty AI blackboard for typed local facts.
 - `lurek.ai.newCommandQueue() -> LCommandQueue`: Creates an empty command queue for callback-backed AI commands.
 - `lurek.ai.newCondition(callback) -> LBTNode`: Creates a behavior tree condition leaf backed by a Lua callback.
+- `lurek.ai.newDecisionBiasSet() -> LDecisionBiasSet`: Creates an empty set of rules that map profile traits onto named decision scores.
 - `lurek.ai.newDialogueAI() -> LDialogueAI`: Creates an empty dialogue selector for weighted topics and branches.
 - `lurek.ai.newEmotionModel() -> LEmotionModel`: Creates an empty emotion model for named decaying emotion values.
 - `lurek.ai.newGOAPPlanner() -> LGOAPPlanner`: Creates an empty GOAP planner for boolean world-state planning.
@@ -286,6 +287,7 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `lurek.ai.newStimulusWorld() -> LStimulusWorld`: Creates an empty stimulus world for visual and auditory stimulus records.
 - `lurek.ai.newStrategyAI(update_interval) -> LStrategyAI`: Creates a strategy AI that reevaluates goals on a fixed interval.
 - `lurek.ai.newSucceeder() -> LBTNode`: Creates a behavior tree succeeder decorator with an empty sequence child.
+- `lurek.ai.newTraitArchetypes() -> LTraitArchetypes`: Creates a trait archetype registry populated with engine-provided commander presets.
 - `lurek.ai.newTraitProfile() -> LTraitProfile`: Creates an empty trait profile with modifier support.
 - `lurek.ai.newUtilityAI() -> LUtilityAI`: Creates an empty utility AI action scorer.
 - `lurek.ai.newWorld() -> LAIWorld`: Creates an isolated AI world for agents, blackboards, and custom decision callbacks.
@@ -460,6 +462,7 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 ##### Methods
 
 - `LBot:addTag(tag) -> nil`: Adds a tag string to this agent when the agent still exists in its world.
+- `LBot:addTraitModifier(trait_name, delta, duration?, source) -> nil`: Adds a temporary or permanent modifier to one trait on this agent.
 - `LBot:getBlackboard() -> LAIBlackboard`: Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
 - `LBot:getDecisionModel() -> string`: Returns this agent's decision model name or the default model name for a missing agent.
 - `LBot:getMaxForce() -> number`: Returns this agent's maximum steering force or the default force for a missing agent.
@@ -467,8 +470,11 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LBot:getName() -> string`: Returns this agent's stable world name.
 - `LBot:getPosition() -> number, number`: Returns this agent's world position or the origin when the agent has been removed.
 - `LBot:getPriority() -> integer`: Returns this agent's integer priority or zero when the agent has been removed.
+- `LBot:getTrait(name) -> number`: Returns one effective trait value from this agent's profile.
+- `LBot:getTraitProfile() -> LuaValue`: Returns a snapshot copy of this agent's trait profile when one is assigned.
 - `LBot:getVelocity() -> number, number`: Returns this agent's velocity vector or zero velocity when the agent has been removed.
 - `LBot:hasTag(tag) -> boolean`: Returns whether this agent currently has the given tag.
+- `LBot:hasTraitProfile() -> boolean`: Returns whether this agent currently has an assigned trait profile.
 - `LBot:removeTag(tag) -> nil`: Removes a tag string from this agent when the agent still exists in its world.
 - `LBot:setCustomModel(callback) -> nil`: Installs a Lua callback as this agent's decision model and stores it in the callback registry.
 - `LBot:setDecisionModel(model) -> nil`: Sets this agent's built-in decision model from a string name when the name is recognized.
@@ -476,6 +482,8 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LBot:setMaxSpeed(v) -> nil`: Sets this agent's maximum movement speed when the agent still exists in its world.
 - `LBot:setPosition(x, y) -> nil`: Sets this agent's world position when the agent still exists in its world.
 - `LBot:setPriority(p) -> nil`: Sets this agent's integer priority when the agent still exists in its world.
+- `LBot:setTrait(name, value) -> nil`: Sets one trait on this agent, creating an empty profile first when needed.
+- `LBot:setTraitProfile(profile) -> nil`: Copies a trait profile onto this agent so future agent decisions can read commander personality values.
 - `LBot:setVelocity(x, y) -> nil`: Sets this agent's velocity vector when the agent still exists in its world.
 - `LBot:type() -> string`: Returns the Lua-visible type name for this agent handle.
 - `LBot:typeOf(name) -> boolean`: Returns whether this agent handle matches a supported type name.
@@ -501,6 +509,22 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LCommandQueue:replace(kind, callback, opts?) -> nil`: Replaces the queue contents with one command callback.
 - `LCommandQueue:type() -> string`: Returns the Lua-visible type name for this command queue handle.
 - `LCommandQueue:typeOf(name) -> boolean`: Returns whether this command queue handle matches a supported type name.
+
+#### LDecisionBiasSet Type
+
+- Lua handle for open-ended rules that map traits to action or goal score changes.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LDecisionBiasSet:addRule(trait_name, decision_key, weight, mode?) -> nil`: Adds one rule that adjusts a named decision score using one trait.
+- `LDecisionBiasSet:ruleCount() -> integer`: Returns the number of stored bias rules.
+- `LDecisionBiasSet:score(profile, decision_key, base_score) -> number`: Scores one decision using a profile and this bias set.
+- `LDecisionBiasSet:type() -> string`: Returns the Lua-visible type name for this decision bias handle.
+- `LDecisionBiasSet:typeOf(name) -> boolean`: Returns whether this decision bias handle matches a supported type name.
 
 #### LEmotionModel Type
 
@@ -680,6 +704,23 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LStrategyAI:typeOf(name) -> boolean`: Returns whether this strategy AI handle matches a supported type name.
 - `LStrategyAI:update(dt, scorer_fn) -> nil`: Advances strategy timing and scores goals when the update interval has elapsed.
 
+#### LTraitArchetypes Type
+
+- Lua handle for named trait archetypes used to create reusable AI personalities.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LTraitArchetypes:count() -> integer`: Returns the number of registered archetypes.
+- `LTraitArchetypes:createProfile(name, variance?) -> LuaValue`: Creates a trait profile from a registered archetype and optional deterministic variance.
+- `LTraitArchetypes:names() -> table`: Returns registered archetype names.
+- `LTraitArchetypes:register(name, traits) -> nil`: Registers or replaces one named archetype from a table of trait values.
+- `LTraitArchetypes:type() -> string`: Returns the Lua-visible type name for this archetype registry handle.
+- `LTraitArchetypes:typeOf(name) -> boolean`: Returns whether this archetype registry handle matches a supported type name.
+
 #### LTraitProfile Type
 
 - Lua handle for trait values with temporary modifiers and archetype lookup.
@@ -695,7 +736,9 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LTraitProfile:get(name) -> number`: Returns the current value of a named trait including active modifiers.
 - `LTraitProfile:getBase(name) -> number`: Returns the base value of a named trait without temporary modifiers.
 - `LTraitProfile:has(name) -> boolean`: Returns whether the profile has a named trait.
+- `LTraitProfile:names() -> table`: Returns this profile's trait names.
 - `LTraitProfile:removeModifiers(source) -> nil`: Removes all trait modifiers that match a source label.
+- `LTraitProfile:scoreDecision(biases, decision_key, base_score) -> number`: Scores one decision by applying a decision bias set to this profile.
 - `LTraitProfile:set(name, value) -> nil`: Sets the base value for a named trait.
 - `LTraitProfile:traitCount() -> integer`: Returns the number of traits stored in the profile.
 - `LTraitProfile:type() -> string`: Returns the Lua-visible type name for this trait profile handle.
@@ -715,6 +758,7 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LUtilityAI:addAction(name, scorer_fn, weight?) -> nil`: Adds an action scored by a Lua callback and optional momentum weight.
 - `LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1?, p2?, p3?, weight?) -> nil`: Adds a consideration scorer and response curve to an existing utility action.
 - `LUtilityAI:evaluate() -> LuaValue`: Evaluates all actions and returns the winning action name when one is available.
+- `LUtilityAI:evaluateWithProfile(profile, biases) -> LuaValue`: Evaluates all actions after applying trait-profile decision bias rules to each action score.
 - `LUtilityAI:getActionCount() -> integer`: Returns the number of actions registered in this utility AI.
 - `LUtilityAI:getLastAction() -> LuaValue`: Returns the last winning action name when evaluation has selected one.
 - `LUtilityAI:getLastTrace() -> table`: Returns the last structured utility evaluation trace.

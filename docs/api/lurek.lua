@@ -1874,6 +1874,10 @@ LBot = {}
 ---@class LCommandQueue
 LCommandQueue = {}
 
+--- Lua handle for open-ended rules that map traits to action or goal score changes.
+---@class LDecisionBiasSet
+LDecisionBiasSet = {}
+
 --- Lua handle for decaying named emotion intensities.
 ---@class LEmotionModel
 LEmotionModel = {}
@@ -1909,6 +1913,10 @@ LStimulusWorld = {}
 --- Lua handle for interval-based strategic goal selection.
 ---@class LStrategyAI
 LStrategyAI = {}
+
+--- Lua handle for named trait archetypes used to create reusable AI personalities.
+---@class LTraitArchetypes
+LTraitArchetypes = {}
 
 --- Lua handle for trait values with temporary modifiers and archetype lookup.
 ---@class LTraitProfile
@@ -3016,6 +3024,10 @@ LPanel = {}
 ---@class LProgressBar : LUiWidget
 LProgressBar = {}
 
+--- Adds property-widget-specific methods to an inspector widget.
+---@class LPropertyWidget : LUiWidget
+LPropertyWidget = {}
+
 --- Adds radio-button-specific methods to a radio button widget table.
 ---@class LRadioButton : LUiWidget
 LRadioButton = {}
@@ -3864,6 +3876,13 @@ function LBehaviorTree:typeOf(name) end
 ---@param tag string Tag name to insert into the agent tag set.
 function LBot:addTag(tag) end
 
+--- Adds a temporary or permanent modifier to one trait on this agent.
+---@param trait_name string Trait key affected by the modifier.
+---@param delta number Additive value applied while the modifier is active.
+---@param duration? number Modifier lifetime in seconds, or nil for permanent.
+---@param source string Source label used for later removal.
+function LBot:addTraitModifier(trait_name, delta, duration, source) end
+
 --- Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
 ---@return LAIBlackboard Blackboard handle initialized from the agent's local blackboard values at call time.
 function LBot:getBlackboard() end
@@ -3893,6 +3912,15 @@ function LBot:getPosition() end
 ---@return number Current priority value.
 function LBot:getPriority() end
 
+--- Returns one effective trait value from this agent's profile.
+---@param name string Trait key to read.
+---@return number Effective trait value, or zero when unset.
+function LBot:getTrait(name) end
+
+--- Returns a snapshot copy of this agent's trait profile when one is assigned.
+---@return LuaValue Trait profile snapshot, or nil when this agent has no profile.
+function LBot:getTraitProfile() end
+
 --- Returns this agent's velocity vector or zero velocity when the agent has been removed.
 ---@return number X and Y velocity in world units per second. (value 1).
 ---@return number X and Y velocity in world units per second. (value 2).
@@ -3902,6 +3930,10 @@ function LBot:getVelocity() end
 ---@param tag string Tag name to check in the agent tag set.
 ---@return boolean True when the tag exists on the agent.
 function LBot:hasTag(tag) end
+
+--- Returns whether this agent currently has an assigned trait profile.
+---@return boolean True when a trait profile exists on the agent.
+function LBot:hasTraitProfile() end
 
 --- Removes a tag string from this agent when the agent still exists in its world.
 ---@param tag string Tag name to remove from the agent tag set.
@@ -3931,6 +3963,15 @@ function LBot:setPosition(x, y) end
 --- Sets this agent's integer priority when the agent still exists in its world.
 ---@param p number Priority value used by game-side AI scheduling or ordering logic.
 function LBot:setPriority(p) end
+
+--- Sets one trait on this agent, creating an empty profile first when needed.
+---@param name string Trait key to create or update.
+---@param value number Base trait value clamped by the engine to `[0, 1]`.
+function LBot:setTrait(name, value) end
+
+--- Copies a trait profile onto this agent so future agent decisions can read commander personality values.
+---@param profile LTraitProfile Trait profile copied into the agent state.
+function LBot:setTraitProfile(profile) end
 
 --- Sets this agent's velocity vector when the agent still exists in its world.
 ---@param x number New X velocity in world units per second.
@@ -3996,6 +4037,33 @@ function LCommandQueue:type() end
 ---@param name string Type name to compare against `CommandQueue` and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
 function LCommandQueue:typeOf(name) end
+
+--- Adds one rule that adjusts a named decision score using one trait.
+---@param trait_name string Trait key read from a profile.
+---@param decision_key string Action or goal key affected by this rule; `*` applies to every key.
+---@param weight number Adjustment strength; negative values reduce the score.
+---@param mode? string `add` or `multiply`; defaults to `add`.
+function LDecisionBiasSet:addRule(trait_name, decision_key, weight, mode) end
+
+--- Returns the number of stored bias rules.
+---@return number Rule count.
+function LDecisionBiasSet:ruleCount() end
+
+--- Scores one decision using a profile and this bias set.
+---@param profile LTraitProfile Profile that supplies trait values.
+---@param decision_key string Decision key to score.
+---@param base_score number Base score before bias rules.
+---@return number Biased score clamped to `[0, 1]`.
+function LDecisionBiasSet:score(profile, decision_key, base_score) end
+
+--- Returns the Lua-visible type name for this decision bias handle.
+---@return string The string `LDecisionBiasSet`.
+function LDecisionBiasSet:type() end
+
+--- Returns whether this decision bias handle matches a supported type name.
+---@param name string Type name to compare against `LDecisionBiasSet` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LDecisionBiasSet:typeOf(name) end
 
 --- Adds an emotion definition with resting value, decay, and visibility threshold.
 ---@param name string Emotion name.
@@ -4374,6 +4442,34 @@ function LStrategyAI:typeOf(name) end
 ---@param scorer_fn function Function called with a goal name and returning a numeric score.
 function LStrategyAI:update(dt, scorer_fn) end
 
+--- Returns the number of registered archetypes.
+---@return number Archetype count.
+function LTraitArchetypes:count() end
+
+--- Creates a trait profile from a registered archetype and optional deterministic variance.
+---@param name string Archetype name to copy.
+---@param variance? number Maximum deterministic trait jitter; defaults to zero.
+---@return LuaValue New trait profile, or nil when the archetype is unknown.
+function LTraitArchetypes:createProfile(name, variance) end
+
+--- Returns registered archetype names.
+---@return table Array of archetype names.
+function LTraitArchetypes:names() end
+
+--- Registers or replaces one named archetype from a table of trait values.
+---@param name string Archetype name.
+---@param traits table Map of trait names to numeric values.
+function LTraitArchetypes:register(name, traits) end
+
+--- Returns the Lua-visible type name for this archetype registry handle.
+---@return string The string `LTraitArchetypes`.
+function LTraitArchetypes:type() end
+
+--- Returns whether this archetype registry handle matches a supported type name.
+---@param name string Type name to compare against `LTraitArchetypes` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LTraitArchetypes:typeOf(name) end
+
 --- Adds a temporary or permanent modifier to a named trait.
 ---@param trait_name string Trait name affected by the modifier.
 ---@param delta number Value added to the trait while the modifier is active.
@@ -4400,9 +4496,20 @@ function LTraitProfile:getBase(name) end
 ---@return boolean True when the trait exists.
 function LTraitProfile:has(name) end
 
+--- Returns this profile's trait names.
+---@return table Array of trait names.
+function LTraitProfile:names() end
+
 --- Removes all trait modifiers that match a source label.
 ---@param source string Source label to remove.
 function LTraitProfile:removeModifiers(source) end
+
+--- Scores one decision by applying a decision bias set to this profile.
+---@param biases LDecisionBiasSet Bias rules to apply.
+---@param decision_key string Action or goal key to score.
+---@param base_score number Base score before bias rules.
+---@return number Biased score clamped to `[0, 1]`.
+function LTraitProfile:scoreDecision(biases, decision_key, base_score) end
 
 --- Sets the base value for a named trait.
 ---@param name string Trait name to create or update.
@@ -4446,6 +4553,12 @@ function LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1
 --- Evaluates all actions and returns the winning action name when one is available.
 ---@return LuaValue Winning action name, or nil when no action can be selected.
 function LUtilityAI:evaluate() end
+
+--- Evaluates all actions after applying trait-profile decision bias rules to each action score.
+---@param profile LTraitProfile Trait profile that supplies personality values.
+---@param biases LDecisionBiasSet Bias rules keyed by action name.
+---@return LuaValue Winning action name, or nil when no action can be selected.
+function LUtilityAI:evaluateWithProfile(profile, biases) end
 
 --- Returns the number of actions registered in this utility AI.
 ---@return number Current action count.
@@ -4497,6 +4610,10 @@ lurek.ai.newCommandQueue = function() end
 ---@param callback function Callback invoked when the condition node ticks.
 ---@return LBTNode New condition node handle.
 lurek.ai.newCondition = function(callback) end
+
+--- Creates an empty set of rules that map profile traits onto named decision scores.
+---@return LDecisionBiasSet New decision bias handle.
+lurek.ai.newDecisionBiasSet = function() end
 
 --- Creates an empty dialogue selector for weighted topics and branches.
 ---@return LDialogueAI New dialogue AI handle.
@@ -4576,6 +4693,10 @@ lurek.ai.newStrategyAI = function(update_interval) end
 --- Creates a behavior tree succeeder decorator with an empty sequence child.
 ---@return LBTNode New succeeder node handle.
 lurek.ai.newSucceeder = function() end
+
+--- Creates a trait archetype registry populated with engine-provided commander presets.
+---@return LTraitArchetypes New archetype registry handle.
+lurek.ai.newTraitArchetypes = function() end
 
 --- Creates an empty trait profile with modifier support.
 ---@return LTraitProfile New trait profile handle.
@@ -23286,6 +23407,10 @@ function LBody:getAngularDamping() end
 ---@return number Angular velocity in radians per second.
 function LBody:getAngularVelocity() end
 
+--- Returns the single 0..15 collision group for this body, or nil for multi-group masks.
+---@return number? Collision group index, or nil.
+function LBody:getCollisionGroup() end
+
 --- Returns the body's friction coefficient.
 ---@return number Friction value.
 function LBody:getFriction() end
@@ -23383,6 +23508,10 @@ function LBody:setAngularVelocity(omega) end
 --- Enables or disables continuous collision detection to prevent fast-moving tunneling.
 ---@param bullet boolean True to enable CCD.
 function LBody:setBullet(bullet) end
+
+--- Assigns the body to one collision group and opens its local mask to the 16 group bits.
+---@param group number Collision group index, 0..15.
+function LBody:setCollisionGroup(group) end
 
 --- Locks or unlocks the body's rotation. Useful for player characters.
 ---@param fixed boolean True to prevent rotation.
@@ -23754,7 +23883,7 @@ function LWorld:getBeginContactEvents() end
 --- Returns the body ID at a specific world point, or nil if no body is there.
 ---@param x number Query point X.
 ---@param y number Query point Y.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return number Body ID at the point, or nil.
 function LWorld:getBodyAtPoint(x, y, filter) end
 
@@ -23795,6 +23924,17 @@ function LWorld:getBodyType(id) end
 --- Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
 ---@return LWorldGetCollisionEventsResult Array of collision event tables.
 function LWorld:getCollisionEvents() end
+
+--- Returns one row of the 16-group collision matrix.
+---@param group number Source collision group index, 0..15.
+---@return number Target group bitmask.
+function LWorld:getCollisionGroupMask(group) end
+
+--- Returns whether collisions are enabled between two world-level collision groups.
+---@param groupA number First collision group index, 0..15.
+---@param groupB number Second collision group index, 0..15.
+---@return boolean True when the pair is enabled in both matrix directions.
+function LWorld:getCollisionPair(groupA, groupB) end
 
 --- Returns all currently active contact manifolds with normals and touching state.
 ---@return LWorldGetContactsResult Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.
@@ -23933,7 +24073,7 @@ function LWorld:newPolygonBody(x, y, vertices, bodyType) end
 ---@param y number Query rectangle top Y.
 ---@param w number Query rectangle width.
 ---@param h number Query rectangle height.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return number[] Body ID numbers found in the region.
 function LWorld:queryAABB(x, y, w, h, filter) end
 
@@ -23942,7 +24082,7 @@ function LWorld:queryAABB(x, y, w, h, filter) end
 ---@param y1 number Ray origin Y.
 ---@param x2 number Ray end X.
 ---@param y2 number Ray end Y.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return LWorldRaycastResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycast(x1, y1, x2, y2, filter) end
 
@@ -23952,7 +24092,7 @@ function LWorld:raycast(x1, y1, x2, y2, filter) end
 ---@param dx number Ray direction X.
 ---@param dy number Ray direction Y.
 ---@param maxDist number Maximum ray travel distance.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return LWorldRaycastAllResult Array of hit tables {bodyId, x, y, normalX, normalY, toi}.
 function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 
@@ -23962,7 +24102,7 @@ function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 ---@param dx number Ray direction X (does not need to be normalized).
 ---@param dy number Ray direction Y.
 ---@param maxDist number Maximum ray travel distance.
----@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
+---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}.
 ---@return LWorldRaycastClosestResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 
@@ -23970,6 +24110,9 @@ function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 ---@param id number Gravity vector ID returned by addGravityVector.
 ---@return boolean True if an active vector was removed.
 function LWorld:removeGravityVector(id) end
+
+--- Restores all 16 collision groups so every group can collide with every other group.
+function LWorld:resetCollisionGroups() end
 
 --- Fully resets the world to its post-construction state.
 function LWorld:resetWorld() end
@@ -23998,6 +24141,17 @@ function LWorld:setBodyOneWay(id, nx, ny) end
 ---@param id number The body ID.
 ---@param bodyType string New type: "static", "dynamic", "kinematic", or "sensor".
 function LWorld:setBodyType(id, bodyType) end
+
+--- Replaces one row of the 16-group collision matrix.
+---@param group number Source collision group index, 0..15.
+---@param mask number Target group bitmask in 0..0xFFFF.
+function LWorld:setCollisionGroupMask(group, mask) end
+
+--- Enables or disables collisions between two world-level collision groups.
+---@param groupA number First collision group index, 0..15.
+---@param groupB number Second collision group index, 0..15.
+---@param enabled boolean True to allow collisions, false to block them.
+function LWorld:setCollisionPair(groupA, groupB, enabled) end
 
 --- Registers a callback function invoked whenever two bodies stop touching.
 ---@param callback function Called with (bodyIdA, bodyIdB) on each ended contact.
@@ -32540,6 +32694,70 @@ function LProgressBar:setRange(min, max) end
 ---@param v number The progress value.
 function LProgressBar:setValue(v) end
 
+--- Adds a collapsible property group and returns its 1-based index.
+---@param title string The group title.
+---@param collapsed? boolean Whether the group starts collapsed.
+---@return number The 1-based group index.
+function LPropertyWidget:addGroup(title, collapsed) end
+
+--- Adds a property row to a group.
+---@param group number The 1-based group index.
+---@param name string The property label.
+---@param value any Scalar value to display.
+---@param valueType? string `text`, `number`, `bool`, `select`, or `color`.
+---@param options? table Select options for `valueType = "select"`.
+---@param readOnly? boolean Whether the row is read-only.
+---@return number The 1-based row index in the group, or 0 on failure.
+function LPropertyWidget:addProperty(group, name, value, valueType, options, readOnly) end
+
+--- Returns the number of property groups.
+---@return number The group count.
+function LPropertyWidget:getGroupCount() end
+
+--- Returns the left label column width in pixels.
+---@return number Width in pixels.
+function LPropertyWidget:getLabelWidth() end
+
+--- Returns the row count for a property group.
+---@param group number The 1-based group index.
+---@return number The property row count.
+function LPropertyWidget:getPropertyCount(group) end
+
+--- Returns the select options of the first property with `name`.
+---@param name string Property name.
+---@return table Array of option strings.
+function LPropertyWidget:getPropertyOptions(name) end
+
+--- Returns the canonical editor type of the first property with `name`.
+---@param name string Property name.
+---@return string The editor type, or nil when missing.
+function LPropertyWidget:getPropertyType(name) end
+
+--- Returns the stringified value of the first property with `name`.
+---@param name string Property name.
+---@return string The value text, or nil when missing.
+function LPropertyWidget:getPropertyValue(name) end
+
+--- Returns whether a property group is collapsed.
+---@param group number The 1-based group index.
+---@return boolean True when collapsed, or nil when the index is invalid.
+function LPropertyWidget:isGroupCollapsed(group) end
+
+--- Sets the left label column width in pixels.
+---@param width number Width in pixels; clamped to at least 1.
+function LPropertyWidget:setLabelWidth(width) end
+
+--- Updates the first property with `name`.
+---@param name string Property name.
+---@param value any Scalar value to display.
+---@return boolean True when a row changed.
+function LPropertyWidget:setPropertyValue(name, value) end
+
+--- Toggles a property group collapsed/expanded state.
+---@param group number The 1-based group index.
+---@return boolean The new collapsed state, or nil when the index is invalid.
+function LPropertyWidget:toggleGroup(group) end
+
 --- Returns the radio button group name. Buttons in the same group are mutually exclusive.
 ---@return string The group name.
 function LRadioButton:getGroup() end
@@ -33701,6 +33919,10 @@ lurek.ui.newPanel = function() end
 ---@param max? number Maximum value (default 100).
 ---@return LProgressBar The new progress bar widget table.
 lurek.ui.newProgressBar = function(min, max) end
+
+--- Creates a new property inspector widget with collapsible groups and typed value rows.
+---@return LPropertyWidget The new property widget table.
+lurek.ui.newPropertyWidget = function() end
 
 --- Creates a new radio button widget in a named group.
 ---@param text? string The radio button label.

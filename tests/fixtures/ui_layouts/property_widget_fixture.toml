@@ -1,0 +1,81 @@
+resolution = [420, 360]
+
+[root]
+widget_type = "propertywidget"
+id = "property_inspector"
+x = 20
+y = 20
+w = 380
+h = 320
+property_label_width = 200
+property_row_height = 24
+property_group_header_height = 24
+
+[[root.property_groups]]
+title = "Video System"
+collapsed = false
+
+[[root.property_groups.rows]]
+name = "Resolution"
+value = "UHD - 2160p"
+value_type = "select"
+options = ["HD - 1080p", "UHD - 2160p", "DCI - 4K"]
+
+[[root.property_groups.rows]]
+name = "Colorimetry"
+value = "Rec. 709"
+value_type = "select"
+options = ["Rec. 601", "Rec. 709", "Rec. 2020"]
+
+[[root.property_groups.rows]]
+name = "Bits Per Channel"
+value = "10"
+value_type = "number"
+
+[[root.property_groups]]
+title = "Video Settings"
+collapsed = false
+
+[[root.property_groups.rows]]
+name = "Contains Alpha"
+value = "false"
+value_type = "bool"
+
+[[root.property_groups.rows]]
+name = "Delay DVE"
+value = "1"
+value_type = "number"
+
+[[root.property_groups.rows]]
+name = "Overlay Tint"
+value = "#55AAFF"
+value_type = "color"
+
+[[root.property_groups]]
+title = "Audio Settings"
+collapsed = false
+
+[[root.property_groups.rows]]
+name = "Enable Audio"
+value = "true"
+value_type = "bool"
+
+[[root.property_groups.rows]]
+name = "Audio Channels"
+value = "2 Channels"
+value_type = "select"
+options = ["2 Channels", "8 Channels"]
+
+[[root.property_groups.rows]]
+name = "Notes"
+value = "Preview bus"
+value_type = "text"
+
+[[root.property_groups]]
+title = "Key Settings"
+collapsed = true
+
+[[root.property_groups.rows]]
+name = "Chroma Clipping"
+value = "false"
+value_type = "bool"

@@ -189,6 +189,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 | Current artifact | `tests/artifacts/current/ui/layout_gallery_manifest.txt` |
 | Current artifact | `tests/artifacts/current/ui/layout_inventory_fixture.png` |
 | Current artifact | `tests/artifacts/current/ui/layout_main_menu_fixture.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_property_widget_fixture.png` |
 | Current artifact | `tests/artifacts/current/ui/layout_rpg_inventory_1280x720.png` |
 | Current artifact | `tests/artifacts/current/ui/layout_settings_desktop_1366x768.png` |
 | Current artifact | `tests/artifacts/current/ui/layout_settings_fixture.png` |

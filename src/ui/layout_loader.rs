@@ -9,7 +9,7 @@
 //! Preserves deterministic behavior by keeping layout loader calculations explicit at their owner boundary.
 
 use crate::ui::context::{GuiContext, WidgetKind};
-use crate::ui::extras::{DialogAction, DialogActionRole};
+use crate::ui::extras::{DialogAction, DialogActionRole, PropertyRow, PropertyValueKind};
 use crate::ui::widget::TextVAlign;
 use serde::Deserialize;
 use std::collections::{HashMap, HashSet};
@@ -23,6 +23,30 @@ pub struct DialogActionDef {
     pub role: Option<String>,
     /// Whether activating the action should close the dialog.
     pub close_on_activate: Option<bool>,
+}
+/// Declarative property row loaded into a `PropertyWidget`.
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct PropertyRowDef {
+    /// Stable property name shown in the left column.
+    pub name: String,
+    /// Stringified property value shown in the right column.
+    pub value: Option<String>,
+    /// Editor kind: `text`, `number`, `bool`, `select`, `color`, or compatible widget aliases.
+    pub value_type: Option<String>,
+    /// Select options for `value_type = "select"`.
+    pub options: Option<Vec<String>>,
+    /// Whether this property is displayed as read-only.
+    pub read_only: Option<bool>,
+}
+/// Declarative collapsible property group loaded into a `PropertyWidget`.
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct PropertyGroupDef {
+    /// Group title shown in the header.
+    pub title: String,
+    /// Whether rows start hidden.
+    pub collapsed: Option<bool>,
+    /// Ordered property rows.
+    pub rows: Option<Vec<PropertyRowDef>>,
 }
 /// Flat description of a single widget produced by TOML deserialisation; children are nested inline.
 #[derive(Debug, Clone, Deserialize, Default)]
@@ -113,6 +137,14 @@ pub struct WidgetDef {
     pub max_size: Option<[f32; 2]>,
     pub slot: Option<String>,
     pub actions: Option<Vec<DialogActionDef>>,
+    /// Property groups for `propertywidget` definitions.
+    pub property_groups: Option<Vec<PropertyGroupDef>>,
+    /// Left label column width for `propertywidget`.
+    pub property_label_width: Option<f32>,
+    /// Row height for `propertywidget`.
+    pub property_row_height: Option<f32>,
+    /// Group header height for `propertywidget`.
+    pub property_group_header_height: Option<f32>,
     /// Nested child widget definitions; loaded recursively by `load_layout_def`.
     pub children: Option<Vec<WidgetDef>>,
 }
@@ -413,6 +445,7 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
         "tooltippanel" => ctx.add_tooltip_panel(def.text.clone().unwrap_or_default()),
         "colorpicker" => ctx.add_color_picker(),
         "guitable" => ctx.add_gui_table(),
+        "property" | "propertywidget" | "property_widget" => ctx.add_property_widget(),
         // Chart widgets are represented as retained UI slots in TOML layouts.
         // Lua content can render chart images into these slot rects by id.
         "chart" | "linechart" | "barchart" | "scatterplot" | "piechart" | "areachart" => {
@@ -658,6 +691,49 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
                 }
             }
             dialog_should_open = def.open.unwrap_or(false);
+        }
+        Some(WidgetKind::PropertyWidget(property_widget)) => {
+            if let Some(value) = def.property_label_width {
+                property_widget.label_width =
+                    ensure_finite_f32("property_label_width", value)?.max(1.0);
+            }
+            if let Some(value) = def.property_row_height {
+                property_widget.row_height =
+                    ensure_finite_f32("property_row_height", value)?.max(1.0);
+            }
+            if let Some(value) = def.property_group_header_height {
+                property_widget.group_header_height =
+                    ensure_finite_f32("property_group_header_height", value)?.max(1.0);
+            }
+            if let Some(groups) = &def.property_groups {
+                property_widget.groups.clear();
+                for group_def in groups {
+                    let group_idx = property_widget.add_group(
+                        group_def.title.clone(),
+                        group_def.collapsed.unwrap_or(false),
+                    );
+                    if let Some(rows) = &group_def.rows {
+                        for row_def in rows {
+                            let raw_value_type = row_def.value_type.as_deref().unwrap_or("text");
+                            let value_kind = PropertyValueKind::parse_str(raw_value_type)
+                                .ok_or_else(|| {
+                                    format!(
+                                        "unsupported property value_type \"{}\"",
+                                        raw_value_type
+                                    )
+                                })?;
+                            let mut row = PropertyRow::new(
+                                row_def.name.clone(),
+                                row_def.value.clone().unwrap_or_default(),
+                                value_kind,
+                            );
+                            row.options = row_def.options.clone().unwrap_or_default();
+                            row.read_only = row_def.read_only.unwrap_or(false);
+                            let _ = property_widget.add_property(group_idx, row);
+                        }
+                    }
+                }
+            }
         }
         _ => {}
     }

@@ -1,11 +1,13 @@
 //! Owns chunk-oriented rendering support for tilemaps that are too large for one monolithic redraw strategy.
 //! Partitions the full grid into fixed chunks with dirty tracking so small edits trigger only local refresh work.
-//! Uses camera and viewport state to cull at chunk granularity before generating tile-oriented draw output.
+//! Delegates camera viewport range math to `camera`, then uses that range for chunk-level tile output.
 //! Supports per-tile mutation with automatic invalidation so edits stay localized across large-world scenes.
 //! Optionally reduces detail with zoom-aware logic to keep massive maps responsive during interactive viewing.
 //! Open this file when chunk invalidation, visible-chunk culling, or large-map redraw performance is wrong.
 
 use std::collections::HashMap;
+
+use crate::camera::{camera_visible_chunk_range, ChunkViewportRange};
 
 /// A single rendered chunk: a region of tile IDs with a dirty flag for incremental updates.
 #[derive(Debug)]
@@ -137,10 +139,13 @@ impl LargeMapRenderer {
         if self.chunk_size == 0 {
             return 0;
         }
-        let (min_cx, max_cx, min_cy, max_cy) = self.visible_chunk_range();
+        let range = self.visible_chunk_range();
+        if range.is_empty() {
+            return 0;
+        }
         let mut count = 0;
-        for cy in min_cy..=max_cy {
-            for cx in min_cx..=max_cx {
+        for cy in range.min_y..=range.max_y {
+            for cx in range.min_x..=range.max_x {
                 if self.chunks.contains_key(&(cx, cy)) {
                     count += 1;
                 }
@@ -227,53 +232,20 @@ impl LargeMapRenderer {
             }
         }
     }
-    /// Compute the inclusive chunk coordinate range visible through the current camera viewport.
-    fn visible_chunk_range(&self) -> (i32, i32, i32, i32) {
-        if self.viewport_w <= 0.0 || self.viewport_h <= 0.0 {
-            let chunks_x = ((self.map_width as i32 * self.tile_width as i32).max(1)
-                + self.chunk_size as i32
-                - 1)
-                / self.chunk_size as i32;
-            let chunks_y = ((self.map_height as i32 * self.tile_height as i32).max(1)
-                + self.chunk_size as i32
-                - 1)
-                / self.chunk_size as i32;
-            return (-1, chunks_x, -1, chunks_y);
-        }
-        let zoom = if self.camera_zoom.abs() > f32::EPSILON {
-            self.camera_zoom
-        } else {
-            1.0
-        };
-        let half_w = self.viewport_w * 0.5 / zoom;
-        let half_h = self.viewport_h * 0.5 / zoom;
-        let world_left = self.camera_x - half_w;
-        let world_right = self.camera_x + half_w;
-        let world_top = self.camera_y - half_h;
-        let world_bottom = self.camera_y + half_h;
-        let chunk_w = self.chunk_size as f32 * self.tile_width as f32;
-        let chunk_h = self.chunk_size as f32 * self.tile_height as f32;
-        let min_cx = if chunk_w > 0.0 {
-            (world_left / chunk_w).floor() as i32
-        } else {
-            0
-        };
-        let max_cx = if chunk_w > 0.0 {
-            (world_right / chunk_w).floor() as i32
-        } else {
-            0
-        };
-        let min_cy = if chunk_h > 0.0 {
-            (world_top / chunk_h).floor() as i32
-        } else {
-            0
-        };
-        let max_cy = if chunk_h > 0.0 {
-            (world_bottom / chunk_h).floor() as i32
-        } else {
-            0
-        };
-        (min_cx, max_cx, min_cy, max_cy)
+    /// Return the inclusive chunk range visible through the current camera viewport.
+    fn visible_chunk_range(&self) -> ChunkViewportRange {
+        camera_visible_chunk_range(
+            self.map_width,
+            self.map_height,
+            self.tile_width,
+            self.tile_height,
+            self.chunk_size,
+            self.camera_x,
+            self.camera_y,
+            self.camera_zoom,
+            self.viewport_w,
+            self.viewport_h,
+        )
     }
 }
 /// Default `LargeMapRenderer` uses 32×32 pixel tiles.

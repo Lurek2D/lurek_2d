@@ -370,6 +370,119 @@ do
     physics_log("reset meter=" .. world:getMeter() .. " iterations=" .. world:getSolverIterations())
 end
 
+--@api: LWorld:setCollisionPair
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local player = world:newCircleBody(0, 0, 8, "dynamic")
+    local pickup = world:newCircleBody(0, 0, 8, "static")
+    player:setCollisionGroup(0)
+    pickup:setCollisionGroup(1)
+    world:setCollisionPair(0, 1, false)
+    example_print_log("pair", world:getCollisionPair(0, 1))
+    physics_log("player=" .. player:getCollisionGroup() .. " pickup=" .. pickup:getCollisionGroup())
+end
+
+--@api: LWorld:getCollisionPair
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local default_pair = world:getCollisionPair(0, 1)
+    world:setCollisionPair(0, 1, false)
+    local disabled_pair = world:getCollisionPair(0, 1)
+    world:setCollisionPair(0, 1, true)
+    example_print_log("default", default_pair)
+    example_print_log("disabled", disabled_pair)
+    physics_log("restored pair=" .. tostring(world:getCollisionPair(0, 1)))
+end
+
+--@api: LWorld:setCollisionGroupMask
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 6, "static")
+    body:setCollisionGroup(2)
+    world:setCollisionGroupMask(0, 0x4)
+    world:step(1 / 60)
+    local hits = world:queryAABB(0, 0, 20, 20, { group = 0 })
+    example_print_log("mask", world:getCollisionGroupMask(0))
+    physics_log("query hits=" .. #hits .. " body_group=" .. body:getCollisionGroup())
+end
+
+--@api: LWorld:getCollisionGroupMask
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    world:setCollisionGroupMask(3, 0x9)
+    local mask = world:getCollisionGroupMask(3)
+    world:setCollisionPair(3, 0, false)
+    local pair = world:getCollisionPair(3, 0)
+    example_print_log("mask", mask)
+    physics_log("pair after override=" .. tostring(pair))
+end
+
+--@api: LWorld:resetCollisionGroups
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    world:setCollisionPair(0, 1, false)
+    local disabled = world:getCollisionPair(0, 1)
+    world:resetCollisionGroups()
+    local restored = world:getCollisionPair(0, 1)
+    example_print_log("disabled", disabled)
+    physics_log("restored=" .. tostring(restored) .. " mask=" .. world:getCollisionGroupMask(0))
+end
+
 --@api: LWorld:newBody
 do
     local function physics_log(message)
@@ -1122,6 +1235,50 @@ do
     body:setMask(7)
     example_print_log("mask", body:getMask())
     example_print_log("id", body:getId())
+end
+
+--@api: LBody:setCollisionGroup
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 400)
+    local player = world:newBody(100, 100, "dynamic")
+    local wall = world:newBody(120, 100, "static")
+    player:setCollisionGroup(0)
+    wall:setCollisionGroup(1)
+    example_print_log("player_group", player:getCollisionGroup())
+    physics_log("wall group=" .. wall:getCollisionGroup() .. " player layer=" .. player:getLayer())
+end
+
+--@api: LBody:getCollisionGroup
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setCollisionGroup(4)
+    local group = body:getCollisionGroup()
+    body:setLayer(0x3)
+    example_print_log("single", group)
+    physics_log("multi group returns=" .. tostring(body:getCollisionGroup()))
 end
 
 --@api: LBody:sleep

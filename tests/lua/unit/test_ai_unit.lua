@@ -113,6 +113,16 @@ describe("ai factories", function()
         expect_type("userdata", lurek.ai.newTraitProfile())
     end)
 
+    -- @covers lurek.ai.newTraitArchetypes
+    it("newTraitArchetypes creates userdata", function()
+        expect_type("userdata", lurek.ai.newTraitArchetypes())
+    end)
+
+    -- @covers lurek.ai.newDecisionBiasSet
+    it("newDecisionBiasSet creates userdata", function()
+        expect_type("userdata", lurek.ai.newDecisionBiasSet())
+    end)
+
     -- @covers lurek.ai.newStimulusWorld
     it("newStimulusWorld creates userdata", function()
         expect_type("userdata", lurek.ai.newStimulusWorld())
@@ -327,6 +337,55 @@ describe("ai bot", function()
         end)
         world:update(0.25)
         expect_near(0.25, called_dt, 0.001)
+    end)
+
+    -- @covers LBot:setTraitProfile
+    it("setTraitProfile copies profile traits onto the bot", function()
+        local _, agent = new_world_agent("hero")
+        local profile = lurek.ai.newTraitProfile()
+        profile:set("aggression", 0.7)
+        agent:setTraitProfile(profile)
+        expect_near(0.7, agent:getTrait("aggression"), 0.01)
+    end)
+
+    -- @covers LBot:getTraitProfile
+    it("getTraitProfile returns a profile snapshot", function()
+        local _, agent = new_world_agent("hero")
+        agent:setTrait("caution", 0.6)
+        local profile = agent:getTraitProfile()
+        expect_type("userdata", profile)
+        expect_near(0.6, profile:get("caution"), 0.01)
+    end)
+
+    -- @covers LBot:hasTraitProfile
+    it("hasTraitProfile reports assigned profile state", function()
+        local _, agent = new_world_agent("hero")
+        expect_true(not agent:hasTraitProfile())
+        agent:setTrait("caution", 0.4)
+        expect_true(agent:hasTraitProfile())
+    end)
+
+    -- @covers LBot:setTrait
+    it("setTrait creates or updates the bot profile", function()
+        local _, agent = new_world_agent("hero")
+        agent:setTrait("risk_tolerance", 0.8)
+        expect_near(0.8, agent:getTrait("risk_tolerance"), 0.01)
+    end)
+
+    -- @covers LBot:getTrait
+    it("getTrait returns zero for missing bot traits", function()
+        local _, agent = new_world_agent("hero")
+        expect_near(0.0, agent:getTrait("missing_trait"), 0.01)
+    end)
+
+    -- @covers LBot:addTraitModifier
+    it("addTraitModifier changes bot trait until world update expires it", function()
+        local world, agent = new_world_agent("hero")
+        agent:setTrait("caution", 0.3)
+        agent:addTraitModifier("caution", 0.5, 0.2, "ambush")
+        expect_near(0.8, agent:getTrait("caution"), 0.01)
+        world:update(0.5)
+        expect_near(0.3, agent:getTrait("caution"), 0.01)
     end)
 
     -- @covers LBot:addTag
@@ -832,6 +891,18 @@ describe("ai utility ai", function()
         expect_equal("attack", uai:evaluate())
     end)
 
+    -- @covers LUtilityAI:evaluateWithProfile
+    it("evaluateWithProfile applies personality bias to action scores", function()
+        local uai = lurek.ai.newUtilityAI()
+        uai:addAction("attack", function() return 0.4 end)
+        uai:addAction("defend", function() return 0.5 end)
+        local profile = lurek.ai.newTraitProfile()
+        profile:set("aggression", 0.8)
+        local bias = lurek.ai.newDecisionBiasSet()
+        bias:addRule("aggression", "attack", 0.3, "add")
+        expect_equal("attack", uai:evaluateWithProfile(profile, bias))
+    end)
+
     -- @covers LUtilityAI:getActionCount
     it("getActionCount returns the number of registered actions", function()
         local uai = lurek.ai.newUtilityAI()
@@ -1079,6 +1150,24 @@ describe("ai trait profile", function()
         expect_true(profile:has("wisdom"))
     end)
 
+    -- @covers LTraitProfile:names
+    it("names returns profile trait names", function()
+        local profile = lurek.ai.newTraitProfile()
+        profile:set("aggression", 0.7)
+        profile:set("caution", 0.2)
+        local names = profile:names()
+        expect_equal(2, #names)
+    end)
+
+    -- @covers LTraitProfile:scoreDecision
+    it("scoreDecision applies a decision bias set", function()
+        local profile = lurek.ai.newTraitProfile()
+        profile:set("aggression", 0.8)
+        local bias = lurek.ai.newDecisionBiasSet()
+        bias:addRule("aggression", "attack", 0.2, "add")
+        expect_near(0.66, profile:scoreDecision(bias, "attack", 0.5), 0.01)
+    end)
+
     -- @covers LTraitProfile:traitCount
     it("traitCount returns the number of stored traits", function()
         local profile = lurek.ai.newTraitProfile()
@@ -1101,6 +1190,83 @@ describe("ai trait profile", function()
     -- @covers LTraitProfile:typeOf
     it("typeOf reports trait profile inheritance", function()
         expect_true(lurek.ai.newTraitProfile():typeOf("LTraitProfile"))
+    end)
+end)
+
+-- @describe trait archetypes
+describe("ai trait archetypes", function()
+    -- @covers LTraitArchetypes:register
+    it("register adds a custom archetype", function()
+        local archetypes = lurek.ai.newTraitArchetypes()
+        archetypes:register("raider", { aggression = 0.9, naval_focus = 1.0 })
+        local profile = archetypes:createProfile("raider")
+        expect_near(1.0, profile:get("naval_focus"), 0.01)
+    end)
+
+    -- @covers LTraitArchetypes:createProfile
+    it("createProfile returns built-in commander profiles", function()
+        local archetypes = lurek.ai.newTraitArchetypes()
+        local profile = archetypes:createProfile("aggressive")
+        expect_type("userdata", profile)
+        expect_true(profile:get("aggression") > 0.5)
+    end)
+
+    -- @covers LTraitArchetypes:names
+    it("names returns built-in archetype names", function()
+        local names = lurek.ai.newTraitArchetypes():names()
+        expect_true(#names >= 1)
+    end)
+
+    -- @covers LTraitArchetypes:count
+    it("count returns registered archetype count", function()
+        expect_true(lurek.ai.newTraitArchetypes():count() >= 1)
+    end)
+
+    -- @covers LTraitArchetypes:type
+    it("type returns LTraitArchetypes", function()
+        expect_equal("LTraitArchetypes", lurek.ai.newTraitArchetypes():type())
+    end)
+
+    -- @covers LTraitArchetypes:typeOf
+    it("typeOf reports trait archetype inheritance", function()
+        expect_true(lurek.ai.newTraitArchetypes():typeOf("LTraitArchetypes"))
+    end)
+end)
+
+-- @describe decision bias
+describe("ai decision bias", function()
+    -- @covers LDecisionBiasSet:addRule
+    it("addRule stores a trait-to-decision rule", function()
+        local bias = lurek.ai.newDecisionBiasSet()
+        bias:addRule("aggression", "attack", 0.2, "add")
+        expect_equal(1, bias:ruleCount())
+    end)
+
+    -- @covers LDecisionBiasSet:score
+    it("score applies matching rules to profile values", function()
+        local profile = lurek.ai.newTraitProfile()
+        profile:set("aggression", 0.8)
+        local bias = lurek.ai.newDecisionBiasSet()
+        bias:addRule("aggression", "attack", 0.2, "add")
+        expect_near(0.66, bias:score(profile, "attack", 0.5), 0.01)
+    end)
+
+    -- @covers LDecisionBiasSet:ruleCount
+    it("ruleCount returns the stored rule count", function()
+        local bias = lurek.ai.newDecisionBiasSet()
+        bias:addRule("caution", "retreat", 0.4)
+        bias:addRule("aggression", "attack", 0.2)
+        expect_equal(2, bias:ruleCount())
+    end)
+
+    -- @covers LDecisionBiasSet:type
+    it("type returns LDecisionBiasSet", function()
+        expect_equal("LDecisionBiasSet", lurek.ai.newDecisionBiasSet():type())
+    end)
+
+    -- @covers LDecisionBiasSet:typeOf
+    it("typeOf reports decision bias inheritance", function()
+        expect_true(lurek.ai.newDecisionBiasSet():typeOf("LDecisionBiasSet"))
     end)
 end)
 

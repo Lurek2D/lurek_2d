@@ -4,10 +4,10 @@ use super::SharedState;
 use crate::ai::validation::{finite_f32, finite_f64, non_negative, positive_nonzero};
 use crate::ai::{
     AIDirector, AILod, AIWorld, AiValidationLimits, BTNode, BehaviorTree, Blackboard,
-    CallbackErrorTrace, CommandQueue, Consideration, DecisionModel, DialogueAI, Emotion,
-    EmotionModel, FormationType, GOAPPlanner, HTNDomain, HTNMethod, HTNPlanner, MCTSConfig,
-    MCTSEngine, Need, NeedSystem, ParallelPolicy, ResponseCurve, Squad, StimulusWorld, StrategyAI,
-    TraitProfile, UtilityAI, WorldState,
+    CallbackErrorTrace, CommandQueue, Consideration, DecisionBiasSet, DecisionModel, DialogueAI,
+    Emotion, EmotionModel, FormationType, GOAPPlanner, HTNDomain, HTNMethod, HTNPlanner,
+    MCTSConfig, MCTSEngine, Need, NeedSystem, ParallelPolicy, ResponseCurve, Squad, StimulusWorld,
+    StrategyAI, TraitArchetypes, TraitProfile, UtilityAI, WorldState,
 };
 use crate::lua_api::callback_registry::CallbackRegistry;
 use mlua::prelude::*;
@@ -35,6 +35,15 @@ fn lua_require_positive_f32(field: &'static str, value: f32) -> LuaResult<f32> {
     positive_nonzero(field, f64::from(value), &AiValidationLimits::default())
         .map(|_| value)
         .map_err(|err| lua_ai_runtime_error(err.to_string()))
+}
+
+fn lua_table_to_f32_map(table: LuaTable) -> LuaResult<HashMap<String, f32>> {
+    let mut out = HashMap::new();
+    for pair in table.pairs::<String, f32>() {
+        let (key, value) = pair?;
+        out.insert(key, lua_require_finite_f32("ai trait value", value)?);
+    }
+    Ok(out)
 }
 
 fn callback_errors_to_lua<'lua>(
@@ -416,6 +425,86 @@ impl LuaUserData for LuaAgent {
             }
             Ok(())
         });
+        // -- setTraitProfile --
+        /// Copies a trait profile onto this agent so future agent decisions can read commander personality values.
+        /// @param | profile | LTraitProfile | Trait profile copied into the agent state.
+        methods.add_method("setTraitProfile", |_, this, profile_ud: LuaAnyUserData| {
+            let profile = profile_ud.borrow::<LuaTraitProfile>()?;
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.trait_profile = Some(profile.inner.borrow().clone());
+            }
+            Ok(())
+        });
+        // -- getTraitProfile --
+        /// Returns a snapshot copy of this agent's trait profile when one is assigned.
+        /// @return | LuaValue | Trait profile snapshot, or nil when this agent has no profile.
+        methods.add_method("getTraitProfile", |_, this, ()| {
+            let w = this.world.borrow();
+            if let Some(agent) = w.agent(&this.name) {
+                if let Some(profile) = &agent.trait_profile {
+                    return Ok(Some(LuaTraitProfile {
+                        inner: Rc::new(RefCell::new(profile.clone())),
+                    }));
+                }
+            }
+            Ok(None)
+        });
+        // -- hasTraitProfile --
+        /// Returns whether this agent currently has an assigned trait profile.
+        /// @return | boolean | True when a trait profile exists on the agent.
+        methods.add_method("hasTraitProfile", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .agent(&this.name)
+                .and_then(|agent| agent.trait_profile.as_ref())
+                .is_some())
+        });
+        // -- setTrait --
+        /// Sets one trait on this agent, creating an empty profile first when needed.
+        /// @param | name | string | Trait key to create or update.
+        /// @param | value | number | Base trait value clamped by the engine to `[0, 1]`.
+        methods.add_method("setTrait", |_, this, (name, value): (String, f32)| {
+            let value = lua_require_finite_f32("agent trait value", value)?;
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                let profile = agent.trait_profile.get_or_insert_with(TraitProfile::new);
+                profile.set(&name, value);
+            }
+            Ok(())
+        });
+        // -- getTrait --
+        /// Returns one effective trait value from this agent's profile.
+        /// @param | name | string | Trait key to read.
+        /// @return | number | Effective trait value, or zero when unset.
+        methods.add_method("getTrait", |_, this, name: String| {
+            Ok(this
+                .world
+                .borrow()
+                .agent(&this.name)
+                .and_then(|agent| agent.trait_profile.as_ref())
+                .map(|profile| profile.get(&name))
+                .unwrap_or(0.0))
+        });
+        // -- addTraitModifier --
+        /// Adds a temporary or permanent modifier to one trait on this agent.
+        /// @param | trait_name | string | Trait key affected by the modifier.
+        /// @param | delta | number | Additive value applied while the modifier is active.
+        /// @param | duration | number? | Modifier lifetime in seconds, or nil for permanent.
+        /// @param | source | string | Source label used for later removal.
+        methods.add_method(
+            "addTraitModifier",
+            |_, this, (trait_name, delta, duration, source): (String, f32, Option<f32>, String)| {
+                let delta = lua_require_finite_f32("agent trait modifier delta", delta)?;
+                let duration = duration
+                    .map(|value| lua_require_finite_f32("agent trait modifier duration", value))
+                    .transpose()?;
+                if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                    let profile = agent.trait_profile.get_or_insert_with(TraitProfile::new);
+                    profile.add_modifier(&trait_name, delta, duration, &source);
+                }
+                Ok(())
+            },
+        );
         // -- addTag --
         /// Adds a tag string to this agent when the agent still exists in its world.
         /// @param | tag | string | Tag name to insert into the agent tag set.
@@ -930,6 +1019,29 @@ impl LuaUserData for LuaUtilityAI {
                 None => Ok(LuaValue::Nil),
             }
         });
+        // -- evaluateWithProfile --
+        /// Evaluates all actions after applying trait-profile decision bias rules to each action score.
+        /// @param | profile | LTraitProfile | Trait profile that supplies personality values.
+        /// @param | biases | LDecisionBiasSet | Bias rules keyed by action name.
+        /// @return | LuaValue | Winning action name, or nil when no action can be selected.
+        methods.add_method(
+            "evaluateWithProfile",
+            |lua, this, (profile_ud, bias_ud): (LuaAnyUserData, LuaAnyUserData)| {
+                let profile = profile_ud.borrow::<LuaTraitProfile>()?;
+                let biases = bias_ud.borrow::<LuaDecisionBiasSet>()?;
+                let chosen = {
+                    let profile_ref = profile.inner.borrow();
+                    let biases_ref = biases.inner.borrow();
+                    this.inner
+                        .borrow_mut()
+                        .evaluate_with_profile(lua, &profile_ref, &biases_ref)?
+                };
+                match chosen {
+                    Some(name) => Ok(LuaValue::String(lua.create_string(&name)?)),
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
         // -- getActionCount --
         /// Returns the number of actions registered in this utility AI.
         /// @return | integer | Current action count.
@@ -1460,6 +1572,140 @@ impl LuaUserData for LuaCommandQueue {
         });
     }
 }
+/// Lua handle for named trait archetypes used to create reusable AI personalities.
+#[derive(Clone)]
+struct LuaTraitArchetypes {
+    /// Shared archetype registry.
+    inner: Rc<RefCell<TraitArchetypes>>,
+}
+impl LuaUserData for LuaTraitArchetypes {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- register --
+        /// Registers or replaces one named archetype from a table of trait values.
+        /// @param | name | string | Archetype name.
+        /// @param | traits | table | Map of trait names to numeric values.
+        methods.add_method_mut("register", |_, this, (name, traits): (String, LuaTable)| {
+            this.inner
+                .borrow_mut()
+                .register(&name, lua_table_to_f32_map(traits)?);
+            Ok(())
+        });
+        // -- createProfile --
+        /// Creates a trait profile from a registered archetype and optional deterministic variance.
+        /// @param | name | string | Archetype name to copy.
+        /// @param | variance | number? | Maximum deterministic trait jitter; defaults to zero.
+        /// @return | LuaValue | New trait profile, or nil when the archetype is unknown.
+        methods.add_method(
+            "createProfile",
+            |_, this, (name, variance): (String, Option<f32>)| {
+                let variance = variance.unwrap_or(0.0).max(0.0);
+                Ok(
+                    TraitProfile::from_archetype(&this.inner.borrow(), &name, variance).map(
+                        |profile| LuaTraitProfile {
+                            inner: Rc::new(RefCell::new(profile)),
+                        },
+                    ),
+                )
+            },
+        );
+        // -- names --
+        /// Returns registered archetype names.
+        /// @return | table | Array of archetype names.
+        methods.add_method("names", |lua, this, ()| {
+            let out = lua.create_table()?;
+            for (i, name) in this.inner.borrow().names().iter().enumerate() {
+                out.set(i + 1, *name)?;
+            }
+            Ok(out)
+        });
+        // -- count --
+        /// Returns the number of registered archetypes.
+        /// @return | integer | Archetype count.
+        methods.add_method(
+            "count",
+            |_, this, ()| Ok(this.inner.borrow().count() as i64),
+        );
+        // -- type --
+        /// Returns the Lua-visible type name for this archetype registry handle.
+        /// @return | string | The string `LTraitArchetypes`.
+        methods.add_method("type", |_, _, ()| Ok("LTraitArchetypes"));
+        // -- typeOf --
+        /// Returns whether this archetype registry handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LTraitArchetypes` and `Object`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LTraitArchetypes" || name == "LObject")
+        });
+    }
+}
+
+/// Lua handle for open-ended rules that map traits to action or goal score changes.
+#[derive(Clone)]
+struct LuaDecisionBiasSet {
+    /// Shared decision bias rules.
+    inner: Rc<RefCell<DecisionBiasSet>>,
+}
+impl LuaUserData for LuaDecisionBiasSet {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addRule --
+        /// Adds one rule that adjusts a named decision score using one trait.
+        /// @param | trait_name | string | Trait key read from a profile.
+        /// @param | decision_key | string | Action or goal key affected by this rule; `*` applies to every key.
+        /// @param | weight | number | Adjustment strength; negative values reduce the score.
+        /// @param | mode | string? | `add` or `multiply`; defaults to `add`.
+        methods.add_method_mut(
+            "addRule",
+            |_, this, (trait_name, decision_key, weight, mode): (String, String, f32, Option<String>)| {
+                let weight = lua_require_finite_f32("decision bias weight", weight)?;
+                this.inner.borrow_mut().add_rule(
+                    &trait_name,
+                    &decision_key,
+                    weight,
+                    mode.as_deref().unwrap_or("add"),
+                );
+                Ok(())
+            },
+        );
+        // -- score --
+        /// Scores one decision using a profile and this bias set.
+        /// @param | profile | LTraitProfile | Profile that supplies trait values.
+        /// @param | decision_key | string | Decision key to score.
+        /// @param | base_score | number | Base score before bias rules.
+        /// @return | number | Biased score clamped to `[0, 1]`.
+        methods.add_method(
+            "score",
+            |_, this, (profile_ud, decision_key, base_score): (LuaAnyUserData, String, f32)| {
+                let base_score = lua_require_finite_f32("decision bias base_score", base_score)?;
+                let profile = profile_ud.borrow::<LuaTraitProfile>()?;
+                let score = {
+                    let profile_ref = profile.inner.borrow();
+                    this.inner
+                        .borrow()
+                        .score_decision(&profile_ref, &decision_key, base_score)
+                };
+                Ok(score)
+            },
+        );
+        // -- ruleCount --
+        /// Returns the number of stored bias rules.
+        /// @return | integer | Rule count.
+        methods.add_method("ruleCount", |_, this, ()| {
+            Ok(this.inner.borrow().rule_count() as i64)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this decision bias handle.
+        /// @return | string | The string `LDecisionBiasSet`.
+        methods.add_method("type", |_, _, ()| Ok("LDecisionBiasSet"));
+        // -- typeOf --
+        /// Returns whether this decision bias handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LDecisionBiasSet` and `Object`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LDecisionBiasSet" || name == "LObject")
+        });
+    }
+}
+
 /// Lua handle for trait values with temporary modifiers and archetype lookup.
 #[derive(Clone)]
 struct LuaTraitProfile {
@@ -1526,6 +1772,37 @@ impl LuaUserData for LuaTraitProfile {
         methods.add_method("has", |_, this, name: String| {
             Ok(this.inner.borrow().has(&name))
         });
+        // -- names --
+        /// Returns this profile's trait names.
+        /// @return | table | Array of trait names.
+        methods.add_method("names", |lua, this, ()| {
+            let out = lua.create_table()?;
+            for (i, name) in this.inner.borrow().trait_names_owned().iter().enumerate() {
+                out.set(i + 1, name.as_str())?;
+            }
+            Ok(out)
+        });
+        // -- scoreDecision --
+        /// Scores one decision by applying a decision bias set to this profile.
+        /// @param | biases | LDecisionBiasSet | Bias rules to apply.
+        /// @param | decision_key | string | Action or goal key to score.
+        /// @param | base_score | number | Base score before bias rules.
+        /// @return | number | Biased score clamped to `[0, 1]`.
+        methods.add_method(
+            "scoreDecision",
+            |_, this, (bias_ud, decision_key, base_score): (LuaAnyUserData, String, f32)| {
+                let base_score =
+                    lua_require_finite_f32("trait profile decision base_score", base_score)?;
+                let bias = bias_ud.borrow::<LuaDecisionBiasSet>()?;
+                let score = {
+                    let profile_ref = this.inner.borrow();
+                    bias.inner
+                        .borrow()
+                        .score_decision(&profile_ref, &decision_key, base_score)
+                };
+                Ok(score)
+            },
+        );
         // -- traitCount --
         /// Returns the number of traits stored in the profile.
         /// @return | integer | Current trait count.
@@ -2438,6 +2715,28 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|_, ()| {
             Ok(LuaTraitProfile {
                 inner: Rc::new(RefCell::new(TraitProfile::new())),
+            })
+        })?,
+    )?;
+    // -- newTraitArchetypes --
+    /// Creates a trait archetype registry populated with engine-provided commander presets.
+    /// @return | LTraitArchetypes | New archetype registry handle.
+    tbl.set(
+        "newTraitArchetypes",
+        lua.create_function(|_, ()| {
+            Ok(LuaTraitArchetypes {
+                inner: Rc::new(RefCell::new(TraitArchetypes::with_builtins())),
+            })
+        })?,
+    )?;
+    // -- newDecisionBiasSet --
+    /// Creates an empty set of rules that map profile traits onto named decision scores.
+    /// @return | LDecisionBiasSet | New decision bias handle.
+    tbl.set(
+        "newDecisionBiasSet",
+        lua.create_function(|_, ()| {
+            Ok(LuaDecisionBiasSet {
+                inner: Rc::new(RefCell::new(DecisionBiasSet::new())),
             })
         })?,
     )?;

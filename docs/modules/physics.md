@@ -63,6 +63,7 @@ end
 - Terrain support matters because a large share of game physics is really about how actors relate to authored space. Ground, ramps, tile-derived obstacles, one-way behavior, ledges, and sensor volumes all need to participate in the same contact model or movement quickly becomes inconsistent.
 - Joints and constraints extend the feature beyond isolated bodies into coupled systems such as hinges, chains, levers, suspended loads, doors, and puzzle machinery. Without that layer, several gameplay designs would need bespoke approximations instead of sharing engine-owned physical semantics.
 - Filtering rules are equally important because not every shape should collide, trigger, block, or report in the same way. Keeping collision layers and response policy near world state lets projects express interaction rules explicitly rather than hiding them in scattered caller-side checks.
+- The 16-group world collision matrix gives projects a single policy surface for common roles such as player, enemy, projectile, pickup, and terrain while preserving lower-level per-body layer/mask overrides for specialized cases.
 - Debug visualization is not just a convenience but a necessary part of the contract because collision tuning mistakes are difficult to reason about from code alone. Seeing shapes, sensors, normals, joints, and query paths turns the simulation into something inspectable instead of opaque.
 - This makes `physics` especially important for grounded locomotion, projectile travel, hazard interaction, puzzle systems, traversal mechanics, and any design where contact semantics are part of gameplay rather than an incidental backend.
 - The shared step loop gives other systems one trusted spatial authority for grounded movement, projectiles, puzzle machinery, and hazards instead of several drifting approximations.
@@ -1520,6 +1521,47 @@ end
 
 ---
 
+#### `LBody:getCollisionGroup`
+
+Returns the single 0..15 collision group for this body, or nil for multi-group masks.
+
+```lua
+LBody:getCollisionGroup()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number? | Collision group index, or nil. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setCollisionGroup(4)
+    local group = body:getCollisionGroup()
+    body:setLayer(0x3)
+    example_print_log("single", group)
+    physics_log("multi group returns=" .. tostring(body:getCollisionGroup()))
+end
+```
+
+---
+
 #### `LBody:getFriction`
 
 Returns the body's friction coefficient.
@@ -2472,6 +2514,47 @@ do
     bullet:setBullet(true)
     example_print_log("is_bullet", bullet:isBullet())
     example_print_log("type", bullet:getType())
+end
+```
+
+---
+
+#### `LBody:setCollisionGroup`
+
+Assigns the body to one collision group and opens its local mask to the 16 group bits.
+
+```lua
+LBody:setCollisionGroup(group)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | Collision group index, 0..15. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 400)
+    local player = world:newBody(100, 100, "dynamic")
+    local wall = world:newBody(120, 100, "static")
+    player:setCollisionGroup(0)
+    wall:setCollisionGroup(1)
+    example_print_log("player_group", player:getCollisionGroup())
+    physics_log("wall group=" .. wall:getCollisionGroup() .. " player layer=" .. player:getLayer())
 end
 ```
 
@@ -6167,7 +6250,7 @@ LWorld:getBodyAtPoint(x, y, filter)
 |------|------|-------------|
 | `x` | number | Query point X. |
 | `y` | number | Query point Y. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -6564,6 +6647,102 @@ do
         end
     end
     example_print_log("count", count)
+end
+```
+
+---
+
+#### `LWorld:getCollisionGroupMask`
+
+Returns one row of the 16-group collision matrix.
+
+```lua
+LWorld:getCollisionGroupMask(group)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | Source collision group index, 0..15. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Target group bitmask. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    world:setCollisionGroupMask(3, 0x9)
+    local mask = world:getCollisionGroupMask(3)
+    world:setCollisionPair(3, 0, false)
+    local pair = world:getCollisionPair(3, 0)
+    example_print_log("mask", mask)
+    physics_log("pair after override=" .. tostring(pair))
+end
+```
+
+---
+
+#### `LWorld:getCollisionPair`
+
+Returns whether collisions are enabled between two world-level collision groups.
+
+```lua
+LWorld:getCollisionPair(groupA, groupB)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `groupA` | number | First collision group index, 0..15. |
+| `groupB` | number | Second collision group index, 0..15. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the pair is enabled in both matrix directions. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local default_pair = world:getCollisionPair(0, 1)
+    world:setCollisionPair(0, 1, false)
+    local disabled_pair = world:getCollisionPair(0, 1)
+    world:setCollisionPair(0, 1, true)
+    example_print_log("default", default_pair)
+    example_print_log("disabled", disabled_pair)
+    physics_log("restored pair=" .. tostring(world:getCollisionPair(0, 1)))
 end
 ```
 
@@ -7681,7 +7860,7 @@ LWorld:queryAABB(x, y, w, h, filter)
 | `y` | number | Query rectangle top Y. |
 | `w` | number | Query rectangle width. |
 | `h` | number | Query rectangle height. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -7735,7 +7914,7 @@ LWorld:raycast(x1, y1, x2, y2, filter)
 | `y1` | number | Ray origin Y. |
 | `x2` | number | Ray end X. |
 | `y2` | number | Ray end Y. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -7791,7 +7970,7 @@ LWorld:raycastAll(x, y, dx, dy, maxDist, filter)
 | `dx` | number | Ray direction X. |
 | `dy` | number | Ray direction Y. |
 | `maxDist` | number | Maximum ray travel distance. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -7846,7 +8025,7 @@ LWorld:raycastClosest(x, y, dx, dy, maxDist, filter)
 | `dx` | number | Ray direction X (does not need to be normalized). |
 | `dy` | number | Ray direction Y. |
 | `maxDist` | number | Maximum ray travel distance. |
-| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
+| `filter?` | table | Optional query filter: {layer?, mask?, group?, groups?, includeSensors?}. |
 
 **Returns**
 
@@ -7925,6 +8104,41 @@ do
     local removed = world:removeGravityVector(vector_id)
     local vector = world:getGravityVector(vector_id)
     physics_log("removed=" .. tostring(removed) .. " active=" .. tostring(vector ~= nil))
+end
+```
+
+---
+
+#### `LWorld:resetCollisionGroups`
+
+Restores all 16 collision groups so every group can collide with every other group.
+
+```lua
+LWorld:resetCollisionGroups()
+```
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    world:setCollisionPair(0, 1, false)
+    local disabled = world:getCollisionPair(0, 1)
+    world:resetCollisionGroups()
+    local restored = world:getCollisionPair(0, 1)
+    example_print_log("disabled", disabled)
+    physics_log("restored=" .. tostring(restored) .. " mask=" .. world:getCollisionGroupMask(0))
 end
 ```
 
@@ -8176,6 +8390,93 @@ do
     world:step(1 / 60)
     physics_log("builder converted type=" .. world:getBodyType(body:getId()))
     physics_log("placement=" .. body:getX() .. "," .. body:getY())
+end
+```
+
+---
+
+#### `LWorld:setCollisionGroupMask`
+
+Replaces one row of the 16-group collision matrix.
+
+```lua
+LWorld:setCollisionGroupMask(group, mask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group` | number | Source collision group index, 0..15. |
+| `mask` | number | Target group bitmask in 0..0xFFFF. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(10, 10, 6, "static")
+    body:setCollisionGroup(2)
+    world:setCollisionGroupMask(0, 0x4)
+    world:step(1 / 60)
+    local hits = world:queryAABB(0, 0, 20, 20, { group = 0 })
+    example_print_log("mask", world:getCollisionGroupMask(0))
+    physics_log("query hits=" .. #hits .. " body_group=" .. body:getCollisionGroup())
+end
+```
+
+---
+
+#### `LWorld:setCollisionPair`
+
+Enables or disables collisions between two world-level collision groups.
+
+```lua
+LWorld:setCollisionPair(groupA, groupB, enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `groupA` | number | First collision group index, 0..15. |
+| `groupB` | number | Second collision group index, 0..15. |
+| `enabled` | boolean | True to allow collisions, false to block them. |
+
+**Example**
+
+```lua
+do
+    local function physics_log(message)
+        lurek.log.info("[physics.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local world = lurek.physics.newWorld(0, 0)
+    local player = world:newCircleBody(0, 0, 8, "dynamic")
+    local pickup = world:newCircleBody(0, 0, 8, "static")
+    player:setCollisionGroup(0)
+    pickup:setCollisionGroup(1)
+    world:setCollisionPair(0, 1, false)
+    example_print_log("pair", world:getCollisionPair(0, 1))
+    physics_log("player=" .. player:getCollisionGroup() .. " pickup=" .. pickup:getCollisionGroup())
 end
 ```
 

@@ -1,6 +1,6 @@
 //! Owns the global AI world registry that stores agents, name lookup, and the shared blackboard inherited by new actors.
 //! Provides add, remove, index, and mutable access helpers so population-level systems can manage agents coherently.
-//! Advances all agents through one broad world pulse, integrating velocity into position inside the central owner.
+//! Advances all agents through one broad world pulse, integrating velocity and per-agent support state inside the central owner.
 //! Open this owner when registry integrity or world-wide update flow needs coordinated changes across agents.
 
 use crate::ai::agent::Agent;
@@ -77,11 +77,14 @@ impl AIWorld {
     pub fn global_blackboard_mut(&mut self) -> &mut Blackboard {
         &mut self.global_blackboard
     }
-    /// Advance all agents by integrating velocity over `dt`.
+    /// Advance all agents by integrating velocity and time-based support state over `dt` seconds.
     pub fn update(&mut self, dt: f32) {
         for agent in &mut self.agents {
             agent.position.0 += agent.velocity.0 * dt;
             agent.position.1 += agent.velocity.1 * dt;
+            if let Some(profile) = &mut agent.trait_profile {
+                profile.update(dt);
+            }
         }
     }
 }

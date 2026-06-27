@@ -1,4 +1,6 @@
-use lurek2d::camera::{fit_content_to_screen, screen_to_content, zoom_offset_at, Camera2D};
+use lurek2d::camera::{
+    camera_visible_chunk_range, fit_content_to_screen, screen_to_content, zoom_offset_at, Camera2D,
+};
 use lurek2d::math::Vec2;
 
 fn assert_near(expected: f32, actual: f32) {
@@ -96,4 +98,22 @@ fn viewport_helpers_fit_pick_and_zoom_around_anchor() {
     let (new_x, new_y) = zoom_offset_at(250.0, 100.0, offset_x, offset_y, 2.0, 4.0);
     assert_near(-150.0, new_x);
     assert_near(-100.0, new_y);
+}
+
+#[test]
+fn camera_chunk_range_clamps_to_map_chunks() {
+    let range = camera_visible_chunk_range(100, 80, 16, 16, 16, 512.0, 384.0, 1.0, 512.0, 256.0);
+
+    assert_eq!(range.min_x, 1);
+    assert_eq!(range.max_x, 3);
+    assert_eq!(range.min_y, 1);
+    assert_eq!(range.max_y, 2);
+    assert!(!range.is_empty());
+}
+
+#[test]
+fn camera_chunk_range_empty_when_view_is_outside_map() {
+    let range = camera_visible_chunk_range(16, 16, 16, 16, 8, -200.0, -200.0, 1.0, 64.0, 64.0);
+
+    assert!(range.is_empty());
 }
