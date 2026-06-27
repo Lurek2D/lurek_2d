@@ -18,6 +18,8 @@
 - `content/games/` is not the home for API showcases, single-mechanic labs, or examples of 2-3 features.
 - If a folder mainly demonstrates one API or produces a useful artifact, move that value to `content/examples/` or `tests/lua/evidence/` before keeping or deleting the game folder.
 - Never call low-level presentation swaps such as `lurek.window.present`.
+- Use only generated or manually allowlisted `lurek.*` APIs and known engine callbacks; `validate_game.py` treats unknown calls and callbacks as failures.
+- In local `ui.toml`, use `w`/`h` keys instead of `width`/`height`, and keep bitmap `font_size` to 8, 10, 12, 16, 20, 24, or 30.
 - Keep game state in local tables or module scope.
 - Keep custom assets inside the game folder and load them by relative path.
 

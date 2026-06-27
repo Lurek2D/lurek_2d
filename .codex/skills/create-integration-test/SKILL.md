@@ -26,9 +26,9 @@ description: "Load this skill when creating or modifying Lua integration tests t
 - Inspect existing integration tests and involved API specs before writing.
 - Modify an existing canonical `tests/lua/integration/test_<modules>_integration.lua` file for the module pair when present; create a new file only for a genuinely new module pair or module set.
 - Use public `lurek.*` APIs and explicit state assertions.
-- Keep markers directly adjacent to each `it()` block and update them when scenario ownership changes.
+- Keep every used public API declared with a directly adjacent `-- @integration <generated-lua-name>` marker, indented like the `it()` line, and update markers when scenario ownership changes.
 - Add or confirm harness registration when a new file is introduced.
-- Run `python tools/audit/lua_nonunit_test_coverage.py --category integration` and `cargo test --test lua_tests <module-pair>` when possible, then rerun the audit.
+- Run `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category integration` and `cargo test --test lua_tests <module-pair>` when possible, then rerun the audit.
 - Finish by reporting changed files and validation evidence.
 
 ## Success Criteria

@@ -25,6 +25,7 @@
 - RAG is first-pass discovery: use `tools/rag/query.py "<keywords>" --profile all|game|engine` before broad reads.
 - MCP/repo CLI comes before ad hoc scripts when a matching tool exists.
 - Prefer `python path/to/script.py` for parsing, reporting, and automation.
+- When a repo tool enforces a marker, path, registry, or file-shape contract, treat that parser as source of truth and keep the nearest `AGENTS.md` plus task skills synced.
 - Keep output short; cap captured output at 1000 lines.
 - Do not read huge files unless needed.
 - Keep scope narrow and never revert unrelated user changes.

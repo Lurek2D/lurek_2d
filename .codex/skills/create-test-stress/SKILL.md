@@ -25,10 +25,10 @@ description: "Load this skill when creating or modifying stress tests, ceilings,
 ## Workflow
 - Inspect current stress reports, existing stress tests, and user threshold before editing.
 - Modify the canonical `tests/lua/stress/test_<module>_stress.lua` file for that module when present; create a new file only for a missing module owner.
-- Split any stress `it()` block that still owns multiple APIs so one API has one `@stress` marker and one block.
+- Split any stress `it()` block that still owns multiple APIs so one API has one directly adjacent `-- @stress <generated-lua-name>` marker and one block.
 - Keep load deterministic and record artifacts under `work/<short-chat-name>/` when temporary output is needed.
 - Run the stress script and monitor OOM, timeout, and frame-time behavior.
-- Rerun `python tools/audit/lua_nonunit_test_coverage.py --category stress` and compare against the expected ceiling.
+- Rerun `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category stress` and compare against the expected ceiling.
 - Finish by reporting changed files and validation evidence.
 
 ## Success Criteria

@@ -25,7 +25,8 @@ description: "Load this skill when creating or modifying Rust engine modules in 
 - Inspect existing `src/<module>/`, `src/lua_api/`, specs, examples, and tests before deciding create vs modify.
 - Create a new top-level module only when no current module owns the behavior.
 - Keep `src/lua_api/` registration-only and implement logic in the domain module.
-- Update specs, generated API docs, Lua tests, and examples when public behavior changes.
+- Update `docs/meta/modules.toml`, specs, generated API docs, Lua tests, and examples when public behavior changes.
+- Generate Lua API data before writing example `--@api:` blocks or unit-test `-- @covers` markers for the new surface.
 - Run docs generation, cargo tests, clippy, and CAG validation.
 - Finish by reporting changed files and validation evidence.
 

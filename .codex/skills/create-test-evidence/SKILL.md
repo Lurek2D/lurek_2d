@@ -27,7 +27,8 @@ description: "Load this skill when creating or modifying Lua tests that produce 
 ## Workflow
 - Inspect existing evidence tests, golden files, and target API before editing.
 - Modify an existing evidence path when it covers the module; create new artifact coverage only for missing contracts.
-- Put a rationale block directly above every evidence `it()` with `Does`, `Shows`, `Artifact`, and `Why`.
+- Put rationale comments directly above every evidence `it()` using exact `-- Does:`, `-- Shows:`, `-- Artifact:`, and `-- Why:` prefixes.
+- Do not add `-- @evidence` or file-level `-- @covers`; evidence ownership comes from `tests/lua/evidence/test_<module>_evidence.lua` and the artifact itself.
 - Save fresh evidence under `tests/artifacts/current/<module>/`; do not treat baselines as the output target.
 - Redesign or delete evidence whose artifact is not clearly legible to a reviewer.
 - Run golden comparison and evidence contract audit when the workflow also updates or depends on stored golden baselines. Use the canonical scripts so the shared Lua artifact lock serializes reseed/audit access to `tests/artifacts/baselines/`.

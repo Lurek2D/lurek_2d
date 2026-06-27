@@ -42,6 +42,7 @@ description: "Load this skill when converting Gemini Canvas, React, TSX, JavaScr
 - Bind named actions instead of scattering raw key strings through logic.
 - Draw world content in `lurek.draw` and HUD/menu overlays in `lurek.draw_ui`.
 - Keep UI text concise and in-game; do not add explanatory landing screens.
+- For TOML UI in converted games, use `w`/`h` keys and validator-supported bitmap font sizes 8, 10, 12, 16, 20, 24, or 30.
 - Use procedural shapes for Gemini canvas prototypes unless real assets are supplied or clearly needed.
 - Add a small `README.md` only when nearby demos use one or the game needs catalog context.
 - If a prototype feature has no current Lurek API, state the gap and build the simplest Lua-side equivalent without pretending an API exists.

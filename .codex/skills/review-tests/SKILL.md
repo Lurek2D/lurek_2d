@@ -33,6 +33,7 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 - For non-unit suites, run `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py` and read these counts first: category totals, duplicate primary markers in `stress/security`, evidence file ownership and rationale compliance, and integration marker mismatches.
 - Compare audit output with `tests/lua/` canonical files and harness registration.
 - Report missing `@covers`, structure issues, uncovered public APIs, duplicated API owners, stale evidence markers, and weak rationale blocks first.
+- Verify tool-enforced Lua structure before edits land: plain file header, `-- @describe` before `describe()`, folder-specific primary marker indented like `it()`, no legacy markers, and one final bare `test_summary()`.
 - Keep canonical unit ownership module-local: one `test_<module>_unit.lua` file per module, with `lurek.<module>.*` tests before userdata/object method coverage.
 - If edit-capable, fix tests and rerun coverage, structure audit, and `cargo test --test lua_tests`.
 - If read-only, hand off to `tester` with exact missing API coverage.

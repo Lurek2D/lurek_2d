@@ -28,7 +28,9 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 - Start from `tools/python.cmd tools/audit/unit_test_api_coverage.py` so the target module is framed by exact counts: total APIs, exactly-one-owner APIs, missing-owner APIs, and duplicated-owner APIs.
 - When editing non-unit canonical suites, also read `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py` for category-specific structural debt before changing files.
 - Modify the matching canonical `tests/lua/unit/test_<module>_unit.lua` file when present; create a new file only for uncovered module coverage.
-- Keep one public API in one owning `it()` block, but put every required assertion for that API inside that same block.
+- Keep one public API in one owning `it()` block, with exactly one directly preceding `-- @covers <generated-lua-name>` marker indented like the `it()` line.
+- Keep the plain file header, `-- @describe` before `describe()`, no legacy `@tests` or `@description` markers, and exactly one final bare `test_summary()`.
+- Put every required assertion for that API inside that same block.
 - Keep module functions first in the file, then userdata/object method coverage for that same module.
 - Register new files in `tests/lua_tests.rs`; that file is the canonical Lua test target registration.
 - Run Lua test target, structure audit, coverage audit, and CAG validation when needed.

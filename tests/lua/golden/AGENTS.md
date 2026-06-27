@@ -12,6 +12,7 @@
 - Use one canonical file per module when the owner is clear: `test_<module>_golden.lua`.
 - Golden tests compare `tests/artifacts/current/<module>/...` against `tests/artifacts/baselines/<module>/...`.
 - Do not create new evidence here.
+- Golden tests must not contain generation logic such as `lurek.*`, `savePNG`, `saveWAV`, `io.open`, or evidence directory creation.
 - If evidence output is stale, fix the evidence owner first and reseed intentionally; do not patch golden tests around the mismatch.
 
 ## Workflow

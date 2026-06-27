@@ -24,7 +24,8 @@ description: "Load this skill when creating or modifying Lua snippets and genera
 ## Workflow
 - Inspect existing snippets, current API docs, and generated extension output before editing.
 - Modify an existing snippet when it owns the use case; create only for uncovered high-value API usage.
-- Follow snippet template marker order and naming conventions.
+- Follow exact snippet marker order: `-- @snippet`, `-- @prefix`, `-- @module`, `-- @description`, `-- @body`, body lines, `-- @end`.
+- Keep `@module` equal to the file stem, descriptions at least 20 characters, and at least one `SNIP_<index>_<name>` placeholder in each body.
 - Regenerate VS Code snippets when inventory changes.
 - Validate snippets and rerun coverage.
 - Finish by reporting changed files and validation evidence.
@@ -41,7 +42,7 @@ description: "Load this skill when creating or modifying Lua snippets and genera
 
 ## Companion File Index
 - Contracts: `content/snippets/AGENTS.md`, `docs/AGENTS.md`, `extension/vscode/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "content snippets API usage" --profile game --limit 10`, `tools/python.cmd tools/audit/snippet_coverage.py`, `tools/python.cmd tools/snippets/gen_vscode_snippets.py`, `tools/python.cmd tools/validate/validate_snippets.py`
+- Primary tools: `tools/python.cmd tools/rag/query.py "content snippets API usage" --profile game --limit 10`, `tools/python.cmd tools/audit/snippet_coverage.py`, `tools/python.cmd tools/snippets/gen_vscode_snippets.py`, `tools/python.cmd tools/validate/validate_snippets.py --vscode-snippets extension/vscode/data/snippets.json`
 - Owner profile: `doc_writer`
 
 ## Common RAG Queries
@@ -57,5 +58,5 @@ description: "Load this skill when creating or modifying Lua snippets and genera
 
 ## References
 - `contracts: content/snippets/AGENTS.md, docs/AGENTS.md, extension/vscode/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "content snippets API usage" --profile game --limit 10, tools/python.cmd tools/audit/snippet_coverage.py, tools/python.cmd tools/snippets/gen_vscode_snippets.py, tools/python.cmd tools/validate/validate_snippets.py`
+- `tools: tools/python.cmd tools/rag/query.py "content snippets API usage" --profile game --limit 10, tools/python.cmd tools/audit/snippet_coverage.py, tools/python.cmd tools/snippets/gen_vscode_snippets.py, tools/python.cmd tools/validate/validate_snippets.py --vscode-snippets extension/vscode/data/snippets.json`
 - `agent: doc_writer`

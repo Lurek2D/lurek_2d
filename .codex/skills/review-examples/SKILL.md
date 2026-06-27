@@ -25,6 +25,7 @@ description: "Load this skill when auditing and fixing example coverage, example
 ## Workflow
 - Run example coverage for the selected scope.
 - Inspect uncovered or thin APIs and existing example owners before editing.
+- Enforce exact parser shape: `--@api:` or temporary `--@api-stub:` followed immediately by `do`, no top-level setup, no duplicate markers, and at least 5 non-comment code lines for real examples.
 - Report missing, TODO, or PART example blocks first.
 - If edit-capable, add or modify examples and rerun coverage plus validation.
 - If read-only, hand off to `content` with target API methods.

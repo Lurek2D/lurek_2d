@@ -24,7 +24,8 @@ description: "Load this skill when creating or modifying Rust engine features th
 ## Workflow
 - Inspect the existing module, spec, Lua API wrapper, examples, and tests before choosing create vs modify.
 - Use `create-module` only when a new top-level module is needed; otherwise update the existing owner module.
-- Change Lua API, specs, examples, and tests only when public behavior changes.
+- Change Lua API, specs, examples, and tests only when public behavior changes, using tool-enforced example and Lua test marker formats.
+- For public API changes, regenerate Lua API data before writing example `--@api:` blocks or unit-test `-- @covers` markers.
 - Keep `src/lua_api/` thin and put business logic in the Rust domain module.
 - Run cargo, docs generation, and CAG validation appropriate to the changed surface.
 - Finish by reporting changed files and validation evidence.

@@ -12,7 +12,8 @@
 - Use one canonical file per module when the owner is clear: `test_<module>_evidence.lua`.
 - Evidence passes when it produces the intended artifact under `tests/artifacts/current/<module>/`.
 - Do not use file-level `@covers` in this folder.
-- Put a rationale block above every `it()` with `Does`, `Shows`, `Artifact`, and `Why`.
+- Do not use legacy `-- @evidence` markers; evidence ownership comes from the module file and prose rationale comments.
+- Put a rationale block above every `it()` with exact `-- Does:`, `-- Shows:`, `-- Artifact:`, and `-- Why:` lines.
 - The artifact must make the behavior legible to a reviewer. If the artifact does not clearly prove anything, redesign or remove it.
 - Keep helper export APIs incidental; the owned behavior is the module being evidenced.
 

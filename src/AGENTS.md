@@ -12,6 +12,7 @@
 
 ## Rules
 - Keep gameplay logic and state in Rust modules; keep `src/lua_api/` thin.
+- New top-level `src/<module>/` owners need matching `docs/meta/modules.toml`, `docs/specs/<module>.md`, example, and Lua unit-test registry entries unless intentionally excluded by tools.
 - Every `.rs` file needs `//!` file docs stating purpose, owned state, and boundary.
 - Follow `docs/architecture/rust_file_docstring_guidelines.md` for qualitative file-level `//!` writing rules.
 - Public structs, enums, fields, methods, and Lua-facing helpers need factual `///` docs.

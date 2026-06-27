@@ -10,6 +10,7 @@
 
 ## Rules
 - Keep bindings thin: registration, conversion, `LuaUserData`, and validation only.
+- Public binding additions must flow through generated Lua API data before updating examples or unit-test `@covers` markers.
 - Validate ranges, patterns, sizes, casts, and enum-like strings at the boundary.
 - Use `any` in Rust bindings when Lua needs a loose type; do not fake Lua casts.
 - Match names, defaults, returns, and docstrings to `lurek.*` specs.

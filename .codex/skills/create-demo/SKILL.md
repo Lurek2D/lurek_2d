@@ -28,6 +28,7 @@ description: "Load this skill when creating or modifying finished playable Lua m
 - Include local assets under the game folder, including PNG art and audio where the design has feedback or music.
 - Write an English `README.md` that explains the game design, controls, structure, APIs used, how to play, and whether the scope is `game` or `minigame`.
 - Use TOML layout files for menus, HUDs, tool panels, and app UI; update widgets through `lurek.ui`.
+- In game-local `ui.toml`, use `w`/`h` geometry keys and bitmap font sizes 8, 10, 12, 16, 20, 24, or 30.
 - Use real `lurek.*` APIs whenever they exist; do not write local stand-ins for engine systems such as input, audio, particles, tilemaps, physics, UI, automation, dataframe, or province rendering.
 - The result must be a complete playable product, not an API showcase.
 - Capture `screen.png` from active gameplay, not a menu; if a menu blocks gameplay, add or use automation so the renderer reaches the right frame before capture.

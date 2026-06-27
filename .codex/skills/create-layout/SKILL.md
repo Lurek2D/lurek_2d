@@ -24,7 +24,7 @@ description: "Load this skill when creating or modifying TOML UI layouts under c
 ## Workflow
 - Inspect existing layouts and UI primitives before editing.
 - Modify a matching layout when present; create a new TOML layout only when no existing asset owns the screen.
-- Keep layout dimensions, anchors, and naming consistent with content conventions.
+- Keep layout dimensions, anchors, and naming consistent with content conventions; use `w`/`h` keys and bitmap font sizes 8, 10, 12, 16, 20, 24, or 30.
 - Run snap-to-grid and layout fixer after hand edits.
 - Render evidence or preview output and iterate on visual alignment.
 - Finish by reporting changed files and validation evidence.

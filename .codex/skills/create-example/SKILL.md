@@ -25,8 +25,9 @@ description: "Load this skill when creating or modifying API examples under cont
 ## Workflow
 - Inspect existing examples and current API signatures before writing.
 - Modify an existing module example file when it already owns the API; create a new file only for a new module owner.
-- Keep one API = one `-- @api:` marker = one runnable `do ... end` block.
-- Keep the block self-contained, runnable, and free of TODO stubs.
+- Keep one API = one exact `--@api:` marker = one immediately following runnable `do ... end` block.
+- Keep the block self-contained, runnable, free of TODO stubs, and at least 5 relevant non-comment code lines.
+- Do not add comments, setup, helpers, callbacks, tables, or reusable logic between a marker and `do`, or at top level outside marker-owned blocks.
 - Show one concrete usage pattern with short context; do not turn the block into an exhaustive test.
 - Keep the full module file runnable in Lurek without errors.
 - Run example coverage before and after the change.

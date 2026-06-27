@@ -11,6 +11,8 @@
 ## Rules
 - Use unique `snake_case` component IDs per file.
 - Snap coordinates to an 8-pixel grid.
+- Use `w` and `h` geometry keys, not `width` or `height`.
+- Use bitmap font sizes supported by validators: 8, 10, 12, 16, 20, 24, or 30.
 - Prefer flexbox direction, wrapping, and alignment over hardcoded offsets.
 - Do not add keys unsupported by the engine layout deserializer.
 

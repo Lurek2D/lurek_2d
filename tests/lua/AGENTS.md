@@ -15,8 +15,11 @@
 ## Rules
 - Unit coverage must reach 100% for public Lua APIs.
 - Use one canonical file per module/category: `test_<module>_unit.lua`, `test_<modules>_integration.lua`, `test_<module>_stress.lua`, and so on.
+- Every BDD Lua test file starts with a plain prose header comment, every `describe()` has a directly preceding `-- @describe`, and describe docstrings contain only `@describe`.
 - For unit tests: `1 API = 1 unit it() = 1 directly-adjacent -- @covers`.
 - Multiple `-- @covers` markers are temporary only; canonical end state is 1 API per `it()`.
+- Primary marker lines must use the folder marker and match `it()` indentation: unit `@covers`, integration `@integration`, stress `@stress`, security `@security`.
+- Never use legacy `-- @tests`, `-- @description`, `-- @description:`, or `-- @category:` markers.
 - Do not leave unit `it()` blocks without a preceding `-- @covers`.
 - Do not duplicate one public API across multiple unit `it()` blocks.
 - Put all assertions needed to prove one API inside that API's single owning `it()` block.
@@ -32,7 +35,7 @@
 - For `golden`, pass only when current output matches the stored baseline.
 - Prefer `expect_equal`, `expect_true`, `expect_near`, `expect_nil`, and `expect_no_error` over raw `assert`.
 - Demo-specific headless tests live next to the game as `content/games/**/test.lua`, not under `tests/lua/`.
-- End runnable Lua files with `test_summary()`.
+- End runnable Lua files with exactly one bare `test_summary()` as the last non-empty line.
 
 ## Workflow
 - Run `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/unit`.

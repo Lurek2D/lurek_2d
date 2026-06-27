@@ -14,6 +14,7 @@
 - Treat `docs/specs/*.md` as generated output.
 - Edit `docs/specs/manual/<module>.md` for `TL;DR`, `Summary`, `Notes`, and architecture links.
 - Edit source docstrings, tests, examples, or `docs/meta/modules.toml` when generated facts are wrong.
+- Keep `docs/meta/modules.toml` as source of truth for module tier, source path, Lua binding path, namespace, example file, Lua unit test, user-facing flag, and plugin tier.
 - Never copy generated spec prose back into Rust docstrings.
 - Rebuild specs after Rust Lua API signature or docs metadata changes.
 

@@ -23,8 +23,8 @@ description: "Load this skill when creating or modifying pure Lua library module
 
 ## Workflow
 - Inspect the target `library/<name>/` and existing library conventions first.
-- Modify an existing library when it owns the requested API; create `init.lua` and docs only for a new library.
-- Keep the public Lua interface small and documented.
+- Modify an existing library when it owns the requested API; new libraries need `library/<name>/init.lua`, `library/<name>/example.lua`, and `tests/lua/library/test_<name>_library.lua`.
+- Keep the public Lua interface small, documented with LDoc-style `-- @...` or `--- @...` annotations, and returned from `init.lua` without raw global writes.
 - Add or update Lua tests and examples that exercise real behavior.
 - Run library validation and coverage before finishing.
 - Finish by reporting changed files and validation evidence.
@@ -41,7 +41,7 @@ description: "Load this skill when creating or modifying pure Lua library module
 
 ## Companion File Index
 - Contracts: `library/AGENTS.md`, `tests/lua/AGENTS.md`, `content/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10`, `tools/python.cmd tools/audit/library_coverage.py`, `tools/python.cmd tools/validate/validate_library.py --lib <name>`
+- Primary tools: `tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10`, `tools/python.cmd tools/audit/library_coverage.py`, `tools/python.cmd tools/validate/validate_library.py --library <name>`
 - Owner profile: `content`
 
 ## Common RAG Queries
@@ -57,5 +57,5 @@ description: "Load this skill when creating or modifying pure Lua library module
 
 ## References
 - `contracts: library/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10, tools/python.cmd tools/audit/library_coverage.py, tools/python.cmd tools/validate/validate_library.py --lib <name>`
+- `tools: tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10, tools/python.cmd tools/audit/library_coverage.py, tools/python.cmd tools/validate/validate_library.py --library <name>`
 - `agent: content`
