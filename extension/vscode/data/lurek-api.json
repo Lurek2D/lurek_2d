@@ -127518,7 +127518,7 @@
             {
               "name": "slot",
               "type": "string",
-              "description": "Slot name (e.g. \"slot1\", \"quicksave\"). The file is stored as save/slot_<name>.sav.",
+              "description": "Slot name (e.g. \"slot1\", \"quicksave\"). The file is stored as save/slots/slot_<name>.sav.",
               "optional": false
             }
           ],

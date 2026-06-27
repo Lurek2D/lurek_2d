@@ -32,8 +32,8 @@ mod save_manager_tests {
 
     #[test]
     fn slot_path_format() {
-        assert_eq!(SaveManager::slot_path("quick"), "save/slot_quick.sav");
-        assert_eq!(SaveManager::slot_path("1"), "save/slot_1.sav");
+        assert_eq!(SaveManager::slot_path("quick"), "save/slots/slot_quick.sav");
+        assert_eq!(SaveManager::slot_path("1"), "save/slots/slot_1.sav");
     }
 
     #[test]
@@ -89,7 +89,7 @@ mod save_manager_tests {
         assert_eq!(
             sm.slot_path_checked("valid_slot-1")
                 .expect("validated slot"),
-            "save/slot_valid_slot-1.sav"
+            "save/slots/slot_valid_slot-1.sav"
         );
     }
 

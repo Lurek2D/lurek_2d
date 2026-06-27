@@ -130,7 +130,7 @@ describe("validation: savegame edge cases", function()
         hp = 20
         mgr:save(slot)
 
-        lurek.filesystem.write("save/slot_" .. slot .. ".sav", "return { broken = }")
+        lurek.filesystem.write("save/slots/slot_" .. slot .. ".sav", "return { broken = }")
 
         hp = 0
         local ok, err = mgr:load(slot)

@@ -28150,7 +28150,7 @@ function LSaveManager:reset() end
 function LSaveManager:restore(data) end
 
 --- Persist all registered data sections to the named slot file on disk.
----@param slot string Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slot_<name>.sav.
+---@param slot string Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slots/slot_<name>.sav.
 function LSaveManager:save(slot) end
 
 --- Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.

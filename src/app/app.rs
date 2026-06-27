@@ -4141,7 +4141,7 @@ fn init_logging(
     } else {
         std::env::current_dir()
             .unwrap_or_else(|_| std::path::PathBuf::from("."))
-            .join("work")
+            .join("logs")
             .join("runtime")
             .join("lurek.log")
     };

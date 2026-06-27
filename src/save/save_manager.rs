@@ -24,7 +24,7 @@ const LEGACY_COMPRESSED_MARKER: &str = "--[[COMPRESSED]]";
 const COMPRESSED_HEADER_PREFIX: &str = "--[[LUREK_SAVE v1 ";
 const COMPRESSED_HEADER_SUFFIX: &str = "]]";
 const COMPRESSED_ALGORITHM: &str = "lz4";
-const DEFAULT_SLOT_ROOT: &str = "save";
+const DEFAULT_SLOT_ROOT: &str = "save/slots";
 
 /// Metadata stored alongside a save slot; used by Lua to display save-select UI.
 #[derive(Debug, Clone, Default)]
@@ -568,9 +568,14 @@ impl SaveManager {
         *self = Self::default();
     }
 
-    /// Return the legacy permissive file path for `slot`, e.g. `"save/slot_slot1.sav"`.
+    /// Return the canonical file path for `slot`, e.g. `"save/slots/slot_slot1.sav"`.
     pub fn slot_path(slot: &str) -> String {
         format!("{DEFAULT_SLOT_ROOT}/slot_{}.sav", slot)
+    }
+
+    /// Return the logical save-slot directory root.
+    pub fn slot_root() -> &'static str {
+        DEFAULT_SLOT_ROOT
     }
 
     /// Validate the save slot naming policy.

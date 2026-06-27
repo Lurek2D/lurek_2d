@@ -73,7 +73,7 @@ mod province_map_pipeline_tests {
 
     #[test]
     fn province_map_shader_is_parseable_wgsl() {
-        let source = include_str!("../../../assets/shaders/province_map.wgsl");
+        let source = include_str!("../../../src/render/shaders/province_map.wgsl");
         wgpu::naga::front::wgsl::parse_str(source)
             .expect("province map shader should remain valid WGSL");
     }

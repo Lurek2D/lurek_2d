@@ -8,7 +8,7 @@
 use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;
 
-const PROVINCE_MAP_SHADER: &str = include_str!("../../assets/shaders/province_map.wgsl");
+const PROVINCE_MAP_SHADER: &str = include_str!("shaders/province_map.wgsl");
 
 fn default_province_watermark_rgba() -> [u8; 8 * 8 * 4] {
     let mut pixels = [0_u8; 8 * 8 * 4];

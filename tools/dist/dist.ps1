@@ -4,25 +4,21 @@
     Build and package Lurek2D for Windows distribution.
 
 .DESCRIPTION
-    Runs a full release build, then assembles a portable distribution folder and
-    a ZIP archive ready to ship alongside game projects.
+    Runs a release build, then assembles a portable distribution folder and
+    ZIP archive for end users. The packager enforces a Windows binary size
+    budget after UPX compression:
 
-    Output layout:
-        dist/
-          lurek2d-windows-x86_64/
-            lurek2d.exe           � engine binary
-            assets/              � engine assets (splash, icon)
-            content/demos/            � bundled example games
-            LICENSE
-            README.md
-            HOW-TO-RUN.txt
-          lurek2d-windows-x86_64.zip   � ready to upload / distribute
+      - ideal: <= 10 MB
+      - acceptable: <= 12.5 MB
+      - hard max: <= 15 MB
+
+    The script uses the accepted Windows shipping setting: UPX `--best`.
 
 .PARAMETER OutDir
-    Root output folder.  Default: dist/ inside the workspace.
+    Root output folder. Default: dist/ inside the workspace.
 
 .PARAMETER SkipBuild
-    Skip the wrapper-backed release build (use an already-compiled binary).  Useful for CI.
+    Skip the release build step and package the existing binary.
 
 .EXAMPLE
     .\tools\dist.ps1
@@ -44,16 +40,21 @@ if (-not $OutDir) { $OutDir = Join-Path $WorkspaceRoot 'dist' }
 $CargoToml = Join-Path $WorkspaceRoot 'Cargo.toml'
 $Version = (Select-String -Path $CargoToml -Pattern '^version\s*=\s*"([^"]+)"' | Select-Object -First 1).Matches.Groups[1].Value
 if (-not $Version) { $Version = "1.0.0" }
+
 $ArchName = "lurek2d-windows-x86_64"
 $PackageDir = Join-Path $OutDir $ArchName
 $ZipPath = Join-Path $OutDir "$ArchName.zip"
-# Release binary lives in build/dist/ (cargo build --profile dist)
-$BinarySource = Join-Path $WorkspaceRoot 'build\dist\lurek2d.exe'
+$BinarySource = Join-Path $WorkspaceRoot 'build\release\lurek2d.exe'
 
-# -- Helpers -------------------------------------------------------------------
+$IdealBinarySizeMB = 10.0
+$AcceptableBinarySizeMB = 12.5
+$HardMaxBinarySizeMB = 15.0
+
 function Write-Step([string]$Msg) { Write-Host "[dist] $Msg" -ForegroundColor Cyan }
-function Write-OK  ([string]$Msg) { Write-Host "[ OK ] $Msg" -ForegroundColor Green }
+function Write-OK([string]$Msg) { Write-Host "[ OK ] $Msg" -ForegroundColor Green }
+function Write-Warn([string]$Msg) { Write-Host "[warn] $Msg" -ForegroundColor Yellow }
 function Write-Fail([string]$Msg) { Write-Host "[FAIL] $Msg" -ForegroundColor Red; exit 1 }
+
 function Resolve-UpxPath {
     $upxCmd = Get-Command upx -ErrorAction SilentlyContinue
     if ($upxCmd) { return $upxCmd.Source }
@@ -64,34 +65,46 @@ function Resolve-UpxPath {
     return $null
 }
 
-# -- 0. Verify workspace -------------------------------------------------------
-if (-not (Test-Path (Join-Path $WorkspaceRoot 'Cargo.toml'))) {
+function Get-FileSizeMB([string]$Path) {
+    return [math]::Round((Get-Item $Path).Length / 1MB, 2)
+}
+
+function Compress-WithUpx([string]$UpxPath, [string]$BinaryPath, [string[]]$Args) {
+    $quotedUpx = '"' + $UpxPath + '"'
+    $quotedBinary = '"' + $BinaryPath + '"'
+    $argText = ($Args -join ' ')
+
+    $compressOutput = cmd.exe /d /c "$quotedUpx $argText $quotedBinary 2>&1"
+    $compressOutput | ForEach-Object { Write-Host "    $_" }
+    return ($LASTEXITCODE -eq 0)
+}
+
+if (-not (Test-Path $CargoToml)) {
     Write-Fail "Must be run from the lurek2d workspace root."
 }
 
-# -- 1. Verify branding assets ------------------------------------------------
 Write-Step "Checking branding assets ..."
 $SplashPng = Join-Path $WorkspaceRoot 'assets\splash.png'
 $FaviconIco = Join-Path $WorkspaceRoot 'assets\favicon.ico'
-
 if (-not (Test-Path $SplashPng)) {
-    Write-Host "[warn] Missing assets\splash.png." -ForegroundColor Yellow
+    Write-Warn "Missing assets\splash.png."
 }
 if (-not (Test-Path $FaviconIco)) {
-    Write-Host "[warn] Missing assets\favicon.ico." -ForegroundColor Yellow
+    Write-Warn "Missing assets\favicon.ico."
 }
 
-# -- 2. Release build ----------------------------------------------------------
 if (-not $SkipBuild) {
-    Write-Step "Building Lurek2D (dist -- size-optimised) -- this may take several minutes ..."
+    Write-Step "Building Lurek2D (release -- distribution-optimised) -- this may take several minutes ..."
     Push-Location $WorkspaceRoot
     try {
-        # Do NOT pipe through ForEach-Object — cargo writes to stderr and
-        # $ErrorActionPreference='Stop' would treat piped stderr as a fatal error.
-        python tools/dev/parallel_cargo.py build dist
-        if ($LASTEXITCODE -ne 0) { Write-Fail "parallel_cargo.py build dist failed (exit $LASTEXITCODE)." }
+        python tools/dev/parallel_cargo.py build release
+        if ($LASTEXITCODE -ne 0) {
+            Write-Fail "parallel_cargo.py build release failed (exit $LASTEXITCODE)."
+        }
     }
-    finally { Pop-Location }
+    finally {
+        Pop-Location
+    }
     Write-OK "Build succeeded."
 }
 else {
@@ -102,58 +115,51 @@ if (-not (Test-Path $BinarySource)) {
     Write-Fail "Binary not found at '$BinarySource'. Run without -SkipBuild."
 }
 
-# -- 3. Assemble package directory --------------------------------------------
 Write-Step "Assembling distribution package at '$PackageDir' ..."
 if (Test-Path $PackageDir) { Remove-Item $PackageDir -Recurse -Force }
 New-Item -ItemType Directory -Path $PackageDir -Force | Out-Null
 
-# Copy binary
 $DestBinary = Join-Path $PackageDir 'lurek2d.exe'
 Copy-Item $BinarySource -Destination $DestBinary -Force
-$SizeBefore = [math]::Round((Get-Item $DestBinary).Length / 1MB, 2)
+$SizeBefore = Get-FileSizeMB $DestBinary
+$FinalBinarySizeMB = $SizeBefore
 Write-OK ("Copied lurek2d.exe ({0} MB)" -f $SizeBefore)
 
-# -- Optional UPX compression --------------------------------------------------
-# UPX --best uses UCL/NRV compression (no LZMA): strong size reduction with
-# faster startup decompression than --lzma. Target range: 10-15 MB on Windows.
-# Install: https://upx.github.io/  (place upx.exe anywhere on PATH)
-# Caveats: some AV scanners flag UPX'd bins.
 $upxPath = Resolve-UpxPath
 if ($upxPath) {
-    $quotedUpx = '"' + $upxPath + '"'
-    $quotedBinary = '"' + $DestBinary + '"'
-    $listOutput = cmd.exe /d /c "$quotedUpx -l $quotedBinary 2>&1"
-    $alreadyPacked = ($LASTEXITCODE -eq 0)
-
-    if ($alreadyPacked) {
-        Write-Host "[dist] Binary already packed by UPX -- leaving as-is." -ForegroundColor DarkGray
+    Copy-Item $BinarySource -Destination $DestBinary -Force
+    Write-Step "UPX mode 'best' ..."
+    if (Compress-WithUpx $upxPath $DestBinary @("--best")) {
+        $FinalBinarySizeMB = Get-FileSizeMB $DestBinary
+        Write-OK ("UPX compressed (best): {0} MB -> {1} MB" -f $SizeBefore, $FinalBinarySizeMB)
     }
     else {
-        Write-Step "UPX found -- compressing lurek2d.exe ..."
-        # --best = maximum UCL compression (no LZMA): smaller package, still fast
-        $upxOutput = cmd.exe /d /c "$quotedUpx --best $quotedBinary 2>&1"
-        $upxOutput | ForEach-Object { Write-Host "    $_" }
-        if ($LASTEXITCODE -eq 0) {
-            $SizeAfter = [math]::Round((Get-Item $DestBinary).Length / 1MB, 2)
-            Write-OK "UPX compressed: $SizeBefore MB � $SizeAfter MB"
-        }
-        else {
-            Write-Host "[warn] UPX returned non-zero; binary unchanged." -ForegroundColor Yellow
-        }
+        Write-Warn "UPX mode 'best' failed; keeping the uncompressed release binary."
     }
 }
 else {
-    Write-Host "[dist] UPX not found on PATH -- skipping compression (add upx to PATH to enable)." -ForegroundColor DarkGray
+    Write-Warn "UPX not found on PATH -- skipping compression (add upx to PATH to enable)."
 }
 
-# Copy lurekc.bat launcher (no-console shortcut)
+if ($FinalBinarySizeMB -le $IdealBinarySizeMB) {
+    Write-OK ("Final binary size {0} MB meets the ideal <= {1} MB target." -f $FinalBinarySizeMB, $IdealBinarySizeMB)
+}
+elseif ($FinalBinarySizeMB -le $AcceptableBinarySizeMB) {
+    Write-OK ("Final binary size {0} MB is above the ideal {1} MB target but within the acceptable <= {2} MB budget." -f $FinalBinarySizeMB, $IdealBinarySizeMB, $AcceptableBinarySizeMB)
+}
+elseif ($FinalBinarySizeMB -le $HardMaxBinarySizeMB) {
+    Write-Warn ("Final binary size {0} MB exceeds the acceptable {1} MB budget and should be reduced further." -f $FinalBinarySizeMB, $AcceptableBinarySizeMB)
+}
+else {
+    Write-Fail ("Final binary size {0} MB exceeds the hard maximum {1} MB budget." -f $FinalBinarySizeMB, $HardMaxBinarySizeMB)
+}
+
 $LunecBat = Join-Path $WorkspaceRoot 'lurekc.bat'
 if (Test-Path $LunecBat) {
     Copy-Item $LunecBat -Destination (Join-Path $PackageDir 'lurekc.bat') -Force
     Write-OK "Copied lurekc.bat"
 }
 
-# Copy engine assets (splash, icons)
 $AssetsSource = Join-Path $WorkspaceRoot 'assets'
 if (Test-Path $AssetsSource) {
     $AssetsDest = Join-Path $PackageDir 'assets'
@@ -162,7 +168,6 @@ if (Test-Path $AssetsSource) {
     Write-OK "Copied assets/"
 }
 
-# Copy examples
 $ExamplesSource = Join-Path $WorkspaceRoot 'content\examples'
 if (Test-Path $ExamplesSource) {
     $ExamplesDest = Join-Path $PackageDir 'examples'
@@ -171,7 +176,6 @@ if (Test-Path $ExamplesSource) {
     Write-OK "Copied content/examples/"
 }
 
-# Copy Windows packaging helpers for .lurek archives and file association setup
 $DistToolsDest = Join-Path $PackageDir 'tools\dist'
 New-Item -ItemType Directory -Path $DistToolsDest -Force | Out-Null
 foreach ($toolFile in @('pack.ps1', 'pack.py', 'package_games.py', 'register_lurek_filetype.ps1')) {
@@ -182,7 +186,6 @@ foreach ($toolFile in @('pack.ps1', 'pack.py', 'package_games.py', 'register_lur
     }
 }
 
-# Copy demos (playable game demos)
 $DemosSource = Join-Path $WorkspaceRoot 'content\games'
 if (Test-Path $DemosSource) {
     $DemosDest = Join-Path $PackageDir 'games'
@@ -191,7 +194,6 @@ if (Test-Path $DemosSource) {
     Write-OK "Copied content/games/"
 }
 
-# Copy library (Lureksome pure-Lua standard libraries)
 $LibrarySource = Join-Path $WorkspaceRoot 'library'
 if (Test-Path $LibrarySource) {
     $LibraryDest = Join-Path $PackageDir 'library'
@@ -200,7 +202,6 @@ if (Test-Path $LibrarySource) {
     Write-OK "Copied library/"
 }
 
-# Copy API docs  (lurek.md, lurek.lua LuaCATS stubs)
 $ApiDocsDest = Join-Path $PackageDir 'docs'
 New-Item -ItemType Directory -Path $ApiDocsDest -Force | Out-Null
 foreach ($apiFile in @('lurek.md', 'lurek.lua', 'lureksome.md', 'lureksome.lua')) {
@@ -211,7 +212,6 @@ foreach ($apiFile in @('lurek.md', 'lurek.lua', 'lureksome.md', 'lureksome.lua')
     }
 }
 
-# Copy docs
 foreach ($f in @('README.md', 'LICENSE')) {
     $src = Join-Path $WorkspaceRoot $f
     if (Test-Path $src) {
@@ -219,7 +219,6 @@ foreach ($f in @('README.md', 'LICENSE')) {
     }
 }
 
-# Write how-to-run
 $HowTo = @"
 LUREK2D $Version -- Windows Portable Distribution
 =================================================
@@ -255,41 +254,40 @@ Lureksome standard libraries (library\)
 API Reference (docs\)
 ----------------------
   docs\lurek.md     -- lurek.* Lua API reference (Markdown)
-  docs\lurek.lua     -- LuaCATS type stubs for IDE autocompletion
+  docs\lurek.lua    -- LuaCATS type stubs for IDE autocompletion
                       (copy to your project root or configure in .luarc.json)
-    docs\lureksome.md -- Lureksome library reference (Markdown)
-    docs\lureksome.lua -- LuaCATS stubs for bundled library modules
+  docs\lureksome.md -- Lureksome library reference (Markdown)
+  docs\lureksome.lua -- LuaCATS stubs for bundled library modules
 
 Packaging helpers (tools\dist\)
 --------------------------------
-    tools\dist\pack.ps1   -- pack a game folder into a .lurek archive
-    tools\dist\pack.py    -- cross-platform .lurek packer
-    tools\dist\package_games.py -- batch-pack content\games into .lurek files
-    tools\dist\register_lurek_filetype.ps1 -- register .lurek double-click handling
+  tools\dist\pack.ps1   -- pack a game folder into a .lurek archive
+  tools\dist\pack.py    -- cross-platform .lurek packer
+  tools\dist\package_games.py -- batch-pack content\games into .lurek files
+  tools\dist\register_lurek_filetype.ps1 -- register .lurek double-click handling
 
 Writing your own game
 ---------------------
   1. Create a folder, e.g. my_game\
   2. Add a main.lua with lurek.load() / lurek.update(dt) / lurek.draw()
   3. Optionally add a conf.lua for window title, width, height
-  4. Run:  lurekc.bat my_game   (or drag the folder onto lurekc.lnk)
+  4. Run: lurekc.bat my_game   (or drag the folder onto lurekc.lnk)
 
 Opening .lurek game archives
 ----------------------------
-    1. Pack your game folder so main.lua is at the ZIP root
-    2. Rename or output the archive with a .lurek extension
-    3. Run tools\dist\register_lurek_filetype.ps1 once to enable double-click launch
-    4. Double-click the .lurek archive or run: lurek2d.exe my_game.lurek
+  1. Pack your game folder so main.lua is at the ZIP root
+  2. Rename or output the archive with a .lurek extension
+  3. Run tools\dist\register_lurek_filetype.ps1 once to enable double-click launch
+  4. Double-click the .lurek archive or run: lurek2d.exe my_game.lurek
 
-Full docs & source:  https://github.com/RandomBladeDude/lurek2d
+Full docs & source: https://github.com/RandomBladeDude/lurek2d
 "@
 Set-Content -Path (Join-Path $PackageDir 'HOW-TO-RUN.txt') -Value $HowTo -Encoding UTF8
 Write-OK "Written HOW-TO-RUN.txt"
 
-# -- 3b. Create lurekc.lnk shortcut with Lurek2D icon ---------------------------
 $IcoPath = Join-Path $PackageDir 'assets\favicon.ico'
 if (-not (Test-Path $IcoPath)) {
-    $IcoPath = Join-Path $PackageDir 'assets\icon.png'  # fallback: no icon in shortcut
+    $IcoPath = Join-Path $PackageDir 'assets\icon.png'
 }
 if (Test-Path $IcoPath) {
     Write-Step "Creating lurekc.lnk shortcut with Lurek2D icon ..."
@@ -304,26 +302,23 @@ if (Test-Path $IcoPath) {
     Write-OK "Created lurekc.lnk (double-click to run a game, drag-and-drop supported)"
 }
 
-# -- 4. Create ZIP -------------------------------------------------------------
 Write-Step "Creating ZIP archive at '$ZipPath' ..."
 if (Test-Path $ZipPath) { Remove-Item $ZipPath -Force }
 
-# Use .NET ZipFile — reads files as streams so VS Code file locks don't block it.
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 [System.IO.Compression.ZipFile]::CreateFromDirectory(
     $PackageDir,
     $ZipPath,
     [System.IO.Compression.CompressionLevel]::Optimal,
-    $true   # $true = include top-level dir name in entry paths
+    $true
 )
 $ZipSizeKB = [math]::Round((Get-Item $ZipPath).Length / 1024)
 Write-OK ("ZIP created ({0} KB) -> {1}" -f $ZipSizeKB, $ZipPath)
 
-# -- 5. Summary ----------------------------------------------------------------
 Write-Host ""
 Write-OK "Distribution package ready:"
 Write-Host "  Folder : $PackageDir" -ForegroundColor White
-Write-Host "  ZIP    : $ZipPath"    -ForegroundColor White
+Write-Host "  ZIP    : $ZipPath" -ForegroundColor White
 Write-Host ""
 Write-Host "  Distribute the ZIP or the folder contents to end users." -ForegroundColor Yellow
-Write-Host "  For a full installer, run:  makensis tools\dist\installer.nsi" -ForegroundColor Yellow
+Write-Host "  For a full installer, run: makensis tools\dist\installer.nsi" -ForegroundColor Yellow

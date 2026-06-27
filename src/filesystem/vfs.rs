@@ -15,6 +15,9 @@ use crate::runtime::error::{EngineError, EngineResult};
 use crate::runtime::log_messages::{FS01_GAMEFS_INIT, FS04_PATH_TRAVERSAL, FS05_VFS_MOUNT};
 use serde_json::Value as JsonValue;
 use std::path::{Path, PathBuf};
+
+const SAVE_ROOT: &str = "save";
+const SAVE_TEMP_DIR: &str = "save/tmp";
 /// Metadata snapshot for a file or directory in the virtual filesystem.
 #[derive(Debug, Clone)]
 pub struct FileInfo {
@@ -423,7 +426,7 @@ impl GameFS {
     }
     /// Return the save directory path under the base directory.
     pub fn get_save_directory(&self) -> PathBuf {
-        self.base_dir.join("save")
+        self.base_dir.join(SAVE_ROOT)
     }
     /// Return the current working directory as a string or filesystem error.
     pub fn get_working_directory() -> EngineResult<String> {
@@ -609,7 +612,7 @@ impl GameFS {
     /// Resolve a writable path inside save/ or return a filesystem error.
     pub fn resolve_save_path(&self, path: &str) -> EngineResult<PathBuf> {
         let full = self.base_dir.join(path);
-        let save_dir = self.base_dir.join("save");
+        let save_dir = self.base_dir.join(SAVE_ROOT);
         if !full.starts_with(&save_dir) {
             return Err(EngineError::FileSystemError(
                 "Write access restricted to save/ directory".into(),
@@ -697,9 +700,12 @@ impl GameFS {
     }
     /// Create a unique temporary file under save/ and return its logical path.
     pub fn create_temp_file(&self, prefix: &str) -> EngineResult<String> {
-        let save_dir = self.base_dir.join("save");
+        let save_dir = self.base_dir.join(SAVE_TEMP_DIR);
         std::fs::create_dir_all(&save_dir).map_err(|e| {
-            EngineError::FileSystemError(format!("create_temp_file: cannot create save/: {}", e))
+            EngineError::FileSystemError(format!(
+                "create_temp_file: cannot create {}: {}",
+                SAVE_TEMP_DIR, e
+            ))
         })?;
         let ts = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -723,7 +729,7 @@ impl GameFS {
         std::fs::File::create(&full_path).map_err(|e| {
             EngineError::FileSystemError(format!("create_temp_file: cannot create file: {}", e))
         })?;
-        Ok(format!("save/{}", filename))
+        Ok(format!("{}/{}", SAVE_TEMP_DIR, filename))
     }
 }
 /// Provide dataframe file persistence storage operations through GameFS.

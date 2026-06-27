@@ -20,7 +20,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -136,7 +136,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -179,7 +179,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -229,7 +229,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -283,7 +283,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -297,13 +297,13 @@ do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_TOML,   "toml", {name = "ProjectConfig"})
     local h2 = lurek.asset.load(PATH_JSON,   "json", {name = "FontAtlas"})
-    local h3 = lurek.asset.load(PATH_SHADER, "shader")  -- stem = "province_map"
+    local h3 = lurek.asset.load(PATH_SHADER, "shader")  -- stem = "sample_shader"
 
     -- Substring search is case-insensitive.
     local matches = lurek.asset.findByName("config")
     example_print_log("findByName 'config' count=" .. #matches)  -- 1
-    local shader_matches = lurek.asset.findByName("province")
-    example_print_log("findByName 'province' count=" .. #shader_matches)  -- 1
+    local shader_matches = lurek.asset.findByName("sample")
+    example_print_log("findByName 'sample' count=" .. #shader_matches)  -- 1
     lurek.asset.clear()
 end
 ```
@@ -338,7 +338,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -395,7 +395,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -452,7 +452,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -507,7 +507,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -556,7 +556,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -613,7 +613,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -663,7 +663,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -747,7 +747,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -797,7 +797,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -849,7 +849,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -898,7 +898,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -950,7 +950,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -1115,7 +1115,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -1176,7 +1176,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -1262,7 +1262,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -1347,7 +1347,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -1399,7 +1399,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -1444,7 +1444,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -1498,7 +1498,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -1601,7 +1601,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)
@@ -1651,7 +1651,7 @@ do
     local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
     local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
     local PATH_LUA    = "content/examples/asset.lua"
-    local PATH_SHADER = "assets/shaders/province_map.wgsl"
+    local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
     local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
     local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
     local function example_print_log(...)

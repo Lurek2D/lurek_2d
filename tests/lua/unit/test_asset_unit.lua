@@ -9,9 +9,9 @@ do
 local PATH_JSON = "assets/fonts/bitmap_fonts.json"
 local PATH_TOML = "Cargo.toml"
 local PATH_LUA = "content/examples/asset.lua"
-local PATH_SHADER = "assets/shaders/province_map.wgsl"
+local PATH_SHADER = "content/examples/assets/shaders/sample_shader.wgsl"
 local PATH_OBJ = "content/examples/asset.lua"
-local PATH_BIN = "assets/textures/province_map.png"
+local PATH_BIN = "content/examples/assets/audio/sample_tone.wav"
 
 local function reset_assets()
     lurek.asset.clear()

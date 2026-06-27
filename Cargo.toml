@@ -191,12 +191,12 @@ path = "src/lib.rs"
 [profile.dev]
 # FAST DEV BUILD — tuned for the shortest edit/build/run cycle.
 # opt-level = 0: no compiler optimizations; fastest compile and lightest link.
-# incremental = false: keeps disk churn lower and avoids incremental cache bloat.
+# incremental = true: reuses prior work for the fastest rebuilds during daily iteration.
 # debug = 0: no debug symbols for the fast path; use a debugger-specific build
 #            only when you actually need step-through debugging.
 # codegen-units = 256: maximum parallel code generation units = fastest compile.
 opt-level = 0
-incremental = false
+incremental = true
 debug = 0
 codegen-units = 256
 
@@ -216,9 +216,6 @@ debug = false
 
 # DISTRIBUTION profile — inherits everything from release (opt-level=3, fat LTO,
 # strip, panic=abort). dist.ps1 applies UPX --best on top → ~8-9 MB package.
-[profile.dist]
-inherits = "release"
-
 [[test]]
 name = "examples_load_test"
 path = "tests/examples_load_test.rs"

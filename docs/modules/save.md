@@ -939,7 +939,7 @@ LSaveManager:save(slot)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `slot` | string | Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slot_<name>.sav. |
+| `slot` | string | Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slots/slot_<name>.sav. |
 
 **Example**
 

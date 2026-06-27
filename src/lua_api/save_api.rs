@@ -396,7 +396,7 @@ impl LuaSaveManager {
     }
     fn list_slots<'a>(&self, lua: &'a Lua) -> LuaResult<LuaTable<'a>> {
         let result = lua.create_table()?;
-        let entries = match self.state.borrow().fs.list("save") {
+        let entries = match self.state.borrow().fs.list(SaveManager::slot_root()) {
             Ok(e) => e,
             Err(_) => return Ok(result),
         };
@@ -694,7 +694,7 @@ impl LuaUserData for LuaSaveManager {
         /// Persist all registered data sections to the named slot file on disk.
         /// Calls the onBeforeSave hook, collects data, optionally compresses, then writes temp + rename with optional `.bak` recovery.
         /// Slot names must use `[A-Za-z0-9_-]`; invalid names are rejected before any file write occurs.
-        /// @param | slot | string | Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slot_<name>.sav.
+        /// @param | slot | string | Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slots/slot_<name>.sav.
         methods.add_method_mut("save", |lua, this, slot: String| {
             this.save_to_slot(lua, &slot)
         });

@@ -47,7 +47,7 @@ Aby dostarczyć grę dla Linuksa jako jeden plik "kliknij-i-graj" (AppImage), kt
 1. **Przygotowanie binarki**
    Kompilujemy silnik w środowisku ze starym glibc:
    ```bash
-   cargo build --profile dist
+   cargo build --release
    ```
 
 2. **Pobranie linuxdeploy**
@@ -130,10 +130,10 @@ Observed repo facts:
 - Linux is a declared desktop target in `docs/architecture/philosophy.md` and `docs/architecture/engine-architecture.md`.
 - The Linux/macOS packager exists as `tools/dist/dist.sh`.
 - The Linux installer exists as `tools/dist/install.sh`.
-- The Cargo wrapper already supports `build dist` through `tools/dev/parallel_cargo.py`.
-- The Windows packager uses `build dist` and UPX.
-- The Linux packager currently builds `release`, not `dist`.
-- `profile.dist` currently only inherits `release`; it is not yet more size-oriented than `release`.
+- The Cargo wrapper supports `build debug` and `build release` through `tools/dev/parallel_cargo.py`.
+- The Windows packager uses `build release` and UPX.
+- The Linux packager also builds `release`.
+- `dist/` is the packaged output folder, not a third Cargo profile.
 - The `<= 10 MB` target is still marked as proposed architecture, not an active enforced contract.
 - `.github/workflows/` is empty in this checkout, so Linux CI is not actually present right now.
 
@@ -425,8 +425,8 @@ For Linux, the user-facing shipped size matters more than the raw ELF size.
 
 First size steps that do not cut features:
 
-1. make `profile.dist` truly size-oriented
-2. make Linux packaging use `build dist`, not `build release`
+1. keep `release` as the single shipping profile
+2. keep Linux and Windows packagers aligned on `build release`
 3. split debug info out of the shipping binary
 4. run `strip --strip-unneeded` as part of the Linux packaging path
 5. optionally run UPX on the final ELF if the team accepts the trade-offs
@@ -632,8 +632,8 @@ This plan assumes:
 | Phase | Owner | Why it exists | Binary gate |
 |---|---|---|---|
 | P1 - Define Linux shipping baseline | planner / build-engineer | stop ambiguity between `gnu` and `musl` | written release contract chooses `x86_64-unknown-linux-gnu` as primary |
-| P2 - Make `dist` real | build-engineer | today Linux `dist` is not truly distinct from `release` | `cargo build --profile dist` produces a smaller binary than `--release` |
-| P3 - Fix Linux packager | build-engineer | `tools/dist/dist.sh` must build `dist`, read `build/dist/lurek2d`, and emit size report | packaging script produces folder + `tar.xz` from `build/dist/lurek2d` |
+| P2 - Keep one shipping profile | build-engineer | avoid duplicate Rust caches and ambiguous release paths | `cargo build --release` is the only shipping build mode |
+| P3 - Keep Linux packager aligned | build-engineer | Linux and Windows should package the same release output | packaging script produces folder + `tar.xz` from `build/release/lurek2d` |
 | P4 - Add Linux compression policy | build-engineer | align Linux with Windows size work without unsafe defaults | Linux packager supports `strip`, optional UPX, and always `tar.xz` |
 | P5 - Add optional AppImage path | build-engineer | give a better end-user artifact than raw folder only | AppImage is produced and launch-tested on Linux |
 | P6 - Add Linux CI | verifier | repo currently has no real workflow files in this checkout | Ubuntu build + tests + packaging job is green |
@@ -673,7 +673,7 @@ If the goal is "make Linux work reliably now" under the full-core assumption, do
 
 1. standardize on `x86_64-unknown-linux-gnu`
 2. validate on Mint and Fedora natively
-3. make Linux `dist.sh` use `build dist`
+3. keep Linux `dist.sh` on `build release`
 4. keep `UPX` optional on Linux
 5. use `tar.xz` as the guaranteed compressed artifact
 6. add AppImage later as the preferred no-install user artifact

@@ -145,7 +145,7 @@ A solo developer or small team builds a 2D desktop game in Lua and ships it on S
 
 | Target | Command | Output |
 |--------|---------|--------|
-| Windows (primary) | `cargo build --profile dist` + `dist.ps1` | `lurek2d.exe` stripped + UPX ≈ 8–9 MB |
+| Windows (primary) | `cargo build --release` + `dist.ps1` | `lurek2d.exe` stripped + UPX ≈ 8–9 MB |
 | Linux | `bash tools/dist/dist.sh` → `tar.xz` / AppImage | portable folder |
 | macOS | `bash tools/dist/dist.sh` | binary + folder |
 
@@ -2286,7 +2286,7 @@ A game studio builds a Lurek2D-based game launcher: display game list, check for
 |---------|---------|------------|----------|
 | `dev` | `cargo build` | ~80–150 MB (unstripped) | Development, fast recompile |
 | `release` | `cargo build --release` | ~30–40 MB (stripped=false) | Testing, QA |
-| `dist` | `cargo build --profile dist` + UPX | ~8–9 MB | Shipping to end users |
+| `release+UPX` | `cargo build --release` + UPX | ~8–9 MB | Shipping to end users |
 | `lua54` | `--no-default-features --features lua54` | Similar to release | ARM64 / platforms without LuaJIT |
 | `headless` | Runtime flag `--headless` | Same binary | CI, batch compute, server |
 
@@ -2308,7 +2308,7 @@ cargo build --release --target aarch64-unknown-linux-gnu --no-default-features -
 
 ```powershell
 $env:RUSTFLAGS="-C target-feature=+crt-static"
-cargo build --profile dist
+cargo build --release
 ```
 
 Produces a fully self-contained `.exe` with no VCRUNTIME dependency.
