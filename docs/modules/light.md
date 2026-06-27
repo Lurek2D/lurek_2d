@@ -453,6 +453,35 @@ end
 
 ---
 
+### `lurek.light.getShader`
+
+Returns the default custom light shader for the light world.
+
+```lua
+lurek.light.getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](#lshader)? | Bound shader or nil. |
+
+**Example**
+
+```lua
+do
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "light" })
+    lurek.light.setShader(shader)
+    local active = lurek.light.getShader()
+    local target = active and active:getTarget() or "nil"
+    lurek.light.setShader(nil)
+    lurek.log.info("[light] world shader target=" .. target)
+end
+```
+
+---
+
 ### `lurek.light.isEnabled`
 
 Returns whether the shared light world is enabled.
@@ -814,6 +843,37 @@ end
 
 ---
 
+### `lurek.light.setShader`
+
+Sets or clears the default custom light shader for the light world.
+
+```lua
+lurek.light.setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](#lshader) | Light-target shader or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "light" })
+    lurek.light.setShader(shader)
+    lurek.log.info("[light] world shader=" .. tostring(lurek.light.getShader() ~= nil))
+end
+```
+
+---
+
 ### `lurek.light.syncAmbient`
 
 Returns the light world's ambient color hint.
@@ -866,6 +926,7 @@ end
 - [LImageData](#limagedata)
 - [LLight](#llight)
 - [LOccluder](#loccluder)
+- [LShader](#lshader)
 
 ## LImageData
 
@@ -966,6 +1027,29 @@ LImageData:applyPaletteLut(lut_ud)
 | Name | Type | Description |
 |------|------|-------------|
 | `lut_ud` | [LPaletteLUT](image.md#lpalettelut) | Palette lookup table handle. |
+
+---
+
+#### `LImageData:applyShader`
+
+Applies an offline image shader and returns the processed image.
+
+```lua
+LImageData:applyShader(shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader` | [LShader](#lshader) | Image-target shader. |
+| `opts?` | table | Optional processing options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Processed image. |
 
 ---
 
@@ -2563,6 +2647,36 @@ end
 
 ---
 
+#### `LLight:getShader`
+
+Returns the custom light shader bound to this light, if any.
+
+```lua
+LLight:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](#lshader)? | Bound shader or nil. |
+
+**Example**
+
+```lua
+do
+    local light = lurek.light.newLight(400, 300, 180)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "light" })
+    light:setShader(shader)
+    local active = light:getShader()
+    local target = active and active:getTarget() or "nil"
+    light:setShader(nil)
+    lurek.log.info("[light] light shader target=" .. target)
+end
+```
+
+---
+
 #### `LLight:getShadowColor`
 
 Returns this light shadow RGBA color.
@@ -3731,6 +3845,38 @@ end
 
 ---
 
+#### `LLight:setShader`
+
+Sets or clears the custom light-contribution shader for this light.
+
+```lua
+LLight:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](#lshader) | Light-target shader or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local light = lurek.light.newLight(400, 300, 180)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "light" })
+    light:setShader(shader)
+    lurek.log.info("[light] light shader=" .. tostring(light:getShader() ~= nil))
+end
+```
+
+---
+
 #### `LLight:setShadowColor`
 
 Sets this light shadow RGBA color. This method is available to Lua scripts.
@@ -4766,5 +4912,154 @@ do
     example_print_log("is Object = " .. tostring(occ:typeOf("LObject")))
 end
 ```
+
+---
+
+## LShader
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LShader:getDiagnostics`
+
+Returns shader validation diagnostics.
+
+```lua
+LShader:getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of diagnostic strings. |
+
+---
+
+#### `LShader:getId`
+
+Returns the internal numeric handle ID for this shader.
+
+```lua
+LShader:getId()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Opaque shader handle identifier. |
+
+---
+
+#### `LShader:getTarget`
+
+Returns the target this shader was validated for.
+
+```lua
+LShader:getTarget()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Shader target name. |
+
+---
+
+#### `LShader:hasUniform`
+
+Checks whether this shader declares a uniform with the given name.
+
+```lua
+LShader:hasUniform(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Uniform name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the uniform exists. |
+
+---
+
+#### `LShader:release`
+
+Releases the shader resource. If active, the default shader is restored.
+
+```lua
+LShader:release()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the shader was valid and was released. |
+
+---
+
+#### `LShader:send`
+
+Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
+
+```lua
+LShader:send(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Uniform variable name declared in the shader. |
+| `value` | number|boolean|table | The value to send. |
+
+---
+
+#### `LShader:type`
+
+Returns the type name string for this shader object.
+
+```lua
+LShader:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always "[LShader](#lshader)". |
+
+---
+
+#### `LShader:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LShader:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check ("Shader" or "Object"). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the name matches. |
 
 ---

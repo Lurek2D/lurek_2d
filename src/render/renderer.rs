@@ -453,7 +453,10 @@ pub enum RenderCommand {
         oy: f32,
     },
     /// Draw a particle system snapshot as a list of `ParticleInstance` values.
-    DrawParticleSystem { particles: Vec<ParticleInstance> },
+    DrawParticleSystem {
+        particles: Vec<ParticleInstance>,
+        shader: Option<ShaderKey>,
+    },
     /// Mark the start of a post-processing capture region identified by `stack_id`.
     BeginPostFx { stack_id: u64 },
     /// Mark the end of a post-processing capture region.
@@ -809,6 +812,20 @@ pub struct ParticleInstance {
     pub quad: Option<[f32; 4]>,
     /// Source texture dimensions `(width, height)` used for UV calculation.
     pub quad_tex_dims: Option<(f32, f32)>,
+    /// Particle-local X position before emitter/world offset.
+    pub local_x: f32,
+    /// Particle-local Y position before emitter/world offset.
+    pub local_y: f32,
+    /// Horizontal velocity in world units per second.
+    pub velocity_x: f32,
+    /// Vertical velocity in world units per second.
+    pub velocity_y: f32,
+    /// Normalized age in [0, 1].
+    pub normalized_age: f32,
+    /// Original particle lifetime in seconds.
+    pub lifetime: f32,
+    /// Stable random seed for visual shader variation.
+    pub seed: u32,
 }
 /// A renderable resource handle used by generic draw utilities.
 #[derive(Debug, Clone)]

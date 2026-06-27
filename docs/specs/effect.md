@@ -136,10 +136,10 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 - `lurek.effect.getEffectTypes() -> string[]`: Returns all built-in post-processing effect type names.
 - `lurek.effect.getPresetNames() -> string[]`: Returns all built-in post-processing preset names.
 - `lurek.effect.getShaderErrorDisplay() -> boolean`: Returns whether renderer shader error display overlays are enabled.
-- `lurek.effect.newCustomEffect(shader_id) -> LPostFxEffect`: Creates a custom post-processing effect that references an existing shader id.
+- `lurek.effect.newCustomEffect(shader) -> LPostFxEffect`: Creates a custom post-processing effect from a postfx-target shader.
 - `lurek.effect.newEffect(type_name) -> LPostFxEffect`: Creates a built-in post-processing effect by type name.
 - `lurek.effect.newImageEffect(spec?, params?) -> LImageEffect`: Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
-- `lurek.effect.newPass(shader_id) -> LPostFxEffect`: Creates a custom post-processing pass from an existing shader id.
+- `lurek.effect.newPass(shader) -> LPostFxEffect`: Creates a custom post-processing pass from a postfx-target shader.
 - `lurek.effect.newPresetStack(name, w?, h?) -> LPostFxStack`: Creates a named preset post-processing stack with optional dimensions.
 - `lurek.effect.newStack(w?, h?) -> LPostFxStack`: Creates a post-processing stack using optional dimensions or the current window size.
 - `lurek.effect.setShaderErrorDisplay(enabled) -> nil`: Enables or disables renderer shader error display overlays.

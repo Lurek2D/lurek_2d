@@ -2603,24 +2603,6 @@
           "objectType": null
         },
         {
-          "name": "newMidiPlayer",
-          "fullPath": "lurek.audio.newMidiPlayer",
-          "signature": "lurek.audio.newMidiPlayer([path])",
-          "description": "Creates a new MIDI player instance, optionally loading a file immediately.",
-          "parameters": [
-            {
-              "name": "path",
-              "type": "string",
-              "description": "Optional relative path to a .mid file to load.",
-              "optional": true
-            }
-          ],
-          "returns": "LMidiPlayer",
-          "returnType": "LMidiPlayer",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
           "name": "newSoundData",
           "fullPath": "lurek.audio.newSoundData",
           "signature": "(...)",
@@ -2647,46 +2629,6 @@
           ],
           "returns": "LSoundData",
           "returnType": "LSoundData",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "setMidiSoundFont",
-          "fullPath": "lurek.audio.setMidiSoundFont",
-          "signature": "(path)",
-          "description": "Sets the SoundFont file used for MIDI synthesis.",
-          "parameters": [
-            {
-              "name": "path",
-              "type": "string",
-              "description": "Relative path to the .sf2 SoundFont file.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "hasMidiSoundFont",
-          "fullPath": "lurek.audio.hasMidiSoundFont",
-          "signature": "()",
-          "description": "Returns whether a SoundFont file has been loaded for MIDI synthesis.",
-          "parameters": [],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "clearMidiSoundFont",
-          "fullPath": "lurek.audio.clearMidiSoundFont",
-          "signature": "()",
-          "description": "Clears the loaded SoundFont and reverts MIDI synthesis to default.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -9010,13 +8952,13 @@
         {
           "name": "newCustomEffect",
           "fullPath": "lurek.effect.newCustomEffect",
-          "signature": "(shader_id)",
-          "description": "Creates a custom post-processing effect that references an existing shader id.",
+          "signature": "(shader_value)",
+          "description": "Creates a custom post-processing effect from a postfx-target shader.",
           "parameters": [
             {
-              "name": "shader_id",
-              "type": "integer",
-              "description": "Renderer shader identifier used for the custom effect.",
+              "name": "shader",
+              "type": "LShader|integer",
+              "description": "Postfx-target shader handle or legacy shader id.",
               "optional": false
             }
           ],
@@ -9082,13 +9024,13 @@
         {
           "name": "newPass",
           "fullPath": "lurek.effect.newPass",
-          "signature": "(shader_id)",
-          "description": "Creates a custom post-processing pass from an existing shader id.",
+          "signature": "(shader_value)",
+          "description": "Creates a custom post-processing pass from a postfx-target shader.",
           "parameters": [
             {
-              "name": "shader_id",
-              "type": "integer",
-              "description": "Renderer shader identifier used for the pass.",
+              "name": "shader",
+              "type": "LShader|integer",
+              "description": "Postfx-target shader handle or legacy shader id.",
               "optional": false
             }
           ],
@@ -11919,6 +11861,36 @@
           "objectType": null
         },
         {
+          "name": "requestShader",
+          "fullPath": "lurek.image.requestShader",
+          "signature": "(image, shader, [opts])",
+          "description": "Starts an offline image shader request and returns a completed job handle.",
+          "parameters": [
+            {
+              "name": "image",
+              "type": "LImageData",
+              "description": "Source image data.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Image-target shader.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional job options.",
+              "optional": true
+            }
+          ],
+          "returns": "LImageShaderJob",
+          "returnType": "LImageShaderJob",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newImageDataFromBytes",
           "fullPath": "lurek.image.newImageDataFromBytes",
           "signature": "(w, h, bytes)",
@@ -11952,7 +11924,7 @@
           "name": "newCompressedData",
           "fullPath": "lurek.image.newCompressedData",
           "signature": "(filename)",
-          "description": "Loads DDS compressed image data from GameFS.",
+          "description": "Attempts to load DDS compressed image data from GameFS.",
           "parameters": [
             {
               "name": "filename",
@@ -14280,24 +14252,6 @@
           "objectType": null
         },
         {
-          "name": "loadOnnx",
-          "fullPath": "lurek.learning.loadOnnx",
-          "signature": "(path)",
-          "description": "Loads and optimises an ONNX model from a file path.",
-          "parameters": [
-            {
-              "name": "path",
-              "type": "string",
-              "description": "Filesystem path to the `.onnx` model file inside the current sandbox root.",
-              "optional": false
-            }
-          ],
-          "returns": "LOnnxModel",
-          "returnType": "LOnnxModel",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
           "name": "newTensor",
           "fullPath": "lurek.learning.newTensor",
           "signature": "(shape_tbl, data_tbl)",
@@ -14580,6 +14534,35 @@
       "name": "light",
       "description": "Registers the `lurek.light` Lua API for light worlds, occluders, blends, and validated lighting options.",
       "functions": [
+        {
+          "name": "setShader",
+          "fullPath": "lurek.light.setShader",
+          "signature": "([shader])",
+          "description": "Sets or clears the default custom light shader for the light world.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Light-target shader or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getShader",
+          "fullPath": "lurek.light.getShader",
+          "signature": "()",
+          "description": "Returns the default custom light shader for the light world.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
+          "isMethod": false,
+          "objectType": null
+        },
         {
           "name": "newLight",
           "fullPath": "lurek.light.newLight",
@@ -18073,71 +18056,6 @@
       "methods": []
     },
     {
-      "name": "midi",
-      "description": "Registers the `lurek.midi` Lua API for MIDI-facing runtime helpers and thin script bindings over playback.",
-      "functions": [
-        {
-          "name": "newPlayer",
-          "fullPath": "lurek.midi.newPlayer",
-          "signature": "([path])",
-          "description": "Creates a new MIDI player instance, optionally loading a file immediately.",
-          "parameters": [
-            {
-              "name": "path",
-              "type": "string",
-              "description": "Optional relative path to a .mid file to load.",
-              "optional": true
-            }
-          ],
-          "returns": "LMidiPlayer",
-          "returnType": "LMidiPlayer",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "loadSoundFont",
-          "fullPath": "lurek.midi.loadSoundFont",
-          "signature": "(path)",
-          "description": "Loads a SoundFont (SF2) file into the global MIDI state for synthesis.",
-          "parameters": [
-            {
-              "name": "path",
-              "type": "string",
-              "description": "Relative path to the .sf2 file.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "hasSoundFont",
-          "fullPath": "lurek.midi.hasSoundFont",
-          "signature": "()",
-          "description": "Returns whether a SoundFont is currently loaded and ready for synthesis.",
-          "parameters": [],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "clearSoundFont",
-          "fullPath": "lurek.midi.clearSoundFont",
-          "signature": "()",
-          "description": "Unloads the current SoundFont and frees its memory.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": false,
-          "objectType": null
-        }
-      ],
-      "methods": []
-    },
-    {
       "name": "minimap",
       "description": "Registers the `lurek.minimap` Lua API for minimap userdata, icon parsing, colors, and minimap rendering.",
       "functions": [
@@ -18306,17 +18224,6 @@
           ],
           "returns": "LNetworkHost",
           "returnType": "LNetworkHost",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newRuntime",
-          "fullPath": "lurek.network.newRuntime",
-          "signature": "()",
-          "description": "Creates a background network runtime.",
-          "parameters": [],
-          "returns": "LNetworkRuntime",
-          "returnType": "LNetworkRuntime",
           "isMethod": false,
           "objectType": null
         },
@@ -18732,60 +18639,6 @@
               "type": "number",
               "description": "Distance threshold above which a hard snap occurs.",
               "optional": false
-            }
-          ],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "sseConnect",
-          "fullPath": "lurek.network.sseConnect",
-          "signature": "(url, callback)",
-          "description": "Opens an SSE stream to `url` and returns an `LSseStream` handle.",
-          "parameters": [
-            {
-              "name": "url",
-              "type": "string",
-              "description": "SSE endpoint URL.",
-              "optional": false
-            },
-            {
-              "name": "callback",
-              "type": "function",
-              "description": "Called with each event table `{ id?, event?, data }`.",
-              "optional": false
-            }
-          ],
-          "returns": "LSseStream",
-          "returnType": "LSseStream",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "sseCollect",
-          "fullPath": "lurek.network.sseCollect",
-          "signature": "(url, n, [timeout_secs])",
-          "description": "Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.",
-          "parameters": [
-            {
-              "name": "url",
-              "type": "string",
-              "description": "SSE endpoint URL.",
-              "optional": false
-            },
-            {
-              "name": "n",
-              "type": "integer",
-              "description": "Maximum number of events to collect.",
-              "optional": false
-            },
-            {
-              "name": "timeout_secs",
-              "type": "number",
-              "description": "Optional timeout in seconds; defaults to 5.",
-              "optional": true
             }
           ],
           "returns": "table",
@@ -27843,6 +27696,37 @@
           ],
           "returns": "table",
           "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "shader",
+      "description": "Registers the `lurek.shader` Lua API for target-aware WGSL shader handles.\n\nThe shader namespace is a thin public constructor layer over the shared render\nshader store. Rendering modules decide where validated shader targets may be\nbound; this file only parses options, constructs shaders, and returns handles.",
+      "functions": [
+        {
+          "name": "new",
+          "fullPath": "lurek.shader.new",
+          "signature": "(code, [opts])",
+          "description": "Compiles a target-aware WGSL fragment shader and returns a shader handle.",
+          "parameters": [
+            {
+              "name": "code",
+              "type": "string",
+              "description": "WGSL fragment shader source code.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options table with optional `target` string.",
+              "optional": true
+            }
+          ],
+          "returns": "LShader",
+          "returnType": "LShader",
           "isMethod": false,
           "objectType": null
         }
@@ -57023,7 +56907,7 @@
     },
     {
       "name": "LCompressedImageData",
-      "description": "Lua-side handle for compressed DDS image metadata and mipmap data.",
+      "description": "Lua-side handle for legacy compressed DDS metadata.",
       "methods": [
         {
           "name": "getWidth",
@@ -79710,6 +79594,30 @@
           "objectType": "LImageData"
         },
         {
+          "name": "applyShader",
+          "fullPath": "LImageData:applyShader",
+          "signature": "(shader, [opts])",
+          "description": "Applies an offline image shader and returns the processed image.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Image-target shader.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional processing options.",
+              "optional": true
+            }
+          ],
+          "returns": "LImageData",
+          "returnType": "LImageData",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
           "name": "applyMask",
           "fullPath": "LImageData:applyMask",
           "signature": "(mask)",
@@ -82412,6 +82320,52 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LImageEffect"
+        }
+      ]
+    },
+    {
+      "name": "LImageShaderJob",
+      "description": "Lua handle for an offline image shader request.",
+      "methods": [
+        {
+          "name": "poll",
+          "fullPath": "LImageShaderJob:poll",
+          "signature": "()",
+          "description": "Returns the shader output image when the job has completed, or nil if pending/cancelled.",
+          "parameters": [],
+          "returns": "LImageData?",
+          "returnType": "LImageData?",
+          "isMethod": true,
+          "objectType": "LImageShaderJob"
+        },
+        {
+          "name": "wait",
+          "fullPath": "LImageShaderJob:wait",
+          "signature": "([timeout_ms])",
+          "description": "Waits for the offline image shader job and returns its output image.",
+          "parameters": [
+            {
+              "name": "timeoutMs",
+              "type": "integer",
+              "description": "Optional timeout in milliseconds.",
+              "optional": true
+            }
+          ],
+          "returns": "LImageData?",
+          "returnType": "LImageData?",
+          "isMethod": true,
+          "objectType": "LImageShaderJob"
+        },
+        {
+          "name": "cancel",
+          "fullPath": "LImageShaderJob:cancel",
+          "signature": "()",
+          "description": "Cancels this image shader job.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageShaderJob"
         }
       ]
     },
@@ -91574,6 +91528,35 @@
           "parameters": [],
           "returns": "number",
           "returnType": "number",
+          "isMethod": true,
+          "objectType": "LLight"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LLight:setShader",
+          "signature": "([shader])",
+          "description": "Sets or clears the custom light-contribution shader for this light.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Light-target shader or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLight"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LLight:getShader",
+          "signature": "()",
+          "description": "Returns the custom light shader bound to this light, if any.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
           "isMethod": true,
           "objectType": "LLight"
         },
@@ -104494,431 +104477,6 @@
       ]
     },
     {
-      "name": "LNetworkRuntime",
-      "description": "Lua-side wrapper for the background network runtime.",
-      "methods": [
-        {
-          "name": "httpRequest",
-          "fullPath": "LNetworkRuntime:httpRequest",
-          "signature": "(opts)",
-          "description": "Starts an HTTP request from an options table and returns its request id.",
-          "parameters": [
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Options table with `url`, optional `method`, `headers`, `body`, and `timeout`.",
-              "optional": false
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "httpGet",
-          "fullPath": "LNetworkRuntime:httpGet",
-          "signature": "(url, [headers])",
-          "description": "Starts an HTTP GET request. This method is available to Lua scripts.",
-          "parameters": [
-            {
-              "name": "url",
-              "type": "string",
-              "description": "Request URL.",
-              "optional": false
-            },
-            {
-              "name": "headers",
-              "type": "table",
-              "description": "Optional headers table.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "httpPost",
-          "fullPath": "LNetworkRuntime:httpPost",
-          "signature": "(url, body, [headers])",
-          "description": "Starts an HTTP POST request. This method is available to Lua scripts.",
-          "parameters": [
-            {
-              "name": "url",
-              "type": "string",
-              "description": "Request URL.",
-              "optional": false
-            },
-            {
-              "name": "body",
-              "type": "string",
-              "description": "Request body.",
-              "optional": false
-            },
-            {
-              "name": "headers",
-              "type": "table",
-              "description": "Optional headers table.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "httpJson",
-          "fullPath": "LNetworkRuntime:httpJson",
-          "signature": "(url, body, [headers])",
-          "description": "Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.",
-          "parameters": [
-            {
-              "name": "url",
-              "type": "string",
-              "description": "Request URL.",
-              "optional": false
-            },
-            {
-              "name": "body",
-              "type": "string",
-              "description": "JSON string to send as the request body.",
-              "optional": false
-            },
-            {
-              "name": "headers",
-              "type": "table",
-              "description": "Optional additional headers table.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "httpStream",
-          "fullPath": "LNetworkRuntime:httpStream",
-          "signature": "(url, [headers], [timeout_secs])",
-          "description": "Starts an HTTP GET request intended for Server-Sent Events or streaming responses.",
-          "parameters": [
-            {
-              "name": "url",
-              "type": "string",
-              "description": "Request URL.",
-              "optional": false
-            },
-            {
-              "name": "headers",
-              "type": "table",
-              "description": "Optional headers table.",
-              "optional": true
-            },
-            {
-              "name": "timeout_secs",
-              "type": "integer",
-              "description": "Optional timeout override in seconds.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "authBootstrap",
-          "fullPath": "LNetworkRuntime:authBootstrap",
-          "signature": "(auth_url, payload, refresh_url)",
-          "description": "Start authenticating with a backend.",
-          "parameters": [
-            {
-              "name": "auth_url",
-              "type": "string",
-              "description": "Authentication URL.",
-              "optional": false
-            },
-            {
-              "name": "payload",
-              "type": "string",
-              "description": "JSON payload.",
-              "optional": false
-            },
-            {
-              "name": "refresh_url",
-              "type": "string",
-              "description": "Refresh URL.",
-              "optional": false
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "getAuthToken",
-          "fullPath": "LNetworkRuntime:getAuthToken",
-          "signature": "()",
-          "description": "Returns the current active access token.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "getAuthStatus",
-          "fullPath": "LNetworkRuntime:getAuthStatus",
-          "signature": "()",
-          "description": "Returns the current active authentication status.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "authCancel",
-          "fullPath": "LNetworkRuntime:authCancel",
-          "signature": "()",
-          "description": "Cancels the currently active authentication request.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "matchmakeStart",
-          "fullPath": "LNetworkRuntime:matchmakeStart",
-          "signature": "(url, payload)",
-          "description": "Starts a matchmaking request against the backend.",
-          "parameters": [
-            {
-              "name": "url",
-              "type": "string",
-              "description": "Matchmaker URL.",
-              "optional": false
-            },
-            {
-              "name": "payload",
-              "type": "string",
-              "description": "JSON payload.",
-              "optional": false
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "matchmakeCancel",
-          "fullPath": "LNetworkRuntime:matchmakeCancel",
-          "signature": "(id)",
-          "description": "Cancels a previously started matchmaking request.",
-          "parameters": [
-            {
-              "name": "id",
-              "type": "integer",
-              "description": "Request id.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "tcpConnect",
-          "fullPath": "LNetworkRuntime:tcpConnect",
-          "signature": "(addr)",
-          "description": "Opens a TCP connection. This method is available to Lua scripts.",
-          "parameters": [
-            {
-              "name": "addr",
-              "type": "string",
-              "description": "Remote address.",
-              "optional": false
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "tcpSend",
-          "fullPath": "LNetworkRuntime:tcpSend",
-          "signature": "(id, data)",
-          "description": "Sends bytes over a TCP connection. This method is available to Lua scripts.",
-          "parameters": [
-            {
-              "name": "id",
-              "type": "integer",
-              "description": "Connection id.",
-              "optional": false
-            },
-            {
-              "name": "data",
-              "type": "string",
-              "description": "Binary payload string.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "tcpClose",
-          "fullPath": "LNetworkRuntime:tcpClose",
-          "signature": "(id)",
-          "description": "Closes a TCP connection. This method is available to Lua scripts.",
-          "parameters": [
-            {
-              "name": "id",
-              "type": "integer",
-              "description": "Connection id.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "wsConnect",
-          "fullPath": "LNetworkRuntime:wsConnect",
-          "signature": "(url)",
-          "description": "Opens a WebSocket connection. This method is available to Lua scripts.",
-          "parameters": [
-            {
-              "name": "url",
-              "type": "string",
-              "description": "WebSocket URL.",
-              "optional": false
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "wsSend",
-          "fullPath": "LNetworkRuntime:wsSend",
-          "signature": "(id, data)",
-          "description": "Sends text over a WebSocket connection.",
-          "parameters": [
-            {
-              "name": "id",
-              "type": "integer",
-              "description": "Connection id.",
-              "optional": false
-            },
-            {
-              "name": "data",
-              "type": "string",
-              "description": "Text payload.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "wsClose",
-          "fullPath": "LNetworkRuntime:wsClose",
-          "signature": "(id)",
-          "description": "Closes a WebSocket connection. This method is available to Lua scripts.",
-          "parameters": [
-            {
-              "name": "id",
-              "type": "integer",
-              "description": "Connection id.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "poll",
-          "fullPath": "LNetworkRuntime:poll",
-          "signature": "()",
-          "description": "Polls runtime responses for HTTP, TCP, and WebSocket operations.",
-          "parameters": [],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "getMetrics",
-          "fullPath": "LNetworkRuntime:getMetrics",
-          "signature": "()",
-          "description": "Returns current network runtime metrics.",
-          "parameters": [],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "shutdown",
-          "fullPath": "LNetworkRuntime:shutdown",
-          "signature": "()",
-          "description": "Shuts down the network runtime and cancels pending requests.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "type",
-          "fullPath": "LNetworkRuntime:type",
-          "signature": "()",
-          "description": "Returns the Lua-visible type name for this network runtime handle.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LNetworkRuntime:typeOf",
-          "signature": "(name)",
-          "description": "Returns whether this network runtime handle matches a supported type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to compare against `LNetworkRuntime` and `Object`.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LNetworkRuntime"
-        }
-      ]
-    },
-    {
       "name": "LNeuralEngine",
       "description": "Lua wrapper over a heterogeneous neural engine with flat parameter packing.",
       "methods": [
@@ -108489,81 +108047,6 @@
       ]
     },
     {
-      "name": "LOnnxModel",
-      "description": "ONNX model handle that wraps a tract runnable plan for Lua-driven inference.",
-      "methods": [
-        {
-          "name": "run",
-          "fullPath": "LOnnxModel:run",
-          "signature": "(inputs_tbl)",
-          "description": "Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.",
-          "parameters": [
-            {
-              "name": "inputs",
-              "type": "table",
-              "description": "Array-indexed table of LTensor input values.",
-              "optional": false
-            }
-          ],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LOnnxModel"
-        },
-        {
-          "name": "inputCount",
-          "fullPath": "LOnnxModel:inputCount",
-          "signature": "()",
-          "description": "Returns the number of input tensors expected by the model.",
-          "parameters": [],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LOnnxModel"
-        },
-        {
-          "name": "outputCount",
-          "fullPath": "LOnnxModel:outputCount",
-          "signature": "()",
-          "description": "Returns the number of output tensors produced by the model.",
-          "parameters": [],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LOnnxModel"
-        },
-        {
-          "name": "type",
-          "fullPath": "LOnnxModel:type",
-          "signature": "()",
-          "description": "Returns the type name `\"LOnnxModel\"`.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LOnnxModel"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LOnnxModel:typeOf",
-          "signature": "(name)",
-          "description": "Returns whether this model handle matches a supported type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to compare against `LOnnxModel` and `Object`.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LOnnxModel"
-        }
-      ]
-    },
-    {
       "name": "LOverlay",
       "description": "Lua-side handle for screen overlay, ambient, weather, and transition visual state.",
       "methods": [
@@ -108582,6 +108065,77 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LOverlay:setShader",
+          "signature": "([shader])",
+          "description": "Sets or clears the shader used for custom overlay rendering.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Overlay-target shader or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LOverlay:getShader",
+          "signature": "()",
+          "description": "Returns the shader bound to this overlay, if any.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "setShaderLayer",
+          "fullPath": "LOverlay:setShaderLayer",
+          "signature": "(layer, [shader])",
+          "description": "Sets or clears an overlay-layer shader binding.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "string",
+              "description": "Layer name such as `heat_haze`, `water`, or `fog`.",
+              "optional": false
+            },
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Overlay-target shader or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "getShaderLayer",
+          "fullPath": "LOverlay:getShaderLayer",
+          "signature": "(layer)",
+          "description": "Returns a shader bound to one overlay layer, if present.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "string",
+              "description": "Layer name.",
+              "optional": false
+            }
+          ],
+          "returns": "LShader?",
+          "returnType": "LShader?",
           "isMethod": true,
           "objectType": "LOverlay"
         },
@@ -112421,6 +111975,59 @@
               "name": "dt",
               "type": "number",
               "description": "Delta time in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LParticleSystem"
+        },
+        {
+          "name": "setShader",
+          "fullPath": "LParticleSystem:setShader",
+          "signature": "([shader])",
+          "description": "Sets or clears the render-time shader for this particle system.",
+          "parameters": [
+            {
+              "name": "shader",
+              "type": "LShader",
+              "description": "Particle-target shader or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LParticleSystem"
+        },
+        {
+          "name": "getShader",
+          "fullPath": "LParticleSystem:getShader",
+          "signature": "()",
+          "description": "Returns the render-time shader bound to this particle system, if any.",
+          "parameters": [],
+          "returns": "LShader?",
+          "returnType": "LShader?",
+          "isMethod": true,
+          "objectType": "LParticleSystem"
+        },
+        {
+          "name": "setShaderUniform",
+          "fullPath": "LParticleSystem:setShaderUniform",
+          "signature": "(name, value)",
+          "description": "Sends a uniform value to the shader bound to this particle system.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Uniform name.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "number|boolean|table",
+              "description": "Uniform value.",
               "optional": false
             }
           ],
@@ -134455,6 +134062,17 @@
           "objectType": "LShader"
         },
         {
+          "name": "getTarget",
+          "fullPath": "LShader:getTarget",
+          "signature": "()",
+          "description": "Returns the target this shader was validated for.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LShader"
+        },
+        {
           "name": "send",
           "fullPath": "LShader:send",
           "signature": "(name, value)",
@@ -134493,6 +134111,17 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LShader"
+        },
+        {
+          "name": "getDiagnostics",
+          "fullPath": "LShader:getDiagnostics",
+          "signature": "()",
+          "description": "Returns shader validation diagnostics.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LShader"
         },
@@ -145118,74 +144747,6 @@
       ]
     },
     {
-      "name": "LSseStream",
-      "description": "Lua userdata wrapping an `SseStream` with an optional stored callback.",
-      "methods": [
-        {
-          "name": "next",
-          "fullPath": "LSseStream:next",
-          "signature": "()",
-          "description": "Polls for the next available event from the SSE stream (non-blocking).",
-          "parameters": [],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LSseStream"
-        },
-        {
-          "name": "close",
-          "fullPath": "LSseStream:close",
-          "signature": "()",
-          "description": "Signals the background reader thread to stop and closes the stream.",
-          "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LSseStream"
-        },
-        {
-          "name": "isOpen",
-          "fullPath": "LSseStream:isOpen",
-          "signature": "()",
-          "description": "Returns true if the background reader thread is still connected and reading.",
-          "parameters": [],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LSseStream"
-        },
-        {
-          "name": "type",
-          "fullPath": "LSseStream:type",
-          "signature": "()",
-          "description": "Returns the Lua-visible type name for this SSE stream handle.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LSseStream"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LSseStream:typeOf",
-          "signature": "(name)",
-          "description": "Returns whether this SSE stream handle matches a supported type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to compare against `LSseStream` and `Object`.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LSseStream"
-        }
-      ]
-    },
-    {
       "name": "LStack",
       "description": "Lua-facing LIFO stack with optional capacity limit. Supports push/pop from both ends.",
       "methods": [
@@ -154764,7 +154325,7 @@
     },
     {
       "name": "LTensor",
-      "description": "Flat tensor handle exposing shape, element access, and tract conversion to Lua.",
+      "description": "Flat tensor handle exposing shape, element access, and flat data to Lua.",
       "methods": [
         {
           "name": "shape",
@@ -179752,99 +179313,6 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LWorld"
-        }
-      ]
-    },
-    {
-      "name": "LZipMount",
-      "description": "Lua-side handle for a mounted ZIP archive view.",
-      "methods": [
-        {
-          "name": "readFile",
-          "fullPath": "LZipMount:readFile",
-          "signature": "(virtual_path)",
-          "description": "Reads a file from the ZIP mount by virtual path.",
-          "parameters": [
-            {
-              "name": "virtual_path",
-              "type": "string",
-              "description": "Path inside the mount prefix.",
-              "optional": false
-            }
-          ],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LZipMount"
-        },
-        {
-          "name": "contains",
-          "fullPath": "LZipMount:contains",
-          "signature": "(virtual_path)",
-          "description": "Returns whether a virtual path exists in the ZIP mount.",
-          "parameters": [
-            {
-              "name": "virtual_path",
-              "type": "string",
-              "description": "Path inside the mount prefix.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LZipMount"
-        },
-        {
-          "name": "listFiles",
-          "fullPath": "LZipMount:listFiles",
-          "signature": "()",
-          "description": "Returns every virtual file path in the ZIP mount.",
-          "parameters": [],
-          "returns": "string[]",
-          "returnType": "string[]",
-          "isMethod": true,
-          "objectType": "LZipMount"
-        },
-        {
-          "name": "prefix",
-          "fullPath": "LZipMount:prefix",
-          "signature": "()",
-          "description": "Returns the virtual prefix used by this ZIP mount.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LZipMount"
-        },
-        {
-          "name": "type",
-          "fullPath": "LZipMount:type",
-          "signature": "()",
-          "description": "Returns the Lua-visible type name for this ZIP mount handle.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LZipMount"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LZipMount:typeOf",
-          "signature": "(name)",
-          "description": "Returns whether this ZIP mount handle matches a supported type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to compare against `LZipMount` and `Object`.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LZipMount"
         }
       ]
     },

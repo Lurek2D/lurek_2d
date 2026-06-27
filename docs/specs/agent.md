@@ -6,7 +6,7 @@
 
 - Orchestrates multi-agent AI completions and stateful conversations.
 - Supports tiered, persistent working, episodic, and semantic memory.
-- Manages local Ollama lifecycles and background request polling.
+- Manages local Ollama lifecycles and background request polling over local plain HTTP.
 
 ## General Info
 
@@ -25,6 +25,8 @@
 - Working, episodic, and semantic memory are central because the module is designed for repeated interaction, not only for one-shot completions.
 - That memory model matters because a useful assistant usually needs continuity: it should keep recent context, retain important facts, and support longer-lived agent identities instead of acting like a stateless prompt box.
 - Polling, retries, and background lifecycle handling matter because real agent workflows are often slow, asynchronous, or multi-stage.
+- Runtime HTTP transport is intentionally narrow: local `http://host:port/path` only, intended for Ollama endpoints such as `http://127.0.0.1:11434/api/generate`.
+- HTTPS, TLS, redirects, gzip, and streaming/chunked responses are not part of the runtime agent transport. Attempts to use HTTPS are rejected with `Ollama agent runtime supports local plain HTTP only`.
 - Structured responses broaden the feature beyond conversational prose into tool-friendly outputs that other systems can consume reliably.
 - Embeddings support is equally important because retrieval, similarity search, and grounding workflows often matter as much as text generation itself.
 - This makes the module useful not only for chat-like helpers, but also for assistants that classify, retrieve, summarize, or fill structured records as part of larger tool or content workflows.
@@ -33,7 +35,7 @@
 - `agent` owns prompts, memory, agent identity, structured responses, and request orchestration semantics.
 - Read `agent` as the place where assistants become first-class runtime capabilities rather than thin HTTP wrappers.
 
-This module primarily collaborates with `network`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
+This module owns its small local Ollama HTTP client rather than depending on `network`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
 
 ## Ownership
 
@@ -41,11 +43,11 @@ This module primarily collaborates with `network`. Its responsibility should sta
 - Owning tier: `Feature Systems`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/agent_api.rs`
-- Referenced engine modules: `network`
+- Referenced engine modules: None detected from Rust imports.
 
 ## Imports
 
-- `network`: Imports or references `src/network/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Source Files
 
@@ -69,6 +71,12 @@ This module primarily collaborates with `network`. Its responsibility should sta
 - Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
 - Use this file when changing client defaults, lifecycle handling, validation, or data ownership.
 - Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
+
+### local_http.rs
+
+- Minimal plain-HTTP client used only by the local Ollama agent runtime.
+- It intentionally supports a narrow HTTP/1.1 request/response path so the
+- game networking module does not need a general web client dependency.
 
 ### memory.rs
 

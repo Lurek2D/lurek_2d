@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Manages CPU image buffers, compressed textures, layered stacks, palette remapping, and atlases.
+Manages CPU image buffers, PNG texture loading, layered stacks, palette remapping, and atlases.
 
 ## When To Use
 
@@ -148,9 +148,9 @@ do
     local png_path = "content/examples/assets/images/sample_texture.png"
     local dds = lurek.image.isCompressed(dds_path)
     local png = lurek.image.isCompressed(png_path)
-    local cdata = lurek.image.newCompressedData(dds_path)
-    local fmt = cdata:getFormat()
-    image_log("dds=" .. tostring(dds) .. " png=" .. tostring(png) .. " format=" .. fmt)
+    local ok, err = pcall(lurek.image.newCompressedData, dds_path)
+    local status = ok and "loaded" or tostring(err)
+    image_log("dds=" .. tostring(dds) .. " png=" .. tostring(png) .. " status=" .. status)
 end
 ```
 
@@ -284,7 +284,7 @@ end
 
 ### `lurek.image.newCompressedData`
 
-Loads DDS compressed image data from GameFS.
+Attempts to load DDS compressed image data from GameFS.
 
 ```lua
 lurek.image.newCompressedData(filename)
@@ -300,7 +300,7 @@ lurek.image.newCompressedData(filename)
 
 | Type | Description |
 |------|-------------|
-| [LCompressedImageData](#lcompressedimagedata) | New compressed image data handle. |
+| [LCompressedImageData](#lcompressedimagedata) | New compressed image data handle when DDS support is enabled. |
 
 **Example**
 
@@ -317,11 +317,12 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w, h = cdata:getDimensions()
-    local fmt = cdata:getFormat()
-    local mips = cdata:getMipmapCount()
-    image_log("compressed " .. w .. "x" .. h .. " format=" .. fmt .. " mips=" .. mips)
+    local path = "content/examples/assets/images/sample_normal.dds"
+    local ok, result = pcall(lurek.image.newCompressedData, path)
+    local is_dds = lurek.image.isCompressed(path)
+    local status = ok and result:type() or "unsupported"
+    local detail = ok and result:getFormat() or tostring(result)
+    image_log("compressed dds=" .. tostring(is_dds) .. " status=" .. status .. " detail=" .. detail)
 end
 ```
 
@@ -553,6 +554,48 @@ end
 
 ---
 
+### `lurek.image.requestShader`
+
+Starts an offline image shader request and returns a completed job handle.
+
+```lua
+lurek.image.requestShader(image, shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `image` | [LImageData](#limagedata) | Source image data. |
+| `shader` | [LShader](#lshader) | Image-target shader. |
+| `opts?` | table | Optional job options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageShaderJob](#limageshaderjob) | Offline shader job handle. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(2, 2)
+    image:fill(120, 80, 40, 255)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.b, color.g, color.r, color.a);
+}
+]], { target = "image" })
+    local job = lurek.image.requestShader(image, shader)
+    local output = job:wait(50)
+    lurek.log.info("[image] shader job done=" .. tostring(output ~= nil))
+end
+```
+
+---
+
 ### `lurek.image.saveGIF`
 
 Encodes a sequence of equally sized image frames as an animated GIF.
@@ -698,9 +741,11 @@ end
 - [LAnimatedImage](#lanimatedimage)
 - [LCompressedImageData](#lcompressedimagedata)
 - [LImageData](#limagedata)
+- [LImageShaderJob](#limageshaderjob)
 - [LLayeredImage](#llayeredimage)
 - [LPaletteLUT](#lpalettelut)
 - [LProvinceGrid](#lprovincegrid)
+- [LShader](#lshader)
 
 ## LAnimatedImage
 
@@ -969,11 +1014,13 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w, h = cdata:getDimensions()
-    local fmt = cdata:getFormat()
-    local mips = cdata:getMipmapCount()
-    example_print_log("compressed = " .. w .. "x" .. h)
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local w, h = 0, 0
+    if ok then
+        w, h = cdata:getDimensions()
+    end
+    local status = ok and (w .. "x" .. h) or "unsupported in PNG runtime"
+    example_print_log("compressed = " .. status)
 end
 ```
 
@@ -1008,11 +1055,11 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w = cdata:getWidth()
-    local h = cdata:getHeight()
-    local mips = cdata:getMipmapCount()
-    example_print_log("format = " .. cdata:getFormat())
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local w = ok and cdata:getWidth() or 0
+    local h = ok and cdata:getHeight() or 0
+    local format = ok and cdata:getFormat() or "unsupported"
+    example_print_log("format = " .. format .. " size=" .. w .. "x" .. h)
 end
 ```
 
@@ -1047,10 +1094,10 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w = cd:getWidth()
-    local h = cd:getHeight()
-    local mips = cd:getMipmapCount()
+    local ok, cd = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local w = ok and cd:getWidth() or 0
+    local h = ok and cd:getHeight() or 0
+    local mips = ok and cd:getMipmapCount() or 0
     example_print_log("compressed w=" .. w .. " h=" .. h .. " mips=" .. mips)
 end
 ```
@@ -1086,11 +1133,12 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local fmt = cdata:getFormat()
-    local w = cdata:getWidth()
-    local h = cdata:getHeight()
-    example_print_log("mipmaps = " .. cdata:getMipmapCount())
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local fmt = ok and cdata:getFormat() or "unsupported"
+    local w = ok and cdata:getWidth() or 0
+    local h = ok and cdata:getHeight() or 0
+    local mips = ok and cdata:getMipmapCount() or 0
+    example_print_log("mipmaps = " .. mips .. " format=" .. fmt .. " size=" .. w .. "x" .. h)
 end
 ```
 
@@ -1125,10 +1173,10 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w = cd:getWidth()
-    local h = cd:getHeight()
-    local mips = cd:getMipmapCount()
+    local ok, cd = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local w = ok and cd:getWidth() or 0
+    local h = ok and cd:getHeight() or 0
+    local mips = ok and cd:getMipmapCount() or 0
     example_print_log("compressed w=" .. w .. " h=" .. h .. " mips=" .. mips)
 end
 ```
@@ -1164,11 +1212,11 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local fmt = cdata:getFormat()
-    local w = cdata:getWidth()
-    example_print_log("type = " .. cdata:type())
-    example_print_log("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local fmt = ok and cdata:getFormat() or "unsupported"
+    local w = ok and cdata:getWidth() or 0
+    local type_name = ok and cdata:type() or "nil"
+    example_print_log("type = " .. type_name .. " format=" .. fmt .. " width=" .. w)
 end
 ```
 
@@ -1209,11 +1257,11 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local fmt = cdata:getFormat()
-    local is_object = cdata:typeOf("LObject")
-    example_print_log("type = " .. cdata:type())
-    example_print_log("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local fmt = ok and cdata:getFormat() or "unsupported"
+    local is_object = ok and cdata:typeOf("LObject") or false
+    local is_compressed = ok and cdata:typeOf("LCompressedImageData") or false
+    example_print_log("typeOf object=" .. tostring(is_object) .. " compressed=" .. tostring(is_compressed) .. " format=" .. fmt)
 end
 ```
 
@@ -1403,6 +1451,47 @@ do
     local kind = lut:type()
     img:applyPaletteLut(lut)
     example_print_log("palette LUT applied")
+end
+```
+
+---
+
+#### `LImageData:applyShader`
+
+Applies an offline image shader and returns the processed image.
+
+```lua
+LImageData:applyShader(shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader` | [LShader](#lshader) | Image-target shader. |
+| `opts?` | table | Optional processing options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Processed image. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(40, 80, 160, 255)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(1.0 - color.r, color.g, uv.x, color.a);
+}
+]], { target = "image" })
+    local output = image:applyShader(shader)
+    local r, g, b, _ = output:getPixel(0, 0)
+    lurek.log.info("[image] shader output=" .. output:getWidth() .. "x" .. output:getHeight() .. " pixel=" .. r .. "," .. g .. "," .. b)
 end
 ```
 
@@ -3190,6 +3279,104 @@ end
 
 ---
 
+## LImageShaderJob
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LImageShaderJob:cancel`
+
+Cancels this image shader job.
+
+```lua
+LImageShaderJob:cancel()
+```
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(2, 2)
+    image:fill(70, 80, 90, 255)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
+    local job = lurek.image.requestShader(image, shader)
+    job:cancel()
+    local output = job:poll()
+    lurek.log.info("[image] shader cancel output=" .. tostring(output))
+end
+```
+
+---
+
+#### `LImageShaderJob:poll`
+
+Returns the shader output image when the job has completed, or nil if pending/cancelled.
+
+```lua
+LImageShaderJob:poll()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata)? | Completed image result. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(2, 2)
+    image:fill(10, 20, 30, 255)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
+    local job = lurek.image.requestShader(image, shader)
+    local output = job:poll()
+    local ready = output ~= nil and output:getWidth() == image:getWidth()
+    lurek.log.info("[image] shader poll ready=" .. tostring(ready))
+end
+```
+
+---
+
+#### `LImageShaderJob:wait`
+
+Waits for the offline image shader job and returns its output image.
+
+```lua
+LImageShaderJob:wait(timeoutMs)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `timeoutMs?` | number | Optional timeout in milliseconds. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata)? | Completed image result. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(2, 2)
+    image:fill(40, 50, 60, 255)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
+    local job = lurek.image.requestShader(image, shader)
+    local output = job:wait(100)
+    local done = output ~= nil and output:getHeight() == image:getHeight()
+    lurek.log.info("[image] shader wait done=" .. tostring(done))
+end
+```
+
+---
+
 ## LLayeredImage
 
 ### Type Fields
@@ -4879,5 +5066,154 @@ do
     example_print_log("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
 end
 ```
+
+---
+
+## LShader
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LShader:getDiagnostics`
+
+Returns shader validation diagnostics.
+
+```lua
+LShader:getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of diagnostic strings. |
+
+---
+
+#### `LShader:getId`
+
+Returns the internal numeric handle ID for this shader.
+
+```lua
+LShader:getId()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Opaque shader handle identifier. |
+
+---
+
+#### `LShader:getTarget`
+
+Returns the target this shader was validated for.
+
+```lua
+LShader:getTarget()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Shader target name. |
+
+---
+
+#### `LShader:hasUniform`
+
+Checks whether this shader declares a uniform with the given name.
+
+```lua
+LShader:hasUniform(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Uniform name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the uniform exists. |
+
+---
+
+#### `LShader:release`
+
+Releases the shader resource. If active, the default shader is restored.
+
+```lua
+LShader:release()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the shader was valid and was released. |
+
+---
+
+#### `LShader:send`
+
+Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
+
+```lua
+LShader:send(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Uniform variable name declared in the shader. |
+| `value` | number|boolean|table | The value to send. |
+
+---
+
+#### `LShader:type`
+
+Returns the type name string for this shader object.
+
+```lua
+LShader:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always "[LShader](#lshader)". |
+
+---
+
+#### `LShader:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LShader:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check ("Shader" or "Object"). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the name matches. |
 
 ---

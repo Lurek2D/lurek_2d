@@ -9,6 +9,8 @@
 use crate::log_msg;
 use crate::runtime::log_messages::SH01_SHADER_OK;
 use std::collections::HashMap;
+use std::fmt;
+use std::str::FromStr;
 use wgpu::naga::{Binding, ScalarKind, TypeInner, VectorSize};
 
 const MAX_SHADER_UNIFORM_NAME_LEN: usize = 64;
@@ -48,6 +50,61 @@ const RESERVED_SHADER_UNIFORM_NAMES: &[&str] = &[
     "requires",
     "switch",
 ];
+/// Runtime shader pipeline family requested by user code.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ShaderTarget {
+    /// Draw-command shader used by `lurek.render.setShader`.
+    Draw,
+    /// Full-screen post-processing shader.
+    PostFx,
+    /// Off-screen image-processing shader.
+    Image,
+    /// Screen overlay shader.
+    Overlay,
+    /// Particle-rendering shader.
+    Particle,
+    /// Light-contribution shader.
+    Light,
+}
+
+impl ShaderTarget {
+    /// Returns the stable Lua-facing target name.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Draw => "draw",
+            Self::PostFx => "postfx",
+            Self::Image => "image",
+            Self::Overlay => "overlay",
+            Self::Particle => "particle",
+            Self::Light => "light",
+        }
+    }
+}
+
+impl fmt::Display for ShaderTarget {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+impl FromStr for ShaderTarget {
+    type Err = String;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value.trim().to_ascii_lowercase().as_str() {
+            "draw" | "render" => Ok(Self::Draw),
+            "postfx" | "effect" => Ok(Self::PostFx),
+            "image" => Ok(Self::Image),
+            "overlay" => Ok(Self::Overlay),
+            "particle" | "particles" => Ok(Self::Particle),
+            "light" => Ok(Self::Light),
+            other => Err(format!(
+                "unknown shader target '{other}', expected draw, postfx, image, overlay, particle, or light"
+            )),
+        }
+    }
+}
+
 /// Fragment input location slot decoded from a user shader entry point.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ShaderFragmentInput {
@@ -55,6 +112,18 @@ pub enum ShaderFragmentInput {
     Color,
     /// `@location(1) vec2<f32>` UV coordinate input.
     Uv,
+    /// `@location(2) vec2<f32>` pixel or local-space position input.
+    PixelOrLocal,
+    /// `@location(3) vec2<f32>` resolution or world-space position input.
+    ResolutionOrWorld,
+    /// `@location(4) vec2<f32>` texel size or velocity input.
+    TexelOrVelocity,
+    /// `@location(5) f32` normalized age, distance, or target-specific scalar input.
+    Scalar0,
+    /// `@location(6) f32` lifetime, radius, or target-specific scalar input.
+    Scalar1,
+    /// `@location(7) f32` random seed, intensity, or target-specific scalar input.
+    Scalar2,
 }
 /// Rewritten fragment source and its entry name, ready for injection into the wrapper pipeline.
 #[derive(Debug, Clone)]
@@ -79,6 +148,8 @@ struct FragmentEntrySignature {
 pub struct Shader {
     /// Original WGSL source as supplied by the game.
     pub source: String,
+    /// Target pipeline family this shader was validated for.
+    pub target: ShaderTarget,
     /// Rewritten source with `@fragment` stripped for pipeline wrapper injection.
     pub wrapper_source: String,
     /// Name of the fragment entry function in the rewritten source.
@@ -87,6 +158,8 @@ pub struct Shader {
     pub fragment_inputs: Vec<ShaderFragmentInput>,
     /// Named uniform values set by `send()`; forwarded to the GPU each frame.
     pub uniforms: HashMap<String, UniformValue>,
+    /// Non-fatal validation notes and target-contract details exposed to Lua.
+    pub diagnostics: Vec<String>,
 }
 /// A typed uniform value sent to a `Shader` via `send()`.
 #[derive(Debug, Clone)]
@@ -107,15 +180,21 @@ pub enum UniformValue {
 impl Shader {
     /// Parse, validate, and prepare `source`; return error string on WGSL validation failure.
     pub fn new(source: String) -> Result<Self, String> {
-        validate_wgsl(&source)?;
-        let prepared = prepare_fragment_source_for_wrapper(&source)?;
+        Self::new_for_target(source, ShaderTarget::Draw)
+    }
+    /// Parse, validate, and prepare `source` for a specific shader target.
+    pub fn new_for_target(source: String, target: ShaderTarget) -> Result<Self, String> {
+        validate_wgsl(&source, target)?;
+        let prepared = prepare_fragment_source_for_wrapper(&source, target)?;
         log_msg!(info, SH01_SHADER_OK);
         Ok(Self {
             source,
+            target,
             wrapper_source: prepared.source,
             fragment_entry_name: prepared.entry_name,
             fragment_inputs: prepared.inputs,
             uniforms: HashMap::new(),
+            diagnostics: vec![format!("validated for {} shader target", target.as_str())],
         })
     }
     /// Set or replace the named uniform value used on subsequent frames.
@@ -127,6 +206,14 @@ impl Shader {
     /// Return `true` when a uniform with `name` has been set.
     pub fn has_uniform(&self, name: &str) -> bool {
         self.uniforms.contains_key(name)
+    }
+    /// Returns this shader's target pipeline family.
+    pub fn target(&self) -> ShaderTarget {
+        self.target
+    }
+    /// Returns non-fatal diagnostics collected during validation.
+    pub fn diagnostics(&self) -> &[String] {
+        &self.diagnostics
     }
     /// Return all set uniforms sorted alphabetically by name for deterministic GPU upload order.
     pub(crate) fn ordered_uniforms(&self) -> Vec<(&str, &UniformValue)> {
@@ -150,6 +237,53 @@ impl Shader {
     pub(crate) fn fragment_inputs(&self) -> &[ShaderFragmentInput] {
         &self.fragment_inputs
     }
+    /// Build a full post-processing fragment module from this shader's target wrapper.
+    pub fn fullscreen_postfx_source(&self) -> String {
+        let fragment_call_args = fullscreen_fragment_call_args(self.fragment_inputs());
+        let user_entry = "lurek_user_fragment";
+        let user_source = self.wrapper_source().replacen(
+            &format!("fn {}", self.fragment_entry_name()),
+            &format!("fn {user_entry}"),
+            1,
+        );
+        format!(
+            r#"
+struct PostFxParams {{ p: array<vec4<f32>, 4>, }}
+@group(0) @binding(0) var t_src: texture_2d<f32>;
+@group(0) @binding(1) var s_src: sampler;
+@group(0) @binding(2) var<uniform> params: PostFxParams;
+{user_source}
+@fragment
+fn fs_main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {{
+    let source = textureSample(t_src, s_src, uv);
+    let resolution = vec2<f32>(textureDimensions(t_src));
+    let pixel = uv * resolution;
+    let texel = 1.0 / max(resolution, vec2<f32>(1.0, 1.0));
+    return {user_entry}({fragment_call_args});
+}}
+"#,
+            user_source = user_source,
+            user_entry = user_entry,
+            fragment_call_args = fragment_call_args,
+        )
+    }
+}
+
+fn fullscreen_fragment_call_args(inputs: &[ShaderFragmentInput]) -> String {
+    inputs
+        .iter()
+        .map(|input| match input {
+            ShaderFragmentInput::Color => "source",
+            ShaderFragmentInput::Uv => "uv",
+            ShaderFragmentInput::PixelOrLocal => "pixel",
+            ShaderFragmentInput::ResolutionOrWorld => "resolution",
+            ShaderFragmentInput::TexelOrVelocity => "texel",
+            ShaderFragmentInput::Scalar0 => "params.p[3].x",
+            ShaderFragmentInput::Scalar1 => "params.p[3].y",
+            ShaderFragmentInput::Scalar2 => "params.p[3].z",
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
 }
 /// Validate a user-supplied shader uniform name before it is interpolated into WGSL.
 pub fn validate_uniform_name(name: &str) -> Result<(), String> {
@@ -187,15 +321,18 @@ pub fn validate_uniform_name(name: &str) -> Result<(), String> {
     Ok(())
 }
 /// Parse `source` and confirm it contains a valid fragment entry point; return error on failure.
-fn validate_wgsl(source: &str) -> Result<(), String> {
+fn validate_wgsl(source: &str, target: ShaderTarget) -> Result<(), String> {
     let module = wgpu::naga::front::wgsl::parse_str(source).map_err(|err| err.to_string())?;
-    fragment_entry_signature(&module)?;
+    fragment_entry_signature(&module, target)?;
     Ok(())
 }
 /// Parse `source`, extract the fragment signature, and rewrite it as a helper function.
-fn prepare_fragment_source_for_wrapper(source: &str) -> Result<PreparedFragmentSource, String> {
+fn prepare_fragment_source_for_wrapper(
+    source: &str,
+    target: ShaderTarget,
+) -> Result<PreparedFragmentSource, String> {
     let module = wgpu::naga::front::wgsl::parse_str(source).map_err(|err| err.to_string())?;
-    let signature = fragment_entry_signature(&module)?;
+    let signature = fragment_entry_signature(&module, target)?;
     let rewritten = rewrite_fragment_entry_as_helper(source, &signature.name)?;
     Ok(PreparedFragmentSource {
         source: rewritten,
@@ -204,7 +341,10 @@ fn prepare_fragment_source_for_wrapper(source: &str) -> Result<PreparedFragmentS
     })
 }
 /// Locate the `@fragment` entry in `module` and return its name and input slots.
-fn fragment_entry_signature(module: &wgpu::naga::Module) -> Result<FragmentEntrySignature, String> {
+fn fragment_entry_signature(
+    module: &wgpu::naga::Module,
+    target: ShaderTarget,
+) -> Result<FragmentEntrySignature, String> {
     let entry = module
         .entry_points
         .iter()
@@ -214,20 +354,14 @@ fn fragment_entry_signature(module: &wgpu::naga::Module) -> Result<FragmentEntry
         .function
         .arguments
         .iter()
-        .map(|argument| {
-            match argument.binding {
-            Some(Binding::Location { location, .. }) => match location {
-                0 => validate_vec4_f32(module, argument.ty).map(|_| ShaderFragmentInput::Color),
-                1 => validate_vec2_f32(module, argument.ty).map(|_| ShaderFragmentInput::Uv),
-                _ => Err(format!(
-                    "shader fragment entry point uses unsupported input @location({location})"
-                )),
-            },
+        .map(|argument| match argument.binding {
+            Some(Binding::Location { location, .. }) => {
+                validate_target_input(module, target, location, argument.ty)
+            }
             _ => Err(
-                "shader fragment entry point inputs must use @location(0) color and @location(1) uv"
+                "shader fragment entry point inputs must use supported @location bindings"
                     .to_string(),
             ),
-        }
         })
         .collect::<Result<Vec<_>, _>>()?;
     let result = entry.function.result.as_ref().ok_or_else(|| {
@@ -246,6 +380,133 @@ fn fragment_entry_signature(module: &wgpu::naga::Module) -> Result<FragmentEntry
         inputs,
     })
 }
+fn validate_target_input(
+    module: &wgpu::naga::Module,
+    target: ShaderTarget,
+    location: u32,
+    ty: wgpu::naga::Handle<wgpu::naga::Type>,
+) -> Result<ShaderFragmentInput, String> {
+    let input = match target {
+        ShaderTarget::Draw => match location {
+            0 => {
+                validate_vec4_f32(module, ty)?;
+                ShaderFragmentInput::Color
+            }
+            1 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::Uv
+            }
+            _ => {
+                return Err(format!(
+                    "draw shader uses unsupported input @location({location}); expected color at 0 and uv at 1"
+                ))
+            }
+        },
+        ShaderTarget::PostFx | ShaderTarget::Image | ShaderTarget::Overlay => match location {
+            0 => {
+                validate_vec4_f32(module, ty)?;
+                ShaderFragmentInput::Color
+            }
+            1 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::Uv
+            }
+            2 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::PixelOrLocal
+            }
+            3 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::ResolutionOrWorld
+            }
+            4 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::TexelOrVelocity
+            }
+            _ => {
+                return Err(format!(
+                    "{} shader uses unsupported input @location({location}); expected color, uv, pixel, resolution, or texel size",
+                    target.as_str()
+                ))
+            }
+        },
+        ShaderTarget::Particle => match location {
+            0 => {
+                validate_vec4_f32(module, ty)?;
+                ShaderFragmentInput::Color
+            }
+            1 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::Uv
+            }
+            2 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::PixelOrLocal
+            }
+            3 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::ResolutionOrWorld
+            }
+            4 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::TexelOrVelocity
+            }
+            5 => {
+                validate_f32(module, ty)?;
+                ShaderFragmentInput::Scalar0
+            }
+            6 => {
+                validate_f32(module, ty)?;
+                ShaderFragmentInput::Scalar1
+            }
+            7 => {
+                validate_f32(module, ty)?;
+                ShaderFragmentInput::Scalar2
+            }
+            _ => {
+                return Err(format!(
+                    "particle shader uses unsupported input @location({location})"
+                ))
+            }
+        },
+        ShaderTarget::Light => match location {
+            0 => {
+                validate_vec4_f32(module, ty)?;
+                ShaderFragmentInput::Color
+            }
+            1 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::Uv
+            }
+            2 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::PixelOrLocal
+            }
+            3 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::ResolutionOrWorld
+            }
+            4 => {
+                validate_vec2_f32(module, ty)?;
+                ShaderFragmentInput::TexelOrVelocity
+            }
+            5 => {
+                validate_f32(module, ty)?;
+                ShaderFragmentInput::Scalar0
+            }
+            6 => {
+                validate_f32(module, ty)?;
+                ShaderFragmentInput::Scalar1
+            }
+            7 => {
+                validate_f32(module, ty)?;
+                ShaderFragmentInput::Scalar2
+            }
+            _ => return Err(format!("light shader uses unsupported input @location({location})")),
+        },
+    };
+    Ok(input)
+}
 /// Assert that `ty` resolves to `vec2<f32>` in `module`.
 fn validate_vec2_f32(
     module: &wgpu::naga::Module,
@@ -259,6 +520,19 @@ fn validate_vec4_f32(
     ty: wgpu::naga::Handle<wgpu::naga::Type>,
 ) -> Result<(), String> {
     validate_vector_type(module, ty, VectorSize::Quad, "vec4<f32>")
+}
+/// Assert that `ty` resolves to `f32`.
+fn validate_f32(
+    module: &wgpu::naga::Module,
+    ty: wgpu::naga::Handle<wgpu::naga::Type>,
+) -> Result<(), String> {
+    let actual = &module.types[ty].inner;
+    match actual {
+        TypeInner::Scalar(scalar) if scalar.kind == ScalarKind::Float && scalar.width == 4 => {
+            Ok(())
+        }
+        _ => Err("expected f32".to_string()),
+    }
 }
 /// Assert that `ty` resolves to a float vector of `size` in `module`.
 fn validate_vector_type(

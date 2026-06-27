@@ -806,7 +806,18 @@ describe("render strict: canvas and shader", function()
     end)
 
     -- @covers lurek.render.setShader
-    it("setShader nil clears shader and getShader returns nil", function()
+    it("setShader accepts draw shaders and rejects other targets", function()
+        local draw_shader = lurek.render.newShader(minimal_shader_code())
+        lurek.render.setShader(draw_shader)
+        expect_type("userdata", lurek.render.getShader())
+        expect_error(function()
+            lurek.render.setShader(lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "image" }))
+        end)
         local ok = pcall(lurek.render.setShader, nil)
         expect_true(ok)
         local s = lurek.render.getShader()

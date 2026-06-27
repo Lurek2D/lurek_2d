@@ -176,6 +176,22 @@ describe("lurek.light module", function()
         expect_equal(64, img:getWidth())
         expect_equal(48, img:getHeight())
     end)
+
+    -- @covers lurek.light.setShader
+    -- @covers lurek.light.getShader
+    it("setShader binds and clears the default world light shader", function()
+        reset_light()
+        local shader = lurek.shader.new([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) world_pos: vec2<f32>, @location(3) light_pos: vec2<f32>, @location(4) direction: vec2<f32>, @location(5) distance: f32, @location(6) radius: f32, @location(7) intensity: f32) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0 + world_pos.xyx * 0.0 + light_pos.xyx * 0.0 + direction.xyx * 0.0 + vec3<f32>(distance + radius + intensity) * 0.0, color.a);
+}
+]], { target = "light" })
+        lurek.light.setShader(shader)
+        expect_equal(shader:getId(), lurek.light.getShader():getId())
+        lurek.light.setShader(nil)
+        expect_equal(nil, lurek.light.getShader())
+    end)
 end)
 
 -- @describe light handle methods
@@ -599,6 +615,22 @@ describe("light handle methods", function()
         expect_near(0.65, light:getNormalStrength(), 0.001)
         light:setNormalStrength(2.0)
         expect_near(1.0, light:getNormalStrength(), 0.001)
+    end)
+
+    -- @covers LLight:setShader
+    -- @covers LLight:getShader
+    it("setShader binds and clears a per-light custom shader", function()
+        local light = make_light()
+        local shader = lurek.shader.new([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "light" })
+        light:setShader(shader)
+        expect_equal(shader:getId(), light:getShader():getId())
+        light:setShader(nil)
+        expect_equal(nil, light:getShader())
     end)
 
     -- @covers LLight:clearNormalMap

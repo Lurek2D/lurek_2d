@@ -2163,3 +2163,51 @@ do
     example_print_log("overlay stats size=" .. stats.width .. "x" .. stats.height)
     example_print_log("overlay stats effects=" .. stats.active_effects .. " weather=" .. tostring(stats.weather_enabled))
 end
+
+--@api: LOverlay:setShader
+do
+    local ov = lurek.overlay.new(800, 600)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "overlay" })
+    ov:setShader(shader)
+    lurek.log.info("[overlay.example] shader bound=" .. tostring(ov:getShader() ~= nil))
+end
+
+--@api: LOverlay:getShader
+do
+    local ov = lurek.overlay.new(800, 600)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "overlay" })
+    ov:setShader(shader)
+    local active = ov:getShader()
+    local target = active and active:getTarget() or "nil"
+    ov:setShader(nil)
+    lurek.log.info("[overlay.example] shader target=" .. target)
+end
+
+--@api: LOverlay:setShaderLayer
+do
+    local ov = lurek.overlay.new(800, 600)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "overlay" })
+    ov:setShaderLayer("heat_haze", shader)
+    lurek.log.info("[overlay.example] layer shader=" .. tostring(ov:getShaderLayer("heat_haze") ~= nil))
+end
+
+--@api: LOverlay:getShaderLayer
+do
+    local ov = lurek.overlay.new(800, 600)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "overlay" })
+    ov:setShaderLayer("heat_haze", shader)
+    local active = ov:getShaderLayer("heat_haze")
+    local target = active and active:getTarget() or "nil"
+    ov:setShaderLayer("heat_haze", nil)
+    lurek.log.info("[overlay.example] heat_haze target=" .. target)
+end

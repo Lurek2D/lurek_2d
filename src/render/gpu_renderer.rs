@@ -36,8 +36,9 @@ use crate::render::gpu_pipeline::{GeometryKind, GpuStencilMode, PipelineSelectio
 use crate::render::gpu_shadows::ShadowEdgeCache;
 use crate::render::gpu_state::{FrameRenderBuffers, RenderStats};
 use crate::render::gpu_types::{
-    ColorVertex, LightVertex, PreparedDraw, RenderTargetId, ShadowDispatchInput, TexRef, TexVertex,
-    ViewportUniform, MAX_COLOR_IDXS, MAX_COLOR_VERTS, MAX_LIGHT_QUADS, MAX_TEX_IDXS, MAX_TEX_VERTS,
+    ColorVertex, LightVertex, ParticleVertex, PreparedDraw, RenderTargetId, ShadowDispatchInput,
+    TexRef, TexVertex, ViewportUniform, MAX_COLOR_IDXS, MAX_COLOR_VERTS, MAX_LIGHT_QUADS,
+    MAX_PARTICLE_IDXS, MAX_PARTICLE_VERTS, MAX_TEX_IDXS, MAX_TEX_VERTS,
 };
 use crate::render::input_validation::{
     validate_compound_shape, validate_render_command_with_category, RenderInputLimits,
@@ -583,6 +584,14 @@ pub struct GpuRenderer {
     pub(crate) tex_vertex_capacity: u64,
     /// Current capacity of `tex_index_buffer` in index units.
     pub(crate) tex_index_capacity: u64,
+    /// GPU vertex buffer used by particle shader draws.
+    pub(crate) particle_vertex_buffer: wgpu::Buffer,
+    /// GPU index buffer used by particle shader draws.
+    pub(crate) particle_index_buffer: wgpu::Buffer,
+    /// Current capacity of `particle_vertex_buffer` in vertex units.
+    pub(crate) particle_vertex_capacity: u64,
+    /// Current capacity of `particle_index_buffer` in index units.
+    pub(crate) particle_index_capacity: u64,
     /// GPU textures keyed by `TextureKey`.
     pub(crate) gpu_textures: SparseSecondaryMap<TextureKey, crate::render::gpu_state::GpuTexture>,
     /// Font atlas GPU textures keyed by `FontKey`.
@@ -744,6 +753,18 @@ impl GpuRenderer {
             usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
             mapped_at_creation: false,
         });
+        let particle_vertex_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("particle_vbo"),
+            size: MAX_PARTICLE_VERTS * std::mem::size_of::<ParticleVertex>() as u64,
+            usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let particle_index_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("particle_ibo"),
+            size: MAX_PARTICLE_IDXS * std::mem::size_of::<u32>() as u64,
+            usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
         let instance_buffer = device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("instance_vbo"),
             size: 1024 * std::mem::size_of::<crate::render::gpu_types::InstanceData>() as u64,
@@ -829,10 +850,14 @@ impl GpuRenderer {
             color_index_buffer,
             tex_vertex_buffer,
             tex_index_buffer,
+            particle_vertex_buffer,
+            particle_index_buffer,
             color_vertex_capacity: MAX_COLOR_VERTS,
             color_index_capacity: MAX_COLOR_IDXS,
             tex_vertex_capacity: MAX_TEX_VERTS,
             tex_index_capacity: MAX_TEX_IDXS,
+            particle_vertex_capacity: MAX_PARTICLE_VERTS,
+            particle_index_capacity: MAX_PARTICLE_IDXS,
             instance_buffer,
             instance_capacity: 1024,
             gpu_textures: SparseSecondaryMap::new(),
@@ -1089,6 +1114,8 @@ impl GpuRenderer {
             color_idxs: mut all_color_idxs,
             tex_verts: mut all_tex_verts,
             tex_idxs: mut all_tex_idxs,
+            particle_verts: mut all_particle_verts,
+            particle_idxs: mut all_particle_idxs,
             mut draws,
             instances: mut frame_instances,
             scratch_color_verts,
@@ -2575,7 +2602,10 @@ impl GpuRenderer {
                         &mut draws,
                     );
                 }
-                RenderCommand::DrawParticleSystem { ref particles } => {
+                RenderCommand::DrawParticleSystem {
+                    ref particles,
+                    shader,
+                } => {
                     if particles.is_empty() {
                         continue;
                     }
@@ -2585,10 +2615,15 @@ impl GpuRenderer {
                     let scissor = normalize_scissor(current_scissor, target_width, target_height);
                     let mut pverts: Vec<ColorVertex> = Vec::with_capacity(particles.len() * 6);
                     let mut pidxs: Vec<u32> = Vec::with_capacity(particles.len() * 12);
+                    let mut shader_pverts: Vec<ParticleVertex> =
+                        Vec::with_capacity(particles.len() * 6);
+                    let mut shader_pidxs: Vec<u32> = Vec::with_capacity(particles.len() * 12);
                     use std::f32::consts::PI;
                     for inst in particles {
                         let color = [inst.r, inst.g, inst.b, inst.a];
                         let half = inst.size * 0.5;
+                        let vertex_start = pverts.len();
+                        let index_start = pidxs.len();
                         match &inst.shape {
                             ParticleRenderShape::Square | ParticleRenderShape::Diamond => {
                                 let cos_r = inst.rotation.cos();
@@ -2847,8 +2882,55 @@ impl GpuRenderer {
                                 }
                             }
                         }
+                        if shader.is_some() {
+                            let particle_base = shader_pverts.len() as u32;
+                            for vertex in &pverts[vertex_start..] {
+                                shader_pverts.push(ParticleVertex {
+                                    position: vertex.position,
+                                    color: vertex.color,
+                                    local_pos: [inst.local_x, inst.local_y],
+                                    world_pos: [inst.x, inst.y],
+                                    velocity: [inst.velocity_x, inst.velocity_y],
+                                    normalized_age: inst.normalized_age,
+                                    lifetime: inst.lifetime,
+                                    seed: inst.seed as f32,
+                                    _pad: 0.0,
+                                });
+                            }
+                            for idx in &pidxs[index_start..] {
+                                shader_pidxs
+                                    .push(particle_base + idx.saturating_sub(vertex_start as u32));
+                            }
+                        }
                     }
-                    if !pverts.is_empty() {
+                    if let Some(shader_key) = shader.filter(|key| shaders.contains_key(*key)) {
+                        if !shader_pverts.is_empty() {
+                            let idx_start = all_particle_idxs.len() as u32;
+                            let base = all_particle_verts.len() as u32;
+                            let idx_count = shader_pidxs.len() as u32;
+                            all_particle_verts.extend_from_slice(&shader_pverts);
+                            all_particle_idxs.extend(shader_pidxs.iter().map(|idx| base + *idx));
+                            draws.push(PreparedDraw {
+                                target: current_target,
+                                geometry: GeometryKind::Particle,
+                                texture_ref: None,
+                                idx_start,
+                                idx_count,
+                                blend_mode: current_blend_mode,
+                                scissor,
+                                color_mask_bits,
+                                shader: Some(shader_key),
+                                stencil_mode,
+                                stencil_reference: stencil_reference as u32,
+                                static_geometry: None,
+                                instance_buffer: None,
+                                instance_start: 0,
+                                instance_count: 1,
+                            });
+                        }
+                    } else if !pverts.is_empty() {
+                        let particle_shader =
+                            active_shader.filter(|key| shaders.contains_key(*key));
                         append_color_draw(
                             &mut draws,
                             &mut all_color_verts,
@@ -2857,7 +2939,7 @@ impl GpuRenderer {
                             current_blend_mode,
                             scissor,
                             color_mask_bits,
-                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            particle_shader,
                             stencil_mode,
                             stencil_reference,
                             pverts,
@@ -3874,6 +3956,8 @@ impl GpuRenderer {
             all_color_idxs.len(),
             all_tex_verts.len(),
             all_tex_idxs.len(),
+            all_particle_verts.len(),
+            all_particle_idxs.len(),
         );
         if !all_color_verts.is_empty() {
             self.queue.write_buffer(
@@ -3899,6 +3983,18 @@ impl GpuRenderer {
                 bytemuck::cast_slice(&all_tex_idxs),
             );
         }
+        if !all_particle_verts.is_empty() {
+            self.queue.write_buffer(
+                &self.particle_vertex_buffer,
+                0,
+                bytemuck::cast_slice(&all_particle_verts),
+            );
+            self.queue.write_buffer(
+                &self.particle_index_buffer,
+                0,
+                bytemuck::cast_slice(&all_particle_idxs),
+            );
+        }
         if !frame_instances.is_empty() {
             self.ensure_instance_buffer_capacity(frame_instances.len());
             self.queue.write_buffer(
@@ -3915,6 +4011,8 @@ impl GpuRenderer {
                     color_idxs: all_color_idxs,
                     tex_verts: all_tex_verts,
                     tex_idxs: all_tex_idxs,
+                    particle_verts: all_particle_verts,
+                    particle_idxs: all_particle_idxs,
                     draws,
                     instances: frame_instances,
                     scratch_color_verts,
@@ -4336,6 +4434,7 @@ impl GpuRenderer {
                     &capture.view,
                     &view,
                     passes,
+                    shaders,
                     *w,
                     *h,
                     frame_time,
@@ -4353,6 +4452,8 @@ impl GpuRenderer {
             color_idxs: all_color_idxs,
             tex_verts: all_tex_verts,
             tex_idxs: all_tex_idxs,
+            particle_verts: all_particle_verts,
+            particle_idxs: all_particle_idxs,
             draws,
             instances: frame_instances,
             scratch_color_verts,

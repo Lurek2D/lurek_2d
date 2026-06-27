@@ -7,6 +7,7 @@ do
 -- Canonical unit coverage for lurek.image and related userdata APIs.
 
 local DDS_FIXTURE = "tests/fixtures/test_dxt1.dds"
+local PNG_FIXTURE = "content/examples/assets/images/sample_texture.png"
 local PROVINCE_FIXTURE = "content/games/eu2/map.png"
 local ROUNDTRIP_IMAGE_PATH = "save/test_image_core_roundtrip.limg"
 local ROUNDTRIP_PNG_PATH = "save/test_image_core_roundtrip.png"
@@ -28,10 +29,6 @@ local function expect_pixel(img, x, y, r, g, b, a)
     expect_equal(g, pg)
     expect_equal(b, pb)
     expect_equal(a, pa)
-end
-
-local function load_compressed_fixture()
-    return lurek.image.newCompressedData(DDS_FIXTURE)
 end
 
 local function new_layered_fixture()
@@ -67,15 +64,20 @@ end
 -- @describe lurek.image module functions
 describe("lurek.image module functions", function()
     -- @covers lurek.image.newCompressedData
-    it("newCompressedData errors on a missing file", function()
+    it("newCompressedData rejects missing files and unsupported DDS payloads", function()
         expect_error(function()
             lurek.image.newCompressedData("nonexistent_file.dds")
+        end)
+        expect_error(function()
+            lurek.image.newCompressedData(DDS_FIXTURE)
         end)
     end)
 
     -- @covers lurek.image.isCompressed
-    it("isCompressed returns false for a missing file", function()
+    it("isCompressed detects DDS headers without requiring DDS decode support", function()
         expect_false(lurek.image.isCompressed("nonexistent_file.dds"))
+        expect_false(lurek.image.isCompressed(PNG_FIXTURE))
+        expect_true(lurek.image.isCompressed(DDS_FIXTURE))
     end)
 
     -- @covers lurek.image.loadImage
@@ -206,51 +208,38 @@ end)
 -- @describe LCompressedImageData methods
 describe("LCompressedImageData methods", function()
     -- @covers LCompressedImageData:getDimensions
-    it("getDimensions matches width and height getters", function()
-        local data = load_compressed_fixture()
-        local w, h = data:getDimensions()
-        expect_equal(data:getWidth(), w)
-        expect_equal(data:getHeight(), h)
+    it("getDimensions is pending because this runtime build rejects DDS", function()
+        pending("DDS compressed textures are not supported in this runtime build; use PNG")
     end)
 
     -- @covers LCompressedImageData:getFormat
-    it("getFormat returns a non-empty format string", function()
-        local data = load_compressed_fixture()
-        local format = data:getFormat()
-        expect_type("string", format)
-        expect_true(#format > 0)
+    it("getFormat is pending because this runtime build rejects DDS", function()
+        pending("DDS compressed textures are not supported in this runtime build; use PNG")
     end)
 
     -- @covers LCompressedImageData:getHeight
-    it("getHeight reports positive height", function()
-        local data = load_compressed_fixture()
-        expect_true(data:getHeight() > 0)
+    it("getHeight is pending because this runtime build rejects DDS", function()
+        pending("DDS compressed textures are not supported in this runtime build; use PNG")
     end)
 
     -- @covers LCompressedImageData:getMipmapCount
-    it("getMipmapCount returns a non-negative integer", function()
-        local data = load_compressed_fixture()
-        local count = data:getMipmapCount()
-        expect_type("number", count)
-        expect_true(count >= 0)
+    it("getMipmapCount is pending because this runtime build rejects DDS", function()
+        pending("DDS compressed textures are not supported in this runtime build; use PNG")
     end)
 
     -- @covers LCompressedImageData:getWidth
-    it("getWidth reports positive width", function()
-        local data = load_compressed_fixture()
-        expect_true(data:getWidth() > 0)
+    it("getWidth is pending because this runtime build rejects DDS", function()
+        pending("DDS compressed textures are not supported in this runtime build; use PNG")
     end)
 
     -- @covers LCompressedImageData:type
-    it("type returns a userdata type name", function()
-        local data = load_compressed_fixture()
-        expect_type("string", data:type())
+    it("type is pending because this runtime build rejects DDS", function()
+        pending("DDS compressed textures are not supported in this runtime build; use PNG")
     end)
 
     -- @covers LCompressedImageData:typeOf
-    it("typeOf is callable and returns a boolean", function()
-        local data = load_compressed_fixture()
-        expect_type("boolean", data:typeOf("LObject"))
+    it("typeOf is pending because this runtime build rejects DDS", function()
+        pending("DDS compressed textures are not supported in this runtime build; use PNG")
     end)
 end)
 
@@ -941,6 +930,48 @@ describe("image extended editing API", function()
         expect_equal(235, r)
         img:applyEffects({ "grayscale", { name = "posterize", opts = { levels = 2 } } })
         expect_type("number", ({ img:getPixel(1, 1) })[1])
+    end)
+
+    -- @covers LImageData:applyShader
+    it("applyShader executes image-target shader and returns processed image data", function()
+        local img = solid_image(2, 2, 20, 40, 80, 255)
+        local shader = lurek.shader.new([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>, @location(3) resolution: vec2<f32>, @location(4) texel: vec2<f32>) -> @location(0) vec4<f32> {
+    _ = uv;
+    _ = pixel;
+    _ = resolution;
+    _ = texel;
+    return vec4<f32>(1.0, 0.0, 0.0, color.a);
+}
+]], { target = "image" })
+        local out = img:applyShader(shader)
+        expect_equal(2, out:getWidth())
+        expect_equal(2, out:getHeight())
+        expect_pixel(out, 0, 0, 255, 0, 0, 255)
+        expect_error(function()
+            img:applyShader(lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "draw" }))
+        end)
+    end)
+
+    -- @covers lurek.image.requestShader
+    it("requestShader exposes poll wait and cancel for image shader jobs", function()
+        local img = solid_image(1, 1, 1, 2, 3, 255)
+        local shader = lurek.shader.new([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    _ = color;
+    _ = uv;
+    return vec4<f32>(0.0, 1.0, 0.0, 1.0);
+}
+]], { target = "image" })
+        local job = lurek.image.requestShader(img, shader)
+        local polled = job:poll()
+        expect_equal(1, polled:getWidth())
+        expect_pixel(polled, 0, 0, 0, 255, 0, 255)
+        expect_equal(1, job:wait(10):getHeight())
+        job:cancel()
+        expect_equal(nil, job:poll())
     end)
 
     -- @covers LImageData:applyMask

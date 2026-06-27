@@ -1232,6 +1232,16 @@
       "tests/lua/golden/test_serialize_golden.lua"
     ]
   },
+  "shader": {
+    "baseline_artifacts": [],
+    "current_artifacts": [
+      "tests/artifacts/current/shader/shader_api_contract.txt"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_shader_evidence.lua"
+    ],
+    "golden_tests": []
+  },
   "spine": {
     "baseline_artifacts": [
       "tests/artifacts/baselines/spine/bone_operations.txt",

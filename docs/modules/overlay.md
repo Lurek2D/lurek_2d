@@ -989,7 +989,7 @@ LOverlay:getRenderPlan()
 
 | Type | Description |
 |------|-------------|
-| table | Table with `rendered` and `externally_handled` string arrays. |
+| table | Table with `rendered`, `externally_handled`, and `shader` string arrays. |
 
 **Example**
 
@@ -1015,6 +1015,72 @@ do
     overlay_log("rendered layers=" .. tostring(#plan.rendered))
     overlay_log("external layers=" .. tostring(#plan.externally_handled))
     overlay_log("first external=" .. tostring(plan.externally_handled[1]))
+end
+```
+
+---
+
+#### `LOverlay:getShader`
+
+Returns the shader bound to this overlay, if any.
+
+```lua
+LOverlay:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader or nil. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "overlay" })
+    ov:setShader(shader)
+    local active = ov:getShader()
+    local target = active and active:getTarget() or "nil"
+    ov:setShader(nil)
+    lurek.log.info("[overlay.example] shader target=" .. target)
+end
+```
+
+---
+
+#### `LOverlay:getShaderLayer`
+
+Returns a shader bound to one overlay layer, if present.
+
+```lua
+LOverlay:getShaderLayer(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | string | Layer name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader or nil. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "overlay" })
+    ov:setShaderLayer("heat_haze", shader)
+    local active = ov:getShaderLayer("heat_haze")
+    local target = active and active:getTarget() or "nil"
+    ov:setShaderLayer("heat_haze", nil)
+    lurek.log.info("[overlay.example] heat_haze target=" .. target)
 end
 ```
 
@@ -2792,6 +2858,71 @@ do
     ov:setLightningColor(1.0, 1.0, 0.8, 1.0)
     local r, g, b, a = ov:getLightningColor()
     example_print_log("LOverlay:setLightningColor=" .. rgba_text(r, g, b, a))
+end
+```
+
+---
+
+#### `LOverlay:setShader`
+
+Sets or clears the shader used for custom overlay rendering.
+
+```lua
+LOverlay:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Overlay-target shader or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "overlay" })
+    ov:setShader(shader)
+    lurek.log.info("[overlay.example] shader bound=" .. tostring(ov:getShader() ~= nil))
+end
+```
+
+---
+
+#### `LOverlay:setShaderLayer`
+
+Sets or clears an overlay-layer shader binding.
+
+```lua
+LOverlay:setShaderLayer(layer, shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | string | Layer name such as `heat_haze`, `water`, or `fog`. |
+| `shader?` | [LShader](render.md#lshader) | Overlay-target shader or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "overlay" })
+    ov:setShaderLayer("heat_haze", shader)
+    lurek.log.info("[overlay.example] layer shader=" .. tostring(ov:getShaderLayer("heat_haze") ~= nil))
 end
 ```
 

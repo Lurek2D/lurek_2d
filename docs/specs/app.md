@@ -116,9 +116,9 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 
 ### splash_screen.rs
 
-- This file owns splash-branding asset loading and centered startup render-command generation for the desktop app.
-- It decodes embedded icon and banner PNGs into temporary texture storage used before game assets are active.
-- Layout helpers fit branding into the window, center it, and switch the footer hint when drag-and-drop is hovering.
+- This file owns minimal startup render-command generation for the desktop app.
+- It keeps the no-game screen free of embedded bitmap assets so the runtime exe stays compact.
+- Layout helpers center the footer hint and switch it when drag-and-drop is hovering.
 - The file is only about splash visuals; window creation, input handling, and frame flow stay in the main app owner.
 - Open this file when startup presentation changes; runtime orchestration and fatal fallback screens live in siblings.
 

@@ -13,7 +13,7 @@
 - Source path: `src/overlay`
 - Binding: `src/lua_api/overlay_api.rs`
 - Namespace: `lurek.overlay`
-- Lua API surface: `2` functions, `3` types, `95` methods
+- Lua API surface: `2` functions, `3` types, `99` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -169,6 +169,8 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:getLightningAlpha() -> number`: Returns the current lightning alpha.
 - `LOverlay:getLightningColor() -> number`: Returns overlay lightning RGBA color.
 - `LOverlay:getRenderPlan() -> table`: Returns the current render responsibility plan for active overlay layers.
+- `LOverlay:getShader() -> LShader?`: Returns the shader bound to this overlay, if any.
+- `LOverlay:getShaderLayer(layer) -> LShader?`: Returns a shader bound to one overlay layer, if present.
 - `LOverlay:getShakeOffset() -> number`: Returns the current screen shake offset.
 - `LOverlay:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
 - `LOverlay:getTimeOfDay() -> number`: Returns the overlay time-of-day value.
@@ -212,6 +214,8 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:setHeatHazeEnabled(v) -> nil`: Enables or disables overlay heat haze rendering.
 - `LOverlay:setHeatHazeIntensity(v) -> nil`: Sets overlay heat haze intensity. This method is available to Lua scripts.
 - `LOverlay:setLightningColor(r, g, b, a?) -> nil`: Sets overlay lightning RGBA color.
+- `LOverlay:setShader(shader?) -> nil`: Sets or clears the shader used for custom overlay rendering.
+- `LOverlay:setShaderLayer(layer, shader?) -> nil`: Sets or clears an overlay-layer shader binding.
 - `LOverlay:setTimeOfDay(v) -> nil`: Sets the overlay time-of-day value used by ambient effects.
 - `LOverlay:setVignetteEnabled(v) -> nil`: Enables or disables overlay vignette rendering.
 - `LOverlay:setVignetteStrength(v) -> nil`: Sets overlay vignette strength. This method is available to Lua scripts.

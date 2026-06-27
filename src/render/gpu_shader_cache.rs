@@ -8,13 +8,13 @@
 use std::collections::HashMap;
 
 use crate::render::gpu_pipeline::{
-    build_custom_color_shader_source, build_custom_texture_shader_source, create_render_pipeline,
-    GeometryKind, PipelineKey,
+    build_custom_color_shader_source, build_custom_particle_shader_source,
+    build_custom_texture_shader_source, create_render_pipeline, GeometryKind, PipelineKey,
 };
 use crate::render::gpu_renderer::GpuRenderer;
 use crate::render::gpu_shaders::{GpuShader, ShaderUniformKind};
 use crate::render::gpu_tess::{uniform_bytes, uniform_kind};
-use crate::render::shader::Shader;
+use crate::render::shader::{Shader, ShaderTarget};
 use crate::runtime::resource_keys::ShaderKey;
 
 impl GpuRenderer {
@@ -85,12 +85,19 @@ impl GpuRenderer {
                 })
             });
             let color_source = build_custom_color_shader_source(shader, &uniform_signature);
+            let particle_source = build_custom_particle_shader_source(shader, &uniform_signature);
             let texture_source = build_custom_texture_shader_source(shader, &uniform_signature);
             let color_module = self
                 .device
                 .create_shader_module(wgpu::ShaderModuleDescriptor {
                     label: Some("custom_color_shader"),
                     source: wgpu::ShaderSource::Wgsl(color_source.into()),
+                });
+            let particle_module = self
+                .device
+                .create_shader_module(wgpu::ShaderModuleDescriptor {
+                    label: Some("custom_particle_shader"),
+                    source: wgpu::ShaderSource::Wgsl(particle_source.into()),
                 });
             let texture_module = self
                 .device
@@ -129,6 +136,18 @@ impl GpuRenderer {
                         push_constant_ranges: &[],
                     })
             };
+            let particle_layout = {
+                let bind_group_layouts = match uniform_bind_group_layout.as_ref() {
+                    Some(uniform_layout) => vec![&self.viewport_bind_group_layout, uniform_layout],
+                    None => vec![&self.viewport_bind_group_layout],
+                };
+                self.device
+                    .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                        label: Some("custom_particle_layout"),
+                        bind_group_layouts: &bind_group_layouts,
+                        push_constant_ranges: &[],
+                    })
+            };
             self.shader_cache.insert(
                 shader_key,
                 GpuShader {
@@ -138,10 +157,13 @@ impl GpuRenderer {
                     uniform_bind_group,
                     color_module,
                     texture_module,
+                    particle_module,
                     color_layout,
                     texture_layout,
+                    particle_layout,
                     color_pipelines: HashMap::new(),
                     texture_pipelines: HashMap::new(),
+                    particle_pipelines: HashMap::new(),
                 },
             );
         }
@@ -161,6 +183,9 @@ impl GpuRenderer {
         geometry: GeometryKind,
         key: PipelineKey,
     ) -> Option<&wgpu::RenderPipeline> {
+        if !matches!(shader.target(), ShaderTarget::Draw | ShaderTarget::Particle) {
+            return None;
+        }
         self.ensure_shader_cache(shader_key, shader);
         let missing = {
             let Some(cache) = self.shader_cache.get(shader_key) else {
@@ -174,6 +199,7 @@ impl GpuRenderer {
                 GeometryKind::Texture | GeometryKind::TextureInstanced => {
                     !cache.texture_pipelines.contains_key(&key)
                 }
+                GeometryKind::Particle => !cache.particle_pipelines.contains_key(&key),
             }
         };
         if missing {
@@ -203,6 +229,15 @@ impl GpuRenderer {
                             "lurek_fragment_main",
                         )
                     }
+                    GeometryKind::Particle => create_render_pipeline(
+                        &self.device,
+                        self.surface_format,
+                        &cache.particle_layout,
+                        &cache.particle_module,
+                        geometry,
+                        key,
+                        "lurek_fragment_main",
+                    ),
                 }
             };
             let Some(cache) = self.shader_cache.get_mut(shader_key) else {
@@ -215,6 +250,9 @@ impl GpuRenderer {
                 }
                 GeometryKind::Texture | GeometryKind::TextureInstanced => {
                     cache.texture_pipelines.insert(key, pipeline);
+                }
+                GeometryKind::Particle => {
+                    cache.particle_pipelines.insert(key, pipeline);
                 }
             }
         }
@@ -236,6 +274,14 @@ impl GpuRenderer {
                 debug_assert!(
                     pipeline.is_some(),
                     "custom texture pipeline missing after ensure"
+                );
+                pipeline
+            }
+            GeometryKind::Particle => {
+                let pipeline = cache.particle_pipelines.get(&key);
+                debug_assert!(
+                    pipeline.is_some(),
+                    "custom particle pipeline missing after ensure"
                 );
                 pipeline
             }

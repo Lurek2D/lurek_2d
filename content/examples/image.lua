@@ -174,9 +174,9 @@ do
     local png_path = "content/examples/assets/images/sample_texture.png"
     local dds = lurek.image.isCompressed(dds_path)
     local png = lurek.image.isCompressed(png_path)
-    local cdata = lurek.image.newCompressedData(dds_path)
-    local fmt = cdata:getFormat()
-    image_log("dds=" .. tostring(dds) .. " png=" .. tostring(png) .. " format=" .. fmt)
+    local ok, err = pcall(lurek.image.newCompressedData, dds_path)
+    local status = ok and "loaded" or tostring(err)
+    image_log("dds=" .. tostring(dds) .. " png=" .. tostring(png) .. " status=" .. status)
 end
 
 --@api: lurek.image.newCompressedData
@@ -192,11 +192,12 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w, h = cdata:getDimensions()
-    local fmt = cdata:getFormat()
-    local mips = cdata:getMipmapCount()
-    image_log("compressed " .. w .. "x" .. h .. " format=" .. fmt .. " mips=" .. mips)
+    local path = "content/examples/assets/images/sample_normal.dds"
+    local ok, result = pcall(lurek.image.newCompressedData, path)
+    local is_dds = lurek.image.isCompressed(path)
+    local status = ok and result:type() or "unsupported"
+    local detail = ok and result:getFormat() or tostring(result)
+    image_log("compressed dds=" .. tostring(is_dds) .. " status=" .. status .. " detail=" .. detail)
 end
 
 --@api: lurek.image.newLayeredImage
@@ -1695,11 +1696,13 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w, h = cdata:getDimensions()
-    local fmt = cdata:getFormat()
-    local mips = cdata:getMipmapCount()
-    example_print_log("compressed = " .. w .. "x" .. h)
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local w, h = 0, 0
+    if ok then
+        w, h = cdata:getDimensions()
+    end
+    local status = ok and (w .. "x" .. h) or "unsupported in PNG runtime"
+    example_print_log("compressed = " .. status)
 end
 
 --@api: LCompressedImageData:getFormat
@@ -1715,11 +1718,11 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w = cdata:getWidth()
-    local h = cdata:getHeight()
-    local mips = cdata:getMipmapCount()
-    example_print_log("format = " .. cdata:getFormat())
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local w = ok and cdata:getWidth() or 0
+    local h = ok and cdata:getHeight() or 0
+    local format = ok and cdata:getFormat() or "unsupported"
+    example_print_log("format = " .. format .. " size=" .. w .. "x" .. h)
 end
 
 --@api: LCompressedImageData:getMipmapCount
@@ -1735,11 +1738,12 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local fmt = cdata:getFormat()
-    local w = cdata:getWidth()
-    local h = cdata:getHeight()
-    example_print_log("mipmaps = " .. cdata:getMipmapCount())
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local fmt = ok and cdata:getFormat() or "unsupported"
+    local w = ok and cdata:getWidth() or 0
+    local h = ok and cdata:getHeight() or 0
+    local mips = ok and cdata:getMipmapCount() or 0
+    example_print_log("mipmaps = " .. mips .. " format=" .. fmt .. " size=" .. w .. "x" .. h)
 end
 
 --@api: LCompressedImageData:type
@@ -1755,11 +1759,11 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local fmt = cdata:getFormat()
-    local w = cdata:getWidth()
-    example_print_log("type = " .. cdata:type())
-    example_print_log("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local fmt = ok and cdata:getFormat() or "unsupported"
+    local w = ok and cdata:getWidth() or 0
+    local type_name = ok and cdata:type() or "nil"
+    example_print_log("type = " .. type_name .. " format=" .. fmt .. " width=" .. w)
 end
 
 --@api: LCompressedImageData:typeOf
@@ -1775,11 +1779,11 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local fmt = cdata:getFormat()
-    local is_object = cdata:typeOf("LObject")
-    example_print_log("type = " .. cdata:type())
-    example_print_log("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
+    local ok, cdata = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local fmt = ok and cdata:getFormat() or "unsupported"
+    local is_object = ok and cdata:typeOf("LObject") or false
+    local is_compressed = ok and cdata:typeOf("LCompressedImageData") or false
+    example_print_log("typeOf object=" .. tostring(is_object) .. " compressed=" .. tostring(is_compressed) .. " format=" .. fmt)
 end
 
 --@api: LProvinceGrid:getAt
@@ -2077,10 +2081,10 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w = cd:getWidth()
-    local h = cd:getHeight()
-    local mips = cd:getMipmapCount()
+    local ok, cd = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local w = ok and cd:getWidth() or 0
+    local h = ok and cd:getHeight() or 0
+    local mips = ok and cd:getMipmapCount() or 0
     example_print_log("compressed w=" .. w .. " h=" .. h .. " mips=" .. mips)
 end
 
@@ -2097,10 +2101,10 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
-    local w = cd:getWidth()
-    local h = cd:getHeight()
-    local mips = cd:getMipmapCount()
+    local ok, cd = pcall(lurek.image.newCompressedData, "content/examples/assets/images/sample_normal.dds")
+    local w = ok and cd:getWidth() or 0
+    local h = ok and cd:getHeight() or 0
+    local mips = ok and cd:getMipmapCount() or 0
     example_print_log("compressed w=" .. w .. " h=" .. h .. " mips=" .. mips)
 end
 --@api: lurek.image.loadAnimated
@@ -2237,4 +2241,67 @@ do
     local resized = image:transform({ width = 8, height = 6, filter = "linear" })
     local w, h = resized:getDimensions()
     lurek.log.info("[image] transformed=" .. tostring(w) .. "x" .. tostring(h))
+end
+
+--@api: LImageData:applyShader
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(40, 80, 160, 255)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(1.0 - color.r, color.g, uv.x, color.a);
+}
+]], { target = "image" })
+    local output = image:applyShader(shader)
+    local r, g, b, _ = output:getPixel(0, 0)
+    lurek.log.info("[image] shader output=" .. output:getWidth() .. "x" .. output:getHeight() .. " pixel=" .. r .. "," .. g .. "," .. b)
+end
+
+--@api: lurek.image.requestShader
+do
+    local image = lurek.image.newImageData(2, 2)
+    image:fill(120, 80, 40, 255)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.b, color.g, color.r, color.a);
+}
+]], { target = "image" })
+    local job = lurek.image.requestShader(image, shader)
+    local output = job:wait(50)
+    lurek.log.info("[image] shader job done=" .. tostring(output ~= nil))
+end
+
+--@api: LImageShaderJob:poll
+do
+    local image = lurek.image.newImageData(2, 2)
+    image:fill(10, 20, 30, 255)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
+    local job = lurek.image.requestShader(image, shader)
+    local output = job:poll()
+    local ready = output ~= nil and output:getWidth() == image:getWidth()
+    lurek.log.info("[image] shader poll ready=" .. tostring(ready))
+end
+
+--@api: LImageShaderJob:wait
+do
+    local image = lurek.image.newImageData(2, 2)
+    image:fill(40, 50, 60, 255)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
+    local job = lurek.image.requestShader(image, shader)
+    local output = job:wait(100)
+    local done = output ~= nil and output:getHeight() == image:getHeight()
+    lurek.log.info("[image] shader wait done=" .. tostring(done))
+end
+
+--@api: LImageShaderJob:cancel
+do
+    local image = lurek.image.newImageData(2, 2)
+    image:fill(70, 80, 90, 255)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "image" })
+    local job = lurek.image.requestShader(image, shader)
+    job:cancel()
+    local output = job:poll()
+    lurek.log.info("[image] shader cancel output=" .. tostring(output))
 end

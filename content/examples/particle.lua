@@ -2472,3 +2472,41 @@ do
     example_print_log("state = " .. tostring(stats.state))
 end
 
+--@api: LParticleSystem:setShader
+do
+    local ps = lurek.particle.newSystem({ maxParticles = 32 })
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "particle" })
+    ps:setShader(shader)
+    lurek.log.info("[particle.example] shader bound=" .. tostring(ps:getShader() ~= nil))
+end
+
+--@api: LParticleSystem:getShader
+do
+    local ps = lurek.particle.newSystem({ maxParticles = 32 })
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "particle" })
+    ps:setShader(shader)
+    local active = ps:getShader()
+    local target = active and active:getTarget() or "nil"
+    ps:setShader(nil)
+    lurek.log.info("[particle.example] shader target=" .. target)
+end
+
+--@api: LParticleSystem:setShaderUniform
+do
+    local ps = lurek.particle.newSystem({ maxParticles = 32 })
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "particle" })
+    ps:setShader(shader)
+    ps:setShaderUniform("glow_amount", 0.8)
+    lurek.log.info("[particle.example] uniform=" .. tostring(shader:hasUniform("glow_amount")))
+end
+

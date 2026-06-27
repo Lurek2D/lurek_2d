@@ -1,5 +1,6 @@
 //! Registers the `lurek.light` Lua API for light worlds, occluders, blends, and validated lighting options.
 
+use super::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
 use super::SharedState;
 use crate::color::Color;
 use crate::light::transition::LightTransition;
@@ -8,6 +9,7 @@ use crate::light::{
     LightType, Occluder, ShadowFilter,
 };
 use crate::math::Vec2;
+use crate::render::ShaderTarget;
 use crate::runtime::resource_keys::{LightKey, OccluderKey};
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -1290,6 +1292,40 @@ impl LuaUserData for LuaLight {
                 .ok_or_else(|| invalid_light("Light:getNormalStrength"))?;
             Ok(light.get_normal_strength())
         });
+        // -- setShader --
+        /// Sets or clears the custom light-contribution shader for this light.
+        /// @param | shader | LShader? | Light-target shader or nil to clear.
+        methods.add_method("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            let mut st = this.state.borrow_mut();
+            let key = match shader {
+                Some(ud) => {
+                    let key = shader_key_from_userdata(&ud)?;
+                    ensure_shader_target(&st, key, ShaderTarget::Light, "Light:setShader")?;
+                    Some(key)
+                }
+                None => None,
+            };
+            let light = st
+                .light_world
+                .get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setShader"))?;
+            light.shader = key;
+            Ok(())
+        });
+        // -- getShader --
+        /// Returns the custom light shader bound to this light, if any.
+        /// @return | LShader? | Bound shader or nil.
+        methods.add_method("getShader", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st
+                .light_world
+                .get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getShader"))?;
+            Ok(light.shader.map(|key| LuaShader {
+                state: this.state.clone(),
+                key,
+            }))
+        });
         // -- type --
         /// Returns the Lua-visible type name for this light handle.
         /// @return | string | The string `LLight`.
@@ -1492,6 +1528,40 @@ impl LuaUserData for LuaOccluder {
 /// Registers `lurek.light` light-world constructors and global lighting controls.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    let s = state.clone();
+    // -- setShader --
+    /// Sets or clears the default custom light shader for the light world.
+    /// @param | shader | LShader? | Light-target shader or nil to clear.
+    tbl.set(
+        "setShader",
+        lua.create_function(move |_, shader: Option<LuaAnyUserData>| {
+            let mut st = s.borrow_mut();
+            let key = match shader {
+                Some(ud) => {
+                    let key = shader_key_from_userdata(&ud)?;
+                    ensure_shader_target(&st, key, ShaderTarget::Light, "lurek.light.setShader")?;
+                    Some(key)
+                }
+                None => None,
+            };
+            st.light_world.shader = key;
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- getShader --
+    /// Returns the default custom light shader for the light world.
+    /// @return | LShader? | Bound shader or nil.
+    tbl.set(
+        "getShader",
+        lua.create_function(move |_, ()| {
+            let st = s.borrow();
+            Ok(st.light_world.shader.map(|key| LuaShader {
+                state: s.clone(),
+                key,
+            }))
+        })?,
+    )?;
     let s = state.clone();
     // -- newLight --
     /// Creates a light and applies optional light settings.

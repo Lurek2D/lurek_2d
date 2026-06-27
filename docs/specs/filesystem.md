@@ -13,7 +13,7 @@
 - Source path: `src/filesystem`
 - Binding: `src/lua_api/filesystem_api.rs`
 - Namespace: `lurek.filesystem`
-- Lua API surface: `44` functions, `5` types, `23` methods
+- Lua API surface: `44` functions, `4` types, `17` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -71,8 +71,8 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 
 ### mod.rs
 
-- `src/filesystem/mod.rs` is the module index for virtual paths, file data, handles, watchers, async I/O, and ZIP mounts.
-- It declares the files that own path resolution, buffered stream access, archive overlays, watch polling, and worker I/O.
+- `src/filesystem/mod.rs` is the module index for virtual paths, file data, handles, watchers, and async I/O.
+- It declares the files that own path resolution, buffered stream access, watch polling, and worker I/O.
 - This file reexports the main filesystem types so callers can use storage services without importing deep internal paths.
 - No path normalization, mount state, or worker queues live here; it only defines visibility and subsystem boundaries.
 - Read this index first when tracing filesystem behavior, because it shows where sandboxing, streams, and mounts split.
@@ -96,14 +96,6 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 - It owns watch registration, cached mtimes, deterministic poll ordering, and forced invalidation for refresh flows.
 - This file is the change-detection helper for filesystem clients; it does not resolve paths or read file contents.
 - Read it when watch semantics, change polling, or refresh-trigger contracts for filesystem consumers need changes.
-
-### zip_mount.rs
-
-- `src/filesystem/zip_mount.rs` mounts a ZIP archive as a virtual read-only path prefix inside the filesystem layer.
-- It owns archive indexing, normalized virtual-path lookup, traversal rejection, and on-demand entry reads from ZIP data.
-- Contains and list operations live here so archive-backed mounts can behave like directory sources to higher layers.
-- This file is the archive overlay boundary; it does not manage save writes, async queues, or mutable stream handles.
-- Read it when virtual archive paths, ZIP lookup behavior, or sandbox checks for mounted content need to change.
 
 
 
@@ -233,23 +225,6 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 ##### Methods
 
 - No documented methods.
-
-#### LZipMount Type
-
-- Lua-side handle for a mounted ZIP archive view.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LZipMount:contains(virtual_path) -> boolean`: Returns whether a virtual path exists in the ZIP mount.
-- `LZipMount:listFiles() -> string[]`: Returns every virtual file path in the ZIP mount.
-- `LZipMount:prefix() -> string`: Returns the virtual prefix used by this ZIP mount.
-- `LZipMount:readFile(virtual_path) -> string`: Reads a file from the ZIP mount by virtual path.
-- `LZipMount:type() -> string`: Returns the Lua-visible type name for this ZIP mount handle.
-- `LZipMount:typeOf(name) -> boolean`: Returns whether this ZIP mount handle matches a supported type name.
 
 ## Examples
 

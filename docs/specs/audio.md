@@ -15,7 +15,7 @@
 - Source path: `src/audio`
 - Binding: `src/lua_api/audio_api.rs`
 - Namespace: `lurek.audio`
-- Lua API surface: `94` functions, `7` types, `157` methods
+- Lua API surface: `90` functions, `7` types, `157` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -47,13 +47,12 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - Owning tier: `Platform Services`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/audio_api.rs`
-- Referenced engine modules: `dsp`, `image`, `midi`, `runtime`
+- Referenced engine modules: `dsp`, `image`, `runtime`
 
 ## Imports
 
 - `dsp`: Imports or references `src/dsp/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
-- `midi`: Imports or references `src/midi/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
 ## Source Files
@@ -144,7 +143,6 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 
 - `lurek.audio.beatClockFromSource(source, bpm, opts?) -> LBeatClock`: Creates a new beat clock and synchronizes it to an audio source position.
 - `lurek.audio.clearFilter(source) -> nil`: Removes all frequency filters from a source.
-- `lurek.audio.clearMidiSoundFont() -> nil`: Clears the loaded SoundFont and reverts MIDI synthesis to default.
 - `lurek.audio.clearRandomPitch(src_ud) -> nil`: Clears any random pitch range previously set on the source.
 - `lurek.audio.clone(source) -> LSource`: Creates an independent copy of a source sharing the same audio data.
 - `lurek.audio.create_bus(name, parent_name?) -> nil`: Creates a named audio bus, optionally parented to another bus.
@@ -178,7 +176,6 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - `lurek.audio.getStereoWidth(src_ud) -> number`: Returns the current stereo width factor of an audio source.
 - `lurek.audio.getVelocity(source) -> number, number, number`: Returns the velocity vector of a source.
 - `lurek.audio.getVolume(source) -> number`: Returns the current volume of a source.
-- `lurek.audio.hasMidiSoundFont() -> boolean`: Returns whether a SoundFont file has been loaded for MIDI synthesis.
 - `lurek.audio.isLooping(source) -> boolean`: Returns whether a source has looping enabled.
 - `lurek.audio.isMuted() -> boolean`: Returns whether global audio is currently muted.
 - `lurek.audio.isPaused(source) -> boolean`: Returns whether a source is currently paused.
@@ -191,7 +188,6 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - `lurek.audio.newBeatClock(bpm, beats_per_bar_or_opts, opts?) -> LBeatClock`: Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.
 - `lurek.audio.newBus(name) -> LBus`: Creates a new audio mixing bus for grouping and controlling sources.
 - `lurek.audio.newDecoder(source, buffersize?) -> LDecoder`: Creates a streaming audio decoder for the given file. The file is opened relative to the game directory.
-- `lurek.audio.newMidiPlayer(path?) -> LMidiPlayer`: Creates a new MIDI player instance, optionally loading a file immediately.
 - `lurek.audio.newPool(file_path, voice_count) -> LSoundPool`: Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.
 - `lurek.audio.newQueueableSource(sample_rate, bit_depth, channels, buffer_count?) -> integer`: Creates a new queueable audio source for streaming PCM data buffer by buffer.
 - `lurek.audio.newSoundData(pathOrCount, sampleRate, channels?) -> LSoundData`: Creates a new SoundData object from a file path or blank buffer for procedural audio.
@@ -218,7 +214,6 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - `lurek.audio.setLowpass(source, cutoff_hz) -> nil`: Applies a lowpass filter to a source, attenuating high frequencies.
 - `lurek.audio.setMasterVolume(vol) -> nil`: Sets the global master volume affecting all audio output.
 - `lurek.audio.setMeter(level) -> nil`: Sets the master peak level for metering purposes.
-- `lurek.audio.setMidiSoundFont(path) -> nil`: Sets the SoundFont file used for MIDI synthesis.
 - `lurek.audio.setMuted(muted) -> nil`: Globally mutes all audio (pauses all sources without stopping them).
 - `lurek.audio.setOrientation(source, fx, fy, fz, ux, uy, uz) -> nil`: Sets the orientation of a source using forward and up vectors.
 - `lurek.audio.setPan(source, pan) -> nil`: Sets the stereo panning of a source.

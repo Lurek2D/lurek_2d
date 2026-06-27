@@ -39,8 +39,13 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
-    local fx = lurek.effect.newCustomEffect(shader:getId())
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "postfx" })
+    local fx = lurek.effect.newCustomEffect(shader)
     fx:setParameter("distortion", 0.15)
     fx:disableAutoUniforms()
     local enabled = fx:isEnabled()
@@ -100,8 +105,13 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
-    local fx = lurek.effect.newPass(shader:getId())
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "postfx" })
+    local fx = lurek.effect.newPass(shader)
     fx:setParameter("exposure", 1.1)
     fx:enableAutoUniforms()
     local type_name = fx:getType()

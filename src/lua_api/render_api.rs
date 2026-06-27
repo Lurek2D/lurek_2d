@@ -12,7 +12,7 @@ use crate::render::renderer::{BevelStyle, GradientDirection, HexOrientation, Pat
 use crate::render::shape::{CompoundShape, ShapeCommand};
 use crate::render::{
     BlendMode, Canvas, CompareMode, DepthMode, DrawMode, Mesh, MeshDrawMode, MeshVertex,
-    RenderCommand, Shader, StencilAction, StencilMode, TextAlign, UniformValue,
+    RenderCommand, Shader, ShaderTarget, StencilAction, StencilMode, TextAlign, UniformValue,
 };
 use crate::runtime::resource_keys::*;
 use crate::runtime::ScreenshotRequest;
@@ -1257,6 +1257,16 @@ impl LuaUserData for LuaShader {
         /// Returns the internal numeric handle ID for this shader.
         /// @return | number | Opaque shader handle identifier.
         methods.add_method("getId", |_, this, ()| Ok(this.key.data().as_ffi()));
+        // -- getTarget --
+        /// Returns the target this shader was validated for.
+        /// @return | string | Shader target name.
+        methods.add_method("getTarget", |_, this, ()| {
+            let st = this.state.borrow();
+            let shader = st.shaders.get(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shader handle is not valid or was released".into())
+            })?;
+            Ok(shader.target().as_str().to_string())
+        });
         // -- send --
         /// Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
         /// @param | name | string | Uniform variable name declared in the shader.
@@ -1282,6 +1292,20 @@ impl LuaUserData for LuaShader {
                 LuaError::RuntimeError("Shader handle is not valid or was released".into())
             })?;
             Ok(shader.has_uniform(&name))
+        });
+        // -- getDiagnostics --
+        /// Returns shader validation diagnostics.
+        /// @return | table | Array of diagnostic strings.
+        methods.add_method("getDiagnostics", |lua, this, ()| {
+            let st = this.state.borrow();
+            let shader = st.shaders.get(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shader handle is not valid or was released".into())
+            })?;
+            let table = lua.create_table()?;
+            for (index, diagnostic) in shader.diagnostics().iter().enumerate() {
+                table.set(index + 1, diagnostic.as_str())?;
+            }
+            Ok(table)
         });
         // -- release --
         /// Releases the shader resource. If active, the default shader is restored.
@@ -1309,6 +1333,32 @@ impl LuaUserData for LuaShader {
         /// @return | string | Always "LShader".
         methods.add_method("type", |_, _, ()| Ok("LShader"));
     }
+}
+/// Extract a live shader key from a Lua shader userdata handle.
+pub(crate) fn shader_key_from_userdata(ud: &LuaAnyUserData) -> LuaResult<ShaderKey> {
+    let shader = ud.borrow::<LuaShader>()?;
+    Ok(shader.key)
+}
+
+/// Ensure a shader handle exists and was validated for `expected`.
+pub(crate) fn ensure_shader_target(
+    state: &SharedState,
+    key: ShaderKey,
+    expected: ShaderTarget,
+    api: &str,
+) -> LuaResult<()> {
+    let shader = state
+        .shaders
+        .get(key)
+        .ok_or_else(|| LuaError::RuntimeError(format!("{api}: shader handle is not valid")))?;
+    if shader.target() != expected {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: expected {} shader, got {} shader",
+            expected.as_str(),
+            shader.target().as_str()
+        )));
+    }
+    Ok(())
 }
 /// Rectangular sub-region of a texture, used for sprite sheets and atlas-based rendering.
 #[derive(Clone)]
@@ -3261,7 +3311,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "newShader",
         lua.create_function(move |_, code: String| {
-            let shader = match Shader::new(code) {
+            let shader = match Shader::new_for_target(code, ShaderTarget::Draw) {
                 Ok(shader) => shader,
                 Err(err) => {
                     let msg = format!("lurek.render.newShader: {}", err);
@@ -3298,6 +3348,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                             "lurek.render.setShader: shader handle is not valid".into(),
                         ));
                     }
+                    ensure_shader_target(&st, key, ShaderTarget::Draw, "lurek.render.setShader")?;
                     st.active_shader = Some(key);
                     st.render_commands.push(RenderCommand::SetShader(Some(key)));
                 }

@@ -5,7 +5,9 @@
 //! Keeps public crate helpers focused on gpu state behavior while Lua registration stays elsewhere.
 //! Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
-use crate::render::gpu_types::{ColorVertex, InstanceData, PreparedDraw, TexVertex};
+use crate::render::gpu_types::{
+    ColorVertex, InstanceData, ParticleVertex, PreparedDraw, TexVertex,
+};
 use crate::runtime::resource_keys::{InstanceBufferKey, StaticGeometryKey};
 
 /// GPU texture with its bind group; held in slot-maps keyed by `TextureKey` / `CanvasKey` / `FontKey`.
@@ -88,6 +90,10 @@ pub struct FrameRenderBuffers {
     pub tex_verts: Vec<TexVertex>,
     /// Textured indices accumulated before GPU upload.
     pub tex_idxs: Vec<u32>,
+    /// Particle shader vertices accumulated before GPU upload.
+    pub particle_verts: Vec<ParticleVertex>,
+    /// Particle shader indices accumulated before GPU upload.
+    pub particle_idxs: Vec<u32>,
     /// Prepared draw calls generated from render commands.
     pub draws: Vec<PreparedDraw>,
     /// Per-frame instance transforms uploaded to the shared instance buffer.
@@ -104,6 +110,27 @@ pub struct FrameRenderBuffers {
     pub merged_draws: Vec<PreparedDraw>,
 }
 
+/// Reservation sizes for frame-local render buffers.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct FrameRenderBufferReservations {
+    /// Flat-color vertex reservation.
+    pub color_verts: usize,
+    /// Flat-color index reservation.
+    pub color_idxs: usize,
+    /// Textured vertex reservation.
+    pub tex_verts: usize,
+    /// Textured index reservation.
+    pub tex_idxs: usize,
+    /// Particle shader vertex reservation.
+    pub particle_verts: usize,
+    /// Particle shader index reservation.
+    pub particle_idxs: usize,
+    /// Prepared draw reservation.
+    pub draws: usize,
+    /// Instanced draw reservation.
+    pub instances: usize,
+}
+
 impl FrameRenderBuffers {
     /// Clear all frame buffers while retaining allocated capacity for the next frame.
     pub fn clear_for_frame(&mut self) {
@@ -111,6 +138,8 @@ impl FrameRenderBuffers {
         self.color_idxs.clear();
         self.tex_verts.clear();
         self.tex_idxs.clear();
+        self.particle_verts.clear();
+        self.particle_idxs.clear();
         self.draws.clear();
         self.instances.clear();
         self.scratch_color_verts.clear();
@@ -121,31 +150,27 @@ impl FrameRenderBuffers {
     }
 
     /// Reserve enough capacity for a known frame size without changing current lengths.
-    pub fn reserve_for_frame(
-        &mut self,
-        color_verts: usize,
-        color_idxs: usize,
-        tex_verts: usize,
-        tex_idxs: usize,
-        draws: usize,
-        instances: usize,
-    ) {
-        reserve_to_capacity(&mut self.color_verts, color_verts);
-        reserve_to_capacity(&mut self.color_idxs, color_idxs);
-        reserve_to_capacity(&mut self.tex_verts, tex_verts);
-        reserve_to_capacity(&mut self.tex_idxs, tex_idxs);
-        reserve_to_capacity(&mut self.draws, draws);
-        reserve_to_capacity(&mut self.instances, instances);
-        reserve_to_capacity(&mut self.merged_draws, draws);
+    pub fn reserve_for_frame(&mut self, reservations: FrameRenderBufferReservations) {
+        reserve_to_capacity(&mut self.color_verts, reservations.color_verts);
+        reserve_to_capacity(&mut self.color_idxs, reservations.color_idxs);
+        reserve_to_capacity(&mut self.tex_verts, reservations.tex_verts);
+        reserve_to_capacity(&mut self.tex_idxs, reservations.tex_idxs);
+        reserve_to_capacity(&mut self.particle_verts, reservations.particle_verts);
+        reserve_to_capacity(&mut self.particle_idxs, reservations.particle_idxs);
+        reserve_to_capacity(&mut self.draws, reservations.draws);
+        reserve_to_capacity(&mut self.instances, reservations.instances);
+        reserve_to_capacity(&mut self.merged_draws, reservations.draws);
     }
 
     /// Return current vector lengths in a stable diagnostic order.
-    pub fn lengths(&self) -> [usize; 11] {
+    pub fn lengths(&self) -> [usize; 13] {
         [
             self.color_verts.len(),
             self.color_idxs.len(),
             self.tex_verts.len(),
             self.tex_idxs.len(),
+            self.particle_verts.len(),
+            self.particle_idxs.len(),
             self.draws.len(),
             self.instances.len(),
             self.scratch_color_verts.len(),
@@ -157,12 +182,14 @@ impl FrameRenderBuffers {
     }
 
     /// Return current vector capacities in the same order as `lengths`.
-    pub fn capacities(&self) -> [usize; 11] {
+    pub fn capacities(&self) -> [usize; 13] {
         [
             self.color_verts.capacity(),
             self.color_idxs.capacity(),
             self.tex_verts.capacity(),
             self.tex_idxs.capacity(),
+            self.particle_verts.capacity(),
+            self.particle_idxs.capacity(),
             self.draws.capacity(),
             self.instances.capacity(),
             self.scratch_color_verts.capacity(),

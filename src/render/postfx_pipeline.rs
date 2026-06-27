@@ -9,6 +9,9 @@
 //! Open this file when post-processing order, texture swaps, or effect application behavior is incorrect.
 //! Use this owner for postfx bugs before changing the broader GPU renderer orchestration path.
 
+use crate::render::shader::{Shader, ShaderTarget};
+use crate::runtime::resource_keys::ShaderKey;
+use slotmap::{Key, SlotMap};
 use std::collections::HashMap;
 /// Shared fullscreen-triangle vertex shader used by every built-in and custom post-fx effect.
 const POSTFX_VERTEX: &str = r#"
@@ -862,6 +865,7 @@ impl PostFxPipeline {
         capture_view: &wgpu::TextureView,
         target_view: &wgpu::TextureView,
         passes: &[crate::render::renderer::PostFxPass],
+        shaders: &SlotMap<ShaderKey, Shader>,
         width: u32,
         height: u32,
         total_time: f32,
@@ -885,6 +889,26 @@ impl PostFxPipeline {
         let n = passes.len();
         for (i, pass) in passes.iter().enumerate() {
             let is_last = i == n - 1;
+            let effect_key = pass.effect_name.as_str();
+            if let Some(shader_id) = pass.shader_id {
+                if !self.pipelines.contains_key(effect_key) {
+                    if let Some((_, shader)) = shaders.iter().find(|(key, shader)| {
+                        key.data().as_ffi() as usize == shader_id
+                            && matches!(
+                                shader.target(),
+                                ShaderTarget::PostFx | ShaderTarget::Overlay
+                            )
+                    }) {
+                        let fs_src = shader.fullscreen_postfx_source();
+                        self.register_custom(device, effect_key, &fs_src);
+                    } else {
+                        log::warn!(
+                            "PostFxPipeline: custom shader id {} is missing or not a fullscreen shader",
+                            shader_id
+                        );
+                    }
+                }
+            }
             let dst_view: &wgpu::TextureView = if is_last {
                 target_view
             } else {
@@ -911,7 +935,6 @@ impl PostFxPipeline {
                 raw[15] = height as f32;
             }
             queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
-            let effect_key = pass.effect_name.as_str();
             let Some(pipeline) = self.pipelines.get(effect_key) else {
                 log::warn!("PostFxPipeline: unknown effect '{}' — skipped", effect_key);
                 if !self.run_copy_pass(device, encoder, queue, source, dst_view) {

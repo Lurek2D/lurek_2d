@@ -76,7 +76,7 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - This file owns `GamepadState`, `GamepadVibrationRequest`, and `GamepadMappings`, the runtime gamepad model.
 - It stores connection flags, per-button hold and transition sets, axis values, GUIDs, names, and rumble capability.
 - Frame helpers clear transient deltas, while update methods record button and axis changes from backend polling.
-- Virtual D-pad conversion and gilrs name mappers also live here so backend-specific identities normalize once.
+- Virtual D-pad conversion also lives here so input-facing helpers stay near the gamepad state model.
 - The mappings store parses SDL2-style controller database lines, keeps them by GUID, and can read or write files.
 - The file is the owner for device state and mapping schema, while app-side polling and rumble dispatch live higher.
 - Open it when gamepad semantics change; combo logic, recording, and window-event orchestration live in siblings.

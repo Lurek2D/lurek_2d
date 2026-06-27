@@ -15,7 +15,7 @@ use crate::runtime::resource_keys::{
 };
 
 use crate::render::gpu_tess::parse_filter_mode;
-use crate::render::gpu_types::{ColorVertex, TexVertex};
+use crate::render::gpu_types::{ColorVertex, ParticleVertex, TexVertex};
 use crate::render::renderer::TextureData;
 use slotmap::{Key, SlotMap};
 
@@ -117,6 +117,8 @@ impl GpuRenderer {
         color_idxs_needed: usize,
         tex_verts_needed: usize,
         tex_idxs_needed: usize,
+        particle_verts_needed: usize,
+        particle_idxs_needed: usize,
     ) {
         let color_v_needed = color_verts_needed as u64;
         if color_v_needed > self.color_vertex_capacity {
@@ -173,6 +175,30 @@ impl GpuRenderer {
                 "[G003] grew tex index buffer capacity to {} indices",
                 self.tex_index_capacity
             );
+        }
+        let particle_v_needed = particle_verts_needed as u64;
+        if particle_v_needed > self.particle_vertex_capacity {
+            let new_cap = Self::grow_capacity(self.particle_vertex_capacity, particle_v_needed);
+            self.particle_vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some("particle_vbo"),
+                size: new_cap * std::mem::size_of::<ParticleVertex>() as u64,
+                usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            });
+            self.particle_vertex_capacity = new_cap;
+            self.render_diagnostics.record_buffer_growth_event();
+        }
+        let particle_i_needed = particle_idxs_needed as u64;
+        if particle_i_needed > self.particle_index_capacity {
+            let new_cap = Self::grow_capacity(self.particle_index_capacity, particle_i_needed);
+            self.particle_index_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some("particle_ibo"),
+                size: new_cap * std::mem::size_of::<u32>() as u64,
+                usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            });
+            self.particle_index_capacity = new_cap;
+            self.render_diagnostics.record_buffer_growth_event();
         }
     }
 

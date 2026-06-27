@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- Manages CPU image buffers, compressed textures, layered stacks, palette remapping, and atlases.
+- Manages CPU image buffers, PNG texture loading, layered stacks, palette remapping, and atlases.
 - Supports pixel-level effects, nine-slices, compatibility province-grid ingest, and graphical debug visualizations.
 
 ## Summary
@@ -29,6 +29,8 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 ## Notes
 
 - `lurek.image.newProvinceGrid` remains a compatibility facade for image-origin province data. Canonical province region semantics belong to `province`.
+- DDS compressed texture decode is intentionally not part of this runtime build. `isCompressed` can still detect DDS headers for migration/diagnostics, but game textures should load through PNG-backed `newImageData`.
+- `ImageData:applyShader` and `lurek.image.requestShader` accept `target = "image"` WGSL shaders and run an off-screen render-owned GPU pass that reads RGBA8 pixels back into `ImageData`.
 
 ## Architecture Links
 

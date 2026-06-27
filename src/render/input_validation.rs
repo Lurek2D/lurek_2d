@@ -448,7 +448,7 @@ pub fn validate_render_command(
             validate_non_negative("nine_slice.w", *w)?;
             validate_non_negative("nine_slice.h", *h)
         }
-        DrawParticleSystem { particles } => {
+        DrawParticleSystem { particles, .. } => {
             validate_count(
                 "particles",
                 particles.len(),
@@ -459,12 +459,19 @@ pub fn validate_render_command(
                     ("particle.x", particle.x),
                     ("particle.y", particle.y),
                     ("particle.rotation", particle.rotation),
+                    ("particle.local_x", particle.local_x),
+                    ("particle.local_y", particle.local_y),
+                    ("particle.velocity_x", particle.velocity_x),
+                    ("particle.velocity_y", particle.velocity_y),
+                    ("particle.normalized_age", particle.normalized_age),
+                    ("particle.lifetime", particle.lifetime),
                 ])?;
                 validate_color(
                     "particle.color",
                     [particle.r, particle.g, particle.b, particle.a],
                 )?;
                 validate_non_negative("particle.size", particle.size)?;
+                validate_non_negative("particle.lifetime", particle.lifetime)?;
                 validate_particle_shape(&particle.shape)?;
                 if let Some(quad) = particle.quad {
                     validate_non_negative("particle.quad_x", quad[0])?;

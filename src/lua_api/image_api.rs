@@ -1,5 +1,6 @@
 //! Registers the `lurek.image` Lua API for image userdata, dimension checks, GIF options, and image transforms.
 
+use super::render_api::{ensure_shader_target, shader_key_from_userdata};
 use super::SharedState;
 use crate::image::effects::{ImageEffectOptions, ResizeFilter};
 use crate::image::serial;
@@ -7,10 +8,58 @@ use crate::image::{
     AnimatedGifOptions, AnimatedGifRepeat, CompressedImageData, ImageData, LayeredImage,
     ProvinceGrid, ProvinceShapeCacheEntry,
 };
-use crate::render::{DrawMode, RenderCommand};
+use crate::render::offline_image_shader::apply_image_shader_blocking;
+use crate::render::{DrawMode, RenderCommand, ShaderTarget};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+/// Lua handle for an offline image shader request.
+#[derive(Clone)]
+pub struct LuaImageShaderJob {
+    result: Option<ImageData>,
+    cancelled: bool,
+    done: bool,
+}
+
+impl LuaUserData for LuaImageShaderJob {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- poll --
+        /// Returns the shader output image when the job has completed, or nil if pending/cancelled.
+        /// @return | LImageData? | Completed image result.
+        methods.add_method("poll", |lua, this, ()| {
+            if this.done && !this.cancelled {
+                match &this.result {
+                    Some(image) => Ok(Some(lua.create_userdata(image.clone())?)),
+                    None => Ok(None),
+                }
+            } else {
+                Ok(None)
+            }
+        });
+        // -- wait --
+        /// Waits for the offline image shader job and returns its output image.
+        /// @param | timeoutMs | integer? | Optional timeout in milliseconds.
+        /// @return | LImageData? | Completed image result.
+        methods.add_method("wait", |lua, this, _timeout_ms: Option<u32>| {
+            if this.cancelled {
+                return Ok(None);
+            }
+            match &this.result {
+                Some(image) => Ok(Some(lua.create_userdata(image.clone())?)),
+                None => Ok(None),
+            }
+        });
+        // -- cancel --
+        /// Cancels this image shader job.
+        methods.add_method_mut("cancel", |_, this, ()| {
+            this.cancelled = true;
+            this.done = false;
+            this.result = None;
+            Ok(())
+        });
+    }
+}
 
 fn parse_lua_u32(value: LuaValue, api: &str, arg_name: &str) -> LuaResult<u32> {
     match value {
@@ -706,7 +755,7 @@ impl LuaUserData for LuaLayeredImage {
         });
     }
 }
-/// Lua-side handle for compressed DDS image metadata and mipmap data.
+/// Lua-side handle for legacy compressed DDS metadata.
 pub struct LuaCompressedImageData {
     /// Compressed image dimensions, format, mipmaps, and byte data.
     inner: CompressedImageData,
@@ -791,6 +840,41 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             lua.create_userdata(img)
         })?,
     )?;
+    let s = state.clone();
+    // -- requestShader --
+    /// Starts an offline image shader request and returns a completed job handle.
+    ///
+    /// The current implementation executes synchronously through the
+    /// render-owned headless GPU image shader executor, then stores the
+    /// readback result in the job handle.
+    /// @param | image | LImageData | Source image data.
+    /// @param | shader | LShader | Image-target shader.
+    /// @param | opts | table? | Optional job options.
+    /// @return | LImageShaderJob | Offline shader job handle.
+    tbl.set(
+        "requestShader",
+        lua.create_function(
+            move |lua, (image, shader, _opts): (LuaAnyUserData, LuaAnyUserData, Option<LuaTable>)| {
+                let key = shader_key_from_userdata(&shader)?;
+                let shader = {
+                    let st = s.borrow();
+                    ensure_shader_target(&st, key, ShaderTarget::Image, "lurek.image.requestShader")?;
+                    st.shaders
+                        .get(key)
+                        .cloned()
+                        .ok_or_else(|| LuaError::RuntimeError("lurek.image.requestShader: shader handle is released".into()))?
+                };
+                let image = image.borrow::<ImageData>()?.clone();
+                let result = apply_image_shader_blocking(&image, &shader)
+                    .map_err(|err| LuaError::RuntimeError(format!("lurek.image.requestShader: {err}")))?;
+                lua.create_userdata(LuaImageShaderJob {
+                    result: Some(result),
+                    cancelled: false,
+                    done: true,
+                })
+            },
+        )?,
+    )?;
     // -- newImageDataFromBytes --
     /// Creates image data from raw RGBA bytes and explicit dimensions.
     /// @param | w | integer | Width in pixels.
@@ -807,9 +891,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- newCompressedData --
-    /// Loads DDS compressed image data from GameFS.
+    /// Attempts to load DDS compressed image data from GameFS.
+    ///
+    /// This runtime build intentionally rejects DDS payloads with an error and
+    /// expects game textures to be loaded as PNG through `newImageData`.
     /// @param | filename | string | GameFS path to a DDS file.
-    /// @return | LCompressedImageData | New compressed image data handle.
+    /// @return | LCompressedImageData | New compressed image data handle when DDS support is enabled.
     tbl.set(
         "newCompressedData",
         lua.create_function(move |lua, filename: String| {
@@ -825,6 +912,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- isCompressed --
     /// Returns whether a GameFS image file begins with DDS compressed image magic bytes.
+    ///
+    /// Detection is available even though `newCompressedData` rejects DDS in
+    /// this PNG-only runtime build.
     /// @param | filename | string | GameFS path to inspect.
     /// @return | boolean | True when the file appears to be DDS compressed data.
     tbl.set(
@@ -1152,6 +1242,40 @@ impl mlua::UserData for ImageData {
                     }
                 }
                 Ok(LuaValue::Nil)
+            },
+        );
+        // -- applyShader --
+        /// Applies an offline image shader and returns the processed image.
+        ///
+        /// This validates the image-target shader, runs a render-owned
+        /// headless fullscreen GPU pass, and returns the readback image.
+        /// @param | shader | LShader | Image-target shader.
+        /// @param | opts | table? | Optional processing options.
+        /// @return | LImageData | Processed image.
+        methods.add_method(
+            "applyShader",
+            |lua, this, (shader, _opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let state = lua
+                    .app_data_ref::<Rc<RefCell<SharedState>>>()
+                    .ok_or_else(|| {
+                        LuaError::RuntimeError(
+                            "ImageData:applyShader: runtime state is unavailable".into(),
+                        )
+                    })?;
+                let key = shader_key_from_userdata(&shader)?;
+                let shader = {
+                    let st = state.borrow();
+                    ensure_shader_target(&st, key, ShaderTarget::Image, "ImageData:applyShader")?;
+                    st.shaders.get(key).cloned().ok_or_else(|| {
+                        LuaError::RuntimeError(
+                            "ImageData:applyShader: shader handle is released".into(),
+                        )
+                    })?
+                };
+                let out = apply_image_shader_blocking(this, &shader).map_err(|err| {
+                    LuaError::RuntimeError(format!("ImageData:applyShader: {err}"))
+                })?;
+                lua.create_userdata(out)
             },
         );
         // -- applyMask --

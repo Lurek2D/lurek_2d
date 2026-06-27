@@ -2,6 +2,7 @@
 
 use super::callback_registry::CallbackRegistry;
 use super::physics_api::LuaWorld;
+use super::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
 use super::SharedState;
 use crate::image::ImageData;
 use crate::particle::visualization as particle_vis;
@@ -11,6 +12,7 @@ use crate::particle::{
     RelativeMode, Trail,
 };
 use crate::physics::World;
+use crate::render::{ShaderTarget, UniformValue};
 use crate::runtime::resource_keys::ParticleKey;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -44,6 +46,31 @@ fn positive_u32(api: &str, arg_name: &str, value: u32) -> LuaResult<u32> {
         Err(LuaError::RuntimeError(format!(
             "{api}: {arg_name} must be > 0"
         )))
+    }
+}
+
+fn lua_value_to_uniform(api: &str, value: LuaValue) -> LuaResult<UniformValue> {
+    match value {
+        LuaValue::Number(n) => Ok(UniformValue::Float(n as f32)),
+        LuaValue::Integer(n) => Ok(UniformValue::Int(n as i32)),
+        LuaValue::Boolean(b) => Ok(UniformValue::Bool(b)),
+        LuaValue::Table(t) => match t.raw_len() {
+            2 => Ok(UniformValue::Vec2([t.get(1)?, t.get(2)?])),
+            3 => Ok(UniformValue::Vec3([t.get(1)?, t.get(2)?, t.get(3)?])),
+            4 => Ok(UniformValue::Vec4([
+                t.get(1)?,
+                t.get(2)?,
+                t.get(3)?,
+                t.get(4)?,
+            ])),
+            _ => Err(LuaError::RuntimeError(format!(
+                "{api}: uniform table must have 2, 3, or 4 elements"
+            ))),
+        },
+        other => Err(LuaError::RuntimeError(format!(
+            "{api}: uniform value must be number, boolean, or numeric table, got {}",
+            other.type_name()
+        ))),
     }
 }
 #[derive(Clone)]
@@ -145,6 +172,73 @@ impl LuaUserData for LuaParticleSystem {
             }
             Ok(())
         });
+        // -- setShader --
+        /// Sets or clears the render-time shader for this particle system.
+        /// @param | shader | LShader? | Particle-target shader or nil to clear.
+        methods.add_method("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            let mut st = this.state.borrow_mut();
+            let key = match shader {
+                Some(ud) => {
+                    let key = shader_key_from_userdata(&ud)?;
+                    ensure_shader_target(
+                        &st,
+                        key,
+                        ShaderTarget::Particle,
+                        "LParticleSystem:setShader",
+                    )?;
+                    Some(key)
+                }
+                None => None,
+            };
+            let ps = st
+                .particle_systems
+                .get_mut(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+            ps.shader = key;
+            Ok(())
+        });
+        // -- getShader --
+        /// Returns the render-time shader bound to this particle system, if any.
+        /// @return | LShader? | Bound shader or nil.
+        methods.add_method("getShader", |_, this, ()| {
+            let st = this.state.borrow();
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+            Ok(ps.shader.map(|key| LuaShader {
+                state: this.state.clone(),
+                key,
+            }))
+        });
+        // -- setShaderUniform --
+        /// Sends a uniform value to the shader bound to this particle system.
+        /// @param | name | string | Uniform name.
+        /// @param | value | number|boolean|table | Uniform value.
+        methods.add_method(
+            "setShaderUniform",
+            |_, this, (name, value): (String, LuaValue)| {
+                let mut st = this.state.borrow_mut();
+                let shader_key = st
+                    .particle_systems
+                    .get(this.key)
+                    .ok_or_else(|| {
+                        LuaError::runtime("ParticleSystem handle is invalid (released)")
+                    })?
+                    .shader
+                    .ok_or_else(|| {
+                        LuaError::runtime("LParticleSystem:setShaderUniform: no shader is bound")
+                    })?;
+                let uniform = lua_value_to_uniform("LParticleSystem:setShaderUniform", value)?;
+                let shader = st.shaders.get_mut(shader_key).ok_or_else(|| {
+                    LuaError::runtime("LParticleSystem:setShaderUniform: shader handle is invalid")
+                })?;
+                shader.send(name, uniform).map_err(|err| {
+                    LuaError::RuntimeError(format!("LParticleSystem:setShaderUniform: {err}"))
+                })?;
+                Ok(())
+            },
+        );
         // -- emit --
         /// Emits particles immediately. This method is available to Lua scripts.
         /// @param | count | integer | Number of particles to emit.

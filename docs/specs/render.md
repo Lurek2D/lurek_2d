@@ -15,7 +15,7 @@
 - Source path: `src/render`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `118` functions, `14` types, `89` methods
+- Lua API surface: `118` functions, `14` types, `91` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -320,6 +320,14 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Acts as the model-import boundary between external Wavefront assets and internal 2D mesh representations.
 - Open this file when OBJ parsing, index normalization, material mapping, or projection output is incorrect.
 - Read this owner before general mesh changes when the bug is limited to imported model content.
+
+### offline_image_shader.rs
+
+- Runs target-aware WGSL image shaders against `ImageData` through a temporary headless wgpu device.
+- Keeps offline bitmap processing inside the render subsystem so image and Lua APIs never own `wgpu`.
+- Uploads source RGBA bytes, renders a fullscreen pass into an offscreen RGBA8 texture, and reads pixels back.
+- Uses the same fullscreen wrapper contract as post-processing shaders, preserving target validation semantics.
+- Open this file when `ImageData:applyShader` or `lurek.image.requestShader` output differs from WGSL intent.
 
 ### postfx_pipeline.rs
 
@@ -742,7 +750,9 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ##### Methods
 
+- `LShader:getDiagnostics() -> table`: Returns shader validation diagnostics.
 - `LShader:getId() -> number`: Returns the internal numeric handle ID for this shader.
+- `LShader:getTarget() -> string`: Returns the target this shader was validated for.
 - `LShader:hasUniform(name) -> boolean`: Checks whether this shader declares a uniform with the given name.
 - `LShader:release() -> boolean`: Releases the shader resource. If active, the default shader is restored.
 - `LShader:send(name, value) -> nil`: Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).

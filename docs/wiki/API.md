@@ -16,8 +16,8 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 
 ## Official API Sources
 
-- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9643 lines)
-- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (34928 lines)
+- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9591 lines)
+- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (34764 lines)
 - Runtime callbacks: [docs/api/callbacks.md](../blob/main/docs/api/callbacks.md)
 - Lureksome library API: [docs/api/lureksome.md](../blob/main/docs/api/lureksome.md)
 - Machine-readable Lua API data: [build/docs-data/lua_api.json](../blob/main/build/docs-data/lua_api.json)
@@ -25,7 +25,7 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 ## Coverage
 
 - 72 modules
-- 6432 functions and methods
+- 6401 functions and methods
 - 99.9% documented
 
 ## Module Map
@@ -67,15 +67,14 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.image](https://lurek2d.github.io/lurek_2d/modules/image.html) | The image module is the engine's CPU-side image workbench for users who need pixel data to be loaded, transformed, composed, inspected, compared, and exported under one coherent API. |
 | [lurek.input](https://lurek2d.github.io/lurek_2d/modules/input.html) | The input module is the engine's unified control surface for users who need keyboard, mouse, gamepad, and touch state to behave as one coherent runtime system. |
 | [lurek.layout](https://lurek2d.github.io/lurek_2d/modules/layout.html) | The layout module is the automatic placement layer for users who need graph-like structures to become readable 2D diagrams without hand-positioning every node. |
-| [lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html) | The learning module is the engine's machine-learning and adaptive-policy surface for users who want experimentation, inference, and lightweight training loops to live inside the same runtime as gameplay and tooling code. |
+| [lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html) | The learning module is the engine's lightweight adaptive-policy surface for users who want experimentation, inference-like forward passes, and basic training loops to live inside the same runtime as gameplay and tooling code. |
 | [lurek.light](https://lurek2d.github.io/lurek_2d/modules/light.html) | The light module is the engine's shared 2D lighting-data surface for users who need lights, occluders, shadows, and illumination behavior to remain structured before rendering. |
 | [lurek.log](https://lurek2d.github.io/lurek_2d/modules/log.html) | The log module is the common script-facing path for runtime diagnostics, so users can emit messages through one consistent logging surface instead of mixing ad hoc print styles. |
 | [lurek.mapblock](https://lurek2d.github.io/lurek_2d/modules/mapblock.html) | The mapblock module is the engine's modular map-assembly surface for users who want larger spaces built from reusable authored blocks instead of from one monolithic generator. |
 | [lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html) | The math module is the engine's shared numerical and geometric foundation for users who need consistent rules for coordinates, shapes, transforms, interpolation, sampling, and spatial reasoning across many feature areas. |
-| [lurek.midi](https://lurek2d.github.io/lurek_2d/modules/midi.html) | The midi module is the playback surface for projects that want symbolic music control instead of treating every cue as rendered audio. |
 | [lurek.minimap](https://lurek2d.github.io/lurek_2d/modules/minimap.html) | The minimap module is the HUD-scale map surface for users who want world state, fog, markers, and view tracking to become a compact readable overlay. |
 | [lurek.mods](https://lurek2d.github.io/lurek_2d/modules/mods.html) | The mods module is the governed extension surface for projects that want external content packs to behave like controlled runtime extensions instead of unrestricted code drops. |
-| [lurek.network](https://lurek2d.github.io/lurek_2d/modules/network.html) | The network module is the engine's communication and session surface for users who need game state, tool messages, service calls, telemetry, or multiplayer traffic to move between processes or machines. |
+| [lurek.network](https://lurek2d.github.io/lurek_2d/modules/network.html) | The network module is the engine's small-game multiplayer surface for users who need direct IP or LAN-hosted sessions for roughly 8-16 players. |
 | [lurek.overlay](https://lurek2d.github.io/lurek_2d/modules/overlay.html) | The overlay module is the engine's screen-layer presentation surface for users who want weather, atmosphere, transitions, and other scene-wide visual treatments to behave as one coherent system. |
 | [lurek.parallax](https://lurek2d.github.io/lurek_2d/modules/parallax.html) | The parallax module is the layered-background surface for projects that want depth and atmospheric motion without full 3D simulation. |
 | [lurek.particle](https://lurek2d.github.io/lurek_2d/modules/particle.html) | The particle module is the pooled visual-effects system for users who want smoke, sparks, rain, trails, bursts, and other transient visuals to behave like one reusable runtime feature. |
@@ -91,6 +90,7 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.save](https://lurek2d.github.io/lurek_2d/modules/save.html) | The save module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump. |
 | [lurek.scene](https://lurek2d.github.io/lurek_2d/modules/scene.html) | The scene module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles. |
 | [lurek.serialize](https://lurek2d.github.io/lurek_2d/modules/serialize.html) | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
+| [lurek.shader](https://lurek2d.github.io/lurek_2d/modules/shader.html) | WGSL is the only supported user shader language. |
 | [lurek.spine](https://lurek2d.github.io/lurek_2d/modules/spine.html) | The spine module is the skeletal-animation surface for users who want bone-based rigs, slots, skins, and timeline-driven pose changes inside the engine. |
 | [lurek.sprite](https://lurek2d.github.io/lurek_2d/modules/sprite.html) | The sprite module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model. |
 | [lurek.svg](https://lurek2d.github.io/lurek_2d/modules/svg.html) | The svg module is the engine surface for scalable SVG artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |

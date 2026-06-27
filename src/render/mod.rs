@@ -54,6 +54,8 @@ pub mod mesh;
 /// Wavefront OBJ parser producing `Mesh` instances from `.obj` text data.
 #[cfg(feature = "obj-loader")]
 pub mod obj_loader;
+/// Headless GPU executor for offline `ImageData` shader processing.
+pub mod offline_image_shader;
 /// Post-effect pipeline: chain of `ShaderPassDescriptor`s applied after the main pass.
 pub mod postfx_pipeline;
 /// Fullscreen province map shader pipeline and bind-group setup.
@@ -83,5 +85,5 @@ pub use renderer::{
     BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand,
     RenderCommandCategory, StencilAction, TextAlign, TextureData,
 };
-pub use shader::{Shader, UniformValue};
+pub use shader::{Shader, ShaderTarget, UniformValue};
 pub use shape::{CompoundShape, ShapeCommand};

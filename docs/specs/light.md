@@ -13,7 +13,7 @@
 - Source path: `src/light`
 - Binding: `src/lua_api/light_api.rs`
 - Namespace: `lurek.light`
-- Lua API surface: `20` functions, `4` types, `79` methods
+- Lua API surface: `22` functions, `4` types, `81` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -151,6 +151,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `lurek.light.getMaxLights() -> integer`: Returns the maximum configured light count.
 - `lurek.light.getNormalMapHints() -> table`: Returns light hints that reference normal maps.
 - `lurek.light.getOccluderCount() -> integer`: Returns the number of live occluders.
+- `lurek.light.getShader() -> LShader?`: Returns the default custom light shader for the light world.
 - `lurek.light.isEnabled() -> boolean`: Returns whether the shared light world is enabled.
 - `lurek.light.newLight(x, y, radius, opts?) -> LLight`: Creates a light and applies optional light settings.
 - `lurek.light.newOccluder(vtbl, opts?) -> LOccluder`: Creates an occluder from a flat vertex coordinate table and optional settings.
@@ -160,6 +161,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `lurek.light.setGroupEnabled(group_id, enabled) -> nil`: Enables or disables all lights in a group.
 - `lurek.light.setGroupIntensity(group_id, intensity) -> nil`: Sets intensity for all lights in a group.
 - `lurek.light.setMaxLights(n) -> nil`: Sets the maximum configured light count, clamped to 1 through 256.
+- `lurek.light.setShader(shader?) -> nil`: Sets or clears the default custom light shader for the light world.
 - `lurek.light.syncAmbient() -> number`: Returns the light world's ambient color hint.
 
 ### Callbacks
@@ -203,6 +205,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `LLight:getOuterAngle() -> number`: Returns this spot light outer cone angle.
 - `LLight:getPosition() -> number`: Returns this light position. This method is available to Lua scripts.
 - `LLight:getRadius() -> number`: Returns this light radius. This method is available to Lua scripts.
+- `LLight:getShader() -> LShader?`: Returns the custom light shader bound to this light, if any.
 - `LLight:getShadowColor() -> number`: Returns this light shadow RGBA color.
 - `LLight:getShadowFilter() -> string`: Returns this light shadow filter string.
 - `LLight:getShadowMask() -> integer`: Returns this light's shadow receiver mask.
@@ -234,6 +237,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `LLight:setOuterAngle(a) -> nil`: Sets this spot light outer cone angle.
 - `LLight:setPosition(x, y) -> nil`: Sets this light position. This method is available to Lua scripts.
 - `LLight:setRadius(r) -> nil`: Sets this light radius. This method is available to Lua scripts.
+- `LLight:setShader(shader?) -> nil`: Sets or clears the custom light-contribution shader for this light.
 - `LLight:setShadowColor(r, g, b, a?) -> nil`: Sets this light shadow RGBA color. This method is available to Lua scripts.
 - `LLight:setShadowEnabled(b) -> nil`: Enables or disables shadow casting for this light.
 - `LLight:setShadowFilter(filter) -> nil`: Sets this light shadow filter. This method is available to Lua scripts.

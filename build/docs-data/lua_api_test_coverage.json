@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-27T12:18:16.791084+00:00",
+    "generated": "2026-06-27T20:26:04.818733+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6436,
-    "marker_covered": 6411,
-    "describe_covered": 152,
-    "describe_coverage_pct": 2.4,
-    "heuristic_covered": 0,
-    "total_covered": 6436,
+    "total_api_functions": 6405,
+    "marker_covered": 6377,
+    "describe_covered": 150,
+    "describe_coverage_pct": 2.3,
+    "heuristic_covered": 3,
+    "total_covered": 6405,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -4152,11 +4152,11 @@
       ]
     },
     "audio": {
-      "total": 251,
-      "marker_covered": 251,
+      "total": 247,
+      "marker_covered": 247,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 251,
+      "covered": 247,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.4,
       "describe_score": 0.004,
@@ -4683,43 +4683,7 @@
           "describe_score": 0.0
         },
         {
-          "lua_name": "lurek.audio.newMidiPlayer",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
           "lua_name": "lurek.audio.newSoundData",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.audio.setMidiSoundFont",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.audio.hasMidiSoundFont",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.audio.clearMidiSoundFont",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -18574,11 +18538,11 @@
       ]
     },
     "filesystem": {
-      "total": 67,
-      "marker_covered": 67,
+      "total": 61,
+      "marker_covered": 61,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 67,
+      "covered": 61,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -19130,60 +19094,6 @@
         },
         {
           "lua_name": "LFileHandle:typeOf",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LZipMount:readFile",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LZipMount:contains",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LZipMount:listFiles",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LZipMount:prefix",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LZipMount:type",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LZipMount:typeOf",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -22219,11 +22129,11 @@
       ]
     },
     "image": {
-      "total": 116,
-      "marker_covered": 116,
+      "total": 121,
+      "marker_covered": 118,
       "describe_covered": 0,
-      "heuristic_covered": 0,
-      "covered": 116,
+      "heuristic_covered": 3,
+      "covered": 121,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -22235,6 +22145,15 @@
       "functions": [
         {
           "lua_name": "lurek.image.newImageData",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.image.requestShader",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -22356,6 +22275,33 @@
           "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageShaderJob:poll",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageShaderJob:wait",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageShaderJob:cancel",
+          "kind": "method",
+          "marker_covered": false,
+          "describe_covered": false,
+          "heuristic_covered": true,
           "covered": true,
           "describe_score": 0.0
         },
@@ -22838,6 +22784,15 @@
         },
         {
           "lua_name": "LImageData:applyEffects",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageData:applyShader",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -24369,11 +24324,11 @@
       ]
     },
     "learning": {
-      "total": 158,
-      "marker_covered": 158,
+      "total": 152,
+      "marker_covered": 152,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 158,
+      "covered": 152,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -24475,15 +24430,6 @@
         },
         {
           "lua_name": "lurek.learning.timeLimit",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.learning.loadOnnx",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -25759,60 +25705,15 @@
           "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
-        },
-        {
-          "lua_name": "LOnnxModel:run",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LOnnxModel:inputCount",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LOnnxModel:outputCount",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LOnnxModel:type",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LOnnxModel:typeOf",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
         }
       ]
     },
     "light": {
-      "total": 99,
-      "marker_covered": 99,
+      "total": 103,
+      "marker_covered": 103,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 99,
+      "covered": 103,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -25822,6 +25723,24 @@
       ],
       "describe_files": [],
       "functions": [
+        {
+          "lua_name": "lurek.light.setShader",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.light.getShader",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
         {
           "lua_name": "lurek.light.newLight",
           "kind": "function",
@@ -26562,6 +26481,24 @@
         },
         {
           "lua_name": "LLight:getNormalStrength",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LLight:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LLight:getShader",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -30012,59 +29949,6 @@
         }
       ]
     },
-    "midi": {
-      "total": 4,
-      "marker_covered": 4,
-      "describe_covered": 0,
-      "heuristic_covered": 0,
-      "covered": 4,
-      "coverage_pct": 100.0,
-      "describe_coverage_pct": 0.0,
-      "describe_score": 0.0,
-      "uncovered": [],
-      "test_files": [
-        "tests/lua/unit/test_midi_unit.lua"
-      ],
-      "describe_files": [],
-      "functions": [
-        {
-          "lua_name": "lurek.midi.newPlayer",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.midi.loadSoundFont",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.midi.hasSoundFont",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.midi.clearSoundFont",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        }
-      ]
-    },
     "minimap": {
       "total": 96,
       "marker_covered": 96,
@@ -31489,14 +31373,14 @@
       ]
     },
     "network": {
-      "total": 91,
-      "marker_covered": 91,
-      "describe_covered": 3,
+      "total": 61,
+      "marker_covered": 61,
+      "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 91,
+      "covered": 61,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 3.3,
-      "describe_score": 0.033,
+      "describe_coverage_pct": 1.6,
+      "describe_score": 0.016,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_net_unit.lua",
@@ -31526,15 +31410,6 @@
         },
         {
           "lua_name": "lurek.network.newClient",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.network.newRuntime",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -31703,24 +31578,6 @@
           "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
-        },
-        {
-          "lua_name": "lurek.network.sseConnect",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": true,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 1.0
-        },
-        {
-          "lua_name": "lurek.network.sseCollect",
-          "kind": "function",
-          "marker_covered": true,
-          "describe_covered": true,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 1.0
         },
         {
           "lua_name": "lurek.network.setReady",
@@ -32081,258 +31938,15 @@
           "heuristic_covered": false,
           "covered": true,
           "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:httpRequest",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:httpGet",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:httpPost",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:httpJson",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:httpStream",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:authBootstrap",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:getAuthToken",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:getAuthStatus",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:authCancel",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:matchmakeStart",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:matchmakeCancel",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:tcpConnect",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:tcpSend",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:tcpClose",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:wsConnect",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:wsSend",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:wsClose",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:poll",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:getMetrics",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:shutdown",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:type",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LNetworkRuntime:typeOf",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LSseStream:next",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LSseStream:close",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LSseStream:isOpen",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LSseStream:type",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
-        },
-        {
-          "lua_name": "LSseStream:typeOf",
-          "kind": "method",
-          "marker_covered": true,
-          "describe_covered": false,
-          "heuristic_covered": false,
-          "covered": true,
-          "describe_score": 0.0
         }
       ]
     },
     "overlay": {
-      "total": 97,
-      "marker_covered": 97,
+      "total": 101,
+      "marker_covered": 101,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 97,
+      "covered": 101,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -32364,6 +31978,42 @@
         },
         {
           "lua_name": "LOverlay:update",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LOverlay:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LOverlay:getShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LOverlay:setShaderLayer",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LOverlay:getShaderLayer",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -33714,14 +33364,14 @@
       ]
     },
     "particle": {
-      "total": 111,
-      "marker_covered": 111,
+      "total": 114,
+      "marker_covered": 114,
       "describe_covered": 3,
       "heuristic_covered": 0,
-      "covered": 111,
+      "covered": 114,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 2.7,
-      "describe_score": 0.027,
+      "describe_coverage_pct": 2.6,
+      "describe_score": 0.026,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_particle_unit.lua",
@@ -33778,6 +33428,33 @@
         },
         {
           "lua_name": "LParticleSystem:update",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LParticleSystem:setShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LParticleSystem:getShader",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LParticleSystem:setShaderUniform",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -44193,11 +43870,11 @@
       ]
     },
     "render": {
-      "total": 207,
-      "marker_covered": 207,
+      "total": 209,
+      "marker_covered": 209,
       "describe_covered": 2,
       "heuristic_covered": 0,
-      "covered": 207,
+      "covered": 209,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 1.0,
       "describe_score": 0.01,
@@ -44206,6 +43883,7 @@
         "tests/lua/unit/test_font_unit.lua",
         "tests/lua/unit/test_image_unit.lua",
         "tests/lua/unit/test_render_unit.lua",
+        "tests/lua/unit/test_shader_unit.lua",
         "tests/lua/unit/test_shape_unit.lua",
         "tests/lua/unit/test_sprite_unit.lua"
       ],
@@ -45735,6 +45413,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LShader:getTarget",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LShader:send",
           "kind": "method",
           "marker_covered": true,
@@ -45745,6 +45432,15 @@
         },
         {
           "lua_name": "LShader:hasUniform",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LShader:getDiagnostics",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -47437,6 +47133,32 @@
         },
         {
           "lua_name": "lurek.serialize.applyDefaults",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        }
+      ]
+    },
+    "shader": {
+      "total": 1,
+      "marker_covered": 1,
+      "describe_covered": 0,
+      "heuristic_covered": 0,
+      "covered": 1,
+      "coverage_pct": 100.0,
+      "describe_coverage_pct": 0.0,
+      "describe_score": 0.0,
+      "uncovered": [],
+      "test_files": [
+        "tests/lua/unit/test_shader_unit.lua"
+      ],
+      "describe_files": [],
+      "functions": [
+        {
+          "lua_name": "lurek.shader.new",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -59235,6 +58957,27 @@
       ]
     }
   },
-  "orphaned_markers": [],
+  "orphaned_markers": [
+    {
+      "file": "tests/lua/unit/test_audio_unit.lua",
+      "line": 94,
+      "marker": "lurek.audio.newMidiPlayer"
+    },
+    {
+      "file": "tests/lua/unit/test_audio_unit.lua",
+      "line": 598,
+      "marker": "lurek.audio.setMidiSoundFont"
+    },
+    {
+      "file": "tests/lua/unit/test_audio_unit.lua",
+      "line": 606,
+      "marker": "lurek.audio.hasMidiSoundFont"
+    },
+    {
+      "file": "tests/lua/unit/test_audio_unit.lua",
+      "line": 613,
+      "marker": "lurek.audio.clearMidiSoundFont"
+    }
+  ],
   "unresolved_describe": []
 }

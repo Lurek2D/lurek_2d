@@ -16,6 +16,7 @@ use crate::light::light_type::LightType;
 use crate::light::shadow::ShadowFilter;
 use crate::log_msg;
 use crate::runtime::log_messages::{LT01, LT02, LT03};
+use crate::runtime::resource_keys::ShaderKey;
 
 /// Optional attenuation coefficient updates for a light option patch.
 #[derive(Clone, Copy, Debug, Default)]
@@ -135,6 +136,8 @@ pub struct Light2D {
     pub normal_map_path: Option<String>,
     /// Scale applied to the normal map contribution; range [0.0, 1.0].
     pub normal_strength: f32,
+    /// Optional custom light-contribution shader.
+    pub shader: Option<ShaderKey>,
 }
 impl Light2D {
     /// Create a point light at `(x, y)` with `radius`; all other fields default.
@@ -167,6 +170,7 @@ impl Light2D {
             volumetric: false,
             normal_map_path: None,
             normal_strength: 1.0,
+            shader: None,
         }
     }
     /// Set world-space position and log at trace level.

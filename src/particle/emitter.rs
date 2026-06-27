@@ -26,6 +26,7 @@ use crate::log_msg;
 use crate::particle::shapes::ParticleShape;
 use crate::render::renderer::{ParticleInstance, ParticleRenderShape, RenderCommand};
 use crate::runtime::log_messages::{PE01, PE02, PE03, PE04};
+use crate::runtime::resource_keys::ShaderKey;
 use std::cell::Cell;
 
 const MIN_LIFETIME_EPSILON: f32 = 1.0e-4;
@@ -194,6 +195,8 @@ pub struct ParticleSystem {
     pub pending_deaths: Vec<(f32, f32, f32, f32)>,
     /// Lightweight diagnostics updated during runtime and render extraction.
     pub diagnostics: Cell<ParticleRuntimeDiagnostics>,
+    /// Optional render-time shader applied to this system's particle draw command.
+    pub shader: Option<ShaderKey>,
 }
 
 impl ParticleSystem {
@@ -229,6 +232,7 @@ impl ParticleSystem {
             pending_custom_offsets: Vec::new(),
             pending_deaths: Vec::new(),
             diagnostics: Cell::new(ParticleRuntimeDiagnostics::default()),
+            shader: None,
         }
     }
 
@@ -375,12 +379,20 @@ impl ParticleSystem {
                 texture_key,
                 quad,
                 quad_tex_dims,
+                local_x: p.x,
+                local_y: p.y,
+                velocity_x: p.vx,
+                velocity_y: p.vy,
+                normalized_age: t,
+                lifetime: p.max_life,
+                seed: p.shape_seed,
             });
             *rendered_instances += 1;
         }
         if !instances.is_empty() {
             all_cmds.push(RenderCommand::DrawParticleSystem {
                 particles: instances,
+                shader: self.shader,
             });
         }
         for sub in &self.sub_systems {
@@ -470,6 +482,7 @@ impl ParticleSystem {
             pending_custom_offsets: Vec::new(),
             pending_deaths: Vec::new(),
             diagnostics: Cell::new(ParticleRuntimeDiagnostics::default()),
+            shader: None,
         })
     }
 

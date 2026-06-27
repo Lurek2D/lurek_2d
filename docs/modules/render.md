@@ -6784,6 +6784,29 @@ LImageData:applyPaletteLut(lut_ud)
 
 ---
 
+#### `LImageData:applyShader`
+
+Applies an offline image shader and returns the processed image.
+
+```lua
+LImageData:applyShader(shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader` | [LShader](#lshader) | Image-target shader. |
+| `opts?` | table | Optional processing options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Processed image. |
+
+---
+
 #### `LImageData:blit`
 
 Copies a source image into this image at a destination coordinate.
@@ -8569,6 +8592,42 @@ end
 
 ### Type Methods
 
+#### `LShader:getDiagnostics`
+
+Returns shader validation diagnostics.
+
+```lua
+LShader:getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of diagnostic strings. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local code = "@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }"
+    local shader = lurek.render.newShader(code)
+    local diagnostics = shader:getDiagnostics()
+    local first = diagnostics[1] or ""
+    example_print_log("shader diagnostics = " .. first)
+end
+```
+
+---
+
 #### `LShader:getId`
 
 Returns the internal numeric handle ID for this shader.
@@ -8603,6 +8662,42 @@ do
     local id = shader:getId()
     example_print_log("shader id = " .. tostring(id))
     example_print_log("shader id numeric = " .. tostring(type(id) == "number"))
+end
+```
+
+---
+
+#### `LShader:getTarget`
+
+Returns the target this shader was validated for.
+
+```lua
+LShader:getTarget()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Shader target name. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local code = "@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }"
+    local shader = lurek.render.newShader(code)
+    local target = shader:getTarget()
+    local id = shader:getId()
+    example_print_log("shader target = " .. target .. " id=" .. tostring(id))
 end
 ```
 

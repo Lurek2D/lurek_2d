@@ -87,7 +87,7 @@ The glossary collects terms that appear across module and API pages.
 - `LComboBox` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds combo-box-specific methods to a combo box widget table.
 - `LCommandQueue` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a command queue that stores ordered callback-backed commands.
 - `LCommandStack` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
-- `LCompressedImageData` ([lurek.image](https://lurek2d.github.io/lurek_2d/modules/image.html)) - Lua-side handle for compressed DDS image metadata and mipmap data.
+- `LCompressedImageData` ([lurek.image](https://lurek2d.github.io/lurek_2d/modules/image.html)) - Lua-side handle for legacy compressed DDS metadata.
 - `LContentRegistry` ([lurek.mods](https://lurek2d.github.io/lurek_2d/modules/mods.html)) - Lua-side content registry for storing typed Lua values by id.
 - `LContextSteering` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua handle for slot-based context steering direction selection.
 - `LConv2D` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua wrapper over `Conv2D` for deterministic spatial inference and weight roundtrips.

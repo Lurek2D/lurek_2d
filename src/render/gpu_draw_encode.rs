@@ -51,6 +51,7 @@ impl GpuRenderer {
             GeometryKind::TextureInstanced => {
                 !self.default_texture_instanced_pipelines.contains_key(&key)
             }
+            GeometryKind::Particle => return None,
         };
         if missing {
             let pipeline = match geometry {
@@ -90,6 +91,7 @@ impl GpuRenderer {
                     key,
                     "fs_main",
                 ),
+                GeometryKind::Particle => return None,
             };
             match geometry {
                 GeometryKind::Color => {
@@ -105,6 +107,7 @@ impl GpuRenderer {
                     self.default_texture_instanced_pipelines
                         .insert(key, pipeline);
                 }
+                GeometryKind::Particle => return None,
             }
         }
         match geometry {
@@ -140,6 +143,7 @@ impl GpuRenderer {
                 );
                 pipeline
             }
+            GeometryKind::Particle => None,
         }
     }
 
@@ -210,6 +214,9 @@ impl GpuRenderer {
                 }
                 GeometryKind::Texture | GeometryKind::TextureInstanced => {
                     (&self.tex_vertex_buffer, &self.tex_index_buffer)
+                }
+                GeometryKind::Particle => {
+                    (&self.particle_vertex_buffer, &self.particle_index_buffer)
                 }
             },
         };
@@ -289,6 +296,30 @@ impl GpuRenderer {
                         return false;
                     };
                     pass.set_pipeline(pipeline);
+                }
+            }
+            GeometryKind::Particle => {
+                let Some(shader_key) = effective_shader else {
+                    self.render_diagnostics.record_shader_pipeline_failure();
+                    self.render_diagnostics.record_dropped_command();
+                    return false;
+                };
+                let Some(shader) = shaders.get(shader_key) else {
+                    self.render_diagnostics.record_shader_pipeline_failure();
+                    self.render_diagnostics.record_dropped_command();
+                    return false;
+                };
+                if let Some(pipeline) =
+                    self.custom_pipeline(shader_key, shader, draw.geometry, pipeline_key)
+                {
+                    pass.set_pipeline(pipeline);
+                    if let Some(bind_group) = self.shader_bind_group(shader_key) {
+                        pass.set_bind_group(1, bind_group, &[]);
+                    }
+                } else {
+                    self.render_diagnostics.record_shader_pipeline_failure();
+                    self.render_diagnostics.record_dropped_command();
+                    return false;
                 }
             }
             GeometryKind::Texture | GeometryKind::TextureInstanced => {

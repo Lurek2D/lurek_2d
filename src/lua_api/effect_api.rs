@@ -1,11 +1,13 @@
 //! Registers the `lurek.effect` Lua API for post-effect constructors, pass sync, and capture-related userdata.
 
+use super::render_api::shader_key_from_userdata;
 use super::SharedState;
 use crate::effect::{
     presets::{build_preset, preset_names},
     ImageEffect, PostFxDiagnostics, PostFxEffect, PostFxEffectType, PostFxLimits, PostFxStack,
 };
 use crate::render::renderer::{PostFxPass, RenderCommand};
+use crate::render::ShaderTarget;
 use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;
@@ -31,10 +33,33 @@ fn postfx_diagnostics_error(api: &str, diagnostics: &PostFxDiagnostics) -> LuaEr
 }
 
 fn shader_exists(state: &SharedState, shader_id: usize) -> bool {
-    state
-        .shaders
-        .iter()
-        .any(|(key, _)| key.data().as_ffi() as usize == shader_id)
+    state.shaders.iter().any(|(key, shader)| {
+        key.data().as_ffi() as usize == shader_id && shader.target() == ShaderTarget::PostFx
+    })
+}
+
+fn custom_shader_id_from_lua(state: &SharedState, value: LuaValue, api: &str) -> LuaResult<usize> {
+    let shader_id = match value {
+        LuaValue::Integer(id) if id >= 0 => id as usize,
+        LuaValue::Number(id) if id.is_finite() && id >= 0.0 => id as usize,
+        LuaValue::UserData(ud) => shader_key_from_userdata(&ud)?.data().as_ffi() as usize,
+        other => {
+            return Err(postfx_runtime_error(
+                api,
+                format!(
+                    "expected LShader or numeric shader id, got {}",
+                    other.type_name()
+                ),
+            ))
+        }
+    };
+    if !shader_exists(state, shader_id) {
+        return Err(postfx_runtime_error(
+            api,
+            format!("post-fx shader id {shader_id} is not registered as a postfx shader"),
+        ));
+    }
+    Ok(shader_id)
 }
 /// Lua-side handle for a single post-processing effect instance.
 pub struct LuaPostFxEffect {
@@ -696,15 +721,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     // -- newCustomEffect --
-    /// Creates a custom post-processing effect that references an existing shader id.
-    /// @param | shader_id | integer | Renderer shader identifier used for the custom effect.
+    /// Creates a custom post-processing effect from a postfx-target shader.
+    /// @param | shader | LShader|integer | Postfx-target shader handle or legacy shader id.
     /// @return | LPostFxEffect | New custom post-processing effect handle.
     let s = state.clone();
     tbl.set(
         "newCustomEffect",
-        lua.create_function(move |lua, shader_id: usize| {
+        lua.create_function(move |lua, shader_value: LuaValue| {
             let effect = {
                 let state = s.borrow();
+                let shader_id = custom_shader_id_from_lua(&state, shader_value, "newCustomEffect")?;
                 PostFxEffect::new_custom_checked(shader_id, |id| shader_exists(&state, id))
                     .map_err(|error| postfx_runtime_error("newCustomEffect", error.to_string()))?
             };
@@ -779,15 +805,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
     // -- newPass --
-    /// Creates a custom post-processing pass from an existing shader id.
-    /// @param | shader_id | integer | Renderer shader identifier used for the pass.
+    /// Creates a custom post-processing pass from a postfx-target shader.
+    /// @param | shader | LShader|integer | Postfx-target shader handle or legacy shader id.
     /// @return | LPostFxEffect | New custom post-processing effect handle.
     let s = state.clone();
     tbl.set(
         "newPass",
-        lua.create_function(move |lua, shader_id: usize| {
+        lua.create_function(move |lua, shader_value: LuaValue| {
             let effect = {
                 let state = s.borrow();
+                let shader_id = custom_shader_id_from_lua(&state, shader_value, "newPass")?;
                 PostFxEffect::new_custom_checked(shader_id, |id| shader_exists(&state, id))
                     .map_err(|error| postfx_runtime_error("newPass", error.to_string()))?
             };

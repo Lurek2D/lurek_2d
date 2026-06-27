@@ -4,7 +4,7 @@
 
 ## TL;DR
 
-- Manages CPU image buffers, compressed textures, layered stacks, palette remapping, and atlases.
+- Manages CPU image buffers, PNG texture loading, layered stacks, palette remapping, and atlases.
 - Supports pixel-level effects, nine-slices, compatibility province-grid ingest, and graphical debug visualizations.
 
 ## General Info
@@ -13,7 +13,7 @@
 - Source path: `src/image`
 - Binding: `src/lua_api/image_api.rs`
 - Namespace: `lurek.image`
-- Lua API surface: `14` functions, `11` types, `102` methods
+- Lua API surface: `15` functions, `12` types, `106` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -69,11 +69,9 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 ### compressed.rs
 
-- Loads DDS-backed compressed textures and stores format, dimensions, and mip levels without CPU decompression.
-- Maps DXGI and legacy D3D format markers into Lurek enums so renderer upload code sees stable texture tags.
-- Validates file signatures and header fields before exposing width, height, mip count, and format metadata.
+- Keeps the compressed-image API surface stable while the runtime build only accepts PNG image content.
 - Keeps compressed-image parsing separate from ordinary RGBA image loading and PNG style content workflows.
-- Open this owner when DDS detection, format mapping, or compressed texture metadata looks incorrect at load.
+- Open this owner when DDS rejection or compressed texture metadata behavior must change.
 
 ### effects.rs
 
@@ -269,12 +267,13 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - `lurek.image.loadAnimated(source) -> LAnimatedImage`: Loads an animated GIF from GameFS path or decodes animated GIF bytes.
 - `lurek.image.loadImage(filename) -> LImageData`: Loads and decodes image data from GameFS.
 - `lurek.image.loadLayered(filename) -> LLayeredImage`: Loads a serialized layered image stack from GameFS.
-- `lurek.image.newCompressedData(filename) -> LCompressedImageData`: Loads DDS compressed image data from GameFS.
+- `lurek.image.newCompressedData(filename) -> LCompressedImageData`: Attempts to load DDS compressed image data from GameFS.
 - `lurek.image.newImageData(width_or_filename, height?) -> LImageData`: Creates empty image data from dimensions or decodes image data from a GameFS filename.
 - `lurek.image.newImageDataFromBytes(w, h, bytes) -> LImageData`: Creates image data from raw RGBA bytes and explicit dimensions.
 - `lurek.image.newLayeredImage(width, height) -> LLayeredImage`: Creates a layered image stack with one or more blank layers.
 - `lurek.image.newPaletteLut() -> LPaletteLUT`: Creates an empty palette lookup table.
 - `lurek.image.newProvinceGrid(filename) -> LProvinceGrid`: Loads a province id grid from an image file under the current game directory. This is a compatibility facade over the province subsystem.
+- `lurek.image.requestShader(image, shader, opts?) -> LImageShaderJob`: Starts an offline image shader request and returns a completed job handle.
 - `lurek.image.saveGIF(frames, filename, opts?) -> nil`: Encodes a sequence of equally sized image frames as an animated GIF.
 - `lurek.image.saveImage(img_ud, filename) -> nil`: Saves an image data object to a path under the current game directory.
 - `lurek.image.savePNG(img_ud, filename) -> nil`: Encodes image data as PNG and writes it under the current game directory.
@@ -310,7 +309,7 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 #### LCompressedImageData Type
 
-- Lua-side handle for compressed DDS image metadata and mipmap data.
+- Lua-side handle for legacy compressed DDS metadata.
 
 ##### Fields
 
@@ -341,6 +340,7 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - `LImageData:applyEffects(effects, opts?) -> LImageData|nil`: Applies a sequence of named effects in order.
 - `LImageData:applyMask(mask) -> nil`: Multiplies this image alpha by another image's alpha channel.
 - `LImageData:applyPaletteLut(lut_ud) -> nil`: Applies a palette lookup table to this image in place.
+- `LImageData:applyShader(shader, opts?) -> LImageData`: Applies an offline image shader and returns the processed image.
 - `LImageData:blit(src_ud, dst_x, dst_y) -> nil`: Copies a source image into this image at a destination coordinate.
 - `LImageData:blur(radius) -> LImageData`: Returns a blurred copy of this image.
 - `LImageData:brightness(factor) -> nil`: Applies a brightness factor to this image in place.
@@ -385,6 +385,20 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - `LImageData:transform(opts?) -> LImageData`: Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.
 - `LImageData:type() -> string`: Returns the Lua-visible type name for this image data handle.
 - `LImageData:typeOf(name) -> boolean`: Returns whether this image data handle matches the `LImageData` type name.
+
+#### LImageShaderJob Type
+
+- Lua handle for an offline image shader request.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LImageShaderJob:cancel() -> nil`: Cancels this image shader job.
+- `LImageShaderJob:poll() -> LImageData?`: Returns the shader output image when the job has completed, or nil if pending/cancelled.
+- `LImageShaderJob:wait(timeoutMs?) -> LImageData?`: Waits for the offline image shader job and returns its output image.
 
 #### LLayeredImage Type
 
@@ -616,3 +630,5 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 ## Notes
 
 - `lurek.image.newProvinceGrid` remains a compatibility facade for image-origin province data. Canonical province region semantics belong to `province`.
+- DDS compressed texture decode is intentionally not part of this runtime build. `isCompressed` can still detect DDS headers for migration/diagnostics, but game textures should load through PNG-backed `newImageData`.
+- `ImageData:applyShader` and `lurek.image.requestShader` accept `target = "image"` WGSL shaders and run an off-screen render-owned GPU pass that reads RGBA8 pixels back into `ImageData`.

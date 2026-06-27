@@ -135,7 +135,6 @@ nav:
     - Log: modules/log.md
     - Mapblock: modules/mapblock.md
     - Math: modules/math.md
-    - Midi: modules/midi.md
     - Minimap: modules/minimap.md
     - Mods: modules/mods.md
     - Network: modules/network.md
@@ -155,6 +154,7 @@ nav:
     - Save: modules/save.md
     - Scene: modules/scene.md
     - Serialize: modules/serialize.md
+    - Shader: modules/shader.md
     - Spine: modules/spine.md
     - Sprite: modules/sprite.md
     - SVG: modules/svg.md

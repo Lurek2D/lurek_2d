@@ -428,6 +428,29 @@ LImageData:applyPaletteLut(lut_ud)
 
 ---
 
+#### `LImageData:applyShader`
+
+Applies an offline image shader and returns the processed image.
+
+```lua
+LImageData:applyShader(shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader` | [LShader](render.md#lshader) | Image-target shader. |
+| `opts?` | table | Optional processing options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Processed image. |
+
+---
+
 #### `LImageData:blit`
 
 Copies a source image into this image at a destination coordinate.
@@ -2601,6 +2624,36 @@ end
 
 ---
 
+#### `LParticleSystem:getShader`
+
+Returns the render-time shader bound to this particle system, if any.
+
+```lua
+LParticleSystem:getShader()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LShader](render.md#lshader)? | Bound shader or nil. |
+
+**Example**
+
+```lua
+do
+    local ps = lurek.particle.newSystem({ maxParticles = 32 })
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "particle" })
+    ps:setShader(shader)
+    local active = ps:getShader()
+    local target = active and active:getTarget() or "nil"
+    ps:setShader(nil)
+    lurek.log.info("[particle.example] shader target=" .. target)
+end
+```
+
+---
+
 #### `LParticleSystem:getShape`
 
 Returns particle shape. This method is available to Lua scripts.
@@ -4412,6 +4465,72 @@ do
     local min_rotation, max_rotation = ps:getRotation()
     local shape = ps:getShape()
     particle_log("shrapnel rotation " .. min_rotation .. ".." .. max_rotation .. " shape " .. shape)
+end
+```
+
+---
+
+#### `LParticleSystem:setShader`
+
+Sets or clears the render-time shader for this particle system.
+
+```lua
+LParticleSystem:setShader(shader)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader?` | [LShader](render.md#lshader) | Particle-target shader or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local ps = lurek.particle.newSystem({ maxParticles = 32 })
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "particle" })
+    ps:setShader(shader)
+    lurek.log.info("[particle.example] shader bound=" .. tostring(ps:getShader() ~= nil))
+end
+```
+
+---
+
+#### `LParticleSystem:setShaderUniform`
+
+Sends a uniform value to the shader bound to this particle system.
+
+```lua
+LParticleSystem:setShaderUniform(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Uniform name. |
+| `value` | number|boolean|table | Uniform value. |
+
+**Example**
+
+```lua
+do
+    local ps = lurek.particle.newSystem({ maxParticles = 32 })
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "particle" })
+    ps:setShader(shader)
+    ps:setShaderUniform("glow_amount", 0.8)
+    lurek.log.info("[particle.example] uniform=" .. tostring(shader:hasUniform("glow_amount")))
 end
 ```
 

@@ -37,9 +37,9 @@ end
 
 - Start with `lurek.audio.beatClockFromSource` when exploring this module.
 - Start with `lurek.audio.clearFilter` when exploring this module.
-- Start with `lurek.audio.clearMidiSoundFont` when exploring this module.
 - Start with `lurek.audio.clearRandomPitch` when exploring this module.
 - Start with `lurek.audio.clone` when exploring this module.
+- Start with `lurek.audio.create_bus` when exploring this module.
 
 ## API Reference
 
@@ -146,37 +146,6 @@ do
     example_print_log("lowpass before clear = " .. tostring(lurek.audio.getLowpass(src)))
     lurek.audio.clearFilter(src)
     example_print_log("filters cleared")
-end
-```
-
----
-
-### `lurek.audio.clearMidiSoundFont`
-
-Clears the loaded SoundFont and reverts MIDI synthesis to default.
-
-```lua
-lurek.audio.clearMidiSoundFont()
-```
-
-**Example**
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local before = lurek.audio.hasMidiSoundFont()
-    lurek.audio.clearMidiSoundFont()
-    local after = lurek.audio.hasMidiSoundFont()
-    local player = lurek.audio.newMidiPlayer()
-    lurek.log.info("soundfont before clear=" .. tostring(before))
-    lurek.log.info("soundfont after clear=" .. tostring(after) .. " player type=" .. player:type() .. " loaded=" .. tostring(player:isLoaded()))
 end
 ```
 
@@ -1518,42 +1487,6 @@ end
 
 ---
 
-### `lurek.audio.hasMidiSoundFont`
-
-Returns whether a SoundFont file has been loaded for MIDI synthesis.
-
-```lua
-lurek.audio.hasMidiSoundFont()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if a SoundFont is loaded. |
-
-**Example**
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local has = lurek.audio.hasMidiSoundFont()
-    local player = lurek.audio.newMidiPlayer()
-    local loaded = player:isLoaded()
-    lurek.log.info("has soundfont=" .. tostring(has))
-    lurek.log.info("midi player loaded=" .. tostring(loaded) .. " type=" .. tostring(player:type()))
-end
-```
-
----
-
 ### `lurek.audio.isLooping`
 
 Returns whether a source has looping enabled.
@@ -1975,48 +1908,6 @@ do
     example_print_log("decoder created = " .. tostring(dec ~= nil))
     example_print_log("sample rate = " .. tostring(dec:getSampleRate()))
     example_print_log("channels = " .. tostring(dec:getChannelCount()))
-end
-```
-
----
-
-### `lurek.audio.newMidiPlayer`
-
-Creates a new MIDI player instance, optionally loading a file immediately.
-
-```lua
-lurek.audio.newMidiPlayer(path)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `path?` | string | Optional relative path to a .mid file to load. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LMidiPlayer](#lmidiplayer) | A new MIDI player ready for playback. |
-
-**Example**
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local player = lurek.audio.newMidiPlayer()
-    local loaded = player:isLoaded()
-    local playing = player:isPlaying()
-    lurek.log.info("midi player created=" .. tostring(player ~= nil))
-    lurek.log.info("player type=" .. player:type() .. " loaded=" .. tostring(loaded) .. " playing=" .. tostring(playing))
 end
 ```
 
@@ -3030,42 +2921,6 @@ do
     local quieter = lurek.audio.getMeter()
     lurek.log.info("meter before=" .. tostring(before) .. " after=" .. tostring(after))
     lurek.log.info("meter quieter mix=" .. tostring(quieter))
-end
-```
-
----
-
-### `lurek.audio.setMidiSoundFont`
-
-Sets the SoundFont file used for MIDI synthesis.
-
-```lua
-lurek.audio.setMidiSoundFont(path)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `path` | string | Relative path to the .sf2 SoundFont file. |
-
-**Example**
-
-```lua
-do
-    local function example_print_log(...)
-        local parts = {}
-        for i = 1, select("#", ...) do
-            parts[i] = tostring(select(i, ...))
-        end
-        lurek.log.info(table.concat(parts, " "))
-    end
-
-    local path = "content/examples/assets/audio/sample_soundfont.sf2"
-    local ok = pcall(function()
-        lurek.audio.setMidiSoundFont(path)
-    end)
-    example_print_log("soundfont set = " .. tostring(ok and lurek.audio.hasMidiSoundFont()))
 end
 ```
 

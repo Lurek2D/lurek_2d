@@ -1853,3 +1853,49 @@ do
     example_print_log("lurek.light.drawToImage size=" .. img:getWidth() .. "x" .. img:getHeight())
     example_print_log("preview lights=" .. light_count .. " occluders=" .. occ_count .. " valid=" .. tostring(occ:isValid()))
 end
+
+--@api: lurek.light.setShader
+do
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "light" })
+    lurek.light.setShader(shader)
+    lurek.log.info("[light] world shader=" .. tostring(lurek.light.getShader() ~= nil))
+end
+
+--@api: lurek.light.getShader
+do
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "light" })
+    lurek.light.setShader(shader)
+    local active = lurek.light.getShader()
+    local target = active and active:getTarget() or "nil"
+    lurek.light.setShader(nil)
+    lurek.log.info("[light] world shader target=" .. target)
+end
+
+--@api: LLight:setShader
+do
+    local light = lurek.light.newLight(400, 300, 180)
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
+    return color;
+}
+]], { target = "light" })
+    light:setShader(shader)
+    lurek.log.info("[light] light shader=" .. tostring(light:getShader() ~= nil))
+end
+
+--@api: LLight:getShader
+do
+    local light = lurek.light.newLight(400, 300, 180)
+    local shader = lurek.shader.new("@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }", { target = "light" })
+    light:setShader(shader)
+    local active = light:getShader()
+    local target = active and active:getTarget() or "nil"
+    light:setShader(nil)
+    lurek.log.info("[light] light shader target=" .. target)
+end

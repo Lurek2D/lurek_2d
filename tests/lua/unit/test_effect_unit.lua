@@ -17,6 +17,15 @@ local function minimal_shader_code()
     return "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
 end
 
+local function postfx_shader()
+    return lurek.shader.new([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>, @location(3) resolution: vec2<f32>, @location(4) texel: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * 0.0 + texel.xyx * 0.0, color.a);
+}
+]], { target = "postfx" })
+end
+
 local function new_overlay(w, h)
     return lurek.overlay.new(w, h)
 end
@@ -71,13 +80,13 @@ describe("lurek.effect module", function()
 
     -- @covers lurek.effect.newPass
     it("newPass constructs a custom pass effect", function()
-        local shader = lurek.render.newShader(minimal_shader_code())
-        expect_equal("LPostFxEffect", lurek.effect.newPass(shader:getId()):type())
+        expect_equal("LPostFxEffect", lurek.effect.newPass(postfx_shader()):type())
     end)
 
     -- @covers lurek.effect.newCustomEffect
-    it("newCustomEffect exists and rejects an unknown shader id", function()
+    it("newCustomEffect accepts postfx shaders and rejects an unknown shader id", function()
         expect_type("function", lurek.effect.newCustomEffect)
+        expect_equal("LPostFxEffect", lurek.effect.newCustomEffect(postfx_shader()):type())
         expect_error(function()
             lurek.effect.newCustomEffect(999999)
         end)

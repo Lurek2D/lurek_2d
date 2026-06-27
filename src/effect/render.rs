@@ -98,7 +98,10 @@ impl PostFxStack {
             }
 
             plan.passes.push(PostFxPass {
-                effect_name: effect.get_type_name().to_string(),
+                effect_name: effect
+                    .shader_id
+                    .map(|id| format!("custom_{id}"))
+                    .unwrap_or_else(|| effect.get_type_name().to_string()),
                 params: effect.params.clone(),
                 shader_id: effect.shader_id,
                 auto_uniforms: effect.auto_uniforms,

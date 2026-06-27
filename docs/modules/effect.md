@@ -182,17 +182,17 @@ end
 
 ### `lurek.effect.newCustomEffect`
 
-Creates a custom post-processing effect that references an existing shader id.
+Creates a custom post-processing effect from a postfx-target shader.
 
 ```lua
-lurek.effect.newCustomEffect(shader_id)
+lurek.effect.newCustomEffect(shader)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shader_id` | number | Renderer shader identifier used for the custom effect. |
+| `shader` | [LShader](#lshader)|number | Postfx-target shader handle or legacy shader id. |
 
 **Returns**
 
@@ -215,8 +215,13 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
-    local fx = lurek.effect.newCustomEffect(shader:getId())
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "postfx" })
+    local fx = lurek.effect.newCustomEffect(shader)
     fx:setParameter("distortion", 0.15)
     fx:disableAutoUniforms()
     local enabled = fx:isEnabled()
@@ -319,17 +324,17 @@ end
 
 ### `lurek.effect.newPass`
 
-Creates a custom post-processing pass from an existing shader id.
+Creates a custom post-processing pass from a postfx-target shader.
 
 ```lua
-lurek.effect.newPass(shader_id)
+lurek.effect.newPass(shader)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shader_id` | number | Renderer shader identifier used for the pass. |
+| `shader` | [LShader](#lshader)|number | Postfx-target shader handle or legacy shader id. |
 
 **Returns**
 
@@ -352,8 +357,13 @@ do
         lurek.log.info(table.concat(parts, " "))
     end
 
-    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
-    local fx = lurek.effect.newPass(shader:getId())
+    local shader = lurek.shader.new([[
+@fragment
+fn fs(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "postfx" })
+    local fx = lurek.effect.newPass(shader)
     fx:setParameter("exposure", 1.1)
     fx:enableAutoUniforms()
     local type_name = fx:getType()
@@ -508,6 +518,7 @@ end
 - [LImageEffect](#limageeffect)
 - [LPostFxEffect](#lpostfxeffect)
 - [LPostFxStack](#lpostfxstack)
+- [LShader](#lshader)
 
 ## LImageEffect
 
@@ -2995,5 +3006,154 @@ do
     effect_log("is stack=" .. tostring(is_stack) .. " type=" .. type_name)
 end
 ```
+
+---
+
+## LShader
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LShader:getDiagnostics`
+
+Returns shader validation diagnostics.
+
+```lua
+LShader:getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of diagnostic strings. |
+
+---
+
+#### `LShader:getId`
+
+Returns the internal numeric handle ID for this shader.
+
+```lua
+LShader:getId()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Opaque shader handle identifier. |
+
+---
+
+#### `LShader:getTarget`
+
+Returns the target this shader was validated for.
+
+```lua
+LShader:getTarget()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Shader target name. |
+
+---
+
+#### `LShader:hasUniform`
+
+Checks whether this shader declares a uniform with the given name.
+
+```lua
+LShader:hasUniform(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Uniform name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the uniform exists. |
+
+---
+
+#### `LShader:release`
+
+Releases the shader resource. If active, the default shader is restored.
+
+```lua
+LShader:release()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the shader was valid and was released. |
+
+---
+
+#### `LShader:send`
+
+Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
+
+```lua
+LShader:send(name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Uniform variable name declared in the shader. |
+| `value` | number|boolean|table | The value to send. |
+
+---
+
+#### `LShader:type`
+
+Returns the type name string for this shader object.
+
+```lua
+LShader:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always "[LShader](#lshader)". |
+
+---
+
+#### `LShader:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LShader:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check ("Shader" or "Object"). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the name matches. |
 
 ---

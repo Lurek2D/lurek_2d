@@ -161,6 +161,7 @@ describe("overlay methods", function()
         expect_true(table_contains(plan.externally_handled, "water"))
         expect_true(table_contains(plan.externally_handled, "clouds"))
         expect_true(table_contains(plan.externally_handled, "film_grain"))
+        expect_type("table", plan.shader)
     end)
 
     -- @covers LOverlay:getWidth
@@ -586,6 +587,39 @@ describe("overlay methods", function()
             overlay:setCustomShader("../scanlines")
         end)
         overlay:setCustomShader("vignette")
+    end)
+
+    -- @covers LOverlay:setShader
+    -- @covers LOverlay:getShader
+    it("setShader binds and clears an overlay-target shader", function()
+        local overlay = new_overlay(320, 240)
+        local shader = lurek.shader.new([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, @location(2) pixel: vec2<f32>, @location(3) resolution: vec2<f32>, @location(4) texel: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0 + pixel.xyx * 0.0 + resolution.xyx * 0.0 + texel.xyx * 0.0, color.a);
+}
+]], { target = "overlay" })
+        overlay:setShader(shader)
+        expect_equal(shader:getId(), overlay:getShader():getId())
+        overlay:setShader(nil)
+        expect_equal(nil, overlay:getShader())
+    end)
+
+    -- @covers LOverlay:setShaderLayer
+    -- @covers LOverlay:getShaderLayer
+    it("setShaderLayer stores named overlay shader layers", function()
+        local overlay = new_overlay(320, 240)
+        local shader = lurek.shader.new([[
+@fragment
+fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(color.rgb + uv.xyx * 0.0, color.a);
+}
+]], { target = "overlay" })
+        overlay:setShaderLayer("heat_haze", shader)
+        expect_equal(shader:getId(), overlay:getShaderLayer("heat_haze"):getId())
+        expect_true(table_contains(overlay:getRenderPlan().shader, "heat_haze"))
+        overlay:setShaderLayer("heat_haze", nil)
+        expect_equal(nil, overlay:getShaderLayer("heat_haze"))
     end)
 
     -- @covers LOverlay:flash

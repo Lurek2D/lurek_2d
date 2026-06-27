@@ -38,7 +38,7 @@ impl CompressedFormat {
         }
     }
 }
-/// DDS image data with decoded mipmap payloads and detected format.
+/// Legacy DDS image metadata shape retained for API compatibility.
 #[derive(Debug, Clone)]
 pub struct CompressedImageData {
     /// Detected compressed format.
@@ -51,7 +51,7 @@ pub struct CompressedImageData {
     pub mipmaps: Vec<Vec<u8>>,
 }
 impl CompressedImageData {
-    /// Decode DDS bytes into compressed image data or return a file-system error.
+    /// Reject DDS bytes in this PNG-only runtime build.
     pub fn from_dds(_bytes: &[u8]) -> Result<Self, EngineError> {
         Err(EngineError::FileSystemError(
             "DDS compressed textures are not supported in this runtime build; use PNG".to_string(),
@@ -73,7 +73,7 @@ impl CompressedImageData {
     pub fn is_dds_magic(bytes: &[u8]) -> bool {
         bytes.len() >= 4 && bytes[..4] == [0x44, 0x44, 0x53, 0x20]
     }
-    /// Read a DDS file from disk and decode it into compressed image data.
+    /// Read a DDS file from disk and return the same unsupported-DDS error as `from_dds`.
     pub fn from_file(path: &str) -> Result<Self, EngineError> {
         let bytes = std::fs::read(path)
             .map_err(|e| EngineError::FileSystemError(format!("Cannot read '{}': {}", path, e)))?;

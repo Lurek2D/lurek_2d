@@ -57,7 +57,7 @@ mod province_map_pipeline_tests {
         assert_f32_slice_eq(&u.edge_gradient_params, &[16.0, 0.25, 0.45, 255.0]);
         assert_f32_slice_eq(
             &u.province_border_color,
-            &[64.0 / 255.0, 64.0 / 255.0, 60.0 / 255.0, 210.0 / 255.0],
+            &[72.0 / 255.0, 58.0 / 255.0, 32.0 / 255.0, 1.0],
         );
         assert_f32_slice_eq(
             &u.coast_border_color,
@@ -1256,12 +1256,21 @@ mod gpu_shadow_tests {
 }
 
 mod frame_buffer_tests {
-    use lurek2d::render::gpu_state::FrameRenderBuffers;
+    use lurek2d::render::gpu_state::{FrameRenderBufferReservations, FrameRenderBuffers};
 
     #[test]
     fn frame_render_buffers_clear_without_shrinking_capacity() {
         let mut buffers = FrameRenderBuffers::default();
-        buffers.reserve_for_frame(8, 12, 16, 20, 4, 6);
+        buffers.reserve_for_frame(FrameRenderBufferReservations {
+            color_verts: 8,
+            color_idxs: 12,
+            tex_verts: 16,
+            tex_idxs: 20,
+            particle_verts: 5,
+            particle_idxs: 7,
+            draws: 4,
+            instances: 6,
+        });
         buffers.scratch_color_verts.reserve(10);
         buffers.scratch_color_idxs.reserve(14);
         buffers.scratch_tex_verts.reserve(18);
@@ -1270,19 +1279,21 @@ mod frame_buffer_tests {
 
         buffers.clear_for_frame();
 
-        assert_eq!(buffers.lengths(), [0; 11]);
+        assert_eq!(buffers.lengths(), [0; 13]);
         assert_eq!(buffers.capacities(), capacities);
         assert!(capacities[0] >= 8);
         assert!(capacities[1] >= 12);
         assert!(capacities[2] >= 16);
         assert!(capacities[3] >= 20);
-        assert!(capacities[4] >= 4);
-        assert!(capacities[5] >= 6);
-        assert!(capacities[6] >= 10);
-        assert!(capacities[7] >= 14);
-        assert!(capacities[8] >= 18);
-        assert!(capacities[9] >= 22);
-        assert!(capacities[10] >= 4);
+        assert!(capacities[4] >= 5);
+        assert!(capacities[5] >= 7);
+        assert!(capacities[6] >= 4);
+        assert!(capacities[7] >= 6);
+        assert!(capacities[8] >= 10);
+        assert!(capacities[9] >= 14);
+        assert!(capacities[10] >= 18);
+        assert!(capacities[11] >= 22);
+        assert!(capacities[12] >= 4);
     }
 }
 
@@ -1568,8 +1579,8 @@ mod render_input_validation_tests {
 mod gpu_renderer_tests {
     use lurek2d::render::gpu_frame_builder::merge_adjacent_prepared_draws;
     use lurek2d::render::gpu_pipeline::{
-        build_custom_color_shader_source, build_custom_texture_shader_source, depth_stencil_state,
-        GeometryKind, GpuStencilMode,
+        build_custom_color_shader_source, build_custom_particle_shader_source,
+        build_custom_texture_shader_source, depth_stencil_state, GeometryKind, GpuStencilMode,
     };
     use lurek2d::render::gpu_resources::{
         canvas_texture_needs_recreate, is_builtin_static_geometry_key, texture_needs_upload,
@@ -1583,7 +1594,7 @@ mod gpu_renderer_tests {
     use lurek2d::render::gpu_types::{PreparedDraw, RenderTargetId};
     use lurek2d::render::renderer::{CompareMode, StencilAction};
     use lurek2d::render::shader::validate_uniform_name;
-    use lurek2d::render::{BlendMode, Shader, TextureData, UniformValue};
+    use lurek2d::render::{BlendMode, Shader, ShaderTarget, TextureData, UniformValue};
     use lurek2d::runtime::resource_keys::StaticGeometryKey;
 
     const VALID_WGSL_FRAGMENT_SHADER: &str = r#"
@@ -1593,6 +1604,49 @@ fn fs_main(
     @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
     return color + vec4<f32>(uv, 0.0, 0.0);
+}
+"#;
+    const SCREEN_SHADER: &str = r#"
+@fragment
+fn fs_main(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) pixel: vec2<f32>,
+    @location(3) resolution: vec2<f32>,
+    @location(4) texel: vec2<f32>,
+) -> @location(0) vec4<f32> {
+    return color + vec4<f32>(uv * texel * resolution + pixel * 0.0, 0.0, 0.0);
+}
+"#;
+    const PARTICLE_SHADER: &str = r#"
+@fragment
+fn fs_main(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) local_pos: vec2<f32>,
+    @location(3) world_pos: vec2<f32>,
+    @location(4) velocity: vec2<f32>,
+    @location(5) age: f32,
+    @location(6) lifetime: f32,
+    @location(7) seed: f32,
+) -> @location(0) vec4<f32> {
+    return color + vec4<f32>(uv + local_pos * 0.0 + world_pos * 0.0 + velocity * 0.0, age + lifetime + seed, 0.0);
+}
+"#;
+    const LIGHT_SHADER: &str = r#"
+@fragment
+fn fs_main(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) world_pos: vec2<f32>,
+    @location(3) light_pos: vec2<f32>,
+    @location(4) normal_hint: vec2<f32>,
+    @location(5) distance_norm: f32,
+    @location(6) radius: f32,
+    @location(7) intensity: f32,
+) -> @location(0) vec4<f32> {
+    let falloff = max(1.0 - distance_norm, 0.0) * intensity;
+    return vec4<f32>(color.rgb * falloff + (world_pos + light_pos + normal_hint + uv).x * 0.0, color.a + radius * 0.0);
 }
 "#;
 
@@ -1844,6 +1898,129 @@ fn fs_main(
         assert!(source.contains("textureSample(t_diffuse, s_diffuse, in.uv) * in.color"));
         wgpu::naga::front::wgsl::parse_str(&source)
             .expect("wrapped texture shader source should remain valid WGSL");
+    }
+
+    #[test]
+    fn custom_particle_shader_source_forwards_particle_inputs() {
+        let shader = Shader::new_for_target(PARTICLE_SHADER.to_string(), ShaderTarget::Particle)
+            .expect("expected valid particle shader");
+        let source = build_custom_particle_shader_source(&shader, &[]);
+
+        assert!(source.contains("in.local_pos"));
+        assert!(source.contains("in.world_pos"));
+        assert!(source.contains("in.velocity"));
+        assert!(source.contains("in.normalized_age"));
+        assert!(source.contains("in.lifetime"));
+        assert!(source.contains("in.seed"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped particle shader source should remain valid WGSL");
+    }
+
+    #[test]
+    fn shader_targets_validate_expected_contracts() {
+        let draw =
+            Shader::new_for_target(VALID_WGSL_FRAGMENT_SHADER.to_string(), ShaderTarget::Draw)
+                .expect("draw shader should validate");
+        assert_eq!(draw.target(), ShaderTarget::Draw);
+
+        for target in [
+            ShaderTarget::PostFx,
+            ShaderTarget::Image,
+            ShaderTarget::Overlay,
+        ] {
+            let shader = Shader::new_for_target(SCREEN_SHADER.to_string(), target)
+                .expect("screen shader should validate");
+            assert_eq!(shader.target(), target);
+            let generated = shader.fullscreen_postfx_source();
+            wgpu::naga::front::wgsl::parse_str(&format!(
+                "{}\n{}",
+                r#"
+struct VertexOutput {
+    @builtin(position) clip_pos: vec4<f32>,
+    @location(0) uv: vec2<f32>,
+}
+"#,
+                generated
+            ))
+            .expect("generated fullscreen source parses");
+        }
+
+        Shader::new_for_target(PARTICLE_SHADER.to_string(), ShaderTarget::Particle)
+            .expect("particle shader should validate");
+        Shader::new_for_target(LIGHT_SHADER.to_string(), ShaderTarget::Light)
+            .expect("light shader should validate");
+    }
+
+    #[test]
+    fn shader_targets_reject_wrong_contracts() {
+        let err = Shader::new_for_target(SCREEN_SHADER.to_string(), ShaderTarget::Draw)
+            .expect_err("draw target must reject screen shader inputs");
+        assert!(err.contains("draw shader uses unsupported input"));
+    }
+
+    #[test]
+    fn example_shader_assets_validate_for_declared_targets() {
+        let shaders = [
+            (
+                include_str!("../../../content/examples/assets/shaders/image_palette_lut.wgsl"),
+                ShaderTarget::Image,
+            ),
+            (
+                include_str!("../../../content/examples/assets/shaders/image_mask_threshold.wgsl"),
+                ShaderTarget::Image,
+            ),
+            (
+                include_str!("../../../content/examples/assets/shaders/overlay_heat_haze.wgsl"),
+                ShaderTarget::Overlay,
+            ),
+            (
+                include_str!(
+                    "../../../content/examples/assets/shaders/overlay_water_distortion.wgsl"
+                ),
+                ShaderTarget::Overlay,
+            ),
+            (
+                include_str!(
+                    "../../../content/examples/assets/shaders/particle_dissolve_glow.wgsl"
+                ),
+                ShaderTarget::Particle,
+            ),
+            (
+                include_str!(
+                    "../../../content/examples/assets/shaders/light_custom_falloff_rim.wgsl"
+                ),
+                ShaderTarget::Light,
+            ),
+            (
+                include_str!("../../../content/examples/assets/shaders/postfx_crt_chroma.wgsl"),
+                ShaderTarget::PostFx,
+            ),
+            (
+                include_str!(
+                    "../../../content/examples/assets/shaders/sprite_recolor_palette_swap.wgsl"
+                ),
+                ShaderTarget::Draw,
+            ),
+            (
+                include_str!("../../../content/examples/assets/shaders/fog_of_war.wgsl"),
+                ShaderTarget::Overlay,
+            ),
+            (
+                include_str!("../../../content/examples/assets/shaders/procedural_background.wgsl"),
+                ShaderTarget::Overlay,
+            ),
+            (
+                include_str!(
+                    "../../../content/examples/assets/shaders/province_minimap_visualization.wgsl"
+                ),
+                ShaderTarget::Overlay,
+            ),
+        ];
+
+        for (source, target) in shaders {
+            Shader::new_for_target(source.to_string(), target)
+                .unwrap_or_else(|err| panic!("{target:?} shader asset failed: {err}"));
+        }
     }
     #[test]
     fn stencil_write_depth_state_enables_writes_and_action() {

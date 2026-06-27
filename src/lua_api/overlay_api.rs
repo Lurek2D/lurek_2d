@@ -1,12 +1,33 @@
 //! Registers the `lurek.overlay` Lua API for overlay controllers, transitions, telemetry, and validated options.
 
+use super::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
 use super::SharedState;
 use crate::overlay::{
     Overlay, OverlayAccessibilityPolicy, ScreenTransition, TransitionKind, WeatherType,
 };
+use crate::render::renderer::{PostFxPass, RenderCommand};
+use crate::render::ShaderTarget;
+use crate::runtime::resource_keys::ShaderKey;
 use mlua::prelude::*;
+use slotmap::Key;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
+
+const OVERLAY_SHADER_STACK_ID: u64 = 0x4f56_4c59_0000_0001;
+
+fn shader_id_from_key(key: ShaderKey) -> usize {
+    key.data().as_ffi() as usize
+}
+
+fn overlay_shader_pass(effect_name: String, key: ShaderKey) -> PostFxPass {
+    PostFxPass {
+        effect_name,
+        params: HashMap::new(),
+        shader_id: Some(shader_id_from_key(key)),
+        auto_uniforms: true,
+    }
+}
 
 fn finite_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
     if value.is_finite() {
@@ -49,6 +70,10 @@ pub struct LuaOverlay {
     inner: Overlay,
     /// Shared runtime state used for renderer commands and light ambient synchronization.
     state: Rc<RefCell<SharedState>>,
+    /// Optional shader bound to the whole overlay.
+    shader: Option<ShaderKey>,
+    /// Optional per-layer shader bindings.
+    shader_layers: HashMap<String, ShaderKey>,
 }
 /// Provides Lua methods for overlay animation, ambient, weather, fog, water, and render submission.
 impl LuaUserData for LuaOverlay {
@@ -60,6 +85,76 @@ impl LuaUserData for LuaOverlay {
             let dt = non_negative_f32("LOverlay:update", "dt", dt)?;
             this.inner.update(dt);
             Ok(())
+        });
+        // -- setShader --
+        /// Sets or clears the shader used for custom overlay rendering.
+        /// @param | shader | LShader? | Overlay-target shader or nil to clear.
+        methods.add_method_mut("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            let key = match shader {
+                Some(ud) => {
+                    let key = shader_key_from_userdata(&ud)?;
+                    ensure_shader_target(
+                        &this.state.borrow(),
+                        key,
+                        ShaderTarget::Overlay,
+                        "LOverlay:setShader",
+                    )?;
+                    Some(key)
+                }
+                None => None,
+            };
+            this.shader = key;
+            Ok(())
+        });
+        // -- getShader --
+        /// Returns the shader bound to this overlay, if any.
+        /// @return | LShader? | Bound shader or nil.
+        methods.add_method("getShader", |_, this, ()| {
+            Ok(this.shader.map(|key| LuaShader {
+                state: this.state.clone(),
+                key,
+            }))
+        });
+        // -- setShaderLayer --
+        /// Sets or clears an overlay-layer shader binding.
+        /// @param | layer | string | Layer name such as `heat_haze`, `water`, or `fog`.
+        /// @param | shader | LShader? | Overlay-target shader or nil to clear.
+        methods.add_method_mut(
+            "setShaderLayer",
+            |_, this, (layer, shader): (String, Option<LuaAnyUserData>)| {
+                let layer = layer.trim().to_string();
+                if layer.is_empty() {
+                    return Err(LuaError::RuntimeError(
+                        "LOverlay:setShaderLayer: layer must not be empty".into(),
+                    ));
+                }
+                match shader {
+                    Some(ud) => {
+                        let key = shader_key_from_userdata(&ud)?;
+                        ensure_shader_target(
+                            &this.state.borrow(),
+                            key,
+                            ShaderTarget::Overlay,
+                            "LOverlay:setShaderLayer",
+                        )?;
+                        this.shader_layers.insert(layer, key);
+                    }
+                    None => {
+                        this.shader_layers.remove(&layer);
+                    }
+                }
+                Ok(())
+            },
+        );
+        // -- getShaderLayer --
+        /// Returns a shader bound to one overlay layer, if present.
+        /// @param | layer | string | Layer name.
+        /// @return | LShader? | Bound shader or nil.
+        methods.add_method("getShaderLayer", |_, this, layer: String| {
+            Ok(this.shader_layers.get(layer.trim()).map(|key| LuaShader {
+                state: this.state.clone(),
+                key: *key,
+            }))
         });
         // -- triggerFlash --
         /// Starts a screen flash with explicit RGBA color and duration.
@@ -161,7 +256,7 @@ impl LuaUserData for LuaOverlay {
         });
         // -- getRenderPlan --
         /// Returns the current render responsibility plan for active overlay layers.
-        /// @return | table | Table with `rendered` and `externally_handled` string arrays.
+        /// @return | table | Table with `rendered`, `externally_handled`, and `shader` string arrays.
         methods.add_method("getRenderPlan", |lua, this, ()| {
             let plan = this.inner.render_plan();
             let table = lua.create_table()?;
@@ -175,6 +270,19 @@ impl LuaUserData for LuaOverlay {
             }
             table.set("rendered", rendered)?;
             table.set("externally_handled", external)?;
+            let shader_layers = lua.create_table()?;
+            let mut shader_index = 1;
+            if this.shader.is_some() {
+                shader_layers.set(shader_index, "overlay")?;
+                shader_index += 1;
+            }
+            let mut layers: Vec<_> = this.shader_layers.keys().cloned().collect();
+            layers.sort();
+            for layer in layers {
+                shader_layers.set(shader_index, layer)?;
+                shader_index += 1;
+            }
+            table.set("shader", shader_layers)?;
             Ok(table)
         });
         // -- clear --
@@ -737,7 +845,36 @@ impl LuaUserData for LuaOverlay {
         // -- render --
         /// Queues renderer commands for the overlay's current visual state.
         methods.add_method("render", |_, this, ()| {
-            let cmds = this.inner.build_render_commands();
+            let mut cmds = this.inner.build_render_commands();
+            let mut shader_passes = Vec::new();
+            if let Some(key) = this.shader {
+                shader_passes.push(overlay_shader_pass(
+                    format!("overlay_shader_{}", shader_id_from_key(key)),
+                    key,
+                ));
+            }
+            let mut layers: Vec<_> = this.shader_layers.iter().collect();
+            layers.sort_by(|(left, _), (right, _)| left.cmp(right));
+            for (layer, key) in layers {
+                shader_passes.push(overlay_shader_pass(
+                    format!("overlay_layer_{}_{}", layer, shader_id_from_key(*key)),
+                    *key,
+                ));
+            }
+            if !shader_passes.is_empty() {
+                cmds.push(RenderCommand::BeginPostFx {
+                    stack_id: OVERLAY_SHADER_STACK_ID,
+                });
+                cmds.push(RenderCommand::EndPostFx {
+                    stack_id: OVERLAY_SHADER_STACK_ID,
+                });
+                cmds.push(RenderCommand::ApplyPostFx {
+                    stack_id: OVERLAY_SHADER_STACK_ID,
+                    passes: shader_passes,
+                    width: this.inner.get_width(),
+                    height: this.inner.get_height(),
+                });
+            }
             this.state.borrow_mut().render_commands.extend(cmds);
             Ok(())
         });
@@ -957,6 +1094,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             lua.create_userdata(LuaOverlay {
                 inner: Overlay::new(width, height),
                 state: s.clone(),
+                shader: None,
+                shader_layers: HashMap::new(),
             })
         })?,
     )?;

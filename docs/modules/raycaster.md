@@ -2469,6 +2469,29 @@ LImageData:applyPaletteLut(lut_ud)
 
 ---
 
+#### `LImageData:applyShader`
+
+Applies an offline image shader and returns the processed image.
+
+```lua
+LImageData:applyShader(shader, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `shader` | [LShader](render.md#lshader) | Image-target shader. |
+| `opts?` | table | Optional processing options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Processed image. |
+
+---
+
 #### `LImageData:blit`
 
 Copies a source image into this image at a destination coordinate.

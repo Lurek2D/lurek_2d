@@ -4,8 +4,9 @@
 
 ## TL;DR
 
-- Manages ENet UDP hosts, TCP/WebSocket pools, and ureq-backed HTTP/SSE channels.
-- Coordinates MessagePack messaging, linear predictions, and snapshot syncs.
+- Manages ENet UDP hosts for small client/server or peer-hosted games.
+- Coordinates LAN lobby discovery, room state, MessagePack payloads, RPC helpers, prediction, and snapshot sync.
+- Does not provide web-service, streaming, auth, or SaaS matchmaking runtime APIs.
 
 ## General Info
 
@@ -13,26 +14,19 @@
 - Source path: `src/network`
 - Binding: `src/lua_api/network_api.rs`
 - Namespace: `lurek.network`
-- Lua API surface: `30` functions, `17` types, `61` methods
+- Lua API surface: `27` functions, `14` types, `34` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
 ## Summary
 
-- The `network` module is the engine's communication and session surface for users who need game state, tool messages, service calls, telemetry, or multiplayer traffic to move between processes or machines.
-- Its scope is intentionally broad because real communication needs are broad. Raw TCP, HTTP-style requests, websockets, SSE-like streams, lobbies, host state, relays, RPC, sync structures, and worker-thread coordination all appear in one engine-facing family.
-- That breadth is a practical advantage because projects often need several kinds of communication at once. A multiplayer game may also need service APIs, diagnostics channels, content downloads, and background coordination without wanting four unrelated networking stacks.
-- Message and transport types are central to the contract because networking is not just about opening a socket; it is also about how payloads are described, routed, retried, synchronized, and surfaced to the rest of the engine.
-- Session and host helpers matter because communication often begins before any gameplay packet is exchanged. Discovery, lobby state, connection negotiation, and participant tracking are all part of real multiplayer or remote-tool workflows.
-- RPC-style and sync-oriented surfaces broaden the feature into structured state exchange, while background thread support keeps network activity off the main loop.
-- This asynchronous model matters for responsiveness, retries, timeouts, and long-lived connections where the network layer must remain active even while other systems continue to update.
-- HTTP, websocket, and streaming surfaces keep the module useful beyond multiplayer for tooling, remote control, telemetry, and services.
-- Error typing and connection-state tracking are equally valuable because networking only becomes usable at scale when disconnects, retries, and degraded states are visible rather than hidden in transport internals.
-- That shared transport layer also reduces the need for project-specific communication glue.
-- The module is therefore useful for online play, local-network coordination, service-backed tools, live dashboards, remote assistants, telemetry sinks, and any feature that depends on structured communication beyond the current process.
-- That breadth is one reason the subsystem belongs in the engine rather than in ad hoc project code.
-- Domain modules define what should be exchanged, while `network` owns how those exchanges are carried, coordinated, monitored, and kept off the blocking path.
-- Read `network` as the engine feature that turns remote communication into a reusable runtime capability.
+- The `network` module is the engine's small-game multiplayer surface for users who need direct IP or LAN-hosted sessions for roughly 8-16 players.
+- ENet is the gameplay transport. It provides reliable and unreliable UDP channels, host/server/client roles, peer events, flushing, pinging, disconnects, stats, and metrics.
+- LAN lobby and room helpers cover local coordination before gameplay packets flow: lobby advertisement/discovery, room creation, join/leave, readiness, room lookup, and player lists.
+- MessagePack payload helpers keep gameplay messages compact and structured. Snapshot, prediction, reconciliation, net state, and RPC helpers are part of the same game-state exchange contract.
+- Relay and punch helpers are lightweight string/payload helpers only. They do not create a built-in web relay client or internet matchmaking service inside `lurek.exe`.
+- Web-service transports, streaming feeds, auth bootstrap, and SaaS-style matchmaking are intentionally outside the runtime network API. If a project needs internet services later, they should live in a separate service/tool while gameplay remains ENet-based.
+- Read `network` as the engine feature for small multiplayer sessions, LAN discovery, and structured gameplay state exchange.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
@@ -52,13 +46,13 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### constants.rs
 
-- This file owns shared numeric limits for peers, channels, timeouts, and socket buffer sizes in networking.
+- This file owns shared numeric limits for peers and ENet channels in networking.
 - It centralizes defaults such as `DEFAULT_PEERS`, `DEFAULT_CHANNELS`, and transport buffer capacities.
 - Open it when protocol ceilings change; host logic, runtime polling, and message framing live in siblings.
 
 ### error.rs
 
-- This file owns the unified `NetworkError` enum used to surface IO, protocol, address, and thread failures.
+- This file owns the unified `NetworkError` enum used to surface IO, protocol, and address failures.
 - It maps transport-specific problems into one error boundary so higher layers do not depend on backend details.
 - Open it when network failure categories change; host state, runtime flow, and message codecs live elsewhere.
 
@@ -71,15 +65,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Lease registration and cleanup also belong here since reconnect tokens are indexed by peer ownership state.
 - Bandwidth, channel, address, and connection metrics remain local because they report or tune host-level behavior.
 - Server and client convenience constructors stay here because role assignment and binding strategy are host concerns.
-- Open it when ENet peer ownership changes; lobbies, wire values, and background TCP or WebSocket workers do not.
-
-### http.rs
-
-- This file owns synchronous HTTP execution used by matchmaking, auth flows, and simple remote fetches.
-- `HttpResponse` stores status, body, headers, and error text so callers receive one uniform completion payload.
-- `execute_request` and its agent helper stay here because timeout, headers, and body dispatch are HTTP concerns.
-- The file keeps network-runtime callers free from ureq details while still returning raw response bytes.
-- Open it when blocking request behavior changes; sockets, lobbies, and background orchestration live elsewhere.
+- Open it when ENet peer ownership changes; lobbies and wire values do not.
 
 ### lobby.rs
 
@@ -99,10 +85,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### mod.rs
 
-- This module is the network index, exposing transports, host ownership, sync helpers, and background workers.
-- It reexports only `SseEvent` and `SseStream`, while the rest of the surface stays partitioned by transport owner.
-- `host.rs` owns ENet peers, `net_thread.rs` owns blocking IO workers, and `message.rs` owns portable wire values.
-- `http.rs`, `tcp.rs`, `websocket.rs`, and `sse.rs` implement request or socket backends used by the runtime.
+- This module is the network index, exposing ENet host ownership, sync helpers, and local lobby coordination.
+- `host.rs` owns ENet peers, while `message.rs` owns portable wire values.
 - `lobby.rs`, `relay.rs`, `rpc.rs`, `net_sync.rs`, and `netstate.rs` cover higher-level multiplayer coordination.
 - Open this file to navigate subsystem boundaries; actual transport logic and state live in sibling modules.
 
@@ -114,20 +98,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Prediction and reconciliation helpers also stay here because smoothing policy is part of sync semantics, not transport.
 - The distance-based reconcile policy is local because soft and hard correction thresholds shape state convergence.
 - Open it when replicated actor semantics change; hosts, sockets, and Lua netstate bindings live in siblings.
-
-### net_thread.rs
-
-- This file owns the background network runtime that keeps blocking HTTP, TCP, and WebSocket work off the game loop.
-- `NetworkRequest` and `NetworkResponse` define the typed command and completion protocol between threads.
-- `TcpEvent` and `WsEvent` live here because the runtime normalizes lifecycle callbacks emitted by backend managers.
-- `NetworkRuntime` stores the request sender, response receiver, join handle, ids, auth token, and activity counters.
-- Public queue helpers stay here because request-id allocation and active-request accounting are runtime concerns.
-- Thread startup and shutdown also belong here because this file owns the `lurek-network` worker thread lifecycle.
-- Its event loop polls backend managers, drains requests, and drives auth refresh plus matchmaking polling state.
-- `handle_request` remains local because it routes HTTP, TCP, WebSocket, auth, and matchmake commands.
-- Auth and matchmake session structs stay here because they track transient runtime state between helper-thread callbacks.
-- Metrics and access-token getters also belong here since they summarize live runtime status for callers.
-- Open it when cross-thread networking flow changes; backend socket mechanics live in their sibling transport owners.
 
 ### netstat.rs
 
@@ -158,32 +128,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - It is a binding layer for RPC scripting, not the socket transport, host ownership, or auth runtime.
 - Open it when Lua-facing RPC controls change; transport workers and wire values live in sibling modules.
 
-### sse.rs
-
-- This file owns long-lived Server-Sent Events readers that stream HTTP event feeds on a helper thread.
-- `SseEvent` stores parsed id, event name, and data, while `SseStream` manages the channel and close flags.
-- Connect-time thread spawning and line parsing stay here because SSE framing is distinct from request-response HTTP.
-- Non-blocking `next` and blocking `collect` helpers also belong here as stream-consumption policies for callers.
-- Drop-time shutdown is local because the reader thread lifecycle is part of owning one live SSE connection.
-- Open it when event-stream behavior changes; standard HTTP requests and socket transports live in siblings.
-
-### tcp.rs
-
-- This file owns the non-blocking TCP connection pool used by the background network runtime thread.
-- `TcpConnectionManager` stores live streams, handles connect and send, and polls all sockets round-robin.
-- Lifecycle events are emitted through `NetworkResponse` because the manager reports data, closes, and errors only.
-- Cleanup and missing-connection errors stay here since stream ownership belongs below the main runtime loop.
-- Open it when TCP polling changes; request routing, WebSockets, and ENet host logic live in sibling files.
-
-### websocket.rs
-
-- This file owns the WebSocket connection pool used by the background runtime for framed duplex messaging.
-- `WebSocketManager` stores live sockets and pending handshakes, while `PendingConnect` tracks helper-thread results.
-- Connect-time worker spawning stays here because TLS handshakes and tungstenite setup must not block the game loop.
-- Frame send, close, and poll logic also live here because text, binary, and close-event handling is backend-specific.
-- Pending-connect promotion belongs here since open or error events are derived from handshake completion state.
-- Open it when WebSocket lifecycle changes; request routing, TCP sockets, and message values live elsewhere.
-
 
 
 ## Lua API Ref
@@ -205,7 +149,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.network.newNetState(host?, opts?) -> LNetworkState`: Creates a network state synchronization manager.
 - `lurek.network.newRelayTicket(room_id, peer_id) -> string`: Creates an encoded relay ticket. This function is exposed to Lua scripts.
 - `lurek.network.newRpc(host, channel?, timeout_ms?) -> LNetworkRpc`: Creates a network RPC manager attached to a host.
-- `lurek.network.newRuntime() -> LNetworkRuntime`: Creates a background network runtime.
 - `lurek.network.newServer(opts) -> LNetworkHost`: Creates a server host from an options table.
 - `lurek.network.pack(value) -> string`: Packs a supported Lua value into a binary network message string.
 - `lurek.network.packSnapshot(snapshot) -> string`: Packs a sync snapshot table into a binary network message string.
@@ -215,15 +158,13 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.network.reconcileSnapshot(pred, auth, alpha) -> table`: Reconciles a predicted snapshot toward an authoritative snapshot.
 - `lurek.network.reconcileWithPolicy(pred, auth, alpha, soft_threshold, hard_threshold) -> table`: Reconciles a predicted snapshot toward an authoritative snapshot using a distance-based policy.
 - `lurek.network.setReady(room_name, peer_id, ready) -> nil`: Marks a player as ready or not ready in a room.
-- `lurek.network.sseCollect(url, n, timeout_secs?) -> table`: Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
-- `lurek.network.sseConnect(url, callback) -> LSseStream`: Opens an SSE stream to `url` and returns an `LSseStream` handle.
 - `lurek.network.syncEntity(host_ud, entity_id, data_tbl, channel?, reliable?) -> nil`: Broadcasts a packed entity sync payload through a network host.
 - `lurek.network.unpack(data) -> table`: Unpacks a binary network message string into a Lua value.
 - `lurek.network.unpackSnapshot(data) -> table`: Unpacks a binary network message string into a sync snapshot table.
 
 ### Callbacks
 
-- `lurek.network.sseConnect` param `callback` (`function`): Called with each event table `{ id?, event?, data }`.
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -468,56 +409,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - No documented methods.
 
-#### LNetworkRuntime Type
-
-- Lua-side wrapper for the background network runtime.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url) -> integer`: Start authenticating with a backend.
-- `LNetworkRuntime:authCancel() -> nil`: Cancels the currently active authentication request.
-- `LNetworkRuntime:getAuthStatus() -> string`: Returns the current active authentication status.
-- `LNetworkRuntime:getAuthToken() -> string`: Returns the current active access token.
-- `LNetworkRuntime:getMetrics() -> table`: Returns current network runtime metrics.
-- `LNetworkRuntime:httpGet(url, headers?) -> integer`: Starts an HTTP GET request. This method is available to Lua scripts.
-- `LNetworkRuntime:httpJson(url, body, headers?) -> integer`: Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
-- `LNetworkRuntime:httpPost(url, body, headers?) -> integer`: Starts an HTTP POST request. This method is available to Lua scripts.
-- `LNetworkRuntime:httpRequest(opts) -> integer`: Starts an HTTP request from an options table and returns its request id.
-- `LNetworkRuntime:httpStream(url, headers?, timeout_secs?) -> integer`: Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
-- `LNetworkRuntime:matchmakeCancel(id) -> nil`: Cancels a previously started matchmaking request.
-- `LNetworkRuntime:matchmakeStart(url, payload) -> integer`: Starts a matchmaking request against the backend.
-- `LNetworkRuntime:poll() -> table`: Polls runtime responses for HTTP, TCP, and WebSocket operations.
-- `LNetworkRuntime:shutdown() -> nil`: Shuts down the network runtime and cancels pending requests.
-- `LNetworkRuntime:tcpClose(id) -> nil`: Closes a TCP connection. This method is available to Lua scripts.
-- `LNetworkRuntime:tcpConnect(addr) -> integer`: Opens a TCP connection. This method is available to Lua scripts.
-- `LNetworkRuntime:tcpSend(id, data) -> nil`: Sends bytes over a TCP connection. This method is available to Lua scripts.
-- `LNetworkRuntime:type() -> string`: Returns the Lua-visible type name for this network runtime handle.
-- `LNetworkRuntime:typeOf(name) -> boolean`: Returns whether this network runtime handle matches a supported type name.
-- `LNetworkRuntime:wsClose(id) -> nil`: Closes a WebSocket connection. This method is available to Lua scripts.
-- `LNetworkRuntime:wsConnect(url) -> integer`: Opens a WebSocket connection. This method is available to Lua scripts.
-- `LNetworkRuntime:wsSend(id, data) -> nil`: Sends text over a WebSocket connection.
-
-#### LNetworkRuntimePollResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `body` (`string?`): HTTP response body.
-- `headers` (`table?`): HTTP response headers.
-- `id` (`integer?`): TCP/WS connection id.
-- `request_id` (`integer?`): HTTP request id.
-- `status` (`integer?`): HTTP status code.
-- `type` (`string`): Response type (http, tcp, ws).
-
-##### Methods
-
-- No documented methods.
-
 #### LNetworkUnpackResult Type
 
 - Generated result shape from @field tags.
@@ -533,22 +424,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ##### Methods
 
 - No documented methods.
-
-#### LSseStream Type
-
-- Lua userdata wrapping an `SseStream` with an optional stored callback.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LSseStream:close() -> nil`: Signals the background reader thread to stop and closes the stream.
-- `LSseStream:isOpen() -> boolean`: Returns true if the background reader thread is still connected and reading.
-- `LSseStream:next() -> table`: Polls for the next available event from the SSE stream (non-blocking).
-- `LSseStream:type() -> string`: Returns the Lua-visible type name for this SSE stream handle.
-- `LSseStream:typeOf(name) -> boolean`: Returns whether this SSE stream handle matches a supported type name.
 
 ## Examples
 

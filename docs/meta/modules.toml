@@ -438,16 +438,6 @@ lua_unit_test = "tests/lua/unit/test_math_unit.lua"
 user_facing = true
 plugin_tier = "not_evaluated"
 
-[midi]
-tier = "platform_services"
-source = "src/midi"
-lua_binding = "src/lua_api/midi_api.rs"
-namespace = "lurek.midi"
-example_file = "content/examples/midi.lua"
-lua_unit_test = "tests/lua/unit/test_midi_unit.lua"
-user_facing = true
-plugin_tier = "not_evaluated"
-
 [minimap]
 tier = "feature_systems"
 source = "src/minimap"
@@ -637,6 +627,16 @@ example_file = "content/examples/serialize.lua"
 lua_unit_test = "tests/lua/unit/test_serialize_unit.lua"
 user_facing = true
 plugin_tier = "core_keep"
+
+[shader]
+tier = "platform_services"
+source = "src/render"
+lua_binding = "src/lua_api/shader_api.rs"
+namespace = "lurek.shader"
+example_file = "content/examples/shader.lua"
+lua_unit_test = "tests/lua/unit/test_shader_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
 
 [spine]
 tier = "feature_systems"

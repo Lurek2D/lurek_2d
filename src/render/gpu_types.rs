@@ -19,6 +19,29 @@ pub struct ColorVertex {
     /// RGBA vertex color.
     pub(crate) color: [f32; 4],
 }
+/// Particle vertex carrying color plus render-time particle shader inputs.
+#[repr(C)]
+#[derive(Copy, Clone, Pod, Zeroable)]
+pub struct ParticleVertex {
+    /// Screen-space XY position after particle shape expansion.
+    pub(crate) position: [f32; 2],
+    /// Per-vertex particle color.
+    pub(crate) color: [f32; 4],
+    /// Particle-local position before emitter/world offset.
+    pub(crate) local_pos: [f32; 2],
+    /// Particle world-space center position.
+    pub(crate) world_pos: [f32; 2],
+    /// Particle velocity in world units per second.
+    pub(crate) velocity: [f32; 2],
+    /// Normalized age in `[0, 1]`.
+    pub(crate) normalized_age: f32,
+    /// Original lifetime in seconds.
+    pub(crate) lifetime: f32,
+    /// Stable random seed converted to `f32` for WGSL visual variation.
+    pub(crate) seed: f32,
+    /// Padding to keep a 16-byte aligned stride.
+    pub(crate) _pad: f32,
+}
 /// Textured vertex with position, UV, RGBA tint, and homogeneous W depth for perspective correction.
 #[repr(C)]
 #[derive(Copy, Clone, Pod, Zeroable)]
@@ -121,6 +144,10 @@ pub enum TexRef {
 pub const MAX_COLOR_VERTS: u64 = 1 << 19;
 /// Maximum flat-color index count before the buffer must grow.
 pub const MAX_COLOR_IDXS: u64 = 1 << 21;
+/// Maximum particle shader vertex count before the buffer must grow.
+pub const MAX_PARTICLE_VERTS: u64 = 1 << 19;
+/// Maximum particle shader index count before the buffer must grow.
+pub const MAX_PARTICLE_IDXS: u64 = 1 << 21;
 /// Maximum textured vertex count before the buffer must grow.
 pub const MAX_TEX_VERTS: u64 = 1 << 14;
 /// Maximum textured index count before the buffer must grow.

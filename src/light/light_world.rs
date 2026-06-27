@@ -18,7 +18,7 @@ use crate::light::shadow::ShadowFilter;
 use crate::log_msg;
 use crate::math::Vec2;
 use crate::runtime::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
-use crate::runtime::resource_keys::{LightKey, OccluderKey};
+use crate::runtime::resource_keys::{LightKey, OccluderKey, ShaderKey};
 use slotmap::SlotMap;
 
 /// Scene-level container for all `Light2D` instances and `Occluder` shapes.
@@ -33,6 +33,8 @@ pub struct LightWorld {
     pub enabled: bool,
     /// Maximum number of active lights evaluated per frame by the renderer.
     pub max_lights: u16,
+    /// Optional default custom light shader used when a light has no per-light shader.
+    pub shader: Option<ShaderKey>,
     /// Cached list of keys for lights that have flicker enabled; rebuilt when `flicker_index_dirty`.
     flicker_keys: Vec<LightKey>,
     /// True when the flicker index is stale and must be rebuilt before next advance.
@@ -95,6 +97,7 @@ impl LightWorld {
             ambient: Color::new(0.1, 0.1, 0.1, 1.0),
             enabled: false,
             max_lights: 64,
+            shader: None,
             flicker_keys: Vec::new(),
             flicker_index_dirty: true,
         }

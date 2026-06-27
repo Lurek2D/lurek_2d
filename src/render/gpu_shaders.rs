@@ -38,14 +38,20 @@ pub struct GpuShader {
     pub color_module: wgpu::ShaderModule,
     /// Compiled shader module for the textured vertex path.
     pub texture_module: wgpu::ShaderModule,
+    /// Compiled shader module for the particle vertex path.
+    pub particle_module: wgpu::ShaderModule,
     /// Pipeline layout for the color module.
     pub color_layout: wgpu::PipelineLayout,
     /// Pipeline layout for the texture module.
     pub texture_layout: wgpu::PipelineLayout,
+    /// Pipeline layout for the particle module.
+    pub particle_layout: wgpu::PipelineLayout,
     /// Cached color render pipelines keyed by blend/stencil state.
     pub color_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
     /// Cached texture render pipelines keyed by blend/stencil state.
     pub texture_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
+    /// Cached particle render pipelines keyed by blend/stencil state.
+    pub particle_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
 }
 
 // Suppress unused key warning — ShaderKey is needed by callers that store GpuShader in a SparseSecondaryMap keyed by ShaderKey.

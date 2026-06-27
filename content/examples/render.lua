@@ -1506,6 +1506,40 @@ do
     example_print_log("shader id numeric = " .. tostring(type(id) == "number"))
 end
 
+--@api: LShader:getTarget
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local code = "@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }"
+    local shader = lurek.render.newShader(code)
+    local target = shader:getTarget()
+    local id = shader:getId()
+    example_print_log("shader target = " .. target .. " id=" .. tostring(id))
+end
+
+--@api: LShader:getDiagnostics
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local code = "@fragment fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> { return color; }"
+    local shader = lurek.render.newShader(code)
+    local diagnostics = shader:getDiagnostics()
+    local first = diagnostics[1] or ""
+    example_print_log("shader diagnostics = " .. first)
+end
+
 --@api: LShader:setShader
 do
     local function render_log(message)

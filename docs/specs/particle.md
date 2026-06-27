@@ -13,7 +13,7 @@
 - Source path: `src/particle`
 - Binding: `src/lua_api/particle_api.rs`
 - Namespace: `lurek.particle`
-- Lua API surface: `5` functions, `3` types, `106` methods
+- Lua API surface: `5` functions, `3` types, `109` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -236,6 +236,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LParticleSystem:getPosition() -> number`: Returns emitter position. This method is available to Lua scripts.
 - `LParticleSystem:getRadialAcceleration() -> number`: Returns radial acceleration range.
 - `LParticleSystem:getRotation() -> number`: Returns particle rotation range. This method is available to Lua scripts.
+- `LParticleSystem:getShader() -> LShader?`: Returns the render-time shader bound to this particle system, if any.
 - `LParticleSystem:getShape() -> string`: Returns particle shape. This method is available to Lua scripts.
 - `LParticleSystem:getSizeVariation() -> number`: Returns size variation. This method is available to Lua scripts.
 - `LParticleSystem:getSizes() -> number[]`: Returns particle size keyframes. This method is available to Lua scripts.
@@ -280,6 +281,8 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LParticleSystem:setRadialAcceleration(min, max) -> nil`: Sets radial acceleration range. This method is available to Lua scripts.
 - `LParticleSystem:setRelativeRotation(v) -> nil`: Sets whether particle rotation is relative to movement.
 - `LParticleSystem:setRotation(min, max) -> nil`: Sets particle rotation range. This method is available to Lua scripts.
+- `LParticleSystem:setShader(shader?) -> nil`: Sets or clears the render-time shader for this particle system.
+- `LParticleSystem:setShaderUniform(name, value) -> nil`: Sends a uniform value to the shader bound to this particle system.
 - `LParticleSystem:setShape(shape) -> nil`: Sets particle shape. This method is available to Lua scripts.
 - `LParticleSystem:setSizeVariation(v) -> nil`: Sets size variation. This method is available to Lua scripts.
 - `LParticleSystem:setSizes(...) -> nil`: Sets the particle size keyframes used during a particle's lifetime. Pass two or more values to interpolate between them.

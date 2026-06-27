@@ -130,6 +130,8 @@ pub mod save_api;
 pub mod scene_api;
 /// Exposes the `lurek.serialize` binding module.
 pub mod serialize_api;
+/// Exposes the `lurek.shader` binding module.
+pub mod shader_api;
 /// Exposes the `lurek.spine` binding module.
 #[cfg(feature = "spine")]
 pub mod spine_api;

@@ -162,6 +162,9 @@ LSpacer = {}
 ---@class LThread
 LThread = {}
 
+---@class LZipMount
+LZipMount = {}
+
 ---@class LAnimationBuildCharacterResult
 ---@field animation LAnimation Animation handle.
 ---@field stateMachine LStateMachine State machine handle.
@@ -758,15 +761,6 @@ LNetworkPredictLinearResult = {}
 ---@field x number X.
 ---@field y number Y.
 LNetworkReconcileSnapshotResult = {}
-
----@class LNetworkRuntimePollResult
----@field body string? HTTP response body.
----@field headers table? HTTP response headers.
----@field id number? TCP/WS connection id.
----@field request_id number? HTTP request id.
----@field status number? HTTP status code.
----@field type string Response type (http, tcp, ws).
-LNetworkRuntimePollResult = {}
 
 ---@class LNetworkUnpackResult
 ---@field host string Host address.
@@ -1699,9 +1693,6 @@ lurek.mapblock = {}
 ---@class lurek.math
 lurek.math = {}
 
----@class lurek.midi
-lurek.midi = {}
-
 ---@class lurek.minimap
 lurek.minimap = {}
 
@@ -1758,6 +1749,9 @@ lurek.scene.transitions = {}
 
 ---@class lurek.serialize
 lurek.serialize = {}
+
+---@class lurek.shader
+lurek.shader = {}
 
 ---@class lurek.spine
 lurek.spine = {}
@@ -2224,10 +2218,6 @@ LFileData = {}
 ---@class LFileHandle
 LFileHandle = {}
 
---- Lua-side handle for a mounted ZIP archive view.
----@class LZipMount
-LZipMount = {}
-
 --- Lua-side graph handle storing graph state and registered event callbacks.
 ---@class LGraph
 LGraph = {}
@@ -2268,13 +2258,17 @@ LGrepEngine = {}
 ---@class LAnimatedImage
 LAnimatedImage = {}
 
---- Lua-side handle for compressed DDS image metadata and mipmap data.
+--- Lua-side handle for legacy compressed DDS metadata.
 ---@class LCompressedImageData
 LCompressedImageData = {}
 
 --- Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.
 ---@class LImageData
 LImageData = {}
+
+--- Lua handle for an offline image shader request.
+---@class LImageShaderJob
+LImageShaderJob = {}
 
 --- Lua-side handle for multiple image layers with visibility, opacity, and ordering.
 ---@class LLayeredImage
@@ -2352,10 +2346,6 @@ LNeuralNet = {}
 ---@class LNeuroevolution
 LNeuroevolution = {}
 
---- ONNX model handle that wraps a tract runnable plan for Lua-driven inference.
----@class LOnnxModel
-LOnnxModel = {}
-
 --- Lua wrapper over `PositionalEncoding`.
 ---@class LPositionalEncoding
 LPositionalEncoding = {}
@@ -2364,7 +2354,7 @@ LPositionalEncoding = {}
 ---@class LQLearner
 LQLearner = {}
 
---- Flat tensor handle exposing shape, element access, and tract conversion to Lua.
+--- Flat tensor handle exposing shape, element access, and flat data to Lua.
 ---@class LTensor
 LTensor = {}
 
@@ -2504,14 +2494,6 @@ LModManager = {}
 --- Lua-side wrapper for a network host.
 ---@class LNetworkHost
 LNetworkHost = {}
-
---- Lua-side wrapper for the background network runtime.
----@class LNetworkRuntime
-LNetworkRuntime = {}
-
---- Lua userdata wrapping an `SseStream` with an optional stored callback.
----@class LSseStream
-LSseStream = {}
 
 --- Lua-side handle for screen overlay, ambient, weather, and transition visual state.
 ---@class LOverlay
@@ -5936,9 +5918,6 @@ lurek.audio.beatClockFromSource = function(source, bpm, opts) end
 ---@param source LSource|number Audio source or numeric source ID.
 lurek.audio.clearFilter = function(source) end
 
---- Clears the loaded SoundFont and reverts MIDI synthesis to default.
-lurek.audio.clearMidiSoundFont = function() end
-
 --- Clears any random pitch range previously set on the source.
 ---@param src_ud LSource The audio source to reset.
 lurek.audio.clearRandomPitch = function(src_ud) end
@@ -6104,10 +6083,6 @@ lurek.audio.getVelocity = function(source) end
 ---@return number Current volume multiplier.
 lurek.audio.getVolume = function(source) end
 
---- Returns whether a SoundFont file has been loaded for MIDI synthesis.
----@return boolean True if a SoundFont is loaded.
-lurek.audio.hasMidiSoundFont = function() end
-
 --- Returns whether a source has looping enabled.
 ---@param source LSource|number Audio source or numeric source ID.
 ---@return boolean True if looping is enabled.
@@ -6162,11 +6137,6 @@ lurek.audio.newBus = function(name) end
 ---@param buffersize? number Number of samples per decode chunk; defaults to 2048.
 ---@return LDecoder A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods.
 lurek.audio.newDecoder = function(source, buffersize) end
-
---- Creates a new MIDI player instance, optionally loading a file immediately.
----@param path? string Optional relative path to a .mid file to load.
----@return LMidiPlayer A new MIDI player ready for playback.
-lurek.audio.newMidiPlayer = function(path) end
 
 --- Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.
 ---@param file_path string Relative path to the audio file shared by all voices in the pool.
@@ -6300,10 +6270,6 @@ lurek.audio.setMasterVolume = function(vol) end
 --- Sets the master peak level for metering purposes.
 ---@param level number Peak level clamped to 0.0-1.0.
 lurek.audio.setMeter = function(level) end
-
---- Sets the SoundFont file used for MIDI synthesis.
----@param path string Relative path to the .sf2 SoundFont file.
-lurek.audio.setMidiSoundFont = function(path) end
 
 --- Globally mutes all audio (pauses all sources without stopping them).
 ---@param muted boolean True to mute, false to unmute all audio.
@@ -12477,10 +12443,10 @@ lurek.effect.getPresetNames = function() end
 ---@return boolean True when shader error display is enabled.
 lurek.effect.getShaderErrorDisplay = function() end
 
---- Creates a custom post-processing effect that references an existing shader id.
----@param shader_id number Renderer shader identifier used for the custom effect.
+--- Creates a custom post-processing effect from a postfx-target shader.
+---@param shader LShader|number Postfx-target shader handle or legacy shader id.
 ---@return LPostFxEffect New custom post-processing effect handle.
-lurek.effect.newCustomEffect = function(shader_id) end
+lurek.effect.newCustomEffect = function(shader) end
 
 --- Creates a built-in post-processing effect by type name.
 ---@param type_name string Built-in effect type name such as `blur`, `bloom`, or `crt`.
@@ -12493,10 +12459,10 @@ lurek.effect.newEffect = function(type_name) end
 ---@return LImageEffect New image effect chain handle.
 lurek.effect.newImageEffect = function(spec, params) end
 
---- Creates a custom post-processing pass from an existing shader id.
----@param shader_id number Renderer shader identifier used for the pass.
+--- Creates a custom post-processing pass from a postfx-target shader.
+---@param shader LShader|number Postfx-target shader handle or legacy shader id.
 ---@return LPostFxEffect New custom post-processing effect handle.
-lurek.effect.newPass = function(shader_id) end
+lurek.effect.newPass = function(shader) end
 
 --- Creates a named preset post-processing stack with optional dimensions.
 ---@param name string Preset stack name.
@@ -12766,33 +12732,6 @@ function LFileHandle:typeOf(name) end
 --- Writes a string to this file handle.
 ---@param data string Text bytes to write.
 function LFileHandle:write(data) end
-
---- Returns whether a virtual path exists in the ZIP mount.
----@param virtual_path string Path inside the mount prefix.
----@return boolean True when the file exists in the archive.
-function LZipMount:contains(virtual_path) end
-
---- Returns every virtual file path in the ZIP mount.
----@return string[] Mounted file paths.
-function LZipMount:listFiles() end
-
---- Returns the virtual prefix used by this ZIP mount.
----@return string Mount prefix.
-function LZipMount:prefix() end
-
---- Reads a file from the ZIP mount by virtual path.
----@param virtual_path string Path inside the mount prefix.
----@return string Raw file bytes as a Lua string.
-function LZipMount:readFile(virtual_path) end
-
---- Returns the Lua-visible type name for this ZIP mount handle.
----@return string The string `LZipMount`.
-function LZipMount:type() end
-
---- Returns whether this ZIP mount handle matches a supported type name.
----@param name string Type name to compare against `LZipMount` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LZipMount:typeOf(name) end
 
 --- Appends UTF-8 text to a GameFS file.
 ---@param path string GameFS path to append to.
@@ -14751,6 +14690,12 @@ function LImageData:applyMask(mask) end
 ---@param lut_ud LPaletteLUT Palette lookup table handle.
 function LImageData:applyPaletteLut(lut_ud) end
 
+--- Applies an offline image shader and returns the processed image.
+---@param shader LShader Image-target shader.
+---@param opts? table Optional processing options.
+---@return LImageData Processed image.
+function LImageData:applyShader(shader, opts) end
+
 --- Copies a source image into this image at a destination coordinate.
 ---@param src_ud LImageData Source image data handle.
 ---@param dst_x number Destination x coordinate.
@@ -14987,6 +14932,18 @@ function LImageData:type() end
 ---@return boolean True when the supplied type name matches.
 function LImageData:typeOf(name) end
 
+--- Cancels this image shader job.
+function LImageShaderJob:cancel() end
+
+--- Returns the shader output image when the job has completed, or nil if pending/cancelled.
+---@return LImageData? Completed image result.
+function LImageShaderJob:poll() end
+
+--- Waits for the offline image shader job and returns its output image.
+---@param timeoutMs? number Optional timeout in milliseconds.
+---@return LImageData? Completed image result.
+function LImageShaderJob:wait(timeoutMs) end
+
 --- Adds a blank layer with an optional name.
 ---@param name? string Optional layer name.
 ---@return number One-based index of the new layer.
@@ -15201,9 +15158,9 @@ lurek.image.loadImage = function(filename) end
 ---@return LLayeredImage Loaded layered image handle.
 lurek.image.loadLayered = function(filename) end
 
---- Loads DDS compressed image data from GameFS.
+--- Attempts to load DDS compressed image data from GameFS.
 ---@param filename string GameFS path to a DDS file.
----@return LCompressedImageData New compressed image data handle.
+---@return LCompressedImageData New compressed image data handle when DDS support is enabled.
 lurek.image.newCompressedData = function(filename) end
 
 --- Creates empty image data from dimensions or decodes image data from a GameFS filename.
@@ -15233,6 +15190,13 @@ lurek.image.newPaletteLut = function() end
 ---@param filename string Province map image filename relative to game directory.
 ---@return LProvinceGrid New province grid handle.
 lurek.image.newProvinceGrid = function(filename) end
+
+--- Starts an offline image shader request and returns a completed job handle.
+---@param image LImageData Source image data.
+---@param shader LShader Image-target shader.
+---@param opts? table Optional job options.
+---@return LImageShaderJob Offline shader job handle.
+lurek.image.requestShader = function(image, shader, opts) end
 
 --- Encodes a sequence of equally sized image frames as an animated GIF.
 ---@param frames table Array of `LImageData` frames in playback order.
@@ -16215,28 +16179,6 @@ function LNeuroevolution:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LNeuroevolution:typeOf(name) end
 
---- Returns the number of input tensors expected by the model.
----@return number Input tensor count.
-function LOnnxModel:inputCount() end
-
---- Returns the number of output tensors produced by the model.
----@return number Output tensor count.
-function LOnnxModel:outputCount() end
-
---- Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.
----@param inputs table Array-indexed table of LTensor input values.
----@return table Array-indexed table of LTensor output values.
-function LOnnxModel:run(inputs) end
-
---- Returns the type name `"LOnnxModel"`.
----@return string The string `LOnnxModel`.
-function LOnnxModel:type() end
-
---- Returns whether this model handle matches a supported type name.
----@param name string Type name to compare against `LOnnxModel` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LOnnxModel:typeOf(name) end
-
 --- Applies sinusoidal positional encoding values to a `[seq_len,d_model]` tensor.
 ---@param input LTensor Input sequence tensor to encode.
 ---@return LTensor Encoded sequence tensor with added positional values.
@@ -16439,11 +16381,6 @@ lurek.learning.defineEnv = function(config) end
 ---@param n number Number of frames to retain.
 ---@return LFrameStack New frame stack handle.
 lurek.learning.frameStack = function(n) end
-
---- Loads and optimises an ONNX model from a file path.
----@param path string Filesystem path to the `.onnx` model file inside the current sandbox root.
----@return LOnnxModel Loaded model handle ready for inference.
-lurek.learning.loadOnnx = function(path) end
 
 --- Creates a multi-armed bandit with a named selection strategy.
 ---@param arm_count number Number of selectable arms.
@@ -16655,6 +16592,10 @@ function LLight:getPosition() end
 ---@return number Radius value.
 function LLight:getRadius() end
 
+--- Returns the custom light shader bound to this light, if any.
+---@return LShader? Bound shader or nil.
+function LLight:getShader() end
+
 --- Returns this light shadow RGBA color.
 ---@return number Red channel.
 ---@return number Green channel.
@@ -16787,6 +16728,10 @@ function LLight:setPosition(x, y) end
 --- Sets this light radius. This method is available to Lua scripts.
 ---@param r number Radius value.
 function LLight:setRadius(r) end
+
+--- Sets or clears the custom light-contribution shader for this light.
+---@param shader? LShader Light-target shader or nil to clear.
+function LLight:setShader(shader) end
 
 --- Sets this light shadow RGBA color. This method is available to Lua scripts.
 ---@param r number Red channel.
@@ -16948,6 +16893,10 @@ lurek.light.getNormalMapHints = function() end
 ---@return number Occluder count.
 lurek.light.getOccluderCount = function() end
 
+--- Returns the default custom light shader for the light world.
+---@return LShader? Bound shader or nil.
+lurek.light.getShader = function() end
+
 --- Returns whether the shared light world is enabled.
 ---@return boolean True when lighting is enabled.
 lurek.light.isEnabled = function() end
@@ -16998,6 +16947,10 @@ lurek.light.setGroupIntensity = function(group_id, intensity) end
 --- Sets the maximum configured light count, clamped to 1 through 256.
 ---@param n number Requested maximum light count.
 lurek.light.setMaxLights = function(n) end
+
+--- Sets or clears the default custom light shader for the light world.
+---@param shader? LShader Light-target shader or nil to clear.
+lurek.light.setShader = function(shader) end
 
 --- Returns the light world's ambient color hint.
 ---@return number Red channel.
@@ -18913,23 +18866,6 @@ lurek.math.vec2 = function(x, y) end
 ---@return LVec3 New vector handle.
 lurek.math.vec3 = function(x, y, z) end
 
---- Unloads the current SoundFont and frees its memory.
-lurek.midi.clearSoundFont = function() end
-
---- Returns whether a SoundFont is currently loaded and ready for synthesis.
----@return boolean True if a SoundFont is loaded.
-lurek.midi.hasSoundFont = function() end
-
---- Loads a SoundFont (SF2) file into the global MIDI state for synthesis.
----@param path string Relative path to the .sf2 file.
----@return boolean True if the SoundFont was loaded successfully.
-lurek.midi.loadSoundFont = function(path) end
-
---- Creates a new MIDI player instance, optionally loading a file immediately.
----@param path? string Optional relative path to a .mid file to load.
----@return LMidiPlayer A new MIDI player ready for playback.
-lurek.midi.newPlayer = function(path) end
-
 --- Adds a world-space marker and returns its unique id.
 ---@param x number Marker x coordinate.
 ---@param y number Marker y coordinate.
@@ -19856,134 +19792,6 @@ function LNetworkHost:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LNetworkHost:typeOf(name) end
 
---- Start authenticating with a backend.
----@param auth_url string Authentication URL.
----@param payload string JSON payload.
----@param refresh_url string Refresh URL.
----@return number Request id.
-function LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url) end
-
---- Cancels the currently active authentication request.
-function LNetworkRuntime:authCancel() end
-
---- Returns the current active authentication status.
----@return string Current status ("unauthenticated", "authenticating", "authenticated", "failed").
-function LNetworkRuntime:getAuthStatus() end
-
---- Returns the current active access token.
----@return string Access token, or nil if unauthenticated.
-function LNetworkRuntime:getAuthToken() end
-
---- Returns current network runtime metrics.
----@return table Metrics table with queue_size, reconnect_count, http_active_count, tcp_active_count, ws_active_count.
-function LNetworkRuntime:getMetrics() end
-
---- Starts an HTTP GET request. This method is available to Lua scripts.
----@param url string Request URL.
----@param headers? table Optional headers table.
----@return number Request id.
-function LNetworkRuntime:httpGet(url, headers) end
-
---- Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
----@param url string Request URL.
----@param body string JSON string to send as the request body.
----@param headers? table Optional additional headers table.
----@return number Request id.
-function LNetworkRuntime:httpJson(url, body, headers) end
-
---- Starts an HTTP POST request. This method is available to Lua scripts.
----@param url string Request URL.
----@param body string Request body.
----@param headers? table Optional headers table.
----@return number Request id.
-function LNetworkRuntime:httpPost(url, body, headers) end
-
---- Starts an HTTP request from an options table and returns its request id.
----@param opts table Options table with `url`, optional `method`, `headers`, `body`, and `timeout`.
----@return number Request id.
-function LNetworkRuntime:httpRequest(opts) end
-
---- Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
----@param url string Request URL.
----@param headers? table Optional headers table.
----@param timeout_secs? number Optional timeout override in seconds.
----@return number Request id.
-function LNetworkRuntime:httpStream(url, headers, timeout_secs) end
-
---- Cancels a previously started matchmaking request.
----@param id number Request id.
-function LNetworkRuntime:matchmakeCancel(id) end
-
---- Starts a matchmaking request against the backend.
----@param url string Matchmaker URL.
----@param payload string JSON payload.
----@return number Request id.
-function LNetworkRuntime:matchmakeStart(url, payload) end
-
---- Polls runtime responses for HTTP, TCP, and WebSocket operations.
----@return LNetworkRuntimePollResult Array table of response/event tables.
-function LNetworkRuntime:poll() end
-
---- Shuts down the network runtime and cancels pending requests.
-function LNetworkRuntime:shutdown() end
-
---- Closes a TCP connection. This method is available to Lua scripts.
----@param id number Connection id.
-function LNetworkRuntime:tcpClose(id) end
-
---- Opens a TCP connection. This method is available to Lua scripts.
----@param addr string Remote address.
----@return number Connection id.
-function LNetworkRuntime:tcpConnect(addr) end
-
---- Sends bytes over a TCP connection. This method is available to Lua scripts.
----@param id number Connection id.
----@param data string Binary payload string.
-function LNetworkRuntime:tcpSend(id, data) end
-
---- Returns the Lua-visible type name for this network runtime handle.
----@return string The string `LNetworkRuntime`.
-function LNetworkRuntime:type() end
-
---- Returns whether this network runtime handle matches a supported type name.
----@param name string Type name to compare against `LNetworkRuntime` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LNetworkRuntime:typeOf(name) end
-
---- Closes a WebSocket connection. This method is available to Lua scripts.
----@param id number Connection id.
-function LNetworkRuntime:wsClose(id) end
-
---- Opens a WebSocket connection. This method is available to Lua scripts.
----@param url string WebSocket URL.
----@return number Connection id.
-function LNetworkRuntime:wsConnect(url) end
-
---- Sends text over a WebSocket connection.
----@param id number Connection id.
----@param data string Text payload.
-function LNetworkRuntime:wsSend(id, data) end
-
---- Signals the background reader thread to stop and closes the stream.
-function LSseStream:close() end
-
---- Returns true if the background reader thread is still connected and reading.
----@return boolean True while the stream is open.
-function LSseStream:isOpen() end
-
---- Polls for the next available event from the SSE stream (non-blocking).
----@return table Event table `{ id?, event?, data }` when available; returns nil when no event is ready.
-function LSseStream:next() end
-
---- Returns the Lua-visible type name for this SSE stream handle.
----@return string The string `LSseStream`.
-function LSseStream:type() end
-
---- Returns whether this SSE stream handle matches a supported type name.
----@param name string Type name to compare against `LSseStream` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LSseStream:typeOf(name) end
-
 --- Broadcasts lobby information and returns it as a table.
 ---@param name string Lobby name.
 ---@param port number Lobby port.
@@ -20067,10 +19875,6 @@ lurek.network.newRelayTicket = function(room_id, peer_id) end
 ---@return LNetworkRpc New RPC manager handle.
 lurek.network.newRpc = function(host, channel, timeout_ms) end
 
---- Creates a background network runtime.
----@return LNetworkRuntime New network runtime handle.
-lurek.network.newRuntime = function() end
-
 --- Creates a server host from an options table.
 ---@param opts table Options with required `port`, optional `maxPeers`/`peers`, and `channels`.
 ---@return LNetworkHost New server host handle.
@@ -20123,19 +19927,6 @@ lurek.network.reconcileWithPolicy = function(pred, auth, alpha, soft_threshold, 
 ---@param peer_id number Peer identifier.
 ---@param ready boolean True to mark as ready, false to unmark.
 lurek.network.setReady = function(room_name, peer_id, ready) end
-
---- Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
----@param url string SSE endpoint URL.
----@param n number Maximum number of events to collect.
----@param timeout_secs? number Optional timeout in seconds; defaults to 5.
----@return table Array of event tables `{ id?, event?, data }`.
-lurek.network.sseCollect = function(url, n, timeout_secs) end
-
---- Opens an SSE stream to `url` and returns an `LSseStream` handle.
----@param url string SSE endpoint URL.
----@param callback function Called with each event table `{ id?, event?, data }`.
----@return LSseStream Stream handle for polling or closing.
-lurek.network.sseConnect = function(url, callback) end
 
 --- Broadcasts a packed entity sync payload through a network host.
 ---@param host_ud LNetworkHost Network host handle.
@@ -20251,8 +20042,17 @@ function LOverlay:getLightningAlpha() end
 function LOverlay:getLightningColor() end
 
 --- Returns the current render responsibility plan for active overlay layers.
----@return table Table with `rendered` and `externally_handled` string arrays.
+---@return table Table with `rendered`, `externally_handled`, and `shader` string arrays.
 function LOverlay:getRenderPlan() end
+
+--- Returns the shader bound to this overlay, if any.
+---@return LShader? Bound shader or nil.
+function LOverlay:getShader() end
+
+--- Returns a shader bound to one overlay layer, if present.
+---@param layer string Layer name.
+---@return LShader? Bound shader or nil.
+function LOverlay:getShaderLayer(layer) end
 
 --- Returns the current screen shake offset.
 ---@return number Current x offset.
@@ -20433,6 +20233,15 @@ function LOverlay:setHeatHazeIntensity(v) end
 ---@param b number Blue channel.
 ---@param a? number Alpha channel, defaulting to 1.0.
 function LOverlay:setLightningColor(r, g, b, a) end
+
+--- Sets or clears the shader used for custom overlay rendering.
+---@param shader? LShader Overlay-target shader or nil to clear.
+function LOverlay:setShader(shader) end
+
+--- Sets or clears an overlay-layer shader binding.
+---@param layer string Layer name such as `heat_haze`, `water`, or `fog`.
+---@param shader? LShader Overlay-target shader or nil to clear.
+function LOverlay:setShaderLayer(layer, shader) end
 
 --- Sets the overlay time-of-day value used by ambient effects.
 ---@param v number Time-of-day value stored on the overlay ambient state.
@@ -20983,6 +20792,10 @@ function LParticleSystem:getRadialAcceleration() end
 ---@return number Maximum rotation.
 function LParticleSystem:getRotation() end
 
+--- Returns the render-time shader bound to this particle system, if any.
+---@return LShader? Bound shader or nil.
+function LParticleSystem:getShader() end
+
 --- Returns particle shape. This method is available to Lua scripts.
 ---@return string Shape name.
 function LParticleSystem:getShape() end
@@ -21182,6 +20995,15 @@ function LParticleSystem:setRelativeRotation(v) end
 ---@param min number Minimum rotation.
 ---@param max number Maximum rotation.
 function LParticleSystem:setRotation(min, max) end
+
+--- Sets or clears the render-time shader for this particle system.
+---@param shader? LShader Particle-target shader or nil to clear.
+function LParticleSystem:setShader(shader) end
+
+--- Sends a uniform value to the shader bound to this particle system.
+---@param name string Uniform name.
+---@param value number|boolean|table Uniform value.
+function LParticleSystem:setShaderUniform(name, value) end
 
 --- Sets particle shape. This method is available to Lua scripts.
 ---@param shape string Shape name.
@@ -27164,9 +26986,17 @@ function LQuad:type() end
 ---@return boolean True if the name matches.
 function LQuad:typeOf(name) end
 
+--- Returns shader validation diagnostics.
+---@return table Array of diagnostic strings.
+function LShader:getDiagnostics() end
+
 --- Returns the internal numeric handle ID for this shader.
 ---@return number Opaque shader handle identifier.
 function LShader:getId() end
+
+--- Returns the target this shader was validated for.
+---@return string Shader target name.
+function LShader:getTarget() end
 
 --- Checks whether this shader declares a uniform with the given name.
 ---@param name string Uniform name to check.
@@ -28702,6 +28532,12 @@ lurek.serialize.toToml = function(value) end
 ---@return boolean True if validation passes; false otherwise.
 ---@return string An error message describing the validation failure; or nil on success.
 lurek.serialize.validate = function(value, schema) end
+
+--- Compiles a target-aware WGSL fragment shader and returns a shader handle.
+---@param code string WGSL fragment shader source code.
+---@param opts? table Options table with optional `target` string.
+---@return LShader Compiled shader handle.
+lurek.shader.new = function(code, opts) end
 
 --- Registers a SkeletonAnimation object with this skeleton so it can be played by name.
 ---@param anim LSkeletonAnimation The animation userdata to register. Consumed by this call.

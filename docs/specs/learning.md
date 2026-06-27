@@ -5,7 +5,7 @@
 ## TL;DR
 
 - Manages dynamic neural nets, attention blocks, transformers, and flat tensor buffers.
-- Supports genetic algorithms, neuroevolution, bandits, tabular Q-learning, and ONNX models.
+- Supports genetic algorithms, neuroevolution, bandits, tabular Q-learning, and simple engine-side tensor/model workflows.
 
 ## General Info
 
@@ -13,19 +13,19 @@
 - Source path: `src/learning`
 - Binding: `src/lua_api/learning_api.rs`
 - Namespace: `lurek.learning`
-- Lua API surface: `21` functions, `19` types, `137` methods
+- Lua API surface: `20` functions, `18` types, `132` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
 ## Summary
 
-- The `learning` module is the engine's machine-learning and adaptive-policy surface for users who want experimentation, inference, and lightweight training loops to live inside the same runtime as gameplay and tooling code.
+- The `learning` module is the engine's lightweight adaptive-policy surface for users who want experimentation, inference-like forward passes, and basic training loops to live inside the same runtime as gameplay and tooling code.
 - Its defining feature is breadth across learning styles. Tensor math, feedforward models, convolutional structures, recurrent logic, attention, transformer-style components, Q-learning, bandits, genetic algorithms, and neuroevolution all coexist because game-related learning problems vary widely.
 - That breadth matters because one project may want inference from a pretrained model, another may want online adaptation, and another may want population-based search or discrete action learning rather than gradient-heavy end-to-end training.
 - The module therefore acts less like a single ML framework and more like an engine-owned research and experimentation toolkit with several entry points.
 - Environment wrappers are an important part of the feature because learning is not only about models. It is also about observations, rewards, resets, episodes, action loops, and the staged interaction between a policy and a simulated task.
 - This makes the module useful for reinforcement-style experimentation where the engine itself is part of the training or evaluation environment rather than merely a host for precomputed predictions.
-- ONNX loading and parameter import or export matter because useful ML workflows rarely remain entirely inside one engine. Teams often train or inspect models externally and then bring those artifacts into runtime experimentation or inference.
+- External model runtimes are intentionally out of scope for the small runtime build. The module keeps basic tensors, neural layers, reinforcement helpers, and population search so scripts can prototype game-facing behavior without turning the engine into a full data-science platform.
 - Bandits, Q-learning, and evolutionary support are particularly relevant for game-like adaptation where discrete choices, heuristic search, or population exploration may be more useful than large-scale supervised training.
 - Deterministic tensor and model operations are also valuable because experimentation inside a game engine still needs inspectability. Teams often need results to be partially reproducible so they can debug or compare behavior meaningfully.
 - The module is therefore useful for adaptive NPC behavior, tuning agents, recommendation-like systems, simulation control, encounter balancing, and tool-side analysis of what a model would choose under engine constraints.
@@ -131,7 +131,7 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 - `neural_net.rs`, `recurrent.rs`, `conv.rs`, and `attention.rs` implement CPU learning blocks with trainable weights.
 - `transformer.rs` composes attention, norms, and feed-forward blocks, while `engine.rs` chains heterogeneous blocks.
 - `genetic.rs`, `neuroevolution.rs`, `bandit.rs`, and `qlearner.rs` cover search and reinforcement loops.
-- `onnx.rs` bridges external models, and `env.rs` plus `tensor.rs` define the data surfaces consumed by these learners.
+- `env.rs` plus `tensor.rs` define the data surfaces consumed by these learners.
 - This file owns visibility and navigation only; actual math, training state, and inference behavior live in siblings.
 
 ### neural_net.rs
@@ -151,15 +151,6 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 - Defines how neuroevolution data is validated, transformed, or stored before neighboring systems use it.
 - Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
 - Keeps public crate helpers focused on neuroevolution behavior while Lua registration stays elsewhere.
-
-### onnx.rs
-
-- Owns the onnx owner for the learning subsystem and keeps its rules local to this file while keeping call sites explicit.
-- Centers the implementation around TractPlan, OnnxLoadOptions, default, with helpers kept close to their invariants.
-- Defines how onnx data is validated, transformed, or stored before neighboring systems use it.
-- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on onnx behavior while Lua registration stays elsewhere.
-- Documents the boundary where learning code accepts inputs, reports errors, or updates state.
 
 ### qlearner.rs
 
@@ -214,7 +205,6 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 - `lurek.learning.defineEnv(config) -> LEnv`: Defines a Lua-described RL environment from a config table.
 - `lurek.learning.frameStack(n) -> LFrameStack`: Creates a frame-stacking ring buffer of the last n observations.
-- `lurek.learning.loadOnnx(path) -> LOnnxModel`: Loads and optimises an ONNX model from a file path.
 - `lurek.learning.newBandit(arm_count, strategy, epsilon, seed) -> LBandit`: Creates a multi-armed bandit with a named selection strategy.
 - `lurek.learning.newConv2D(in_channels, out_channels, kernel_h, kernel_w, stride_h, stride_w, pad_h, pad_w) -> LConv2D`: Creates a Conv2D layer wrapper for deterministic CPU spatial inference.
 - `lurek.learning.newEngine() -> LNeuralEngine`: Creates an empty heterogeneous neural engine.
@@ -476,22 +466,6 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 - `LNeuroevolution:type() -> string`: Returns the Lua-visible type name for this neuroevolution handle.
 - `LNeuroevolution:typeOf(name) -> boolean`: Returns whether this neuroevolution handle matches a supported type name.
 
-#### LOnnxModel Type
-
-- ONNX model handle that wraps a tract runnable plan for Lua-driven inference.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LOnnxModel:inputCount() -> integer`: Returns the number of input tensors expected by the model.
-- `LOnnxModel:outputCount() -> integer`: Returns the number of output tensors produced by the model.
-- `LOnnxModel:run(inputs) -> table`: Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.
-- `LOnnxModel:type() -> string`: Returns the type name `"LOnnxModel"`.
-- `LOnnxModel:typeOf(name) -> boolean`: Returns whether this model handle matches a supported type name.
-
 #### LPositionalEncoding Type
 
 - Lua wrapper over `PositionalEncoding`.
@@ -541,7 +515,7 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 #### LTensor Type
 
-- Flat tensor handle exposing shape, element access, and tract conversion to Lua.
+- Flat tensor handle exposing shape, element access, and flat data to Lua.
 
 ##### Fields
 
