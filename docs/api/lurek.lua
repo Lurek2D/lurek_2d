@@ -209,8 +209,10 @@ LArraySobelResult = {}
 ---@field name string Display name, or the path file-stem when none is set.
 ---@field path string Filesystem path to the asset.
 ---@field refcount number Current reference count.
+---@field revision number Reload revision.
 ---@field tags table Array of tag strings.
 ---@field type string Asset type string.
+---@field watched boolean True when live reload watching is requested.
 LAssetGetInfoResult = {}
 
 ---@class LAssetStatsResult
@@ -2262,6 +2264,10 @@ LFileFilter = {}
 ---@class LGrepEngine
 LGrepEngine = {}
 
+--- Lua-side decoded animated image containing frame images and durations.
+---@class LAnimatedImage
+LAnimatedImage = {}
+
 --- Lua-side handle for compressed DDS image metadata and mipmap data.
 ---@class LCompressedImageData
 LCompressedImageData = {}
@@ -2846,6 +2852,10 @@ LSpriteAnimator = {}
 --- Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
 ---@class LSpriteAtlas
 LSpriteAtlas = {}
+
+--- Lua-visible autotile sheet authored from a sprite/image source.
+---@class LSpriteAutoTileSheet
+LSpriteAutoTileSheet = {}
 
 --- Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
 ---@class LSpriteSheet
@@ -4956,6 +4966,10 @@ function LAnimation:pollEvents() end
 --- Resumes playback of a paused animation.
 function LAnimation:resume() end
 
+--- Seeks to a frame index in the current clip.
+---@param index number Frame index to make current.
+function LAnimation:seek(index) end
+
 --- Changes the playback mode for an existing clip.
 ---@param name string Clip name to update.
 ---@param mode string Playback mode `forward`, `reverse`, or `pingpong`.
@@ -5042,10 +5056,28 @@ function LBlendLayerSet:typeOf(name) end
 ---@return LAnimationBuildCharacterResult Table containing `animation` and, when states are supplied, `stateMachine` handles.
 lurek.animation.buildCharacter = function(cfg) end
 
+--- Creates an animation from decoded frames returned by `lurek.image.loadAnimated`.
+---@param animated LAnimatedImage Decoded animated image.
+---@param opts? table `{name, fps, loop, mode, play}` clip options.
+---@return LAnimation New animation handle.
+lurek.animation.fromAnimatedImage = function(animated, opts) end
+
 --- Loads an animation from an Aseprite JSON export string.
 ---@param json_str string Raw Aseprite JSON document contents.
 ---@return LuaValue Animation handle when parsing succeeds; raises an error when the JSON cannot be parsed.
 lurek.animation.fromAseprite = function(json_str) end
+
+--- Creates an animation from explicit frame rectangle DTOs.
+---@param frames table Array of `{x, y, w, h}` frame rectangles.
+---@param opts? table `{name, fps, loop, mode, play}` clip options.
+---@return LAnimation New animation handle.
+lurek.animation.fromFrames = function(frames, opts) end
+
+--- Creates an animation from a `LSpriteSheet`, optionally using a named group.
+---@param sheet LSpriteSheet Source sprite sheet.
+---@param opts? table `{group, name, fps, loop, mode, play}` clip options.
+---@return LAnimation New animation handle.
+lurek.animation.fromSpriteSheet = function(sheet, opts) end
 
 --- Creates an empty animation with no frames or clips.
 ---@return LAnimation New animation handle.
@@ -5134,6 +5166,11 @@ lurek.asset.getName = function(handle) end
 ---@return string Path that was passed to `lurek.asset.load`.
 lurek.asset.getPath = function(handle) end
 
+--- Returns the current reload revision for an asset handle.
+---@param handle LAssetHandle Asset handle to inspect.
+---@return number Current revision, or 0 when unloaded.
+lurek.asset.getRevision = function(handle) end
+
 --- Returns an array of all tags for an asset handle.
 ---@param handle LAssetHandle Asset handle to query.
 ---@return table Array of tag strings.
@@ -5162,6 +5199,17 @@ lurek.asset.isLoaded = function(handle) end
 ---@return LAssetHandle Handle that keeps the asset alive in the cache.
 lurek.asset.load = function(path, asset_type, opts) end
 
+--- Loads a TOML asset manifest and registers listed assets without transforming them.
+---@param path string Manifest path.
+---@return table Array of `LAssetHandle` values for loaded entries.
+lurek.asset.loadManifest = function(path) end
+
+--- Registers a callback fired by `lurek.asset.reload(handle)`.
+---@param handle LAssetHandle Asset handle to observe.
+---@param callback function Called as `callback(handle, revision)`.
+---@return nil No value is returned.
+lurek.asset.onReload = function(handle, callback) end
+
 --- Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
 ---@param paths table Array of `{path, type}` pairs (or `{path=â€¦, type=â€¦}` tables).
 ---@param callback any Function invoked as `callback(loaded, total)` per item; `callback(nil, nil)` on finish.
@@ -5173,11 +5221,21 @@ lurek.asset.preload = function(paths, callback) end
 ---@return number Current reference count.
 lurek.asset.refcount = function(handle) end
 
+--- Reloads the cached asset metadata/content and increments its revision.
+---@param handle LAssetHandle Asset handle to refresh.
+---@return number New revision.
+lurek.asset.reload = function(handle) end
+
 --- Removes a tag from the tag set of an asset handle.
 ---@param handle LAssetHandle Asset handle to update.
 ---@param tag string Tag string to remove.
 ---@return boolean True when the tag was present and removed.
 lurek.asset.removeTag = function(handle, tag) end
+
+--- Returns a metadata snapshot for an asset handle without transforming the asset data.
+---@param handle LAssetHandle Asset handle to inspect.
+---@return table Snapshot with path, type, refcount, revision, watched, name, group, and tags.
+lurek.asset.resolve = function(handle) end
 
 --- Assigns an asset handle to a named group.
 ---@param handle LAssetHandle Asset handle to update.
@@ -5199,6 +5257,12 @@ lurek.asset.stats = function() end
 ---@param handle LAssetHandle Asset handle to release.
 ---@return nil No value is returned.
 lurek.asset.unload = function(handle) end
+
+--- Marks an asset handle or path as watched for live reload.
+---@param handle_or_path LAssetHandle|string Existing handle or path to register as watched.
+---@param asset_type? string Type used when `handle_or_path` is a path. Defaults to `unknown`.
+---@return LAssetHandle Watched handle.
+lurek.asset.watch = function(handle_or_path, asset_type) end
 
 --- Registers a one-shot callback fired when `beat` is crossed.
 ---@param beat number Beat value threshold.
@@ -14517,6 +14581,37 @@ lurek.i18n.unloadTable = function(locale) end
 ---@return boolean True when the code is valid.
 lurek.i18n.validateLocale = function(locale) end
 
+--- Returns the number of decoded frames.
+---@return number Frame count.
+function LAnimatedImage:frameCount() end
+
+--- Returns a frame duration in milliseconds by one-based index.
+---@param index number One-based frame index.
+---@return number Duration in milliseconds.
+function LAnimatedImage:getDuration(index) end
+
+--- Returns all frame durations in milliseconds.
+---@return table Array of integer durations.
+function LAnimatedImage:getDurations() end
+
+--- Returns a decoded frame by one-based index.
+---@param index number One-based frame index.
+---@return LImageData Decoded frame image.
+function LAnimatedImage:getFrame(index) end
+
+--- Returns all decoded frame images as an array.
+---@return table Array of `LImageData` values.
+function LAnimatedImage:getFrames() end
+
+--- Returns the Lua-visible type name.
+---@return string The string `LAnimatedImage`.
+function LAnimatedImage:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True when the supplied type name matches.
+function LAnimatedImage:typeOf(name) end
+
 --- Returns compressed image dimensions.
 ---@return number Width in pixels.
 ---@return number Height in pixels.
@@ -14551,6 +14646,22 @@ function LCompressedImageData:typeOf(name) end
 ---@param factor number Alpha multiplier.
 function LImageData:alphaMask(factor) end
 
+--- Applies a named image effect in place, or returns a new image when the effect changes size.
+---@param name string Effect name.
+---@param opts? table Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`.
+---@return LImageData nil | New image for size-changing effects, otherwise nil.
+function LImageData:applyEffect(name, opts) end
+
+--- Applies a sequence of named effects in order.
+---@param effects table Array of effect names or `{name=..., opts=...}` tables.
+---@param opts? table Default options used by string entries.
+---@return LImageData nil | Last new image returned by a size-changing effect, otherwise nil.
+function LImageData:applyEffects(effects, opts) end
+
+--- Multiplies this image alpha by another image's alpha channel.
+---@param mask LImageData Same-sized alpha mask image.
+function LImageData:applyMask(mask) end
+
 --- Applies a palette lookup table to this image in place.
 ---@param lut_ud LPaletteLUT Palette lookup table handle.
 function LImageData:applyPaletteLut(lut_ud) end
@@ -14570,6 +14681,10 @@ function LImageData:blur(radius) end
 ---@param factor number Brightness multiplier or adjustment factor.
 function LImageData:brightness(factor) end
 
+--- Returns a deep copy of this image data.
+---@return LImageData Copied image data.
+function LImageData:clone() end
+
 --- Applies a contrast factor to this image in place.
 ---@param factor number Contrast factor.
 function LImageData:contrast(factor) end
@@ -14579,6 +14694,14 @@ function LImageData:contrast(factor) end
 ---@param ksize number Kernel width and height.
 ---@return LImageData Convolved image data handle.
 function LImageData:convolve(kernel_t, ksize) end
+
+--- Copies a rectangular region into a new image.
+---@param x number Source x coordinate.
+---@param y number Source y coordinate.
+---@param w number Region width.
+---@param h number Region height.
+---@return LImageData Copied region.
+function LImageData:copyRegion(x, y, w, h) end
 
 --- Returns a cropped image region. This method is available to Lua scripts.
 ---@param x number Source x coordinate.
@@ -14764,6 +14887,11 @@ function LImageData:threshold(value) end
 ---@param tb number Tint blue channel.
 ---@param factor number Tint blend factor.
 function LImageData:tint(tr, tg, tb, factor) end
+
+--- Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.
+---@param opts? table Transform options.
+---@return LImageData Transformed image.
+function LImageData:transform(opts) end
 
 --- Returns the Lua-visible type name for this image data handle.
 ---@return string The string `LImageData`.
@@ -14972,6 +15100,11 @@ lurek.image.fromScreen = function() end
 ---@param filename string GameFS path to inspect.
 ---@return boolean True when the file appears to be DDS compressed data.
 lurek.image.isCompressed = function(filename) end
+
+--- Loads an animated GIF from GameFS path or decodes animated GIF bytes.
+---@param source string GameFS path or raw GIF bytes.
+---@return LAnimatedImage Decoded frames and durations.
+lurek.image.loadAnimated = function(source) end
 
 --- Loads and decodes image data from GameFS.
 ---@param filename string GameFS path to an encoded image.
@@ -28422,6 +28555,11 @@ function LSkeleton:addSkin(name) end
 ---@return number Zero-based index of the newly added slot.
 function LSkeleton:addSlot(name, bone_idx, attachment) end
 
+--- Binds all atlas entries as sprite-region attachment sources by name.
+---@param atlas LSpriteAtlas Sprite atlas containing named attachment regions.
+---@return number Number of bound sources.
+function LSkeleton:bindAtlas(atlas) end
+
 --- Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.
 ---@param world LWorld Physics world that will receive the generated bodies and joints.
 ---@param parts table Array of part specs keyed by bone name/index plus shape, image, width/height, or radius.
@@ -28466,6 +28604,11 @@ function LSkeleton:findSlot(name) end
 ---@return number Current animation time position.
 function LSkeleton:getAnimationTime() end
 
+--- Returns the neutral visual source assigned to a slot/source key.
+---@param slot string Slot/source key.
+---@return table nil | Attachment source DTO or nil.
+function LSkeleton:getAttachmentSource(slot) end
+
 --- Returns the final world-space transform of a bone after hierarchy resolution.
 ---@param idx number Zero-based bone index.
 ---@return LSkeletonGetBoneWorldResult Table with keys x, y, rotation, scale_x, scale_y â€” or nil if the index is invalid.
@@ -28480,6 +28623,11 @@ function LSkeleton:getSkin() end
 ---@param looping? boolean Whether to loop the animation. Defaults to true.
 ---@return boolean True if the animation was found and started, false otherwise.
 function LSkeleton:playAnimation(name, looping) end
+
+--- Assigns a neutral visual source to a slot name, attachment name, or `slot:attachment` key.
+---@param slot string Slot/source key.
+---@param source table `{kind, name?, x, y, w, h, textureId?, textureWidth?, textureHeight?}`.
+function LSkeleton:setAttachmentSource(slot, source) end
 
 --- Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
 ---@param name string Name of the IK constraint to update.
@@ -28782,6 +28930,46 @@ function LSpriteAtlas:type() end
 ---@return boolean True if the object is the given type.
 function LSpriteAtlas:typeOf(name) end
 
+--- Returns the bitmask for a one-based tile id.
+---@param tile_id number One-based tile id.
+---@return number Bitmask.
+function LSpriteAutoTileSheet:getBitmaskForTile(tile_id) end
+
+--- Returns the default autotile matching mode for this layout.
+---@return string Mode name.
+function LSpriteAutoTileSheet:getDefaultMode() end
+
+--- Returns the autotile layout name.
+---@return string Layout name.
+function LSpriteAutoTileSheet:getLayout() end
+
+--- Returns a one-based tile source rectangle.
+---@param tile_id number One-based tile id.
+---@return table Rectangle table.
+function LSpriteAutoTileSheet:getQuad(tile_id) end
+
+--- Returns the number of logical tiles in the sheet.
+---@return number Tile count.
+function LSpriteAutoTileSheet:getTileCount() end
+
+--- Returns a one-based tile id for a bitmask, or nil when missing.
+---@param bitmask number Neighbor bitmask.
+---@return number nil | One-based tile id.
+function LSpriteAutoTileSheet:getTileForBitmask(bitmask) end
+
+--- Returns all autotile source rectangles as sprite frame DTOs.
+---@return table Array of frame rectangles.
+function LSpriteAutoTileSheet:toFrames() end
+
+--- Returns the Lua-visible type name.
+---@return string The string `LSpriteAutoTileSheet`.
+function LSpriteAutoTileSheet:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True when the supplied type name matches.
+function LSpriteAutoTileSheet:typeOf(name) end
+
 --- Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
 ---@param w number Output image width in pixels.
 ---@param h number Output image height in pixels.
@@ -28832,6 +29020,16 @@ function LSpriteSheet:getRow(row) end
 ---@param count number Number of frames in the group.
 function LSpriteSheet:nameGroup(name, start, count) end
 
+--- Builds an animation clip DTO from this sheet without creating playback state.
+---@param opts? table `{name, group, fps, loop, mode}`.
+---@return table Clip DTO with `name`, `frames`, `fps`, `loop`, and `mode`.
+function LSpriteSheet:toAnimationClip(opts) end
+
+--- Returns frame rectangle DTOs for all frames or a named group.
+---@param group? string Optional group name.
+---@return table Array of `{x, y, w, h}` frame rectangles.
+function LSpriteSheet:toFrames(group) end
+
 --- Returns the type name of this object.
 ---@return string Always `"LSpriteSheet"`.
 function LSpriteSheet:type() end
@@ -28846,6 +29044,12 @@ function LSpriteSheet:typeOf(name) end
 ---@return LSpriteAnimator A new clip animator object.
 lurek.sprite.newAnimator = function(clips) end
 
+--- Parses atlas JSON for an existing `LImageData` source.
+---@param image LImageData Source image data used as the atlas texture.
+---@param atlas_json string TexturePacker or Aseprite JSON.
+---@return LSpriteAtlas Parsed atlas.
+lurek.sprite.newAtlasFromImage = function(image, atlas_json) end
+
 --- Creates a runtime atlas packer for dynamically allocating named sprite regions.
 ---@param width number Atlas width in pixels.
 ---@param height number Atlas height in pixels.
@@ -28859,6 +29063,13 @@ lurek.sprite.newAtlasPacker = function(width, height, padding) end
 ---@param sh number Sheet texture height in pixels.
 ---@return LSpriteSheet A new sprite sheet derived from the atlas entries.
 lurek.sprite.newAtlasSheet = function(atlas, sw, sh) end
+
+--- Creates an autotile sheet descriptor from an image source, layout, and tile options.
+---@param image LImageData Source autotile sheet image.
+---@param layout string `blob47`, `composite48`, `rpgmaker48`, or `minimal16`.
+---@param opts table `{tileWidth, tileHeight}`.
+---@return LSpriteAutoTileSheet Autotile sheet descriptor.
+lurek.sprite.newAutoTileSheet = function(image, layout, opts) end
 
 --- Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
 ---@param image LImage Source texture.
@@ -28882,6 +29093,12 @@ lurek.sprite.newRPGMakerSheet = function(tw, th) end
 ---@param fh number Single frame height in pixels.
 ---@return LSpriteSheet A new sprite sheet object.
 lurek.sprite.newSheet = function(tw, th, fw, fh) end
+
+--- Creates a sprite sheet from an existing `LImageData` source and frame options.
+---@param image LImageData Source image data.
+---@param opts table `{frameWidth, frameHeight}` or `{columns, rows}`.
+---@return LSpriteSheet A new sprite sheet object.
+lurek.sprite.newSheetFromImage = function(image, opts) end
 
 --- Creates a lightweight sprite record with transform and optional normal-map metadata.
 ---@param texture_id number Texture handle used by the sprite.
@@ -31305,6 +31522,11 @@ function LTileSet:getQuad(tile_id) end
 ---@return number Tile spacing.
 function LTileSet:getSpacing() end
 
+--- Returns a Godot-style terrain-set profile.
+---@param name string Profile name.
+---@return table nil | Profile table or nil.
+function LTileSet:getTerrainProfile(name) end
+
 --- Returns the computed texture width and height in pixels.
 ---@return number Texture width.
 ---@return number Texture height.
@@ -31379,6 +31601,11 @@ function LTileSet:setProfile(tile_id, profile) end
 ---@param name string Property name.
 ---@param value any String, number, boolean, or nil to clear the property.
 function LTileSet:setProperty(tile_id, name, value) end
+
+--- Sets a Godot-style terrain-set profile for autotile authoring.
+---@param name string Profile name.
+---@param profile table `{terrainSet, mode, defaultTileId?}`.
+function LTileSet:setTerrainProfile(name, profile) end
 
 --- Assigns or clears the object archetype mapped to one tile.
 ---@param tile_id number Tile id (1-based).

@@ -39,9 +39,9 @@ end
 
 - Start with `lurek.image.fromScreen` when exploring this module.
 - Start with `lurek.image.isCompressed` when exploring this module.
+- Start with `lurek.image.loadAnimated` when exploring this module.
 - Start with `lurek.image.loadImage` when exploring this module.
 - Start with `lurek.image.loadLayered` when exploring this module.
-- Start with `lurek.image.newCompressedData` when exploring this module.
 
 ## API Reference
 
@@ -151,6 +151,42 @@ do
     local cdata = lurek.image.newCompressedData(dds_path)
     local fmt = cdata:getFormat()
     image_log("dds=" .. tostring(dds) .. " png=" .. tostring(png) .. " format=" .. fmt)
+end
+```
+
+---
+
+### `lurek.image.loadAnimated`
+
+Loads an animated GIF from GameFS path or decodes animated GIF bytes.
+
+```lua
+lurek.image.loadAnimated(source)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `source` | string | GameFS path or raw GIF bytes. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAnimatedImage](#lanimatedimage) | Decoded frames and durations. |
+
+**Example**
+
+```lua
+do
+    local a = lurek.image.newImageData(2, 2)
+    local b = lurek.image.newImageData(2, 2)
+    a:fill(255, 0, 0, 255)
+    b:fill(0, 255, 0, 255)
+    lurek.image.saveGIF({ a, b }, "work/example_load_animated.gif", { delayMs = 40 })
+    local animated = lurek.image.loadAnimated("work/example_load_animated.gif")
+    lurek.log.info("[image] animated frames=" .. tostring(animated:frameCount()))
 end
 ```
 
@@ -659,11 +695,241 @@ end
 
 ## Types
 
+- [LAnimatedImage](#lanimatedimage)
 - [LCompressedImageData](#lcompressedimagedata)
 - [LImageData](#limagedata)
 - [LLayeredImage](#llayeredimage)
 - [LPaletteLUT](#lpalettelut)
 - [LProvinceGrid](#lprovincegrid)
+
+## LAnimatedImage
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LAnimatedImage:frameCount`
+
+Returns the number of decoded frames.
+
+```lua
+LAnimatedImage:frameCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Frame count. |
+
+**Example**
+
+```lua
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(255, 255, 255, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_count.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_count.gif")
+    local count = animated:frameCount()
+    lurek.log.info("[image] frameCount=" .. tostring(count))
+end
+```
+
+---
+
+#### `LAnimatedImage:getDuration`
+
+Returns a frame duration in milliseconds by one-based index.
+
+```lua
+LAnimatedImage:getDuration(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | One-based frame index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Duration in milliseconds. |
+
+**Example**
+
+```lua
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(20, 40, 80, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_duration.gif", { delayMs = 50 })
+    local animated = lurek.image.loadAnimated("work/example_anim_duration.gif")
+    local duration = animated:getDuration(1)
+    lurek.log.info("[image] duration=" .. tostring(duration))
+end
+```
+
+---
+
+#### `LAnimatedImage:getDurations`
+
+Returns all frame durations in milliseconds.
+
+```lua
+LAnimatedImage:getDurations()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of integer durations. |
+
+**Example**
+
+```lua
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(80, 40, 20, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_durations.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_durations.gif")
+    local durations = animated:getDurations()
+    lurek.log.info("[image] durations table=" .. tostring(#durations))
+end
+```
+
+---
+
+#### `LAnimatedImage:getFrame`
+
+Returns a decoded frame by one-based index.
+
+```lua
+LAnimatedImage:getFrame(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | One-based frame index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Decoded frame image. |
+
+**Example**
+
+```lua
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(20, 40, 80, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_frame.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_frame.gif")
+    local first = animated:getFrame(1)
+    lurek.log.info("[image] first frame width=" .. tostring(first:getWidth()))
+end
+```
+
+---
+
+#### `LAnimatedImage:getFrames`
+
+Returns all decoded frame images as an array.
+
+```lua
+LAnimatedImage:getFrames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `[LImageData](#limagedata)` values. |
+
+**Example**
+
+```lua
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(80, 40, 20, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_frames.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_frames.gif")
+    local frames = animated:getFrames()
+    lurek.log.info("[image] frames table=" .. tostring(#frames))
+end
+```
+
+---
+
+#### `LAnimatedImage:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LAnimatedImage:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LAnimatedImage](#lanimatedimage)`. |
+
+**Example**
+
+```lua
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(1, 2, 3, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_type.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_type.gif")
+    local kind = animated:type()
+    lurek.log.info("[image] animated type=" .. kind)
+end
+```
+
+---
+
+#### `LAnimatedImage:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LAnimatedImage:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches. |
+
+**Example**
+
+```lua
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(1, 2, 3, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_typeof.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_typeof.gif")
+    local ok = animated:typeOf("LObject")
+    lurek.log.info("[image] animated typeOf=" .. tostring(ok))
+end
+```
+
+---
 
 ## LCompressedImageData
 
@@ -1000,6 +1266,105 @@ end
 
 ---
 
+#### `LImageData:applyEffect`
+
+Applies a named image effect in place, or returns a new image when the effect changes size.
+
+```lua
+LImageData:applyEffect(name, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Effect name. |
+| `opts?` | table | Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | New image for size-changing effects, otherwise nil. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(20, 30, 40, 255)
+    image:applyEffect("invert", { region = { 0, 0, 2, 2 } })
+    local r = ({ image:getPixel(0, 0) })[1]
+    lurek.log.info("[image] effect red=" .. tostring(r))
+end
+```
+
+---
+
+#### `LImageData:applyEffects`
+
+Applies a sequence of named effects in order.
+
+```lua
+LImageData:applyEffects(effects, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `effects` | table | Array of effect names or `{name=..., opts=...}` tables. |
+| `opts?` | table | Default options used by string entries. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | Last new image returned by a size-changing effect, otherwise nil. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(20, 30, 40, 255)
+    image:applyEffects({ "grayscale", { name = "posterize", opts = { levels = 3 } } })
+    local r = ({ image:getPixel(0, 0) })[1]
+    lurek.log.info("[image] effects red=" .. tostring(r))
+end
+```
+
+---
+
+#### `LImageData:applyMask`
+
+Multiplies this image alpha by another image's alpha channel.
+
+```lua
+LImageData:applyMask(mask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mask` | [LImageData](#limagedata) | Same-sized alpha mask image. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(2, 2)
+    local mask = lurek.image.newImageData(2, 2)
+    image:fill(255, 255, 255, 255)
+    mask:fill(0, 0, 0, 128)
+    image:applyMask(mask)
+    lurek.log.info("[image] mask applied")
+end
+```
+
+---
+
 #### `LImageData:applyPaletteLut`
 
 Applies a palette lookup table to this image in place.
@@ -1168,6 +1533,34 @@ end
 
 ---
 
+#### `LImageData:clone`
+
+Returns a deep copy of this image data.
+
+```lua
+LImageData:clone()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Copied image data. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(10, 20, 30, 255)
+    local copy = image:clone()
+    copy:setPixel(0, 0, 255, 0, 0, 255)
+    lurek.log.info("[image] clone width=" .. tostring(copy:getWidth()))
+end
+```
+
+---
+
 #### `LImageData:contrast`
 
 Applies a contrast factor to this image in place.
@@ -1248,6 +1641,43 @@ do
     local result = img:convolve(kernel, 3)
     local r, g, b, a = result:getPixel(0, 0)
     image_log("convolved " .. result:getWidth() .. "x" .. result:getHeight() .. " sample=" .. r .. "," .. g .. "," .. b .. "," .. a)
+end
+```
+
+---
+
+#### `LImageData:copyRegion`
+
+Copies a rectangular region into a new image.
+
+```lua
+LImageData:copyRegion(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Copied region. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(8, 8)
+    image:fill(20, 30, 40, 255)
+    local region = image:copyRegion(2, 2, 4, 4)
+    local w, h = region:getDimensions()
+    lurek.log.info("[image] copied region=" .. tostring(w) .. "x" .. tostring(h))
 end
 ```
 
@@ -2637,6 +3067,40 @@ do
     img:tint(255, 0, 0, 0.5)
     local r, g, b, a = img:getPixel(0, 0)
     image_log("tint sample=" .. r .. "," .. g .. "," .. b .. "," .. a)
+end
+```
+
+---
+
+#### `LImageData:transform`
+
+Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.
+
+```lua
+LImageData:transform(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Transform options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Transformed image. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(5, 10, 15, 255)
+    local resized = image:transform({ width = 8, height = 6, filter = "linear" })
+    local w, h = resized:getDimensions()
+    lurek.log.info("[image] transformed=" .. tostring(w) .. "x" .. tostring(h))
 end
 ```
 

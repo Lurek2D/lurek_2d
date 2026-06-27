@@ -2835,3 +2835,129 @@ do
     local kind = animator:type()
     sprite_log("animator typeOf animator=" .. tostring(is_animator) .. " object=" .. tostring(is_object) .. " type=" .. kind)
 end
+--@api: lurek.sprite.newSheetFromImage
+do
+    local image = lurek.image.newImageData(32, 16)
+    image:fill(255, 255, 255, 255)
+    local sheet = lurek.sprite.newSheetFromImage(image, { frameWidth = 16, frameHeight = 16 })
+    local frames = sheet:toFrames()
+    lurek.log.info("[sprite] image sheet frames=" .. tostring(#frames))
+end
+
+--@api: lurek.sprite.newAtlasFromImage
+do
+    local image = lurek.image.newImageData(16, 16)
+    image:fill(255, 255, 255, 255)
+    local json = '{"frames":{"part":{"frame":{"x":0,"y":0,"w":8,"h":8},"rotated":false}}}'
+    local atlas = lurek.sprite.newAtlasFromImage(image, json)
+    local entry = atlas:getEntry("part")
+    lurek.log.info("[sprite] image atlas entry=" .. tostring(entry.w))
+end
+
+--@api: LSpriteSheet:toFrames
+do
+    local sheet = lurek.sprite.newSheet(32, 16, 16, 16)
+    sheet:nameGroup("idle", 0, 2)
+    local frames = sheet:toFrames("idle")
+    local first = frames[1]
+    lurek.log.info("[sprite] toFrames first=" .. tostring(first.w))
+end
+
+--@api: LSpriteSheet:toAnimationClip
+do
+    local sheet = lurek.sprite.newSheet(32, 16, 16, 16)
+    sheet:nameGroup("idle", 0, 2)
+    local clip = sheet:toAnimationClip({ group = "idle", name = "idle", fps = 8 })
+    local frame_count = #clip.frames
+    lurek.log.info("[sprite] clip frames=" .. tostring(frame_count))
+end
+
+--@api: lurek.sprite.newAutoTileSheet
+do
+    local image = lurek.image.newImageData(256, 16)
+    image:fill(255, 255, 255, 255)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile count=" .. tostring(count))
+end
+
+--@api: LSpriteAutoTileSheet:getLayout
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local layout = sheet:getLayout()
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile layout=" .. layout .. " count=" .. tostring(count))
+end
+
+--@api: LSpriteAutoTileSheet:getDefaultMode
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local mode = sheet:getDefaultMode()
+    local layout = sheet:getLayout()
+    lurek.log.info("[sprite] autotile mode=" .. mode .. " layout=" .. layout)
+end
+
+--@api: LSpriteAutoTileSheet:getTileCount
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local count = sheet:getTileCount()
+    local layout = sheet:getLayout()
+    lurek.log.info("[sprite] autotile count=" .. tostring(count) .. " layout=" .. layout)
+end
+
+--@api: LSpriteAutoTileSheet:getQuad
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local quad = sheet:getQuad(2)
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile quad=" .. tostring(quad.x) .. " count=" .. tostring(count))
+end
+
+--@api: LSpriteAutoTileSheet:getBitmaskForTile
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local bitmask = sheet:getBitmaskForTile(1)
+    local layout = sheet:getLayout()
+    lurek.log.info("[sprite] autotile bitmask=" .. tostring(bitmask) .. " layout=" .. layout)
+end
+
+--@api: LSpriteAutoTileSheet:getTileForBitmask
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local tile = sheet:getTileForBitmask(0)
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile tile=" .. tostring(tile) .. " count=" .. tostring(count))
+end
+
+--@api: LSpriteAutoTileSheet:toFrames
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local frames = sheet:toFrames()
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile frames=" .. tostring(#frames) .. " count=" .. tostring(count))
+end
+
+--@api: LSpriteAutoTileSheet:type
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local kind = sheet:type()
+    local layout = sheet:getLayout()
+    lurek.log.info("[sprite] autotile type=" .. kind .. " layout=" .. layout)
+end
+
+--@api: LSpriteAutoTileSheet:typeOf
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local ok = sheet:typeOf("LObject")
+    local kind = sheet:type()
+    lurek.log.info("[sprite] autotile typeOf=" .. tostring(ok) .. " type=" .. kind)
+end

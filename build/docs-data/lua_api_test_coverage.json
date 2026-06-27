@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-27T08:38:07.172701+00:00",
+    "generated": "2026-06-27T10:42:27.024521+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6356,
-    "marker_covered": 6331,
+    "total_api_functions": 6399,
+    "marker_covered": 6374,
     "describe_covered": 152,
     "describe_coverage_pct": 2.4,
     "heuristic_covered": 0,
-    "total_covered": 6356,
+    "total_covered": 6399,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -3153,11 +3153,11 @@
       ]
     },
     "animation": {
-      "total": 72,
-      "marker_covered": 72,
+      "total": 76,
+      "marker_covered": 76,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 72,
+      "covered": 76,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -3178,6 +3178,33 @@
         },
         {
           "lua_name": "lurek.animation.fromAseprite",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.animation.fromFrames",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.animation.fromSpriteSheet",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.animation.fromAnimatedImage",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -3448,6 +3475,15 @@
         },
         {
           "lua_name": "LAnimation:setFrame",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAnimation:seek",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -3818,14 +3854,14 @@
       ]
     },
     "asset": {
-      "total": 25,
-      "marker_covered": 25,
+      "total": 31,
+      "marker_covered": 31,
       "describe_covered": 24,
       "heuristic_covered": 0,
-      "covered": 25,
+      "covered": 31,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 96.0,
-      "describe_score": 0.96,
+      "describe_coverage_pct": 77.4,
+      "describe_score": 0.774,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_asset_unit.lua"
@@ -3842,6 +3878,60 @@
           "heuristic_covered": false,
           "covered": true,
           "describe_score": 1.0
+        },
+        {
+          "lua_name": "lurek.asset.watch",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.asset.reload",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.asset.getRevision",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.asset.onReload",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.asset.resolve",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.asset.loadManifest",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
         },
         {
           "lua_name": "lurek.asset.unload",
@@ -21967,11 +22057,11 @@
       ]
     },
     "image": {
-      "total": 102,
-      "marker_covered": 102,
+      "total": 116,
+      "marker_covered": 116,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 102,
+      "covered": 116,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -22055,6 +22145,15 @@
         },
         {
           "lua_name": "lurek.image.loadImage",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.image.loadAnimated",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -22217,6 +22316,69 @@
         },
         {
           "lua_name": "LProvinceGrid:deserializeShapeData",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAnimatedImage:frameCount",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAnimatedImage:getFrame",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAnimatedImage:getDuration",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAnimatedImage:getFrames",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAnimatedImage:getDurations",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAnimatedImage:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LAnimatedImage:typeOf",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -22478,6 +22640,60 @@
         },
         {
           "lua_name": "LImageData:getDimensions",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageData:clone",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageData:copyRegion",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageData:applyEffect",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageData:applyEffects",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageData:applyMask",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LImageData:transform",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -46898,11 +47114,11 @@
       ]
     },
     "spine": {
-      "total": 41,
-      "marker_covered": 41,
+      "total": 44,
+      "marker_covered": 44,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 41,
+      "covered": 44,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -46968,6 +47184,33 @@
         },
         {
           "lua_name": "LSkeleton:addSlot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSkeleton:bindAtlas",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSkeleton:setAttachmentSource",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSkeleton:getAttachmentSource",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -47284,14 +47527,14 @@
       ]
     },
     "sprite": {
-      "total": 62,
-      "marker_covered": 62,
+      "total": 76,
+      "marker_covered": 76,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 62,
+      "covered": 76,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 1.6,
-      "describe_score": 0.016,
+      "describe_coverage_pct": 1.3,
+      "describe_score": 0.013,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_sprite_unit.lua"
@@ -47328,6 +47571,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "lurek.sprite.newSheetFromImage",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "lurek.sprite.newRPGMakerSheet",
           "kind": "function",
           "marker_covered": true,
@@ -47338,6 +47590,24 @@
         },
         {
           "lua_name": "lurek.sprite.parseAtlas",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.sprite.newAtlasFromImage",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.sprite.newAutoTileSheet",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -47553,6 +47823,24 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LSpriteSheet:toFrames",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteSheet:toAnimationClip",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LSpriteSheet:drawToImage",
           "kind": "method",
           "marker_covered": true,
@@ -47635,6 +47923,87 @@
         },
         {
           "lua_name": "LSpriteAtlas:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteAutoTileSheet:getLayout",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteAutoTileSheet:getDefaultMode",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteAutoTileSheet:getTileCount",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteAutoTileSheet:getQuad",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteAutoTileSheet:getBitmaskForTile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteAutoTileSheet:getTileForBitmask",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteAutoTileSheet:toFrames",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteAutoTileSheet:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LSpriteAutoTileSheet:typeOf",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -51811,11 +52180,11 @@
       ]
     },
     "tileset": {
-      "total": 44,
-      "marker_covered": 44,
+      "total": 46,
+      "marker_covered": 46,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 44,
+      "covered": 46,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -52196,6 +52565,24 @@
         },
         {
           "lua_name": "LTileSet:getAutoTileMode",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:setTerrainProfile",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileSet:getTerrainProfile",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

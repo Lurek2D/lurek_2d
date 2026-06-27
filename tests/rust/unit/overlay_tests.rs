@@ -6,7 +6,7 @@ use lurek2d::overlay::{
 };
 
 fn plan_has_layer(plan: &[OverlayRenderLayer], layer: OverlayRenderLayer) -> bool {
-    plan.iter().any(|entry| *entry == layer)
+    plan.contains(&layer)
 }
 
 mod accessibility_tests {

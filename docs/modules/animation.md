@@ -37,10 +37,10 @@ end
 ## Common Patterns
 
 - Start with `lurek.animation.buildCharacter` when exploring this module.
+- Start with `lurek.animation.fromAnimatedImage` when exploring this module.
 - Start with `lurek.animation.fromAseprite` when exploring this module.
-- Start with `lurek.animation.new` when exploring this module.
-- Start with `lurek.animation.newBlendLayerSet` when exploring this module.
-- Start with `lurek.animation.newCurve` when exploring this module.
+- Start with `lurek.animation.fromFrames` when exploring this module.
+- Start with `lurek.animation.fromSpriteSheet` when exploring this module.
 
 ## API Reference
 
@@ -115,6 +115,44 @@ end
 
 ---
 
+### `lurek.animation.fromAnimatedImage`
+
+Creates an animation from decoded frames returned by `lurek.image.loadAnimated`.
+
+```lua
+lurek.animation.fromAnimatedImage(animated, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `animated` | [LAnimatedImage](#lanimatedimage) | Decoded animated image. |
+| `opts?` | table | `{name, fps, loop, mode, play}` clip options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAnimation](#lanimation) | New animation handle. |
+
+**Example**
+
+```lua
+do
+    local a = lurek.image.newImageData(2, 2)
+    local b = lurek.image.newImageData(2, 2)
+    a:fill(255, 0, 0, 255)
+    b:fill(0, 255, 0, 255)
+    lurek.image.saveGIF({ a, b }, "work/example_animation_from_gif.gif", { delayMs = 40 })
+    local decoded = lurek.image.loadAnimated("work/example_animation_from_gif.gif")
+    local anim = lurek.animation.fromAnimatedImage(decoded, { name = "gif", loop = true })
+    lurek.log.info("[animation] fromAnimatedImage frames=" .. tostring(anim:getFrameCount()))
+end
+```
+
+---
+
 ### `lurek.animation.fromAseprite`
 
 Loads an animation from an Aseprite JSON export string.
@@ -153,6 +191,78 @@ do
         example_print_log("from aseprite, clips = " .. anim:getClipCount())
         example_print_log("from aseprite, frames = " .. anim:getFrameCount())
     end
+end
+```
+
+---
+
+### `lurek.animation.fromFrames`
+
+Creates an animation from explicit frame rectangle DTOs.
+
+```lua
+lurek.animation.fromFrames(frames, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `frames` | table | Array of `{x, y, w, h}` frame rectangles. |
+| `opts?` | table | `{name, fps, loop, mode, play}` clip options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAnimation](#lanimation) | New animation handle. |
+
+**Example**
+
+```lua
+do
+    local frames = {
+        { x = 0, y = 0, w = 16, h = 16 },
+        { x = 16, y = 0, w = 16, h = 16 },
+    }
+    local anim = lurek.animation.fromFrames(frames, { name = "idle", fps = 8, loop = true })
+    local count = anim:getFrameCount()
+    lurek.log.info("[animation] fromFrames count=" .. tostring(count))
+end
+```
+
+---
+
+### `lurek.animation.fromSpriteSheet`
+
+Creates an animation from a `[LSpriteSheet](#lspritesheet)`, optionally using a named group.
+
+```lua
+lurek.animation.fromSpriteSheet(sheet, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sheet` | [LSpriteSheet](#lspritesheet) | Source sprite sheet. |
+| `opts?` | table | `{group, name, fps, loop, mode, play}` clip options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAnimation](#lanimation) | New animation handle. |
+
+**Example**
+
+```lua
+do
+    local sheet = lurek.sprite.newSheet(64, 16, 16, 16)
+    sheet:nameGroup("walk", 0, 4)
+    local anim = lurek.animation.fromSpriteSheet(sheet, { group = "walk", name = "walk", fps = 10 })
+    local clips = anim:getClipCount()
+    lurek.log.info("[animation] fromSpriteSheet clips=" .. tostring(clips))
 end
 ```
 
@@ -367,8 +477,10 @@ end
 - [LAnimCurve](#lanimcurve)
 - [LAnimStateMachine](#lanimstatemachine)
 - [LAnimSyncGroup](#lanimsyncgroup)
+- [LAnimatedImage](#lanimatedimage)
 - [LAnimation](#lanimation)
 - [LBlendLayerSet](#lblendlayerset)
+- [LSpriteSheet](#lspritesheet)
 
 ## LAnimCurve
 
@@ -1378,6 +1490,144 @@ end
 
 ---
 
+## LAnimatedImage
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LAnimatedImage:frameCount`
+
+Returns the number of decoded frames.
+
+```lua
+LAnimatedImage:frameCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Frame count. |
+
+---
+
+#### `LAnimatedImage:getDuration`
+
+Returns a frame duration in milliseconds by one-based index.
+
+```lua
+LAnimatedImage:getDuration(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | One-based frame index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Duration in milliseconds. |
+
+---
+
+#### `LAnimatedImage:getDurations`
+
+Returns all frame durations in milliseconds.
+
+```lua
+LAnimatedImage:getDurations()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of integer durations. |
+
+---
+
+#### `LAnimatedImage:getFrame`
+
+Returns a decoded frame by one-based index.
+
+```lua
+LAnimatedImage:getFrame(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | One-based frame index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](render.md#limagedata) | Decoded frame image. |
+
+---
+
+#### `LAnimatedImage:getFrames`
+
+Returns all decoded frame images as an array.
+
+```lua
+LAnimatedImage:getFrames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `[LImageData](render.md#limagedata)` values. |
+
+---
+
+#### `LAnimatedImage:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LAnimatedImage:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LAnimatedImage](#lanimatedimage)`. |
+
+---
+
+#### `LAnimatedImage:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LAnimatedImage:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches. |
+
+---
+
 ## LAnimation
 
 ### Type Fields
@@ -2319,6 +2569,36 @@ end
 
 ---
 
+#### `LAnimation:seek`
+
+Seeks to a frame index in the current clip.
+
+```lua
+LAnimation:seek(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | Frame index to make current. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.animation.fromFrames({
+        { x = 0, y = 0, w = 8, h = 8 },
+        { x = 8, y = 0, w = 8, h = 8 },
+    }, { name = "idle", fps = 6, play = true })
+    anim:seek(1)
+    local frame = anim:getCurrentFrame()
+    lurek.log.info("[animation] seek frame=" .. tostring(frame))
+end
+```
+
+---
+
 #### `LAnimation:setClipMode`
 
 Changes the playback mode for an existing clip.
@@ -3008,5 +3288,290 @@ do
     lurek.log.info("is animation=" .. tostring(isAnimation))
 end
 ```
+
+---
+
+## LSpriteSheet
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LSpriteSheet:drawToImage`
+
+Renders the sprite sheet grid into an [LImage](render.md#limage) of the given size for debugging or previews.
+
+```lua
+LSpriteSheet:drawToImage(w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `w` | number | Output image width in pixels. |
+| `h` | number | Output image height in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImage](render.md#limage) | A new image containing the rendered sprite sheet. |
+
+---
+
+#### `LSpriteSheet:getColumn`
+
+Returns all frame quads in the given column of the sprite sheet grid.
+
+```lua
+LSpriteSheet:getColumn(col)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `col` | number | 0-based column index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LSpriteSheetGetColumnResult | Array of quad tables `{x, y, w, h}`. |
+
+---
+
+#### `LSpriteSheet:getFrame`
+
+Returns the UV quad for a single frame by its 1-based index.
+
+```lua
+LSpriteSheet:getFrame(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | 1-based frame index in the sprite sheet. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LSpriteSheetGetFrameResult | Quad table `{x, y, w, h}` with normalized UV coordinates, or nil if the index is out of range. |
+
+---
+
+#### `LSpriteSheet:getFrameCount`
+
+Returns the total number of frames in this sprite sheet.
+
+```lua
+LSpriteSheet:getFrameCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total frame count (columns Ă— rows). |
+
+---
+
+#### `LSpriteSheet:getFrameSize`
+
+Returns the pixel dimensions of a single frame cell.
+
+```lua
+LSpriteSheet:getFrameSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Frame width in pixels. |
+| number | Frame height in pixels. |
+
+---
+
+#### `LSpriteSheet:getGridSize`
+
+Returns the number of columns and rows in the sprite sheet grid.
+
+```lua
+LSpriteSheet:getGridSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of columns. |
+| number | Number of rows. |
+
+---
+
+#### `LSpriteSheet:getGroupFrames`
+
+Returns the frame quads for a named animation group.
+
+```lua
+LSpriteSheet:getGroupFrames(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Name of the animation group (e.g. "walk", "idle"). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LSpriteSheetGetGroupFramesResult | Array of quad tables for the group, or nil if the group does not exist. |
+
+---
+
+#### `LSpriteSheet:getGroupNames`
+
+Returns an array of all named animation group names defined on this sheet.
+
+```lua
+LSpriteSheet:getGroupNames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Group name strings. |
+
+---
+
+#### `LSpriteSheet:getRow`
+
+Returns all frame quads in the given row of the sprite sheet grid.
+
+```lua
+LSpriteSheet:getRow(row)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `row` | number | 0-based row index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LSpriteSheetGetRowResult | Array of quad tables `{x, y, w, h}`. |
+
+---
+
+#### `LSpriteSheet:nameGroup`
+
+Defines a named animation group as a contiguous range of frames.
+
+```lua
+LSpriteSheet:nameGroup(name, start, count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Name for the group (e.g. "attack"). |
+| `start` | number | 1-based start frame index. |
+| `count` | number | Number of frames in the group. |
+
+---
+
+#### `LSpriteSheet:toAnimationClip`
+
+Builds an animation clip DTO from this sheet without creating playback state.
+
+```lua
+LSpriteSheet:toAnimationClip(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | `{name, group, fps, loop, mode}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Clip DTO with `name`, `frames`, `fps`, `loop`, and `mode`. |
+
+---
+
+#### `LSpriteSheet:toFrames`
+
+Returns frame rectangle DTOs for all frames or a named group.
+
+```lua
+LSpriteSheet:toFrames(group)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group?` | string | Optional group name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{x, y, w, h}` frame rectangles. |
+
+---
+
+#### `LSpriteSheet:type`
+
+Returns the type name of this object.
+
+```lua
+LSpriteSheet:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always `"[LSpriteSheet](#lspritesheet)"`. |
+
+---
+
+#### `LSpriteSheet:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LSpriteSheet:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check (e.g. `"[LSpriteSheet](#lspritesheet)"` or `"Object"`). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the object is the given type. |
 
 ---

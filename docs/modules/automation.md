@@ -1250,6 +1250,19 @@ do
     lurek.automation.update(0.016)
     example_print_log("updated by 16ms")
     example_print_log("elapsed = " .. tostring(lurek.automation.getElapsedTime()))
+
+    lurek.automation.load("input_replay", {
+        steps = {
+            { action = "combo", time = 0.10, combo = { "ctrl", "a" }, duration = 0.05 },
+            { action = "mousepress", time = 0.20, x = 120, y = 80, button = 1, clicks = 2, duration = 0.03 },
+            { action = "gamepadpress", time = 0.30, gamepad = 0, gamepadButton = 0, buttonName = "south", duration = 0.10 },
+            { action = "touchpress", time = 0.40, id = 1, x = 64, y = 64, pressure = 1.0, duration = 0.10 },
+        },
+    })
+    lurek.automation.start("input_replay")
+    lurek.automation.update(0.50)
+    example_print_log("input replay step = " .. tostring(lurek.automation.getCurrentStep()))
+    example_print_log("gamepad down = " .. tostring(lurek.input.gamepad.isDown(0, 0)))
 end
 ```
 

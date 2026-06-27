@@ -5,7 +5,8 @@
 //! Open this file when looping policy, frame timing, or GIF export failures affect generated image sequences.
 
 use crate::image::ImageData;
-use ::gif::{Encoder, Frame, Repeat};
+use ::gif::{ColorOutput, DecodeOptions, Encoder, Frame, Repeat};
+use std::io::Cursor;
 
 /// Repeat policy for animated GIF output.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -27,6 +28,15 @@ pub struct AnimatedGifOptions {
     pub speed: i32,
     /// Repeat behaviour metadata written into the GIF stream.
     pub repeat: AnimatedGifRepeat,
+}
+
+/// Decoded animated GIF frame with its display duration.
+#[derive(Debug, Clone)]
+pub struct AnimatedGifFrame {
+    /// RGBA pixels for the composited frame.
+    pub image: ImageData,
+    /// Frame duration in milliseconds.
+    pub duration_ms: u32,
 }
 
 impl Default for AnimatedGifOptions {
@@ -123,6 +133,59 @@ pub fn encode_gif(frames: &[ImageData], options: AnimatedGifOptions) -> Result<V
     }
 
     Ok(bytes)
+}
+
+/// Decode animated GIF bytes into composited RGBA frames and frame durations.
+pub fn decode_gif(bytes: &[u8], label: &str) -> Result<Vec<AnimatedGifFrame>, String> {
+    let mut options = DecodeOptions::new();
+    options.set_color_output(ColorOutput::RGBA);
+    let mut reader = options
+        .read_info(Cursor::new(bytes))
+        .map_err(|e| format!("Failed to decode GIF '{}': {}", label, e))?;
+    let canvas_w = reader.width() as u32;
+    let canvas_h = reader.height() as u32;
+    if canvas_w == 0 || canvas_h == 0 {
+        return Err(format!("GIF '{}' has zero-sized canvas", label));
+    }
+
+    let mut canvas = ImageData::new(canvas_w, canvas_h);
+    let mut frames = Vec::new();
+    while let Some(frame) = reader
+        .read_next_frame()
+        .map_err(|e| format!("Failed to read GIF frame '{}': {}", label, e))?
+    {
+        let fw = frame.width as u32;
+        let fh = frame.height as u32;
+        let left = frame.left as u32;
+        let top = frame.top as u32;
+        let expected = ImageData::rgba_byte_len(fw, fh)?;
+        if frame.buffer.len() != expected {
+            return Err(format!(
+                "GIF '{}' frame has {} bytes, expected {}",
+                label,
+                frame.buffer.len(),
+                expected
+            ));
+        }
+        let frame_image = ImageData::from_bytes(fw, fh, frame.buffer.to_vec())?;
+        canvas.blit(&frame_image, left as i32, top as i32);
+        let duration_ms = (frame.delay as u32).saturating_mul(10).max(10);
+        frames.push(AnimatedGifFrame {
+            image: canvas.clone(),
+            duration_ms,
+        });
+    }
+    if frames.is_empty() {
+        return Err(format!("GIF '{}' contains no frames", label));
+    }
+    Ok(frames)
+}
+
+/// Load and decode an animated GIF from disk.
+pub fn load_gif(path: &std::path::Path) -> Result<Vec<AnimatedGifFrame>, String> {
+    let bytes = std::fs::read(path)
+        .map_err(|e| format!("Failed to read GIF '{}': {}", path.display(), e))?;
+    decode_gif(&bytes, &path.display().to_string())
 }
 
 /// Save a list of equally sized RGBA frames as an animated GIF on disk.

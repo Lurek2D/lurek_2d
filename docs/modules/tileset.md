@@ -970,6 +970,40 @@ end
 
 ---
 
+#### `LTileSet:getTerrainProfile`
+
+Returns a Godot-style terrain-set profile.
+
+```lua
+LTileSet:getTerrainProfile(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Profile table or nil. |
+
+**Example**
+
+```lua
+do
+    local tileset = lurek.tileset.newTileSet(1, 16, 4, 16, 16)
+    tileset:setTerrainProfile("water", { terrainSet = "liquid", mode = "matchSides", defaultTileId = 2 })
+    local profile = tileset:getTerrainProfile("water")
+    local id = profile.defaultTileId
+    lurek.log.info("[tileset] terrain default=" .. tostring(id))
+end
+```
+
+---
+
 #### `LTileSet:getTextureDimensions`
 
 Returns the computed texture width and height in pixels.
@@ -1423,6 +1457,35 @@ do
     local verified = true
     local label = "tileset"
     lurek.log.info(label .. " verified = " .. tostring(verified))
+end
+```
+
+---
+
+#### `LTileSet:setTerrainProfile`
+
+Sets a Godot-style terrain-set profile for autotile authoring.
+
+```lua
+LTileSet:setTerrainProfile(name, profile)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name. |
+| `profile` | table | `{terrainSet, mode, defaultTileId?}`. |
+
+**Example**
+
+```lua
+do
+    local tileset = lurek.tileset.newTileSet(1, 16, 4, 16, 16)
+    tileset:setTerrainProfile("grass", { terrainSet = "ground", mode = "matchCornersAndSides", defaultTileId = 1 })
+    local profile = tileset:getTerrainProfile("grass")
+    local mode = profile.mode
+    lurek.log.info("[tileset] terrain profile mode=" .. mode)
 end
 ```
 

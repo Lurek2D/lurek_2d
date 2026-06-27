@@ -13,6 +13,17 @@ pub enum AutoTileMode {
     MatchCornersAndSides,
 }
 
+/// Godot-style terrain-set profile metadata for autotile authoring.
+#[derive(Debug, Clone)]
+pub struct TerrainProfile {
+    /// Terrain set name or category.
+    pub terrain_set: String,
+    /// Neighbor matching strategy used by this terrain set.
+    pub mode: AutoTileMode,
+    /// Optional default local tile id used when no bitmask rule matches.
+    pub default_tile_id: Option<u32>,
+}
+
 impl AutoTileMode {
     /// Return the stable Lua/API name for this matching strategy.
     pub fn as_str(self) -> &'static str {

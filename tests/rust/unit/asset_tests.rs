@@ -1,4 +1,6 @@
 use lurek2d::asset::{AssetCache, AssetType};
+use std::path::Path;
+use std::time::Duration;
 
 #[test]
 fn repeated_loads_share_one_cache_entry_and_increment_refs() {
@@ -77,4 +79,32 @@ fn releasing_last_reference_removes_cached_key() {
     assert_ne!(id, reloaded);
     assert_eq!(cache.loaded_count(), 1);
     assert_eq!(cache.ref_count(reloaded), 1);
+}
+
+#[test]
+fn watched_entries_report_timestamp_changes_until_reload() {
+    let dir = Path::new("work");
+    std::fs::create_dir_all(dir).unwrap();
+    let path = dir.join("asset_cache_watch_test.txt");
+    std::fs::write(&path, "v1").unwrap();
+
+    let mut cache = AssetCache::new();
+    let id = cache.register(
+        path.to_string_lossy().into_owned(),
+        AssetType::Text,
+        Some("v1".to_string()),
+    );
+
+    assert!(!cache.watched_changed(id));
+    assert!(cache.watch(id));
+    assert!(!cache.watched_changed(id));
+
+    std::thread::sleep(Duration::from_millis(60));
+    std::fs::write(&path, "v2").unwrap();
+
+    assert!(cache.watched_changed(id));
+    assert_eq!(cache.reload(id, Some("v2".to_string())), Some(2));
+    assert!(!cache.watched_changed(id));
+
+    let _ = std::fs::remove_file(path);
 }

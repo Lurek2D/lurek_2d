@@ -6,6 +6,7 @@
 //! Debug image helpers live here so rig tuning can inspect the same live structure that gameplay and rendering use.
 //! Open this file when skeletal runtime semantics change; importer parsing and draw-command translation live in siblings.
 
+use super::attachment::AttachmentSource;
 use super::bone::Bone;
 use super::ik::IKConstraint;
 use super::slot::Slot;
@@ -53,6 +54,8 @@ pub struct Skeleton {
     pub ik_constraints: Vec<IKConstraint>,
     /// Skin table: skin name → (slot name → attachment name).
     pub skins: HashMap<String, HashMap<String, String>>,
+    /// Resolved visual sources keyed by slot name, attachment name, or `slot:attachment`.
+    pub attachment_sources: HashMap<String, AttachmentSource>,
     /// Currently active skin name; None uses slot default attachments.
     pub active_skin: Option<String>,
     /// Name of the animation currently playing; None when idle.
@@ -80,6 +83,7 @@ impl Skeleton {
             animations: Vec::new(),
             ik_constraints: Vec::new(),
             skins: HashMap::new(),
+            attachment_sources: HashMap::new(),
             active_skin: None,
             current_animation: None,
             anim_time: 0.0,
@@ -272,6 +276,28 @@ impl Skeleton {
             }
         }
         slot.attachment_name.as_deref()
+    }
+    /// Bind a visual source to a slot name, attachment name, or `slot:attachment` key.
+    pub fn set_attachment_source(&mut self, key: &str, source: AttachmentSource) {
+        self.attachment_sources.insert(key.to_string(), source);
+    }
+    /// Return a visual source by explicit key.
+    pub fn get_attachment_source_by_key(&self, key: &str) -> Option<&AttachmentSource> {
+        self.attachment_sources.get(key)
+    }
+    /// Return the resolved visual source for a slot.
+    pub fn get_attachment_source_for_slot(&self, slot_idx: usize) -> Option<&AttachmentSource> {
+        let slot = self.slots.get(slot_idx)?;
+        if let Some(attachment) = self.get_slot_attachment(slot_idx) {
+            let combined = format!("{}:{}", slot.name, attachment);
+            if let Some(source) = self.attachment_sources.get(&combined) {
+                return Some(source);
+            }
+            if let Some(source) = self.attachment_sources.get(attachment) {
+                return Some(source);
+            }
+        }
+        self.attachment_sources.get(&slot.name)
     }
     /// Return the number of slots in this skeleton.
     pub fn slot_count(&self) -> usize {

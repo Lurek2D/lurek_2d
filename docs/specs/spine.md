@@ -13,7 +13,7 @@
 - Source path: `src/spine`
 - Binding: `src/lua_api/spine_api.rs`
 - Namespace: `lurek.spine`
-- Lua API surface: `4` functions, `5` types, `37` methods
+- Lua API surface: `4` functions, `5` types, `40` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -47,6 +47,11 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
 ## Source Files
+
+### attachment.rs
+
+- Defines neutral attachment source DTOs used by Spine without owning asset loading.
+- Attachment sources point at sprite, image, or tileset visuals and may carry a texture handle for rendering.
 
 ### bone.rs
 
@@ -153,6 +158,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LSkeleton:addIKConstraint(name, chain, bend_positive?) -> integer`: Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
 - `LSkeleton:addSkin(name) -> nil`: Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
 - `LSkeleton:addSlot(name, bone_idx, attachment?) -> integer`: Adds a slot attached to a specific bone, optionally assigning a default attachment name.
+- `LSkeleton:bindAtlas(atlas) -> integer`: Binds all atlas entries as sprite-region attachment sources by name.
 - `LSkeleton:bindPhysics(world, parts, opts?) -> table`: Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.
 - `LSkeleton:blendAnimation(anim, time, blend_weight?) -> nil`: Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
 - `LSkeleton:boneCount() -> integer`: Returns the total number of bones in the skeleton.
@@ -161,9 +167,11 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LSkeleton:findBone(name) -> integer`: Searches for a bone by name and returns its zero-based index, or nil if not found.
 - `LSkeleton:findSlot(name) -> integer`: Searches for a slot by name and returns its zero-based index, or nil if not found.
 - `LSkeleton:getAnimationTime() -> number`: Returns the current playback time of the active animation in seconds.
+- `LSkeleton:getAttachmentSource(slot) -> table|nil`: Returns the neutral visual source assigned to a slot/source key.
 - `LSkeleton:getBoneWorld(idx) -> table`: Returns the final world-space transform of a bone after hierarchy resolution.
 - `LSkeleton:getSkin() -> string`: Returns the name of the currently active skin, or nil if no skin is set.
 - `LSkeleton:playAnimation(name, looping?) -> boolean`: Starts playing a named animation on this skeleton. Optionally loops.
+- `LSkeleton:setAttachmentSource(slot, source) -> nil`: Assigns a neutral visual source to a slot name, attachment name, or `slot:attachment` key.
 - `LSkeleton:setIKTarget(name, x, y) -> boolean`: Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
 - `LSkeleton:setPosition(x, y) -> nil`: Sets the root bone world position, shifting the entire skeleton.
 - `LSkeleton:setSkin(name) -> boolean`: Activates a named skin, applying its slot-attachment mappings to the skeleton.

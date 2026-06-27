@@ -727,6 +727,65 @@ describe("sprite strict: LSpriteAtlas type/typeOf", function()
         expect_true(atlas:typeOf("LObject"))
     end)
 end)
+
+-- @describe sprite image-backed sheets
+describe("sprite image-backed sheets", function()
+    local function image()
+        local img = lurek.image.newImageData(32, 16)
+        img:setPixel(0, 0, 10, 20, 30, 255)
+        return img
+    end
+
+    -- @covers lurek.sprite.newSheetFromImage
+    -- @covers LSpriteSheet:toFrames
+    -- @covers LSpriteSheet:toAnimationClip
+    it("creates sheets from image dimensions and exports frame DTOs", function()
+        local img = image()
+        local sheet = lurek.sprite.newSheetFromImage(img, { frameWidth = 16, frameHeight = 16 })
+        local frames = sheet:toFrames()
+        local clip = sheet:toAnimationClip({ name = "idle", fps = 8, loop = true })
+        expect_equal(2, #frames)
+        expect_equal("idle", clip.name)
+        expect_equal(2, #clip.frames)
+        expect_equal(10, ({ img:getPixel(0, 0) })[1])
+    end)
+
+    -- @covers lurek.sprite.newAtlasFromImage
+    it("creates atlas metadata from image and JSON without changing pixels", function()
+        local img = image()
+        local atlas = lurek.sprite.newAtlasFromImage(
+            img,
+            '{"frames":{"part.png":{"frame":{"x":1,"y":2,"w":3,"h":4},"rotated":false}}}'
+        )
+        local entry = atlas:getEntry("part.png")
+        expect_equal(1, entry.x)
+        expect_equal(3, entry.w)
+        expect_equal(10, ({ img:getPixel(0, 0) })[1])
+    end)
+
+    -- @covers lurek.sprite.newAutoTileSheet
+    -- @covers LSpriteAutoTileSheet:getLayout
+    -- @covers LSpriteAutoTileSheet:getDefaultMode
+    -- @covers LSpriteAutoTileSheet:getTileCount
+    -- @covers LSpriteAutoTileSheet:getQuad
+    -- @covers LSpriteAutoTileSheet:getBitmaskForTile
+    -- @covers LSpriteAutoTileSheet:getTileForBitmask
+    -- @covers LSpriteAutoTileSheet:toFrames
+    -- @covers LSpriteAutoTileSheet:type
+    -- @covers LSpriteAutoTileSheet:typeOf
+    it("creates autotile sheet descriptors from image dimensions", function()
+        local auto = lurek.sprite.newAutoTileSheet(image(), "minimal16", { tileWidth = 16, tileHeight = 16 })
+        expect_equal("minimal16", auto:getLayout())
+        expect_type("string", auto:getDefaultMode())
+        expect_equal(16, auto:getTileCount())
+        expect_equal(16, auto:getQuad(2).x)
+        expect_equal(0, auto:getBitmaskForTile(1))
+        expect_equal(1, auto:getTileForBitmask(0))
+        expect_equal(16, #auto:toFrames())
+        expect_equal("LSpriteAutoTileSheet", auto:type())
+        expect_true(auto:typeOf("LObject"))
+    end)
+end)
 end
 -- END test_sprite_core_unit.lua
 

@@ -141,15 +141,7 @@ fn get_handle_info_entry(
     let entry = borrow
         .get(id)
         .ok_or_else(|| LuaError::RuntimeError(format!("{}: handle not loaded", context)))?;
-    Ok(crate::asset::AssetEntry {
-        path: entry.path.clone(),
-        asset_type: entry.asset_type.clone(),
-        ref_count: entry.ref_count,
-        text_content: entry.text_content.clone(),
-        name: entry.name.clone(),
-        group: entry.group.clone(),
-        tags: entry.tags.clone(),
-    })
+    Ok(entry.clone())
 }
 
 fn resolve_asset_value(lua: &Lua, entry: ResolvedAssetValue) -> LuaResult<LuaValue<'_>> {
@@ -210,11 +202,182 @@ fn preload_assets(
     Ok(())
 }
 
+fn handle_from_id(id: u64, cache: &Rc<RefCell<AssetCache>>) -> LuaAssetHandle {
+    LuaAssetHandle {
+        id,
+        cache: cache.clone(),
+    }
+}
+
+fn entry_to_table<'lua>(
+    lua: &'lua Lua,
+    entry: &crate::asset::AssetEntry,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("path", entry.path.as_str())?;
+    out.set("type", entry.asset_type.as_str())?;
+    out.set("refcount", entry.ref_count)?;
+    out.set("revision", entry.revision)?;
+    out.set("watched", entry.watched)?;
+    out.set(
+        "name",
+        entry.name.clone().unwrap_or_else(|| {
+            std::path::Path::new(&entry.path)
+                .file_stem()
+                .and_then(|s| s.to_str())
+                .unwrap_or("")
+                .to_string()
+        }),
+    )?;
+    out.set("group", entry.group.clone().unwrap_or_default())?;
+    let mut tags: Vec<String> = entry.tags.iter().cloned().collect();
+    tags.sort();
+    let tag_array = lua.create_table()?;
+    for (i, tag) in tags.iter().enumerate() {
+        tag_array.set(i + 1, tag.as_str())?;
+    }
+    out.set("tags", tag_array)?;
+    Ok(out)
+}
+
+fn reload_asset_entry(cache: &Rc<RefCell<AssetCache>>, id: u64, context: &str) -> LuaResult<u64> {
+    let (path, asset_type) = {
+        let borrow = cache.borrow();
+        let entry = borrow
+            .get(id)
+            .ok_or_else(|| LuaError::RuntimeError(format!("{}: handle not loaded", context)))?;
+        (entry.path.clone(), entry.asset_type.clone())
+    };
+    let text_content = load_text_content(&path, &asset_type, context)?;
+    cache
+        .borrow_mut()
+        .reload(id, text_content)
+        .ok_or_else(|| LuaError::RuntimeError(format!("{}: handle not loaded", context)))
+}
+
+fn refresh_watched_asset(
+    cache: &Rc<RefCell<AssetCache>>,
+    id: u64,
+    context: &str,
+) -> LuaResult<Option<u64>> {
+    let changed = {
+        let borrow = cache.borrow();
+        if borrow.get(id).is_none() {
+            return Err(LuaError::RuntimeError(format!(
+                "{}: handle not loaded",
+                context
+            )));
+        }
+        borrow.watched_changed(id)
+    };
+    if changed {
+        return reload_asset_entry(cache, id, context).map(Some);
+    }
+    Ok(None)
+}
+
+fn notify_reload_callbacks(
+    lua: &Lua,
+    cache: &Rc<RefCell<AssetCache>>,
+    callbacks: &Rc<RefCell<HashMap<u64, Vec<LuaRegistryKey>>>>,
+    id: u64,
+    revision: u64,
+) -> LuaResult<()> {
+    if let Some(callbacks) = callbacks.borrow().get(&id) {
+        for key in callbacks {
+            let callback: LuaFunction = lua.registry_value(key)?;
+            callback.call::<_, ()>((handle_from_id(id, cache), revision))?;
+        }
+    }
+    Ok(())
+}
+
+fn refresh_and_notify(
+    lua: &Lua,
+    cache: &Rc<RefCell<AssetCache>>,
+    callbacks: &Rc<RefCell<HashMap<u64, Vec<LuaRegistryKey>>>>,
+    id: u64,
+    context: &str,
+) -> LuaResult<()> {
+    if let Some(revision) = refresh_watched_asset(cache, id, context)? {
+        notify_reload_callbacks(lua, cache, callbacks, id, revision)?;
+    }
+    Ok(())
+}
+
+fn load_manifest_entries(cache: &Rc<RefCell<AssetCache>>, path: &str) -> LuaResult<Vec<u64>> {
+    let content = std::fs::read_to_string(path).map_err(|e| {
+        LuaError::RuntimeError(format!(
+            "lurek.asset.loadManifest: cannot read \"{}\": {}",
+            path, e
+        ))
+    })?;
+    let parsed: toml::Value = toml::from_str(&content).map_err(|e| {
+        LuaError::RuntimeError(format!(
+            "lurek.asset.loadManifest: invalid TOML \"{}\": {}",
+            path, e
+        ))
+    })?;
+
+    let mut rows = Vec::new();
+    if let Some(assets) = parsed.get("assets") {
+        match assets {
+            toml::Value::Array(items) => rows.extend(items.iter().cloned()),
+            toml::Value::Table(table) => rows.extend(table.values().cloned()),
+            _ => {}
+        }
+    }
+    if let Some(assets) = parsed.get("asset").and_then(|v| v.as_array()) {
+        rows.extend(assets.iter().cloned());
+    }
+
+    let mut ids = Vec::new();
+    for row in rows {
+        let Some(table) = row.as_table() else {
+            continue;
+        };
+        let Some(asset_path) = table.get("path").and_then(|v| v.as_str()) else {
+            continue;
+        };
+        let type_str = table
+            .get("type")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let asset_type = AssetType::from_type_str(type_str);
+        let text_content = load_text_content(asset_path, &asset_type, "lurek.asset.loadManifest")?;
+        let id = cache
+            .borrow_mut()
+            .register(asset_path.to_string(), asset_type, text_content);
+        if let Some(name) = table.get("name").and_then(|v| v.as_str()) {
+            cache.borrow_mut().set_name(id, name.to_string());
+        }
+        if let Some(group) = table.get("group").and_then(|v| v.as_str()) {
+            cache.borrow_mut().set_group(id, group.to_string());
+        }
+        if let Some(tags) = table.get("tags").and_then(|v| v.as_array()) {
+            for tag in tags.iter().filter_map(|v| v.as_str()) {
+                cache.borrow_mut().add_tag(id, tag);
+            }
+        }
+        if table
+            .get("watch")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false)
+        {
+            cache.borrow_mut().watch(id);
+        }
+        ids.push(id);
+    }
+    Ok(ids)
+}
+
 // â”€â”€â”€ register â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Registers `lurek.asset.*` functions into the `lurek` table.
-pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
-    let cache: Rc<RefCell<AssetCache>> = Rc::new(RefCell::new(AssetCache::new()));
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+    let cache: Rc<RefCell<AssetCache>> = state.borrow().asset_cache.clone();
+    let reload_callbacks: Rc<RefCell<HashMap<u64, Vec<LuaRegistryKey>>>> =
+        Rc::new(RefCell::new(HashMap::new()));
 
     let asset_tbl = lua.create_table()?;
 
@@ -251,6 +414,139 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // â”€â”€â”€ unload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    // -- watch --
+    /// Marks an asset handle or path as watched for live reload.
+    /// @param | handle_or_path | LAssetHandle|string | Existing handle or path to register as watched.
+    /// @param | asset_type | string? | Type used when `handle_or_path` is a path. Defaults to `unknown`.
+    /// @return | LAssetHandle | Watched handle.
+    let watch_cache = cache.clone();
+    asset_tbl.set(
+        "watch",
+        lua.create_function(
+            move |_lua, (value, type_str): (LuaValue, Option<String>)| match value {
+                LuaValue::UserData(handle) => {
+                    let h = handle.borrow::<LuaAssetHandle>()?;
+                    h.cache.borrow_mut().watch(h.id);
+                    Ok(handle_from_id(h.id, &h.cache))
+                }
+                LuaValue::String(path) => {
+                    let path = path.to_str()?.to_string();
+                    let asset_type =
+                        AssetType::from_type_str(type_str.as_deref().unwrap_or("unknown"));
+                    let text_content = load_text_content(&path, &asset_type, "lurek.asset.watch")?;
+                    let id = watch_cache
+                        .borrow_mut()
+                        .register(path, asset_type, text_content);
+                    watch_cache.borrow_mut().watch(id);
+                    Ok(handle_from_id(id, &watch_cache))
+                }
+                _ => Err(LuaError::RuntimeError(
+                    "lurek.asset.watch: expected LAssetHandle or path string".into(),
+                )),
+            },
+        )?,
+    )?;
+
+    // -- reload --
+    /// Reloads the cached asset metadata/content and increments its revision.
+    /// @param | handle | LAssetHandle | Asset handle to refresh.
+    /// @return | integer | New revision.
+    let reload_cache = cache.clone();
+    let reload_callback_map = reload_callbacks.clone();
+    asset_tbl.set(
+        "reload",
+        lua.create_function(move |lua, handle: LuaAnyUserData| {
+            let h = handle.borrow::<LuaAssetHandle>()?;
+            let revision = reload_asset_entry(&reload_cache, h.id, "lurek.asset.reload")?;
+            notify_reload_callbacks(lua, &reload_cache, &reload_callback_map, h.id, revision)?;
+            Ok(revision)
+        })?,
+    )?;
+
+    // -- getRevision --
+    /// Returns the current reload revision for an asset handle.
+    /// @param | handle | LAssetHandle | Asset handle to inspect.
+    /// @return | integer | Current revision, or 0 when unloaded.
+    asset_tbl.set(
+        "getRevision",
+        lua.create_function({
+            let revision_callbacks = reload_callbacks.clone();
+            move |lua, handle: LuaAnyUserData| {
+                let h = handle.borrow::<LuaAssetHandle>()?;
+                refresh_and_notify(
+                    lua,
+                    &h.cache,
+                    &revision_callbacks,
+                    h.id,
+                    "lurek.asset.getRevision",
+                )?;
+                let revision = h.cache.borrow().revision(h.id);
+                Ok(revision)
+            }
+        })?,
+    )?;
+
+    // -- onReload --
+    /// Registers a callback fired by `lurek.asset.reload(handle)`.
+    /// @param | handle | LAssetHandle | Asset handle to observe.
+    /// @param | callback | function | Called as `callback(handle, revision)`.
+    /// @return | nil | No value is returned.
+    let on_reload_callbacks = reload_callbacks.clone();
+    asset_tbl.set(
+        "onReload",
+        lua.create_function(
+            move |lua, (handle, callback): (LuaAnyUserData, LuaFunction)| {
+                let h = handle.borrow::<LuaAssetHandle>()?;
+                h.cache.borrow().get(h.id).ok_or_else(|| {
+                    LuaError::RuntimeError("lurek.asset.onReload: handle not loaded".into())
+                })?;
+                let key = lua.create_registry_value(callback)?;
+                on_reload_callbacks
+                    .borrow_mut()
+                    .entry(h.id)
+                    .or_default()
+                    .push(key);
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- resolve --
+    /// Returns a metadata snapshot for an asset handle without transforming the asset data.
+    /// @param | handle | LAssetHandle | Asset handle to inspect.
+    /// @return | table | Snapshot with path, type, refcount, revision, watched, name, group, and tags.
+    let resolve_cache = cache.clone();
+    let resolve_callbacks = reload_callbacks.clone();
+    asset_tbl.set(
+        "resolve",
+        lua.create_function(move |lua, handle: LuaAnyUserData| {
+            let h = handle.borrow::<LuaAssetHandle>()?;
+            refresh_and_notify(
+                lua,
+                &resolve_cache,
+                &resolve_callbacks,
+                h.id,
+                "lurek.asset.resolve",
+            )?;
+            let entry = get_handle_info_entry(&resolve_cache, h.id, "lurek.asset.resolve")?;
+            entry_to_table(lua, &entry)
+        })?,
+    )?;
+
+    // -- loadManifest --
+    /// Loads a TOML asset manifest and registers listed assets without transforming them.
+    /// Supports `assets = [{path, type, name, group, tags, watch}]` and `[assets.name]` shapes.
+    /// @param | path | string | Manifest path.
+    /// @return | table | Array of `LAssetHandle` values for loaded entries.
+    let manifest_cache = cache.clone();
+    asset_tbl.set(
+        "loadManifest",
+        lua.create_function(move |lua, path: String| {
+            let ids = load_manifest_entries(&manifest_cache, &path)?;
+            ids_to_handles_table(lua, &ids, &manifest_cache)
+        })?,
+    )?;
+
     // -- unload --
     /// Decrements the ref count for a cached asset; removes the entry when it reaches zero.
     /// @param | handle | LAssetHandle | Asset handle to release.
@@ -275,10 +571,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | string | Source text for text-like asset types.
     /// @overload | handle | LAssetHandle | table | Runtime object returned by image/font/audio loaders for binary types.
     let get_cache = cache.clone();
+    let get_callbacks = reload_callbacks.clone();
     asset_tbl.set(
         "get",
         lua.create_function(move |lua, handle: LuaAnyUserData| {
             let h = handle.borrow::<LuaAssetHandle>()?;
+            refresh_and_notify(lua, &get_cache, &get_callbacks, h.id, "lurek.asset.get")?;
             let entry = get_handle_value(&get_cache, h.id, "lurek.asset.get")?;
             resolve_asset_value(lua, entry)
         })?,
@@ -449,11 +747,21 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @field | group | string | Group label, or empty string when none is set.
     /// @field | tags | table | Array of tag strings.
     /// @field | refcount | integer | Current reference count.
+    /// @field | revision | integer | Reload revision.
+    /// @field | watched | boolean | True when live reload watching is requested.
     let info_cache = cache.clone();
+    let info_callbacks = reload_callbacks.clone();
     asset_tbl.set(
         "getInfo",
         lua.create_function(move |lua, handle: LuaAnyUserData| {
             let h = handle.borrow::<LuaAssetHandle>()?;
+            refresh_and_notify(
+                lua,
+                &info_cache,
+                &info_callbacks,
+                h.id,
+                "lurek.asset.getInfo",
+            )?;
             let entry = get_handle_info_entry(&info_cache, h.id, "lurek.asset.getInfo")?;
             let name = entry.name.unwrap_or_else(|| {
                 std::path::Path::new(&entry.path)
@@ -477,6 +785,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             }
             info.set("tags", tag_array)?;
             info.set("refcount", entry.ref_count)?;
+            info.set("revision", entry.revision)?;
+            info.set("watched", entry.watched)?;
             Ok(info)
         })?,
     )?;

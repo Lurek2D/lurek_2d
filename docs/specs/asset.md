@@ -12,7 +12,7 @@
 - Source path: `src/asset`
 - Binding: `src/lua_api/asset_api.rs`
 - Namespace: `lurek.asset`
-- Lua API surface: `23` functions, `3` types, `2` methods
+- Lua API surface: `29` functions, `3` types, `2` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -75,22 +75,28 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 - `lurek.asset.getInfo(handle) -> table`: Returns a table containing all metadata for an asset handle.
 - `lurek.asset.getName(handle) -> string`: Returns the display name of an asset handle.
 - `lurek.asset.getPath(handle) -> string`: Returns the filesystem path for the asset associated with a handle.
+- `lurek.asset.getRevision(handle) -> integer`: Returns the current reload revision for an asset handle.
 - `lurek.asset.getTags(handle) -> table`: Returns an array of all tags for an asset handle.
 - `lurek.asset.getType(handle) -> string`: Returns the type string for the asset associated with a handle.
 - `lurek.asset.hasTag(handle, tag) -> boolean`: Returns true when an asset handle has the given tag in its tag set.
 - `lurek.asset.isLoaded(handle) -> boolean`: Returns true when the asset for the given handle is still in the cache.
 - `lurek.asset.load(path, asset_type, opts?) -> LAssetHandle`: Loads and caches an asset by path and type, returning a ref-counted handle.
+- `lurek.asset.loadManifest(path) -> table`: Loads a TOML asset manifest and registers listed assets without transforming them.
+- `lurek.asset.onReload(handle, callback) -> nil`: Registers a callback fired by `lurek.asset.reload(handle)`.
 - `lurek.asset.preload(paths, callback) -> nil`: Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
 - `lurek.asset.refcount(handle) -> integer`: Returns the current ref count for a handle, or 0 when it is no longer loaded.
+- `lurek.asset.reload(handle) -> integer`: Reloads the cached asset metadata/content and increments its revision.
 - `lurek.asset.removeTag(handle, tag) -> boolean`: Removes a tag from the tag set of an asset handle.
+- `lurek.asset.resolve(handle) -> table`: Returns a metadata snapshot for an asset handle without transforming the asset data.
 - `lurek.asset.setGroup(handle, group) -> nil`: Assigns an asset handle to a named group.
 - `lurek.asset.setName(handle, name) -> nil`: Sets the display name for an asset handle.
 - `lurek.asset.stats() -> table`: Returns a snapshot table describing the current cache state.
 - `lurek.asset.unload(handle) -> nil`: Decrements the ref count for a cached asset; removes the entry when it reaches zero.
+- `lurek.asset.watch(handle_or_path, asset_type?) -> LAssetHandle`: Marks an asset handle or path as watched for live reload.
 
 ### Callbacks
 
-- No documented callback parameters in this module.
+- `lurek.asset.onReload` param `callback` (`function`): Called as `callback(handle, revision)`. Invocation: `callback(handle, revision)`.
 
 ### Enums
 
@@ -108,8 +114,10 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 - `name` (`string`): Display name, or the path file-stem when none is set.
 - `path` (`string`): Filesystem path to the asset.
 - `refcount` (`integer`): Current reference count.
+- `revision` (`integer`): Reload revision.
 - `tags` (`table`): Array of tag strings.
 - `type` (`string`): Asset type string.
+- `watched` (`boolean`): True when live reload watching is requested.
 
 ##### Methods
 

@@ -1,6 +1,7 @@
 //! Registers the `lurek.sprite` Lua API for sprite userdata, clips, quads, frames, and sprite table conversion.
 
 use super::SharedState;
+use crate::image::ImageData;
 use crate::lua_api::render_api::{LuaImage, LuaNineSlice};
 use crate::math::{Rect, Vec2};
 use crate::sprite::animator::{AnimatorEvent, SpriteAnimator, SpriteClip};
@@ -8,6 +9,7 @@ use crate::sprite::atlas::{parse_aseprite_json, parse_texturepacker_json, Sprite
 use crate::sprite::sprite::Sprite;
 use crate::sprite::sprite_sheet::SpriteSheet;
 use crate::sprite::{NineSliceInsets, TextureAtlas};
+use crate::tilemap::{AutoTileLayout, AutoTileSheet};
 use mlua::prelude::*;
 use std::borrow::Borrow;
 use std::cell::RefCell;
@@ -22,6 +24,19 @@ fn require_positive_u32(api: &str, arg_name: &str, value: u32) -> LuaResult<u32>
         )));
     }
     Ok(value)
+}
+
+fn parse_autotile_layout(api: &str, layout: &str) -> LuaResult<AutoTileLayout> {
+    match layout {
+        "blob47" => Ok(AutoTileLayout::Blob47),
+        "composite48" => Ok(AutoTileLayout::Composite48),
+        "rpgmaker48" | "rpgmaker" => Ok(AutoTileLayout::RpgMaker48),
+        "minimal16" => Ok(AutoTileLayout::Minimal16),
+        other => Err(LuaError::RuntimeError(format!(
+            "{}: unknown layout '{}', use 'blob47', 'composite48', 'rpgmaker48', or 'minimal16'",
+            api, other
+        ))),
+    }
 }
 
 /// Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.
@@ -100,7 +115,7 @@ impl LuaUserData for LuaSprite {
 /// Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
 /// named animation groups, and row/column slicing for sprite sheet textures.
 pub struct LuaSpriteSheet {
-    inner: SpriteSheet,
+    pub(crate) inner: SpriteSheet,
 }
 impl LuaUserData for LuaSpriteSheet {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -206,6 +221,73 @@ impl LuaUserData for LuaSpriteSheet {
             let (cols, rows) = this.inner.get_grid_size();
             Ok((cols, rows))
         });
+        // -- toFrames --
+        /// Returns frame rectangle DTOs for all frames or a named group.
+        /// @param | group | string? | Optional group name.
+        /// @return | table | Array of `{x, y, w, h}` frame rectangles.
+        methods.add_method("toFrames", |lua, this, group: Option<String>| {
+            if let Some(group) = group {
+                match this.inner.get_group(&group) {
+                    Some(frames) => frames_to_table(lua, &frames),
+                    None => Ok(lua.create_table()?),
+                }
+            } else {
+                let mut frames = Vec::with_capacity(this.inner.get_frame_count());
+                for i in 0..this.inner.get_frame_count() {
+                    if let Some(frame) = this.inner.get_frame(i) {
+                        frames.push(frame);
+                    }
+                }
+                frames_to_table(lua, &frames)
+            }
+        });
+        // -- toAnimationClip --
+        /// Builds an animation clip DTO from this sheet without creating playback state.
+        /// @param | opts | table? | `{name, group, fps, loop, mode}`.
+        /// @return | table | Clip DTO with `name`, `frames`, `fps`, `loop`, and `mode`.
+        methods.add_method("toAnimationClip", |lua, this, opts: Option<LuaTable>| {
+            let name = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<String>>("name").ok().flatten())
+                .unwrap_or_else(|| "default".to_string());
+            let group = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<String>>("group").ok().flatten());
+            let fps = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<f32>>("fps").ok().flatten())
+                .unwrap_or(12.0);
+            let looping = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<bool>>("loop").ok().flatten())
+                .unwrap_or(true);
+            let mode = opts
+                .as_ref()
+                .and_then(|t| t.get::<_, Option<String>>("mode").ok().flatten())
+                .unwrap_or_else(|| "forward".to_string());
+            let frames_value = match group {
+                Some(group) => match this.inner.get_group(&group) {
+                    Some(frames) => frames_to_table(lua, &frames)?,
+                    None => lua.create_table()?,
+                },
+                None => {
+                    let mut frames = Vec::with_capacity(this.inner.get_frame_count());
+                    for i in 0..this.inner.get_frame_count() {
+                        if let Some(frame) = this.inner.get_frame(i) {
+                            frames.push(frame);
+                        }
+                    }
+                    frames_to_table(lua, &frames)?
+                }
+            };
+            let out = lua.create_table()?;
+            out.set("name", name)?;
+            out.set("frames", frames_value)?;
+            out.set("fps", fps)?;
+            out.set("loop", looping)?;
+            out.set("mode", mode)?;
+            Ok(out)
+        });
         // -- drawToImage --
         /// Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
         /// @param | w | integer | Output image width in pixels.
@@ -232,7 +314,7 @@ impl LuaUserData for LuaSpriteSheet {
 /// Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
 /// for packed texture atlases exported from tools like TexturePacker or Aseprite.
 pub struct LuaSpriteAtlas {
-    inner: SpriteAtlas,
+    pub(crate) inner: SpriteAtlas,
 }
 impl LuaUserData for LuaSpriteAtlas {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -369,6 +451,76 @@ impl LuaUserData for LuaSpriteAtlas {
         /// @return | boolean | True if the object is the given type.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LSpriteAtlas" || name == "LObject")
+        });
+    }
+}
+
+/// Lua-visible autotile sheet authored from a sprite/image source.
+pub struct LuaSpriteAutoTileSheet {
+    inner: AutoTileSheet,
+}
+impl LuaUserData for LuaSpriteAutoTileSheet {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getLayout --
+        /// Returns the autotile layout name.
+        /// @return | string | Layout name.
+        methods.add_method("getLayout", |_, this, ()| {
+            Ok(this.inner.get_layout_name().to_string())
+        });
+        // -- getDefaultMode --
+        /// Returns the default autotile matching mode for this layout.
+        /// @return | string | Mode name.
+        methods.add_method("getDefaultMode", |_, this, ()| {
+            Ok(this.inner.get_default_mode().as_str().to_string())
+        });
+        // -- getTileCount --
+        /// Returns the number of logical tiles in the sheet.
+        /// @return | integer | Tile count.
+        methods.add_method("getTileCount", |_, this, ()| {
+            Ok(this.inner.get_tile_count())
+        });
+        // -- getQuad --
+        /// Returns a one-based tile source rectangle.
+        /// @param | tile_id | integer | One-based tile id.
+        /// @return | table | Rectangle table.
+        methods.add_method("getQuad", |lua, this, tile_id: u32| {
+            let r = this.inner.get_quad(tile_id.saturating_sub(1));
+            quad_table(lua, r)
+        });
+        // -- getBitmaskForTile --
+        /// Returns the bitmask for a one-based tile id.
+        /// @param | tile_id | integer | One-based tile id.
+        /// @return | integer | Bitmask.
+        methods.add_method("getBitmaskForTile", |_, this, tile_id: u32| {
+            Ok(this.inner.get_bitmask_for_tile(tile_id.saturating_sub(1)))
+        });
+        // -- getTileForBitmask --
+        /// Returns a one-based tile id for a bitmask, or nil when missing.
+        /// @param | bitmask | integer | Neighbor bitmask.
+        /// @return | integer|nil | One-based tile id.
+        methods.add_method("getTileForBitmask", |_, this, bitmask: u16| {
+            Ok(this.inner.get_tile_for_bitmask(bitmask).map(|idx| idx + 1))
+        });
+        // -- toFrames --
+        /// Returns all autotile source rectangles as sprite frame DTOs.
+        /// @return | table | Array of frame rectangles.
+        methods.add_method("toFrames", |lua, this, ()| {
+            let mut frames = Vec::with_capacity(this.inner.get_tile_count() as usize);
+            for i in 0..this.inner.get_tile_count() {
+                frames.push(this.inner.get_quad(i));
+            }
+            frames_to_table(lua, &frames)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name.
+        /// @return | string | The string `LSpriteAutoTileSheet`.
+        methods.add_method("type", |_, _, ()| Ok("LSpriteAutoTileSheet"));
+        // -- typeOf --
+        /// Returns whether this handle matches a supported type name.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | True when the supplied type name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LSpriteAutoTileSheet" || name == "LObject")
         });
     }
 }
@@ -701,6 +853,54 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             })
         })?,
     )?;
+    // -- newSheetFromImage --
+    /// Creates a sprite sheet from an existing `LImageData` source and frame options.
+    /// @param | image | LImageData | Source image data.
+    /// @param | opts | table | `{frameWidth, frameHeight}` or `{columns, rows}`.
+    /// @return | LSpriteSheet | A new sprite sheet object.
+    tbl.set(
+        "newSheetFromImage",
+        lua.create_function(|lua, (image_ud, opts): (LuaAnyUserData, LuaTable)| {
+            let image = image_ud.borrow::<ImageData>()?;
+            let image_w = image.width();
+            let image_h = image.height();
+            let frame_w = opts
+                .get::<_, Option<u32>>("frameWidth")?
+                .or_else(|| opts.get::<_, Option<u32>>("fw").ok().flatten())
+                .or_else(|| {
+                    opts.get::<_, Option<u32>>("columns")
+                        .ok()
+                        .flatten()
+                        .and_then(|cols| (cols > 0).then_some(image_w / cols))
+                })
+                .ok_or_else(|| {
+                    LuaError::RuntimeError(
+                        "lurek.sprite.newSheetFromImage: expected frameWidth or columns".into(),
+                    )
+                })?;
+            let frame_h = opts
+                .get::<_, Option<u32>>("frameHeight")?
+                .or_else(|| opts.get::<_, Option<u32>>("fh").ok().flatten())
+                .or_else(|| {
+                    opts.get::<_, Option<u32>>("rows")
+                        .ok()
+                        .flatten()
+                        .and_then(|rows| (rows > 0).then_some(image_h / rows))
+                })
+                .ok_or_else(|| {
+                    LuaError::RuntimeError(
+                        "lurek.sprite.newSheetFromImage: expected frameHeight or rows".into(),
+                    )
+                })?;
+            let frame_w =
+                require_positive_u32("lurek.sprite.newSheetFromImage", "frameWidth", frame_w)?;
+            let frame_h =
+                require_positive_u32("lurek.sprite.newSheetFromImage", "frameHeight", frame_h)?;
+            lua.create_userdata(LuaSpriteSheet {
+                inner: SpriteSheet::new(image_w, image_h, frame_w, frame_h),
+            })
+        })?,
+    )?;
     // -- newRPGMakerSheet --
     /// Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
     /// @param | tw | integer | Full texture width in pixels.
@@ -729,6 +929,57 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     Ok(LuaValue::UserData(ud))
                 }
                 Err(e) => Err(LuaError::RuntimeError(format!("parseAtlas: {}", e))),
+            },
+        )?,
+    )?;
+    // -- newAtlasFromImage --
+    /// Parses atlas JSON for an existing `LImageData` source.
+    /// @param | image | LImageData | Source image data used as the atlas texture.
+    /// @param | atlas_json | string | TexturePacker or Aseprite JSON.
+    /// @return | LSpriteAtlas | Parsed atlas.
+    tbl.set(
+        "newAtlasFromImage",
+        lua.create_function(|lua, (image_ud, atlas_json): (LuaAnyUserData, String)| {
+            let _image = image_ud.borrow::<ImageData>()?;
+            match parse_texturepacker_json(&atlas_json)
+                .or_else(|_| parse_aseprite_json(&atlas_json))
+            {
+                Ok(atlas) => lua.create_userdata(LuaSpriteAtlas { inner: atlas }),
+                Err(e) => Err(LuaError::RuntimeError(format!("newAtlasFromImage: {}", e))),
+            }
+        })?,
+    )?;
+    // -- newAutoTileSheet --
+    /// Creates an autotile sheet descriptor from an image source, layout, and tile options.
+    /// @param | image | LImageData | Source autotile sheet image.
+    /// @param | layout | string | `blob47`, `composite48`, `rpgmaker48`, or `minimal16`.
+    /// @param | opts | table | `{tileWidth, tileHeight}`.
+    /// @return | LSpriteAutoTileSheet | Autotile sheet descriptor.
+    tbl.set(
+        "newAutoTileSheet",
+        lua.create_function(
+            |lua, (image_ud, layout, opts): (LuaAnyUserData, String, LuaTable)| {
+                let image = image_ud.borrow::<ImageData>()?;
+                let tile_w = opts
+                    .get::<_, Option<u32>>("tileWidth")?
+                    .or_else(|| opts.get::<_, Option<u32>>("tileW").ok().flatten())
+                    .unwrap_or(image.width());
+                let tile_h = opts
+                    .get::<_, Option<u32>>("tileHeight")?
+                    .or_else(|| opts.get::<_, Option<u32>>("tileH").ok().flatten())
+                    .unwrap_or(image.height());
+                let layout = parse_autotile_layout("lurek.sprite.newAutoTileSheet", &layout)?;
+                lua.create_userdata(LuaSpriteAutoTileSheet {
+                    inner: AutoTileSheet::new(
+                        require_positive_u32("lurek.sprite.newAutoTileSheet", "tileWidth", tile_w)?,
+                        require_positive_u32(
+                            "lurek.sprite.newAutoTileSheet",
+                            "tileHeight",
+                            tile_h,
+                        )?,
+                        layout,
+                    ),
+                })
             },
         )?,
     )?;

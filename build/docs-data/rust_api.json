@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-27T08:37:19.035084+00:00",
+    "generated": "2026-06-27T10:40:58.603243+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3101,
-      "rust_modules": 728,
+      "rust_items": 3109,
+      "rust_modules": 729,
       "rust_tests": 496,
       "lua_tests": 281
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3101,
-      "documented": 3098,
-      "modules": 728
+      "total_items": 3109,
+      "documented": 3106,
+      "modules": 729
     },
     "modules": {
       "agent::chat": {
@@ -1962,23 +1962,23 @@
           {
             "name": "AssetType",
             "kind": "enum",
-            "description": "Asset type discriminant used by the `lurek.asset` cache registry.  Governs how `get()` resolves the underlying resource and which `lurek.*` constructor is called on the Lua side.  # Variants  - `Image`: raster image path reference. - `Font`: font file path reference. - `Audio`: short SFX source path reference. - `Music`: long music source path reference. - `Text`: plain-text file content cached in memory. - `Toml`: TOML source text cached in memory. - `Json`: JSON source text cached in memory. - `Obj`: OBJ source text cached in memory. - `Shader`: shader source text cached in memory. - `Lua`: Lua source text cached in memory. - `Unknown(String)`: unrecognized type string stored as-is.",
+            "description": "Asset type discriminant used by the `lurek.asset` cache registry.  Governs how `get()` resolves the underlying resource and which `lurek.*` constructor is called on the Lua side.  # Variants  - `Image`: raster image path reference. - `Font`: font file path reference. - `Audio`: short SFX source path reference. - `Music`: long music source path reference. - `Text`: plain-text file content cached in memory. - `Toml`: TOML source text cached in memory. - `Json`: JSON source text cached in memory. - `Obj`: OBJ source text cached in memory. - `Shader`: shader source text cached in memory. - `Lua`: Lua source text cached in memory. - `SpriteSheet`: spritesheet metadata or file path reference. - `Atlas`: atlas metadata or file path reference. - `Animation`: animation metadata or file path reference. - `Spine`: Spine skeleton metadata or file path reference. - `TileMap`: tilemap metadata or file path reference. - `TileSet`: tileset metadata or file path reference. - `Unknown(String)`: unrecognized type string stored as-is.",
             "file": "src/asset/cache.rs",
-            "line": 31
+            "line": 38
           },
           {
             "name": "AssetEntry",
             "kind": "struct",
-            "description": "A single registered asset entry.  # Fields  - `path`: filesystem path to the source file. - `asset_type`: type discriminant used by Lua `get()`. - `ref_count`: manual retain/release counter. - `text_content`: cached source text for text-like assets. - `name`: optional display name. - `group`: optional grouping key. - `tags`: searchable tag set.",
+            "description": "A single registered asset entry.  # Fields  - `path`: filesystem path to the source file. - `asset_type`: type discriminant used by Lua `get()`. - `ref_count`: manual retain/release counter. - `text_content`: cached source text for text-like assets. - `name`: optional display name. - `group`: optional grouping key. - `tags`: searchable tag set. - `revision`: reload revision, starting at `1` for registered entries. - `watched`: true when live reload monitoring is requested for this entry. - `last_modified`: last observed file modification timestamp for watched reload checks.",
             "file": "src/asset/cache.rs",
-            "line": 116
+            "line": 151
           },
           {
             "name": "AssetCache",
             "kind": "struct",
             "description": "Ref-counted asset cache keyed by `u64` handle IDs.  All mutation is performed through `&mut self` methods. Interior mutability is provided by the `Rc<RefCell<AssetCache>>` wrapper created in `asset_api::register()`.  # Fields  - `entries`: map of handle ID to `AssetEntry`. - `next_id`: monotonically increasing handle counter.",
             "file": "src/asset/cache.rs",
-            "line": 143
+            "line": 184
           }
         ]
       },
@@ -8486,28 +8486,49 @@
             "kind": "enum",
             "description": "Repeat policy for animated GIF output.",
             "file": "src/image/animated_gif.rs",
-            "line": 12
+            "line": 13
           },
           {
             "name": "AnimatedGifOptions",
             "kind": "struct",
             "description": "GIF export settings shared across image and Lua-facing callers.",
             "file": "src/image/animated_gif.rs",
-            "line": 23
+            "line": 24
+          },
+          {
+            "name": "AnimatedGifFrame",
+            "kind": "struct",
+            "description": "Decoded animated GIF frame with its display duration.",
+            "file": "src/image/animated_gif.rs",
+            "line": 35
           },
           {
             "name": "encode_gif",
             "kind": "fn",
             "description": "Encode a list of equally sized RGBA frames into animated GIF bytes.",
             "file": "src/image/animated_gif.rs",
-            "line": 97
+            "line": 107
+          },
+          {
+            "name": "decode_gif",
+            "kind": "fn",
+            "description": "Decode animated GIF bytes into composited RGBA frames and frame durations.",
+            "file": "src/image/animated_gif.rs",
+            "line": 139
+          },
+          {
+            "name": "load_gif",
+            "kind": "fn",
+            "description": "Load and decode an animated GIF from disk.",
+            "file": "src/image/animated_gif.rs",
+            "line": 185
           },
           {
             "name": "save_gif",
             "kind": "fn",
             "description": "Save a list of equally sized RGBA frames as an animated GIF on disk.",
             "file": "src/image/animated_gif.rs",
-            "line": 129
+            "line": 192
           }
         ]
       },
@@ -8541,6 +8562,13 @@
             "description": "Resize kernels supported by the image resampler.",
             "file": "src/image/effects.rs",
             "line": 14
+          },
+          {
+            "name": "ImageEffectOptions",
+            "kind": "struct",
+            "description": "Parsed options for named image effects.",
+            "file": "src/image/effects.rs",
+            "line": 22
           }
         ]
       },
@@ -21777,7 +21805,7 @@
             "kind": "struct",
             "description": "Runtime data model for aggregate renderer counters derived from the current frame state. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 1222
+            "line": 1225
           }
         ]
       },
@@ -22474,6 +22502,26 @@
           }
         ]
       },
+      "spine::attachment": {
+        "module_doc": "Defines neutral attachment source DTOs used by Spine without owning asset loading. Attachment sources point at sprite, image, or tileset visuals and may carry a texture handle for rendering.",
+        "source_file": "src/spine/attachment.rs",
+        "items": [
+          {
+            "name": "AttachmentSourceKind",
+            "kind": "enum",
+            "description": "Neutral source kind for a resolved Spine slot attachment.",
+            "file": "src/spine/attachment.rs",
+            "line": 6
+          },
+          {
+            "name": "AttachmentSource",
+            "kind": "struct",
+            "description": "Source rectangle and optional render texture for a skeleton attachment.",
+            "file": "src/spine/attachment.rs",
+            "line": 38
+          }
+        ]
+      },
       "spine::bone": {
         "module_doc": "This file owns `Bone`, the transform-bearing unit that stores one rig node's local pose and resolved world pose. It keeps parent linkage, local translation, rotation, scale, and accumulated world-space outputs in one record. Constructors cover root and child bones so importer and runtime code can build hierarchies without extra defaults. Open this file when bone transform payloads change; skeleton playback and rendering live in sibling owners.",
         "source_file": "src/spine/bone.rs",
@@ -22532,53 +22580,60 @@
         "source_file": "src/spine/mod.rs",
         "items": [
           {
+            "name": "attachment",
+            "kind": "mod",
+            "description": "Neutral attachment source descriptors for slot visuals.",
+            "file": "src/spine/mod.rs",
+            "line": 9
+          },
+          {
             "name": "bone",
             "kind": "mod",
             "description": "Bone transform hierarchy and parent-relative pose computation.",
             "file": "src/spine/mod.rs",
-            "line": 9
+            "line": 11
           },
           {
             "name": "ik",
             "kind": "mod",
             "description": "Inverse-kinematics constraint resolving 2-bone IK chains.",
             "file": "src/spine/mod.rs",
-            "line": 11
+            "line": 13
           },
           {
             "name": "importer",
             "kind": "mod",
             "description": "Spine and DragonBones JSON importer for skeleton data.",
             "file": "src/spine/mod.rs",
-            "line": 13
+            "line": 15
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Skeleton-level render assembly: converts posed bones/slots to RenderCommands.",
             "file": "src/spine/mod.rs",
-            "line": 15
+            "line": 17
           },
           {
             "name": "skeleton",
             "kind": "mod",
             "description": "Skeleton: bone tree, slot list, pose accumulation, and animation playback.",
             "file": "src/spine/mod.rs",
-            "line": 17
+            "line": 19
           },
           {
             "name": "slot",
             "kind": "mod",
             "description": "Slot: attachment point linking a bone to a drawable region.",
             "file": "src/spine/mod.rs",
-            "line": 19
+            "line": 21
           },
           {
             "name": "timeline",
             "kind": "mod",
             "description": "Timeline, keyframe, easing, and animation clip data for skeletal animation.",
             "file": "src/spine/mod.rs",
-            "line": 21
+            "line": 23
           }
         ]
       },
@@ -22596,14 +22651,14 @@
             "kind": "struct",
             "description": "Input bag for adding a bone via add_bone_full; avoids multiple positional arguments.",
             "file": "src/spine/skeleton.rs",
-            "line": 17
+            "line": 18
           },
           {
             "name": "Skeleton",
             "kind": "struct",
             "description": "Spine skeleton: holds all bones, slots, animations, IK constraints, skins, and playback state.",
             "file": "src/spine/skeleton.rs",
-            "line": 35
+            "line": 36
           }
         ]
       },
@@ -24285,6 +24340,13 @@
             "description": "Terrain-neighbour matching strategy used when applying autotile rules.",
             "file": "src/tileset/autotile.rs",
             "line": 7
+          },
+          {
+            "name": "TerrainProfile",
+            "kind": "struct",
+            "description": "Godot-style terrain-set profile metadata for autotile authoring.",
+            "file": "src/tileset/autotile.rs",
+            "line": 18
           }
         ]
       },

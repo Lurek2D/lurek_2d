@@ -1,6 +1,7 @@
 //! Registers the `lurek.image` Lua API for image userdata, dimension checks, GIF options, and image transforms.
 
 use super::SharedState;
+use crate::image::effects::{ImageEffectOptions, ResizeFilter};
 use crate::image::serial;
 use crate::image::{
     AnimatedGifOptions, AnimatedGifRepeat, CompressedImageData, ImageData, LayeredImage,
@@ -69,6 +70,62 @@ fn parse_save_gif_options(opts: Option<LuaTable>) -> LuaResult<AnimatedGifOption
     }
 
     Ok(out)
+}
+
+fn parse_effect_options(opts: Option<LuaTable>, api: &str) -> LuaResult<ImageEffectOptions> {
+    let mut out = ImageEffectOptions::default();
+    let Some(opts) = opts else {
+        return Ok(out);
+    };
+    if let Some(factor) = opts.get::<_, Option<f32>>("factor")? {
+        out.factor = factor;
+    }
+    if let Some(amount) = opts.get::<_, Option<u32>>("amount")? {
+        out.amount = amount;
+    }
+    if let Some(value) = opts.get::<_, Option<u8>>("value")? {
+        out.value = value;
+    }
+    if let Some(levels) = opts.get::<_, Option<u8>>("levels")? {
+        out.levels = levels;
+    }
+    if let Some(radius) = opts.get::<_, Option<u32>>("radius")? {
+        out.radius = radius;
+    }
+    if let Some(width) = opts.get::<_, Option<u32>>("width")? {
+        out.width = Some(width);
+    }
+    if let Some(height) = opts.get::<_, Option<u32>>("height")? {
+        out.height = Some(height);
+    }
+    if let Some(filter) = opts.get::<_, Option<String>>("filter")? {
+        out.filter = ResizeFilter::parse(&filter).ok_or_else(|| {
+            LuaError::RuntimeError(format!("{}: unknown resize filter '{}'", api, filter))
+        })?;
+    }
+    if let Some(color) = opts.get::<_, Option<LuaTable>>("color")? {
+        let r = color.get::<_, Option<u8>>(1)?.unwrap_or(0);
+        let g = color.get::<_, Option<u8>>(2)?.unwrap_or(0);
+        let b = color.get::<_, Option<u8>>(3)?.unwrap_or(0);
+        let a = color.get::<_, Option<u8>>(4)?.unwrap_or(255);
+        out.color = Some((r, g, b, a));
+    }
+    Ok(out)
+}
+
+fn parse_region(opts: Option<&LuaTable>) -> LuaResult<Option<(u32, u32, u32, u32)>> {
+    let Some(opts) = opts else {
+        return Ok(None);
+    };
+    let Some(region) = opts.get::<_, Option<LuaTable>>("region")? else {
+        return Ok(None);
+    };
+    Ok(Some((
+        region.get::<_, u32>(1).or_else(|_| region.get("x"))?,
+        region.get::<_, u32>(2).or_else(|_| region.get("y"))?,
+        region.get::<_, u32>(3).or_else(|_| region.get("w"))?,
+        region.get::<_, u32>(4).or_else(|_| region.get("h"))?,
+    )))
 }
 
 /// Lua-side compatibility handle for a province id grid decoded by the province subsystem.
@@ -382,6 +439,79 @@ impl LuaUserData for LuaProvinceGrid {
             } else {
                 Ok(LuaValue::Nil)
             }
+        });
+    }
+}
+/// Lua-side decoded animated image containing frame images and durations.
+pub struct LuaAnimatedImage {
+    /// Decoded RGBA frames.
+    pub(crate) frames: Vec<ImageData>,
+    /// Per-frame durations in milliseconds.
+    pub(crate) durations_ms: Vec<u32>,
+}
+/// Provides Lua methods for decoded animated image inspection.
+impl LuaUserData for LuaAnimatedImage {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- frameCount --
+        /// Returns the number of decoded frames.
+        /// @return | integer | Frame count.
+        methods.add_method("frameCount", |_, this, ()| Ok(this.frames.len()));
+        // -- getFrame --
+        /// Returns a decoded frame by one-based index.
+        /// @param | index | integer | One-based frame index.
+        /// @return | LImageData | Decoded frame image.
+        methods.add_method("getFrame", |lua, this, index: usize| {
+            if index == 0 || index > this.frames.len() {
+                return Err(LuaError::RuntimeError(format!(
+                    "getFrame: frame {} out of range",
+                    index
+                )));
+            }
+            lua.create_userdata(this.frames[index - 1].clone())
+        });
+        // -- getDuration --
+        /// Returns a frame duration in milliseconds by one-based index.
+        /// @param | index | integer | One-based frame index.
+        /// @return | integer | Duration in milliseconds.
+        methods.add_method("getDuration", |_, this, index: usize| {
+            if index == 0 || index > this.durations_ms.len() {
+                return Err(LuaError::RuntimeError(format!(
+                    "getDuration: frame {} out of range",
+                    index
+                )));
+            }
+            Ok(this.durations_ms[index - 1])
+        });
+        // -- getFrames --
+        /// Returns all decoded frame images as an array.
+        /// @return | table | Array of `LImageData` values.
+        methods.add_method("getFrames", |lua, this, ()| {
+            let out = lua.create_table()?;
+            for (i, frame) in this.frames.iter().enumerate() {
+                out.set(i + 1, lua.create_userdata(frame.clone())?)?;
+            }
+            Ok(out)
+        });
+        // -- getDurations --
+        /// Returns all frame durations in milliseconds.
+        /// @return | table | Array of integer durations.
+        methods.add_method("getDurations", |lua, this, ()| {
+            let out = lua.create_table()?;
+            for (i, duration) in this.durations_ms.iter().enumerate() {
+                out.set(i + 1, *duration)?;
+            }
+            Ok(out)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name.
+        /// @return | string | The string `LAnimatedImage`.
+        methods.add_method("type", |_, _, ()| Ok("LAnimatedImage"));
+        // -- typeOf --
+        /// Returns whether this handle matches a supported type name.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | True when the supplied type name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LAnimatedImage" || name == "LObject")
         });
     }
 }
@@ -807,6 +937,37 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     let s = state.clone();
+    // -- loadAnimated --
+    /// Loads an animated GIF from GameFS path or decodes animated GIF bytes.
+    /// @param | source | string | GameFS path or raw GIF bytes.
+    /// @return | LAnimatedImage | Decoded frames and durations.
+    tbl.set(
+        "loadAnimated",
+        lua.create_function(move |lua, source: LuaString| {
+            let label = source.to_str().unwrap_or("<bytes>");
+            let bytes = if let Ok(path) = source.to_str() {
+                s.borrow()
+                    .fs
+                    .read_bytes(path)
+                    .unwrap_or_else(|_| source.as_bytes().to_vec())
+            } else {
+                source.as_bytes().to_vec()
+            };
+            let decoded = crate::image::animated_gif::decode_gif(&bytes, label)
+                .map_err(LuaError::external)?;
+            let mut frames = Vec::with_capacity(decoded.len());
+            let mut durations_ms = Vec::with_capacity(decoded.len());
+            for frame in decoded {
+                frames.push(frame.image);
+                durations_ms.push(frame.duration_ms);
+            }
+            lua.create_userdata(LuaAnimatedImage {
+                frames,
+                durations_ms,
+            })
+        })?,
+    )?;
+    let s = state.clone();
     // -- loadLayered --
     /// Loads a serialized layered image stack from GameFS.
     /// @param | filename | string | GameFS path to the layered image file.
@@ -893,6 +1054,123 @@ impl mlua::UserData for ImageData {
         methods.add_method("getDimensions", |_, this, ()| {
             let (w, h) = this.dimensions();
             Ok((w, h))
+        });
+        // -- clone --
+        /// Returns a deep copy of this image data.
+        /// @return | LImageData | Copied image data.
+        methods.add_method("clone", |lua, this, ()| lua.create_userdata(this.clone()));
+        // -- copyRegion --
+        /// Copies a rectangular region into a new image.
+        /// @param | x | integer | Source x coordinate.
+        /// @param | y | integer | Source y coordinate.
+        /// @param | w | integer | Region width.
+        /// @param | h | integer | Region height.
+        /// @return | LImageData | Copied region.
+        methods.add_method(
+            "copyRegion",
+            |lua, this, (x, y, w, h): (u32, u32, u32, u32)| {
+                let region = this.get_region(x, y, w, h).ok_or_else(|| {
+                    LuaError::RuntimeError("copyRegion: region is empty or out of bounds".into())
+                })?;
+                lua.create_userdata(region)
+            },
+        );
+        // -- applyEffect --
+        /// Applies a named image effect in place, or returns a new image when the effect changes size.
+        /// @param | name | string | Effect name.
+        /// @param | opts | table? | Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`.
+        /// @return | LImageData|nil | New image for size-changing effects, otherwise nil.
+        methods.add_method_mut(
+            "applyEffect",
+            |lua, this, (name, opts): (String, Option<LuaTable>)| {
+                let effect_opts = parse_effect_options(opts.clone(), "applyEffect")?;
+                if let Some((x, y, w, h)) = parse_region(opts.as_ref())? {
+                    let mut region = this.get_region(x, y, w, h).ok_or_else(|| {
+                        LuaError::RuntimeError(
+                            "applyEffect: region is empty or out of bounds".into(),
+                        )
+                    })?;
+                    let result = region
+                        .apply_effect_named(&name, &effect_opts)
+                        .map_err(LuaError::RuntimeError)?;
+                    if let Some(new_image) = result {
+                        return Ok(LuaValue::UserData(lua.create_userdata(new_image)?));
+                    }
+                    this.blit(&region, x as i32, y as i32);
+                    return Ok(LuaValue::Nil);
+                }
+                let result = this
+                    .apply_effect_named(&name, &effect_opts)
+                    .map_err(LuaError::RuntimeError)?;
+                match result {
+                    Some(image) => Ok(LuaValue::UserData(lua.create_userdata(image)?)),
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
+        // -- applyEffects --
+        /// Applies a sequence of named effects in order.
+        /// @param | effects | table | Array of effect names or `{name=..., opts=...}` tables.
+        /// @param | opts | table? | Default options used by string entries.
+        /// @return | LImageData|nil | Last new image returned by a size-changing effect, otherwise nil.
+        methods.add_method_mut(
+            "applyEffects",
+            |_lua, this, (effects, default_opts): (LuaTable, Option<LuaTable>)| {
+                for value in effects.sequence_values::<LuaValue>() {
+                    let result = match value? {
+                        LuaValue::String(name) => {
+                            let name = name.to_str()?.to_string();
+                            let opts = parse_effect_options(default_opts.clone(), "applyEffects")?;
+                            this.apply_effect_named(&name, &opts)
+                                .map_err(LuaError::RuntimeError)?
+                        }
+                        LuaValue::Table(entry) => {
+                            let name: String = entry
+                                .get::<_, Option<String>>("name")?
+                                .or_else(|| entry.get::<_, Option<String>>(1).ok().flatten())
+                                .ok_or_else(|| {
+                                    LuaError::RuntimeError(
+                                        "applyEffects: effect table missing name".into(),
+                                    )
+                                })?;
+                            let opts_table = entry
+                                .get::<_, Option<LuaTable>>("opts")?
+                                .or_else(|| default_opts.clone());
+                            let opts = parse_effect_options(opts_table, "applyEffects")?;
+                            this.apply_effect_named(&name, &opts)
+                                .map_err(LuaError::RuntimeError)?
+                        }
+                        other => {
+                            return Err(LuaError::RuntimeError(format!(
+                                "applyEffects: unsupported entry type {}",
+                                other.type_name()
+                            )));
+                        }
+                    };
+                    if let Some(image) = result {
+                        *this = image;
+                    }
+                }
+                Ok(LuaValue::Nil)
+            },
+        );
+        // -- applyMask --
+        /// Multiplies this image alpha by another image's alpha channel.
+        /// @param | mask | LImageData | Same-sized alpha mask image.
+        methods.add_method_mut("applyMask", |_, this, mask: LuaAnyUserData| {
+            let mask = mask.borrow::<ImageData>()?;
+            this.apply_mask_image(&mask).map_err(LuaError::RuntimeError)
+        });
+        // -- transform --
+        /// Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.
+        /// @param | opts | table | Transform options.
+        /// @return | LImageData | Transformed image.
+        methods.add_method("transform", |lua, this, opts: Option<LuaTable>| {
+            let options = parse_effect_options(opts, "transform")?;
+            let out = this
+                .transform_image(&options)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(out)
         });
         // -- getPixel --
         /// Returns RGBA channels at a pixel coordinate.

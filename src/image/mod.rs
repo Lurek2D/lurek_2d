@@ -38,7 +38,7 @@ pub mod visualization;
 /// Backward-compat re-export: province_grid moved to `crate::province::province_grid`.
 pub use crate::province::province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry};
 /// Animated GIF export types.
-pub use animated_gif::{AnimatedGifOptions, AnimatedGifRepeat};
+pub use animated_gif::{AnimatedGifFrame, AnimatedGifOptions, AnimatedGifRepeat};
 /// Rectangle packing types.
 pub use rect_packing::{PackedRect, RectPacker};
 /// Texture upload helpers and texture metadata types.

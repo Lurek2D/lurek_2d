@@ -5,6 +5,8 @@
 //! `skeleton.rs` coordinates playback and pose updates, and `render.rs` turns posed rigs into engine draw commands.
 //! Change this file when the public spine symbol map moves; change siblings when rig behavior or data rules change.
 
+/// Neutral attachment source descriptors for slot visuals.
+pub mod attachment;
 /// Bone transform hierarchy and parent-relative pose computation.
 pub mod bone;
 /// Inverse-kinematics constraint resolving 2-bone IK chains.
@@ -19,6 +21,7 @@ pub mod skeleton;
 pub mod slot;
 /// Timeline, keyframe, easing, and animation clip data for skeletal animation.
 pub mod timeline;
+pub use attachment::{AttachmentSource, AttachmentSourceKind};
 pub use bone::Bone;
 pub use ik::IKConstraint;
 pub use importer::{skeleton_from_json_str, skeleton_from_json_value, SpineImportError};

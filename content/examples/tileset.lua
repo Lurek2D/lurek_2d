@@ -452,3 +452,20 @@ do
     local label = "tileset"
     lurek.log.info(label .. " verified = " .. tostring(verified))
 end
+--@api: LTileSet:setTerrainProfile
+do
+    local tileset = lurek.tileset.newTileSet(1, 16, 4, 16, 16)
+    tileset:setTerrainProfile("grass", { terrainSet = "ground", mode = "matchCornersAndSides", defaultTileId = 1 })
+    local profile = tileset:getTerrainProfile("grass")
+    local mode = profile.mode
+    lurek.log.info("[tileset] terrain profile mode=" .. mode)
+end
+
+--@api: LTileSet:getTerrainProfile
+do
+    local tileset = lurek.tileset.newTileSet(1, 16, 4, 16, 16)
+    tileset:setTerrainProfile("water", { terrainSet = "liquid", mode = "matchSides", defaultTileId = 2 })
+    local profile = tileset:getTerrainProfile("water")
+    local id = profile.defaultTileId
+    lurek.log.info("[tileset] terrain default=" .. tostring(id))
+end

@@ -10,7 +10,7 @@ use crate::math::Rect;
 use crate::runtime::log_messages::{TS01, TS02};
 use crate::tileset::animation::TileAnimFrame;
 use crate::tileset::archetype::TileObjectArchetype;
-use crate::tileset::autotile::AutoTileMode;
+use crate::tileset::autotile::{AutoTileMode, TerrainProfile};
 use std::collections::HashMap;
 
 /// A tileset slice of a sprite-sheet texture plus reusable object archetypes.
@@ -30,6 +30,7 @@ pub struct TileSet {
     auto_rules_4: HashMap<(String, u8), u32>,
     auto_rules_8: HashMap<(String, u16), u32>,
     auto_modes: HashMap<String, AutoTileMode>,
+    terrain_profiles: HashMap<String, TerrainProfile>,
 }
 
 impl TileSet {
@@ -59,6 +60,7 @@ impl TileSet {
             auto_rules_4: HashMap::new(),
             auto_rules_8: HashMap::new(),
             auto_modes: HashMap::new(),
+            terrain_profiles: HashMap::new(),
         }
     }
 
@@ -113,6 +115,16 @@ impl TileSet {
             .saturating_mul(2)
             .saturating_add(rows.max(1).saturating_mul(self.tile_height + self.spacing))
             .saturating_sub(self.spacing)
+    }
+
+    /// Store a Godot-style terrain-set profile by name.
+    pub fn set_terrain_profile(&mut self, name: &str, profile: TerrainProfile) {
+        self.terrain_profiles.insert(name.to_string(), profile);
+    }
+
+    /// Return a terrain-set profile by name.
+    pub fn get_terrain_profile(&self, name: &str) -> Option<&TerrainProfile> {
+        self.terrain_profiles.get(name)
     }
 
     /// Return the source-image `Rect` in pixels for `local_tile_id`.

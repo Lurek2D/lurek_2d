@@ -14,7 +14,7 @@
 - Source path: `src/animation`
 - Binding: `src/lua_api/animation_api.rs`
 - Namespace: `lurek.animation`
-- Lua API surface: `7` functions, `8` types, `65` methods
+- Lua API surface: `10` functions, `8` types, `66` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -153,7 +153,10 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`, `s
 ### Functions
 
 - `lurek.animation.buildCharacter(cfg) -> table`: Builds a character animation bundle from grid frame and clip configuration.
+- `lurek.animation.fromAnimatedImage(animated, opts?) -> LAnimation`: Creates an animation from decoded frames returned by `lurek.image.loadAnimated`.
 - `lurek.animation.fromAseprite(json_str) -> LuaValue`: Loads an animation from an Aseprite JSON export string.
+- `lurek.animation.fromFrames(frames, opts?) -> LAnimation`: Creates an animation from explicit frame rectangle DTOs.
+- `lurek.animation.fromSpriteSheet(sheet, opts?) -> LAnimation`: Creates an animation from a `LSpriteSheet`, optionally using a named group.
 - `lurek.animation.new() -> LAnimation`: Creates an empty animation with no frames or clips.
 - `lurek.animation.newBlendLayerSet() -> LBlendLayerSet`: Creates an empty blend layer set for layered animation playback.
 - `lurek.animation.newCurve() -> LAnimCurve`: Creates an empty animation curve. This function is exposed to Lua scripts.
@@ -261,6 +264,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`, `s
 - `LAnimation:play(name) -> boolean`: Starts playback of a named clip. This method is available to Lua scripts.
 - `LAnimation:pollEvents() -> table`: Drains animation events produced since the previous poll.
 - `LAnimation:resume() -> nil`: Resumes playback of a paused animation.
+- `LAnimation:seek(index) -> nil`: Seeks to a frame index in the current clip.
 - `LAnimation:setClipMode(name, mode) -> boolean`: Changes the playback mode for an existing clip.
 - `LAnimation:setFrame(index) -> nil`: Sets the current frame index directly.
 - `LAnimation:setImage(image) -> nil`: Stores a spritesheet image on this animation so draw can be called without an explicit image argument.

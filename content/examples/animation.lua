@@ -1362,3 +1362,45 @@ do
     lurek.log.info("is sync group=" .. tostring(isSyncGroup))
     lurek.log.info("is curve=" .. tostring(isCurve))
 end
+--@api: lurek.animation.fromFrames
+do
+    local frames = {
+        { x = 0, y = 0, w = 16, h = 16 },
+        { x = 16, y = 0, w = 16, h = 16 },
+    }
+    local anim = lurek.animation.fromFrames(frames, { name = "idle", fps = 8, loop = true })
+    local count = anim:getFrameCount()
+    lurek.log.info("[animation] fromFrames count=" .. tostring(count))
+end
+
+--@api: lurek.animation.fromSpriteSheet
+do
+    local sheet = lurek.sprite.newSheet(64, 16, 16, 16)
+    sheet:nameGroup("walk", 0, 4)
+    local anim = lurek.animation.fromSpriteSheet(sheet, { group = "walk", name = "walk", fps = 10 })
+    local clips = anim:getClipCount()
+    lurek.log.info("[animation] fromSpriteSheet clips=" .. tostring(clips))
+end
+
+--@api: lurek.animation.fromAnimatedImage
+do
+    local a = lurek.image.newImageData(2, 2)
+    local b = lurek.image.newImageData(2, 2)
+    a:fill(255, 0, 0, 255)
+    b:fill(0, 255, 0, 255)
+    lurek.image.saveGIF({ a, b }, "work/example_animation_from_gif.gif", { delayMs = 40 })
+    local decoded = lurek.image.loadAnimated("work/example_animation_from_gif.gif")
+    local anim = lurek.animation.fromAnimatedImage(decoded, { name = "gif", loop = true })
+    lurek.log.info("[animation] fromAnimatedImage frames=" .. tostring(anim:getFrameCount()))
+end
+
+--@api: LAnimation:seek
+do
+    local anim = lurek.animation.fromFrames({
+        { x = 0, y = 0, w = 8, h = 8 },
+        { x = 8, y = 0, w = 8, h = 8 },
+    }, { name = "idle", fps = 6, play = true })
+    anim:seek(1)
+    local frame = anim:getCurrentFrame()
+    lurek.log.info("[animation] seek frame=" .. tostring(frame))
+end

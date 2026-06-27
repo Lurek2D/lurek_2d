@@ -685,6 +685,40 @@ end
 
 ---
 
+### `lurek.asset.getRevision`
+
+Returns the current reload revision for an asset handle.
+
+```lua
+lurek.asset.getRevision(handle)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `handle` | [LAssetHandle](#lassethandle) | Asset handle to inspect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current revision, or 0 when unloaded. |
+
+**Example**
+
+```lua
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml")
+    local revision = lurek.asset.getRevision(handle)
+    local info = lurek.asset.resolve(handle)
+    lurek.log.info("[asset] revision=" .. tostring(revision) .. " type=" .. tostring(info.type))
+    lurek.asset.unload(handle)
+end
+```
+
+---
+
 ### `lurek.asset.getTags`
 
 Returns an array of all tags for an asset handle.
@@ -982,6 +1016,76 @@ end
 
 ---
 
+### `lurek.asset.loadManifest`
+
+Loads a TOML asset manifest and registers listed assets without transforming them.
+
+```lua
+lurek.asset.loadManifest(path)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | string | Manifest path. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `[LAssetHandle](#lassethandle)` values for loaded entries. |
+
+**Example**
+
+```lua
+do
+    local handles = lurek.asset.loadManifest("tests/fixtures/asset_manifest.toml")
+    local first = handles[1]
+    local info = lurek.asset.resolve(first)
+    lurek.log.info("[asset] manifest loaded " .. tostring(info.name))
+    lurek.asset.clear()
+end
+```
+
+---
+
+### `lurek.asset.onReload`
+
+Registers a callback fired by `lurek.asset.reload(handle)`.
+
+```lua
+lurek.asset.onReload(handle, callback)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `handle` | [LAssetHandle](#lassethandle) | Asset handle to observe. |
+| `callback` | function | Called as `callback(handle, revision)`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | No value is returned. |
+
+**Example**
+
+```lua
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml")
+    local seen = 0
+    lurek.asset.onReload(handle, function(_, revision) seen = revision end)
+    local revision = lurek.asset.reload(handle)
+    lurek.log.info("[asset] callback revision=" .. tostring(seen or revision))
+    lurek.asset.unload(handle)
+end
+```
+
+---
+
 ### `lurek.asset.preload`
 
 Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
@@ -1095,6 +1199,40 @@ end
 
 ---
 
+### `lurek.asset.reload`
+
+Reloads the cached asset metadata/content and increments its revision.
+
+```lua
+lurek.asset.reload(handle)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `handle` | [LAssetHandle](#lassethandle) | Asset handle to refresh. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | New revision. |
+
+**Example**
+
+```lua
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml")
+    local before = lurek.asset.getRevision(handle)
+    local after = lurek.asset.reload(handle)
+    lurek.log.info("[asset] reload revision " .. tostring(before) .. " -> " .. tostring(after))
+    lurek.asset.unload(handle)
+end
+```
+
+---
+
 ### `lurek.asset.removeTag`
 
 Removes a tag from the tag set of an asset handle.
@@ -1141,6 +1279,40 @@ do
     example_print_log("removeTag returned=" .. tostring(removed))
     example_print_log("hasTag after remove=" .. tostring(lurek.asset.hasTag(h, "temp")))
     lurek.asset.unload(h)
+end
+```
+
+---
+
+### `lurek.asset.resolve`
+
+Returns a metadata snapshot for an asset handle without transforming the asset data.
+
+```lua
+lurek.asset.resolve(handle)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `handle` | [LAssetHandle](#lassethandle) | Asset handle to inspect. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Snapshot with path, type, refcount, revision, watched, name, group, and tags. |
+
+**Example**
+
+```lua
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml", { name = "cargo-example" })
+    local info = lurek.asset.resolve(handle)
+    local label = info.name .. ":" .. info.type
+    lurek.log.info("[asset] resolved " .. label)
+    lurek.asset.unload(handle)
 end
 ```
 
@@ -1348,9 +1520,48 @@ end
 
 ---
 
+### `lurek.asset.watch`
+
+Marks an asset handle or path as watched for live reload.
+
+```lua
+lurek.asset.watch(handle_or_path, asset_type)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `handle_or_path` | [LAssetHandle](#lassethandle)|string | Existing handle or path to register as watched. |
+| `asset_type?` | string | Type used when `handle_or_path` is a path. Defaults to `unknown`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAssetHandle](#lassethandle) | Watched handle. |
+
+**Example**
+
+```lua
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml")
+    local watched = lurek.asset.watch(handle)
+    local info = lurek.asset.resolve(watched)
+    lurek.log.info("[asset] watched=" .. tostring(info.watched))
+    lurek.asset.unload(handle)
+end
+```
+
+---
+
 ## Module Fields
 
 *No module-level fields documented.*
+
+## Callback Parameters
+
+- `lurek.asset.onReload` param `callback` (`function`): Called as `callback(handle, revision)`.
 
 ## Enums
 

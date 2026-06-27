@@ -1,0 +1,7 @@
+[[assets]]
+path = "Cargo.toml"
+type = "toml"
+name = "cargo-manifest"
+group = "config"
+tags = ["manifest"]
+watch = true

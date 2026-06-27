@@ -285,8 +285,10 @@ mod terminal_state_tests {
     #[test]
     fn clipboard_limit_enforced() {
         let mut terminal = Terminal::new(20, 6);
-        let mut limits = TerminalLimits::default();
-        limits.max_clipboard_chars = 4;
+        let limits = TerminalLimits {
+            max_clipboard_chars: 4,
+            ..Default::default()
+        };
         terminal.set_limits(limits);
 
         let source = terminal.add_widget(Widget::new_text_box(1, 1, 12));
@@ -308,9 +310,11 @@ mod terminal_state_tests {
     #[test]
     fn terminal_rejects_or_truncates_giant_line() {
         let mut terminal = Terminal::new(20, 6);
-        let mut limits = TerminalLimits::default();
-        limits.max_line_chars = 4;
-        limits.max_history_entry_chars = 5;
+        let limits = TerminalLimits {
+            max_line_chars: 4,
+            max_history_entry_chars: 5,
+            ..Default::default()
+        };
         terminal.set_limits(limits);
 
         terminal.push_scrollback("abcdef");

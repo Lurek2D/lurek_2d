@@ -5685,6 +5685,28 @@ LTileSet:getSpacing()
 
 ---
 
+#### `LTileSet:getTerrainProfile`
+
+Returns a Godot-style terrain-set profile.
+
+```lua
+LTileSet:getTerrainProfile(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Profile table or nil. |
+
+---
+
 #### `LTileSet:getTextureDimensions`
 
 Returns the computed texture width and height in pixels.
@@ -5947,6 +5969,23 @@ LTileSet:setProperty(tile_id, name, value)
 | `tile_id` | number | Tile id (1-based). |
 | `name` | string | Property name. |
 | `value` | any | String, number, boolean, or nil to clear the property. |
+
+---
+
+#### `LTileSet:setTerrainProfile`
+
+Sets a Godot-style terrain-set profile for autotile authoring.
+
+```lua
+LTileSet:setTerrainProfile(name, profile)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name. |
+| `profile` | table | `{terrainSet, mode, defaultTileId?}`. |
 
 ---
 

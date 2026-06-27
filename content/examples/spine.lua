@@ -1392,3 +1392,32 @@ do
     local duration = anim:getDuration()
     lurek.log.info("[spine] addBoneTrack duration=" .. tostring(duration) .. " pose entries=" .. tostring(#pose))
 end
+--@api: LSkeleton:bindAtlas
+do
+    local skeleton = lurek.spine.newSkeleton("atlas_sources")
+    skeleton:addBone("root")
+    skeleton:addSlot("head_slot", 0, "head")
+    local atlas = lurek.sprite.parseAtlas('{"frames":{"head":{"frame":{"x":0,"y":0,"w":16,"h":16},"rotated":false}}}')
+    local count = skeleton:bindAtlas(atlas)
+    lurek.log.info("[spine] bound atlas sources=" .. tostring(count))
+end
+
+--@api: LSkeleton:setAttachmentSource
+do
+    local skeleton = lurek.spine.newSkeleton("manual_sources")
+    skeleton:addBone("root")
+    skeleton:addSlot("body", 0, "body")
+    skeleton:setAttachmentSource("body", { kind = "imageRegion", name = "body", x = 0, y = 0, w = 16, h = 16 })
+    local source = skeleton:getAttachmentSource("body")
+    lurek.log.info("[spine] source kind=" .. tostring(source.kind))
+end
+
+--@api: LSkeleton:getAttachmentSource
+do
+    local skeleton = lurek.spine.newSkeleton("source_lookup")
+    skeleton:addBone("root")
+    skeleton:addSlot("hand", 0, "hand")
+    skeleton:setAttachmentSource("hand", { kind = "spriteRegion", name = "hand", x = 4, y = 4, w = 8, h = 8 })
+    local source = skeleton:getAttachmentSource("hand")
+    lurek.log.info("[spine] source width=" .. tostring(source.w))
+end

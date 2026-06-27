@@ -917,6 +917,71 @@ describe("LProvinceGrid methods", function()
         expect_type("boolean", grid:typeOf("LObject"))
     end)
 end)
+
+-- @describe image extended editing API
+describe("image extended editing API", function()
+    -- @covers LImageData:clone
+    -- @covers LImageData:copyRegion
+    it("clone and copyRegion return independent image data", function()
+        local img = solid_image(4, 4, 10, 20, 30, 255)
+        local copy = img:clone()
+        local region = img:copyRegion(1, 1, 2, 2)
+        copy:setPixel(0, 0, 1, 2, 3, 4)
+        expect_pixel(img, 0, 0, 10, 20, 30, 255)
+        expect_equal(2, region:getWidth())
+        expect_equal(2, region:getHeight())
+    end)
+
+    -- @covers LImageData:applyEffect
+    -- @covers LImageData:applyEffects
+    it("applyEffect and applyEffects mutate pixels through named effects", function()
+        local img = solid_image(2, 2, 20, 40, 80, 255)
+        img:applyEffect("invert", { region = { 0, 0, 1, 1 } })
+        local r = ({ img:getPixel(0, 0) })[1]
+        expect_equal(235, r)
+        img:applyEffects({ "grayscale", { name = "posterize", opts = { levels = 2 } } })
+        expect_type("number", ({ img:getPixel(1, 1) })[1])
+    end)
+
+    -- @covers LImageData:applyMask
+    it("applyMask multiplies alpha by the mask alpha", function()
+        local img = solid_image(1, 1, 10, 20, 30, 200)
+        local mask = solid_image(1, 1, 0, 0, 0, 128)
+        img:applyMask(mask)
+        local _, _, _, a = img:getPixel(0, 0)
+        expect_true(a < 200)
+    end)
+
+    -- @covers LImageData:transform
+    it("transform returns resized image data", function()
+        local img = solid_image(2, 2, 10, 20, 30, 255)
+        local resized = img:transform({ width = 4, height = 3, filter = "linear" })
+        expect_equal(4, resized:getWidth())
+        expect_equal(3, resized:getHeight())
+    end)
+
+    -- @covers lurek.image.loadAnimated
+    -- @covers LAnimatedImage:frameCount
+    -- @covers LAnimatedImage:getFrame
+    -- @covers LAnimatedImage:getDuration
+    -- @covers LAnimatedImage:getFrames
+    -- @covers LAnimatedImage:getDurations
+    -- @covers LAnimatedImage:type
+    -- @covers LAnimatedImage:typeOf
+    it("loadAnimated decodes saved GIF frames and durations", function()
+        local a = solid_image(2, 2, 255, 0, 0, 255)
+        local b = solid_image(2, 2, 0, 255, 0, 255)
+        lurek.image.saveGIF({ a, b }, "work/test_load_animated.gif", { delayMs = 40 })
+        local animated = lurek.image.loadAnimated("work/test_load_animated.gif")
+        expect_equal(2, animated:frameCount())
+        expect_type("userdata", animated:getFrame(1))
+        expect_true(animated:getDuration(1) >= 10)
+        expect_equal(2, #animated:getFrames())
+        expect_equal(2, #animated:getDurations())
+        expect_equal("LAnimatedImage", animated:type())
+        expect_true(animated:typeOf("LObject"))
+    end)
+end)
 end
 -- END test_image_core_unit.lua
 

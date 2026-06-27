@@ -631,6 +631,48 @@ describe("LBlendLayerSet methods", function()
         expect_true(set:typeOf("LBlendLayerSet"))
     end)
 end)
+
+-- @describe animation source adapters
+describe("animation source adapters", function()
+    -- @covers lurek.animation.fromFrames
+    it("fromFrames creates playback from frame DTOs", function()
+        local anim = lurek.animation.fromFrames({
+            { x = 0, y = 0, w = 8, h = 8 },
+            { x = 8, y = 0, w = 8, h = 8 },
+        }, { name = "idle", fps = 10, loop = true, play = true })
+        expect_equal(2, anim:getFrameCount())
+        expect_true(anim:isPlaying())
+    end)
+
+    -- @covers lurek.animation.fromSpriteSheet
+    it("fromSpriteSheet consumes sprite sheet frames", function()
+        local sheet = lurek.sprite.newSheet(32, 16, 16, 16)
+        local anim = lurek.animation.fromSpriteSheet(sheet, { name = "sheet", fps = 8 })
+        expect_equal(2, anim:getFrameCount())
+        expect_equal(1, anim:getClipCount())
+    end)
+
+    -- @covers lurek.animation.fromAnimatedImage
+    it("fromAnimatedImage consumes decoded animated image frames", function()
+        local a = lurek.image.newImageData(2, 2)
+        local b = lurek.image.newImageData(2, 2)
+        a:fill(255, 0, 0, 255)
+        b:fill(0, 255, 0, 255)
+        lurek.image.saveGIF({ a, b }, "work/test_animation_from_animated.gif", { delayMs = 30 })
+        local decoded = lurek.image.loadAnimated("work/test_animation_from_animated.gif")
+        local anim = lurek.animation.fromAnimatedImage(decoded, { name = "gif" })
+        expect_equal(2, anim:getFrameCount())
+        expect_equal(1, anim:getClipCount())
+    end)
+
+    -- @covers LAnimation:seek
+    it("seek aliases direct frame positioning", function()
+        local anim = make_basic_animation()
+        anim:play("idle")
+        anim:seek(1)
+        expect_equal(1, anim:getCurrentFrame())
+    end)
+end)
 end
 -- END test_animation_core_unit.lua
 

@@ -41,7 +41,7 @@ use slotmap::SlotMap;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
-use std::rc::Weak;
+use std::rc::{Rc, Weak};
 use std::sync::Arc;
 use winit::window::Window;
 
@@ -385,6 +385,8 @@ pub struct SharedState {
     pub background_color: [f32; 4],
     /// Stores textures state.
     pub textures: SlotMap<TextureKey, TextureData>,
+    /// Shared asset cache used by `lurek.asset` and specialist loaders.
+    pub asset_cache: Rc<RefCell<crate::asset::AssetCache>>,
     /// Stores released_texture_handles state.
     pub released_texture_handles: HashSet<u64>,
     /// Stores pending_texture_releases state.
@@ -574,6 +576,7 @@ impl SharedState {
             current_color: [1.0, 1.0, 1.0, 1.0],
             background_color: [0.15, 0.12, 0.25, 1.0],
             textures: SlotMap::with_key(),
+            asset_cache: Rc::new(RefCell::new(crate::asset::AssetCache::new())),
             released_texture_handles: HashSet::new(),
             pending_texture_releases: VecDeque::new(),
             keys_down: HashSet::new(),

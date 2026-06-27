@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated": "2026-06-27T08:37:21.915216+00:00",
+    "generated": "2026-06-27T10:41:01.487978+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 6356,
+      "lua_functions": 6399,
       "lua_modules": 72,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 6356,
-      "documented": 6356,
+      "total_functions": 6399,
+      "documented": 6399,
       "coverage_pct": 100.0,
       "modules": 72
     },
@@ -7728,7 +7728,7 @@
             "typed_params": [],
             "inferred_return": "LAnimation",
             "return_description": "New animation handle.",
-            "line": 675,
+            "line": 754,
             "file": "src/lua_api/animation_api.rs"
           },
           {
@@ -7751,7 +7751,94 @@
             ],
             "inferred_return": "LuaValue",
             "return_description": "Animation handle when parsing succeeds; raises an error when the JSON cannot be parsed.",
-            "line": 688,
+            "line": 767,
+            "file": "src/lua_api/animation_api.rs"
+          },
+          {
+            "name": "fromFrames",
+            "lua_name": "lurek.animation.fromFrames",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates an animation from explicit frame rectangle DTOs.",
+            "full_doc": "Creates an animation from explicit frame rectangle DTOs.\n@param | frames | table | Array of `{x, y, w, h}` frame rectangles.\n@param | opts | table? | `{name, fps, loop, mode, play}` clip options.\n@return | LAnimation | New animation handle.",
+            "params_doc": "- `frames` â€” `table`: Array of `{x, y, w, h}` frame rectangles.\n- `opts` â€” `table?`: `{name, fps, loop, mode, play}` clip options.",
+            "returns_doc": "LAnimation",
+            "inferred_sig": "(frames, [opts])",
+            "typed_params": [
+              [
+                "frames",
+                "table",
+                false,
+                "Array of `{x, y, w, h}` frame rectangles."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "`{name, fps, loop, mode, play}` clip options."
+              ]
+            ],
+            "inferred_return": "LAnimation",
+            "return_description": "New animation handle.",
+            "line": 797,
+            "file": "src/lua_api/animation_api.rs"
+          },
+          {
+            "name": "fromSpriteSheet",
+            "lua_name": "lurek.animation.fromSpriteSheet",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates an animation from a `LSpriteSheet`, optionally using a named group.",
+            "full_doc": "Creates an animation from a `LSpriteSheet`, optionally using a named group.\n@param | sheet | LSpriteSheet | Source sprite sheet.\n@param | opts | table? | `{group, name, fps, loop, mode, play}` clip options.\n@return | LAnimation | New animation handle.",
+            "params_doc": "- `sheet` â€” `LSpriteSheet`: Source sprite sheet.\n- `opts` â€” `table?`: `{group, name, fps, loop, mode, play}` clip options.",
+            "returns_doc": "LAnimation",
+            "inferred_sig": "(sheet_ud, [opts])",
+            "typed_params": [
+              [
+                "sheet",
+                "LSpriteSheet",
+                false,
+                "Source sprite sheet."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "`{group, name, fps, loop, mode, play}` clip options."
+              ]
+            ],
+            "inferred_return": "LAnimation",
+            "return_description": "New animation handle.",
+            "line": 815,
+            "file": "src/lua_api/animation_api.rs"
+          },
+          {
+            "name": "fromAnimatedImage",
+            "lua_name": "lurek.animation.fromAnimatedImage",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates an animation from decoded frames returned by `lurek.image.loadAnimated`.",
+            "full_doc": "Creates an animation from decoded frames returned by `lurek.image.loadAnimated`.\n@param | animated | LAnimatedImage | Decoded animated image.\n@param | opts | table? | `{name, fps, loop, mode, play}` clip options.\n@return | LAnimation | New animation handle.",
+            "params_doc": "- `animated` â€” `LAnimatedImage`: Decoded animated image.\n- `opts` â€” `table?`: `{name, fps, loop, mode, play}` clip options.",
+            "returns_doc": "LAnimation",
+            "inferred_sig": "(animated_ud, [opts])",
+            "typed_params": [
+              [
+                "animated",
+                "LAnimatedImage",
+                false,
+                "Decoded animated image."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "`{name, fps, loop, mode, play}` clip options."
+              ]
+            ],
+            "inferred_return": "LAnimation",
+            "return_description": "New animation handle.",
+            "line": 854,
             "file": "src/lua_api/animation_api.rs"
           },
           {
@@ -7780,7 +7867,7 @@
             ],
             "inferred_return": "LAnimStateMachine",
             "return_description": "New animation state machine handle.",
-            "line": 718,
+            "line": 885,
             "file": "src/lua_api/animation_api.rs"
           },
           {
@@ -7796,7 +7883,7 @@
             "typed_params": [],
             "inferred_return": "LAnimCurve",
             "return_description": "New animation curve handle.",
-            "line": 731,
+            "line": 898,
             "file": "src/lua_api/animation_api.rs"
           },
           {
@@ -7812,7 +7899,7 @@
             "typed_params": [],
             "inferred_return": "LAnimSyncGroup",
             "return_description": "New animation sync group handle.",
-            "line": 743,
+            "line": 910,
             "file": "src/lua_api/animation_api.rs"
           },
           {
@@ -7828,7 +7915,7 @@
             "typed_params": [],
             "inferred_return": "LBlendLayerSet",
             "return_description": "New blend layer set handle.",
-            "line": 754,
+            "line": 921,
             "file": "src/lua_api/animation_api.rs"
           },
           {
@@ -7851,7 +7938,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Table containing `animation` and, when states are supplied, `stateMachine` handles.",
-            "line": 768,
+            "line": 935,
             "file": "src/lua_api/animation_api.rs"
           }
         ],
@@ -7898,7 +7985,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Index of the inserted frame.",
-                "line": 64,
+                "line": 66,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -7951,7 +8038,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of frames inserted.",
-                "line": 76,
+                "line": 78,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -7974,7 +8061,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of frames inserted.",
-                "line": 88,
+                "line": 90,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8021,7 +8108,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 107,
+                "line": 109,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8050,7 +8137,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the clip exists and the mode was changed.",
-                "line": 134,
+                "line": 136,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8073,7 +8160,7 @@
                 ],
                 "inferred_return": "LuaValue",
                 "return_description": "Playback mode string, or nil when the clip does not exist.",
-                "line": 147,
+                "line": 149,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8144,7 +8231,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 164,
+                "line": 166,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8167,7 +8254,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the clip exists and playback started.",
-                "line": 189,
+                "line": 191,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8183,7 +8270,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 192,
+                "line": 194,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8199,7 +8286,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 198,
+                "line": 200,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8215,7 +8302,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 204,
+                "line": 206,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8238,7 +8325,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 211,
+                "line": 213,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8254,7 +8341,7 @@
                 "typed_params": [],
                 "inferred_return": "LuaValue",
                 "return_description": "Table with `x`, `y`, `w`, and `h`, or nil when no frame is active.",
-                "line": 219,
+                "line": 221,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8277,7 +8364,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 238,
+                "line": 240,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8318,7 +8405,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a frame draw command was queued; false when no current frame is active.",
-                "line": 254,
+                "line": 256,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8334,7 +8421,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of event tables with `type` and optional `frame` fields.",
-                "line": 262,
+                "line": 264,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8350,7 +8437,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when playback is active.",
-                "line": 280,
+                "line": 282,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8366,7 +8453,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when the active clip is looping.",
-                "line": 284,
+                "line": 286,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8382,7 +8469,7 @@
                 "typed_params": [],
                 "inferred_return": "LuaValue",
                 "return_description": "Current clip name, or nil when no clip is active.",
-                "line": 288,
+                "line": 290,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8398,7 +8485,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Current playback speed multiplier.",
-                "line": 294,
+                "line": 296,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8421,7 +8508,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 298,
+                "line": 300,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8437,7 +8524,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Frame count.",
-                "line": 306,
+                "line": 308,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8453,7 +8540,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Clip count.",
-                "line": 312,
+                "line": 314,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8469,7 +8556,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Current frame index.",
-                "line": 318,
+                "line": 320,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8492,7 +8579,30 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 324,
+                "line": 326,
+                "file": "src/lua_api/animation_api.rs"
+              },
+              {
+                "name": "seek",
+                "lua_name": "LAnimation:seek",
+                "kind": "method",
+                "owner_type": "LAnimation",
+                "description": "Seeks to a frame index in the current clip.",
+                "full_doc": "Seeks to a frame index in the current clip.\n@param | index | integer | Frame index to make current.",
+                "params_doc": "- `index` â€” `integer`: Frame index to make current.",
+                "returns_doc": "",
+                "inferred_sig": "(index)",
+                "typed_params": [
+                  [
+                    "index",
+                    "integer",
+                    false,
+                    "Frame index to make current."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 333,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8521,7 +8631,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the destination clip exists and crossfade started.",
-                "line": 333,
+                "line": 342,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8537,7 +8647,7 @@
                 "typed_params": [],
                 "inferred_return": "LuaValue",
                 "return_description": "Table with `from`, `to`, and `blend`, or nil when no blend is active.",
-                "line": 343,
+                "line": 352,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8566,7 +8676,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Image data containing the rendered frame.",
-                "line": 381,
+                "line": 390,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8595,7 +8705,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Image data containing the preview grid.",
-                "line": 390,
+                "line": 399,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8611,7 +8721,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LAnimation`.",
-                "line": 400,
+                "line": 409,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8634,7 +8744,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 405,
+                "line": 414,
                 "file": "src/lua_api/animation_api.rs"
               }
             ]
@@ -8663,7 +8773,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 422,
+                "line": 431,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8679,7 +8789,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Current state name.",
-                "line": 430,
+                "line": 439,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8702,7 +8812,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the state exists and was activated.",
-                "line": 437,
+                "line": 446,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8737,7 +8847,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 445,
+                "line": 454,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8772,7 +8882,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 457,
+                "line": 466,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8801,7 +8911,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 469,
+                "line": 478,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8817,7 +8927,7 @@
                 "typed_params": [],
                 "inferred_return": "LuaValue",
                 "return_description": "Table with `x`, `y`, `w`, and `h`, or nil when no frame is active.",
-                "line": 490,
+                "line": 499,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8840,7 +8950,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 510,
+                "line": 519,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8881,7 +8991,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a frame draw command was queued; false when no current frame is active.",
-                "line": 526,
+                "line": 535,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8897,7 +9007,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LAnimStateMachine`.",
-                "line": 537,
+                "line": 546,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8920,7 +9030,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 542,
+                "line": 551,
                 "file": "src/lua_api/animation_api.rs"
               }
             ]
@@ -8967,7 +9077,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer was added.",
-                "line": 561,
+                "line": 570,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -8990,7 +9100,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer was removed.",
-                "line": 585,
+                "line": 594,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9019,7 +9129,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists and the weight was changed.",
-                "line": 596,
+                "line": 605,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9042,7 +9152,7 @@
                 ],
                 "inferred_return": "LuaValue",
                 "return_description": "Layer weight, or nil when the layer does not exist.",
-                "line": 606,
+                "line": 615,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9071,7 +9181,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists and the mask was changed.",
-                "line": 614,
+                "line": 623,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9087,7 +9197,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of layer tables with `name`, `clip_name`, `weight`, and `bones` fields.",
-                "line": 632,
+                "line": 641,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9103,7 +9213,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Blend layer count.",
-                "line": 655,
+                "line": 664,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9119,7 +9229,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LBlendLayerSet`.",
-                "line": 659,
+                "line": 668,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9142,7 +9252,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 664,
+                "line": 673,
                 "file": "src/lua_api/animation_api.rs"
               }
             ]
@@ -9177,7 +9287,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1045,
+                "line": 1212,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9200,7 +9310,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Interpolated curve value.",
-                "line": 1056,
+                "line": 1223,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9223,7 +9333,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1067,
+                "line": 1234,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9239,7 +9349,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Keyframe count.",
-                "line": 1086,
+                "line": 1253,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9262,7 +9372,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1092,
+                "line": 1259,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9278,7 +9388,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1116,
+                "line": 1283,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9294,7 +9404,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LAnimCurve`.",
-                "line": 1123,
+                "line": 1290,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9317,7 +9427,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1128,
+                "line": 1295,
                 "file": "src/lua_api/animation_api.rs"
               }
             ]
@@ -9346,7 +9456,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1143,
+                "line": 1310,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9369,7 +9479,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1147,
+                "line": 1314,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9385,7 +9495,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1150,
+                "line": 1317,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9401,7 +9511,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Sync group member count.",
-                "line": 1157,
+                "line": 1324,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9417,7 +9527,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LAnimSyncGroup`.",
-                "line": 1161,
+                "line": 1328,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -9440,7 +9550,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1166,
+                "line": 1333,
                 "file": "src/lua_api/animation_api.rs"
               }
             ]
@@ -9483,7 +9593,157 @@
             ],
             "inferred_return": "LAssetHandle",
             "return_description": "Handle that keeps the asset alive in the cache.",
-            "line": 234,
+            "line": 397,
+            "file": "src/lua_api/asset_api.rs"
+          },
+          {
+            "name": "watch",
+            "lua_name": "lurek.asset.watch",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Marks an asset handle or path as watched for live reload.",
+            "full_doc": "Marks an asset handle or path as watched for live reload.\n@param | handle_or_path | LAssetHandle|string | Existing handle or path to register as watched.\n@param | asset_type | string? | Type used when `handle_or_path` is a path. Defaults to `unknown`.\n@return | LAssetHandle | Watched handle.",
+            "params_doc": "- `handle_or_path` â€” `LAssetHandle|string`: Existing handle or path to register as watched.\n- `asset_type` â€” `string?`: Type used when `handle_or_path` is a path. Defaults to `unknown`.",
+            "returns_doc": "LAssetHandle",
+            "inferred_sig": "(value, [type_str])",
+            "typed_params": [
+              [
+                "handle_or_path",
+                "LAssetHandle|string",
+                false,
+                "Existing handle or path to register as watched."
+              ],
+              [
+                "asset_type",
+                "string?",
+                true,
+                "Type used when `handle_or_path` is a path. Defaults to `unknown`."
+              ]
+            ],
+            "inferred_return": "LAssetHandle",
+            "return_description": "Watched handle.",
+            "line": 423,
+            "file": "src/lua_api/asset_api.rs"
+          },
+          {
+            "name": "reload",
+            "lua_name": "lurek.asset.reload",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Reloads the cached asset metadata/content and increments its revision.",
+            "full_doc": "Reloads the cached asset metadata/content and increments its revision.\n@param | handle | LAssetHandle | Asset handle to refresh.\n@return | integer | New revision.",
+            "params_doc": "- `handle` â€” `LAssetHandle`: Asset handle to refresh.",
+            "returns_doc": "integer",
+            "inferred_sig": "(handle)",
+            "typed_params": [
+              [
+                "handle",
+                "LAssetHandle",
+                false,
+                "Asset handle to refresh."
+              ]
+            ],
+            "inferred_return": "integer",
+            "return_description": "New revision.",
+            "line": 456,
+            "file": "src/lua_api/asset_api.rs"
+          },
+          {
+            "name": "getRevision",
+            "lua_name": "lurek.asset.getRevision",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns the current reload revision for an asset handle.",
+            "full_doc": "Returns the current reload revision for an asset handle.\n@param | handle | LAssetHandle | Asset handle to inspect.\n@return | integer | Current revision, or 0 when unloaded.",
+            "params_doc": "- `handle` â€” `LAssetHandle`: Asset handle to inspect.",
+            "returns_doc": "integer",
+            "inferred_sig": "(handle)",
+            "typed_params": [
+              [
+                "handle",
+                "LAssetHandle",
+                false,
+                "Asset handle to inspect."
+              ]
+            ],
+            "inferred_return": "integer",
+            "return_description": "Current revision, or 0 when unloaded.",
+            "line": 470,
+            "file": "src/lua_api/asset_api.rs"
+          },
+          {
+            "name": "onReload",
+            "lua_name": "lurek.asset.onReload",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Registers a callback fired by `lurek.asset.reload(handle)`.",
+            "full_doc": "Registers a callback fired by `lurek.asset.reload(handle)`.\n@param | handle | LAssetHandle | Asset handle to observe.\n@param | callback | function | Called as `callback(handle, revision)`.\n@return | nil | No value is returned.",
+            "params_doc": "- `handle` â€” `LAssetHandle`: Asset handle to observe.\n- `callback` â€” `function`: Called as `callback(handle, revision)`.",
+            "returns_doc": "nil",
+            "inferred_sig": "(handle, callback)",
+            "typed_params": [
+              [
+                "handle",
+                "LAssetHandle",
+                false,
+                "Asset handle to observe."
+              ],
+              [
+                "callback",
+                "function",
+                false,
+                "Called as `callback(handle, revision)`."
+              ]
+            ],
+            "inferred_return": "nil",
+            "return_description": "No value is returned.",
+            "line": 495,
+            "file": "src/lua_api/asset_api.rs"
+          },
+          {
+            "name": "resolve",
+            "lua_name": "lurek.asset.resolve",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns a metadata snapshot for an asset handle without transforming the asset data.",
+            "full_doc": "Returns a metadata snapshot for an asset handle without transforming the asset data.\n@param | handle | LAssetHandle | Asset handle to inspect.\n@return | table | Snapshot with path, type, refcount, revision, watched, name, group, and tags.",
+            "params_doc": "- `handle` â€” `LAssetHandle`: Asset handle to inspect.",
+            "returns_doc": "table",
+            "inferred_sig": "(handle)",
+            "typed_params": [
+              [
+                "handle",
+                "LAssetHandle",
+                false,
+                "Asset handle to inspect."
+              ]
+            ],
+            "inferred_return": "table",
+            "return_description": "Snapshot with path, type, refcount, revision, watched, name, group, and tags.",
+            "line": 520,
+            "file": "src/lua_api/asset_api.rs"
+          },
+          {
+            "name": "loadManifest",
+            "lua_name": "lurek.asset.loadManifest",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Loads a TOML asset manifest and registers listed assets without transforming them.",
+            "full_doc": "Loads a TOML asset manifest and registers listed assets without transforming them.\nSupports `assets = [{path, type, name, group, tags, watch}]` and `[assets.name]` shapes.\n@param | path | string | Manifest path.\n@return | table | Array of `LAssetHandle` values for loaded entries.",
+            "params_doc": "- `path` â€” `string`: Manifest path.",
+            "returns_doc": "table",
+            "inferred_sig": "(path)",
+            "typed_params": [
+              [
+                "path",
+                "string",
+                false,
+                "Manifest path."
+              ]
+            ],
+            "inferred_return": "table",
+            "return_description": "Array of `LAssetHandle` values for loaded entries.",
+            "line": 542,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9506,7 +9766,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "No value is returned.",
-            "line": 258,
+            "line": 554,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9529,7 +9789,7 @@
             ],
             "inferred_return": "string",
             "return_description": "Source text for text-like asset types.",
-            "line": 278,
+            "line": 575,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9558,7 +9818,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "No value is returned.",
-            "line": 296,
+            "line": 594,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9581,7 +9841,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Current reference count.",
-            "line": 309,
+            "line": 607,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9604,7 +9864,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the asset is still cached.",
-            "line": 324,
+            "line": 622,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9620,7 +9880,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Table with `loaded`, `total_refs`, `types`, and `groups` fields.",
-            "line": 343,
+            "line": 641,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9636,7 +9896,7 @@
             "typed_params": [],
             "inferred_return": "nil",
             "return_description": "No value is returned.",
-            "line": 385,
+            "line": 683,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9659,7 +9919,7 @@
             ],
             "inferred_return": "string",
             "return_description": "Path that was passed to `lurek.asset.load`.",
-            "line": 399,
+            "line": 697,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9682,7 +9942,7 @@
             ],
             "inferred_return": "string",
             "return_description": "Type string, for example `\"image\"`, `\"audio\"`, `\"toml\"`.",
-            "line": 422,
+            "line": 720,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9691,7 +9951,7 @@
             "kind": "function",
             "owner_type": "",
             "description": "Returns a table containing all metadata for an asset handle.",
-            "full_doc": "Returns a table containing all metadata for an asset handle.\n@param | handle | LAssetHandle | Asset handle to inspect.\n@return | table | Metadata table; see fields below.\n@field | path | string | Filesystem path to the asset.\n@field | type | string | Asset type string.\n@field | name | string | Display name, or the path file-stem when none is set.\n@field | group | string | Group label, or empty string when none is set.\n@field | tags | table | Array of tag strings.\n@field | refcount | integer | Current reference count.",
+            "full_doc": "Returns a table containing all metadata for an asset handle.\n@param | handle | LAssetHandle | Asset handle to inspect.\n@return | table | Metadata table; see fields below.\n@field | path | string | Filesystem path to the asset.\n@field | type | string | Asset type string.\n@field | name | string | Display name, or the path file-stem when none is set.\n@field | group | string | Group label, or empty string when none is set.\n@field | tags | table | Array of tag strings.\n@field | refcount | integer | Current reference count.\n@field | revision | integer | Reload revision.\n@field | watched | boolean | True when live reload watching is requested.",
             "params_doc": "- `handle` â€” `LAssetHandle`: Asset handle to inspect.",
             "returns_doc": "table",
             "inferred_sig": "(handle)",
@@ -9705,7 +9965,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Metadata table; see fields below.",
-            "line": 453,
+            "line": 754,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9734,7 +9994,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "No value is returned.",
-            "line": 491,
+            "line": 801,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9757,7 +10017,7 @@
             ],
             "inferred_return": "string",
             "return_description": "Display name or path file-stem.",
-            "line": 507,
+            "line": 817,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9786,7 +10046,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "No value is returned.",
-            "line": 533,
+            "line": 843,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9809,7 +10069,7 @@
             ],
             "inferred_return": "string",
             "return_description": "Group label or empty string.",
-            "line": 549,
+            "line": 859,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9838,7 +10098,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "No value is returned.",
-            "line": 573,
+            "line": 883,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9867,7 +10127,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the tag was present and removed.",
-            "line": 589,
+            "line": 899,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9890,7 +10150,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of tag strings.",
-            "line": 604,
+            "line": 914,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9919,7 +10179,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the tag is present.",
-            "line": 630,
+            "line": 940,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9942,7 +10202,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of `LAssetHandle` values whose name contains `substr`.",
-            "line": 647,
+            "line": 957,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9965,7 +10225,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of `LAssetHandle` values in the given group.",
-            "line": 662,
+            "line": 972,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -9988,7 +10248,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of `LAssetHandle` values tagged with `tag`.",
-            "line": 677,
+            "line": 987,
             "file": "src/lua_api/asset_api.rs"
           },
           {
@@ -10011,7 +10271,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Array of `LAssetHandle` values of that type.",
-            "line": 692,
+            "line": 1002,
             "file": "src/lua_api/asset_api.rs"
           }
         ],
@@ -55618,7 +55878,7 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "New image data handle.",
-            "line": 636,
+            "line": 766,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55653,7 +55913,7 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "New image data handle.",
-            "line": 670,
+            "line": 800,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55676,7 +55936,7 @@
             ],
             "inferred_return": "LCompressedImageData",
             "return_description": "New compressed image data handle.",
-            "line": 683,
+            "line": 813,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55699,7 +55959,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the file appears to be DDS compressed data.",
-            "line": 700,
+            "line": 830,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55728,7 +55988,7 @@
             ],
             "inferred_return": "LLayeredImage",
             "return_description": "New layered image handle.",
-            "line": 715,
+            "line": 845,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55757,7 +56017,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 731,
+            "line": 861,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55786,7 +56046,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 749,
+            "line": 879,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55821,7 +56081,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 769,
+            "line": 899,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55844,7 +56104,30 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "Loaded image data handle.",
-            "line": 796,
+            "line": 926,
+            "file": "src/lua_api/image_api.rs"
+          },
+          {
+            "name": "loadAnimated",
+            "lua_name": "lurek.image.loadAnimated",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Loads an animated GIF from GameFS path or decodes animated GIF bytes.",
+            "full_doc": "Loads an animated GIF from GameFS path or decodes animated GIF bytes.\n@param | source | string | GameFS path or raw GIF bytes.\n@return | LAnimatedImage | Decoded frames and durations.",
+            "params_doc": "- `source` â€” `string`: GameFS path or raw GIF bytes.",
+            "returns_doc": "LAnimatedImage",
+            "inferred_sig": "(source)",
+            "typed_params": [
+              [
+                "source",
+                "string",
+                false,
+                "GameFS path or raw GIF bytes."
+              ]
+            ],
+            "inferred_return": "LAnimatedImage",
+            "return_description": "Decoded frames and durations.",
+            "line": 944,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55867,7 +56150,7 @@
             ],
             "inferred_return": "LLayeredImage",
             "return_description": "Loaded layered image handle.",
-            "line": 814,
+            "line": 975,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55883,7 +56166,7 @@
             "typed_params": [],
             "inferred_return": "LPaletteLUT",
             "return_description": "New palette lookup table handle.",
-            "line": 830,
+            "line": 991,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55906,7 +56189,7 @@
             ],
             "inferred_return": "LProvinceGrid",
             "return_description": "New province grid handle.",
-            "line": 843,
+            "line": 1004,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -55922,7 +56205,7 @@
             "typed_params": [],
             "inferred_return": "LImageData|nil",
             "return_description": "`LImageData` when capture data is ready, or nil after requesting capture.",
-            "line": 862,
+            "line": 1023,
             "file": "src/lua_api/image_api.rs"
           }
         ],
@@ -55944,7 +56227,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid width in pixels.",
-                "line": 89,
+                "line": 146,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -55960,7 +56243,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid height in pixels.",
-                "line": 93,
+                "line": 150,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -55989,7 +56272,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province id at the pixel.",
-                "line": 99,
+                "line": 156,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56005,7 +56288,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Province count.",
-                "line": 105,
+                "line": 162,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56021,7 +56304,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table with `province_a`, `province_b`, and `border_pixels` fields.",
-                "line": 114,
+                "line": 171,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56037,7 +56320,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table with `province_id`, `y`, `x0`, and `x1` fields.",
-                "line": 135,
+                "line": 192,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56053,7 +56336,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table with province ids and segment coordinates.",
-                "line": 160,
+                "line": 217,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56069,7 +56352,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table of province polygon records with `province_id` and `rings` fields.",
-                "line": 186,
+                "line": 243,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56085,7 +56368,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table of simplified province polygon records with `province_id` and `rings` fields.",
-                "line": 217,
+                "line": 274,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56126,7 +56409,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of polygons emitted to the render command queue.",
-                "line": 251,
+                "line": 308,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56142,7 +56425,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LProvinceGrid`.",
-                "line": 324,
+                "line": 381,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56165,7 +56448,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 329,
+                "line": 386,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56181,7 +56464,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Serialized shape data bytes.",
-                "line": 335,
+                "line": 392,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56204,7 +56487,146 @@
                 ],
                 "inferred_return": "LuaValue",
                 "return_description": "Table with `spans` and `segments`, or nil when decoding fails.",
-                "line": 343,
+                "line": 400,
+                "file": "src/lua_api/image_api.rs"
+              }
+            ]
+          },
+          "LAnimatedImage": {
+            "description": "Lua-side decoded animated image containing frame images and durations.",
+            "fields": [],
+            "methods": [
+              {
+                "name": "frameCount",
+                "lua_name": "LAnimatedImage:frameCount",
+                "kind": "method",
+                "owner_type": "LAnimatedImage",
+                "description": "Returns the number of decoded frames.",
+                "full_doc": "Returns the number of decoded frames.\n@return | integer | Frame count.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Frame count.",
+                "line": 458,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "getFrame",
+                "lua_name": "LAnimatedImage:getFrame",
+                "kind": "method",
+                "owner_type": "LAnimatedImage",
+                "description": "Returns a decoded frame by one-based index.",
+                "full_doc": "Returns a decoded frame by one-based index.\n@param | index | integer | One-based frame index.\n@return | LImageData | Decoded frame image.",
+                "params_doc": "- `index` â€” `integer`: One-based frame index.",
+                "returns_doc": "LImageData",
+                "inferred_sig": "(index)",
+                "typed_params": [
+                  [
+                    "index",
+                    "integer",
+                    false,
+                    "One-based frame index."
+                  ]
+                ],
+                "inferred_return": "LImageData",
+                "return_description": "Decoded frame image.",
+                "line": 463,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "getDuration",
+                "lua_name": "LAnimatedImage:getDuration",
+                "kind": "method",
+                "owner_type": "LAnimatedImage",
+                "description": "Returns a frame duration in milliseconds by one-based index.",
+                "full_doc": "Returns a frame duration in milliseconds by one-based index.\n@param | index | integer | One-based frame index.\n@return | integer | Duration in milliseconds.",
+                "params_doc": "- `index` â€” `integer`: One-based frame index.",
+                "returns_doc": "integer",
+                "inferred_sig": "(index)",
+                "typed_params": [
+                  [
+                    "index",
+                    "integer",
+                    false,
+                    "One-based frame index."
+                  ]
+                ],
+                "inferred_return": "integer",
+                "return_description": "Duration in milliseconds.",
+                "line": 476,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "getFrames",
+                "lua_name": "LAnimatedImage:getFrames",
+                "kind": "method",
+                "owner_type": "LAnimatedImage",
+                "description": "Returns all decoded frame images as an array.",
+                "full_doc": "Returns all decoded frame images as an array.\n@return | table | Array of `LImageData` values.",
+                "params_doc": "",
+                "returns_doc": "table",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "table",
+                "return_description": "Array of `LImageData` values.",
+                "line": 488,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "getDurations",
+                "lua_name": "LAnimatedImage:getDurations",
+                "kind": "method",
+                "owner_type": "LAnimatedImage",
+                "description": "Returns all frame durations in milliseconds.",
+                "full_doc": "Returns all frame durations in milliseconds.\n@return | table | Array of integer durations.",
+                "params_doc": "",
+                "returns_doc": "table",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "table",
+                "return_description": "Array of integer durations.",
+                "line": 498,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "type",
+                "lua_name": "LAnimatedImage:type",
+                "kind": "method",
+                "owner_type": "LAnimatedImage",
+                "description": "Returns the Lua-visible type name.",
+                "full_doc": "Returns the Lua-visible type name.\n@return | string | The string `LAnimatedImage`.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "The string `LAnimatedImage`.",
+                "line": 508,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "typeOf",
+                "lua_name": "LAnimatedImage:typeOf",
+                "kind": "method",
+                "owner_type": "LAnimatedImage",
+                "description": "Returns whether this handle matches a supported type name.",
+                "full_doc": "Returns whether this handle matches a supported type name.\n@param | name | string | Type name to compare.\n@return | boolean | True when the supplied type name matches.",
+                "params_doc": "- `name` â€” `string`: Type name to compare.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(name)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "Type name to compare."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the supplied type name matches.",
+                "line": 513,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -56226,7 +56648,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 399,
+                "line": 529,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56242,7 +56664,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Height in pixels.",
-                "line": 403,
+                "line": 533,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56258,7 +56680,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer count.",
-                "line": 407,
+                "line": 537,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56281,7 +56703,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "One-based index of the new layer.",
-                "line": 412,
+                "line": 542,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56304,7 +56726,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a layer was removed.",
-                "line": 421,
+                "line": 551,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56327,7 +56749,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Layer image data handle.",
-                "line": 431,
+                "line": 561,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56356,7 +56778,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer was replaced.",
-                "line": 445,
+                "line": 575,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56379,7 +56801,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Layer opacity.",
-                "line": 461,
+                "line": 591,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56408,7 +56830,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 475,
+                "line": 605,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56431,7 +56853,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer is visible.",
-                "line": 485,
+                "line": 615,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56460,7 +56882,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 499,
+                "line": 629,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56483,7 +56905,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Layer name.",
-                "line": 509,
+                "line": 639,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56512,7 +56934,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 523,
+                "line": 653,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56541,7 +56963,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when both layers exist.",
-                "line": 534,
+                "line": 664,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56570,7 +56992,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the move succeeds.",
-                "line": 545,
+                "line": 675,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56586,7 +57008,7 @@
                 "typed_params": [],
                 "inferred_return": "LImageData",
                 "return_description": "Merged image data handle.",
-                "line": 557,
+                "line": 687,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56609,7 +57031,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 563,
+                "line": 693,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56625,7 +57047,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LLayeredImage`.",
-                "line": 569,
+                "line": 699,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56648,7 +57070,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 574,
+                "line": 704,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -56670,7 +57092,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 590,
+                "line": 720,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56686,7 +57108,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Height in pixels.",
-                "line": 594,
+                "line": 724,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56702,7 +57124,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 599,
+                "line": 729,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56718,7 +57140,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Mipmap level count.",
-                "line": 605,
+                "line": 735,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56734,7 +57156,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Format name.",
-                "line": 611,
+                "line": 741,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56750,7 +57172,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LCompressedImageData`.",
-                "line": 617,
+                "line": 747,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56773,7 +57195,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 622,
+                "line": 752,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -56795,7 +57217,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 884,
+                "line": 1045,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56811,7 +57233,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Height in pixels.",
-                "line": 888,
+                "line": 1049,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56827,7 +57249,168 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 893,
+                "line": 1054,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "clone",
+                "lua_name": "LImageData:clone",
+                "kind": "method",
+                "owner_type": "LImageData",
+                "description": "Returns a deep copy of this image data.",
+                "full_doc": "Returns a deep copy of this image data.\n@return | LImageData | Copied image data.",
+                "params_doc": "",
+                "returns_doc": "LImageData",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "LImageData",
+                "return_description": "Copied image data.",
+                "line": 1061,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "copyRegion",
+                "lua_name": "LImageData:copyRegion",
+                "kind": "method",
+                "owner_type": "LImageData",
+                "description": "Copies a rectangular region into a new image.",
+                "full_doc": "Copies a rectangular region into a new image.\n@param | x | integer | Source x coordinate.\n@param | y | integer | Source y coordinate.\n@param | w | integer | Region width.\n@param | h | integer | Region height.\n@return | LImageData | Copied region.",
+                "params_doc": "- `x` â€” `integer`: Source x coordinate.\n- `y` â€” `integer`: Source y coordinate.\n- `w` â€” `integer`: Region width.\n- `h` â€” `integer`: Region height.",
+                "returns_doc": "LImageData",
+                "inferred_sig": "(x, y, w, h)",
+                "typed_params": [
+                  [
+                    "x",
+                    "integer",
+                    false,
+                    "Source x coordinate."
+                  ],
+                  [
+                    "y",
+                    "integer",
+                    false,
+                    "Source y coordinate."
+                  ],
+                  [
+                    "w",
+                    "integer",
+                    false,
+                    "Region width."
+                  ],
+                  [
+                    "h",
+                    "integer",
+                    false,
+                    "Region height."
+                  ]
+                ],
+                "inferred_return": "LImageData",
+                "return_description": "Copied region.",
+                "line": 1069,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "applyEffect",
+                "lua_name": "LImageData:applyEffect",
+                "kind": "method",
+                "owner_type": "LImageData",
+                "description": "Applies a named image effect in place, or returns a new image when the effect changes size.",
+                "full_doc": "Applies a named image effect in place, or returns a new image when the effect changes size.\n@param | name | string | Effect name.\n@param | opts | table? | Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`.\n@return | LImageData|nil | New image for size-changing effects, otherwise nil.",
+                "params_doc": "- `name` â€” `string`: Effect name.\n- `opts` â€” `table?`: Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`.",
+                "returns_doc": "LImageData|nil",
+                "inferred_sig": "(name, [opts])",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "Effect name."
+                  ],
+                  [
+                    "opts",
+                    "table?",
+                    true,
+                    "Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`."
+                  ]
+                ],
+                "inferred_return": "LImageData|nil",
+                "return_description": "New image for size-changing effects, otherwise nil.",
+                "line": 1083,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "applyEffects",
+                "lua_name": "LImageData:applyEffects",
+                "kind": "method",
+                "owner_type": "LImageData",
+                "description": "Applies a sequence of named effects in order.",
+                "full_doc": "Applies a sequence of named effects in order.\n@param | effects | table | Array of effect names or `{name=..., opts=...}` tables.\n@param | opts | table? | Default options used by string entries.\n@return | LImageData|nil | Last new image returned by a size-changing effect, otherwise nil.",
+                "params_doc": "- `effects` â€” `table`: Array of effect names or `{name=..., opts=...}` tables.\n- `opts` â€” `table?`: Default options used by string entries.",
+                "returns_doc": "LImageData|nil",
+                "inferred_sig": "(effects, [default_opts])",
+                "typed_params": [
+                  [
+                    "effects",
+                    "table",
+                    false,
+                    "Array of effect names or `{name=..., opts=...}` tables."
+                  ],
+                  [
+                    "opts",
+                    "table?",
+                    true,
+                    "Default options used by string entries."
+                  ]
+                ],
+                "inferred_return": "LImageData|nil",
+                "return_description": "Last new image returned by a size-changing effect, otherwise nil.",
+                "line": 1116,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "applyMask",
+                "lua_name": "LImageData:applyMask",
+                "kind": "method",
+                "owner_type": "LImageData",
+                "description": "Multiplies this image alpha by another image's alpha channel.",
+                "full_doc": "Multiplies this image alpha by another image's alpha channel.\n@param | mask | LImageData | Same-sized alpha mask image.",
+                "params_doc": "- `mask` â€” `LImageData`: Same-sized alpha mask image.",
+                "returns_doc": "",
+                "inferred_sig": "(mask)",
+                "typed_params": [
+                  [
+                    "mask",
+                    "LImageData",
+                    false,
+                    "Same-sized alpha mask image."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1160,
+                "file": "src/lua_api/image_api.rs"
+              },
+              {
+                "name": "transform",
+                "lua_name": "LImageData:transform",
+                "kind": "method",
+                "owner_type": "LImageData",
+                "description": "Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.",
+                "full_doc": "Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.\n@param | opts | table | Transform options.\n@return | LImageData | Transformed image.",
+                "params_doc": "- `opts` â€” `table`: Transform options.",
+                "returns_doc": "LImageData",
+                "inferred_sig": "([opts])",
+                "typed_params": [
+                  [
+                    "opts",
+                    "table",
+                    true,
+                    "Transform options."
+                  ]
+                ],
+                "inferred_return": "LImageData",
+                "return_description": "Transformed image.",
+                "line": 1168,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56856,7 +57439,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Red channel.",
-                "line": 905,
+                "line": 1183,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56909,7 +57492,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 924,
+                "line": 1202,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56932,7 +57515,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Encoded image bytes.",
-                "line": 944,
+                "line": 1222,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56948,7 +57531,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Raw image byte string.",
-                "line": 954,
+                "line": 1232,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56971,7 +57554,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 958,
+                "line": 1236,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -56994,7 +57577,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 977,
+                "line": 1255,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57017,7 +57600,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 984,
+                "line": 1262,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57040,7 +57623,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 991,
+                "line": 1269,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57063,7 +57646,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 998,
+                "line": 1276,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57104,7 +57687,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1008,
+                "line": 1286,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57120,7 +57703,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1017,
+                "line": 1295,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57136,7 +57719,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1023,
+                "line": 1301,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57152,7 +57735,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1029,
+                "line": 1307,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57175,7 +57758,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1036,
+                "line": 1314,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57198,7 +57781,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1043,
+                "line": 1321,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57239,7 +57822,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1053,
+                "line": 1331,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57262,7 +57845,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1060,
+                "line": 1338,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57285,7 +57868,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1067,
+                "line": 1345,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57301,7 +57884,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1073,
+                "line": 1351,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57317,7 +57900,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1079,
+                "line": 1357,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57333,7 +57916,7 @@
                 "typed_params": [],
                 "inferred_return": "LImageData",
                 "return_description": "Rotated image data handle.",
-                "line": 1086,
+                "line": 1364,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57374,7 +57957,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Cropped image data handle.",
-                "line": 1096,
+                "line": 1374,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57403,7 +57986,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Resized image data handle.",
-                "line": 1116,
+                "line": 1394,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57426,7 +58009,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Blurred image data handle.",
-                "line": 1123,
+                "line": 1401,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57442,7 +58025,7 @@
                 "typed_params": [],
                 "inferred_return": "LImageData",
                 "return_description": "Sharpened image data handle.",
-                "line": 1129,
+                "line": 1407,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57507,7 +58090,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1142,
+                "line": 1420,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57566,7 +58149,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1158,
+                "line": 1436,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57631,7 +58214,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1175,
+                "line": 1453,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57666,7 +58249,7 @@
                 ],
                 "inferred_return": "LImageData|nil",
                 "return_description": "Resized `LImageData` handle, or nil when resizing fails.",
-                "line": 1188,
+                "line": 1466,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57701,7 +58284,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1234,
+                "line": 1512,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57742,7 +58325,7 @@
                 ],
                 "inferred_return": "LImageData|nil",
                 "return_description": "`LImageData` handle, or nil when the region is out of bounds.",
-                "line": 1249,
+                "line": 1527,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57758,7 +58341,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Raw image byte string.",
-                "line": 1259,
+                "line": 1537,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57781,7 +58364,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Difference score.",
-                "line": 1266,
+                "line": 1544,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57804,7 +58387,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1273,
+                "line": 1551,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57833,7 +58416,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Convolved image data handle.",
-                "line": 1291,
+                "line": 1569,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57856,7 +58439,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1308,
+                "line": 1586,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57879,7 +58462,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1316,
+                "line": 1594,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57914,7 +58497,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1325,
+                "line": 1603,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57930,7 +58513,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LImageData`.",
-                "line": 1336,
+                "line": 1614,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -57953,7 +58536,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches.",
-                "line": 1341,
+                "line": 1619,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -58024,7 +58607,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1364,
+                "line": 1642,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58040,7 +58623,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Color mapping count.",
-                "line": 1388,
+                "line": 1666,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58056,7 +58639,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1393,
+                "line": 1671,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58079,7 +58662,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1400,
+                "line": 1678,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58095,7 +58678,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LPaletteLUT`.",
-                "line": 1407,
+                "line": 1685,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58118,7 +58701,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1412,
+                "line": 1690,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -104272,7 +104855,7 @@
             ],
             "inferred_return": "LPipelineStep",
             "return_description": "The new step object.",
-            "line": 1862,
+            "line": 1863,
             "file": "src/lua_api/pipeline_api.rs"
           },
           {
@@ -104295,7 +104878,7 @@
             ],
             "inferred_return": "LPipeline",
             "return_description": "The new pipeline object.",
-            "line": 1878,
+            "line": 1879,
             "file": "src/lua_api/pipeline_api.rs"
           },
           {
@@ -104318,7 +104901,7 @@
             ],
             "inferred_return": "LPipeline",
             "return_description": "The constructed pipeline.",
-            "line": 1890,
+            "line": 1891,
             "file": "src/lua_api/pipeline_api.rs"
           }
         ],
@@ -104340,7 +104923,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The step name.",
-                "line": 357,
+                "line": 358,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104363,7 +104946,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 364,
+                "line": 365,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104386,7 +104969,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 372,
+                "line": 373,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104409,7 +104992,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 383,
+                "line": 384,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104425,7 +105008,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Delay in seconds.",
-                "line": 391,
+                "line": 392,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104448,7 +105031,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 396,
+                "line": 397,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104464,7 +105047,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Timeout in seconds.",
-                "line": 407,
+                "line": 408,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104487,7 +105070,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 421,
+                "line": 422,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104503,7 +105086,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Number of retry attempts.",
-                "line": 429,
+                "line": 430,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104526,7 +105109,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 436,
+                "line": 437,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104549,7 +105132,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 444,
+                "line": 445,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104565,7 +105148,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the step runs as a coroutine.",
-                "line": 452,
+                "line": 453,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104588,7 +105171,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 457,
+                "line": 458,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104604,7 +105187,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the step is optional.",
-                "line": 465,
+                "line": 466,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104627,7 +105210,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 469,
+                "line": 470,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104656,7 +105239,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 481,
+                "line": 482,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104679,7 +105262,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The stored value, or nil if the key does not exist.",
-                "line": 490,
+                "line": 491,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104702,7 +105285,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 497,
+                "line": 498,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104718,7 +105301,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Local step state table.",
-                "line": 508,
+                "line": 509,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104741,7 +105324,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 520,
+                "line": 521,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104757,7 +105340,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The step tag, or nil if no tag is assigned.",
-                "line": 528,
+                "line": 529,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104780,7 +105363,7 @@
                 ],
                 "inferred_return": "LPipelineStep",
                 "return_description": "Returns self for method chaining.",
-                "line": 533,
+                "line": 534,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104827,7 +105410,7 @@
                 ],
                 "inferred_return": "LPipelineStep",
                 "return_description": "Returns self for method chaining.",
-                "line": 555,
+                "line": 556,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104843,7 +105426,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of link tables with output, target, input, and signal fields.",
-                "line": 599,
+                "line": 600,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104859,7 +105442,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Dependency step name strings.",
-                "line": 615,
+                "line": 616,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104875,7 +105458,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Dependency count.",
-                "line": 622,
+                "line": 623,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104891,7 +105474,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Current step status.",
-                "line": 629,
+                "line": 630,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104907,7 +105490,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Error message, or nil if the step has not failed.",
-                "line": 636,
+                "line": 637,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104923,7 +105506,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Duration in seconds.",
-                "line": 643,
+                "line": 644,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104939,7 +105522,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Attempt number.",
-                "line": 650,
+                "line": 651,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104955,7 +105538,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Type identifier.",
-                "line": 660,
+                "line": 661,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -104978,7 +105561,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the type matches.",
-                "line": 666,
+                "line": 667,
                 "file": "src/lua_api/pipeline_api.rs"
               }
             ]
@@ -105007,7 +105590,7 @@
                 ],
                 "inferred_return": "LPipeline",
                 "return_description": "Returns self for method chaining.",
-                "line": 1032,
+                "line": 1033,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105030,7 +105613,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1048,
+                "line": 1049,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105053,7 +105636,7 @@
                 ],
                 "inferred_return": "LPipelineStep",
                 "return_description": "The step object, or nil if no step with that name exists.",
-                "line": 1058,
+                "line": 1059,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105069,7 +105652,7 @@
                 "typed_params": [],
                 "inferred_return": "LPipelineStep[]",
                 "return_description": "LPipelineStep objects.",
-                "line": 1065,
+                "line": 1066,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105085,7 +105668,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Step count.",
-                "line": 1076,
+                "line": 1077,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105108,7 +105691,7 @@
                 ],
                 "inferred_return": "LPipelineStep[]",
                 "return_description": "Matching LPipelineStep objects.",
-                "line": 1084,
+                "line": 1085,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105124,7 +105707,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1098,
+                "line": 1099,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105140,7 +105723,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the pipeline is valid.",
-                "line": 1108,
+                "line": 1109,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105156,7 +105739,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Step names in execution order, or nil on error.",
-                "line": 1122,
+                "line": 1123,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105172,7 +105755,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Array of arrays, each inner array is a group of step names. Nil on error.",
-                "line": 1140,
+                "line": 1141,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105195,7 +105778,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "A result table with fields: success (boolean), completed, failed, skipped, cancelled (arrays of names), totalDuration (number), errors (array of {name, msg}).",
-                "line": 1169,
+                "line": 1170,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105218,7 +105801,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1248,
+                "line": 1249,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105241,7 +105824,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the entire pipeline has finished (all steps done); false if still running.",
-                "line": 1287,
+                "line": 1288,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105257,7 +105840,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1422,
+                "line": 1423,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105273,7 +105856,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1437,
+                "line": 1438,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105289,7 +105872,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the pipeline is actively running.",
-                "line": 1453,
+                "line": 1454,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105305,7 +105888,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if no steps are still pending or running.",
-                "line": 1458,
+                "line": 1459,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105328,7 +105911,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1475,
+                "line": 1476,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105344,7 +105927,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "\"abort\" or \"continue\".",
-                "line": 1484,
+                "line": 1485,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105360,7 +105943,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Result table with success, completed, failed, skipped, cancelled, totalDuration, errors fields, or nil if no steps exist.",
-                "line": 1498,
+                "line": 1499,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105376,7 +105959,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "The pipeline context table.",
-                "line": 1520,
+                "line": 1521,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105399,7 +105982,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1534,
+                "line": 1535,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105422,7 +106005,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1545,
+                "line": 1546,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105445,7 +106028,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1556,
+                "line": 1557,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105461,7 +106044,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Pipeline name.",
-                "line": 1567,
+                "line": 1568,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105484,7 +106067,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1574,
+                "line": 1575,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105500,7 +106083,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "A table with name, errorMode, and steps array fields.",
-                "line": 1585,
+                "line": 1586,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105516,7 +106099,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Type identifier.",
-                "line": 1650,
+                "line": 1651,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105557,7 +106140,7 @@
                 ],
                 "inferred_return": "LPipeline",
                 "return_description": "Returns self for method chaining.",
-                "line": 1659,
+                "line": 1660,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105604,7 +106187,7 @@
                 ],
                 "inferred_return": "LPipeline",
                 "return_description": "Returns self for method chaining.",
-                "line": 1689,
+                "line": 1690,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105627,7 +106210,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1801,
+                "line": 1802,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105650,7 +106233,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1809,
+                "line": 1810,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105666,7 +106249,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Multi-line ASCII diagram.",
-                "line": 1817,
+                "line": 1818,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105701,7 +106284,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1826,
+                "line": 1827,
                 "file": "src/lua_api/pipeline_api.rs"
               },
               {
@@ -105724,7 +106307,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the type matches.",
-                "line": 1848,
+                "line": 1849,
                 "file": "src/lua_api/pipeline_api.rs"
               }
             ]
@@ -123594,7 +124177,7 @@
             ],
             "inferred_return": "LSkeleton",
             "return_description": "A new skeleton userdata.",
-            "line": 945,
+            "line": 1057,
             "file": "src/lua_api/spine_api.rs"
           },
           {
@@ -123623,7 +124206,7 @@
             ],
             "inferred_return": "LSkeletonAnimation",
             "return_description": "A new animation userdata.",
-            "line": 958,
+            "line": 1070,
             "file": "src/lua_api/spine_api.rs"
           },
           {
@@ -123646,7 +124229,7 @@
             ],
             "inferred_return": "LSkeletonAnimation",
             "return_description": "Parsed animation userdata, or nil on failure.",
-            "line": 977,
+            "line": 1089,
             "file": "src/lua_api/spine_api.rs"
           },
           {
@@ -123669,7 +124252,7 @@
             ],
             "inferred_return": "LSkeleton",
             "return_description": "Parsed skeleton userdata.",
-            "line": 994,
+            "line": 1106,
             "file": "src/lua_api/spine_api.rs"
           }
         ],
@@ -123704,7 +124287,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based index of the newly added bone.",
-                "line": 297,
+                "line": 358,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123739,7 +124322,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based index of the newly added child bone.",
-                "line": 318,
+                "line": 379,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123774,7 +124357,82 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based index of the newly added slot.",
-                "line": 346,
+                "line": 407,
+                "file": "src/lua_api/spine_api.rs"
+              },
+              {
+                "name": "bindAtlas",
+                "lua_name": "LSkeleton:bindAtlas",
+                "kind": "method",
+                "owner_type": "LSkeleton",
+                "description": "Binds all atlas entries as sprite-region attachment sources by name.",
+                "full_doc": "Binds all atlas entries as sprite-region attachment sources by name.\n@param | atlas | LSpriteAtlas | Sprite atlas containing named attachment regions.\n@return | integer | Number of bound sources.",
+                "params_doc": "- `atlas` â€” `LSpriteAtlas`: Sprite atlas containing named attachment regions.",
+                "returns_doc": "integer",
+                "inferred_sig": "(atlas_ud)",
+                "typed_params": [
+                  [
+                    "atlas",
+                    "LSpriteAtlas",
+                    false,
+                    "Sprite atlas containing named attachment regions."
+                  ]
+                ],
+                "inferred_return": "integer",
+                "return_description": "Number of bound sources.",
+                "line": 424,
+                "file": "src/lua_api/spine_api.rs"
+              },
+              {
+                "name": "setAttachmentSource",
+                "lua_name": "LSkeleton:setAttachmentSource",
+                "kind": "method",
+                "owner_type": "LSkeleton",
+                "description": "Assigns a neutral visual source to a slot name, attachment name, or `slot:attachment` key.",
+                "full_doc": "Assigns a neutral visual source to a slot name, attachment name, or `slot:attachment` key.\n@param | slot | string | Slot/source key.\n@param | source | table | `{kind, name?, x, y, w, h, textureId?, textureWidth?, textureHeight?}`.",
+                "params_doc": "- `slot` â€” `string`: Slot/source key.\n- `source` â€” `table`: `{kind, name?, x, y, w, h, textureId?, textureWidth?, textureHeight?}`.",
+                "returns_doc": "",
+                "inferred_sig": "(slot, source)",
+                "typed_params": [
+                  [
+                    "slot",
+                    "string",
+                    false,
+                    "Slot/source key."
+                  ],
+                  [
+                    "source",
+                    "table",
+                    false,
+                    "`{kind, name?, x, y, w, h, textureId?, textureWidth?, textureHeight?}`."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 452,
+                "file": "src/lua_api/spine_api.rs"
+              },
+              {
+                "name": "getAttachmentSource",
+                "lua_name": "LSkeleton:getAttachmentSource",
+                "kind": "method",
+                "owner_type": "LSkeleton",
+                "description": "Returns the neutral visual source assigned to a slot/source key.",
+                "full_doc": "Returns the neutral visual source assigned to a slot/source key.\n@param | slot | string | Slot/source key.\n@return | table|nil | Attachment source DTO or nil.",
+                "params_doc": "- `slot` â€” `string`: Slot/source key.",
+                "returns_doc": "table|nil",
+                "inferred_sig": "(slot)",
+                "typed_params": [
+                  [
+                    "slot",
+                    "string",
+                    false,
+                    "Slot/source key."
+                  ]
+                ],
+                "inferred_return": "table|nil",
+                "return_description": "Attachment source DTO or nil.",
+                "line": 464,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123797,7 +124455,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based bone index, or nil if no bone with that name exists.",
-                "line": 363,
+                "line": 475,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123820,7 +124478,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Zero-based slot index, or nil if no slot with that name exists.",
-                "line": 370,
+                "line": 482,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123836,7 +124494,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 375,
+                "line": 487,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123859,7 +124517,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table with keys x, y, rotation, scale_x, scale_y â€” or nil if the index is invalid.",
-                "line": 388,
+                "line": 500,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123888,7 +124546,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 411,
+                "line": 523,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123904,7 +124562,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Bone count.",
-                "line": 418,
+                "line": 530,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123920,7 +124578,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Slot count.",
-                "line": 422,
+                "line": 534,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123949,7 +124607,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "A new image data object containing the rendered skeleton.",
-                "line": 428,
+                "line": 540,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123978,7 +124636,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the animation was found and started, false otherwise.",
-                "line": 437,
+                "line": 549,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -123994,7 +124652,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 445,
+                "line": 557,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124017,7 +124675,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 452,
+                "line": 564,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124033,7 +124691,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Current animation time position.",
-                "line": 460,
+                "line": 572,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124056,7 +124714,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 466,
+                "line": 578,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124091,7 +124749,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Index of the newly added constraint.",
-                "line": 477,
+                "line": 589,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124126,7 +124784,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the constraint was found and updated, false otherwise.",
-                "line": 494,
+                "line": 606,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124149,7 +124807,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 501,
+                "line": 613,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124172,7 +124830,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the skin was found and activated, false otherwise.",
-                "line": 509,
+                "line": 621,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124188,7 +124846,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Active skin name or nil.",
-                "line": 515,
+                "line": 627,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124223,7 +124881,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 523,
+                "line": 635,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124258,7 +124916,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 535,
+                "line": 647,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124293,7 +124951,7 @@
                 ],
                 "inferred_return": "LSkeletonAnimation",
                 "return_description": "A new animation containing all requested bone timelines.",
-                "line": 554,
+                "line": 666,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124328,7 +124986,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Binding result with bodies, bodyIds, joints, jointIds, and parts arrays.",
-                "line": 584,
+                "line": 696,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124344,7 +125002,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LSkeleton\".",
-                "line": 758,
+                "line": 870,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124367,7 +125025,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object matches the given type.",
-                "line": 763,
+                "line": 875,
                 "file": "src/lua_api/spine_api.rs"
               }
             ]
@@ -124420,7 +125078,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 781,
+                "line": 893,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124449,7 +125107,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 829,
+                "line": 941,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124465,7 +125123,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Duration in seconds.",
-                "line": 843,
+                "line": 955,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124500,7 +125158,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 849,
+                "line": 961,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124529,7 +125187,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of tables, each with \"name\" (string) and \"value\" (number) fields.",
-                "line": 869,
+                "line": 981,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124545,7 +125203,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Timeline count.",
-                "line": 885,
+                "line": 997,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124568,7 +125226,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of tables, each with \"bone_idx\" (integer), \"property\" (string), and \"value\" (number).",
-                "line": 895,
+                "line": 1007,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124584,7 +125242,7 @@
                 "typed_params": [],
                 "inferred_return": "LSkeletonAnimation",
                 "return_description": "A new reversed copy of this animation.",
-                "line": 920,
+                "line": 1032,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124600,7 +125258,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LSkeletonAnimation\".",
-                "line": 928,
+                "line": 1040,
                 "file": "src/lua_api/spine_api.rs"
               },
               {
@@ -124623,7 +125281,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if this object matches the given type.",
-                "line": 933,
+                "line": 1045,
                 "file": "src/lua_api/spine_api.rs"
               }
             ]
@@ -124666,7 +125324,7 @@
             ],
             "inferred_return": "LSprite",
             "return_description": "A new sprite object.",
-            "line": 652,
+            "line": 804,
             "file": "src/lua_api/sprite_api.rs"
           },
           {
@@ -124689,7 +125347,7 @@
             ],
             "inferred_return": "LSpriteAnimator",
             "return_description": "A new clip animator object.",
-            "line": 665,
+            "line": 817,
             "file": "src/lua_api/sprite_api.rs"
           },
           {
@@ -124730,7 +125388,36 @@
             ],
             "inferred_return": "LSpriteSheet",
             "return_description": "A new sprite sheet object.",
-            "line": 692,
+            "line": 844,
+            "file": "src/lua_api/sprite_api.rs"
+          },
+          {
+            "name": "newSheetFromImage",
+            "lua_name": "lurek.sprite.newSheetFromImage",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates a sprite sheet from an existing `LImageData` source and frame options.",
+            "full_doc": "Creates a sprite sheet from an existing `LImageData` source and frame options.\n@param | image | LImageData | Source image data.\n@param | opts | table | `{frameWidth, frameHeight}` or `{columns, rows}`.\n@return | LSpriteSheet | A new sprite sheet object.",
+            "params_doc": "- `image` â€” `LImageData`: Source image data.\n- `opts` â€” `table`: `{frameWidth, frameHeight}` or `{columns, rows}`.",
+            "returns_doc": "LSpriteSheet",
+            "inferred_sig": "(image_ud, opts)",
+            "typed_params": [
+              [
+                "image",
+                "LImageData",
+                false,
+                "Source image data."
+              ],
+              [
+                "opts",
+                "table",
+                false,
+                "`{frameWidth, frameHeight}` or `{columns, rows}`."
+              ]
+            ],
+            "inferred_return": "LSpriteSheet",
+            "return_description": "A new sprite sheet object.",
+            "line": 861,
             "file": "src/lua_api/sprite_api.rs"
           },
           {
@@ -124759,7 +125446,7 @@
             ],
             "inferred_return": "LSpriteSheet",
             "return_description": "A new sprite sheet configured for RPG Maker character sprites.",
-            "line": 709,
+            "line": 909,
             "file": "src/lua_api/sprite_api.rs"
           },
           {
@@ -124782,7 +125469,71 @@
             ],
             "inferred_return": "LSpriteAtlas",
             "return_description": "A new atlas with named sprite regions.",
-            "line": 723,
+            "line": 923,
+            "file": "src/lua_api/sprite_api.rs"
+          },
+          {
+            "name": "newAtlasFromImage",
+            "lua_name": "lurek.sprite.newAtlasFromImage",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Parses atlas JSON for an existing `LImageData` source.",
+            "full_doc": "Parses atlas JSON for an existing `LImageData` source.\n@param | image | LImageData | Source image data used as the atlas texture.\n@param | atlas_json | string | TexturePacker or Aseprite JSON.\n@return | LSpriteAtlas | Parsed atlas.",
+            "params_doc": "- `image` â€” `LImageData`: Source image data used as the atlas texture.\n- `atlas_json` â€” `string`: TexturePacker or Aseprite JSON.",
+            "returns_doc": "LSpriteAtlas",
+            "inferred_sig": "(image_ud, atlas_json)",
+            "typed_params": [
+              [
+                "image",
+                "LImageData",
+                false,
+                "Source image data used as the atlas texture."
+              ],
+              [
+                "atlas_json",
+                "string",
+                false,
+                "TexturePacker or Aseprite JSON."
+              ]
+            ],
+            "inferred_return": "LSpriteAtlas",
+            "return_description": "Parsed atlas.",
+            "line": 940,
+            "file": "src/lua_api/sprite_api.rs"
+          },
+          {
+            "name": "newAutoTileSheet",
+            "lua_name": "lurek.sprite.newAutoTileSheet",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates an autotile sheet descriptor from an image source, layout, and tile options.",
+            "full_doc": "Creates an autotile sheet descriptor from an image source, layout, and tile options.\n@param | image | LImageData | Source autotile sheet image.\n@param | layout | string | `blob47`, `composite48`, `rpgmaker48`, or `minimal16`.\n@param | opts | table | `{tileWidth, tileHeight}`.\n@return | LSpriteAutoTileSheet | Autotile sheet descriptor.",
+            "params_doc": "- `image` â€” `LImageData`: Source autotile sheet image.\n- `layout` â€” `string`: `blob47`, `composite48`, `rpgmaker48`, or `minimal16`.\n- `opts` â€” `table`: `{tileWidth, tileHeight}`.",
+            "returns_doc": "LSpriteAutoTileSheet",
+            "inferred_sig": "(image_ud, layout, opts)",
+            "typed_params": [
+              [
+                "image",
+                "LImageData",
+                false,
+                "Source autotile sheet image."
+              ],
+              [
+                "layout",
+                "string",
+                false,
+                "`blob47`, `composite48`, `rpgmaker48`, or `minimal16`."
+              ],
+              [
+                "opts",
+                "table",
+                false,
+                "`{tileWidth, tileHeight}`."
+              ]
+            ],
+            "inferred_return": "LSpriteAutoTileSheet",
+            "return_description": "Autotile sheet descriptor.",
+            "line": 958,
             "file": "src/lua_api/sprite_api.rs"
           },
           {
@@ -124817,7 +125568,7 @@
             ],
             "inferred_return": "LSpriteSheet",
             "return_description": "A new sprite sheet derived from the atlas entries.",
-            "line": 741,
+            "line": 992,
             "file": "src/lua_api/sprite_api.rs"
           },
           {
@@ -124852,7 +125603,7 @@
             ],
             "inferred_return": "LAtlasPacker",
             "return_description": "A new runtime atlas packer.",
-            "line": 758,
+            "line": 1009,
             "file": "src/lua_api/sprite_api.rs"
           },
           {
@@ -124899,7 +125650,7 @@
             ],
             "inferred_return": "LNineSlice",
             "return_description": "The 9-slice handle.",
-            "line": 776,
+            "line": 1027,
             "file": "src/lua_api/sprite_api.rs"
           },
           {
@@ -124922,7 +125673,7 @@
             ],
             "inferred_return": "LSpriteAtlas",
             "return_description": "A new atlas with named sprite regions from Aseprite frames.",
-            "line": 808,
+            "line": 1059,
             "file": "src/lua_api/sprite_api.rs"
           }
         ],
@@ -124957,7 +125708,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 37,
+                "line": 52,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -124973,7 +125724,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "World X position.",
-                "line": 45,
+                "line": 60,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -124996,7 +125747,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 51,
+                "line": 66,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125012,7 +125763,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 57,
+                "line": 72,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125028,7 +125779,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when a normal map is assigned.",
-                "line": 64,
+                "line": 79,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125044,7 +125795,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Texture handle for the normal map.",
-                "line": 70,
+                "line": 85,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125067,7 +125818,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 76,
+                "line": 91,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125083,7 +125834,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Current non-negative intensity multiplier.",
-                "line": 83,
+                "line": 98,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125099,7 +125850,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LSprite\"`.",
-                "line": 89,
+                "line": 104,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125122,7 +125873,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object is the given type.",
-                "line": 94,
+                "line": 109,
                 "file": "src/lua_api/sprite_api.rs"
               }
             ]
@@ -125151,7 +125902,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Quad table `{x, y, w, h}` with normalized UV coordinates, or nil if the index is out of range.",
-                "line": 115,
+                "line": 130,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125167,7 +125918,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Total frame count (columns Ă— rows).",
-                "line": 127,
+                "line": 142,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125190,7 +125941,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of quad tables `{x, y, w, h}`.",
-                "line": 138,
+                "line": 153,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125213,7 +125964,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of quad tables `{x, y, w, h}`.",
-                "line": 150,
+                "line": 165,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125236,7 +125987,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of quad tables for the group, or nil if the group does not exist.",
-                "line": 161,
+                "line": 176,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125252,7 +126003,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Group name strings.",
-                "line": 173,
+                "line": 188,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125287,7 +126038,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 186,
+                "line": 201,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125303,7 +126054,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Frame width in pixels.",
-                "line": 197,
+                "line": 212,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125319,7 +126070,53 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Number of columns.",
-                "line": 205,
+                "line": 220,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "toFrames",
+                "lua_name": "LSpriteSheet:toFrames",
+                "kind": "method",
+                "owner_type": "LSpriteSheet",
+                "description": "Returns frame rectangle DTOs for all frames or a named group.",
+                "full_doc": "Returns frame rectangle DTOs for all frames or a named group.\n@param | group | string? | Optional group name.\n@return | table | Array of `{x, y, w, h}` frame rectangles.",
+                "params_doc": "- `group` â€” `string?`: Optional group name.",
+                "returns_doc": "table",
+                "inferred_sig": "([group])",
+                "typed_params": [
+                  [
+                    "group",
+                    "string?",
+                    true,
+                    "Optional group name."
+                  ]
+                ],
+                "inferred_return": "table",
+                "return_description": "Array of `{x, y, w, h}` frame rectangles.",
+                "line": 228,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "toAnimationClip",
+                "lua_name": "LSpriteSheet:toAnimationClip",
+                "kind": "method",
+                "owner_type": "LSpriteSheet",
+                "description": "Builds an animation clip DTO from this sheet without creating playback state.",
+                "full_doc": "Builds an animation clip DTO from this sheet without creating playback state.\n@param | opts | table? | `{name, group, fps, loop, mode}`.\n@return | table | Clip DTO with `name`, `frames`, `fps`, `loop`, and `mode`.",
+                "params_doc": "- `opts` â€” `table?`: `{name, group, fps, loop, mode}`.",
+                "returns_doc": "table",
+                "inferred_sig": "([opts])",
+                "typed_params": [
+                  [
+                    "opts",
+                    "table?",
+                    true,
+                    "`{name, group, fps, loop, mode}`."
+                  ]
+                ],
+                "inferred_return": "table",
+                "return_description": "Clip DTO with `name`, `frames`, `fps`, `loop`, and `mode`.",
+                "line": 248,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125348,7 +126145,7 @@
                 ],
                 "inferred_return": "LImage",
                 "return_description": "A new image containing the rendered sprite sheet.",
-                "line": 214,
+                "line": 296,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125364,7 +126161,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LSpriteSheet\"`.",
-                "line": 221,
+                "line": 303,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125387,7 +126184,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object is the given type.",
-                "line": 226,
+                "line": 308,
                 "file": "src/lua_api/sprite_api.rs"
               }
             ]
@@ -125416,7 +126213,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Entry table `{name, x, y, w, h, rotated}`, or nil if the entry is not found.",
-                "line": 249,
+                "line": 331,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125439,7 +126236,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Entry table `{name, x, y, w, h, rotated}`, or nil if the index is out of range.",
-                "line": 282,
+                "line": 364,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125455,7 +126252,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Entry count.",
-                "line": 306,
+                "line": 388,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125471,7 +126268,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Name strings.",
-                "line": 310,
+                "line": 392,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125506,7 +126303,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Entry table with added `flip_x` and `flip_y` fields, or nil if the entry is not found.",
-                "line": 332,
+                "line": 414,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125522,7 +126319,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LSpriteAtlas\"`.",
-                "line": 365,
+                "line": 447,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125545,7 +126342,185 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object is the given type.",
-                "line": 370,
+                "line": 452,
+                "file": "src/lua_api/sprite_api.rs"
+              }
+            ]
+          },
+          "LSpriteAutoTileSheet": {
+            "description": "Lua-visible autotile sheet authored from a sprite/image source.",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getLayout",
+                "lua_name": "LSpriteAutoTileSheet:getLayout",
+                "kind": "method",
+                "owner_type": "LSpriteAutoTileSheet",
+                "description": "Returns the autotile layout name.",
+                "full_doc": "Returns the autotile layout name.\n@return | string | Layout name.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Layout name.",
+                "line": 467,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "getDefaultMode",
+                "lua_name": "LSpriteAutoTileSheet:getDefaultMode",
+                "kind": "method",
+                "owner_type": "LSpriteAutoTileSheet",
+                "description": "Returns the default autotile matching mode for this layout.",
+                "full_doc": "Returns the default autotile matching mode for this layout.\n@return | string | Mode name.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Mode name.",
+                "line": 473,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "getTileCount",
+                "lua_name": "LSpriteAutoTileSheet:getTileCount",
+                "kind": "method",
+                "owner_type": "LSpriteAutoTileSheet",
+                "description": "Returns the number of logical tiles in the sheet.",
+                "full_doc": "Returns the number of logical tiles in the sheet.\n@return | integer | Tile count.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Tile count.",
+                "line": 479,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "getQuad",
+                "lua_name": "LSpriteAutoTileSheet:getQuad",
+                "kind": "method",
+                "owner_type": "LSpriteAutoTileSheet",
+                "description": "Returns a one-based tile source rectangle.",
+                "full_doc": "Returns a one-based tile source rectangle.\n@param | tile_id | integer | One-based tile id.\n@return | table | Rectangle table.",
+                "params_doc": "- `tile_id` â€” `integer`: One-based tile id.",
+                "returns_doc": "table",
+                "inferred_sig": "(tile_id)",
+                "typed_params": [
+                  [
+                    "tile_id",
+                    "integer",
+                    false,
+                    "One-based tile id."
+                  ]
+                ],
+                "inferred_return": "table",
+                "return_description": "Rectangle table.",
+                "line": 486,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "getBitmaskForTile",
+                "lua_name": "LSpriteAutoTileSheet:getBitmaskForTile",
+                "kind": "method",
+                "owner_type": "LSpriteAutoTileSheet",
+                "description": "Returns the bitmask for a one-based tile id.",
+                "full_doc": "Returns the bitmask for a one-based tile id.\n@param | tile_id | integer | One-based tile id.\n@return | integer | Bitmask.",
+                "params_doc": "- `tile_id` â€” `integer`: One-based tile id.",
+                "returns_doc": "integer",
+                "inferred_sig": "(tile_id)",
+                "typed_params": [
+                  [
+                    "tile_id",
+                    "integer",
+                    false,
+                    "One-based tile id."
+                  ]
+                ],
+                "inferred_return": "integer",
+                "return_description": "Bitmask.",
+                "line": 494,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "getTileForBitmask",
+                "lua_name": "LSpriteAutoTileSheet:getTileForBitmask",
+                "kind": "method",
+                "owner_type": "LSpriteAutoTileSheet",
+                "description": "Returns a one-based tile id for a bitmask, or nil when missing.",
+                "full_doc": "Returns a one-based tile id for a bitmask, or nil when missing.\n@param | bitmask | integer | Neighbor bitmask.\n@return | integer|nil | One-based tile id.",
+                "params_doc": "- `bitmask` â€” `integer`: Neighbor bitmask.",
+                "returns_doc": "integer|nil",
+                "inferred_sig": "(bitmask)",
+                "typed_params": [
+                  [
+                    "bitmask",
+                    "integer",
+                    false,
+                    "Neighbor bitmask."
+                  ]
+                ],
+                "inferred_return": "integer|nil",
+                "return_description": "One-based tile id.",
+                "line": 501,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "toFrames",
+                "lua_name": "LSpriteAutoTileSheet:toFrames",
+                "kind": "method",
+                "owner_type": "LSpriteAutoTileSheet",
+                "description": "Returns all autotile source rectangles as sprite frame DTOs.",
+                "full_doc": "Returns all autotile source rectangles as sprite frame DTOs.\n@return | table | Array of frame rectangles.",
+                "params_doc": "",
+                "returns_doc": "table",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "table",
+                "return_description": "Array of frame rectangles.",
+                "line": 507,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "type",
+                "lua_name": "LSpriteAutoTileSheet:type",
+                "kind": "method",
+                "owner_type": "LSpriteAutoTileSheet",
+                "description": "Returns the Lua-visible type name.",
+                "full_doc": "Returns the Lua-visible type name.\n@return | string | The string `LSpriteAutoTileSheet`.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "The string `LSpriteAutoTileSheet`.",
+                "line": 517,
+                "file": "src/lua_api/sprite_api.rs"
+              },
+              {
+                "name": "typeOf",
+                "lua_name": "LSpriteAutoTileSheet:typeOf",
+                "kind": "method",
+                "owner_type": "LSpriteAutoTileSheet",
+                "description": "Returns whether this handle matches a supported type name.",
+                "full_doc": "Returns whether this handle matches a supported type name.\n@param | name | string | Type name to compare.\n@return | boolean | True when the supplied type name matches.",
+                "params_doc": "- `name` â€” `string`: Type name to compare.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(name)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "Type name to compare."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the supplied type name matches.",
+                "line": 522,
                 "file": "src/lua_api/sprite_api.rs"
               }
             ]
@@ -125586,7 +126561,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region was packed.",
-                "line": 388,
+                "line": 540,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125633,7 +126608,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when insets were applied.",
-                "line": 399,
+                "line": 551,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125656,7 +126631,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Region table `{name, x, y, w, h, nine_slice}` or nil when missing.",
-                "line": 423,
+                "line": 575,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125672,7 +126647,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Region count.",
-                "line": 450,
+                "line": 602,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125688,7 +126663,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Atlas width in pixels.",
-                "line": 457,
+                "line": 609,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125704,7 +126679,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 462,
+                "line": 614,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125720,7 +126695,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LAtlasPacker\"`.",
-                "line": 469,
+                "line": 621,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125743,7 +126718,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object is the given type.",
-                "line": 474,
+                "line": 626,
                 "file": "src/lua_api/sprite_api.rs"
               }
             ]
@@ -125778,7 +126753,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 494,
+                "line": 646,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125794,7 +126769,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 504,
+                "line": 656,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125810,7 +126785,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 511,
+                "line": 663,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125826,7 +126801,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 518,
+                "line": 670,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125842,7 +126817,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when playing.",
-                "line": 526,
+                "line": 678,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125858,7 +126833,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Active clip name, or nil if none.",
-                "line": 531,
+                "line": 683,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125874,7 +126849,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Sprite-sheet row.",
-                "line": 539,
+                "line": 691,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125897,7 +126872,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 544,
+                "line": 696,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125920,7 +126895,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 584,
+                "line": 736,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125943,7 +126918,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 592,
+                "line": 744,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125966,7 +126941,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 600,
+                "line": 752,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -125995,7 +126970,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 609,
+                "line": 761,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -126011,7 +126986,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Seconds per frame.",
-                "line": 618,
+                "line": 770,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -126027,7 +127002,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Total clip duration in seconds.",
-                "line": 625,
+                "line": 777,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -126043,7 +127018,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LSpriteAnimator\"`.",
-                "line": 630,
+                "line": 782,
                 "file": "src/lua_api/sprite_api.rs"
               },
               {
@@ -126066,7 +127041,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the object is the given type.",
-                "line": 636,
+                "line": 788,
                 "file": "src/lua_api/sprite_api.rs"
               }
             ]
@@ -137399,7 +138374,7 @@
             ],
             "inferred_return": "LTileSet",
             "return_description": "New tileset handle.",
-            "line": 1330,
+            "line": 1390,
             "file": "src/lua_api/tileset_api.rs"
           },
           {
@@ -137422,7 +138397,7 @@
             ],
             "inferred_return": "LTileCatalog",
             "return_description": "New tile catalog handle.",
-            "line": 1360,
+            "line": 1420,
             "file": "src/lua_api/tileset_api.rs"
           },
           {
@@ -137445,7 +138420,7 @@
             ],
             "inferred_return": "LTileSet",
             "return_description": "New tileset copied from provider data.",
-            "line": 1382,
+            "line": 1442,
             "file": "src/lua_api/tileset_api.rs"
           }
         ],
@@ -138376,6 +139351,58 @@
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
+                "name": "setTerrainProfile",
+                "lua_name": "LTileSet:setTerrainProfile",
+                "kind": "method",
+                "owner_type": "LTileSet",
+                "description": "Sets a Godot-style terrain-set profile for autotile authoring.",
+                "full_doc": "Sets a Godot-style terrain-set profile for autotile authoring.\n@param | name | string | Profile name.\n@param | profile | table | `{terrainSet, mode, defaultTileId?}`.",
+                "params_doc": "- `name` â€” `string`: Profile name.\n- `profile` â€” `table`: `{terrainSet, mode, defaultTileId?}`.",
+                "returns_doc": "",
+                "inferred_sig": "(name, profile)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "Profile name."
+                  ],
+                  [
+                    "profile",
+                    "table",
+                    false,
+                    "`{terrainSet, mode, defaultTileId?}`."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1310,
+                "file": "src/lua_api/tileset_api.rs"
+              },
+              {
+                "name": "getTerrainProfile",
+                "lua_name": "LTileSet:getTerrainProfile",
+                "kind": "method",
+                "owner_type": "LTileSet",
+                "description": "Returns a Godot-style terrain-set profile.",
+                "full_doc": "Returns a Godot-style terrain-set profile.\n@param | name | string | Profile name.\n@return | table|nil | Profile table or nil.",
+                "params_doc": "- `name` â€” `string`: Profile name.",
+                "returns_doc": "table|nil",
+                "inferred_sig": "(name)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "Profile name."
+                  ]
+                ],
+                "inferred_return": "table|nil",
+                "return_description": "Profile table or nil.",
+                "line": 1352,
+                "file": "src/lua_api/tileset_api.rs"
+              },
+              {
                 "name": "type",
                 "lua_name": "LTileSet:type",
                 "kind": "method",
@@ -138388,7 +139415,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `LTileSet`.",
-                "line": 1309,
+                "line": 1369,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -138411,7 +139438,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileSet` or `LObject`.",
-                "line": 1313,
+                "line": 1373,
                 "file": "src/lua_api/tileset_api.rs"
               }
             ]

@@ -2103,3 +2103,138 @@ do
     local mips = cd:getMipmapCount()
     example_print_log("compressed w=" .. w .. " h=" .. h .. " mips=" .. mips)
 end
+--@api: lurek.image.loadAnimated
+do
+    local a = lurek.image.newImageData(2, 2)
+    local b = lurek.image.newImageData(2, 2)
+    a:fill(255, 0, 0, 255)
+    b:fill(0, 255, 0, 255)
+    lurek.image.saveGIF({ a, b }, "work/example_load_animated.gif", { delayMs = 40 })
+    local animated = lurek.image.loadAnimated("work/example_load_animated.gif")
+    lurek.log.info("[image] animated frames=" .. tostring(animated:frameCount()))
+end
+
+--@api: LAnimatedImage:frameCount
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(255, 255, 255, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_count.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_count.gif")
+    local count = animated:frameCount()
+    lurek.log.info("[image] frameCount=" .. tostring(count))
+end
+
+--@api: LAnimatedImage:getFrame
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(20, 40, 80, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_frame.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_frame.gif")
+    local first = animated:getFrame(1)
+    lurek.log.info("[image] first frame width=" .. tostring(first:getWidth()))
+end
+
+--@api: LAnimatedImage:getDuration
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(20, 40, 80, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_duration.gif", { delayMs = 50 })
+    local animated = lurek.image.loadAnimated("work/example_anim_duration.gif")
+    local duration = animated:getDuration(1)
+    lurek.log.info("[image] duration=" .. tostring(duration))
+end
+
+--@api: LAnimatedImage:getFrames
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(80, 40, 20, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_frames.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_frames.gif")
+    local frames = animated:getFrames()
+    lurek.log.info("[image] frames table=" .. tostring(#frames))
+end
+
+--@api: LAnimatedImage:getDurations
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(80, 40, 20, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_durations.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_durations.gif")
+    local durations = animated:getDurations()
+    lurek.log.info("[image] durations table=" .. tostring(#durations))
+end
+
+--@api: LAnimatedImage:type
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(1, 2, 3, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_type.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_type.gif")
+    local kind = animated:type()
+    lurek.log.info("[image] animated type=" .. kind)
+end
+
+--@api: LAnimatedImage:typeOf
+do
+    local frame = lurek.image.newImageData(2, 2)
+    frame:fill(1, 2, 3, 255)
+    lurek.image.saveGIF({ frame, frame }, "work/example_anim_typeof.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("work/example_anim_typeof.gif")
+    local ok = animated:typeOf("LObject")
+    lurek.log.info("[image] animated typeOf=" .. tostring(ok))
+end
+
+--@api: LImageData:clone
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(10, 20, 30, 255)
+    local copy = image:clone()
+    copy:setPixel(0, 0, 255, 0, 0, 255)
+    lurek.log.info("[image] clone width=" .. tostring(copy:getWidth()))
+end
+
+--@api: LImageData:copyRegion
+do
+    local image = lurek.image.newImageData(8, 8)
+    image:fill(20, 30, 40, 255)
+    local region = image:copyRegion(2, 2, 4, 4)
+    local w, h = region:getDimensions()
+    lurek.log.info("[image] copied region=" .. tostring(w) .. "x" .. tostring(h))
+end
+
+--@api: LImageData:applyEffect
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(20, 30, 40, 255)
+    image:applyEffect("invert", { region = { 0, 0, 2, 2 } })
+    local r = ({ image:getPixel(0, 0) })[1]
+    lurek.log.info("[image] effect red=" .. tostring(r))
+end
+
+--@api: LImageData:applyEffects
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(20, 30, 40, 255)
+    image:applyEffects({ "grayscale", { name = "posterize", opts = { levels = 3 } } })
+    local r = ({ image:getPixel(0, 0) })[1]
+    lurek.log.info("[image] effects red=" .. tostring(r))
+end
+
+--@api: LImageData:applyMask
+do
+    local image = lurek.image.newImageData(2, 2)
+    local mask = lurek.image.newImageData(2, 2)
+    image:fill(255, 255, 255, 255)
+    mask:fill(0, 0, 0, 128)
+    image:applyMask(mask)
+    lurek.log.info("[image] mask applied")
+end
+
+--@api: LImageData:transform
+do
+    local image = lurek.image.newImageData(4, 4)
+    image:fill(5, 10, 15, 255)
+    local resized = image:transform({ width = 8, height = 6, filter = "linear" })
+    local w, h = resized:getDimensions()
+    lurek.log.info("[image] transformed=" .. tostring(w) .. "x" .. tostring(h))
+end

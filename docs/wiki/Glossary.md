@@ -39,6 +39,7 @@ The glossary collects terms that appear across module and API pages.
 - `LAISystem` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for an AISystem multi-agent orchestrator.
 - `LAIWorld` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
 - `LAnimatedCursor` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Lua userdata representing an animated cursor that cycles through image frames.
+- `LAnimatedImage` ([lurek.image](https://lurek2d.github.io/lurek_2d/modules/image.html)) - Lua-side decoded animated image containing frame images and durations.
 - `LAnimation` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
 - `LAnimCurve` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation curve with keyframes and optional custom easing callback.
 - `LAnimStateMachine` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation state machine that switches clips from named states and parameters.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LGuiWindow` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds GUI-window-specific methods to a window widget table.
 - `LHeatmapChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a heatmap chart backed by a numeric matrix.
 - `LHeightMap` ([lurek.raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html)) - Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
-- `LHermite` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Hermite spline.

@@ -17,6 +17,43 @@ pub enum ResizeFilter {
     /// Lanczos3 windowed-sinc interpolation.
     Lanczos3,
 }
+/// Parsed options for named image effects.
+#[derive(Clone, Debug)]
+pub struct ImageEffectOptions {
+    /// Generic scalar factor used by color adjustments.
+    pub factor: f32,
+    /// Generic integer amount used by noise, blur, and quantization effects.
+    pub amount: u32,
+    /// Threshold or channel value.
+    pub value: u8,
+    /// Posterize or quantize level count.
+    pub levels: u8,
+    /// Blur radius.
+    pub radius: u32,
+    /// Width for transform/resize effects.
+    pub width: Option<u32>,
+    /// Height for transform/resize effects.
+    pub height: Option<u32>,
+    /// Optional RGB color.
+    pub color: Option<(u8, u8, u8, u8)>,
+    /// Resize filter name.
+    pub filter: ResizeFilter,
+}
+impl Default for ImageEffectOptions {
+    fn default() -> Self {
+        Self {
+            factor: 1.0,
+            amount: 1,
+            value: 128,
+            levels: 4,
+            radius: 1,
+            width: None,
+            height: None,
+            color: None,
+            filter: ResizeFilter::Bilinear,
+        }
+    }
+}
 impl ResizeFilter {
     /// Parse a resize filter name and return the selected filter when recognized.
     pub fn parse(value: &str) -> Option<Self> {
@@ -45,7 +82,86 @@ fn lanczos_weight(x: f32, a: f32) -> f32 {
         sinc(x) * sinc(x / a)
     }
 }
+fn normalize_effect_name(name: &str) -> String {
+    name.chars()
+        .filter(|ch| ch.is_ascii_alphanumeric())
+        .map(|ch| ch.to_ascii_lowercase())
+        .collect()
+}
 impl ImageData {
+    /// Apply a named effect in place, or return a new image when the effect changes dimensions.
+    pub fn apply_effect_named(
+        &mut self,
+        name: &str,
+        options: &ImageEffectOptions,
+    ) -> Result<Option<ImageData>, String> {
+        match normalize_effect_name(name).as_str() {
+            "autolevel" | "autolevels" => self.auto_level(),
+            "levels" => self.levels(options.value, 255, options.factor),
+            "curves" | "curveslut" => self.gamma(options.factor.max(0.01)),
+            "exposure" => self.brightness(2.0f32.powf(options.factor)),
+            "huesaturationlightness" | "hsl" => self.saturation(options.factor),
+            "temperaturetint" | "temperature" | "tint" => {
+                let (r, g, b, _) = options.color.unwrap_or((255, 244, 214, 255));
+                self.tint(r, g, b, options.factor.clamp(0.0, 1.0));
+            }
+            "invert" => self.invert(),
+            "invertalpha" => self.invert_alpha(),
+            "median" => *self = self.median(options.radius.max(1)),
+            "gaussianblur" | "blur" => *self = self.blur(options.radius),
+            "motionblur" => *self = self.motion_blur(options.amount.max(1)),
+            "edgedetect" | "edge" => {
+                *self = self.convolve(&[-1.0, -1.0, -1.0, -1.0, 8.0, -1.0, -1.0, -1.0, -1.0], 3)?;
+            }
+            "emboss" => {
+                *self = self.convolve(&[-2.0, -1.0, 0.0, -1.0, 1.0, 1.0, 0.0, 1.0, 2.0], 3)?;
+            }
+            "normalmap" | "bumpmap" => *self = self.normal_map(),
+            "dropshadow" => {
+                return Ok(Some(self.drop_shadow(options.radius.max(1), options.color)))
+            }
+            "outline" => *self = self.outline(options.radius.max(1), options.color),
+            "glow" => *self = self.glow(options.radius.max(1), options.factor),
+            "quantize" | "posterize" => self.posterize(options.levels.max(2)),
+            "dither" => self.dither(options.levels.max(2)),
+            "noise" | "addnoise" => self.noise(options.amount.min(255) as u8),
+            "removenoise" => *self = self.median(options.radius.max(1)),
+            "grayscale" => self.grayscale(),
+            "sepia" => self.sepia(),
+            "threshold" => self.threshold(options.value),
+            "sharpen" => *self = self.sharpen(),
+            other => return Err(format!("unknown image effect '{}'", other)),
+        }
+        Ok(None)
+    }
+
+    /// Apply alpha from a same-sized mask image to this image.
+    pub fn apply_mask_image(&mut self, mask: &ImageData) -> Result<(), String> {
+        if self.width != mask.width || self.height != mask.height {
+            return Err(format!(
+                "mask size {}x{} does not match image size {}x{}",
+                mask.width, mask.height, self.width, self.height
+            ));
+        }
+        for (dst, src) in self
+            .pixels
+            .chunks_exact_mut(4)
+            .zip(mask.pixels.chunks_exact(4))
+        {
+            let mask_alpha = src[3] as u16;
+            dst[3] = ((dst[3] as u16 * mask_alpha) / 255) as u8;
+        }
+        Ok(())
+    }
+
+    /// Apply a resize/flip/rotate transform and return the resulting image.
+    pub fn transform_image(&self, options: &ImageEffectOptions) -> Result<ImageData, String> {
+        let width = options.width.unwrap_or(self.width);
+        let height = options.height.unwrap_or(self.height);
+        self.resize_with_filter(width, height, options.filter)
+            .ok_or_else(|| "transform: width and height must be greater than zero".to_string())
+    }
+
     /// Scale RGB channels by a factor in place.
     pub fn brightness(&mut self, factor: f32) {
         self.map_pixel_par(|_, _, r, g, b, a| {
@@ -164,6 +280,40 @@ impl ImageData {
         self.map_pixel(|_, _, r, g, b, a| {
             let na = (a as f32 * factor).clamp(0.0, 255.0) as u8;
             (r, g, b, na)
+        });
+    }
+    /// Invert only the alpha channel in place.
+    pub fn invert_alpha(&mut self) {
+        self.map_pixel_par(|_, _, r, g, b, a| (r, g, b, 255 - a));
+    }
+    /// Stretch RGB channels to use the full 0..255 range.
+    pub fn auto_level(&mut self) {
+        let mut min_v = 255u8;
+        let mut max_v = 0u8;
+        for px in self.pixels.chunks_exact(4) {
+            for ch in &px[..3] {
+                min_v = min_v.min(*ch);
+                max_v = max_v.max(*ch);
+            }
+        }
+        if min_v >= max_v {
+            return;
+        }
+        self.levels(min_v, max_v, 1.0);
+    }
+    /// Remap RGB channels from an input range with optional gamma.
+    pub fn levels(&mut self, in_min: u8, in_max: u8, gamma: f32) {
+        let span = (in_max.saturating_sub(in_min)).max(1) as f32;
+        let gamma = gamma.max(0.01);
+        self.map_pixel_par(move |_, _, r, g, b, a| {
+            let apply = |ch: u8| {
+                (((ch.saturating_sub(in_min)) as f32 / span)
+                    .clamp(0.0, 1.0)
+                    .powf(1.0 / gamma)
+                    * 255.0)
+                    .round() as u8
+            };
+            (apply(r), apply(g), apply(b), a)
         });
     }
     /// Flip the image horizontally in place.
@@ -291,6 +441,167 @@ impl ImageData {
             }
         }
         out
+    }
+    /// Median-filter the image with a square radius and return a new image.
+    pub fn median(&self, radius: u32) -> ImageData {
+        let r = radius as i32;
+        let mut out = ImageData::new(self.width, self.height);
+        for y in 0..self.height as i32 {
+            for x in 0..self.width as i32 {
+                let mut rs = Vec::new();
+                let mut gs = Vec::new();
+                let mut bs = Vec::new();
+                let mut alphas = Vec::new();
+                for yy in (y - r)..=(y + r) {
+                    for xx in (x - r)..=(x + r) {
+                        let sx = xx.clamp(0, self.width as i32 - 1) as u32;
+                        let sy = yy.clamp(0, self.height as i32 - 1) as u32;
+                        let idx = ((sy * self.width + sx) * 4) as usize;
+                        rs.push(self.pixels[idx]);
+                        gs.push(self.pixels[idx + 1]);
+                        bs.push(self.pixels[idx + 2]);
+                        alphas.push(self.pixels[idx + 3]);
+                    }
+                }
+                rs.sort_unstable();
+                gs.sort_unstable();
+                bs.sort_unstable();
+                alphas.sort_unstable();
+                let mid = rs.len() / 2;
+                out.set_pixel(x as u32, y as u32, rs[mid], gs[mid], bs[mid], alphas[mid]);
+            }
+        }
+        out
+    }
+    /// Apply a simple horizontal motion blur.
+    pub fn motion_blur(&self, amount: u32) -> ImageData {
+        let radius = amount as i32;
+        let mut out = ImageData::new(self.width, self.height);
+        for y in 0..self.height as i32 {
+            for x in 0..self.width as i32 {
+                let mut sums = [0u32; 4];
+                let mut count = 0u32;
+                for dx in -radius..=radius {
+                    let sx = x + dx;
+                    if sx >= 0 && sx < self.width as i32 {
+                        let idx = ((y as u32 * self.width + sx as u32) * 4) as usize;
+                        for (c, sum) in sums.iter_mut().enumerate() {
+                            *sum += self.pixels[idx + c] as u32;
+                        }
+                        count += 1;
+                    }
+                }
+                let idx = ((y as u32 * self.width + x as u32) * 4) as usize;
+                for (c, sum) in sums.iter().enumerate() {
+                    out.pixels[idx + c] = (sum / count) as u8;
+                }
+            }
+        }
+        out
+    }
+    /// Convert luminance gradients into a simple RGB normal map.
+    pub fn normal_map(&self) -> ImageData {
+        let mut out = ImageData::new(self.width, self.height);
+        let luma = |x: i32, y: i32| -> f32 {
+            let sx = x.clamp(0, self.width as i32 - 1) as u32;
+            let sy = y.clamp(0, self.height as i32 - 1) as u32;
+            let idx = ((sy * self.width + sx) * 4) as usize;
+            (0.2126 * self.pixels[idx] as f32
+                + 0.7152 * self.pixels[idx + 1] as f32
+                + 0.0722 * self.pixels[idx + 2] as f32)
+                / 255.0
+        };
+        for y in 0..self.height as i32 {
+            for x in 0..self.width as i32 {
+                let dx = luma(x + 1, y) - luma(x - 1, y);
+                let dy = luma(x, y + 1) - luma(x, y - 1);
+                let nx = ((dx * 0.5 + 0.5) * 255.0).clamp(0.0, 255.0) as u8;
+                let ny = ((dy * 0.5 + 0.5) * 255.0).clamp(0.0, 255.0) as u8;
+                out.set_pixel(x as u32, y as u32, nx, ny, 255, 255);
+            }
+        }
+        out
+    }
+    /// Create a larger image containing this image and an offset alpha shadow.
+    pub fn drop_shadow(&self, radius: u32, color: Option<(u8, u8, u8, u8)>) -> ImageData {
+        let pad = radius + 2;
+        let mut out = ImageData::new(self.width + pad * 2, self.height + pad * 2);
+        let (r, g, b, a) = color.unwrap_or((0, 0, 0, 160));
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let src = ((y * self.width + x) * 4) as usize;
+                if self.pixels[src + 3] > 0 {
+                    out.set_pixel(x + pad + radius, y + pad + radius, r, g, b, a);
+                }
+            }
+        }
+        out = out.blur(radius);
+        out.blit(self, pad as i32, pad as i32);
+        out
+    }
+    /// Draw a flat outline around non-transparent pixels.
+    pub fn outline(&self, radius: u32, color: Option<(u8, u8, u8, u8)>) -> ImageData {
+        let mut out = self.clone();
+        let (r, g, b, a) = color.unwrap_or((255, 255, 255, 255));
+        let rad = radius as i32;
+        for y in 0..self.height as i32 {
+            for x in 0..self.width as i32 {
+                let idx = ((y as u32 * self.width + x as u32) * 4) as usize;
+                if self.pixels[idx + 3] != 0 {
+                    continue;
+                }
+                let mut near = false;
+                'outer: for yy in (y - rad)..=(y + rad) {
+                    for xx in (x - rad)..=(x + rad) {
+                        if xx < 0 || yy < 0 || xx >= self.width as i32 || yy >= self.height as i32 {
+                            continue;
+                        }
+                        let ni = ((yy as u32 * self.width + xx as u32) * 4) as usize;
+                        if self.pixels[ni + 3] > 0 {
+                            near = true;
+                            break 'outer;
+                        }
+                    }
+                }
+                if near {
+                    out.set_pixel(x as u32, y as u32, r, g, b, a);
+                }
+            }
+        }
+        out
+    }
+    /// Add a blurred copy over the image.
+    pub fn glow(&self, radius: u32, factor: f32) -> ImageData {
+        let blurred = self.blur(radius);
+        let mut out = self.clone();
+        let factor = factor.clamp(0.0, 4.0);
+        out.map_pixel_par(|x, y, r, g, b, a| {
+            let idx = ((y * blurred.width + x) * 4) as usize;
+            let add =
+                |base: u8, glow: u8| (base as f32 + glow as f32 * factor).clamp(0.0, 255.0) as u8;
+            (
+                add(r, blurred.pixels[idx]),
+                add(g, blurred.pixels[idx + 1]),
+                add(b, blurred.pixels[idx + 2]),
+                a,
+            )
+        });
+        out
+    }
+    /// Apply ordered Bayer dithering after posterization.
+    pub fn dither(&mut self, levels: u8) {
+        const BAYER4: [[u8; 4]; 4] = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+        let levels = levels.max(2) as f32;
+        self.map_pixel_par(move |x, y, r, g, b, a| {
+            let t =
+                (BAYER4[(y % 4) as usize][(x % 4) as usize] as f32 / 16.0 - 0.5) * (255.0 / levels);
+            let q = |ch: u8| {
+                (((ch as f32 + t).clamp(0.0, 255.0) / 255.0 * (levels - 1.0)).round()
+                    / (levels - 1.0)
+                    * 255.0) as u8
+            };
+            (q(r), q(g), q(b), a)
+        });
     }
     /// Sharpen the image with a 3x3 kernel and return a new image.
     pub fn sharpen(&self) -> ImageData {

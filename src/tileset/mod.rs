@@ -25,7 +25,7 @@ pub use archetype::{
     TileObjectArchetype, TileObjectLight, TileObjectOccluder, TileObjectPhysics,
     TileObjectRenderLight, TileObjectShapeKind,
 };
-pub use autotile::AutoTileMode;
+pub use autotile::{AutoTileMode, TerrainProfile};
 pub use catalog::TileCatalog;
 pub use tileset::TileSet;
 pub use visual::TileVisual;

@@ -12,7 +12,7 @@
 - Source path: `src/tileset`
 - Binding: `src/lua_api/tileset_api.rs`
 - Namespace: `lurek.tileset`
-- Lua API surface: `3` functions, `2` types, `41` methods
+- Lua API surface: `3` functions, `2` types, `43` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -159,6 +159,7 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 - `LTileSet:getPropertyNumber(tile_id, name) -> number|nil`: Returns a custom tile property parsed as a number.
 - `LTileSet:getQuad(tile_id) -> table`: Returns the atlas rectangle for one tile id.
 - `LTileSet:getSpacing() -> integer`: Returns the spacing between atlas tiles in pixels.
+- `LTileSet:getTerrainProfile(name) -> table|nil`: Returns a Godot-style terrain-set profile.
 - `LTileSet:getTextureDimensions() -> integer`: Returns the computed texture width and height in pixels.
 - `LTileSet:getTileCount() -> integer`: Returns the number of tile entries in this tileset.
 - `LTileSet:getTileDimensions() -> integer`: Returns the tile width and height in pixels.
@@ -174,6 +175,7 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 - `LTileSet:setPhysicsShape(tile_id, shape?) -> nil`: Sets or clears the physics shape label for one tile.
 - `LTileSet:setProfile(tile_id, profile?) -> nil`: Sets or clears the named gameplay profile for one tile.
 - `LTileSet:setProperty(tile_id, name, value) -> nil`: Sets or clears a custom string-convertible tile property.
+- `LTileSet:setTerrainProfile(name, profile) -> nil`: Sets a Godot-style terrain-set profile for autotile authoring.
 - `LTileSet:setTileObject(tile_id, object_name?) -> nil`: Assigns or clears the object archetype mapped to one tile.
 - `LTileSet:type() -> string`: Returns the userdata type name.
 - `LTileSet:typeOf(name) -> boolean`: Checks whether this tileset matches a type name.

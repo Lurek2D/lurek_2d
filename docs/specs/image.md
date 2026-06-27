@@ -13,7 +13,7 @@
 - Source path: `src/image`
 - Binding: `src/lua_api/image_api.rs`
 - Namespace: `lurek.image`
-- Lua API surface: `13` functions, `10` types, `89` methods
+- Lua API surface: `14` functions, `11` types, `102` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -266,6 +266,7 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 - `lurek.image.fromScreen() -> LImageData|nil`: Returns a completed screen capture image or requests one for a future call.
 - `lurek.image.isCompressed(filename) -> boolean`: Returns whether a GameFS image file begins with DDS compressed image magic bytes.
+- `lurek.image.loadAnimated(source) -> LAnimatedImage`: Loads an animated GIF from GameFS path or decodes animated GIF bytes.
 - `lurek.image.loadImage(filename) -> LImageData`: Loads and decodes image data from GameFS.
 - `lurek.image.loadLayered(filename) -> LLayeredImage`: Loads a serialized layered image stack from GameFS.
 - `lurek.image.newCompressedData(filename) -> LCompressedImageData`: Loads DDS compressed image data from GameFS.
@@ -288,6 +289,24 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - No documented module-level enums/constants.
 
 ### Types
+
+#### LAnimatedImage Type
+
+- Lua-side decoded animated image containing frame images and durations.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LAnimatedImage:frameCount() -> integer`: Returns the number of decoded frames.
+- `LAnimatedImage:getDuration(index) -> integer`: Returns a frame duration in milliseconds by one-based index.
+- `LAnimatedImage:getDurations() -> table`: Returns all frame durations in milliseconds.
+- `LAnimatedImage:getFrame(index) -> LImageData`: Returns a decoded frame by one-based index.
+- `LAnimatedImage:getFrames() -> table`: Returns all decoded frame images as an array.
+- `LAnimatedImage:type() -> string`: Returns the Lua-visible type name.
+- `LAnimatedImage:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
 
 #### LCompressedImageData Type
 
@@ -318,12 +337,17 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 ##### Methods
 
 - `LImageData:alphaMask(factor) -> nil`: Multiplies this image alpha channel by a factor in place.
+- `LImageData:applyEffect(name, opts?) -> LImageData|nil`: Applies a named image effect in place, or returns a new image when the effect changes size.
+- `LImageData:applyEffects(effects, opts?) -> LImageData|nil`: Applies a sequence of named effects in order.
+- `LImageData:applyMask(mask) -> nil`: Multiplies this image alpha by another image's alpha channel.
 - `LImageData:applyPaletteLut(lut_ud) -> nil`: Applies a palette lookup table to this image in place.
 - `LImageData:blit(src_ud, dst_x, dst_y) -> nil`: Copies a source image into this image at a destination coordinate.
 - `LImageData:blur(radius) -> LImageData`: Returns a blurred copy of this image.
 - `LImageData:brightness(factor) -> nil`: Applies a brightness factor to this image in place.
+- `LImageData:clone() -> LImageData`: Returns a deep copy of this image data.
 - `LImageData:contrast(factor) -> nil`: Applies a contrast factor to this image in place.
 - `LImageData:convolve(kernel_t, ksize) -> LImageData`: Applies a convolution kernel and returns the filtered image.
+- `LImageData:copyRegion(x, y, w, h) -> LImageData`: Copies a rectangular region into a new image.
 - `LImageData:crop(x, y, w, h) -> LImageData`: Returns a cropped image region. This method is available to Lua scripts.
 - `LImageData:diff(other_ud) -> number`: Computes a difference metric against another image.
 - `LImageData:drawCircle(cx, cy, radius, r, g, b, a) -> nil`: Draws a filled circle into this image.
@@ -358,6 +382,7 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - `LImageData:sharpen() -> LImageData`: Returns a sharpened copy of this image.
 - `LImageData:threshold(value) -> nil`: Applies a threshold filter to this image in place.
 - `LImageData:tint(tr, tg, tb, factor) -> nil`: Blends this image toward a tint color in place.
+- `LImageData:transform(opts?) -> LImageData`: Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.
 - `LImageData:type() -> string`: Returns the Lua-visible type name for this image data handle.
 - `LImageData:typeOf(name) -> boolean`: Returns whether this image data handle matches the `LImageData` type name.
 

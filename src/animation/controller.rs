@@ -68,6 +68,12 @@ impl Animation {
         self.frames.push(AnimFrame::new(quad, 0.0));
         idx
     }
+    /// Append a frame with an explicit duration override in seconds and return its index.
+    pub fn add_frame_with_duration(&mut self, quad: Rect, duration: f32) -> usize {
+        let idx = self.frames.len();
+        self.frames.push(AnimFrame::new(quad, duration.max(0.0)));
+        idx
+    }
     /// Append frames from a texture grid and return the number added.
     pub fn add_frames_from_grid(
         &mut self,

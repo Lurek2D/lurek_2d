@@ -13,7 +13,7 @@
 - Source path: `src/sprite`
 - Binding: `src/lua_api/sprite_api.rs`
 - Namespace: `lurek.sprite`
-- Lua API surface: `9` functions, `13` types, `53` methods
+- Lua API surface: `12` functions, `14` types, `64` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -119,11 +119,14 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 ### Functions
 
 - `lurek.sprite.newAnimator(clips?) -> LSpriteAnimator`: Creates a stateful sprite clip animator from an optional clip definition table.
+- `lurek.sprite.newAtlasFromImage(image, atlas_json) -> LSpriteAtlas`: Parses atlas JSON for an existing `LImageData` source.
 - `lurek.sprite.newAtlasPacker(width, height, padding) -> LAtlasPacker`: Creates a runtime atlas packer for dynamically allocating named sprite regions.
 - `lurek.sprite.newAtlasSheet(atlas, sw, sh) -> LSpriteSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
+- `lurek.sprite.newAutoTileSheet(image, layout, opts) -> LSpriteAutoTileSheet`: Creates an autotile sheet descriptor from an image source, layout, and tile options.
 - `lurek.sprite.newNineSlice(image, top, right, bottom, left) -> LNineSlice`: Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
 - `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 - `lurek.sprite.newSheet(tw, th, fw, fh) -> LSpriteSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
+- `lurek.sprite.newSheetFromImage(image, opts) -> LSpriteSheet`: Creates a sprite sheet from an existing `LImageData` source and frame options.
 - `lurek.sprite.newSprite(texture_id, x, y) -> LSprite`: Creates a lightweight sprite record with transform and optional normal-map metadata.
 - `lurek.sprite.parseAsepriteAtlas(json_str) -> LSpriteAtlas`: Parses an Aseprite JSON atlas string and returns a sprite atlas object.
 - `lurek.sprite.parseAtlas(json_str) -> LSpriteAtlas`: Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
@@ -297,6 +300,26 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 - No documented methods.
 
+#### LSpriteAutoTileSheet Type
+
+- Lua-visible autotile sheet authored from a sprite/image source.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSpriteAutoTileSheet:getBitmaskForTile(tile_id) -> integer`: Returns the bitmask for a one-based tile id.
+- `LSpriteAutoTileSheet:getDefaultMode() -> string`: Returns the default autotile matching mode for this layout.
+- `LSpriteAutoTileSheet:getLayout() -> string`: Returns the autotile layout name.
+- `LSpriteAutoTileSheet:getQuad(tile_id) -> table`: Returns a one-based tile source rectangle.
+- `LSpriteAutoTileSheet:getTileCount() -> integer`: Returns the number of logical tiles in the sheet.
+- `LSpriteAutoTileSheet:getTileForBitmask(bitmask) -> integer|nil`: Returns a one-based tile id for a bitmask, or nil when missing.
+- `LSpriteAutoTileSheet:toFrames() -> table`: Returns all autotile source rectangles as sprite frame DTOs.
+- `LSpriteAutoTileSheet:type() -> string`: Returns the Lua-visible type name.
+- `LSpriteAutoTileSheet:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
+
 #### LSpriteSheet Type
 
 - Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
@@ -317,6 +340,8 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - `LSpriteSheet:getGroupNames() -> string[]`: Returns an array of all named animation group names defined on this sheet.
 - `LSpriteSheet:getRow(row) -> table`: Returns all frame quads in the given row of the sprite sheet grid.
 - `LSpriteSheet:nameGroup(name, start, count) -> nil`: Defines a named animation group as a contiguous range of frames.
+- `LSpriteSheet:toAnimationClip(opts?) -> table`: Builds an animation clip DTO from this sheet without creating playback state.
+- `LSpriteSheet:toFrames(group?) -> table`: Returns frame rectangle DTOs for all frames or a named group.
 - `LSpriteSheet:type() -> string`: Returns the type name of this object.
 - `LSpriteSheet:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 

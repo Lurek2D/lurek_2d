@@ -891,6 +891,68 @@ LImageData:alphaMask(factor)
 
 ---
 
+#### `LImageData:applyEffect`
+
+Applies a named image effect in place, or returns a new image when the effect changes size.
+
+```lua
+LImageData:applyEffect(name, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Effect name. |
+| `opts?` | table | Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | New image for size-changing effects, otherwise nil. |
+
+---
+
+#### `LImageData:applyEffects`
+
+Applies a sequence of named effects in order.
+
+```lua
+LImageData:applyEffects(effects, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `effects` | table | Array of effect names or `{name=..., opts=...}` tables. |
+| `opts?` | table | Default options used by string entries. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | Last new image returned by a size-changing effect, otherwise nil. |
+
+---
+
+#### `LImageData:applyMask`
+
+Multiplies this image alpha by another image's alpha channel.
+
+```lua
+LImageData:applyMask(mask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mask` | [LImageData](#limagedata) | Same-sized alpha mask image. |
+
+---
+
 #### `LImageData:applyPaletteLut`
 
 Applies a palette lookup table to this image in place.
@@ -963,6 +1025,22 @@ LImageData:brightness(factor)
 
 ---
 
+#### `LImageData:clone`
+
+Returns a deep copy of this image data.
+
+```lua
+LImageData:clone()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Copied image data. |
+
+---
+
 #### `LImageData:contrast`
 
 Applies a contrast factor to this image in place.
@@ -999,6 +1077,31 @@ LImageData:convolve(kernel_t, ksize)
 | Type | Description |
 |------|-------------|
 | [LImageData](#limagedata) | Convolved image data handle. |
+
+---
+
+#### `LImageData:copyRegion`
+
+Copies a rectangular region into a new image.
+
+```lua
+LImageData:copyRegion(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Copied region. |
 
 ---
 
@@ -1602,6 +1705,28 @@ LImageData:tint(tr, tg, tb, factor)
 | `tg` | number | Tint green channel. |
 | `tb` | number | Tint blue channel. |
 | `factor` | number | Tint blend factor. |
+
+---
+
+#### `LImageData:transform`
+
+Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.
+
+```lua
+LImageData:transform(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Transform options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Transformed image. |
 
 ---
 

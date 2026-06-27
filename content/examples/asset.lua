@@ -747,3 +747,57 @@ do
     example_print_log("typeOf other="        .. tostring(h:typeOf("other")))
     lurek.asset.unload(h)
 end
+--@api: lurek.asset.watch
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml")
+    local watched = lurek.asset.watch(handle)
+    local info = lurek.asset.resolve(watched)
+    lurek.log.info("[asset] watched=" .. tostring(info.watched))
+    lurek.asset.unload(handle)
+end
+
+--@api: lurek.asset.reload
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml")
+    local before = lurek.asset.getRevision(handle)
+    local after = lurek.asset.reload(handle)
+    lurek.log.info("[asset] reload revision " .. tostring(before) .. " -> " .. tostring(after))
+    lurek.asset.unload(handle)
+end
+
+--@api: lurek.asset.getRevision
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml")
+    local revision = lurek.asset.getRevision(handle)
+    local info = lurek.asset.resolve(handle)
+    lurek.log.info("[asset] revision=" .. tostring(revision) .. " type=" .. tostring(info.type))
+    lurek.asset.unload(handle)
+end
+
+--@api: lurek.asset.onReload
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml")
+    local seen = 0
+    lurek.asset.onReload(handle, function(_, revision) seen = revision end)
+    local revision = lurek.asset.reload(handle)
+    lurek.log.info("[asset] callback revision=" .. tostring(seen or revision))
+    lurek.asset.unload(handle)
+end
+
+--@api: lurek.asset.resolve
+do
+    local handle = lurek.asset.load("Cargo.toml", "toml", { name = "cargo-example" })
+    local info = lurek.asset.resolve(handle)
+    local label = info.name .. ":" .. info.type
+    lurek.log.info("[asset] resolved " .. label)
+    lurek.asset.unload(handle)
+end
+
+--@api: lurek.asset.loadManifest
+do
+    local handles = lurek.asset.loadManifest("tests/fixtures/asset_manifest.toml")
+    local first = handles[1]
+    local info = lurek.asset.resolve(first)
+    lurek.log.info("[asset] manifest loaded " .. tostring(info.name))
+    lurek.asset.clear()
+end

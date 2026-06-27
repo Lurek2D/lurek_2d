@@ -1,6 +1,8 @@
 //! Registers the `lurek.animation` Lua API for clip control, draw options, validation, and frame rendering helpers.
 
+use super::image_api::LuaAnimatedImage;
 use super::render_api::LuaImage;
+use super::sprite_api::LuaSpriteSheet;
 use super::SharedState;
 use crate::animation::aseprite::load_aseprite_json;
 use crate::animation::blend::{BlendLayer, BlendLayerSet, BlendMask};
@@ -322,6 +324,13 @@ impl LuaUserData for LuaAnimation {
         /// Sets the current frame index directly.
         /// @param | index | integer | Frame index to make current.
         methods.add_method_mut("setFrame", |_, this, index: usize| {
+            this.inner.set_frame(index);
+            Ok(())
+        });
+        // -- seek --
+        /// Seeks to a frame index in the current clip.
+        /// @param | index | integer | Frame index to make current.
+        methods.add_method_mut("seek", |_, this, index: usize| {
             this.inner.set_frame(index);
             Ok(())
         });
@@ -666,6 +675,76 @@ impl LuaUserData for LuaBlendLayerSet {
         });
     }
 }
+
+fn rect_from_lua_table(tbl: LuaTable, api: &str) -> LuaResult<Rect> {
+    let x: f32 = tbl
+        .get::<_, Option<f32>>("x")?
+        .or_else(|| tbl.get(1).ok())
+        .ok_or_else(|| LuaError::RuntimeError(format!("{}: frame missing x", api)))?;
+    let y: f32 = tbl
+        .get::<_, Option<f32>>("y")?
+        .or_else(|| tbl.get(2).ok())
+        .ok_or_else(|| LuaError::RuntimeError(format!("{}: frame missing y", api)))?;
+    let w: f32 = tbl
+        .get::<_, Option<f32>>("w")?
+        .or_else(|| tbl.get::<_, Option<f32>>("width").ok().flatten())
+        .or_else(|| tbl.get(3).ok())
+        .ok_or_else(|| LuaError::RuntimeError(format!("{}: frame missing w", api)))?;
+    let h: f32 = tbl
+        .get::<_, Option<f32>>("h")?
+        .or_else(|| tbl.get::<_, Option<f32>>("height").ok().flatten())
+        .or_else(|| tbl.get(4).ok())
+        .ok_or_else(|| LuaError::RuntimeError(format!("{}: frame missing h", api)))?;
+    Ok(Rect::new(x, y, w, h))
+}
+
+fn rects_from_lua_table(frames: LuaTable, api: &str) -> LuaResult<Vec<Rect>> {
+    let mut rects = Vec::new();
+    for entry in frames.sequence_values::<LuaTable>() {
+        rects.push(rect_from_lua_table(entry?, api)?);
+    }
+    Ok(rects)
+}
+
+fn apply_default_clip(
+    anim: &mut Animation,
+    frame_count: usize,
+    opts: Option<LuaTable>,
+    api: &str,
+) -> LuaResult<()> {
+    if frame_count == 0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{}: expected at least one frame",
+            api
+        )));
+    }
+    let name = opts
+        .as_ref()
+        .and_then(|t| t.get::<_, Option<String>>("name").ok().flatten())
+        .unwrap_or_else(|| "default".to_string());
+    let fps = opts
+        .as_ref()
+        .and_then(|t| t.get::<_, Option<f32>>("fps").ok().flatten())
+        .unwrap_or(12.0);
+    let looping = opts
+        .as_ref()
+        .and_then(|t| t.get::<_, Option<bool>>("loop").ok().flatten())
+        .unwrap_or(true);
+    let mode_string = opts
+        .as_ref()
+        .and_then(|t| t.get::<_, Option<String>>("mode").ok().flatten());
+    let mode = parse_clip_mode(mode_string.as_deref())?;
+    anim.add_clip_with_mode(&name, (0..frame_count).collect(), fps, looping, mode)
+        .map_err(|e| LuaError::RuntimeError(format!("{}: {}", api, e)))?;
+    if opts
+        .as_ref()
+        .and_then(|t| t.get::<_, Option<bool>>("play").ok().flatten())
+        .unwrap_or(false)
+    {
+        anim.play(&name);
+    }
+    Ok(())
+}
 /// Registers the `lurek.animation` API table with the Lua VM.
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -709,6 +788,94 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 Err(e) => Err(LuaError::RuntimeError(format!("fromAseprite: {}", e))),
             }
         })?,
+    )?;
+    // -- fromFrames --
+    /// Creates an animation from explicit frame rectangle DTOs.
+    /// @param | frames | table | Array of `{x, y, w, h}` frame rectangles.
+    /// @param | opts | table? | `{name, fps, loop, mode, play}` clip options.
+    /// @return | LAnimation | New animation handle.
+    tbl.set(
+        "fromFrames",
+        lua.create_function(|lua, (frames, opts): (LuaTable, Option<LuaTable>)| {
+            let rects = rects_from_lua_table(frames, "lurek.animation.fromFrames")?;
+            let mut anim = Animation::new();
+            anim.add_frames_from_rects(&rects);
+            apply_default_clip(&mut anim, rects.len(), opts, "lurek.animation.fromFrames")?;
+            lua.create_userdata(LuaAnimation {
+                inner: anim,
+                stored_image: None,
+            })
+        })?,
+    )?;
+    // -- fromSpriteSheet --
+    /// Creates an animation from a `LSpriteSheet`, optionally using a named group.
+    /// @param | sheet | LSpriteSheet | Source sprite sheet.
+    /// @param | opts | table? | `{group, name, fps, loop, mode, play}` clip options.
+    /// @return | LAnimation | New animation handle.
+    tbl.set(
+        "fromSpriteSheet",
+        lua.create_function(
+            |lua, (sheet_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let sheet = sheet_ud.borrow::<LuaSpriteSheet>()?;
+                let group = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<String>>("group").ok().flatten());
+                let rects = if let Some(group) = group {
+                    sheet.inner.get_group(&group).unwrap_or_default()
+                } else {
+                    let mut frames = Vec::with_capacity(sheet.inner.get_frame_count());
+                    for i in 0..sheet.inner.get_frame_count() {
+                        if let Some(frame) = sheet.inner.get_frame(i) {
+                            frames.push(frame);
+                        }
+                    }
+                    frames
+                };
+                let mut anim = Animation::new();
+                anim.add_frames_from_rects(&rects);
+                apply_default_clip(
+                    &mut anim,
+                    rects.len(),
+                    opts,
+                    "lurek.animation.fromSpriteSheet",
+                )?;
+                lua.create_userdata(LuaAnimation {
+                    inner: anim,
+                    stored_image: None,
+                })
+            },
+        )?,
+    )?;
+    // -- fromAnimatedImage --
+    /// Creates an animation from decoded frames returned by `lurek.image.loadAnimated`.
+    /// @param | animated | LAnimatedImage | Decoded animated image.
+    /// @param | opts | table? | `{name, fps, loop, mode, play}` clip options.
+    /// @return | LAnimation | New animation handle.
+    tbl.set(
+        "fromAnimatedImage",
+        lua.create_function(
+            |lua, (animated_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let animated = animated_ud.borrow::<LuaAnimatedImage>()?;
+                let mut anim = Animation::new();
+                for (frame, duration_ms) in animated.frames.iter().zip(animated.durations_ms.iter())
+                {
+                    anim.add_frame_with_duration(
+                        Rect::new(0.0, 0.0, frame.width() as f32, frame.height() as f32),
+                        *duration_ms as f32 / 1000.0,
+                    );
+                }
+                apply_default_clip(
+                    &mut anim,
+                    animated.frames.len(),
+                    opts,
+                    "lurek.animation.fromAnimatedImage",
+                )?;
+                lua.create_userdata(LuaAnimation {
+                    inner: anim,
+                    stored_image: None,
+                })
+            },
+        )?,
     )?;
     // -- newStateMachine --
     /// Creates an animation state machine by consuming an animation handle.

@@ -3,7 +3,7 @@
 use super::SharedState;
 use crate::tilefield::{TileObjectCatalog, TileRef};
 use crate::tileset::{
-    AutoTileMode, TileAnimFrame, TileCatalog, TileObjectArchetype, TileObjectLight,
+    AutoTileMode, TerrainProfile, TileAnimFrame, TileCatalog, TileObjectArchetype, TileObjectLight,
     TileObjectOccluder, TileObjectPhysics, TileObjectRenderLight, TileObjectShapeKind, TileSet,
     TileVisual,
 };
@@ -1303,6 +1303,66 @@ impl LuaUserData for LuaTileSet {
         /// @return | string | Autotile matching mode.
         methods.add_method("getAutoTileMode", |_, this, type_name: String| {
             Ok(this.inner.borrow().get_auto_tile_mode(&type_name).as_str())
+        });
+        /// Sets a Godot-style terrain-set profile for autotile authoring.
+        /// @param | name | string | Profile name.
+        /// @param | profile | table | `{terrainSet, mode, defaultTileId?}`.
+        methods.add_method(
+            "setTerrainProfile",
+            |_, this, (name, profile): (String, LuaTable)| {
+                let terrain_set = profile
+                    .get::<_, Option<String>>("terrainSet")?
+                    .or_else(|| {
+                        profile
+                            .get::<_, Option<String>>("terrain_set")
+                            .ok()
+                            .flatten()
+                    })
+                    .unwrap_or_else(|| name.clone());
+                let mode = parse_auto_tile_mode(
+                    "setTerrainProfile",
+                    profile
+                        .get::<_, Option<String>>("mode")?
+                        .as_deref()
+                        .unwrap_or("matchCornersAndSides"),
+                )?;
+                let default_tile_id = profile
+                    .get::<_, Option<u32>>("defaultTileId")?
+                    .or_else(|| {
+                        profile
+                            .get::<_, Option<u32>>("default_tile_id")
+                            .ok()
+                            .flatten()
+                    })
+                    .map(|id| id.saturating_sub(1));
+                this.inner.borrow_mut().set_terrain_profile(
+                    &name,
+                    TerrainProfile {
+                        terrain_set,
+                        mode,
+                        default_tile_id,
+                    },
+                );
+                Ok(())
+            },
+        );
+        /// Returns a Godot-style terrain-set profile.
+        /// @param | name | string | Profile name.
+        /// @return | table|nil | Profile table or nil.
+        methods.add_method("getTerrainProfile", |lua, this, name: String| {
+            let profile = this.inner.borrow().get_terrain_profile(&name).cloned();
+            match profile {
+                Some(profile) => {
+                    let table = lua.create_table()?;
+                    table.set("terrainSet", profile.terrain_set)?;
+                    table.set("mode", profile.mode.as_str())?;
+                    if let Some(tile_id) = profile.default_tile_id {
+                        table.set("defaultTileId", tile_id + 1)?;
+                    }
+                    Ok(LuaValue::Table(table))
+                }
+                None => Ok(LuaValue::Nil),
+            }
         });
         /// Returns the userdata type name.
         /// @return | string | Always `LTileSet`.

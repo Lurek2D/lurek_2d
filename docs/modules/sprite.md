@@ -30,10 +30,10 @@ end
 ## Common Patterns
 
 - Start with `lurek.sprite.newAnimator` when exploring this module.
+- Start with `lurek.sprite.newAtlasFromImage` when exploring this module.
 - Start with `lurek.sprite.newAtlasPacker` when exploring this module.
 - Start with `lurek.sprite.newAtlasSheet` when exploring this module.
-- Start with `lurek.sprite.newNineSlice` when exploring this module.
-- Start with `lurek.sprite.newRPGMakerSheet` when exploring this module.
+- Start with `lurek.sprite.newAutoTileSheet` when exploring this module.
 
 ## API Reference
 
@@ -120,6 +120,42 @@ do
     local clip = animator:currentClip()
     local playing = animator:isPlaying()
     sprite_log("newAnimator type=" .. kind .. " clip=" .. tostring(clip) .. " playing=" .. tostring(playing))
+end
+```
+
+---
+
+### `lurek.sprite.newAtlasFromImage`
+
+Parses atlas JSON for an existing `[LImageData](#limagedata)` source.
+
+```lua
+lurek.sprite.newAtlasFromImage(image, atlas_json)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `image` | [LImageData](#limagedata) | Source image data used as the atlas texture. |
+| `atlas_json` | string | TexturePacker or Aseprite JSON. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSpriteAtlas](#lspriteatlas) | Parsed atlas. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(16, 16)
+    image:fill(255, 255, 255, 255)
+    local json = '{"frames":{"part":{"frame":{"x":0,"y":0,"w":8,"h":8},"rotated":false}}}'
+    local atlas = lurek.sprite.newAtlasFromImage(image, json)
+    local entry = atlas:getEntry("part")
+    lurek.log.info("[sprite] image atlas entry=" .. tostring(entry.w))
 end
 ```
 
@@ -267,6 +303,42 @@ do
     local first = sheet:getFrame(0)
     local fw, fh = sheet:getFrameSize()
     sprite_log("newAtlasSheet type=" .. sheet:type() .. " frames=" .. count .. " frame=" .. fw .. "x" .. fh .. " first=" .. first.x .. "," .. first.y)
+end
+```
+
+---
+
+### `lurek.sprite.newAutoTileSheet`
+
+Creates an autotile sheet descriptor from an image source, layout, and tile options.
+
+```lua
+lurek.sprite.newAutoTileSheet(image, layout, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `image` | [LImageData](#limagedata) | Source autotile sheet image. |
+| `layout` | string | `blob47`, `composite48`, `rpgmaker48`, or `minimal16`. |
+| `opts` | table | `{tileWidth, tileHeight}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSpriteAutoTileSheet](#lspriteautotilesheet) | Autotile sheet descriptor. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    image:fill(255, 255, 255, 255)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile count=" .. tostring(count))
 end
 ```
 
@@ -454,6 +526,41 @@ do
     local cols, rows = sheet:getGridSize()
     local fw, fh = sheet:getFrameSize()
     sprite_log("newSheet type=" .. sheet:type() .. " frames=" .. frames .. " grid=" .. cols .. "x" .. rows .. " frame=" .. fw .. "x" .. fh)
+end
+```
+
+---
+
+### `lurek.sprite.newSheetFromImage`
+
+Creates a sprite sheet from an existing `[LImageData](#limagedata)` source and frame options.
+
+```lua
+lurek.sprite.newSheetFromImage(image, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `image` | [LImageData](#limagedata) | Source image data. |
+| `opts` | table | `{frameWidth, frameHeight}` or `{columns, rows}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSpriteSheet](#lspritesheet) | A new sprite sheet object. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(32, 16)
+    image:fill(255, 255, 255, 255)
+    local sheet = lurek.sprite.newSheetFromImage(image, { frameWidth = 16, frameHeight = 16 })
+    local frames = sheet:toFrames()
+    lurek.log.info("[sprite] image sheet frames=" .. tostring(#frames))
 end
 ```
 
@@ -686,10 +793,12 @@ end
 
 - [LAtlasPacker](#latlaspacker)
 - [LImage](#limage)
+- [LImageData](#limagedata)
 - [LNineSlice](#lnineslice)
 - [LSprite](#lsprite)
 - [LSpriteAnimator](#lspriteanimator)
 - [LSpriteAtlas](#lspriteatlas)
+- [LSpriteAutoTileSheet](#lspriteautotilesheet)
 - [LSpriteSheet](#lspritesheet)
 
 ## LAtlasPacker
@@ -1370,6 +1479,907 @@ LImage:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True if the name matches. |
+
+---
+
+## LImageData
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LImageData:alphaMask`
+
+Multiplies this image alpha channel by a factor in place.
+
+```lua
+LImageData:alphaMask(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Alpha multiplier. |
+
+---
+
+#### `LImageData:applyEffect`
+
+Applies a named image effect in place, or returns a new image when the effect changes size.
+
+```lua
+LImageData:applyEffect(name, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Effect name. |
+| `opts?` | table | Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | New image for size-changing effects, otherwise nil. |
+
+---
+
+#### `LImageData:applyEffects`
+
+Applies a sequence of named effects in order.
+
+```lua
+LImageData:applyEffects(effects, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `effects` | table | Array of effect names or `{name=..., opts=...}` tables. |
+| `opts?` | table | Default options used by string entries. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | Last new image returned by a size-changing effect, otherwise nil. |
+
+---
+
+#### `LImageData:applyMask`
+
+Multiplies this image alpha by another image's alpha channel.
+
+```lua
+LImageData:applyMask(mask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mask` | [LImageData](#limagedata) | Same-sized alpha mask image. |
+
+---
+
+#### `LImageData:applyPaletteLut`
+
+Applies a palette lookup table to this image in place.
+
+```lua
+LImageData:applyPaletteLut(lut_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lut_ud` | [LPaletteLUT](image.md#lpalettelut) | Palette lookup table handle. |
+
+---
+
+#### `LImageData:blit`
+
+Copies a source image into this image at a destination coordinate.
+
+```lua
+LImageData:blit(src_ud, dst_x, dst_y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:blur`
+
+Returns a blurred copy of this image.
+
+```lua
+LImageData:blur(radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `radius` | number | Blur radius. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Blurred image data handle. |
+
+---
+
+#### `LImageData:brightness`
+
+Applies a brightness factor to this image in place.
+
+```lua
+LImageData:brightness(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Brightness multiplier or adjustment factor. |
+
+---
+
+#### `LImageData:clone`
+
+Returns a deep copy of this image data.
+
+```lua
+LImageData:clone()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Copied image data. |
+
+---
+
+#### `LImageData:contrast`
+
+Applies a contrast factor to this image in place.
+
+```lua
+LImageData:contrast(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Contrast factor. |
+
+---
+
+#### `LImageData:convolve`
+
+Applies a convolution kernel and returns the filtered image.
+
+```lua
+LImageData:convolve(kernel_t, ksize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kernel_t` | table | Array table of numeric kernel weights. |
+| `ksize` | number | Kernel width and height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Convolved image data handle. |
+
+---
+
+#### `LImageData:copyRegion`
+
+Copies a rectangular region into a new image.
+
+```lua
+LImageData:copyRegion(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Copied region. |
+
+---
+
+#### `LImageData:crop`
+
+Returns a cropped image region. This method is available to Lua scripts.
+
+```lua
+LImageData:crop(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Crop width. |
+| `h` | number | Crop height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Cropped image data handle. |
+
+---
+
+#### `LImageData:diff`
+
+Computes a difference metric against another image.
+
+```lua
+LImageData:diff(other_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `other_ud` | [LImageData](#limagedata) | Image data handle to compare with this image. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Difference score. |
+
+---
+
+#### `LImageData:drawCircle`
+
+Draws a filled circle into this image.
+
+```lua
+LImageData:drawCircle(cx, cy, radius, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `radius` | number | Circle radius. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawLine`
+
+Draws a line into this image. This method is available to Lua scripts.
+
+```lua
+LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x0` | number | Start x coordinate. |
+| `y0` | number | Start y coordinate. |
+| `x1` | number | End x coordinate. |
+| `y1` | number | End y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawRect`
+
+Draws a filled rectangle into this image.
+
+```lua
+LImageData:drawRect(x, y, w, h, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:encode`
+
+Encodes image data in a supported format.
+
+```lua
+LImageData:encode(format)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `format` | string | Format name; currently `png`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Encoded image bytes. |
+
+---
+
+#### `LImageData:fill`
+
+Fills the whole image with one RGBA color.
+
+```lua
+LImageData:fill(r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:flipHorizontal`
+
+Flips this image horizontally in place.
+
+```lua
+LImageData:flipHorizontal()
+```
+
+---
+
+#### `LImageData:flipVertical`
+
+Flips this image vertically in place.
+
+```lua
+LImageData:flipVertical()
+```
+
+---
+
+#### `LImageData:gamma`
+
+Applies gamma correction to this image in place.
+
+```lua
+LImageData:gamma(gamma)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gamma` | number | Gamma value. |
+
+---
+
+#### `LImageData:getDimensions`
+
+Returns image dimensions. This method is available to Lua scripts.
+
+```lua
+LImageData:getDimensions()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getHeight`
+
+Returns image height. This method is available to Lua scripts.
+
+```lua
+LImageData:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getPixel`
+
+Returns RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:getPixel(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LImageData:getRawBytes`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getRawBytes()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getRegion`
+
+Returns an image region when the requested rectangle is inside bounds.
+
+```lua
+LImageData:getRegion(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Region x coordinate. |
+| `y` | number | Region y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | `[LImageData](#limagedata)` handle, or nil when the region is out of bounds. |
+
+---
+
+#### `LImageData:getString`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getString()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getWidth`
+
+Returns image width. This method is available to Lua scripts.
+
+```lua
+LImageData:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+
+---
+
+#### `LImageData:grayscale`
+
+Converts this image to grayscale in place.
+
+```lua
+LImageData:grayscale()
+```
+
+---
+
+#### `LImageData:invert`
+
+Inverts image color channels in place.
+
+```lua
+LImageData:invert()
+```
+
+---
+
+#### `LImageData:mapPixel`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixel(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:mapPixels`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixels(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:noise`
+
+Adds noise to this image in place. This method is available to Lua scripts.
+
+```lua
+LImageData:noise(amount)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `amount` | number | Noise amount. |
+
+---
+
+#### `LImageData:paste`
+
+Pastes a source image into this image at unsigned destination coordinates.
+
+```lua
+LImageData:paste(src_ud, dx, dy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
+| `dx` | number | Destination x coordinate. |
+| `dy` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:posterize`
+
+Reduces image colors to a fixed number of levels in place.
+
+```lua
+LImageData:posterize(levels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `levels` | number | Number of posterization levels. |
+
+---
+
+#### `LImageData:resize`
+
+Returns a resized image using an optional named filter.
+
+```lua
+LImageData:resize(width, height, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Output width. |
+| `height` | number | Output height. |
+| `filter` | string | Optional filter name, defaulting to `bilinear`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | nil | Resized `[LImageData](#limagedata)` handle, or nil when resizing fails. |
+
+---
+
+#### `LImageData:resizeNearest`
+
+Returns a resized image using nearest-neighbor sampling.
+
+```lua
+LImageData:resizeNearest(new_w, new_h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `new_w` | number | Output width. |
+| `new_h` | number | Output height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Resized image data handle. |
+
+---
+
+#### `LImageData:rotate90cw`
+
+Returns a new image rotated ninety degrees clockwise.
+
+```lua
+LImageData:rotate90cw()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Rotated image data handle. |
+
+---
+
+#### `LImageData:saturation`
+
+Applies a saturation factor to this image in place.
+
+```lua
+LImageData:saturation(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Saturation factor. |
+
+---
+
+#### `LImageData:sepia`
+
+Applies a sepia filter to this image in place.
+
+```lua
+LImageData:sepia()
+```
+
+---
+
+#### `LImageData:setPixel`
+
+Sets RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:setPixel(x, y, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:setRawData`
+
+Replaces the image byte buffer with raw bytes.
+
+```lua
+LImageData:setRawData(bytes)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bytes` | string | Raw byte string matching the image storage size. |
+
+---
+
+#### `LImageData:sharpen`
+
+Returns a sharpened copy of this image.
+
+```lua
+LImageData:sharpen()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Sharpened image data handle. |
+
+---
+
+#### `LImageData:threshold`
+
+Applies a threshold filter to this image in place.
+
+```lua
+LImageData:threshold(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | number | Threshold channel value. |
+
+---
+
+#### `LImageData:tint`
+
+Blends this image toward a tint color in place.
+
+```lua
+LImageData:tint(tr, tg, tb, factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tr` | number | Tint red channel. |
+| `tg` | number | Tint green channel. |
+| `tb` | number | Tint blue channel. |
+| `factor` | number | Tint blend factor. |
+
+---
+
+#### `LImageData:transform`
+
+Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.
+
+```lua
+LImageData:transform(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Transform options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata) | Transformed image. |
+
+---
+
+#### `LImageData:type`
+
+Returns the Lua-visible type name for this image data handle.
+
+```lua
+LImageData:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LImageData](#limagedata)`. |
+
+---
+
+#### `LImageData:typeOf`
+
+Returns whether this image data handle matches the `[LImageData](#limagedata)` type name.
+
+```lua
+LImageData:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LImageData](#limagedata)` or `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches. |
 
 ---
 
@@ -3650,6 +4660,290 @@ end
 
 ---
 
+## LSpriteAutoTileSheet
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LSpriteAutoTileSheet:getBitmaskForTile`
+
+Returns the bitmask for a one-based tile id.
+
+```lua
+LSpriteAutoTileSheet:getBitmaskForTile(tile_id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tile_id` | number | One-based tile id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Bitmask. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local bitmask = sheet:getBitmaskForTile(1)
+    local layout = sheet:getLayout()
+    lurek.log.info("[sprite] autotile bitmask=" .. tostring(bitmask) .. " layout=" .. layout)
+end
+```
+
+---
+
+#### `LSpriteAutoTileSheet:getDefaultMode`
+
+Returns the default autotile matching mode for this layout.
+
+```lua
+LSpriteAutoTileSheet:getDefaultMode()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Mode name. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local mode = sheet:getDefaultMode()
+    local layout = sheet:getLayout()
+    lurek.log.info("[sprite] autotile mode=" .. mode .. " layout=" .. layout)
+end
+```
+
+---
+
+#### `LSpriteAutoTileSheet:getLayout`
+
+Returns the autotile layout name.
+
+```lua
+LSpriteAutoTileSheet:getLayout()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Layout name. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local layout = sheet:getLayout()
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile layout=" .. layout .. " count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LSpriteAutoTileSheet:getQuad`
+
+Returns a one-based tile source rectangle.
+
+```lua
+LSpriteAutoTileSheet:getQuad(tile_id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tile_id` | number | One-based tile id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Rectangle table. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local quad = sheet:getQuad(2)
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile quad=" .. tostring(quad.x) .. " count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LSpriteAutoTileSheet:getTileCount`
+
+Returns the number of logical tiles in the sheet.
+
+```lua
+LSpriteAutoTileSheet:getTileCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile count. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local count = sheet:getTileCount()
+    local layout = sheet:getLayout()
+    lurek.log.info("[sprite] autotile count=" .. tostring(count) .. " layout=" .. layout)
+end
+```
+
+---
+
+#### `LSpriteAutoTileSheet:getTileForBitmask`
+
+Returns a one-based tile id for a bitmask, or nil when missing.
+
+```lua
+LSpriteAutoTileSheet:getTileForBitmask(bitmask)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bitmask` | number | Neighbor bitmask. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | nil | One-based tile id. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local tile = sheet:getTileForBitmask(0)
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile tile=" .. tostring(tile) .. " count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LSpriteAutoTileSheet:toFrames`
+
+Returns all autotile source rectangles as sprite frame DTOs.
+
+```lua
+LSpriteAutoTileSheet:toFrames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of frame rectangles. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local frames = sheet:toFrames()
+    local count = sheet:getTileCount()
+    lurek.log.info("[sprite] autotile frames=" .. tostring(#frames) .. " count=" .. tostring(count))
+end
+```
+
+---
+
+#### `LSpriteAutoTileSheet:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LSpriteAutoTileSheet:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LSpriteAutoTileSheet](#lspriteautotilesheet)`. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local kind = sheet:type()
+    local layout = sheet:getLayout()
+    lurek.log.info("[sprite] autotile type=" .. kind .. " layout=" .. layout)
+end
+```
+
+---
+
+#### `LSpriteAutoTileSheet:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LSpriteAutoTileSheet:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches. |
+
+**Example**
+
+```lua
+do
+    local image = lurek.image.newImageData(256, 16)
+    local sheet = lurek.sprite.newAutoTileSheet(image, "minimal16", { tileWidth = 16, tileHeight = 16 })
+    local ok = sheet:typeOf("LObject")
+    local kind = sheet:type()
+    lurek.log.info("[sprite] autotile typeOf=" .. tostring(ok) .. " type=" .. kind)
+end
+```
+
+---
+
 ## LSpriteSheet
 
 ### Type Fields
@@ -4339,6 +5633,74 @@ do
     local names = sheet:getGroupNames()
     local frames = sheet:getGroupFrames("run")
     sprite_log("nameGroup groups=" .. #names .. " run_frames=" .. #frames .. " first_group=" .. tostring(names[1]))
+end
+```
+
+---
+
+#### `LSpriteSheet:toAnimationClip`
+
+Builds an animation clip DTO from this sheet without creating playback state.
+
+```lua
+LSpriteSheet:toAnimationClip(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | `{name, group, fps, loop, mode}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Clip DTO with `name`, `frames`, `fps`, `loop`, and `mode`. |
+
+**Example**
+
+```lua
+do
+    local sheet = lurek.sprite.newSheet(32, 16, 16, 16)
+    sheet:nameGroup("idle", 0, 2)
+    local clip = sheet:toAnimationClip({ group = "idle", name = "idle", fps = 8 })
+    local frame_count = #clip.frames
+    lurek.log.info("[sprite] clip frames=" .. tostring(frame_count))
+end
+```
+
+---
+
+#### `LSpriteSheet:toFrames`
+
+Returns frame rectangle DTOs for all frames or a named group.
+
+```lua
+LSpriteSheet:toFrames(group)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `group?` | string | Optional group name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{x, y, w, h}` frame rectangles. |
+
+**Example**
+
+```lua
+do
+    local sheet = lurek.sprite.newSheet(32, 16, 16, 16)
+    sheet:nameGroup("idle", 0, 2)
+    local frames = sheet:toFrames("idle")
+    local first = frames[1]
+    lurek.log.info("[sprite] toFrames first=" .. tostring(first.w))
 end
 ```
 

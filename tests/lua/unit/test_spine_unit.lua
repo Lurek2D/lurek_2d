@@ -663,6 +663,41 @@ describe("spine physics binding", function()
         expect_type("userdata", image_binding.bodies[1])
     end)
 end)
+
+-- @describe spine attachment sources
+describe("spine attachment sources", function()
+    -- @covers LSkeleton:bindAtlas
+    -- @covers LSkeleton:setAttachmentSource
+    -- @covers LSkeleton:getAttachmentSource
+    it("binds atlas regions and explicit neutral attachment sources", function()
+        local atlas = lurek.sprite.parseAtlas(
+            '{"frames":{"head":{"frame":{"x":2,"y":3,"w":8,"h":9},"rotated":false}}}'
+        )
+        local sk = lurek.spine.newSkeleton("sources")
+        sk:addBone("root")
+        sk:addSlot("head_slot", 0, "head")
+        expect_equal(1, sk:bindAtlas(atlas))
+        local source = sk:getAttachmentSource("head")
+        expect_equal("spriteRegion", source.kind)
+        expect_equal(8, source.w)
+
+        sk:setAttachmentSource("head_slot", {
+            kind = "imageRegion",
+            name = "manual",
+            x = 1,
+            y = 2,
+            w = 3,
+            h = 4,
+            textureId = 42,
+            textureWidth = 16,
+            textureHeight = 16,
+        })
+        local manual = sk:getAttachmentSource("head_slot")
+        expect_equal("imageRegion", manual.kind)
+        expect_equal(42, manual.textureId)
+        expect_equal(16, manual.textureWidth)
+    end)
+end)
 end
 -- END test_spine_physics_binding_unit.lua
 

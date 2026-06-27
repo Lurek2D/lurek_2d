@@ -8,6 +8,7 @@
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Component, Path};
+use std::time::SystemTime;
 
 /// Asset type discriminant used by the `lurek.asset` cache registry.
 ///
@@ -26,6 +27,12 @@ use std::path::{Component, Path};
 /// - `Obj`: OBJ source text cached in memory.
 /// - `Shader`: shader source text cached in memory.
 /// - `Lua`: Lua source text cached in memory.
+/// - `SpriteSheet`: spritesheet metadata or file path reference.
+/// - `Atlas`: atlas metadata or file path reference.
+/// - `Animation`: animation metadata or file path reference.
+/// - `Spine`: Spine skeleton metadata or file path reference.
+/// - `TileMap`: tilemap metadata or file path reference.
+/// - `TileSet`: tileset metadata or file path reference.
 /// - `Unknown(String)`: unrecognized type string stored as-is.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AssetType {
@@ -50,6 +57,18 @@ pub enum AssetType {
     Shader,
     /// Lua script source text (for modding or data-driven logic).
     Lua,
+    /// Spritesheet asset; resolved by sprite-specific systems.
+    SpriteSheet,
+    /// Texture atlas asset; resolved by sprite-specific systems.
+    Atlas,
+    /// Frame animation asset; resolved by animation-specific systems.
+    Animation,
+    /// Spine skeleton or animation asset; resolved by spine-specific systems.
+    Spine,
+    /// Tilemap asset; resolved by tilemap-specific systems.
+    TileMap,
+    /// Tileset asset; resolved by tileset-specific systems.
+    TileSet,
     /// Unrecognised type string; stored by path reference only.
     Unknown(String),
 }
@@ -68,6 +87,12 @@ impl AssetType {
             "obj" => Self::Obj,
             "shader" => Self::Shader,
             "lua" => Self::Lua,
+            "spritesheet" => Self::SpriteSheet,
+            "atlas" => Self::Atlas,
+            "animation" => Self::Animation,
+            "spine" => Self::Spine,
+            "tilemap" => Self::TileMap,
+            "tileset" => Self::TileSet,
             other => Self::Unknown(other.to_string()),
         }
     }
@@ -97,6 +122,12 @@ impl AssetType {
             Self::Obj => "obj",
             Self::Shader => "shader",
             Self::Lua => "lua",
+            Self::SpriteSheet => "spritesheet",
+            Self::Atlas => "atlas",
+            Self::Animation => "animation",
+            Self::Spine => "spine",
+            Self::TileMap => "tilemap",
+            Self::TileSet => "tileset",
             Self::Unknown(s) => s.as_str(),
         }
     }
@@ -113,6 +144,10 @@ impl AssetType {
 /// - `name`: optional display name.
 /// - `group`: optional grouping key.
 /// - `tags`: searchable tag set.
+/// - `revision`: reload revision, starting at `1` for registered entries.
+/// - `watched`: true when live reload monitoring is requested for this entry.
+/// - `last_modified`: last observed file modification timestamp for watched reload checks.
+#[derive(Clone)]
 pub struct AssetEntry {
     /// Filesystem path to the asset.
     pub path: String,
@@ -128,6 +163,12 @@ pub struct AssetEntry {
     pub group: Option<String>,
     /// Searchable tag set (e.g. `"enemy"`, `"sfx"`, `"hud"`).
     pub tags: HashSet<String>,
+    /// Monotonic revision incremented whenever `reload()` refreshes the entry.
+    pub revision: u64,
+    /// Whether runtime live-reload monitoring is requested for this entry.
+    pub watched: bool,
+    /// Last observed source file modification time.
+    pub last_modified: Option<SystemTime>,
 }
 
 /// Ref-counted asset cache keyed by `u64` handle IDs.
@@ -204,6 +245,12 @@ fn normalize_asset_path(path: &str) -> String {
     }
 }
 
+fn asset_modified(path: &str) -> Option<SystemTime> {
+    std::fs::metadata(path)
+        .and_then(|metadata| metadata.modified())
+        .ok()
+}
+
 impl AssetCache {
     /// Creates an empty cache with the ID counter starting at `1`.
     pub fn new() -> Self {
@@ -236,6 +283,7 @@ impl AssetCache {
         self.entries.insert(
             id,
             AssetEntry {
+                last_modified: asset_modified(&path),
                 path,
                 asset_type,
                 ref_count: 1,
@@ -243,6 +291,8 @@ impl AssetCache {
                 name: None,
                 group: None,
                 tags: HashSet::new(),
+                revision: 1,
+                watched: false,
             },
         );
         self.keys.insert(key, id);
@@ -274,6 +324,52 @@ impl AssetCache {
     /// Returns a reference to the entry with the given ID, or `None`.
     pub fn get(&self, id: u64) -> Option<&AssetEntry> {
         self.entries.get(&id)
+    }
+
+    /// Returns a mutable reference to an entry with the given ID, or `None`.
+    pub fn get_mut(&mut self, id: u64) -> Option<&mut AssetEntry> {
+        self.entries.get_mut(&id)
+    }
+
+    /// Returns the current revision for `id`, or `0` when not present.
+    pub fn revision(&self, id: u64) -> u64 {
+        self.entries.get(&id).map_or(0, |e| e.revision)
+    }
+
+    /// Marks an entry as watched for live reload.
+    ///
+    /// Returns `true` when the entry exists.
+    pub fn watch(&mut self, id: u64) -> bool {
+        if let Some(e) = self.entries.get_mut(&id) {
+            e.watched = true;
+            e.last_modified = asset_modified(&e.path);
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Returns `true` when a watched entry's source timestamp changed.
+    pub fn watched_changed(&self, id: u64) -> bool {
+        self.entries.get(&id).is_some_and(|entry| {
+            entry.watched
+                && asset_modified(&entry.path).is_some_and(|modified| {
+                    entry
+                        .last_modified
+                        .is_some_and(|last_modified| modified != last_modified)
+                })
+        })
+    }
+
+    /// Replaces cached text content and increments the entry revision.
+    ///
+    /// Binary assets pass `None`; the cache only records their path and revision.
+    pub fn reload(&mut self, id: u64, text_content: Option<String>) -> Option<u64> {
+        let entry = self.entries.get_mut(&id)?;
+        entry.text_content = text_content;
+        entry.revision = entry.revision.saturating_add(1);
+        entry.last_modified = asset_modified(&entry.path);
+        Some(entry.revision)
     }
 
     /// Sets the display name for the entry with the given ID.

@@ -709,6 +709,41 @@ end
 
 ---
 
+#### `LSkeleton:bindAtlas`
+
+Binds all atlas entries as sprite-region attachment sources by name.
+
+```lua
+LSkeleton:bindAtlas(atlas)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `atlas` | [LSpriteAtlas](sprite.md#lspriteatlas) | Sprite atlas containing named attachment regions. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of bound sources. |
+
+**Example**
+
+```lua
+do
+    local skeleton = lurek.spine.newSkeleton("atlas_sources")
+    skeleton:addBone("root")
+    skeleton:addSlot("head_slot", 0, "head")
+    local atlas = lurek.sprite.parseAtlas('{"frames":{"head":{"frame":{"x":0,"y":0,"w":16,"h":16},"rotated":false}}}')
+    local count = skeleton:bindAtlas(atlas)
+    lurek.log.info("[spine] bound atlas sources=" .. tostring(count))
+end
+```
+
+---
+
 #### `LSkeleton:bindPhysics`
 
 Creates physics bodies for skeleton parts and connects child parts to parent parts with joints.
@@ -1140,6 +1175,41 @@ end
 
 ---
 
+#### `LSkeleton:getAttachmentSource`
+
+Returns the neutral visual source assigned to a slot/source key.
+
+```lua
+LSkeleton:getAttachmentSource(slot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot/source key. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Attachment source DTO or nil. |
+
+**Example**
+
+```lua
+do
+    local skeleton = lurek.spine.newSkeleton("source_lookup")
+    skeleton:addBone("root")
+    skeleton:addSlot("hand", 0, "hand")
+    skeleton:setAttachmentSource("hand", { kind = "spriteRegion", name = "hand", x = 4, y = 4, w = 8, h = 8 })
+    local source = skeleton:getAttachmentSource("hand")
+    lurek.log.info("[spine] source width=" .. tostring(source.w))
+end
+```
+
+---
+
 #### `LSkeleton:getBoneWorld`
 
 Returns the final world-space transform of a bone after hierarchy resolution.
@@ -1308,6 +1378,36 @@ do
     local started = skel:playAnimation("idle", true)
     example_print_log("started = " .. tostring(started))
     example_print_log("time = " .. skel:getAnimationTime())
+end
+```
+
+---
+
+#### `LSkeleton:setAttachmentSource`
+
+Assigns a neutral visual source to a slot name, attachment name, or `slot:attachment` key.
+
+```lua
+LSkeleton:setAttachmentSource(slot, source)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `slot` | string | Slot/source key. |
+| `source` | table | `{kind, name?, x, y, w, h, textureId?, textureWidth?, textureHeight?}`. |
+
+**Example**
+
+```lua
+do
+    local skeleton = lurek.spine.newSkeleton("manual_sources")
+    skeleton:addBone("root")
+    skeleton:addSlot("body", 0, "body")
+    skeleton:setAttachmentSource("body", { kind = "imageRegion", name = "body", x = 0, y = 0, w = 16, h = 16 })
+    local source = skeleton:getAttachmentSource("body")
+    lurek.log.info("[spine] source kind=" .. tostring(source.kind))
 end
 ```
 

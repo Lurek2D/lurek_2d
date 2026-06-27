@@ -776,6 +776,78 @@
           "objectType": null
         },
         {
+          "name": "fromFrames",
+          "fullPath": "lurek.animation.fromFrames",
+          "signature": "(frames, [opts])",
+          "description": "Creates an animation from explicit frame rectangle DTOs.",
+          "parameters": [
+            {
+              "name": "frames",
+              "type": "table",
+              "description": "Array of `{x, y, w, h}` frame rectangles.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{name, fps, loop, mode, play}` clip options.",
+              "optional": true
+            }
+          ],
+          "returns": "LAnimation",
+          "returnType": "LAnimation",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "fromSpriteSheet",
+          "fullPath": "lurek.animation.fromSpriteSheet",
+          "signature": "(sheet_ud, [opts])",
+          "description": "Creates an animation from a `LSpriteSheet`, optionally using a named group.",
+          "parameters": [
+            {
+              "name": "sheet",
+              "type": "LSpriteSheet",
+              "description": "Source sprite sheet.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{group, name, fps, loop, mode, play}` clip options.",
+              "optional": true
+            }
+          ],
+          "returns": "LAnimation",
+          "returnType": "LAnimation",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "fromAnimatedImage",
+          "fullPath": "lurek.animation.fromAnimatedImage",
+          "signature": "(animated_ud, [opts])",
+          "description": "Creates an animation from decoded frames returned by `lurek.image.loadAnimated`.",
+          "parameters": [
+            {
+              "name": "animated",
+              "type": "LAnimatedImage",
+              "description": "Decoded animated image.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{name, fps, loop, mode, play}` clip options.",
+              "optional": true
+            }
+          ],
+          "returns": "LAnimation",
+          "returnType": "LAnimation",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newStateMachine",
           "fullPath": "lurek.animation.newStateMachine",
           "signature": "(anim_ud, initial)",
@@ -884,6 +956,126 @@
           ],
           "returns": "LAssetHandle",
           "returnType": "LAssetHandle",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "watch",
+          "fullPath": "lurek.asset.watch",
+          "signature": "(value, [type_str])",
+          "description": "Marks an asset handle or path as watched for live reload.",
+          "parameters": [
+            {
+              "name": "handle_or_path",
+              "type": "LAssetHandle|string",
+              "description": "Existing handle or path to register as watched.",
+              "optional": false
+            },
+            {
+              "name": "asset_type",
+              "type": "string",
+              "description": "Type used when `handle_or_path` is a path. Defaults to `unknown`.",
+              "optional": true
+            }
+          ],
+          "returns": "LAssetHandle",
+          "returnType": "LAssetHandle",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "reload",
+          "fullPath": "lurek.asset.reload",
+          "signature": "(handle)",
+          "description": "Reloads the cached asset metadata/content and increments its revision.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to refresh.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getRevision",
+          "fullPath": "lurek.asset.getRevision",
+          "signature": "(handle)",
+          "description": "Returns the current reload revision for an asset handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to inspect.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "onReload",
+          "fullPath": "lurek.asset.onReload",
+          "signature": "(handle, callback)",
+          "description": "Registers a callback fired by `lurek.asset.reload(handle)`.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to observe.",
+              "optional": false
+            },
+            {
+              "name": "callback",
+              "type": "function",
+              "description": "Called as `callback(handle, revision)`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "resolve",
+          "fullPath": "lurek.asset.resolve",
+          "signature": "(handle)",
+          "description": "Returns a metadata snapshot for an asset handle without transforming the asset data.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to inspect.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "loadManifest",
+          "fullPath": "lurek.asset.loadManifest",
+          "signature": "(path)",
+          "description": "Loads a TOML asset manifest and registers listed assets without transforming them.",
+          "parameters": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": "Manifest path.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -11607,6 +11799,24 @@
           ],
           "returns": "LImageData",
           "returnType": "LImageData",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "loadAnimated",
+          "fullPath": "lurek.image.loadAnimated",
+          "signature": "(source)",
+          "description": "Loads an animated GIF from GameFS path or decodes animated GIF bytes.",
+          "parameters": [
+            {
+              "name": "source",
+              "type": "string",
+              "description": "GameFS path or raw GIF bytes.",
+              "optional": false
+            }
+          ],
+          "returns": "LAnimatedImage",
+          "returnType": "LAnimatedImage",
           "isMethod": false,
           "objectType": null
         },
@@ -27403,6 +27613,30 @@
           "objectType": null
         },
         {
+          "name": "newSheetFromImage",
+          "fullPath": "lurek.sprite.newSheetFromImage",
+          "signature": "(image_ud, opts)",
+          "description": "Creates a sprite sheet from an existing `LImageData` source and frame options.",
+          "parameters": [
+            {
+              "name": "image",
+              "type": "LImageData",
+              "description": "Source image data.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{frameWidth, frameHeight}` or `{columns, rows}`.",
+              "optional": false
+            }
+          ],
+          "returns": "LSpriteSheet",
+          "returnType": "LSpriteSheet",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newRPGMakerSheet",
           "fullPath": "lurek.sprite.newRPGMakerSheet",
           "signature": "(tw, th)",
@@ -27441,6 +27675,60 @@
           ],
           "returns": "LSpriteAtlas",
           "returnType": "LSpriteAtlas",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newAtlasFromImage",
+          "fullPath": "lurek.sprite.newAtlasFromImage",
+          "signature": "(image_ud, atlas_json)",
+          "description": "Parses atlas JSON for an existing `LImageData` source.",
+          "parameters": [
+            {
+              "name": "image",
+              "type": "LImageData",
+              "description": "Source image data used as the atlas texture.",
+              "optional": false
+            },
+            {
+              "name": "atlas_json",
+              "type": "string",
+              "description": "TexturePacker or Aseprite JSON.",
+              "optional": false
+            }
+          ],
+          "returns": "LSpriteAtlas",
+          "returnType": "LSpriteAtlas",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newAutoTileSheet",
+          "fullPath": "lurek.sprite.newAutoTileSheet",
+          "signature": "(image_ud, layout, opts)",
+          "description": "Creates an autotile sheet descriptor from an image source, layout, and tile options.",
+          "parameters": [
+            {
+              "name": "image",
+              "type": "LImageData",
+              "description": "Source autotile sheet image.",
+              "optional": false
+            },
+            {
+              "name": "layout",
+              "type": "string",
+              "description": "`blob47`, `composite48`, `rpgmaker48`, or `minimal16`.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{tileWidth, tileHeight}`.",
+              "optional": false
+            }
+          ],
+          "returns": "LSpriteAutoTileSheet",
+          "returnType": "LSpriteAutoTileSheet",
           "isMethod": false,
           "objectType": null
         },
@@ -37150,6 +37438,110 @@
       ]
     },
     {
+      "name": "LAnimatedImage",
+      "description": "Lua-side decoded animated image containing frame images and durations.",
+      "methods": [
+        {
+          "name": "frameCount",
+          "fullPath": "LAnimatedImage:frameCount",
+          "signature": "()",
+          "description": "Returns the number of decoded frames.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAnimatedImage"
+        },
+        {
+          "name": "getFrame",
+          "fullPath": "LAnimatedImage:getFrame",
+          "signature": "(index)",
+          "description": "Returns a decoded frame by one-based index.",
+          "parameters": [
+            {
+              "name": "index",
+              "type": "integer",
+              "description": "One-based frame index.",
+              "optional": false
+            }
+          ],
+          "returns": "LImageData",
+          "returnType": "LImageData",
+          "isMethod": true,
+          "objectType": "LAnimatedImage"
+        },
+        {
+          "name": "getDuration",
+          "fullPath": "LAnimatedImage:getDuration",
+          "signature": "(index)",
+          "description": "Returns a frame duration in milliseconds by one-based index.",
+          "parameters": [
+            {
+              "name": "index",
+              "type": "integer",
+              "description": "One-based frame index.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAnimatedImage"
+        },
+        {
+          "name": "getFrames",
+          "fullPath": "LAnimatedImage:getFrames",
+          "signature": "()",
+          "description": "Returns all decoded frame images as an array.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAnimatedImage"
+        },
+        {
+          "name": "getDurations",
+          "fullPath": "LAnimatedImage:getDurations",
+          "signature": "()",
+          "description": "Returns all frame durations in milliseconds.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAnimatedImage"
+        },
+        {
+          "name": "type",
+          "fullPath": "LAnimatedImage:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAnimatedImage"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LAnimatedImage:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAnimatedImage"
+        }
+      ]
+    },
+    {
       "name": "LAnimation",
       "description": "Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.",
       "methods": [
@@ -37650,6 +38042,24 @@
           "fullPath": "LAnimation:setFrame",
           "signature": "(index)",
           "description": "Sets the current frame index directly.",
+          "parameters": [
+            {
+              "name": "index",
+              "type": "integer",
+              "description": "Frame index to make current.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAnimation"
+        },
+        {
+          "name": "seek",
+          "fullPath": "LAnimation:seek",
+          "signature": "(index)",
+          "description": "Seeks to a frame index in the current clip.",
           "parameters": [
             {
               "name": "index",
@@ -78640,6 +79050,137 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "clone",
+          "fullPath": "LImageData:clone",
+          "signature": "()",
+          "description": "Returns a deep copy of this image data.",
+          "parameters": [],
+          "returns": "LImageData",
+          "returnType": "LImageData",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "copyRegion",
+          "fullPath": "LImageData:copyRegion",
+          "signature": "(x, y, w, h)",
+          "description": "Copies a rectangular region into a new image.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Source x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Source y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "w",
+              "type": "integer",
+              "description": "Region width.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "integer",
+              "description": "Region height.",
+              "optional": false
+            }
+          ],
+          "returns": "LImageData",
+          "returnType": "LImageData",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "applyEffect",
+          "fullPath": "LImageData:applyEffect",
+          "signature": "(name, [opts])",
+          "description": "Applies a named image effect in place, or returns a new image when the effect changes size.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Effect name.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Effect options such as `factor`, `amount`, `radius`, `levels`, `region`, or `color`.",
+              "optional": true
+            }
+          ],
+          "returns": "LImageData|nil",
+          "returnType": "LImageData|nil",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "applyEffects",
+          "fullPath": "LImageData:applyEffects",
+          "signature": "(effects, [default_opts])",
+          "description": "Applies a sequence of named effects in order.",
+          "parameters": [
+            {
+              "name": "effects",
+              "type": "table",
+              "description": "Array of effect names or `{name=..., opts=...}` tables.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Default options used by string entries.",
+              "optional": true
+            }
+          ],
+          "returns": "LImageData|nil",
+          "returnType": "LImageData|nil",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "applyMask",
+          "fullPath": "LImageData:applyMask",
+          "signature": "(mask)",
+          "description": "Multiplies this image alpha by another image's alpha channel.",
+          "parameters": [
+            {
+              "name": "mask",
+              "type": "LImageData",
+              "description": "Same-sized alpha mask image.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "transform",
+          "fullPath": "LImageData:transform",
+          "signature": "([opts])",
+          "description": "Returns a transformed image, currently supporting high-quality resize through `width`, `height`, and `filter`.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Transform options.",
+              "optional": true
+            }
+          ],
+          "returns": "LImageData",
+          "returnType": "LImageData",
           "isMethod": true,
           "objectType": "LImageData"
         },
@@ -134296,6 +134837,66 @@
           "objectType": "LSkeleton"
         },
         {
+          "name": "bindAtlas",
+          "fullPath": "LSkeleton:bindAtlas",
+          "signature": "(atlas_ud)",
+          "description": "Binds all atlas entries as sprite-region attachment sources by name.",
+          "parameters": [
+            {
+              "name": "atlas",
+              "type": "LSpriteAtlas",
+              "description": "Sprite atlas containing named attachment regions.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSkeleton"
+        },
+        {
+          "name": "setAttachmentSource",
+          "fullPath": "LSkeleton:setAttachmentSource",
+          "signature": "(slot, source)",
+          "description": "Assigns a neutral visual source to a slot name, attachment name, or `slot:attachment` key.",
+          "parameters": [
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Slot/source key.",
+              "optional": false
+            },
+            {
+              "name": "source",
+              "type": "table",
+              "description": "`{kind, name?, x, y, w, h, textureId?, textureWidth?, textureHeight?}`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSkeleton"
+        },
+        {
+          "name": "getAttachmentSource",
+          "fullPath": "LSkeleton:getAttachmentSource",
+          "signature": "(slot)",
+          "description": "Returns the neutral visual source assigned to a slot/source key.",
+          "parameters": [
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Slot/source key.",
+              "optional": false
+            }
+          ],
+          "returns": "table|nil",
+          "returnType": "table|nil",
+          "isMethod": true,
+          "objectType": "LSkeleton"
+        },
+        {
           "name": "findBone",
           "fullPath": "LSkeleton:findBone",
           "signature": "(name)",
@@ -142769,6 +143370,139 @@
       ]
     },
     {
+      "name": "LSpriteAutoTileSheet",
+      "description": "Lua-visible autotile sheet authored from a sprite/image source.",
+      "methods": [
+        {
+          "name": "getLayout",
+          "fullPath": "LSpriteAutoTileSheet:getLayout",
+          "signature": "()",
+          "description": "Returns the autotile layout name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSpriteAutoTileSheet"
+        },
+        {
+          "name": "getDefaultMode",
+          "fullPath": "LSpriteAutoTileSheet:getDefaultMode",
+          "signature": "()",
+          "description": "Returns the default autotile matching mode for this layout.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSpriteAutoTileSheet"
+        },
+        {
+          "name": "getTileCount",
+          "fullPath": "LSpriteAutoTileSheet:getTileCount",
+          "signature": "()",
+          "description": "Returns the number of logical tiles in the sheet.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSpriteAutoTileSheet"
+        },
+        {
+          "name": "getQuad",
+          "fullPath": "LSpriteAutoTileSheet:getQuad",
+          "signature": "(tile_id)",
+          "description": "Returns a one-based tile source rectangle.",
+          "parameters": [
+            {
+              "name": "tile_id",
+              "type": "integer",
+              "description": "One-based tile id.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSpriteAutoTileSheet"
+        },
+        {
+          "name": "getBitmaskForTile",
+          "fullPath": "LSpriteAutoTileSheet:getBitmaskForTile",
+          "signature": "(tile_id)",
+          "description": "Returns the bitmask for a one-based tile id.",
+          "parameters": [
+            {
+              "name": "tile_id",
+              "type": "integer",
+              "description": "One-based tile id.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSpriteAutoTileSheet"
+        },
+        {
+          "name": "getTileForBitmask",
+          "fullPath": "LSpriteAutoTileSheet:getTileForBitmask",
+          "signature": "(bitmask)",
+          "description": "Returns a one-based tile id for a bitmask, or nil when missing.",
+          "parameters": [
+            {
+              "name": "bitmask",
+              "type": "integer",
+              "description": "Neighbor bitmask.",
+              "optional": false
+            }
+          ],
+          "returns": "integer|nil",
+          "returnType": "integer|nil",
+          "isMethod": true,
+          "objectType": "LSpriteAutoTileSheet"
+        },
+        {
+          "name": "toFrames",
+          "fullPath": "LSpriteAutoTileSheet:toFrames",
+          "signature": "()",
+          "description": "Returns all autotile source rectangles as sprite frame DTOs.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSpriteAutoTileSheet"
+        },
+        {
+          "name": "type",
+          "fullPath": "LSpriteAutoTileSheet:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSpriteAutoTileSheet"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LSpriteAutoTileSheet:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSpriteAutoTileSheet"
+        }
+      ]
+    },
+    {
       "name": "LSpriteBatch",
       "description": "Batched sprite renderer for efficiently drawing many copies of the same texture.",
       "methods": [
@@ -143400,6 +144134,42 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSpriteSheet"
+        },
+        {
+          "name": "toFrames",
+          "fullPath": "LSpriteSheet:toFrames",
+          "signature": "([group])",
+          "description": "Returns frame rectangle DTOs for all frames or a named group.",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Optional group name.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSpriteSheet"
+        },
+        {
+          "name": "toAnimationClip",
+          "fullPath": "LSpriteSheet:toAnimationClip",
+          "signature": "([opts])",
+          "description": "Builds an animation clip DTO from this sheet without creating playback state.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{name, group, fps, loop, mode}`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSpriteSheet"
         },
@@ -161188,6 +161958,48 @@
           ],
           "returns": "string",
           "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "setTerrainProfile",
+          "fullPath": "LTileSet:setTerrainProfile",
+          "signature": "(name, profile)",
+          "description": "Sets a Godot-style terrain-set profile for autotile authoring.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Profile name.",
+              "optional": false
+            },
+            {
+              "name": "profile",
+              "type": "table",
+              "description": "`{terrainSet, mode, defaultTileId?}`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "getTerrainProfile",
+          "fullPath": "LTileSet:getTerrainProfile",
+          "signature": "(name)",
+          "description": "Returns a Godot-style terrain-set profile.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Profile name.",
+              "optional": false
+            }
+          ],
+          "returns": "table|nil",
+          "returnType": "table|nil",
           "isMethod": true,
           "objectType": "LTileSet"
         },

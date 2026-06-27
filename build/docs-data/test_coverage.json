@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 6833,
-    "covered": 3894,
-    "uncovered": 2939,
-    "coverage_pct": 57.0,
+    "total": 6861,
+    "covered": 3905,
+    "uncovered": 2956,
+    "coverage_pct": 56.9,
     "covered_items": [
       {
         "module": "agent",
@@ -1221,91 +1221,91 @@
         "module": "animation",
         "name": "Animation::add_frames_from_rects",
         "file": "src/animation/controller.rs",
-        "line": 111
+        "line": 117
       },
       {
         "module": "animation",
         "name": "Animation::add_clip",
         "file": "src/animation/controller.rs",
-        "line": 118
+        "line": 124
       },
       {
         "module": "animation",
         "name": "Animation::play",
         "file": "src/animation/controller.rs",
-        "line": 211
+        "line": 217
       },
       {
         "module": "animation",
         "name": "Animation::stop",
         "file": "src/animation/controller.rs",
-        "line": 225
+        "line": 231
       },
       {
         "module": "animation",
         "name": "Animation::pause",
         "file": "src/animation/controller.rs",
-        "line": 231
+        "line": 237
       },
       {
         "module": "animation",
         "name": "Animation::resume",
         "file": "src/animation/controller.rs",
-        "line": 235
+        "line": 241
       },
       {
         "module": "animation",
         "name": "Animation::update",
         "file": "src/animation/controller.rs",
-        "line": 239
+        "line": 245
       },
       {
         "module": "animation",
         "name": "Animation::is_looping",
         "file": "src/animation/controller.rs",
-        "line": 404
+        "line": 410
       },
       {
         "module": "animation",
         "name": "Animation::get_frame_count",
         "file": "src/animation/controller.rs",
-        "line": 423
+        "line": 429
       },
       {
         "module": "animation",
         "name": "Animation::get_frame_quad",
         "file": "src/animation/controller.rs",
-        "line": 427
+        "line": 433
       },
       {
         "module": "animation",
         "name": "Animation::get_clip_count",
         "file": "src/animation/controller.rs",
-        "line": 431
+        "line": 437
       },
       {
         "module": "animation",
         "name": "Animation::get_clip",
         "file": "src/animation/controller.rs",
-        "line": 435
+        "line": 441
       },
       {
         "module": "animation",
         "name": "Animation::drain_events",
         "file": "src/animation/controller.rs",
-        "line": 443
+        "line": 449
       },
       {
         "module": "animation",
         "name": "Animation::draw_to_image",
         "file": "src/animation/controller.rs",
-        "line": 493
+        "line": 499
       },
       {
         "module": "animation",
         "name": "Animation::load_from_aseprite",
         "file": "src/animation/controller.rs",
-        "line": 601
+        "line": 607
       },
       {
         "module": "animation",
@@ -1629,67 +1629,97 @@
         "module": "asset",
         "name": "AssetType::as_str",
         "file": "src/asset/cache.rs",
-        "line": 88
+        "line": 113
       },
       {
         "module": "asset",
         "name": "AssetCache::new",
         "file": "src/asset/cache.rs",
-        "line": 209
+        "line": 256
       },
       {
         "module": "asset",
         "name": "AssetCache::register",
         "file": "src/asset/cache.rs",
-        "line": 222
+        "line": 269
       },
       {
         "module": "asset",
         "name": "AssetCache::dec_ref",
         "file": "src/asset/cache.rs",
-        "line": 260
+        "line": 310
       },
       {
         "module": "asset",
         "name": "AssetCache::get",
         "file": "src/asset/cache.rs",
-        "line": 275
+        "line": 325
+      },
+      {
+        "module": "asset",
+        "name": "AssetCache::get_mut",
+        "file": "src/asset/cache.rs",
+        "line": 330
+      },
+      {
+        "module": "asset",
+        "name": "AssetCache::revision",
+        "file": "src/asset/cache.rs",
+        "line": 335
+      },
+      {
+        "module": "asset",
+        "name": "AssetCache::watch",
+        "file": "src/asset/cache.rs",
+        "line": 342
+      },
+      {
+        "module": "asset",
+        "name": "AssetCache::watched_changed",
+        "file": "src/asset/cache.rs",
+        "line": 353
+      },
+      {
+        "module": "asset",
+        "name": "AssetCache::reload",
+        "file": "src/asset/cache.rs",
+        "line": 367
       },
       {
         "module": "asset",
         "name": "AssetCache::set_name",
         "file": "src/asset/cache.rs",
-        "line": 282
+        "line": 378
       },
       {
         "module": "asset",
         "name": "AssetCache::add_tag",
         "file": "src/asset/cache.rs",
-        "line": 300
+        "line": 396
       },
       {
         "module": "asset",
         "name": "AssetCache::ref_count",
         "file": "src/asset/cache.rs",
-        "line": 323
+        "line": 419
       },
       {
         "module": "asset",
         "name": "AssetCache::loaded_count",
         "file": "src/asset/cache.rs",
-        "line": 333
+        "line": 429
       },
       {
         "module": "asset",
         "name": "AssetCache::clear",
         "file": "src/asset/cache.rs",
-        "line": 416
+        "line": 512
       },
       {
         "module": "asset",
         "name": "AssetCache::iter",
         "file": "src/asset/cache.rs",
-        "line": 422
+        "line": 518
       },
       {
         "module": "audio",
@@ -7803,163 +7833,187 @@
         "module": "image",
         "name": "ResizeFilter::parse",
         "file": "src/image/effects.rs",
-        "line": 22
+        "line": 59
       },
       {
         "module": "image",
         "name": "ImageData::brightness",
         "file": "src/image/effects.rs",
-        "line": 50
+        "line": 166
       },
       {
         "module": "image",
         "name": "ImageData::contrast",
         "file": "src/image/effects.rs",
-        "line": 59
+        "line": 175
       },
       {
         "module": "image",
         "name": "ImageData::saturation",
         "file": "src/image/effects.rs",
-        "line": 66
+        "line": 182
       },
       {
         "module": "image",
         "name": "ImageData::gamma",
         "file": "src/image/effects.rs",
-        "line": 74
+        "line": 190
       },
       {
         "module": "image",
         "name": "ImageData::tint",
         "file": "src/image/effects.rs",
-        "line": 85
+        "line": 201
       },
       {
         "module": "image",
         "name": "ImageData::grayscale",
         "file": "src/image/effects.rs",
-        "line": 94
+        "line": 210
       },
       {
         "module": "image",
         "name": "ImageData::sepia",
         "file": "src/image/effects.rs",
-        "line": 101
+        "line": 217
       },
       {
         "module": "image",
         "name": "ImageData::invert",
         "file": "src/image/effects.rs",
-        "line": 113
+        "line": 229
       },
       {
         "module": "image",
         "name": "ImageData::threshold",
         "file": "src/image/effects.rs",
-        "line": 117
+        "line": 233
       },
       {
         "module": "image",
         "name": "ImageData::posterize",
         "file": "src/image/effects.rs",
-        "line": 125
+        "line": 241
       },
       {
         "module": "image",
         "name": "ImageData::fill",
         "file": "src/image/effects.rs",
-        "line": 134
+        "line": 250
       },
       {
         "module": "image",
         "name": "ImageData::noise",
         "file": "src/image/effects.rs",
-        "line": 138
+        "line": 254
       },
       {
         "module": "image",
         "name": "ImageData::alpha_mask",
         "file": "src/image/effects.rs",
-        "line": 163
+        "line": 279
+      },
+      {
+        "module": "image",
+        "name": "ImageData::levels",
+        "file": "src/image/effects.rs",
+        "line": 305
       },
       {
         "module": "image",
         "name": "ImageData::flip_horizontal",
         "file": "src/image/effects.rs",
-        "line": 170
+        "line": 320
       },
       {
         "module": "image",
         "name": "ImageData::flip_vertical",
         "file": "src/image/effects.rs",
-        "line": 186
+        "line": 336
       },
       {
         "module": "image",
         "name": "ImageData::rotate_90_cw",
         "file": "src/image/effects.rs",
-        "line": 198
+        "line": 348
       },
       {
         "module": "image",
         "name": "ImageData::crop",
         "file": "src/image/effects.rs",
-        "line": 216
+        "line": 366
       },
       {
         "module": "image",
         "name": "ImageData::resize_nearest",
         "file": "src/image/effects.rs",
-        "line": 230
+        "line": 380
       },
       {
         "module": "image",
         "name": "ImageData::blur",
         "file": "src/image/effects.rs",
-        "line": 248
+        "line": 398
+      },
+      {
+        "module": "image",
+        "name": "ImageData::motion_blur",
+        "file": "src/image/effects.rs",
+        "line": 477
+      },
+      {
+        "module": "image",
+        "name": "ImageData::normal_map",
+        "file": "src/image/effects.rs",
+        "line": 503
+      },
+      {
+        "module": "image",
+        "name": "ImageData::dither",
+        "file": "src/image/effects.rs",
+        "line": 592
       },
       {
         "module": "image",
         "name": "ImageData::sharpen",
         "file": "src/image/effects.rs",
-        "line": 296
+        "line": 607
       },
       {
         "module": "image",
         "name": "ImageData::resize",
         "file": "src/image/effects.rs",
-        "line": 324
+        "line": 635
       },
       {
         "module": "image",
         "name": "ImageData::resize_with_filter",
         "file": "src/image/effects.rs",
-        "line": 328
+        "line": 639
       },
       {
         "module": "image",
         "name": "ImageData::blit",
         "file": "src/image/effects.rs",
-        "line": 428
+        "line": 739
       },
       {
         "module": "image",
         "name": "ImageData::draw_nine_slice",
         "file": "src/image/effects.rs",
-        "line": 490
+        "line": 801
       },
       {
         "module": "image",
         "name": "ImageData::get_region",
         "file": "src/image/effects.rs",
-        "line": 629
+        "line": 940
       },
       {
         "module": "image",
         "name": "ImageData::diff",
         "file": "src/image/effects.rs",
-        "line": 644
+        "line": 955
       },
       {
         "module": "image",
@@ -10413,13 +10467,13 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/animation_api.rs",
-        "line": 670
+        "line": 749
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/asset_api.rs",
-        "line": 216
+        "line": 377
       },
       {
         "module": "lua_api",
@@ -10659,7 +10713,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/image_api.rs",
-        "line": 628
+        "line": 758
       },
       {
         "module": "lua_api",
@@ -10809,19 +10863,19 @@
         "module": "lua_api",
         "name": "LuaPipeline::new",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 689
+        "line": 690
       },
       {
         "module": "lua_api",
         "name": "LuaPipeline::from_parts",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 707
+        "line": 708
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1854
+        "line": 1855
       },
       {
         "module": "lua_api",
@@ -10899,13 +10953,13 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/spine_api.rs",
-        "line": 939
+        "line": 1051
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 643
+        "line": 795
       },
       {
         "module": "lua_api",
@@ -10953,7 +11007,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1319
+        "line": 1379
       },
       {
         "module": "lua_api",
@@ -19089,73 +19143,73 @@
         "module": "runtime",
         "name": "SharedState::new",
         "file": "src/runtime/shared_state.rs",
-        "line": 570
+        "line": 572
       },
       {
         "module": "runtime",
         "name": "SharedState::step_timer",
         "file": "src/runtime/shared_state.rs",
-        "line": 669
+        "line": 672
       },
       {
         "module": "runtime",
         "name": "SharedState::touch_texture",
         "file": "src/runtime/shared_state.rs",
-        "line": 681
+        "line": 684
       },
       {
         "module": "runtime",
         "name": "SharedState::touch_canvas",
         "file": "src/runtime/shared_state.rs",
-        "line": 685
+        "line": 688
       },
       {
         "module": "runtime",
         "name": "SharedState::ack_released_texture_handle",
         "file": "src/runtime/shared_state.rs",
-        "line": 709
+        "line": 712
       },
       {
         "module": "runtime",
         "name": "SharedState::pending_texture_release_count",
         "file": "src/runtime/shared_state.rs",
-        "line": 721
+        "line": 724
       },
       {
         "module": "runtime",
         "name": "SharedState::release_texture",
         "file": "src/runtime/shared_state.rs",
-        "line": 726
+        "line": 729
       },
       {
         "module": "runtime",
         "name": "SharedState::evict_lru_resources",
         "file": "src/runtime/shared_state.rs",
-        "line": 736
+        "line": 739
       },
       {
         "module": "runtime",
         "name": "SharedState::resource_memory_stats",
         "file": "src/runtime/shared_state.rs",
-        "line": 802
+        "line": 805
       },
       {
         "module": "runtime",
         "name": "SharedState::validate_frame_state",
         "file": "src/runtime/shared_state.rs",
-        "line": 848
+        "line": 851
       },
       {
         "module": "runtime",
         "name": "SharedState::resource_budget_report",
         "file": "src/runtime/shared_state.rs",
-        "line": 920
+        "line": 923
       },
       {
         "module": "runtime",
         "name": "SharedState::load_default_fonts",
         "file": "src/runtime/shared_state.rs",
-        "line": 1017
+        "line": 1020
       },
       {
         "module": "save",
@@ -19645,6 +19699,18 @@
       },
       {
         "module": "spine",
+        "name": "AttachmentSourceKind::parse",
+        "file": "src/spine/attachment.rs",
+        "line": 17
+      },
+      {
+        "module": "spine",
+        "name": "AttachmentSourceKind::as_str",
+        "file": "src/spine/attachment.rs",
+        "line": 27
+      },
+      {
+        "module": "spine",
         "name": "Bone::new",
         "file": "src/spine/bone.rs",
         "line": 38
@@ -19683,169 +19749,169 @@
         "module": "spine",
         "name": "Skeleton::generate_render_commands",
         "file": "src/spine/render.rs",
-        "line": 13
+        "line": 15
       },
       {
         "module": "spine",
         "name": "Skeleton::new",
         "file": "src/spine/skeleton.rs",
-        "line": 70
+        "line": 73
       },
       {
         "module": "spine",
         "name": "Skeleton::add_bone",
         "file": "src/spine/skeleton.rs",
-        "line": 91
+        "line": 95
       },
       {
         "module": "spine",
         "name": "Skeleton::add_slot",
         "file": "src/spine/skeleton.rs",
-        "line": 97
+        "line": 101
       },
       {
         "module": "spine",
         "name": "Skeleton::find_bone",
         "file": "src/spine/skeleton.rs",
-        "line": 103
+        "line": 107
       },
       {
         "module": "spine",
         "name": "Skeleton::find_slot",
         "file": "src/spine/skeleton.rs",
-        "line": 107
+        "line": 111
       },
       {
         "module": "spine",
         "name": "Skeleton::add_bone_full",
         "file": "src/spine/skeleton.rs",
-        "line": 111
+        "line": 115
       },
       {
         "module": "spine",
         "name": "Skeleton::add_slot_full",
         "file": "src/spine/skeleton.rs",
-        "line": 124
+        "line": 128
       },
       {
         "module": "spine",
         "name": "Skeleton::bone_world_transform",
         "file": "src/spine/skeleton.rs",
-        "line": 135
+        "line": 139
       },
       {
         "module": "spine",
         "name": "Skeleton::set_root_position",
         "file": "src/spine/skeleton.rs",
-        "line": 147
+        "line": 151
       },
       {
         "module": "spine",
         "name": "Skeleton::bone_count",
         "file": "src/spine/skeleton.rs",
-        "line": 155
+        "line": 159
       },
       {
         "module": "spine",
         "name": "Skeleton::add_animation",
         "file": "src/spine/skeleton.rs",
-        "line": 159
+        "line": 163
       },
       {
         "module": "spine",
         "name": "Skeleton::find_animation",
         "file": "src/spine/skeleton.rs",
-        "line": 163
+        "line": 167
       },
       {
         "module": "spine",
         "name": "Skeleton::play_animation",
         "file": "src/spine/skeleton.rs",
-        "line": 167
+        "line": 171
       },
       {
         "module": "spine",
         "name": "Skeleton::stop_animation",
         "file": "src/spine/skeleton.rs",
-        "line": 179
+        "line": 183
       },
       {
         "module": "spine",
         "name": "Skeleton::update_animation",
         "file": "src/spine/skeleton.rs",
-        "line": 183
+        "line": 187
       },
       {
         "module": "spine",
         "name": "Skeleton::get_animation_time",
         "file": "src/spine/skeleton.rs",
-        "line": 215
+        "line": 219
       },
       {
         "module": "spine",
         "name": "Skeleton::add_ik_constraint",
         "file": "src/spine/skeleton.rs",
-        "line": 219
+        "line": 223
       },
       {
         "module": "spine",
         "name": "Skeleton::set_ik_target",
         "file": "src/spine/skeleton.rs",
-        "line": 225
+        "line": 229
       },
       {
         "module": "spine",
         "name": "Skeleton::apply_ik_constraints",
         "file": "src/spine/skeleton.rs",
-        "line": 234
+        "line": 238
       },
       {
         "module": "spine",
         "name": "Skeleton::add_skin",
         "file": "src/spine/skeleton.rs",
-        "line": 241
+        "line": 245
       },
       {
         "module": "spine",
         "name": "Skeleton::set_skin",
         "file": "src/spine/skeleton.rs",
-        "line": 245
+        "line": 249
       },
       {
         "module": "spine",
         "name": "Skeleton::get_skin",
         "file": "src/spine/skeleton.rs",
-        "line": 254
+        "line": 258
       },
       {
         "module": "spine",
         "name": "Skeleton::set_skin_mapping",
         "file": "src/spine/skeleton.rs",
-        "line": 258
+        "line": 262
       },
       {
         "module": "spine",
         "name": "Skeleton::get_slot_attachment",
         "file": "src/spine/skeleton.rs",
-        "line": 265
+        "line": 269
       },
       {
         "module": "spine",
         "name": "Skeleton::slot_count",
         "file": "src/spine/skeleton.rs",
-        "line": 277
+        "line": 303
       },
       {
         "module": "spine",
         "name": "Skeleton::update_world_transforms",
         "file": "src/spine/skeleton.rs",
-        "line": 281
+        "line": 307
       },
       {
         "module": "spine",
         "name": "Skeleton::draw_to_image",
         "file": "src/spine/skeleton.rs",
-        "line": 334
+        "line": 360
       },
       {
         "module": "spine",
@@ -21753,7 +21819,7 @@
         "module": "tileset",
         "name": "AutoTileMode::as_str",
         "file": "src/tileset/autotile.rs",
-        "line": 18
+        "line": 29
       },
       {
         "module": "tileset",
@@ -21777,73 +21843,73 @@
         "module": "tileset",
         "name": "TileSet::new",
         "file": "src/tileset/tileset.rs",
-        "line": 37
+        "line": 38
       },
       {
         "module": "tileset",
         "name": "TileSet::get_tile_count",
         "file": "src/tileset/tileset.rs",
-        "line": 70
+        "line": 72
       },
       {
         "module": "tileset",
         "name": "TileSet::get_tile_width",
         "file": "src/tileset/tileset.rs",
-        "line": 78
+        "line": 80
       },
       {
         "module": "tileset",
         "name": "TileSet::get_tile_height",
         "file": "src/tileset/tileset.rs",
-        "line": 82
+        "line": 84
       },
       {
         "module": "tileset",
         "name": "TileSet::get_quad",
         "file": "src/tileset/tileset.rs",
-        "line": 119
+        "line": 131
       },
       {
         "module": "tileset",
         "name": "TileSet::archetype",
         "file": "src/tileset/tileset.rs",
-        "line": 139
+        "line": 151
       },
       {
         "module": "tileset",
         "name": "TileSet::set_animation",
         "file": "src/tileset/tileset.rs",
-        "line": 195
+        "line": 207
       },
       {
         "module": "tileset",
         "name": "TileSet::get_animation",
         "file": "src/tileset/tileset.rs",
-        "line": 207
+        "line": 219
       },
       {
         "module": "tileset",
         "name": "TileSet::properties",
         "file": "src/tileset/tileset.rs",
-        "line": 254
+        "line": 266
       },
       {
         "module": "tileset",
         "name": "TileSet::get_auto_tile_id",
         "file": "src/tileset/tileset.rs",
-        "line": 264
+        "line": 276
       },
       {
         "module": "tileset",
         "name": "TileSet::get_auto_tile_id_8",
         "file": "src/tileset/tileset.rs",
-        "line": 275
+        "line": 287
       },
       {
         "module": "tileset",
         "name": "TileSet::get_auto_tile_mode",
         "file": "src/tileset/tileset.rs",
-        "line": 285
+        "line": 297
       },
       {
         "module": "timer",
@@ -24255,93 +24321,99 @@
       },
       {
         "module": "animation",
-        "name": "Animation::add_frames_from_grid",
+        "name": "Animation::add_frame_with_duration",
         "file": "src/animation/controller.rs",
         "line": 72
       },
       {
         "module": "animation",
+        "name": "Animation::add_frames_from_grid",
+        "file": "src/animation/controller.rs",
+        "line": 78
+      },
+      {
+        "module": "animation",
         "name": "Animation::add_clip_with_mode",
         "file": "src/animation/controller.rs",
-        "line": 128
+        "line": 134
       },
       {
         "module": "animation",
         "name": "Animation::add_clip_from_grid",
         "file": "src/animation/controller.rs",
-        "line": 173
+        "line": 179
       },
       {
         "module": "animation",
         "name": "Animation::current_quad",
         "file": "src/animation/controller.rs",
-        "line": 385
+        "line": 391
       },
       {
         "module": "animation",
         "name": "Animation::current_frame",
         "file": "src/animation/controller.rs",
-        "line": 392
+        "line": 398
       },
       {
         "module": "animation",
         "name": "Animation::get_current_clip",
         "file": "src/animation/controller.rs",
-        "line": 396
+        "line": 402
       },
       {
         "module": "animation",
         "name": "Animation::is_playing",
         "file": "src/animation/controller.rs",
-        "line": 400
+        "line": 406
       },
       {
         "module": "animation",
         "name": "Animation::get_speed",
         "file": "src/animation/controller.rs",
-        "line": 411
+        "line": 417
       },
       {
         "module": "animation",
         "name": "Animation::set_speed",
         "file": "src/animation/controller.rs",
-        "line": 415
+        "line": 421
       },
       {
         "module": "animation",
         "name": "Animation::get_clip_mut",
         "file": "src/animation/controller.rs",
-        "line": 439
+        "line": 445
       },
       {
         "module": "animation",
         "name": "Animation::set_frame",
         "file": "src/animation/controller.rs",
-        "line": 447
+        "line": 453
       },
       {
         "module": "animation",
         "name": "Animation::set_current_clip_looping",
         "file": "src/animation/controller.rs",
-        "line": 458
+        "line": 464
       },
       {
         "module": "animation",
         "name": "Animation::crossfade",
         "file": "src/animation/controller.rs",
-        "line": 469
+        "line": 475
       },
       {
         "module": "animation",
         "name": "Animation::get_blend_state",
         "file": "src/animation/controller.rs",
-        "line": 483
+        "line": 489
       },
       {
         "module": "animation",
         "name": "Animation::draw_preview_grid",
         "file": "src/animation/controller.rs",
-        "line": 551
+        "line": 557
       },
       {
         "module": "animation",
@@ -24497,79 +24569,79 @@
         "module": "asset",
         "name": "AssetType::from_type_str",
         "file": "src/asset/cache.rs",
-        "line": 59
+        "line": 78
       },
       {
         "module": "asset",
         "name": "AssetType::is_text_like",
         "file": "src/asset/cache.rs",
-        "line": 80
+        "line": 105
       },
       {
         "module": "asset",
         "name": "AssetCache::inc_ref",
         "file": "src/asset/cache.rs",
-        "line": 253
+        "line": 303
       },
       {
         "module": "asset",
         "name": "AssetCache::set_group",
         "file": "src/asset/cache.rs",
-        "line": 291
+        "line": 387
       },
       {
         "module": "asset",
         "name": "AssetCache::remove_tag",
         "file": "src/asset/cache.rs",
-        "line": 309
+        "line": 405
       },
       {
         "module": "asset",
         "name": "AssetCache::has_tag",
         "file": "src/asset/cache.rs",
-        "line": 318
+        "line": 414
       },
       {
         "module": "asset",
         "name": "AssetCache::is_loaded",
         "file": "src/asset/cache.rs",
-        "line": 328
+        "line": 424
       },
       {
         "module": "asset",
         "name": "AssetCache::total_refs",
         "file": "src/asset/cache.rs",
-        "line": 338
+        "line": 434
       },
       {
         "module": "asset",
         "name": "AssetCache::find_by_name",
         "file": "src/asset/cache.rs",
-        "line": 345
+        "line": 441
       },
       {
         "module": "asset",
         "name": "AssetCache::find_by_group",
         "file": "src/asset/cache.rs",
-        "line": 367
+        "line": 463
       },
       {
         "module": "asset",
         "name": "AssetCache::find_by_tag",
         "file": "src/asset/cache.rs",
-        "line": 379
+        "line": 475
       },
       {
         "module": "asset",
         "name": "AssetCache::find_by_type",
         "file": "src/asset/cache.rs",
-        "line": 391
+        "line": 487
       },
       {
         "module": "asset",
         "name": "AssetCache::unique_groups",
         "file": "src/asset/cache.rs",
-        "line": 403
+        "line": 499
       },
       {
         "module": "audio",
@@ -30293,19 +30365,85 @@
         "module": "image",
         "name": "encode_gif",
         "file": "src/image/animated_gif.rs",
-        "line": 97
+        "line": 107
+      },
+      {
+        "module": "image",
+        "name": "decode_gif",
+        "file": "src/image/animated_gif.rs",
+        "line": 139
+      },
+      {
+        "module": "image",
+        "name": "load_gif",
+        "file": "src/image/animated_gif.rs",
+        "line": 185
       },
       {
         "module": "image",
         "name": "save_gif",
         "file": "src/image/animated_gif.rs",
-        "line": 129
+        "line": 192
+      },
+      {
+        "module": "image",
+        "name": "ImageData::apply_effect_named",
+        "file": "src/image/effects.rs",
+        "line": 93
+      },
+      {
+        "module": "image",
+        "name": "ImageData::apply_mask_image",
+        "file": "src/image/effects.rs",
+        "line": 139
+      },
+      {
+        "module": "image",
+        "name": "ImageData::transform_image",
+        "file": "src/image/effects.rs",
+        "line": 158
+      },
+      {
+        "module": "image",
+        "name": "ImageData::invert_alpha",
+        "file": "src/image/effects.rs",
+        "line": 286
+      },
+      {
+        "module": "image",
+        "name": "ImageData::auto_level",
+        "file": "src/image/effects.rs",
+        "line": 290
+      },
+      {
+        "module": "image",
+        "name": "ImageData::median",
+        "file": "src/image/effects.rs",
+        "line": 446
+      },
+      {
+        "module": "image",
+        "name": "ImageData::drop_shadow",
+        "file": "src/image/effects.rs",
+        "line": 526
+      },
+      {
+        "module": "image",
+        "name": "ImageData::outline",
+        "file": "src/image/effects.rs",
+        "line": 543
+      },
+      {
+        "module": "image",
+        "name": "ImageData::glow",
+        "file": "src/image/effects.rs",
+        "line": 574
       },
       {
         "module": "image",
         "name": "ImageData::convolve",
         "file": "src/image/effects.rs",
-        "line": 673
+        "line": 984
       },
       {
         "module": "image",
@@ -31493,25 +31631,25 @@
         "module": "lua_api",
         "name": "pipeline_result_to_lua",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 728
+        "line": 729
       },
       {
         "module": "lua_api",
         "name": "cancel_remaining_steps",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 773
+        "line": 774
       },
       {
         "module": "lua_api",
         "name": "fire_step_callbacks",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 783
+        "line": 784
       },
       {
         "module": "lua_api",
         "name": "finalize_pipeline_result",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1002
+        "line": 1003
       },
       {
         "module": "lua_api",
@@ -37379,97 +37517,97 @@
         "module": "runtime",
         "name": "SharedState::queue_released_texture_handle",
         "file": "src/runtime/shared_state.rs",
-        "line": 690
+        "line": 693
       },
       {
         "module": "runtime",
         "name": "SharedState::clear_released_texture_handle",
         "file": "src/runtime/shared_state.rs",
-        "line": 702
+        "line": 705
       },
       {
         "module": "runtime",
         "name": "SharedState::request_async_load",
         "file": "src/runtime/shared_state.rs",
-        "line": 944
+        "line": 947
       },
       {
         "module": "runtime",
         "name": "SharedState::request_async_write",
         "file": "src/runtime/shared_state.rs",
-        "line": 959
+        "line": 962
       },
       {
         "module": "runtime",
         "name": "SharedState::set_configured_default_font",
         "file": "src/runtime/shared_state.rs",
-        "line": 998
+        "line": 1001
       },
       {
         "module": "runtime",
         "name": "SharedState::set_active_builtin_font",
         "file": "src/runtime/shared_state.rs",
-        "line": 1007
+        "line": 1010
       },
       {
         "module": "runtime",
         "name": "SharedState::poll_async_load",
         "file": "src/runtime/shared_state.rs",
-        "line": 1037
+        "line": 1040
       },
       {
         "module": "runtime",
         "name": "SharedState::poll_async_write",
         "file": "src/runtime/shared_state.rs",
-        "line": 1053
+        "line": 1056
       },
       {
         "module": "runtime",
         "name": "SharedState::set_active_mod_sandbox",
         "file": "src/runtime/shared_state.rs",
-        "line": 1069
+        "line": 1072
       },
       {
         "module": "runtime",
         "name": "SharedState::clear_active_mod_sandbox",
         "file": "src/runtime/shared_state.rs",
-        "line": 1075
+        "line": 1078
       },
       {
         "module": "runtime",
         "name": "SharedState::active_mod_context",
         "file": "src/runtime/shared_state.rs",
-        "line": 1081
+        "line": 1084
       },
       {
         "module": "runtime",
         "name": "SharedState::restore_active_mod_context",
         "file": "src/runtime/shared_state.rs",
-        "line": 1086
+        "line": 1089
       },
       {
         "module": "runtime",
         "name": "SharedState::ensure_mod_api_allowed",
         "file": "src/runtime/shared_state.rs",
-        "line": 1096
+        "line": 1099
       },
       {
         "module": "runtime",
         "name": "SharedState::ensure_mod_file_read",
         "file": "src/runtime/shared_state.rs",
-        "line": 1122
+        "line": 1125
       },
       {
         "module": "runtime",
         "name": "SharedState::ensure_mod_file_write",
         "file": "src/runtime/shared_state.rs",
-        "line": 1137
+        "line": 1140
       },
       {
         "module": "runtime",
         "name": "SharedState::compute_stats",
         "file": "src/runtime/shared_state.rs",
-        "line": 1237
+        "line": 1240
       },
       {
         "module": "save",
@@ -37953,9 +38091,27 @@
       },
       {
         "module": "spine",
+        "name": "Skeleton::set_attachment_source",
+        "file": "src/spine/skeleton.rs",
+        "line": 281
+      },
+      {
+        "module": "spine",
+        "name": "Skeleton::get_attachment_source_by_key",
+        "file": "src/spine/skeleton.rs",
+        "line": 285
+      },
+      {
+        "module": "spine",
+        "name": "Skeleton::get_attachment_source_for_slot",
+        "file": "src/spine/skeleton.rs",
+        "line": 289
+      },
+      {
+        "module": "spine",
         "name": "Skeleton::draw_bones_to_image",
         "file": "src/spine/skeleton.rs",
-        "line": 366
+        "line": 392
       },
       {
         "module": "spine",
@@ -39509,121 +39665,133 @@
         "module": "tileset",
         "name": "TileSet::get_first_gid",
         "file": "src/tileset/tileset.rs",
-        "line": 66
+        "line": 68
       },
       {
         "module": "tileset",
         "name": "TileSet::get_columns",
         "file": "src/tileset/tileset.rs",
-        "line": 74
+        "line": 76
       },
       {
         "module": "tileset",
         "name": "TileSet::get_tile_dimensions",
         "file": "src/tileset/tileset.rs",
-        "line": 86
+        "line": 88
       },
       {
         "module": "tileset",
         "name": "TileSet::get_spacing",
         "file": "src/tileset/tileset.rs",
-        "line": 90
+        "line": 92
       },
       {
         "module": "tileset",
         "name": "TileSet::get_margin",
         "file": "src/tileset/tileset.rs",
-        "line": 94
+        "line": 96
       },
       {
         "module": "tileset",
         "name": "TileSet::get_texture_width",
         "file": "src/tileset/tileset.rs",
-        "line": 98
+        "line": 100
       },
       {
         "module": "tileset",
         "name": "TileSet::get_texture_height",
         "file": "src/tileset/tileset.rs",
-        "line": 109
+        "line": 111
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::set_terrain_profile",
+        "file": "src/tileset/tileset.rs",
+        "line": 121
+      },
+      {
+        "module": "tileset",
+        "name": "TileSet::get_terrain_profile",
+        "file": "src/tileset/tileset.rs",
+        "line": 126
       },
       {
         "module": "tileset",
         "name": "TileSet::set_archetype",
         "file": "src/tileset/tileset.rs",
-        "line": 134
+        "line": 146
       },
       {
         "module": "tileset",
         "name": "TileSet::remove_archetype",
         "file": "src/tileset/tileset.rs",
-        "line": 144
+        "line": 156
       },
       {
         "module": "tileset",
         "name": "TileSet::archetype_names",
         "file": "src/tileset/tileset.rs",
-        "line": 154
+        "line": 166
       },
       {
         "module": "tileset",
         "name": "TileSet::set_tile_archetype",
         "file": "src/tileset/tileset.rs",
-        "line": 161
+        "line": 173
       },
       {
         "module": "tileset",
         "name": "TileSet::get_tile_archetype",
         "file": "src/tileset/tileset.rs",
-        "line": 184
+        "line": 196
       },
       {
         "module": "tileset",
         "name": "TileSet::archetype_for_tile",
         "file": "src/tileset/tileset.rs",
-        "line": 189
+        "line": 201
       },
       {
         "module": "tileset",
         "name": "TileSet::iter_animated_local_ids",
         "file": "src/tileset/tileset.rs",
-        "line": 212
+        "line": 224
       },
       {
         "module": "tileset",
         "name": "TileSet::set_property",
         "file": "src/tileset/tileset.rs",
-        "line": 217
+        "line": 229
       },
       {
         "module": "tileset",
         "name": "TileSet::get_property",
         "file": "src/tileset/tileset.rs",
-        "line": 246
+        "line": 258
       },
       {
         "module": "tileset",
         "name": "TileSet::set_auto_tile_rule",
         "file": "src/tileset/tileset.rs",
-        "line": 259
+        "line": 271
       },
       {
         "module": "tileset",
         "name": "TileSet::set_auto_tile_rule_8",
         "file": "src/tileset/tileset.rs",
-        "line": 270
+        "line": 282
       },
       {
         "module": "tileset",
         "name": "TileSet::set_auto_tile_mode",
         "file": "src/tileset/tileset.rs",
-        "line": 281
+        "line": 293
       },
       {
         "module": "tileset",
         "name": "TileSet::has_auto_tile_mode",
         "file": "src/tileset/tileset.rs",
-        "line": 292
+        "line": 304
       },
       {
         "module": "timer",
@@ -41008,8 +41176,8 @@
     ]
   },
   "lua": {
-    "total": 6356,
-    "covered": 6356,
+    "total": 6399,
+    "covered": 6399,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -43433,504 +43601,532 @@
         "lua_name": "LAnimation:addFrame",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 64
+        "line": 66
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:addFramesFromGrid",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 76
+        "line": 78
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:addFramesFromRects",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 88
+        "line": 90
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:addClip",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 107
+        "line": 109
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:setClipMode",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 134
+        "line": 136
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:getClipMode",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 147
+        "line": 149
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:addClipFromGrid",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 164
+        "line": 166
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:play",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 189
+        "line": 191
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:stop",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 192
+        "line": 194
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:pause",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 198
+        "line": 200
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:resume",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 204
+        "line": 206
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:update",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 211
+        "line": 213
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:getQuad",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 219
+        "line": 221
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:setImage",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 238
+        "line": 240
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:draw",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 254
+        "line": 256
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:pollEvents",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 262
+        "line": 264
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:isPlaying",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 280
+        "line": 282
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:isLooping",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 284
+        "line": 286
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:getClip",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 288
+        "line": 290
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:getSpeed",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 294
+        "line": 296
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:setSpeed",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 298
+        "line": 300
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:getFrameCount",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 306
+        "line": 308
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:getClipCount",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 312
+        "line": 314
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:getCurrentFrame",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 318
+        "line": 320
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:setFrame",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 324
+        "line": 326
       },
       {
         "module": "animation",
-        "lua_name": "LAnimation:crossfade",
+        "lua_name": "LAnimation:seek",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
         "line": 333
       },
       {
         "module": "animation",
+        "lua_name": "LAnimation:crossfade",
+        "kind": "method",
+        "file": "src/lua_api/animation_api.rs",
+        "line": 342
+      },
+      {
+        "module": "animation",
         "lua_name": "LAnimation:getBlendState",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 343
+        "line": 352
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:drawToImage",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 381
+        "line": 390
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:drawPreviewGrid",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 390
+        "line": 399
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:type",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 400
+        "line": 409
       },
       {
         "module": "animation",
         "lua_name": "LAnimation:typeOf",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 405
+        "line": 414
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:update",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 422
+        "line": 431
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:getState",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 430
+        "line": 439
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:forceState",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 437
+        "line": 446
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:addState",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 445
+        "line": 454
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:addTransition",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 457
+        "line": 466
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:setParam",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 469
+        "line": 478
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:getQuad",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 490
+        "line": 499
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:setImage",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 510
+        "line": 519
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:draw",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 526
+        "line": 535
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:type",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 537
+        "line": 546
       },
       {
         "module": "animation",
         "lua_name": "LAnimStateMachine:typeOf",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 542
+        "line": 551
       },
       {
         "module": "animation",
         "lua_name": "LBlendLayerSet:addLayer",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 561
+        "line": 570
       },
       {
         "module": "animation",
         "lua_name": "LBlendLayerSet:removeLayer",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 585
+        "line": 594
       },
       {
         "module": "animation",
         "lua_name": "LBlendLayerSet:setWeight",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 596
+        "line": 605
       },
       {
         "module": "animation",
         "lua_name": "LBlendLayerSet:getWeight",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 606
+        "line": 615
       },
       {
         "module": "animation",
         "lua_name": "LBlendLayerSet:setMask",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 614
+        "line": 623
       },
       {
         "module": "animation",
         "lua_name": "LBlendLayerSet:listLayers",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 632
+        "line": 641
       },
       {
         "module": "animation",
         "lua_name": "LBlendLayerSet:len",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 655
+        "line": 664
       },
       {
         "module": "animation",
         "lua_name": "LBlendLayerSet:type",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 659
+        "line": 668
       },
       {
         "module": "animation",
         "lua_name": "LBlendLayerSet:typeOf",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 664
+        "line": 673
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.new",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 675
+        "line": 754
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.fromAseprite",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 688
+        "line": 767
+      },
+      {
+        "module": "animation",
+        "lua_name": "lurek.animation.fromFrames",
+        "kind": "function",
+        "file": "src/lua_api/animation_api.rs",
+        "line": 797
+      },
+      {
+        "module": "animation",
+        "lua_name": "lurek.animation.fromSpriteSheet",
+        "kind": "function",
+        "file": "src/lua_api/animation_api.rs",
+        "line": 815
+      },
+      {
+        "module": "animation",
+        "lua_name": "lurek.animation.fromAnimatedImage",
+        "kind": "function",
+        "file": "src/lua_api/animation_api.rs",
+        "line": 854
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.newStateMachine",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 718
+        "line": 885
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.newCurve",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 731
+        "line": 898
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.newSyncGroup",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 743
+        "line": 910
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.newBlendLayerSet",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 754
+        "line": 921
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.buildCharacter",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 768
+        "line": 935
       },
       {
         "module": "animation",
         "lua_name": "LAnimCurve:addKeyframe",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1045
+        "line": 1212
       },
       {
         "module": "animation",
         "lua_name": "LAnimCurve:eval",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1056
+        "line": 1223
       },
       {
         "module": "animation",
         "lua_name": "LAnimCurve:setEasing",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1067
+        "line": 1234
       },
       {
         "module": "animation",
         "lua_name": "LAnimCurve:keyframeCount",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1086
+        "line": 1253
       },
       {
         "module": "animation",
         "lua_name": "LAnimCurve:setCustomEasing",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1092
+        "line": 1259
       },
       {
         "module": "animation",
         "lua_name": "LAnimCurve:clear",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1116
+        "line": 1283
       },
       {
         "module": "animation",
         "lua_name": "LAnimCurve:type",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1123
+        "line": 1290
       },
       {
         "module": "animation",
         "lua_name": "LAnimCurve:typeOf",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1128
+        "line": 1295
       },
       {
         "module": "animation",
         "lua_name": "LAnimSyncGroup:add",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1143
+        "line": 1310
       },
       {
         "module": "animation",
         "lua_name": "LAnimSyncGroup:remove",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1147
+        "line": 1314
       },
       {
         "module": "animation",
         "lua_name": "LAnimSyncGroup:clear",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1150
+        "line": 1317
       },
       {
         "module": "animation",
         "lua_name": "LAnimSyncGroup:memberCount",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1157
+        "line": 1324
       },
       {
         "module": "animation",
         "lua_name": "LAnimSyncGroup:type",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1161
+        "line": 1328
       },
       {
         "module": "animation",
         "lua_name": "LAnimSyncGroup:typeOf",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 1166
+        "line": 1333
       },
       {
         "module": "asset",
@@ -43951,161 +44147,203 @@
         "lua_name": "lurek.asset.load",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 234
+        "line": 397
+      },
+      {
+        "module": "asset",
+        "lua_name": "lurek.asset.watch",
+        "kind": "function",
+        "file": "src/lua_api/asset_api.rs",
+        "line": 423
+      },
+      {
+        "module": "asset",
+        "lua_name": "lurek.asset.reload",
+        "kind": "function",
+        "file": "src/lua_api/asset_api.rs",
+        "line": 456
+      },
+      {
+        "module": "asset",
+        "lua_name": "lurek.asset.getRevision",
+        "kind": "function",
+        "file": "src/lua_api/asset_api.rs",
+        "line": 470
+      },
+      {
+        "module": "asset",
+        "lua_name": "lurek.asset.onReload",
+        "kind": "function",
+        "file": "src/lua_api/asset_api.rs",
+        "line": 495
+      },
+      {
+        "module": "asset",
+        "lua_name": "lurek.asset.resolve",
+        "kind": "function",
+        "file": "src/lua_api/asset_api.rs",
+        "line": 520
+      },
+      {
+        "module": "asset",
+        "lua_name": "lurek.asset.loadManifest",
+        "kind": "function",
+        "file": "src/lua_api/asset_api.rs",
+        "line": 542
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.unload",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 258
+        "line": 554
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.get",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 278
+        "line": 575
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.preload",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 296
+        "line": 594
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.refcount",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 309
+        "line": 607
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.isLoaded",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 324
+        "line": 622
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.stats",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 343
+        "line": 641
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.clear",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 385
+        "line": 683
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.getPath",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 399
+        "line": 697
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.getType",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 422
+        "line": 720
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.getInfo",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 453
+        "line": 754
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.setName",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 491
+        "line": 801
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.getName",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 507
+        "line": 817
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.setGroup",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 533
+        "line": 843
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.getGroup",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 549
+        "line": 859
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.addTag",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 573
+        "line": 883
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.removeTag",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 589
+        "line": 899
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.getTags",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 604
+        "line": 914
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.hasTag",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 630
+        "line": 940
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.findByName",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 647
+        "line": 957
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.findByGroup",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 662
+        "line": 972
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.findByTag",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 677
+        "line": 987
       },
       {
         "module": "asset",
         "lua_name": "lurek.asset.findByType",
         "kind": "function",
         "file": "src/lua_api/asset_api.rs",
-        "line": 692
+        "line": 1002
       },
       {
         "module": "audio",
@@ -57678,714 +57916,812 @@
         "lua_name": "LProvinceGrid:getWidth",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 89
+        "line": 146
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:getHeight",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 93
+        "line": 150
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:getAt",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 99
+        "line": 156
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:provinceCount",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 105
+        "line": 162
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:adjacencies",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 114
+        "line": 171
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:provinceSpans",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 135
+        "line": 192
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:borderSegments",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 160
+        "line": 217
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:getPolygons",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 186
+        "line": 243
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:getPolygonsSimplified",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 217
+        "line": 274
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:drawShapes",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 251
+        "line": 308
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:type",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 324
+        "line": 381
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 329
+        "line": 386
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:serializeShapeData",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 335
+        "line": 392
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:deserializeShapeData",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 343
+        "line": 400
+      },
+      {
+        "module": "image",
+        "lua_name": "LAnimatedImage:frameCount",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 458
+      },
+      {
+        "module": "image",
+        "lua_name": "LAnimatedImage:getFrame",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 463
+      },
+      {
+        "module": "image",
+        "lua_name": "LAnimatedImage:getDuration",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 476
+      },
+      {
+        "module": "image",
+        "lua_name": "LAnimatedImage:getFrames",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 488
+      },
+      {
+        "module": "image",
+        "lua_name": "LAnimatedImage:getDurations",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 498
+      },
+      {
+        "module": "image",
+        "lua_name": "LAnimatedImage:type",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 508
+      },
+      {
+        "module": "image",
+        "lua_name": "LAnimatedImage:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 513
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getWidth",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 399
+        "line": 529
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getHeight",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 403
+        "line": 533
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:layerCount",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 407
+        "line": 537
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:addLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 412
+        "line": 542
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:removeLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 421
+        "line": 551
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 431
+        "line": 561
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:setLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 445
+        "line": 575
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getOpacity",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 461
+        "line": 591
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:setOpacity",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 475
+        "line": 605
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:isVisible",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 485
+        "line": 615
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:setVisible",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 499
+        "line": 629
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getName",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 509
+        "line": 639
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:setName",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 523
+        "line": 653
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:swapLayers",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 534
+        "line": 664
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:moveLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 545
+        "line": 675
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:merge",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 557
+        "line": 687
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:save",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 563
+        "line": 693
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:type",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 569
+        "line": 699
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 574
+        "line": 704
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getWidth",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 590
+        "line": 720
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getHeight",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 594
+        "line": 724
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getDimensions",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 599
+        "line": 729
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getMipmapCount",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 605
+        "line": 735
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getFormat",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 611
+        "line": 741
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:type",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 617
+        "line": 747
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 622
+        "line": 752
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newImageData",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 636
+        "line": 766
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newImageDataFromBytes",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 670
+        "line": 800
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newCompressedData",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 683
+        "line": 813
       },
       {
         "module": "image",
         "lua_name": "lurek.image.isCompressed",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 700
+        "line": 830
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newLayeredImage",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 715
+        "line": 845
       },
       {
         "module": "image",
         "lua_name": "lurek.image.saveImage",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 731
+        "line": 861
       },
       {
         "module": "image",
         "lua_name": "lurek.image.savePNG",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 749
+        "line": 879
       },
       {
         "module": "image",
         "lua_name": "lurek.image.saveGIF",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 769
+        "line": 899
       },
       {
         "module": "image",
         "lua_name": "lurek.image.loadImage",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 796
+        "line": 926
+      },
+      {
+        "module": "image",
+        "lua_name": "lurek.image.loadAnimated",
+        "kind": "function",
+        "file": "src/lua_api/image_api.rs",
+        "line": 944
       },
       {
         "module": "image",
         "lua_name": "lurek.image.loadLayered",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 814
+        "line": 975
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newPaletteLut",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 830
+        "line": 991
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newProvinceGrid",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 843
+        "line": 1004
       },
       {
         "module": "image",
         "lua_name": "lurek.image.fromScreen",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 862
+        "line": 1023
       },
       {
         "module": "image",
         "lua_name": "LImageData:getWidth",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 884
+        "line": 1045
       },
       {
         "module": "image",
         "lua_name": "LImageData:getHeight",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 888
+        "line": 1049
       },
       {
         "module": "image",
         "lua_name": "LImageData:getDimensions",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 893
+        "line": 1054
       },
       {
         "module": "image",
-        "lua_name": "LImageData:getPixel",
+        "lua_name": "LImageData:clone",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 905
+        "line": 1061
       },
       {
         "module": "image",
-        "lua_name": "LImageData:setPixel",
+        "lua_name": "LImageData:copyRegion",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 924
+        "line": 1069
       },
       {
         "module": "image",
-        "lua_name": "LImageData:encode",
+        "lua_name": "LImageData:applyEffect",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 944
+        "line": 1083
       },
       {
         "module": "image",
-        "lua_name": "LImageData:getString",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 954
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:mapPixel",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 958
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:brightness",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 977
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:contrast",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 984
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:saturation",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 991
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:gamma",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 998
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:tint",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1008
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:grayscale",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1017
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:sepia",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1023
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:invert",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1029
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:threshold",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1036
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:posterize",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1043
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:fill",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1053
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:noise",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1060
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:alphaMask",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1067
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:flipHorizontal",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1073
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:flipVertical",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1079
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:rotate90cw",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1086
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:crop",
-        "kind": "method",
-        "file": "src/lua_api/image_api.rs",
-        "line": 1096
-      },
-      {
-        "module": "image",
-        "lua_name": "LImageData:resizeNearest",
+        "lua_name": "LImageData:applyEffects",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
         "line": 1116
       },
       {
         "module": "image",
-        "lua_name": "LImageData:blur",
+        "lua_name": "LImageData:applyMask",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1123
+        "line": 1160
       },
       {
         "module": "image",
-        "lua_name": "LImageData:sharpen",
+        "lua_name": "LImageData:transform",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1129
+        "line": 1168
       },
       {
         "module": "image",
-        "lua_name": "LImageData:drawRect",
+        "lua_name": "LImageData:getPixel",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1142
+        "line": 1183
       },
       {
         "module": "image",
-        "lua_name": "LImageData:drawCircle",
+        "lua_name": "LImageData:setPixel",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1158
+        "line": 1202
       },
       {
         "module": "image",
-        "lua_name": "LImageData:drawLine",
+        "lua_name": "LImageData:encode",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1175
+        "line": 1222
       },
       {
         "module": "image",
-        "lua_name": "LImageData:resize",
+        "lua_name": "LImageData:getString",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1188
+        "line": 1232
       },
       {
         "module": "image",
-        "lua_name": "LImageData:blit",
+        "lua_name": "LImageData:mapPixel",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1234
+        "line": 1236
       },
       {
         "module": "image",
-        "lua_name": "LImageData:getRegion",
+        "lua_name": "LImageData:brightness",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1249
+        "line": 1255
       },
       {
         "module": "image",
-        "lua_name": "LImageData:getRawBytes",
+        "lua_name": "LImageData:contrast",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1259
+        "line": 1262
       },
       {
         "module": "image",
-        "lua_name": "LImageData:diff",
+        "lua_name": "LImageData:saturation",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1266
+        "line": 1269
       },
       {
         "module": "image",
-        "lua_name": "LImageData:mapPixels",
+        "lua_name": "LImageData:gamma",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1273
+        "line": 1276
       },
       {
         "module": "image",
-        "lua_name": "LImageData:convolve",
+        "lua_name": "LImageData:tint",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1291
+        "line": 1286
       },
       {
         "module": "image",
-        "lua_name": "LImageData:applyPaletteLut",
+        "lua_name": "LImageData:grayscale",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1308
+        "line": 1295
       },
       {
         "module": "image",
-        "lua_name": "LImageData:setRawData",
+        "lua_name": "LImageData:sepia",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1316
+        "line": 1301
       },
       {
         "module": "image",
-        "lua_name": "LImageData:paste",
+        "lua_name": "LImageData:invert",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1325
+        "line": 1307
       },
       {
         "module": "image",
-        "lua_name": "LImageData:type",
+        "lua_name": "LImageData:threshold",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1336
+        "line": 1314
       },
       {
         "module": "image",
-        "lua_name": "LImageData:typeOf",
+        "lua_name": "LImageData:posterize",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1341
+        "line": 1321
       },
       {
         "module": "image",
-        "lua_name": "LPaletteLUT:setColor",
+        "lua_name": "LImageData:fill",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1331
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:noise",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1338
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:alphaMask",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1345
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:flipHorizontal",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1351
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:flipVertical",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1357
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:rotate90cw",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
         "line": 1364
       },
       {
         "module": "image",
-        "lua_name": "LPaletteLUT:getColorCount",
+        "lua_name": "LImageData:crop",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1388
+        "line": 1374
       },
       {
         "module": "image",
-        "lua_name": "LPaletteLUT:clear",
+        "lua_name": "LImageData:resizeNearest",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1393
+        "line": 1394
       },
       {
         "module": "image",
-        "lua_name": "LPaletteLUT:cycle",
+        "lua_name": "LImageData:blur",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1400
+        "line": 1401
       },
       {
         "module": "image",
-        "lua_name": "LPaletteLUT:type",
+        "lua_name": "LImageData:sharpen",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
         "line": 1407
       },
       {
         "module": "image",
+        "lua_name": "LImageData:drawRect",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1420
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:drawCircle",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1436
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:drawLine",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1453
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:resize",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1466
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:blit",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1512
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:getRegion",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1527
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:getRawBytes",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1537
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:diff",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1544
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:mapPixels",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1551
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:convolve",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1569
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:applyPaletteLut",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1586
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:setRawData",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1594
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:paste",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1603
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:type",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1614
+      },
+      {
+        "module": "image",
+        "lua_name": "LImageData:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1619
+      },
+      {
+        "module": "image",
+        "lua_name": "LPaletteLUT:setColor",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1642
+      },
+      {
+        "module": "image",
+        "lua_name": "LPaletteLUT:getColorCount",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1666
+      },
+      {
+        "module": "image",
+        "lua_name": "LPaletteLUT:clear",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1671
+      },
+      {
+        "module": "image",
+        "lua_name": "LPaletteLUT:cycle",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1678
+      },
+      {
+        "module": "image",
+        "lua_name": "LPaletteLUT:type",
+        "kind": "method",
+        "file": "src/lua_api/image_api.rs",
+        "line": 1685
+      },
+      {
+        "module": "image",
         "lua_name": "LPaletteLUT:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1412
+        "line": 1690
       },
       {
         "module": "input",
@@ -71755,490 +72091,490 @@
         "lua_name": "LPipelineStep:getName",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 357
+        "line": 358
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setCallback",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 364
+        "line": 365
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setCondition",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 372
+        "line": 373
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setDelay",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 383
+        "line": 384
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getDelay",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 391
+        "line": 392
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setTimeout",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 396
+        "line": 397
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getTimeout",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 407
+        "line": 408
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setRetryCount",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 421
+        "line": 422
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getRetryCount",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 429
+        "line": 430
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setRetryDelay",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 436
+        "line": 437
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setAsync",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 444
+        "line": 445
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:isAsync",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 452
+        "line": 453
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setOptional",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 457
+        "line": 458
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:isOptional",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 465
+        "line": 466
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setOnError",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 469
+        "line": 470
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setData",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 481
+        "line": 482
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getData",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 490
+        "line": 491
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setState",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 497
+        "line": 498
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getState",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 508
+        "line": 509
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:setTag",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 520
+        "line": 521
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getTag",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 528
+        "line": 529
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:dependsOn",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 533
+        "line": 534
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:connectOutput",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 555
+        "line": 556
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getOutputLinks",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 599
+        "line": 600
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getDependencies",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 615
+        "line": 616
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getDependencyCount",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 622
+        "line": 623
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getStatus",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 629
+        "line": 630
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getError",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 636
+        "line": 637
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getDuration",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 643
+        "line": 644
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getAttempt",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 650
+        "line": 651
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:type",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 660
+        "line": 661
       },
       {
         "module": "pipeline",
         "lua_name": "LPipelineStep:typeOf",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 666
+        "line": 667
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:addStep",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1032
+        "line": 1033
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:removeStep",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1048
+        "line": 1049
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getStep",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1058
+        "line": 1059
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getSteps",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1065
+        "line": 1066
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getStepCount",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1076
+        "line": 1077
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getStepsByTag",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1084
+        "line": 1085
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:clear",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1098
+        "line": 1099
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:validate",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1108
+        "line": 1109
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getExecutionOrder",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1122
+        "line": 1123
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getParallelGroups",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1140
+        "line": 1141
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:run",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1169
+        "line": 1170
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:runAsync",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1248
+        "line": 1249
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:update",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1287
+        "line": 1288
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:cancel",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1422
+        "line": 1423
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:reset",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1437
+        "line": 1438
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:isRunning",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1453
+        "line": 1454
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:isComplete",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1458
+        "line": 1459
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:setErrorMode",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1475
+        "line": 1476
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getErrorMode",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1484
+        "line": 1485
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getResult",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1498
+        "line": 1499
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getContext",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1520
+        "line": 1521
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:setOnComplete",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1534
+        "line": 1535
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:setOnStepComplete",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1545
+        "line": 1546
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:setOnStepError",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1556
+        "line": 1557
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:getName",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1567
+        "line": 1568
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:setName",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1574
+        "line": 1575
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:toTable",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1585
+        "line": 1586
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:type",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1650
+        "line": 1651
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:addConditional",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1659
+        "line": 1660
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:addBranch",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1689
+        "line": 1690
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:onProgress",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1801
+        "line": 1802
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:onEvent",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1809
+        "line": 1810
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:toAscii",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1817
+        "line": 1818
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:addSubPipeline",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1826
+        "line": 1827
       },
       {
         "module": "pipeline",
         "lua_name": "LPipeline:typeOf",
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1848
+        "line": 1849
       },
       {
         "module": "pipeline",
         "lua_name": "lurek.pipeline.newStep",
         "kind": "function",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1862
+        "line": 1863
       },
       {
         "module": "pipeline",
         "lua_name": "lurek.pipeline.newPipeline",
         "kind": "function",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1878
+        "line": 1879
       },
       {
         "module": "pipeline",
         "lua_name": "lurek.pipeline.fromTable",
         "kind": "function",
         "file": "src/lua_api/pipeline_api.rs",
-        "line": 1890
+        "line": 1891
       },
       {
         "module": "procgen",
@@ -76683,721 +77019,840 @@
         "lua_name": "LSkeleton:addBone",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 297
+        "line": 358
       },
       {
         "module": "spine",
         "lua_name": "LSkeleton:addChildBone",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 318
+        "line": 379
       },
       {
         "module": "spine",
         "lua_name": "LSkeleton:addSlot",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 346
+        "line": 407
       },
       {
         "module": "spine",
-        "lua_name": "LSkeleton:findBone",
+        "lua_name": "LSkeleton:bindAtlas",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 363
+        "line": 424
       },
       {
         "module": "spine",
-        "lua_name": "LSkeleton:findSlot",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 370
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:updateWorldTransforms",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 375
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:getBoneWorld",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 388
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:setPosition",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 411
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:boneCount",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 418
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:slotCount",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 422
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:drawToImage",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 428
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:playAnimation",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 437
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:stopAnimation",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 445
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:updateAnimation",
+        "lua_name": "LSkeleton:setAttachmentSource",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
         "line": 452
       },
       {
         "module": "spine",
-        "lua_name": "LSkeleton:getAnimationTime",
+        "lua_name": "LSkeleton:getAttachmentSource",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 460
+        "line": 464
       },
       {
         "module": "spine",
-        "lua_name": "LSkeleton:addAnimation",
+        "lua_name": "LSkeleton:findBone",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 466
+        "line": 475
       },
       {
         "module": "spine",
-        "lua_name": "LSkeleton:addIKConstraint",
+        "lua_name": "LSkeleton:findSlot",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 477
+        "line": 482
       },
       {
         "module": "spine",
-        "lua_name": "LSkeleton:setIKTarget",
+        "lua_name": "LSkeleton:updateWorldTransforms",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 494
+        "line": 487
       },
       {
         "module": "spine",
-        "lua_name": "LSkeleton:addSkin",
+        "lua_name": "LSkeleton:getBoneWorld",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 501
+        "line": 500
       },
       {
         "module": "spine",
-        "lua_name": "LSkeleton:setSkin",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 509
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:getSkin",
-        "kind": "method",
-        "file": "src/lua_api/spine_api.rs",
-        "line": 515
-      },
-      {
-        "module": "spine",
-        "lua_name": "LSkeleton:setSkinMapping",
+        "lua_name": "LSkeleton:setPosition",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
         "line": 523
       },
       {
         "module": "spine",
+        "lua_name": "LSkeleton:boneCount",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 530
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:slotCount",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 534
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:drawToImage",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 540
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:playAnimation",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 549
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:stopAnimation",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 557
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:updateAnimation",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 564
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:getAnimationTime",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 572
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:addAnimation",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 578
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:addIKConstraint",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 589
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:setIKTarget",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 606
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:addSkin",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 613
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:setSkin",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 621
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:getSkin",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 627
+      },
+      {
+        "module": "spine",
+        "lua_name": "LSkeleton:setSkinMapping",
+        "kind": "method",
+        "file": "src/lua_api/spine_api.rs",
+        "line": 635
+      },
+      {
+        "module": "spine",
         "lua_name": "LSkeleton:blendAnimation",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 535
+        "line": 647
       },
       {
         "module": "spine",
         "lua_name": "LSkeleton:buildAnimation",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 554
+        "line": 666
       },
       {
         "module": "spine",
         "lua_name": "LSkeleton:bindPhysics",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 584
+        "line": 696
       },
       {
         "module": "spine",
         "lua_name": "LSkeleton:type",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 758
+        "line": 870
       },
       {
         "module": "spine",
         "lua_name": "LSkeleton:typeOf",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 763
+        "line": 875
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:addKeyframe",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 781
+        "line": 893
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:addBoneTrack",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 829
+        "line": 941
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:getDuration",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 843
+        "line": 955
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:addEventKey",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 849
+        "line": 961
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:getEvents",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 869
+        "line": 981
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:getTimelineCount",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 885
+        "line": 997
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:poseAt",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 895
+        "line": 1007
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:reverse",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 920
+        "line": 1032
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:type",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 928
+        "line": 1040
       },
       {
         "module": "spine",
         "lua_name": "LSkeletonAnimation:typeOf",
         "kind": "method",
         "file": "src/lua_api/spine_api.rs",
-        "line": 933
+        "line": 1045
       },
       {
         "module": "spine",
         "lua_name": "lurek.spine.newSkeleton",
         "kind": "function",
         "file": "src/lua_api/spine_api.rs",
-        "line": 945
+        "line": 1057
       },
       {
         "module": "spine",
         "lua_name": "lurek.spine.newSkeletonAnimation",
         "kind": "function",
         "file": "src/lua_api/spine_api.rs",
-        "line": 958
+        "line": 1070
       },
       {
         "module": "spine",
         "lua_name": "lurek.spine.animationFromJson",
         "kind": "function",
         "file": "src/lua_api/spine_api.rs",
-        "line": 977
+        "line": 1089
       },
       {
         "module": "spine",
         "lua_name": "lurek.spine.skeletonFromJson",
         "kind": "function",
         "file": "src/lua_api/spine_api.rs",
-        "line": 994
+        "line": 1106
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:setPosition",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 37
+        "line": 52
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:getPosition",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 45
+        "line": 60
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:setNormalMap",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 51
+        "line": 66
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:clearNormalMap",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 57
+        "line": 72
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:hasNormalMap",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 64
+        "line": 79
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:getNormalMap",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 70
+        "line": 85
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:setNormalIntensity",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 76
+        "line": 91
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:getNormalIntensity",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 83
+        "line": 98
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:type",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 89
+        "line": 104
       },
       {
         "module": "sprite",
         "lua_name": "LSprite:typeOf",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 94
+        "line": 109
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:getFrame",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 115
+        "line": 130
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:getFrameCount",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 127
+        "line": 142
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:getRow",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 138
+        "line": 153
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:getColumn",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 150
+        "line": 165
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:getGroupFrames",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 161
+        "line": 176
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:getGroupNames",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 173
+        "line": 188
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:nameGroup",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 186
+        "line": 201
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:getFrameSize",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 197
+        "line": 212
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:getGridSize",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 205
+        "line": 220
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteSheet:toFrames",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 228
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteSheet:toAnimationClip",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 248
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:drawToImage",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 214
+        "line": 296
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:type",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 221
+        "line": 303
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteSheet:typeOf",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 226
+        "line": 308
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAtlas:getEntry",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 249
+        "line": 331
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAtlas:getByIndex",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 282
+        "line": 364
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAtlas:entryCount",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 306
+        "line": 388
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAtlas:entryNames",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 310
+        "line": 392
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAtlas:getFlipped",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 332
+        "line": 414
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAtlas:type",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 365
+        "line": 447
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAtlas:typeOf",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 370
+        "line": 452
       },
       {
         "module": "sprite",
-        "lua_name": "LAtlasPacker:pack",
+        "lua_name": "LSpriteAutoTileSheet:getLayout",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 388
+        "line": 467
       },
       {
         "module": "sprite",
-        "lua_name": "LAtlasPacker:setNineSlice",
+        "lua_name": "LSpriteAutoTileSheet:getDefaultMode",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 399
+        "line": 473
       },
       {
         "module": "sprite",
-        "lua_name": "LAtlasPacker:getRegion",
+        "lua_name": "LSpriteAutoTileSheet:getTileCount",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 423
+        "line": 479
       },
       {
         "module": "sprite",
-        "lua_name": "LAtlasPacker:regionCount",
+        "lua_name": "LSpriteAutoTileSheet:getQuad",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 450
+        "line": 486
       },
       {
         "module": "sprite",
-        "lua_name": "LAtlasPacker:getDimensions",
-        "kind": "method",
-        "file": "src/lua_api/sprite_api.rs",
-        "line": 457
-      },
-      {
-        "module": "sprite",
-        "lua_name": "LAtlasPacker:clear",
-        "kind": "method",
-        "file": "src/lua_api/sprite_api.rs",
-        "line": 462
-      },
-      {
-        "module": "sprite",
-        "lua_name": "LAtlasPacker:type",
-        "kind": "method",
-        "file": "src/lua_api/sprite_api.rs",
-        "line": 469
-      },
-      {
-        "module": "sprite",
-        "lua_name": "LAtlasPacker:typeOf",
-        "kind": "method",
-        "file": "src/lua_api/sprite_api.rs",
-        "line": 474
-      },
-      {
-        "module": "sprite",
-        "lua_name": "LSpriteAnimator:play",
+        "lua_name": "LSpriteAutoTileSheet:getBitmaskForTile",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
         "line": 494
       },
       {
         "module": "sprite",
-        "lua_name": "LSpriteAnimator:pause",
+        "lua_name": "LSpriteAutoTileSheet:getTileForBitmask",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 504
+        "line": 501
       },
       {
         "module": "sprite",
-        "lua_name": "LSpriteAnimator:resume",
+        "lua_name": "LSpriteAutoTileSheet:toFrames",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 511
+        "line": 507
       },
       {
         "module": "sprite",
-        "lua_name": "LSpriteAnimator:stop",
+        "lua_name": "LSpriteAutoTileSheet:type",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 518
+        "line": 517
       },
       {
         "module": "sprite",
-        "lua_name": "LSpriteAnimator:isPlaying",
+        "lua_name": "LSpriteAutoTileSheet:typeOf",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 526
+        "line": 522
       },
       {
         "module": "sprite",
-        "lua_name": "LSpriteAnimator:currentClip",
+        "lua_name": "LAtlasPacker:pack",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 531
+        "line": 540
       },
       {
         "module": "sprite",
-        "lua_name": "LSpriteAnimator:currentFrame",
+        "lua_name": "LAtlasPacker:setNineSlice",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 539
+        "line": 551
       },
       {
         "module": "sprite",
-        "lua_name": "LSpriteAnimator:update",
+        "lua_name": "LAtlasPacker:getRegion",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 544
+        "line": 575
       },
       {
         "module": "sprite",
-        "lua_name": "LSpriteAnimator:onFrame",
+        "lua_name": "LAtlasPacker:regionCount",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 584
+        "line": 602
       },
       {
         "module": "sprite",
-        "lua_name": "LSpriteAnimator:onLoop",
-        "kind": "method",
-        "file": "src/lua_api/sprite_api.rs",
-        "line": 592
-      },
-      {
-        "module": "sprite",
-        "lua_name": "LSpriteAnimator:onEnd",
-        "kind": "method",
-        "file": "src/lua_api/sprite_api.rs",
-        "line": 600
-      },
-      {
-        "module": "sprite",
-        "lua_name": "LSpriteAnimator:addClip",
+        "lua_name": "LAtlasPacker:getDimensions",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
         "line": 609
       },
       {
         "module": "sprite",
+        "lua_name": "LAtlasPacker:clear",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 614
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LAtlasPacker:type",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 621
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LAtlasPacker:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 626
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:play",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 646
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:pause",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 656
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:resume",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 663
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:stop",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 670
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:isPlaying",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 678
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:currentClip",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 683
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:currentFrame",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 691
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:update",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 696
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:onFrame",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 736
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:onLoop",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 744
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:onEnd",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 752
+      },
+      {
+        "module": "sprite",
+        "lua_name": "LSpriteAnimator:addClip",
+        "kind": "method",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 761
+      },
+      {
+        "module": "sprite",
         "lua_name": "LSpriteAnimator:frameDuration",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 618
+        "line": 770
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAnimator:clipDuration",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 625
+        "line": 777
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAnimator:type",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 630
+        "line": 782
       },
       {
         "module": "sprite",
         "lua_name": "LSpriteAnimator:typeOf",
         "kind": "method",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 636
+        "line": 788
       },
       {
         "module": "sprite",
         "lua_name": "lurek.sprite.newSprite",
         "kind": "function",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 652
+        "line": 804
       },
       {
         "module": "sprite",
         "lua_name": "lurek.sprite.newAnimator",
         "kind": "function",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 665
+        "line": 817
       },
       {
         "module": "sprite",
         "lua_name": "lurek.sprite.newSheet",
         "kind": "function",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 692
+        "line": 844
+      },
+      {
+        "module": "sprite",
+        "lua_name": "lurek.sprite.newSheetFromImage",
+        "kind": "function",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 861
       },
       {
         "module": "sprite",
         "lua_name": "lurek.sprite.newRPGMakerSheet",
         "kind": "function",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 709
+        "line": 909
       },
       {
         "module": "sprite",
         "lua_name": "lurek.sprite.parseAtlas",
         "kind": "function",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 723
+        "line": 923
+      },
+      {
+        "module": "sprite",
+        "lua_name": "lurek.sprite.newAtlasFromImage",
+        "kind": "function",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 940
+      },
+      {
+        "module": "sprite",
+        "lua_name": "lurek.sprite.newAutoTileSheet",
+        "kind": "function",
+        "file": "src/lua_api/sprite_api.rs",
+        "line": 958
       },
       {
         "module": "sprite",
         "lua_name": "lurek.sprite.newAtlasSheet",
         "kind": "function",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 741
+        "line": 992
       },
       {
         "module": "sprite",
         "lua_name": "lurek.sprite.newAtlasPacker",
         "kind": "function",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 758
+        "line": 1009
       },
       {
         "module": "sprite",
         "lua_name": "lurek.sprite.newNineSlice",
         "kind": "function",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 776
+        "line": 1027
       },
       {
         "module": "sprite",
         "lua_name": "lurek.sprite.parseAsepriteAtlas",
         "kind": "function",
         "file": "src/lua_api/sprite_api.rs",
-        "line": 808
+        "line": 1059
       },
       {
         "module": "svg",
@@ -80649,38 +81104,52 @@
       },
       {
         "module": "tileset",
+        "lua_name": "LTileSet:setTerrainProfile",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1310
+      },
+      {
+        "module": "tileset",
+        "lua_name": "LTileSet:getTerrainProfile",
+        "kind": "method",
+        "file": "src/lua_api/tileset_api.rs",
+        "line": 1352
+      },
+      {
+        "module": "tileset",
         "lua_name": "LTileSet:type",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1309
+        "line": 1369
       },
       {
         "module": "tileset",
         "lua_name": "LTileSet:typeOf",
         "kind": "method",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1313
+        "line": 1373
       },
       {
         "module": "tileset",
         "lua_name": "lurek.tileset.newTileSet",
         "kind": "function",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1330
+        "line": 1390
       },
       {
         "module": "tileset",
         "lua_name": "lurek.tileset.newCatalog",
         "kind": "function",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1360
+        "line": 1420
       },
       {
         "module": "tileset",
         "lua_name": "lurek.tileset.fromProvider",
         "kind": "function",
         "file": "src/lua_api/tileset_api.rs",
-        "line": 1382
+        "line": 1442
       },
       {
         "module": "timer",

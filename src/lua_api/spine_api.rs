@@ -1,12 +1,15 @@
 //! Registers the `lurek.spine` Lua API for Spine animation userdata, bone options, and validated playback.
 
 use super::physics_api::{lua_body_from_body, LuaPhysicsShape, LuaWorld};
+use super::sprite_api::LuaSpriteAtlas;
 use super::SharedState;
 use crate::image::ImageData;
 use crate::physics::{AlphaShapeOptions, Body, BodyType, Shape};
 use crate::spine::ik::IKConstraint;
 use crate::spine::timeline::{BoneProperty, EasingType, SkeletonAnimation};
-use crate::spine::{skeleton_from_json_str, BoneParams, Skeleton};
+use crate::spine::{
+    skeleton_from_json_str, AttachmentSource, AttachmentSourceKind, BoneParams, Skeleton,
+};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -185,6 +188,64 @@ fn alpha_options_for_spine(
     Ok(options)
 }
 
+fn attachment_source_from_table(api: &str, table: LuaTable) -> LuaResult<AttachmentSource> {
+    let kind_str: String = table.get("kind")?;
+    let kind = AttachmentSourceKind::parse(&kind_str).ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "{}: unknown attachment source kind '{}'",
+            api, kind_str
+        ))
+    })?;
+    let w = table
+        .get::<_, Option<f32>>("w")?
+        .or_else(|| table.get::<_, Option<f32>>("width").ok().flatten())
+        .unwrap_or(0.0);
+    let h = table
+        .get::<_, Option<f32>>("h")?
+        .or_else(|| table.get::<_, Option<f32>>("height").ok().flatten())
+        .unwrap_or(0.0);
+    Ok(AttachmentSource {
+        kind,
+        name: table.get::<_, Option<String>>("name")?,
+        x: table.get::<_, Option<f32>>("x")?.unwrap_or(0.0),
+        y: table.get::<_, Option<f32>>("y")?.unwrap_or(0.0),
+        w,
+        h,
+        texture_w: table
+            .get::<_, Option<f32>>("textureWidth")?
+            .or_else(|| table.get::<_, Option<f32>>("texW").ok().flatten())
+            .unwrap_or(w),
+        texture_h: table
+            .get::<_, Option<f32>>("textureHeight")?
+            .or_else(|| table.get::<_, Option<f32>>("texH").ok().flatten())
+            .unwrap_or(h),
+        texture_id: table
+            .get::<_, Option<u64>>("textureId")?
+            .or_else(|| table.get::<_, Option<u64>>("texture_id").ok().flatten()),
+    })
+}
+
+fn attachment_source_to_table<'lua>(
+    lua: &'lua Lua,
+    source: &AttachmentSource,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("kind", source.kind.as_str())?;
+    if let Some(name) = &source.name {
+        table.set("name", name.as_str())?;
+    }
+    table.set("x", source.x)?;
+    table.set("y", source.y)?;
+    table.set("w", source.w)?;
+    table.set("h", source.h)?;
+    table.set("textureWidth", source.texture_w)?;
+    table.set("textureHeight", source.texture_h)?;
+    if let Some(texture_id) = source.texture_id {
+        table.set("textureId", texture_id)?;
+    }
+    Ok(table)
+}
+
 struct SpinePhysicsLuaParser;
 
 impl SpinePhysicsLuaParser {
@@ -356,6 +417,57 @@ impl LuaUserData for LuaSkeleton {
                 Ok(this.inner.add_slot_full(&name, bone_idx, attachment))
             },
         );
+        // -- bindAtlas --
+        /// Binds all atlas entries as sprite-region attachment sources by name.
+        /// @param | atlas | LSpriteAtlas | Sprite atlas containing named attachment regions.
+        /// @return | integer | Number of bound sources.
+        methods.add_method_mut("bindAtlas", |_, this, atlas_ud: LuaAnyUserData| {
+            let atlas = atlas_ud.borrow::<LuaSpriteAtlas>()?;
+            let mut count = 0usize;
+            for name in atlas.inner.entry_names() {
+                if let Some(entry) = atlas.inner.get_entry(name) {
+                    this.inner.set_attachment_source(
+                        name,
+                        AttachmentSource {
+                            kind: AttachmentSourceKind::SpriteRegion,
+                            name: Some(entry.name.clone()),
+                            x: entry.x as f32,
+                            y: entry.y as f32,
+                            w: entry.w as f32,
+                            h: entry.h as f32,
+                            texture_w: (entry.x + entry.w) as f32,
+                            texture_h: (entry.y + entry.h) as f32,
+                            texture_id: None,
+                        },
+                    );
+                    count += 1;
+                }
+            }
+            Ok(count)
+        });
+        // -- setAttachmentSource --
+        /// Assigns a neutral visual source to a slot name, attachment name, or `slot:attachment` key.
+        /// @param | slot | string | Slot/source key.
+        /// @param | source | table | `{kind, name?, x, y, w, h, textureId?, textureWidth?, textureHeight?}`.
+        methods.add_method_mut(
+            "setAttachmentSource",
+            |_, this, (slot, source): (String, LuaTable)| {
+                let source = attachment_source_from_table("LSkeleton:setAttachmentSource", source)?;
+                this.inner.set_attachment_source(&slot, source);
+                Ok(())
+            },
+        );
+        // -- getAttachmentSource --
+        /// Returns the neutral visual source assigned to a slot/source key.
+        /// @param | slot | string | Slot/source key.
+        /// @return | table|nil | Attachment source DTO or nil.
+        methods.add_method("getAttachmentSource", |lua, this, slot: String| match this
+            .inner
+            .get_attachment_source_by_key(&slot)
+        {
+            Some(source) => Ok(LuaValue::Table(attachment_source_to_table(lua, source)?)),
+            None => Ok(LuaValue::Nil),
+        });
         // -- findBone --
         /// Searches for a bone by name and returns its zero-based index, or nil if not found.
         /// @param | name | string | Name of the bone to find.
