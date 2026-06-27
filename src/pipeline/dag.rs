@@ -85,6 +85,7 @@ impl Pipeline {
         }
         for step in self.steps.values_mut() {
             step.deps.retain(|d| d != name);
+            step.output_links.retain(|link| link.target != name);
         }
         true
     }
@@ -123,6 +124,14 @@ impl Pipeline {
                     errors.push(format!(
                         "step '{}' depends on '{}' which does not exist",
                         step.name, dep
+                    ));
+                }
+            }
+            for link in &step.output_links {
+                if !self.steps.contains_key(link.target.as_str()) {
+                    errors.push(format!(
+                        "step '{}' output {} targets '{}' which does not exist",
+                        step.name, link.output_slot, link.target
                     ));
                 }
             }
@@ -329,9 +338,19 @@ impl Pipeline {
                                 .map(|s| s.deps.join(","))
                                 .unwrap_or_default();
                             if deps.is_empty() {
-                                format!("[{}]", n)
+                                let outputs = self.output_summary(n);
+                                if outputs.is_empty() {
+                                    format!("[{}]", n)
+                                } else {
+                                    format!("[{} => {}]", n, outputs)
+                                }
                             } else {
-                                format!("[{} <-- {}]", n, deps)
+                                let outputs = self.output_summary(n);
+                                if outputs.is_empty() {
+                                    format!("[{} <-- {}]", n, deps)
+                                } else {
+                                    format!("[{} <-- {} => {}]", n, deps, outputs)
+                                }
                             }
                         })
                         .collect();
@@ -377,10 +396,24 @@ impl Pipeline {
             if sub_entry_points.contains(&step.name) {
                 step.deps.extend(outer_deps.clone());
             }
+            for link in &mut step.output_links {
+                link.target = format!("{}/{}", alias, link.target);
+            }
             step.name = prefixed_name;
             self.add_step(step)?;
         }
         Ok(())
+    }
+
+    /// Return a compact output-link summary for ASCII diagrams.
+    fn output_summary(&self, name: &str) -> String {
+        self.steps.get(name).map_or_else(String::new, |step| {
+            step.output_links
+                .iter()
+                .map(|link| format!("out{}:{}", link.output_slot, link.target))
+                .collect::<Vec<_>>()
+                .join(",")
+        })
     }
 
     /// Collect all step names that directly depend on `root`; used for reverse-traversal queries.

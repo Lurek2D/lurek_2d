@@ -1181,6 +1181,41 @@ describe("compound widgets and helpers", function()
         expect_not_nil(lurek.ui.newLayout("vertical"))
     end)
 
+    -- @covers lurek.ui.newVBoxContainer
+    it("newVBoxContainer creates a vertical layout container", function()
+        local layout = lurek.ui.newVBoxContainer()
+        expect_equal("vertical", layout:getDirection())
+    end)
+
+    -- @covers lurek.ui.newHBoxContainer
+    it("newHBoxContainer creates a horizontal layout container", function()
+        local layout = lurek.ui.newHBoxContainer()
+        expect_equal("horizontal", layout:getDirection())
+    end)
+
+    -- @covers lurek.ui.newGridContainer
+    it("newGridContainer creates a grid layout with columns", function()
+        local layout = lurek.ui.newGridContainer(3)
+        expect_equal("grid", layout:getDirection())
+    end)
+
+    -- @covers lurek.ui.newMarginContainer
+    it("newMarginContainer applies padding shorthand", function()
+        local layout = lurek.ui.newMarginContainer(4, 8)
+        local top, right, bottom, left = layout:getPadding()
+        expect_equal(4, top)
+        expect_equal(8, right)
+        expect_equal(4, bottom)
+        expect_equal(8, left)
+    end)
+
+    -- @covers lurek.ui.newCenterContainer
+    it("newCenterContainer centers children by default", function()
+        local layout = lurek.ui.newCenterContainer()
+        expect_equal("center", layout:getAlign())
+        expect_equal("center", layout:getJustify())
+    end)
+
     -- @covers LLayout:setDirection
     it("layout setDirection updates direction", function()
         local layout = lurek.ui.newLayout("vertical")
@@ -1308,6 +1343,15 @@ describe("compound widgets and helpers", function()
     -- @covers lurek.ui.newScrollPanel
     it("newScrollPanel creates a scroll panel", function()
         expect_not_nil(lurek.ui.newScrollPanel())
+    end)
+
+    -- @covers lurek.ui.newScrollContainer
+    it("newScrollContainer creates a scroll panel alias", function()
+        local panel = lurek.ui.newScrollContainer()
+        panel:setContentSize(300, 200)
+        local width, height = panel:getContentSize()
+        expect_equal(300, width)
+        expect_equal(200, height)
     end)
 
     -- @covers LScrollPanel:setContentSize
@@ -3010,6 +3054,122 @@ describe("ui retained widget owner coverage", function()
         expect_no_error(function()
             window:setOnClose(function() end)
         end)
+    end)
+
+    -- @covers lurek.ui.newSplitContainer
+    it("newSplitContainer creates a split panel alias", function()
+        local split = lurek.ui.newSplitContainer("vertical")
+        expect_equal("vertical", split:getOrientation())
+    end)
+
+    -- @covers lurek.ui.newStackContainer
+    it("newStackContainer creates a layered page container", function()
+        local stack = lurek.ui.newStackContainer()
+        stack:addChild(lurek.ui.newPanel())
+        expect_equal(1, stack:getChildCount())
+    end)
+
+    -- @covers LStackContainer:setActiveIndex
+    it("stack container setActiveIndex selects a child page", function()
+        local stack = lurek.ui.newStackContainer()
+        local first = lurek.ui.newPanel()
+        local second = lurek.ui.newPanel()
+        stack:addChild(first)
+        stack:addChild(second)
+        expect_true(stack:setActiveIndex(2))
+        expect_equal(2, stack:getActiveIndex())
+    end)
+
+    -- @covers LStackContainer:getActiveIndex
+    it("stack container getActiveIndex returns the active page", function()
+        local stack = lurek.ui.newStackContainer()
+        stack:addChild(lurek.ui.newPanel())
+        expect_equal(1, stack:getActiveIndex())
+    end)
+
+    -- @covers LStackContainer:getActiveChild
+    it("stack container getActiveChild returns the active widget index", function()
+        local stack = lurek.ui.newStackContainer()
+        local child = lurek.ui.newPanel()
+        stack:addChild(child)
+        expect_equal(child._idx, stack:getActiveChild())
+    end)
+
+    -- @covers LStackContainer:addTab
+    it("stack container addTab appends a page label", function()
+        local stack = lurek.ui.newStackContainer()
+        stack:addTab("Inventory")
+        expect_equal(1, stack:getTabCount())
+    end)
+
+    -- @covers LStackContainer:getTab
+    it("stack container getTab returns a page label", function()
+        local stack = lurek.ui.newStackContainer()
+        stack:addTab("Map")
+        expect_equal("Map", stack:getTab(1))
+    end)
+
+    -- @covers LStackContainer:getTabCount
+    it("stack container getTabCount returns the page label count", function()
+        local stack = lurek.ui.newStackContainer()
+        stack:addTab("Stats")
+        stack:addTab("Equipment")
+        expect_equal(2, stack:getTabCount())
+    end)
+
+    -- @covers lurek.ui.newTabContainer
+    it("newTabContainer creates a tabbed page container", function()
+        local tabs = lurek.ui.newTabContainer()
+        expect_not_nil(tabs)
+        expect_equal(0, tabs:getTabCount())
+    end)
+
+    -- @covers LTabContainer:setActiveIndex
+    it("tab container setActiveIndex selects a child page", function()
+        local tabs = lurek.ui.newTabContainer()
+        local first = lurek.ui.newPanel()
+        local second = lurek.ui.newPanel()
+        tabs:addChild(first)
+        tabs:addChild(second)
+        expect_true(tabs:setActiveIndex(2))
+        expect_equal(2, tabs:getActiveIndex())
+    end)
+
+    -- @covers LTabContainer:getActiveIndex
+    it("tab container getActiveIndex returns the active page", function()
+        local tabs = lurek.ui.newTabContainer()
+        tabs:addChild(lurek.ui.newPanel())
+        expect_equal(1, tabs:getActiveIndex())
+    end)
+
+    -- @covers LTabContainer:getActiveChild
+    it("tab container getActiveChild returns the active widget index", function()
+        local tabs = lurek.ui.newTabContainer()
+        local child = lurek.ui.newPanel()
+        tabs:addChild(child)
+        expect_equal(child._idx, tabs:getActiveChild())
+    end)
+
+    -- @covers LTabContainer:addTab
+    it("tab container addTab appends a label", function()
+        local tabs = lurek.ui.newTabContainer()
+        tabs:addTab("Video")
+        expect_equal(1, tabs:getTabCount())
+    end)
+
+    -- @covers LTabContainer:getTab
+    it("tab container getTab returns a label", function()
+        local tabs = lurek.ui.newTabContainer()
+        tabs:addTab("Audio")
+        expect_equal("Audio", tabs:getTab(1))
+    end)
+
+    -- @covers LTabContainer:getTabCount
+    it("tab container getTabCount returns label count", function()
+        local tabs = lurek.ui.newTabContainer()
+        tabs:addTab("Video")
+        tabs:addTab("Controls")
+        expect_equal(2, tabs:getTabCount())
     end)
 
     -- @covers LSplitPanel:getOrientation

@@ -119,6 +119,12 @@ pub struct WidgetDef {
     pub columns: Option<usize>,
     /// Whether layout children wrap when they exceed available space.
     pub wrap: Option<bool>,
+    /// Active page index for stack and tab containers; one-based to match Lua.
+    pub active_index: Option<usize>,
+    /// Optional tab labels for tab container definitions.
+    pub tabs: Option<Vec<String>>,
+    /// Height reserved for a tab container tab strip.
+    pub tab_bar_height: Option<f32>,
     /// Maximum number of visible rows in combo-box dropdowns before scrolling.
     pub max_visible_items: Option<usize>,
     /// Orientation string (`"horizontal"` / `"vertical"`) for separators, scroll bars, etc.
@@ -183,6 +189,18 @@ fn subtree_children(ctx: &GuiContext, idx: usize) -> Vec<usize> {
             }
         }
         if let Some(child_idx) = dialog.footer_idx {
+            if !out.contains(&child_idx) {
+                out.push(child_idx);
+            }
+        }
+    }
+    if let Some(WidgetKind::SplitPanel(split)) = ctx.widgets.get(idx) {
+        if let Some(child_idx) = split.first_child {
+            if !out.contains(&child_idx) {
+                out.push(child_idx);
+            }
+        }
+        if let Some(child_idx) = split.second_child {
             if !out.contains(&child_idx) {
                 out.push(child_idx);
             }
@@ -287,6 +305,40 @@ fn load_layout_def_inner(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize,
                         ))
                     }
                 },
+                Some("first") | Some("left") | Some("top") => match ctx.widgets.get_mut(idx) {
+                    Some(WidgetKind::SplitPanel(split)) => {
+                        if split.first_child.replace(child_idx).is_some() {
+                            return Err(format!(
+                                "split panel \"{}\" defines more than one first slot child",
+                                def.id.as_deref().unwrap_or(&def.widget_type)
+                            ));
+                        }
+                    }
+                    _ => {
+                        return Err(format!(
+                            "slot=\"{}\" is only supported for split panel children (parent: {})",
+                            child_def.slot.as_deref().unwrap_or_default(),
+                            def.widget_type
+                        ))
+                    }
+                },
+                Some("second") | Some("right") | Some("bottom") => match ctx.widgets.get_mut(idx) {
+                    Some(WidgetKind::SplitPanel(split)) => {
+                        if split.second_child.replace(child_idx).is_some() {
+                            return Err(format!(
+                                "split panel \"{}\" defines more than one second slot child",
+                                def.id.as_deref().unwrap_or(&def.widget_type)
+                            ));
+                        }
+                    }
+                    _ => {
+                        return Err(format!(
+                            "slot=\"{}\" is only supported for split panel children (parent: {})",
+                            child_def.slot.as_deref().unwrap_or_default(),
+                            def.widget_type
+                        ))
+                    }
+                },
                 Some(other) => {
                     return Err(format!(
                         "unsupported slot value \"{other}\" for child of {}",
@@ -294,7 +346,24 @@ fn load_layout_def_inner(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize,
                     ))
                 }
                 None => {
-                    if !ctx.add_child(idx, child_idx) {
+                    let attached_to_split_slot = match ctx.widgets.get_mut(idx) {
+                        Some(WidgetKind::SplitPanel(split)) if split.first_child.is_none() => {
+                            split.first_child = Some(child_idx);
+                            true
+                        }
+                        Some(WidgetKind::SplitPanel(split)) if split.second_child.is_none() => {
+                            split.second_child = Some(child_idx);
+                            true
+                        }
+                        Some(WidgetKind::SplitPanel(_)) => {
+                            return Err(format!(
+                                "split panel \"{}\" has more than two child widgets",
+                                def.id.as_deref().unwrap_or(&def.widget_type)
+                            ));
+                        }
+                        _ => false,
+                    };
+                    if !attached_to_split_slot && !ctx.add_child(idx, child_idx) {
                         return Err(format!(
                             "failed to attach child \"{}\" to parent \"{}\"",
                             child_def.id.as_deref().unwrap_or(&child_def.widget_type),
@@ -383,15 +452,27 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
         "combobox" => ctx.add_combo_box(),
         "listbox" | "list" => ctx.add_list_box(),
         "panel" => ctx.add_panel(),
-        "layout" => {
+        "layout" | "vboxcontainer" | "vbox" | "hboxcontainer" | "hbox" | "gridcontainer"
+        | "grid" | "margincontainer" | "centercontainer" => {
             let dir = def
                 .direction
                 .as_deref()
                 .and_then(crate::ui::LayoutDirection::parse_str)
-                .unwrap_or(crate::ui::LayoutDirection::Vertical);
-            ctx.add_layout(dir)
+                .unwrap_or(match widget_type.as_str() {
+                    "hboxcontainer" | "hbox" => crate::ui::LayoutDirection::Horizontal,
+                    "gridcontainer" | "grid" => crate::ui::LayoutDirection::Grid,
+                    _ => crate::ui::LayoutDirection::Vertical,
+                });
+            let idx = ctx.add_layout(dir);
+            if let Some(WidgetKind::Layout(layout)) = ctx.widgets.get_mut(idx) {
+                if matches!(widget_type.as_str(), "centercontainer") {
+                    layout.align = "center".to_string();
+                    layout.justify = "center".to_string();
+                }
+            }
+            idx
         }
-        "scrollpanel" => ctx.add_scroll_panel(),
+        "scrollpanel" | "scrollcontainer" => ctx.add_scroll_panel(),
         "ninepatch" => ctx.add_nine_patch(),
         "tabbar" => ctx.add_tab_bar(),
         "separator" => {
@@ -426,11 +507,13 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
             ctx.add_scroll_bar(vertical)
         }
         "guiwindow" | "window" => ctx.add_gui_window(def.text.clone().unwrap_or_default()),
-        "splitpanel" => ctx.add_split_panel(
+        "splitpanel" | "splitcontainer" => ctx.add_split_panel(
             def.orientation
                 .clone()
                 .unwrap_or_else(|| "horizontal".to_string()),
         ),
+        "stackcontainer" | "stack" => ctx.add_stack_container(),
+        "tabcontainer" => ctx.add_tab_container(),
         "dockpanel" => ctx.add_dock_panel(),
         "toolbar" => ctx.add_toolbar(
             def.orientation
@@ -624,6 +707,19 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
             }
             if let Some(wrap) = def.wrap {
                 lay.wrap = wrap;
+            }
+        }
+        Some(WidgetKind::StackContainer(stack)) | Some(WidgetKind::TabContainer(stack)) => {
+            if let Some(active_index) = def.active_index {
+                if active_index >= 1 {
+                    stack.active_index = active_index - 1;
+                }
+            }
+            if let Some(tabs) = &def.tabs {
+                stack.tabs = tabs.clone();
+            }
+            if let Some(value) = def.tab_bar_height {
+                stack.tab_bar_height = ensure_finite_f32("tab_bar_height", value)?.max(0.0);
             }
         }
         Some(WidgetKind::GUIWindow(window)) => {

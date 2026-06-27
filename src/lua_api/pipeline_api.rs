@@ -2,7 +2,9 @@
 
 use super::SharedState;
 use crate::log_msg;
-use crate::pipeline::{ErrorMode, Pipeline, PipelineScheduler, PipelineStep, StepStatus};
+use crate::pipeline::{
+    ErrorMode, Pipeline, PipelineScheduler, PipelineStep, StepStatus, MAX_OUTPUT_SLOTS,
+};
 use crate::runtime::log_messages::LA02_PIPELINE_CALLBACK_FAIL;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -17,6 +19,8 @@ pub struct LuaStep {
     pub(crate) callback_key: Rc<RefCell<Option<LuaRegistryKey>>>,
     pub(crate) condition_key: Rc<RefCell<Option<LuaRegistryKey>>>,
     pub(crate) on_error_key: Rc<RefCell<Option<LuaRegistryKey>>>,
+    pub(crate) output_condition_keys: Rc<RefCell<HashMap<String, LuaRegistryKey>>>,
+    pub(crate) state_key: Rc<RefCell<Option<LuaRegistryKey>>>,
 }
 impl LuaStep {
     /// Wraps an existing pipeline step in a Lua-visible userdata handle.
@@ -26,6 +30,8 @@ impl LuaStep {
             callback_key: Rc::new(RefCell::new(None)),
             condition_key: Rc::new(RefCell::new(None)),
             on_error_key: Rc::new(RefCell::new(None)),
+            output_condition_keys: Rc::new(RefCell::new(HashMap::new())),
+            state_key: Rc::new(RefCell::new(None)),
         }
     }
     /// Execute sync. This function is part of the public API.
@@ -57,15 +63,17 @@ impl LuaStep {
         for attempt in 0..max_attempts {
             self.inner.borrow_mut().attempt = attempt + 1;
             self.inner.borrow_mut().status = StepStatus::Running;
-            match cb.call::<_, LuaValue<'_>>(ctx.clone()) {
+            let input = pipeline_step_input_table(lua, ctx, &name)?;
+            match cb.call::<_, LuaValue<'_>>((ctx.clone(), input)) {
                 Ok(result) => {
                     let results: LuaTable = match ctx.get("results") {
                         Ok(t) => t,
                         Err(_) => lua.create_table()?,
                     };
-                    results.set(name.clone(), result)?;
+                    results.set(name.clone(), result.clone())?;
                     /// Performs the 'results' operation.
                     ctx.set("results", results)?;
+                    store_pipeline_step_outputs(lua, ctx, &name, result)?;
                     self.inner.borrow_mut().status = StepStatus::Completed;
                     self.inner.borrow_mut().duration = started.elapsed().as_secs_f32();
                     self.inner.borrow_mut().error_msg = None;
@@ -115,6 +123,232 @@ impl LuaStep {
             .metadata
             .insert("__pipeline_async".to_string(), enabled.to_string());
     }
+}
+
+fn pipeline_namespace<'lua>(lua: &'lua Lua, ctx: &LuaTable<'lua>) -> LuaResult<LuaTable<'lua>> {
+    match ctx.get::<_, LuaTable>("pipeline") {
+        Ok(table) => Ok(table),
+        Err(_) => {
+            let table = lua.create_table()?;
+            table.set("inputs", lua.create_table()?)?;
+            table.set("outputs", lua.create_table()?)?;
+            table.set("signals", lua.create_table()?)?;
+            ctx.set("pipeline", table.clone())?;
+            Ok(table)
+        }
+    }
+}
+
+fn pipeline_child_table<'lua>(
+    lua: &'lua Lua,
+    parent: &LuaTable<'lua>,
+    key: &str,
+) -> LuaResult<LuaTable<'lua>> {
+    match parent.get::<_, LuaTable>(key) {
+        Ok(table) => Ok(table),
+        Err(_) => {
+            let table = lua.create_table()?;
+            parent.set(key, table.clone())?;
+            Ok(table)
+        }
+    }
+}
+
+fn pipeline_step_input_table<'lua>(
+    lua: &'lua Lua,
+    ctx: &LuaTable<'lua>,
+    step_name: &str,
+) -> LuaResult<LuaTable<'lua>> {
+    let ns = pipeline_namespace(lua, ctx)?;
+    let inputs = pipeline_child_table(lua, &ns, "inputs")?;
+    match inputs.get::<_, LuaTable>(step_name) {
+        Ok(table) => Ok(table),
+        Err(_) => {
+            let table = lua.create_table()?;
+            inputs.set(step_name, table.clone())?;
+            Ok(table)
+        }
+    }
+}
+
+fn store_pipeline_step_outputs<'lua>(
+    lua: &'lua Lua,
+    ctx: &LuaTable<'lua>,
+    step_name: &str,
+    result: LuaValue<'lua>,
+) -> LuaResult<()> {
+    let ns = pipeline_namespace(lua, ctx)?;
+    let outputs = pipeline_child_table(lua, &ns, "outputs")?;
+    let step_outputs = lua.create_table()?;
+    match result {
+        LuaValue::Table(table) => {
+            let mut copied_any = false;
+            for slot in 1..=MAX_OUTPUT_SLOTS {
+                if let Ok(value) = table.get::<_, LuaValue>(format!("output{}", slot)) {
+                    if !matches!(value, LuaValue::Nil) {
+                        step_outputs.set(slot, value)?;
+                        copied_any = true;
+                    }
+                } else if let Ok(value) = table.get::<_, LuaValue>(slot as i64) {
+                    if !matches!(value, LuaValue::Nil) {
+                        step_outputs.set(slot, value)?;
+                        copied_any = true;
+                    }
+                }
+            }
+            if !copied_any {
+                step_outputs.set(1, table)?;
+            }
+        }
+        value => {
+            step_outputs.set(1, value)?;
+        }
+    }
+    outputs.set(step_name, step_outputs)?;
+    Ok(())
+}
+
+fn sync_output_dependencies(this: &LuaPipeline) {
+    for (name, wrapper) in this.step_wrappers.borrow().iter() {
+        if let Some(pipeline_step) = this.inner.borrow_mut().get_step_mut(name) {
+            let wrapper_inner = wrapper.inner.borrow();
+            pipeline_step.deps = wrapper_inner.deps.clone();
+            pipeline_step.output_links = wrapper_inner.output_links.clone();
+        }
+    }
+    let links: Vec<(String, String)> = this
+        .step_wrappers
+        .borrow()
+        .iter()
+        .flat_map(|(source_name, wrapper)| {
+            wrapper
+                .inner
+                .borrow()
+                .output_links
+                .iter()
+                .filter(|link| link.signal)
+                .map(|link| (source_name.clone(), link.target.clone()))
+                .collect::<Vec<_>>()
+        })
+        .collect();
+    for (source_name, target_name) in links {
+        if let Some(target) = this.step_wrappers.borrow().get(&target_name).cloned() {
+            let mut target_inner = target.inner.borrow_mut();
+            if !target_inner.deps.iter().any(|dep| dep == &source_name) {
+                target_inner.deps.push(source_name.clone());
+            }
+            if let Some(pipeline_step) = this.inner.borrow_mut().get_step_mut(&target_name) {
+                if !pipeline_step.deps.iter().any(|dep| dep == &source_name) {
+                    pipeline_step.deps.push(source_name);
+                }
+            }
+        }
+    }
+}
+
+fn pipeline_step_has_blocked_signal<'lua>(
+    lua: &'lua Lua,
+    ctx: &LuaTable<'lua>,
+    target_name: &str,
+    wrappers: &HashMap<String, LuaStep>,
+) -> LuaResult<bool> {
+    let ns = pipeline_namespace(lua, ctx)?;
+    let signals = pipeline_child_table(lua, &ns, "signals")?;
+    for (source_name, wrapper) in wrappers {
+        let inner = wrapper.inner.borrow();
+        let mut has_link = false;
+        for link in inner.links_to(target_name) {
+            if link.signal {
+                has_link = true;
+            }
+        }
+        if has_link {
+            let target_signals = match signals.get::<_, LuaTable>(target_name) {
+                Ok(table) => table,
+                Err(_) => return Ok(true),
+            };
+            let signaled = target_signals
+                .get::<_, Option<bool>>(source_name.as_str())?
+                .unwrap_or(false);
+            if !signaled {
+                return Ok(true);
+            }
+        }
+    }
+    Ok(false)
+}
+
+fn route_pipeline_outputs<'lua>(
+    lua: &'lua Lua,
+    this: &LuaPipeline,
+    source_name: &str,
+    ctx: &LuaTable<'lua>,
+    wrapper: &LuaStep,
+) -> LuaResult<()> {
+    if wrapper.inner.borrow().status != StepStatus::Completed {
+        return Ok(());
+    }
+    let links = wrapper.inner.borrow().output_links.clone();
+    if links.is_empty() {
+        return Ok(());
+    }
+    let ns = pipeline_namespace(lua, ctx)?;
+    let outputs = pipeline_child_table(lua, &ns, "outputs")?;
+    let inputs = pipeline_child_table(lua, &ns, "inputs")?;
+    let signals = pipeline_child_table(lua, &ns, "signals")?;
+    let source_outputs: LuaTable = match outputs.get(source_name) {
+        Ok(table) => table,
+        Err(_) => return Ok(()),
+    };
+    for link in links {
+        let payload: LuaValue = source_outputs
+            .get(link.output_slot as i64)
+            .unwrap_or(LuaValue::Nil);
+        let mut allow = true;
+        if let Some(key_name) = link.condition_key.as_deref() {
+            if let Some(cond_key) = wrapper.output_condition_keys.borrow().get(key_name) {
+                let cond: LuaFunction = lua.registry_value(cond_key)?;
+                allow = cond.call::<_, bool>((
+                    ctx.clone(),
+                    payload.clone(),
+                    source_name.to_string(),
+                    link.target.clone(),
+                ))?;
+            }
+        }
+        if !allow {
+            continue;
+        }
+        let target_inputs = match inputs.get::<_, LuaTable>(link.target.as_str()) {
+            Ok(table) => table,
+            Err(_) => {
+                let table = lua.create_table()?;
+                inputs.set(link.target.as_str(), table.clone())?;
+                table
+            }
+        };
+        target_inputs.set(link.target_input as i64, payload)?;
+        if link.signal {
+            let target_signals = match signals.get::<_, LuaTable>(link.target.as_str()) {
+                Ok(table) => table,
+                Err(_) => {
+                    let table = lua.create_table()?;
+                    signals.set(link.target.as_str(), table.clone())?;
+                    table
+                }
+            };
+            target_signals.set(source_name, true)?;
+            fire_pipeline_event(
+                lua,
+                this,
+                "step_signaled",
+                &link.target,
+                StepStatus::Waiting.as_str(),
+                LuaValue::String(lua.create_string(source_name)?),
+            )?;
+        }
+    }
+    Ok(())
 }
 impl LuaUserData for LuaStep {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -258,6 +492,29 @@ impl LuaUserData for LuaStep {
             Ok(this.inner.borrow().metadata.get(&key).cloned())
         });
 
+        // -- setState --
+        /// Stores a Lua table as local state for this step. The table is retained by registry reference.
+        /// @param | state | table? | Local step state table; pass nil to clear.
+        methods.add_method("setState", |lua, this, state: Option<LuaTable>| {
+            *this.state_key.borrow_mut() = match state {
+                Some(table) => Some(lua.create_registry_value(table)?),
+                None => None,
+            };
+            Ok(())
+        });
+
+        // -- getState --
+        /// Returns this step's local state table, creating an empty one when none exists.
+        /// @return | table | Local step state table.
+        methods.add_method("getState", |lua, this, ()| {
+            if let Some(key) = this.state_key.borrow().as_ref() {
+                return lua.registry_value::<LuaTable>(key);
+            }
+            let table = lua.create_table()?;
+            *this.state_key.borrow_mut() = Some(lua.create_registry_value(table.clone())?);
+            Ok(table)
+        });
+
         // -- setTag --
         /// Assigns a tag string to this step for grouping and filtering purposes.
         /// @param | tag | string | A category tag for this step.
@@ -286,6 +543,71 @@ impl LuaUserData for LuaStep {
             };
             this.inner.borrow_mut().deps.push(dep_name);
             Ok(this.clone())
+        });
+
+        // -- connectOutput --
+        /// Connects one output slot (1..5) to a target step input slot (1..5), optionally gated by a Lua predicate.
+        /// @param | outputSlot | integer | Source output slot, clamped to 1..5.
+        /// @param | target | string|LPipelineStep | Target step name or step object.
+        /// @param | inputSlot | integer? | Target input slot, defaults to the output slot.
+        /// @param | condition | function? | Predicate receiving (ctx, payload, sourceName, targetName); false blocks signal and data.
+        /// @param | signal | boolean? | Whether this link triggers target eligibility; defaults to true.
+        /// @return | LPipelineStep | Returns self for method chaining.
+        methods.add_method(
+            "connectOutput",
+            |lua,
+             this,
+             (output_slot, target, input_slot, condition, signal): (
+                u8,
+                LuaValue,
+                Option<u8>,
+                Option<LuaFunction>,
+                Option<bool>,
+            )| {
+                let target_name = match target {
+                    LuaValue::String(s) => s.to_str()?.to_owned(),
+                    LuaValue::UserData(ud) => ud.borrow::<LuaStep>()?.inner.borrow().name.clone(),
+                    _ => {
+                        return Err(LuaError::runtime(
+                            "connectOutput: expected string or PipelineStep target",
+                        ))
+                    }
+                };
+                let output_slot = output_slot.clamp(1, MAX_OUTPUT_SLOTS);
+                let input_slot = input_slot.unwrap_or(output_slot).clamp(1, MAX_OUTPUT_SLOTS);
+                let key = this.inner.borrow_mut().add_output_link(
+                    output_slot,
+                    target_name.clone(),
+                    input_slot,
+                    signal.unwrap_or(true),
+                );
+                this.inner
+                    .borrow_mut()
+                    .deps
+                    .retain(|dep| dep != &target_name);
+                if let Some(cond) = condition {
+                    this.output_condition_keys
+                        .borrow_mut()
+                        .insert(key, lua.create_registry_value(cond)?);
+                }
+                Ok(this.clone())
+            },
+        );
+
+        // -- getOutputLinks --
+        /// Returns configured output links for this step.
+        /// @return | table | Array of link tables with output, target, input, and signal fields.
+        methods.add_method("getOutputLinks", |lua, this, ()| {
+            let links = lua.create_table()?;
+            for (i, link) in this.inner.borrow().output_links.iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("output", link.output_slot)?;
+                entry.set("target", link.target.clone())?;
+                entry.set("input", link.target_input)?;
+                entry.set("signal", link.signal)?;
+                links.set(i + 1, entry)?;
+            }
+            Ok(links)
         });
 
         // -- getDependencies --
@@ -616,7 +938,8 @@ fn execute_async_coroutine_step<'lua>(
         }
     };
     let resumed = if first_resume {
-        thread.resume::<_, LuaValue<'_>>(ctx.clone())
+        let input = pipeline_step_input_table(lua, ctx, step_name)?;
+        thread.resume::<_, LuaValue<'_>>((ctx.clone(), input))
     } else {
         thread.resume::<_, LuaValue<'_>>(())
     };
@@ -636,9 +959,10 @@ fn execute_async_coroutine_step<'lua>(
                 Ok(t) => t,
                 Err(_) => lua.create_table()?,
             };
-            results.set(step_name.to_string(), result)?;
+            results.set(step_name.to_string(), result.clone())?;
             /// Performs the 'results' operation.
             ctx.set("results", results)?;
+            store_pipeline_step_outputs(lua, ctx, step_name, result)?;
             let mut inner = wrapper.inner.borrow_mut();
             inner.status = StepStatus::Completed;
             if let Some(started) = this.started_at.borrow_mut().remove(step_name) {
@@ -715,6 +1039,7 @@ impl LuaUserData for LuaPipeline {
                 .map_err(LuaError::runtime)?;
             let name = step.inner.borrow().name.clone();
             this.step_wrappers.borrow_mut().insert(name, step);
+            sync_output_dependencies(this);
             Ok(this.clone())
         });
 
@@ -782,6 +1107,7 @@ impl LuaUserData for LuaPipeline {
         /// @return | boolean | True if the pipeline is valid.
         /// @return | string[] | Error message strings (empty if valid).
         methods.add_method("validate", |lua, this, ()| {
+            sync_output_dependencies(this);
             let (ok, errs) = this.inner.borrow().validate();
             let t = lua.create_table()?;
             for (i, e) in errs.iter().enumerate() {
@@ -795,6 +1121,7 @@ impl LuaUserData for LuaPipeline {
         /// @return | string[] | Step names in execution order, or nil on error.
         /// @return | string | Error message if ordering failed (e.g., circular dependency), or nil on success.
         methods.add_method("getExecutionOrder", |lua, this, ()| {
+            sync_output_dependencies(this);
             match this.inner.borrow().get_execution_order() {
                 Ok(order) => {
                     let t = lua.create_table()?;
@@ -812,6 +1139,7 @@ impl LuaUserData for LuaPipeline {
         /// @return | string[] | Array of arrays, each inner array is a group of step names. Nil on error.
         /// @return | string | Error message if grouping failed, or nil on success.
         methods.add_method("getParallelGroups", |lua, this, ()| {
+            sync_output_dependencies(this);
             match this.inner.borrow().get_parallel_groups() {
                 Ok(groups) => {
                     let outer = lua.create_table()?;
@@ -840,6 +1168,7 @@ impl LuaUserData for LuaPipeline {
         /// @field | totalDuration | number | Total duration in seconds.
         /// @field | errors | table | Array of error entries.
         methods.add_method("run", |lua, this, context: Option<LuaTable>| {
+            sync_output_dependencies(this);
             let order = this
                 .inner
                 .borrow()
@@ -885,6 +1214,16 @@ impl LuaUserData for LuaPipeline {
                         continue;
                     }
                 }
+                if pipeline_step_has_blocked_signal(
+                    lua,
+                    &ctx,
+                    step_name,
+                    &this.step_wrappers.borrow(),
+                )? {
+                    wrapper.inner.borrow_mut().status = StepStatus::Skipped;
+                    fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
+                    continue;
+                }
                 fire_pipeline_event(
                     lua,
                     this,
@@ -894,6 +1233,7 @@ impl LuaUserData for LuaPipeline {
                     LuaValue::Nil,
                 )?;
                 let succeeded = wrapper.execute_sync(lua, &ctx, abort_on_fail)?;
+                route_pipeline_outputs(lua, this, step_name, &ctx, &wrapper)?;
                 fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
                 if !succeeded {
                     cancel_remaining_steps(&this.step_wrappers.borrow(), &order);
@@ -907,6 +1247,7 @@ impl LuaUserData for LuaPipeline {
         /// Starts asynchronous (coroutine-based) execution of the pipeline. Call update(dt) each frame to advance steps.
         /// @param | context | table? | An optional shared context table. A fresh table is created if omitted.
         methods.add_method("runAsync", |lua, this, context: Option<LuaTable>| {
+            sync_output_dependencies(this);
             this.inner.borrow_mut().reset();
             for wrapper in this.step_wrappers.borrow().values() {
                 wrapper.inner.borrow_mut().reset();
@@ -965,6 +1306,7 @@ impl LuaUserData for LuaPipeline {
                 };
                 let done = execute_async_coroutine_step(lua, this, &step_name, &wrapper, &ctx)?;
                 if done {
+                    route_pipeline_outputs(lua, this, &step_name, &ctx, &wrapper)?;
                     fire_step_callbacks(lua, this, &step_name, &ctx, &wrapper)?;
                     if wrapper.inner.borrow().status == StepStatus::Failed && abort_on_fail {
                         this.step_wrappers.borrow().values().for_each(|w| {
@@ -999,14 +1341,26 @@ impl LuaUserData for LuaPipeline {
                     StepStatus::Running.as_str(),
                     LuaValue::Nil,
                 )?;
+                if pipeline_step_has_blocked_signal(
+                    lua,
+                    &ctx,
+                    step_name,
+                    &this.step_wrappers.borrow(),
+                )? {
+                    wrapper.inner.borrow_mut().status = StepStatus::Skipped;
+                    fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
+                    continue;
+                }
                 let succeeded = if wrapper.is_async_enabled() {
                     let done = execute_async_coroutine_step(lua, this, step_name, &wrapper, &ctx)?;
                     if done {
+                        route_pipeline_outputs(lua, this, step_name, &ctx, &wrapper)?;
                         fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
                     }
                     done || wrapper.inner.borrow().status != StepStatus::Failed
                 } else {
                     let ok = wrapper.execute_sync(lua, &ctx, abort_on_fail)?;
+                    route_pipeline_outputs(lua, this, step_name, &ctx, &wrapper)?;
                     fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
                     ok
                 };
@@ -1264,6 +1618,16 @@ impl LuaUserData for LuaPipeline {
                     /// The 'tag' field value exposed to Lua scripts.
                     st.set("tag", tag.clone())?;
                 }
+                let links_t = lua.create_table()?;
+                for (j, link) in inner.output_links.iter().enumerate() {
+                    let link_t = lua.create_table()?;
+                    link_t.set("output", link.output_slot)?;
+                    link_t.set("target", link.target.clone())?;
+                    link_t.set("input", link.target_input)?;
+                    link_t.set("signal", link.signal)?;
+                    links_t.set(j + 1, link_t)?;
+                }
+                st.set("outputs", links_t)?;
                 steps_t.set(i, st)?;
                 i += 1;
             }
@@ -1568,6 +1932,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                         step.metadata
                             .insert("__pipeline_async".to_string(), async_enabled.to_string());
                     }
+                    if let Ok(outputs_t) = st.get::<_, LuaTable<'_>>("outputs") {
+                        for link_v in outputs_t.sequence_values::<LuaTable<'_>>() {
+                            let link_t = link_v?;
+                            let output_slot = link_t.get::<_, Option<u8>>("output")?.unwrap_or(1);
+                            let target = link_t.get::<_, String>("target")?;
+                            let input_slot =
+                                link_t.get::<_, Option<u8>>("input")?.unwrap_or(output_slot);
+                            let signal = link_t.get::<_, Option<bool>>("signal")?.unwrap_or(true);
+                            step.add_output_link(output_slot, target, input_slot, signal);
+                        }
+                    }
                     let wrapper = LuaStep::new(step.clone());
                     if let Ok(cb) = st.get::<_, LuaFunction<'_>>("fn") {
                         *wrapper.callback_key.borrow_mut() = Some(lua.create_registry_value(cb)?);
@@ -1579,7 +1954,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     wrappers_rc.borrow_mut().insert(sname, wrapper);
                 }
             }
-            Ok(LuaPipeline::from_parts(pipeline_rc, wrappers_rc))
+            let pipeline = LuaPipeline::from_parts(pipeline_rc, wrappers_rc);
+            sync_output_dependencies(&pipeline);
+            Ok(pipeline)
         })?,
     )?;
     lurek.set("pipeline", tbl)?;

@@ -634,6 +634,7 @@
       "tests/artifacts/baselines/ui/layout_gallery_manifest.txt",
       "tests/artifacts/baselines/ui/layout_inventory_fixture.png",
       "tests/artifacts/baselines/ui/layout_main_menu_fixture.png",
+      "tests/artifacts/baselines/ui/layout_property_widget_fixture.png",
       "tests/artifacts/baselines/ui/layout_rpg_inventory_1280x720.png",
       "tests/artifacts/baselines/ui/layout_settings_desktop_1366x768.png",
       "tests/artifacts/baselines/ui/layout_settings_fixture.png",

@@ -118,7 +118,7 @@ describe("lurek.automation", function()
     end)
 
     -- @covers lurek.automation.update
-    it("advances repeated steps and elapsed time", function()
+    it("advances repeated steps, duration releases, combos, gamepad, touch, and elapsed time", function()
         automation.load("repeat_script", {
             steps = {
                 { action = "wait", time = 0.5, ["repeat"] = 2, repeatInterval = 0.25 },
@@ -132,6 +132,68 @@ describe("lurek.automation", function()
         automation.update(0.25)
         expect_equal(3, automation.getCurrentStep())
         expect_true(automation.getElapsedTime() >= 1.0)
+
+        local key_events = {}
+        local mouse_events = {}
+        local gamepad_events = {}
+        local touch_events = {}
+        local old_keypressed = lurek.keypressed
+        local old_keyreleased = lurek.keyreleased
+        local old_mousepressed = lurek.mousepressed
+        local old_mousereleased = lurek.mousereleased
+        local old_gamepadpressed = lurek.gamepadpressed
+        local old_gamepadreleased = lurek.gamepadreleased
+        local old_gamepadaxis = lurek.gamepadaxis
+        local old_touchpressed = lurek.touchpressed
+        local old_touchreleased = lurek.touchreleased
+
+        lurek.keypressed = function(key) table.insert(key_events, "down:" .. key) end
+        lurek.keyreleased = function(key) table.insert(key_events, "up:" .. key) end
+        lurek.mousepressed = function(x, y, button) table.insert(mouse_events, "down:" .. button .. ":" .. x .. ":" .. y) end
+        lurek.mousereleased = function(x, y, button) table.insert(mouse_events, "up:" .. button .. ":" .. x .. ":" .. y) end
+        lurek.gamepadpressed = function(id, button) table.insert(gamepad_events, "down:" .. id .. ":" .. button) end
+        lurek.gamepadreleased = function(id, button) table.insert(gamepad_events, "up:" .. id .. ":" .. button) end
+        lurek.gamepadaxis = function(id, axis, value) table.insert(gamepad_events, "axis:" .. id .. ":" .. axis .. ":" .. tostring(value)) end
+        lurek.touchpressed = function(id, x, y) table.insert(touch_events, "down:" .. id .. ":" .. x .. ":" .. y) end
+        lurek.touchreleased = function(id, x, y) table.insert(touch_events, "up:" .. id .. ":" .. x .. ":" .. y) end
+
+        automation.load("input_script", {
+            steps = {
+                { action = "combo", time = 0.01, combo = { "ctrl", "a", "mouse1" }, x = 12, y = 34, duration = 0.10 },
+                { action = "gamepadpress", time = 0.02, gamepad = 0, gamepadButton = 2, buttonName = "south", duration = 0.10 },
+                { action = "gamepadaxis", time = 0.03, gamepad = 0, gamepadAxis = 1, axisName = "leftx", value = 0.75 },
+                { action = "touchpress", time = 0.04, id = 7, x = 50, y = 60, pressure = 0.5, duration = 0.10 },
+            }
+        })
+        automation.start("input_script")
+        automation.update(0.05)
+        expect_true(lurek.input.keyboard.isDown("ctrl"))
+        expect_true(lurek.input.keyboard.isDown("a"))
+        expect_true(lurek.input.mouse.isDown(1))
+        expect_true(lurek.input.gamepad.isDown(0, 2))
+        local tx, ty = lurek.input.touch.getPosition(7)
+        expect_near(50, tx, 0.001)
+        expect_near(60, ty, 0.001)
+        automation.update(0.20)
+        expect_false(lurek.input.keyboard.isDown("ctrl"))
+        expect_false(lurek.input.keyboard.isDown("a"))
+        expect_false(lurek.input.mouse.isDown(1))
+        expect_false(lurek.input.gamepad.isDown(0, 2))
+        expect_equal(0, lurek.input.touch.getTouchCount())
+        expect_true(#key_events >= 4)
+        expect_true(#mouse_events >= 2)
+        expect_true(#gamepad_events >= 3)
+        expect_true(#touch_events >= 2)
+
+        lurek.keypressed = old_keypressed
+        lurek.keyreleased = old_keyreleased
+        lurek.mousepressed = old_mousepressed
+        lurek.mousereleased = old_mousereleased
+        lurek.gamepadpressed = old_gamepadpressed
+        lurek.gamepadreleased = old_gamepadreleased
+        lurek.gamepadaxis = old_gamepadaxis
+        lurek.touchpressed = old_touchpressed
+        lurek.touchreleased = old_touchreleased
     end)
 
     -- @covers lurek.automation.isRunning

@@ -114,6 +114,23 @@ describe("PipelineStep construction", function()
         local s = lurek.pipeline.newStep("s")
         expect_nil(s:getData("nonexistent"))
     end)
+
+    -- @covers LPipelineStep:setState
+    it("setState stores a local Lua table on the step", function()
+        local s = lurek.pipeline.newStep("stateful")
+        s:setState({ count = 2 })
+        expect_equal(2, s:getState().count)
+        s:setState(nil)
+        expect_type("table", s:getState())
+    end)
+
+    -- @covers LPipelineStep:getState
+    it("getState creates a persistent table when missing", function()
+        local s = lurek.pipeline.newStep("stateful_default")
+        local state = s:getState()
+        state.count = 3
+        expect_equal(3, s:getState().count)
+    end)
 end)
 
 -- =========================================================================
@@ -152,6 +169,55 @@ describe("PipelineStep dependency management", function()
         s:dependsOn("a")
         s:dependsOn("b")
         expect_equal(2, s:getDependencyCount())
+    end)
+
+    -- @covers LPipelineStep:connectOutput
+    it("connectOutput routes data and signal-gates target execution", function()
+        local ran_b = false
+        local ran_c = false
+        local producer = lurek.pipeline.newStep("producer", function(ctx)
+            return {
+                output1 = { score = 7 },
+                output2 = { score = 2 },
+            }
+        end)
+        local consumer = lurek.pipeline.newStep("consumer", function(ctx, input)
+            ran_b = true
+            expect_equal(7, input[2].score)
+            expect_equal(7, ctx.pipeline.inputs.consumer[2].score)
+        end)
+        local blocked = lurek.pipeline.newStep("blocked", function()
+            ran_c = true
+        end)
+
+        producer:connectOutput(1, consumer, 2, function(ctx, payload)
+            return payload.score > 5
+        end)
+        producer:connectOutput(2, blocked, 1, function(ctx, payload)
+            return payload.score > 5
+        end)
+
+        local p = lurek.pipeline.newPipeline("routing")
+        p:addStep(producer):addStep(consumer):addStep(blocked)
+        local result = p:run({})
+
+        expect_true(result.success)
+        expect_true(ran_b)
+        expect_false(ran_c)
+        expect_true(table_contains(result.completed, "consumer"))
+        expect_true(table_contains(result.skipped, "blocked"))
+    end)
+
+    -- @covers LPipelineStep:getOutputLinks
+    it("getOutputLinks reports configured output slots", function()
+        local a = lurek.pipeline.newStep("a")
+        a:connectOutput(5, "b", 3, nil, false)
+        local links = a:getOutputLinks()
+        expect_equal(1, #links)
+        expect_equal(5, links[1].output)
+        expect_equal("b", links[1].target)
+        expect_equal(3, links[1].input)
+        expect_false(links[1].signal)
     end)
 end)
 

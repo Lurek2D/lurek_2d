@@ -5,7 +5,7 @@
 ## TL;DR
 
 - Orchestrates steps using validated dependency graphs.
-- Supports parallel groups, branch conditions, delays, and retries.
+- Supports parallel groups, branch conditions, delays, retries, and output-slot routing.
 - Runs synchronously or asynchronously with step reports.
 
 ## General Info
@@ -14,7 +14,7 @@
 - Source path: `src/pipeline`
 - Binding: `src/lua_api/pipeline_api.rs`
 - Namespace: `lurek.pipeline`
-- Lua API surface: `3` functions, `5` types, `63` methods
+- Lua API surface: `3` functions, `5` types, `67` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -26,9 +26,13 @@
 - That makes the module useful for asset processing, validation chains, analytics jobs, build-like tasks, scripted tool workflows, content transforms, and other domains where several operations must be coordinated explicitly.
 - Scheduler logic is important because a pipeline must decide when steps are eligible, blocked, complete, retried, or failed instead of merely storing a list of actions.
 - Result handling matters for the same reason. Multi-step workflows usually need explicit output capture, pass-through state, intermediate artifacts, and error-aware progression rather than simple immediate returns.
+- Each step is a process block, not a logistics node. A callback can receive arbitrary Lua input data, keep local Lua state, return up to five output slots, and let configured output links forward data to later blocks.
+- Signal routing and data routing are separate. A completed block can signal another block without meaningful payload data, forward payload data without being the only structural dependency, or gate either behavior with Lua conditions.
+- Output links make branching and fan-out explicit: one source can send slot 1 to one target, slot 2 to another target, and suppress a target entirely when a predicate rejects the payload.
 - Tool-facing workflows benefit when those stages stay inspectable instead of becoming a black box.
 - The module therefore gives users a stable vocabulary for reasoning about staged work, dependency flow, and execution state instead of accidental nested control structure.
 - Read `pipeline` as the engine feature for explicit staged workflows with clear execution semantics.
+- Do not read `pipeline` as the resource-network simulation owner. `flownet` owns graph logistics, capacities, queues, routing, and item movement; `pipeline` owns flexible process execution and block orchestration that may optionally be driven by data from a graph.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
@@ -110,6 +114,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LPipeline:setOnComplete` param `callback` (`function?`): A function receiving the result table. Pass nil to remove.
 - `LPipeline:setOnStepComplete` param `callback` (`function?`): A function receiving (stepName, context). Pass nil to remove.
 - `LPipeline:setOnStepError` param `callback` (`function?`): A function receiving (stepName, errorMessage). Pass nil to remove.
+- `LPipelineStep:connectOutput` param `condition` (`function?`): Predicate receiving (ctx, payload, sourceName, targetName); false blocks signal and data.
 - `LPipelineStep:setCallback` param `callback` (`function`): A function receiving the pipeline context table and optionally returning a result value.
 - `LPipelineStep:setCondition` param `condition` (`function?`): A function receiving the context table and returning a boolean. Pass nil to remove the condition.
 - `LPipelineStep:setOnError` param `callback` (`function?`): A function receiving (stepName, errorMessage). Pass nil to remove.
@@ -213,6 +218,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ##### Methods
 
+- `LPipelineStep:connectOutput(outputSlot, target, inputSlot?, condition?, signal?) -> LPipelineStep`: Connects one output slot (1..5) to a target step input slot (1..5), optionally gated by a Lua predicate.
 - `LPipelineStep:dependsOn(dep) -> LPipelineStep`: Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.
 - `LPipelineStep:getAttempt() -> integer`: Returns the current attempt number (1-based). Increases with each retry.
 - `LPipelineStep:getData(key) -> string`: Retrieves a metadata value previously stored with setData.
@@ -222,7 +228,9 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LPipelineStep:getDuration() -> number`: Returns how long this step took to execute in seconds (measured from start to completion or failure).
 - `LPipelineStep:getError() -> string`: Returns the error message if this step failed, or nil if it has not failed.
 - `LPipelineStep:getName() -> string`: Returns the unique name of this pipeline step.
+- `LPipelineStep:getOutputLinks() -> table`: Returns configured output links for this step.
 - `LPipelineStep:getRetryCount() -> integer`: Returns the configured retry count for this step.
+- `LPipelineStep:getState() -> table`: Returns this step's local state table, creating an empty one when none exists.
 - `LPipelineStep:getStatus() -> string`: Returns the current execution status of this step as a string ("pending", "waiting", "running", "completed", "failed", "skipped", "cancelled").
 - `LPipelineStep:getTag() -> string`: Returns the tag assigned to this step, or nil if none is set.
 - `LPipelineStep:getTimeout() -> number`: Returns the configured timeout for this step, or 0 if none is set.
@@ -237,6 +245,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LPipelineStep:setOptional(optional) -> nil`: Marks this step as optional. Optional steps do not cause pipeline failure if they fail.
 - `LPipelineStep:setRetryCount(count) -> nil`: Sets how many times this step should be retried after a failure before being marked as failed.
 - `LPipelineStep:setRetryDelay(seconds) -> nil`: Sets the delay in seconds between retry attempts for this step.
+- `LPipelineStep:setState(state?) -> nil`: Stores a Lua table as local state for this step. The table is retained by registry reference.
 - `LPipelineStep:setTag(tag) -> nil`: Assigns a tag string to this step for grouping and filtering purposes.
 - `LPipelineStep:setTimeout(seconds) -> nil`: Sets a maximum execution time for this step. If exceeded in async mode, the step may be considered failed.
 - `LPipelineStep:type() -> string`: Returns the type name of this object ("LPipelineStep").

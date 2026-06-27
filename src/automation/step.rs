@@ -1,6 +1,6 @@
 //! `src/automation/step.rs` owns the typed action enum and step record that describe timed automation inputs and checks.
 //! It defines `Action` and `Step`, keeping parseable action names and optional per-step payload fields under one owner.
-//! Keyboard, mouse, wheel, text, wait, macro, assert, and visual-assert step categories are all declared here.
+//! Keyboard, mouse, wheel, text, touch, gamepad, combo, wait, macro, assert, and visual-assert categories are declared here.
 //! Read this file when action vocabulary, step fields, or scancode fallback behavior for automation content changes.
 //! This file is the schema boundary for automation scripts, while parsing and playback behavior stay in sibling modules.
 
@@ -21,6 +21,22 @@ pub enum Action {
     MouseWheel,
     /// Fires a text-input event carrying a UTF-8 string payload.
     TextInput,
+    /// Presses every binding in `combo`, allowing chords such as Ctrl+A or Shift+mouse1.
+    Combo,
+    /// Releases every binding in `combo` after a duration-generated chord.
+    ComboRelease,
+    /// Fires a gamepad-button-pressed event.
+    GamepadPress,
+    /// Fires a gamepad-button-released event.
+    GamepadRelease,
+    /// Fires a gamepad-axis event with a normalized axis value.
+    GamepadAxis,
+    /// Fires a touch-pressed event at the given position.
+    TouchPress,
+    /// Fires a touch-moved event at the given position.
+    TouchMove,
+    /// Fires a touch-released event at the given position.
+    TouchRelease,
     /// No-op; holds the time cursor until the next step fires.
     Wait,
     /// Sentinel produced by `expand_repeats`; not dispatched as an event.
@@ -32,7 +48,7 @@ pub enum Action {
     /// Compares two image files pixel-by-pixel within `max_diff` tolerance.
     VisualAssert,
 }
-const ACTION_MAPPINGS: [(&str, Action); 12] = [
+const ACTION_MAPPINGS: [(&str, Action); 20] = [
     ("keypress", Action::KeyPress),
     ("keyrelease", Action::KeyRelease),
     ("mousemove", Action::MouseMove),
@@ -40,6 +56,14 @@ const ACTION_MAPPINGS: [(&str, Action); 12] = [
     ("mouserelease", Action::MouseRelease),
     ("mousewheel", Action::MouseWheel),
     ("textinput", Action::TextInput),
+    ("combo", Action::Combo),
+    ("comborelease", Action::ComboRelease),
+    ("gamepadpress", Action::GamepadPress),
+    ("gamepadrelease", Action::GamepadRelease),
+    ("gamepadaxis", Action::GamepadAxis),
+    ("touchpress", Action::TouchPress),
+    ("touchmove", Action::TouchMove),
+    ("touchrelease", Action::TouchRelease),
     ("wait", Action::Wait),
     ("repeat", Action::Repeat),
     ("callmacro", Action::CallMacro),
@@ -84,6 +108,26 @@ pub struct Step {
     pub button: Option<u32>,
     /// UTF-8 text payload for `TextInput` steps.
     pub text: Option<String>,
+    /// Chord bindings pressed as one authored event, such as `ctrl`, `a`, or `mouse1`.
+    pub combo: Vec<String>,
+    /// Optional duration in seconds; press-like events auto-schedule matching release events.
+    pub duration: Option<f32>,
+    /// Gamepad slot id for `GamepadPress`, `GamepadRelease`, and `GamepadAxis`.
+    pub gamepad_id: Option<u32>,
+    /// Gamepad button code for button actions.
+    pub gamepad_button: Option<u32>,
+    /// Human-readable gamepad button name passed to Lua callbacks.
+    pub gamepad_button_name: Option<String>,
+    /// Gamepad axis code for axis actions.
+    pub gamepad_axis: Option<u32>,
+    /// Human-readable gamepad axis name passed to Lua callbacks.
+    pub gamepad_axis_name: Option<String>,
+    /// Normalized gamepad axis value.
+    pub value: Option<f32>,
+    /// Touch identifier for touch actions.
+    pub touch_id: Option<u64>,
+    /// Normalized touch pressure when available.
+    pub pressure: Option<f64>,
     /// True when the key event is a keyboard auto-repeat hold.
     pub is_repeat: bool,
     /// Click count for `MousePress` (e.g. 2 for a double-click).
@@ -119,6 +163,16 @@ impl Step {
             dy: None,
             button: None,
             text: None,
+            combo: Vec::new(),
+            duration: None,
+            gamepad_id: None,
+            gamepad_button: None,
+            gamepad_button_name: None,
+            gamepad_axis: None,
+            gamepad_axis_name: None,
+            value: None,
+            touch_id: None,
+            pressure: None,
             is_repeat: false,
             clicks: None,
             repeat: None,
@@ -134,5 +188,36 @@ impl Step {
     /// Return `scancode` if set, otherwise fall back to `key`; `None` when both are absent.
     pub fn effective_scancode(&self) -> Option<&str> {
         self.scancode.as_deref().or(self.key.as_deref())
+    }
+
+    /// Return true when this step can be paired with an automatic release after `duration`.
+    pub fn supports_duration_release(&self) -> bool {
+        matches!(
+            self.action,
+            Action::KeyPress
+                | Action::MousePress
+                | Action::Combo
+                | Action::GamepadPress
+                | Action::TouchPress
+        )
+    }
+
+    /// Build the matching release step for a duration-bearing press-like step.
+    pub fn release_pair(&self) -> Option<Self> {
+        if !self.supports_duration_release() {
+            return None;
+        }
+        let mut release = self.clone();
+        release.time = self.time + self.duration.unwrap_or(0.0).max(0.0);
+        release.duration = None;
+        release.action = match self.action {
+            Action::KeyPress => Action::KeyRelease,
+            Action::MousePress => Action::MouseRelease,
+            Action::Combo => Action::ComboRelease,
+            Action::GamepadPress => Action::GamepadRelease,
+            Action::TouchPress => Action::TouchRelease,
+            _ => return None,
+        };
+        Some(release)
     }
 }

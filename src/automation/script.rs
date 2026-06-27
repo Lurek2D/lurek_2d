@@ -40,9 +40,23 @@ impl Script {
         }
         out
     }
+
+    /// Expand duration-bearing press steps into explicit release steps at `time + duration`.
+    fn expand_durations(steps: Vec<Step>) -> Vec<Step> {
+        let mut out = Vec::new();
+        for step in steps {
+            let release = step.release_pair();
+            out.push(step);
+            if let Some(pair) = release {
+                out.push(pair);
+            }
+        }
+        out
+    }
+
     /// Create a `Script` from a name and raw steps: expands repeats, sorts by time, caps to `MAX_STEPS`.
     pub fn new(name: impl Into<String>, steps: Vec<Step>) -> Self {
-        let mut steps = Self::expand_repeats(steps);
+        let mut steps = Self::expand_durations(Self::expand_repeats(steps));
         steps.sort_by(|a, b| {
             a.time
                 .partial_cmp(&b.time)
@@ -117,6 +131,50 @@ impl Script {
                 .and_then(|v| v.as_integer())
                 .map(|n| n as u32);
             step.text = sv.get("text").and_then(|v| v.as_str()).map(str::to_string);
+            step.combo = sv
+                .get("combo")
+                .and_then(|v| v.as_array())
+                .map(|values| {
+                    values
+                        .iter()
+                        .filter_map(|v| v.as_str().map(str::to_string))
+                        .collect()
+                })
+                .unwrap_or_default();
+            step.duration = sv
+                .get("duration")
+                .and_then(|v| v.as_float())
+                .map(|v| v as f32);
+            step.gamepad_id = sv
+                .get("gamepad")
+                .or_else(|| sv.get("gamepadId"))
+                .and_then(|v| v.as_integer())
+                .map(|n| n as u32);
+            step.gamepad_button = sv
+                .get("gamepadButton")
+                .or_else(|| sv.get("button"))
+                .and_then(|v| v.as_integer())
+                .map(|n| n as u32);
+            step.gamepad_button_name = sv
+                .get("buttonName")
+                .and_then(|v| v.as_str())
+                .map(str::to_string);
+            step.gamepad_axis = sv
+                .get("gamepadAxis")
+                .or_else(|| sv.get("axis"))
+                .and_then(|v| v.as_integer())
+                .map(|n| n as u32);
+            step.gamepad_axis_name = sv
+                .get("axisName")
+                .and_then(|v| v.as_str())
+                .map(str::to_string);
+            step.value = sv.get("value").and_then(|v| v.as_float()).map(|v| v as f32);
+            step.touch_id = sv
+                .get("id")
+                .or_else(|| sv.get("touchId"))
+                .and_then(|v| v.as_integer())
+                .map(|n| n as u64);
+            step.pressure = sv.get("pressure").and_then(|v| v.as_float());
             step.is_repeat = sv
                 .get("isRepeat")
                 .and_then(|v| v.as_bool())

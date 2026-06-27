@@ -3056,6 +3056,10 @@ LSpinBox = {}
 ---@class LSplitPanel : LUiWidget
 LSplitPanel = {}
 
+--- Adds stack-container-specific methods to stack and tab container widget tables.
+---@class LStackContainer : LUiWidget
+LStackContainer = {}
+
 --- Adds status-bar-specific methods to a status bar widget table.
 ---@class LStatusBar : LUiWidget
 LStatusBar = {}
@@ -3067,6 +3071,10 @@ LSwitch = {}
 --- Adds tab-bar-specific methods to a tab bar widget table.
 ---@class LTabBar : LUiWidget
 LTabBar = {}
+
+--- Adds tab-container-specific methods to tab container widget tables.
+---@class LTabContainer : LUiWidget
+LTabContainer = {}
 
 --- Adds text-input-specific methods to a text input widget table.
 ---@class LTextInput : LUiWidget
@@ -24671,6 +24679,15 @@ function LPipeline:update(dt) end
 ---@return string[] Error message strings (empty if valid).
 function LPipeline:validate() end
 
+--- Connects one output slot (1..5) to a target step input slot (1..5), optionally gated by a Lua predicate.
+---@param outputSlot number Source output slot, clamped to 1..5.
+---@param target string|LPipelineStep Target step name or step object.
+---@param inputSlot? number Target input slot, defaults to the output slot.
+---@param condition? function Predicate receiving (ctx, payload, sourceName, targetName); false blocks signal and data.
+---@param signal? boolean Whether this link triggers target eligibility; defaults to true.
+---@return LPipelineStep Returns self for method chaining.
+function LPipelineStep:connectOutput(outputSlot, target, inputSlot, condition, signal) end
+
 --- Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.
 ---@param dep string|LPipelineStep The dependency step name or step object.
 ---@return LPipelineStep Returns self for method chaining.
@@ -24709,9 +24726,17 @@ function LPipelineStep:getError() end
 ---@return string The step name.
 function LPipelineStep:getName() end
 
+--- Returns configured output links for this step.
+---@return table Array of link tables with output, target, input, and signal fields.
+function LPipelineStep:getOutputLinks() end
+
 --- Returns the configured retry count for this step.
 ---@return number Number of retry attempts.
 function LPipelineStep:getRetryCount() end
+
+--- Returns this step's local state table, creating an empty one when none exists.
+---@return table Local step state table.
+function LPipelineStep:getState() end
 
 --- Returns the current execution status of this step as a string ("pending", "waiting", "running", "completed", "failed", "skipped", "cancelled").
 ---@return string Current step status.
@@ -24769,6 +24794,10 @@ function LPipelineStep:setRetryCount(count) end
 --- Sets the delay in seconds between retry attempts for this step.
 ---@param seconds number Delay between retries.
 function LPipelineStep:setRetryDelay(seconds) end
+
+--- Stores a Lua table as local state for this step. The table is retained by registry reference.
+---@param state? table Local step state table; pass nil to clear.
+function LPipelineStep:setState(state) end
 
 --- Assigns a tag string to this step for grouping and filtering purposes.
 ---@param tag string A category tag for this step.
@@ -32955,6 +32984,32 @@ function LSplitPanel:setSecondChild(child_idx) end
 ---@param v number The split fraction.
 function LSplitPanel:setSplitPosition(v) end
 
+--- Adds a tab/page label to this stack or tab container.
+---@param label string The visible tab label.
+function LStackContainer:addTab(label) end
+
+--- Returns the widget index of the active child page.
+---@return number nil | The active child widget index, or nil when no child exists.
+function LStackContainer:getActiveChild() end
+
+--- Returns the active child page as a 1-based index.
+---@return number The active child index, or 0 when unavailable.
+function LStackContainer:getActiveIndex() end
+
+--- Returns a tab/page label by 1-based index.
+---@param index number The 1-based tab index.
+---@return string nil | The tab label, or nil when out of range.
+function LStackContainer:getTab(index) end
+
+--- Returns the number of tab/page labels in this stack or tab container.
+---@return number The tab label count.
+function LStackContainer:getTabCount() end
+
+--- Sets the active child page by 1-based child index.
+---@param index number The 1-based child index to show.
+---@return boolean True when the index exists and was set.
+function LStackContainer:setActiveIndex(index) end
+
 --- Adds a labeled section to this status bar.
 ---@param text string The section display text.
 ---@param width? number The section width in pixels (default 100).
@@ -33019,6 +33074,32 @@ function LTabBar:removeTab(index) end
 --- Sets the active (selected) tab by 1-based index.
 ---@param index number The 1-based tab index to activate.
 function LTabBar:setActiveTab(index) end
+
+--- Adds a tab label to this tab container.
+---@param label string The visible tab label.
+function LTabContainer:addTab(label) end
+
+--- Returns the widget index of the active tab page.
+---@return number nil | The active child widget index, or nil when no child exists.
+function LTabContainer:getActiveChild() end
+
+--- Returns the active tab page as a 1-based child index.
+---@return number The active child index, or 0 when unavailable.
+function LTabContainer:getActiveIndex() end
+
+--- Returns a tab label by 1-based index.
+---@param index number The 1-based tab index.
+---@return string nil | The tab label, or nil when out of range.
+function LTabContainer:getTab(index) end
+
+--- Returns the number of tab labels in this tab container.
+---@return number The tab label count.
+function LTabContainer:getTabCount() end
+
+--- Sets the active tab page by 1-based child index.
+---@param index number The 1-based child index to show.
+---@return boolean True when the index exists and was set.
+function LTabContainer:setActiveIndex(index) end
 
 --- Returns the current cursor position (character index) within the text input.
 ---@return number The zero-based cursor position.
@@ -33847,6 +33928,10 @@ lurek.ui.newBadge = function(count) end
 ---@return LButton The new button widget table.
 lurek.ui.newButton = function(text) end
 
+--- Creates a container that centers its child along both axes.
+---@return LLayout The new centered layout widget table.
+lurek.ui.newCenterContainer = function() end
+
 --- Creates a new checkbox widget with optional label.
 ---@param text? string The checkbox label text.
 ---@return LCheckbox The new checkbox widget table.
@@ -33874,6 +33959,15 @@ lurek.ui.newDialog = function(title) end
 ---@return LDockPanel The new dock panel widget table.
 lurek.ui.newDockPanel = function() end
 
+--- Creates a grid container with an optional column count.
+---@param columns? number Number of columns; defaults to 1.
+---@return LLayout The new grid layout widget table.
+lurek.ui.newGridContainer = function(columns) end
+
+--- Creates a horizontal box container that stacks children left-to-right.
+---@return LLayout The new horizontal layout widget table.
+lurek.ui.newHBoxContainer = function() end
+
 --- Creates a label-like widget that displays only a built-in UI icon.
 ---@param icon string Built-in icon name.
 ---@return LLabel nil | The icon widget, or nil when the icon name is unknown.
@@ -33896,6 +33990,14 @@ lurek.ui.newLayout = function(direction) end
 --- Creates a new list box widget for item selection.
 ---@return LListBox The new list box widget table.
 lurek.ui.newList = function() end
+
+--- Creates a padding container around one or more child widgets using CSS-style shorthand.
+---@param top? number Top padding in pixels; defaults to 0.
+---@param right? number Right padding; defaults to top.
+---@param bottom? number Bottom padding; defaults to top.
+---@param left? number Left padding; defaults to right.
+---@return LLayout The new margin container widget table.
+lurek.ui.newMarginContainer = function(top, right, bottom, left) end
 
 --- Creates a new menu bar widget for top-level menus.
 ---@return LMenuBar The new menu bar widget table.
@@ -33935,6 +34037,10 @@ lurek.ui.newRadioButton = function(text, group) end
 ---@return LScrollBar The new scroll bar widget table.
 lurek.ui.newScrollBar = function(vertical) end
 
+--- Creates a scroll container alias for `newScrollPanel`.
+---@return LScrollPanel The new scroll panel widget table.
+lurek.ui.newScrollContainer = function() end
+
 --- Creates a new scrollable panel widget.
 ---@return LScrollPanel The new scroll panel widget table.
 lurek.ui.newScrollPanel = function() end
@@ -33962,10 +34068,19 @@ lurek.ui.newSpacer = function(w, h) end
 ---@return LSpinBox The new spin box widget table.
 lurek.ui.newSpinBox = function(min, max) end
 
+--- Creates a split container alias for `newSplitPanel`.
+---@param orientation? string "horizontal" or "vertical" (default "horizontal").
+---@return LSplitPanel The new split panel widget table.
+lurek.ui.newSplitContainer = function(orientation) end
+
 --- Creates a new split panel widget with two resizable sub-panels.
 ---@param orientation? string "horizontal" or "vertical" (default "horizontal").
 ---@return LSplitPanel The new split panel widget table.
 lurek.ui.newSplitPanel = function(orientation) end
+
+--- Creates a stack container that lays out all children in one rectangle and shows one active child.
+---@return LStackContainer The new stack container widget table.
+lurek.ui.newStackContainer = function() end
 
 --- Creates a new status bar widget for app-level info.
 ---@return LStatusBar The new status bar widget table.
@@ -33979,6 +34094,10 @@ lurek.ui.newSwitch = function(on) end
 --- Creates a new tab bar widget for tabbed navigation.
 ---@return LTabBar The new tab bar widget table.
 lurek.ui.newTabBar = function() end
+
+--- Creates a tab container with tab labels and one active child page.
+---@return LTabContainer The new tab container widget table.
+lurek.ui.newTabContainer = function() end
 
 --- Creates a new table widget for tabular data display.
 ---@return LGuiTable The new table widget.
@@ -34011,6 +34130,10 @@ lurek.ui.newTooltipPanel = function(text) end
 --- Creates a new tree view widget for hierarchical data.
 ---@return LTreeView The new tree view widget table.
 lurek.ui.newTreeView = function() end
+
+--- Creates a vertical box container that stacks children top-to-bottom.
+---@return LLayout The new vertical layout widget table.
+lurek.ui.newVBoxContainer = function() end
 
 --- Creates a new GUI window widget with an optional title.
 ---@param title? string The window title.

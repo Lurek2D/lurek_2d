@@ -25,7 +25,7 @@ pub mod theme;
 pub mod widget;
 pub use containers::{
     DockPanel, GUIWindow, Layout, LayoutDirection, NinePatch, NineSlice, Panel, ScrollPanel,
-    SplitPanel,
+    SplitPanel, StackContainer,
 };
 pub use context::{GuiContext, GuiEvent, UiBindingValue};
 pub use controls::{

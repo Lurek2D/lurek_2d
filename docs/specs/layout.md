@@ -208,6 +208,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 | Baseline artifact | `tests/artifacts/baselines/ui/layout_gallery_manifest.txt` |
 | Baseline artifact | `tests/artifacts/baselines/ui/layout_inventory_fixture.png` |
 | Baseline artifact | `tests/artifacts/baselines/ui/layout_main_menu_fixture.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_property_widget_fixture.png` |
 | Baseline artifact | `tests/artifacts/baselines/ui/layout_rpg_inventory_1280x720.png` |
 | Baseline artifact | `tests/artifacts/baselines/ui/layout_settings_desktop_1366x768.png` |
 | Baseline artifact | `tests/artifacts/baselines/ui/layout_settings_fixture.png` |

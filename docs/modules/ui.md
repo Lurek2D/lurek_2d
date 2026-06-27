@@ -58,6 +58,10 @@ end
 - For inspector-style tools, TOML can define property widget groups and rows directly, so configuration panels can live as content while Lua remains responsible for runtime value updates and callbacks.
 - Styling is not a thin afterthought. Themes, classes, semantic colors, spacing, typography, borders, fills, corner treatment, widget states, and transition-friendly variants all live inside one coherent theme system so several screens can share a recognizable visual language.
 - Layout calculation is another central responsibility. The module resolves requested size, parent constraints, alignment, padding, spacing, scrolling, overflow, clipping, stacking order, and viewport-aware placement into concrete geometry so widgets can be reasoned about structurally instead of geometrically line by line.
+- Layout-manager constructors expose the common screen-structure vocabulary directly: `newVBoxContainer`, `newHBoxContainer`, `newGridContainer`, `newMarginContainer`, `newCenterContainer`, `newScrollContainer`, `newSplitContainer`, `newStackContainer`, and `newTabContainer`. These names mirror the way users think about menu columns, HUD rows, inventory grids, safe-area padding, centered dialogs, scrollable lists, resizable panes, layered views, and settings tabs.
+- `Layout` remains the underlying owner for box, grid, margin, and center behavior, so spacing, padding, alignment, justification, flex grow, and child margins stay on one code path instead of fragmenting into one-off containers.
+- `StackContainer` and `TabContainer` own page selection. They keep all child pages in the retained tree while the layout pass marks only the active child as effectively visible, which lets hidden pages preserve state without being drawn or hit-tested as active content.
+- `SplitPanel` owns two explicit child slots and divides its content rectangle in the layout pass with a clamped split fraction and minimum panel size, making dockable editor-style panes layout-managed rather than manually positioned.
 - Scroll regions, nested containers, resizable panels, and dock-like arrangements are important examples of why layout belongs here: they require persistent bookkeeping and cross-widget coordination that would become brittle if each feature implemented its own layout rules.
 - Input routing is part of the same authority. Mouse, keyboard, controller-like activation, focus traversal, drag, drop, text entry, pointer capture, and event bubbling all flow through the UI context so the entire screen obeys one interaction model.
 - Binding support turns UI from a decorative layer into a practical application surface. Widgets can synchronize with script-visible values, settings models, editor records, or runtime debug state without every screen inventing its own plumbing for reads, writes, and synchronization.
@@ -1813,6 +1817,41 @@ end
 
 ---
 
+### `lurek.ui.newCenterContainer`
+
+Creates a container that centers its child along both axes.
+
+```lua
+lurek.ui.newCenterContainer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLayout](#llayout) | The new centered layout widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local modal_host = lurek.ui.newCenterContainer()
+    modal_host:addChild(lurek.ui.newPanel())
+    example_print_log("center align = " .. modal_host:getAlign())
+    example_print_log("center justify = " .. modal_host:getJustify())
+end
+```
+
+---
+
 ### `lurek.ui.newCheckbox`
 
 Creates a new checkbox widget with optional label.
@@ -2100,6 +2139,84 @@ end
 
 ---
 
+### `lurek.ui.newGridContainer`
+
+Creates a grid container with an optional column count.
+
+```lua
+lurek.ui.newGridContainer(columns)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `columns?` | number | Number of columns; defaults to 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLayout](#llayout) | The new grid layout widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local inventory = lurek.ui.newGridContainer(3)
+    inventory:setSpacing(4)
+    inventory:addChild(lurek.ui.newButton("Slot 1"))
+    inventory:addChild(lurek.ui.newButton("Slot 2"))
+    example_print_log("grid direction = " .. inventory:getDirection())
+end
+```
+
+---
+
+### `lurek.ui.newHBoxContainer`
+
+Creates a horizontal box container that stacks children left-to-right.
+
+```lua
+lurek.ui.newHBoxContainer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLayout](#llayout) | The new horizontal layout widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local hud = lurek.ui.newHBoxContainer()
+    hud:setSpacing(6)
+    hud:addChild(lurek.ui.newLabel("HP"))
+    hud:addChild(lurek.ui.newProgressBar(0, 100))
+    example_print_log("hbox direction = " .. hud:getDirection())
+end
+```
+
+---
+
 ### `lurek.ui.newIcon`
 
 Creates a label-like widget that displays only a built-in UI icon.
@@ -2300,6 +2417,51 @@ do
     example_print_log("items = " .. list:getItemCount())
     example_print_log("list count = " .. list:getItemCount())
     example_print_log("list width = " .. select(3, list:getRect()))
+end
+```
+
+---
+
+### `lurek.ui.newMarginContainer`
+
+Creates a padding container around one or more child widgets using CSS-style shorthand.
+
+```lua
+lurek.ui.newMarginContainer(top, right, bottom, left)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `top?` | number | Top padding in pixels; defaults to 0. |
+| `right?` | number | Right padding; defaults to top. |
+| `bottom?` | number | Bottom padding; defaults to top. |
+| `left?` | number | Left padding; defaults to right. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLayout](#llayout) | The new margin container widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local safe_hud = lurek.ui.newMarginContainer(12, 16)
+    local label = lurek.ui.newLabel("Quest updated")
+    safe_hud:addChild(label)
+    local top, right = safe_hud:getPadding()
+    example_print_log("margin padding = " .. top .. "," .. right)
 end
 ```
 
@@ -2626,6 +2788,42 @@ end
 
 ---
 
+### `lurek.ui.newScrollContainer`
+
+Creates a scroll container alias for `newScrollPanel`.
+
+```lua
+lurek.ui.newScrollContainer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LScrollPanel](#lscrollpanel) | The new scroll panel widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local scroll = lurek.ui.newScrollContainer()
+    scroll:setContentSize(640, 960)
+    scroll:setScrollPosition(0, 32)
+    local sx, sy = scroll:getScrollPosition()
+    example_print_log("scroll container pos = " .. sx .. ", " .. sy)
+end
+```
+
+---
+
 ### `lurek.ui.newScrollPanel`
 
 Creates a new scrollable panel widget.
@@ -2838,6 +3036,49 @@ end
 
 ---
 
+### `lurek.ui.newSplitContainer`
+
+Creates a split container alias for `newSplitPanel`.
+
+```lua
+lurek.ui.newSplitContainer(orientation)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `orientation?` | string | "horizontal" or "vertical" (default "horizontal"). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSplitPanel](#lsplitpanel) | The new split panel widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local split = lurek.ui.newSplitContainer("vertical")
+    local top = lurek.ui.newPanel()
+    local bottom = lurek.ui.newPanel()
+    split:setFirstChild(top._idx)
+    split:setSecondChild(bottom._idx)
+    example_print_log("split container = " .. split:getOrientation())
+end
+```
+
+---
+
 ### `lurek.ui.newSplitPanel`
 
 Creates a new split panel widget with two resizable sub-panels.
@@ -2881,6 +3122,42 @@ do
     split:setMinPanelSize(100)
     example_print_log("split at " .. split:getSplitPosition())
     example_print_log("min panel = " .. split:getMinPanelSize())
+end
+```
+
+---
+
+### `lurek.ui.newStackContainer`
+
+Creates a stack container that lays out all children in one rectangle and shows one active child.
+
+```lua
+lurek.ui.newStackContainer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LStackContainer](#lstackcontainer) | The new stack container widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addChild(lurek.ui.newPanel())
+    stack:addChild(lurek.ui.newPanel())
+    stack:setActiveIndex(2)
+    example_print_log("stack active = " .. stack:getActiveIndex())
 end
 ```
 
@@ -2997,6 +3274,41 @@ do
     example_print_log("tab count = " .. tabs:getTabCount())
     example_print_log("tab count = " .. tabs:getTabCount())
     example_print_log("active tab = " .. tostring(tabs:getActiveTab()))
+end
+```
+
+---
+
+### `lurek.ui.newTabContainer`
+
+Creates a tab container with tab labels and one active child page.
+
+```lua
+lurek.ui.newTabContainer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTabContainer](#ltabcontainer) | The new tab container widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addTab("Video")
+    tabs:addChild(lurek.ui.newPanel())
+    example_print_log("tab container count = " .. tabs:getTabCount())
 end
 ```
 
@@ -3283,6 +3595,42 @@ do
     tree:addNode("main.lua", root)
     example_print_log("total nodes:", tree:getNodeCount())
     example_print_log("root text:", tree:getNodeText(root))
+end
+```
+
+---
+
+### `lurek.ui.newVBoxContainer`
+
+Creates a vertical box container that stacks children top-to-bottom.
+
+```lua
+lurek.ui.newVBoxContainer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLayout](#llayout) | The new vertical layout widget table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local menu = lurek.ui.newVBoxContainer()
+    menu:setSpacing(8)
+    menu:addChild(lurek.ui.newButton("Start"))
+    menu:addChild(lurek.ui.newButton("Options"))
+    example_print_log("vbox children = " .. menu:getChildCount())
 end
 ```
 
@@ -4098,9 +4446,11 @@ end
 - [LSlider](#lslider)
 - [LSpinBox](#lspinbox)
 - [LSplitPanel](#lsplitpanel)
+- [LStackContainer](#lstackcontainer)
 - [LStatusBar](#lstatusbar)
 - [LSwitch](#lswitch)
 - [LTabBar](#ltabbar)
+- [LTabContainer](#ltabcontainer)
 - [LTextInput](#ltextinput)
 - [LTheme](#ltheme)
 - [LToast](#ltoast)
@@ -13881,6 +14231,237 @@ end
 
 ---
 
+## LStackContainer
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LStackContainer:addTab`
+
+Adds a tab/page label to this stack or tab container.
+
+```lua
+LStackContainer:addTab(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | The visible tab label. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addTab("Inventory")
+    stack:addTab("Map")
+    example_print_log("stack labels = " .. stack:getTabCount())
+end
+```
+
+---
+
+#### `LStackContainer:getActiveChild`
+
+Returns the widget index of the active child page.
+
+```lua
+LStackContainer:getActiveChild()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | nil | The active child widget index, or nil when no child exists. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    local page = lurek.ui.newPanel()
+    stack:addChild(page)
+    example_print_log("active child = " .. tostring(stack:getActiveChild()))
+end
+```
+
+---
+
+#### `LStackContainer:getActiveIndex`
+
+Returns the active child page as a 1-based index.
+
+```lua
+LStackContainer:getActiveIndex()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The active child index, or 0 when unavailable. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addChild(lurek.ui.newPanel())
+    stack:setActiveIndex(1)
+    example_print_log("active index = " .. stack:getActiveIndex())
+end
+```
+
+---
+
+#### `LStackContainer:getTab`
+
+Returns a tab/page label by 1-based index.
+
+```lua
+LStackContainer:getTab(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | The 1-based tab index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | nil | The tab label, or nil when out of range. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addTab("Journal")
+    local label = stack:getTab(1)
+    example_print_log("stack label = " .. tostring(label))
+end
+```
+
+---
+
+#### `LStackContainer:getTabCount`
+
+Returns the number of tab/page labels in this stack or tab container.
+
+```lua
+LStackContainer:getTabCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The tab label count. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addTab("Stats")
+    stack:addTab("Equipment")
+    example_print_log("stack label count = " .. stack:getTabCount())
+end
+```
+
+---
+
+#### `LStackContainer:setActiveIndex`
+
+Sets the active child page by 1-based child index.
+
+```lua
+LStackContainer:setActiveIndex(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | The 1-based child index to show. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the index exists and was set. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addChild(lurek.ui.newPanel())
+    stack:addChild(lurek.ui.newPanel())
+    local changed = stack:setActiveIndex(2)
+    example_print_log("active changed = " .. tostring(changed))
+end
+```
+
+---
+
 ## LStatusBar
 
 ### Type Fields
@@ -14496,6 +15077,237 @@ do
     local ok = tabs:removeTab(3)
     example_print_log("removed Help = " .. tostring(ok))
     example_print_log("remaining = " .. tabs:getTabCount())
+end
+```
+
+---
+
+## LTabContainer
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LTabContainer:addTab`
+
+Adds a tab label to this tab container.
+
+```lua
+LTabContainer:addTab(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | The visible tab label. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addTab("Audio")
+    tabs:addTab("Controls")
+    example_print_log("tab labels = " .. tabs:getTabCount())
+end
+```
+
+---
+
+#### `LTabContainer:getActiveChild`
+
+Returns the widget index of the active tab page.
+
+```lua
+LTabContainer:getActiveChild()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | nil | The active child widget index, or nil when no child exists. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    local page = lurek.ui.newPanel()
+    tabs:addChild(page)
+    example_print_log("tab active child = " .. tostring(tabs:getActiveChild()))
+end
+```
+
+---
+
+#### `LTabContainer:getActiveIndex`
+
+Returns the active tab page as a 1-based child index.
+
+```lua
+LTabContainer:getActiveIndex()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The active child index, or 0 when unavailable. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addChild(lurek.ui.newPanel())
+    tabs:setActiveIndex(1)
+    example_print_log("tab active index = " .. tabs:getActiveIndex())
+end
+```
+
+---
+
+#### `LTabContainer:getTab`
+
+Returns a tab label by 1-based index.
+
+```lua
+LTabContainer:getTab(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | The 1-based tab index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | nil | The tab label, or nil when out of range. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addTab("Gameplay")
+    local label = tabs:getTab(1)
+    example_print_log("first tab = " .. tostring(label))
+end
+```
+
+---
+
+#### `LTabContainer:getTabCount`
+
+Returns the number of tab labels in this tab container.
+
+```lua
+LTabContainer:getTabCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The tab label count. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addTab("Video")
+    tabs:addTab("Audio")
+    example_print_log("tab count = " .. tabs:getTabCount())
+end
+```
+
+---
+
+#### `LTabContainer:setActiveIndex`
+
+Sets the active tab page by 1-based child index.
+
+```lua
+LTabContainer:setActiveIndex(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | The 1-based child index to show. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the index exists and was set. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addChild(lurek.ui.newPanel())
+    tabs:addChild(lurek.ui.newPanel())
+    local changed = tabs:setActiveIndex(2)
+    example_print_log("tab active changed = " .. tostring(changed))
 end
 ```
 

@@ -7,6 +7,7 @@ use crate::app::lua_callbacks::{
 use crate::automation::simulator::StepEventSink;
 use crate::automation::{Action, Script, Simulator, Step};
 use crate::event::{Event, EventArg};
+use crate::input::GamepadState;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -63,6 +64,14 @@ fn button_slot(button: u32) -> Option<usize> {
         1..=5 => Some((button - 1) as usize),
         _ => None,
     }
+}
+
+fn ensure_gamepad_slot(gamepads: &mut Vec<GamepadState>, id: usize) -> &mut GamepadState {
+    while gamepads.len() <= id {
+        let new_id = gamepads.len() as u32;
+        gamepads.push(GamepadState::new(new_id));
+    }
+    &mut gamepads[id]
 }
 
 struct AutomationLuaDispatcher;
@@ -251,6 +260,78 @@ impl AutomationLuaDispatcher {
                         )?;
                     }
                 }
+            }
+            "gamepadpressed" => {
+                let id = event_arg_num(&event.args, 0, 0.0).max(0.0) as usize;
+                let button_name = event_arg_string(&event.args, 1, "unknown");
+                let button = event_arg_num(&event.args, 2, 0.0).max(0.0) as u32;
+                {
+                    let mut st = state.borrow_mut();
+                    let gamepad = ensure_gamepad_slot(&mut st.gamepads, id);
+                    gamepad.set_connected(true);
+                    gamepad.update_button(button, true);
+                }
+                call_lua_callback_checked_with_timeout(
+                    lua,
+                    "gamepadpressed",
+                    (id as u32, button_name),
+                    timeout_ms,
+                )?;
+            }
+            "gamepadreleased" => {
+                let id = event_arg_num(&event.args, 0, 0.0).max(0.0) as usize;
+                let button_name = event_arg_string(&event.args, 1, "unknown");
+                let button = event_arg_num(&event.args, 2, 0.0).max(0.0) as u32;
+                {
+                    let mut st = state.borrow_mut();
+                    let gamepad = ensure_gamepad_slot(&mut st.gamepads, id);
+                    gamepad.set_connected(true);
+                    gamepad.update_button(button, false);
+                }
+                call_lua_callback_checked_with_timeout(
+                    lua,
+                    "gamepadreleased",
+                    (id as u32, button_name),
+                    timeout_ms,
+                )?;
+            }
+            "gamepadaxis" => {
+                let id = event_arg_num(&event.args, 0, 0.0).max(0.0) as usize;
+                let axis_name = event_arg_string(&event.args, 1, "unknown");
+                let value = event_arg_num(&event.args, 2, 0.0) as f32;
+                let axis = event_arg_num(&event.args, 3, 0.0).max(0.0) as u32;
+                {
+                    let mut st = state.borrow_mut();
+                    let gamepad = ensure_gamepad_slot(&mut st.gamepads, id);
+                    gamepad.set_connected(true);
+                    gamepad.update_axis(axis, value);
+                }
+                call_lua_callback_checked_with_timeout(
+                    lua,
+                    "gamepadaxis",
+                    (id as u32, axis_name, value),
+                    timeout_ms,
+                )?;
+            }
+            "touchpressed" | "touchmoved" | "touchreleased" => {
+                let id = event_arg_num(&event.args, 0, 0.0).max(0.0) as u64;
+                let x = event_arg_num(&event.args, 1, 0.0);
+                let y = event_arg_num(&event.args, 2, 0.0);
+                let dx = event_arg_num(&event.args, 3, 0.0);
+                let dy = event_arg_num(&event.args, 4, 0.0);
+                let pressure = event_arg_num(&event.args, 5, 1.0);
+                match event.name.as_str() {
+                    "touchpressed" => state.borrow_mut().touch.touch_start(id, x, y, pressure),
+                    "touchmoved" => state.borrow_mut().touch.touch_move(id, x, y, pressure),
+                    "touchreleased" => state.borrow_mut().touch.touch_end(id),
+                    _ => {}
+                }
+                call_lua_callback_checked_with_timeout(
+                    lua,
+                    event.name.as_str(),
+                    (id, x, y, dx, dy, pressure),
+                    timeout_ms,
+                )?;
             }
             _ => {}
         }
@@ -667,7 +748,7 @@ impl Step {
             })?;
             let action = Action::parse_action(&action_str).ok_or_else(|| {
                 LuaError::external(format!(
-                    "simulator.load: unknown action '{}' \u{2014} expected one of: keypress, keyrelease, mousemove, mousepress, mouserelease, mousewheel, textinput, wait, repeat, callmacro, assert, visualassert",
+                    "simulator.load: unknown action '{}' - expected one of: keypress, keyrelease, mousemove, mousepress, mouserelease, mousewheel, textinput, combo, gamepadpress, gamepadrelease, gamepadaxis, touchpress, touchmove, touchrelease, wait, repeat, callmacro, assert, visualassert",
                     action_str
                 ))
             })?;
@@ -681,6 +762,29 @@ impl Step {
             step.dy = entry.get::<_, Option<f64>>("dy")?;
             step.button = entry.get::<_, Option<u32>>("button")?;
             step.text = entry.get::<_, Option<String>>("text")?;
+            step.combo = match entry.get::<_, Option<LuaTable>>("combo")? {
+                Some(combo_table) => combo_table
+                    .sequence_values::<String>()
+                    .collect::<LuaResult<Vec<_>>>()?,
+                None => Vec::new(),
+            };
+            step.duration = entry.get::<_, Option<f32>>("duration")?;
+            step.gamepad_id = entry
+                .get::<_, Option<u32>>("gamepad")?
+                .or(entry.get::<_, Option<u32>>("gamepadId")?);
+            step.gamepad_button = entry
+                .get::<_, Option<u32>>("gamepadButton")?
+                .or(entry.get::<_, Option<u32>>("button")?);
+            step.gamepad_button_name = entry.get::<_, Option<String>>("buttonName")?;
+            step.gamepad_axis = entry
+                .get::<_, Option<u32>>("gamepadAxis")?
+                .or(entry.get::<_, Option<u32>>("axis")?);
+            step.gamepad_axis_name = entry.get::<_, Option<String>>("axisName")?;
+            step.value = entry.get::<_, Option<f32>>("value")?;
+            step.touch_id = entry
+                .get::<_, Option<u64>>("touchId")?
+                .or(entry.get::<_, Option<u64>>("id")?);
+            step.pressure = entry.get::<_, Option<f64>>("pressure")?;
             step.is_repeat = entry.get::<_, Option<bool>>("isRepeat")?.unwrap_or(false);
             step.clicks = entry.get::<_, Option<u32>>("clicks")?;
             step.repeat = entry.get::<_, Option<u32>>("repeat")?;

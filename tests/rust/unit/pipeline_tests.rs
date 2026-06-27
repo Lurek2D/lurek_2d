@@ -88,3 +88,50 @@ mod scheduler_tests {
         assert_eq!(ready, vec!["a"]);
     }
 }
+
+mod output_link_tests {
+    use super::*;
+
+    #[test]
+    fn output_links_validate_missing_targets() {
+        let mut p = Pipeline::new("links");
+        let mut source = PipelineStep::new("source");
+        source.add_output_link(1, "missing", 1, true);
+        p.add_step(source).unwrap();
+
+        let (valid, errors) = p.validate();
+
+        assert!(!valid);
+        assert!(errors
+            .iter()
+            .any(|error| error.contains("targets 'missing'")));
+    }
+
+    #[test]
+    fn output_links_are_rendered_in_ascii_diagram() {
+        let mut p = Pipeline::new("links");
+        let mut source = PipelineStep::new("source");
+        source.add_output_link(2, "target", 4, true);
+        let target = PipelineStep::new("target");
+        p.add_step(source).unwrap();
+        p.add_step(target).unwrap();
+
+        let diagram = p.to_ascii_diagram();
+
+        assert!(diagram.contains("out2:target"));
+    }
+
+    #[test]
+    fn removing_step_scrubs_output_links() {
+        let mut p = Pipeline::new("links");
+        let mut source = PipelineStep::new("source");
+        source.add_output_link(1, "target", 1, true);
+        p.add_step(source).unwrap();
+        p.add_step(PipelineStep::new("target")).unwrap();
+
+        assert!(p.remove_step("target"));
+        let (valid, errors) = p.validate();
+
+        assert!(valid, "{errors:?}");
+    }
+}

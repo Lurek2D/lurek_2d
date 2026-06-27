@@ -18,7 +18,7 @@ use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{GU01_CTX_INIT, GU02_WIDGET_ADD};
 use crate::ui::containers::{
-    DockPanel, GUIWindow, Layout, NinePatch, Panel, ScrollPanel, SplitPanel,
+    DockPanel, GUIWindow, Layout, NinePatch, Panel, ScrollPanel, SplitPanel, StackContainer,
 };
 use crate::ui::controls::{
     Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
@@ -122,6 +122,10 @@ pub enum WidgetKind {
     GUIWindow(GUIWindow),
     /// Two-pane splitter.
     SplitPanel(SplitPanel),
+    /// Layered page container.
+    StackContainer(StackContainer),
+    /// Layered page container with tab labels.
+    TabContainer(StackContainer),
     /// Multi-region dock container.
     DockPanel(DockPanel),
     /// Icon button strip.
@@ -179,6 +183,8 @@ macro_rules! widget_kind_base_match {
             WidgetKind::ScrollBar(w) => $map!(w),
             WidgetKind::GUIWindow(w) => $map!(w),
             WidgetKind::SplitPanel(w) => $map!(w),
+            WidgetKind::StackContainer(w) => $map!(w),
+            WidgetKind::TabContainer(w) => $map!(w),
             WidgetKind::DockPanel(w) => $map!(w),
             WidgetKind::Toolbar(w) => $map!(w),
             WidgetKind::MenuBar(w) => $map!(w),
@@ -223,6 +229,7 @@ impl WidgetKind {
             Self::Panel(p) => Some(&p.children),
             Self::Layout(l) => Some(&l.children),
             Self::ScrollPanel(s) => Some(&s.children),
+            Self::StackContainer(s) | Self::TabContainer(s) => Some(&s.children),
             Self::GUIWindow(w) => Some(&w.children),
             Self::Toolbar(w) => Some(&w.children),
             _ => None,
@@ -234,6 +241,7 @@ impl WidgetKind {
             Self::Panel(p) => Some(&mut p.children),
             Self::Layout(l) => Some(&mut l.children),
             Self::ScrollPanel(s) => Some(&mut s.children),
+            Self::StackContainer(s) | Self::TabContainer(s) => Some(&mut s.children),
             Self::GUIWindow(w) => Some(&mut w.children),
             Self::Toolbar(w) => Some(&mut w.children),
             _ => None,
@@ -424,6 +432,18 @@ impl GuiContext {
                 }
             }
             if let Some(child_idx) = dialog.footer_idx {
+                if !out.contains(&child_idx) {
+                    out.push(child_idx);
+                }
+            }
+        }
+        if let Some(WidgetKind::SplitPanel(split)) = self.widgets.get(idx) {
+            if let Some(child_idx) = split.first_child {
+                if !out.contains(&child_idx) {
+                    out.push(child_idx);
+                }
+            }
+            if let Some(child_idx) = split.second_child {
                 if !out.contains(&child_idx) {
                     out.push(child_idx);
                 }
@@ -659,6 +679,87 @@ impl GuiContext {
         overrides
     }
 
+    fn perform_stack_layout(&self, idx: usize, rect: Rect) -> Vec<(usize, Rect)> {
+        let stack = match &self.widgets[idx] {
+            WidgetKind::StackContainer(stack) | WidgetKind::TabContainer(stack) => stack,
+            _ => return Vec::new(),
+        };
+        let content_rect = stack.content_rect(rect);
+        stack
+            .children
+            .iter()
+            .copied()
+            .map(|child_idx| (child_idx, content_rect))
+            .collect()
+    }
+
+    fn perform_split_layout(&self, idx: usize, rect: Rect) -> Vec<(usize, Rect)> {
+        let WidgetKind::SplitPanel(split) = &self.widgets[idx] else {
+            return Vec::new();
+        };
+        let pad = split.base.padding;
+        let inner = Rect::new(
+            rect.x + pad[3],
+            rect.y + pad[0],
+            (rect.width - pad[1] - pad[3]).max(0.0),
+            (rect.height - pad[0] - pad[2]).max(0.0),
+        );
+        let mut out = Vec::new();
+        let min_size = split.min_panel_size.max(0.0);
+        let split_fraction = split.split_position.clamp(0.0, 1.0);
+        if split.orientation == "vertical" {
+            let first_h = (inner.height * split_fraction).clamp(
+                0.0_f32.min(inner.height),
+                (inner.height - min_size).max(0.0),
+            );
+            let first_h = if inner.height >= min_size * 2.0 {
+                first_h.clamp(min_size, inner.height - min_size)
+            } else {
+                first_h
+            };
+            if let Some(child_idx) = split.first_child {
+                out.push((child_idx, Rect::new(inner.x, inner.y, inner.width, first_h)));
+            }
+            if let Some(child_idx) = split.second_child {
+                out.push((
+                    child_idx,
+                    Rect::new(
+                        inner.x,
+                        inner.y + first_h,
+                        inner.width,
+                        (inner.height - first_h).max(0.0),
+                    ),
+                ));
+            }
+        } else {
+            let first_w = (inner.width * split_fraction)
+                .clamp(0.0_f32.min(inner.width), (inner.width - min_size).max(0.0));
+            let first_w = if inner.width >= min_size * 2.0 {
+                first_w.clamp(min_size, inner.width - min_size)
+            } else {
+                first_w
+            };
+            if let Some(child_idx) = split.first_child {
+                out.push((
+                    child_idx,
+                    Rect::new(inner.x, inner.y, first_w, inner.height),
+                ));
+            }
+            if let Some(child_idx) = split.second_child {
+                out.push((
+                    child_idx,
+                    Rect::new(
+                        inner.x + first_w,
+                        inner.y,
+                        (inner.width - first_w).max(0.0),
+                        inner.height,
+                    ),
+                ));
+            }
+        }
+        out
+    }
+
     /// Recursively lay out widget `idx` relative to `parent_rect`.
     fn layout_widget(
         &mut self,
@@ -693,16 +794,39 @@ impl GuiContext {
             base.is_visible = parent_visible && base.visible;
         }
 
-        let overrides = self.perform_flex_layout(idx, &computed);
-        let child_indices: Vec<usize> = self.widgets[idx].children().cloned().unwrap_or_default();
+        let mut overrides = self.perform_flex_layout(idx, &computed);
+        overrides.extend(self.perform_stack_layout(idx, computed));
+        overrides.extend(self.perform_split_layout(idx, computed));
+        let mut child_indices: Vec<usize> =
+            self.widgets[idx].children().cloned().unwrap_or_default();
+        if let Some(WidgetKind::SplitPanel(split)) = self.widgets.get(idx) {
+            if let Some(child_idx) = split.first_child {
+                if !child_indices.contains(&child_idx) {
+                    child_indices.push(child_idx);
+                }
+            }
+            if let Some(child_idx) = split.second_child {
+                if !child_indices.contains(&child_idx) {
+                    child_indices.push(child_idx);
+                }
+            }
+        }
         let visible = self.widgets[idx].base().is_visible;
+        let active_stack_child = match self.widgets.get(idx) {
+            Some(WidgetKind::StackContainer(stack)) | Some(WidgetKind::TabContainer(stack)) => {
+                stack.children.get(stack.active_index).copied()
+            }
+            _ => None,
+        };
 
         for child_idx in child_indices {
             let child_override = overrides
                 .iter()
                 .find(|(i, _)| *i == child_idx)
                 .map(|(_, r)| *r);
-            self.layout_widget(child_idx, &computed, visible, child_override);
+            let child_visible =
+                active_stack_child.map_or(visible, |active| visible && active == child_idx);
+            self.layout_widget(child_idx, &computed, child_visible, child_override);
         }
         if let Some((content_idx, footer_idx, body_rect, footer_rect)) =
             self.widgets.get(idx).and_then(|widget| {
@@ -852,6 +976,20 @@ impl GuiContext {
         let idx = self.widgets.len();
         self.widgets
             .push(WidgetKind::SplitPanel(SplitPanel::new(orientation)));
+        idx
+    }
+    /// Add a `StackContainer` and return its index.
+    pub fn add_stack_container(&mut self) -> usize {
+        let idx = self.widgets.len();
+        self.widgets
+            .push(WidgetKind::StackContainer(StackContainer::new(false)));
+        idx
+    }
+    /// Add a `TabContainer` and return its index.
+    pub fn add_tab_container(&mut self) -> usize {
+        let idx = self.widgets.len();
+        self.widgets
+            .push(WidgetKind::TabContainer(StackContainer::new(true)));
         idx
     }
     /// Add a `DockPanel` container and return its index.
@@ -2042,6 +2180,36 @@ impl GuiContext {
                     max_h = max_h.max(ch);
                 }
                 (max_w + pad_h, max_h + pad_v)
+            }
+            WidgetKind::StackContainer(stack) | WidgetKind::TabContainer(stack) => {
+                let mut max_w = 0.0_f32;
+                let mut max_h = 0.0_f32;
+                for &child_idx in &stack.children {
+                    let (cw, ch) = self.calculate_minimum_size(child_idx, font);
+                    max_w = max_w.max(cw);
+                    max_h = max_h.max(ch);
+                }
+                let tab_h = if stack.show_tabs {
+                    stack.tab_bar_height.max(0.0)
+                } else {
+                    0.0
+                };
+                (max_w + pad_h, max_h + pad_v + tab_h)
+            }
+            WidgetKind::SplitPanel(split) => {
+                let (first_w, first_h) = split
+                    .first_child
+                    .map(|child_idx| self.calculate_minimum_size(child_idx, font))
+                    .unwrap_or((0.0, 0.0));
+                let (second_w, second_h) = split
+                    .second_child
+                    .map(|child_idx| self.calculate_minimum_size(child_idx, font))
+                    .unwrap_or((0.0, 0.0));
+                if split.orientation == "vertical" {
+                    (first_w.max(second_w) + pad_h, first_h + second_h + pad_v)
+                } else {
+                    (first_w + second_w + pad_h, first_h.max(second_h) + pad_v)
+                }
             }
             WidgetKind::GUIWindow(window) => {
                 let mut max_w = 0.0_f32;

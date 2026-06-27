@@ -1018,6 +1018,81 @@ do
     example_print_log("steps = " .. pipe:getStepCount())
 end
 
+--@api: LPipelineStep:setState
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local step = lurek.pipeline.newStep("stateful")
+    step:setState({ visits = 1 })
+    example_print_log("state visits = " .. tostring(step:getState().visits))
+end
+
+--@api: LPipelineStep:getState
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local step = lurek.pipeline.newStep("stateful")
+    local state = step:getState()
+    state.visits = (state.visits or 0) + 1
+    example_print_log("state visits = " .. tostring(step:getState().visits))
+end
+
+--@api: LPipelineStep:connectOutput
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local source = lurek.pipeline.newStep("score", function()
+        return { output1 = { value = 9 } }
+    end)
+    local target = lurek.pipeline.newStep("reward", function(ctx, input)
+        ctx.reward = input[1].value * 10
+    end)
+    source:connectOutput(1, target, 1, function(ctx, payload)
+        return payload.value > 5
+    end)
+
+    local pipe = lurek.pipeline.newPipeline("slot-routing")
+    pipe:addStep(source):addStep(target)
+    pipe:run({})
+    example_print_log("links = " .. #source:getOutputLinks())
+    example_print_log("target status = " .. target:getStatus())
+end
+
+--@api: LPipelineStep:getOutputLinks
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local step = lurek.pipeline.newStep("source")
+    step:connectOutput(2, "target", 4, nil, false)
+    local links = step:getOutputLinks()
+    example_print_log("output = " .. tostring(links[1].output))
+    example_print_log("target = " .. tostring(links[1].target))
+end
+
 --@api: LPipelineStep:setAsync
 do
     local function example_print_log(...)

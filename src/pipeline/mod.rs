@@ -17,4 +17,4 @@ pub mod step;
 pub use dag::{ErrorMode, Pipeline};
 pub use result::{PipelineResult, PipelineStatus};
 pub use scheduler::PipelineScheduler;
-pub use step::{ErrorPolicy, PipelineStep, StepStatus};
+pub use step::{ErrorPolicy, PipelineOutputLink, PipelineStep, StepStatus, MAX_OUTPUT_SLOTS};

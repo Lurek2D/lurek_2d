@@ -470,12 +470,144 @@ impl Simulator {
                     args: vec![EventArg::Str(text.to_string())],
                 });
             }
+            Action::Combo => {
+                for binding in &step.combo {
+                    Self::dispatch_combo_binding(binding, true, step, event_queue);
+                }
+            }
+            Action::ComboRelease => {
+                for binding in step.combo.iter().rev() {
+                    Self::dispatch_combo_binding(binding, false, step, event_queue);
+                }
+            }
+            Action::GamepadPress => {
+                let id = step.gamepad_id.unwrap_or(0) as f64;
+                let button = step.gamepad_button.unwrap_or(step.button.unwrap_or(0)) as f64;
+                let name = step
+                    .gamepad_button_name
+                    .clone()
+                    .unwrap_or_else(|| button.to_string());
+                event_queue.push_event(Event {
+                    name: "gamepadpressed".to_string(),
+                    args: vec![
+                        EventArg::Num(id),
+                        EventArg::Str(name),
+                        EventArg::Num(button),
+                    ],
+                });
+            }
+            Action::GamepadRelease => {
+                let id = step.gamepad_id.unwrap_or(0) as f64;
+                let button = step.gamepad_button.unwrap_or(step.button.unwrap_or(0)) as f64;
+                let name = step
+                    .gamepad_button_name
+                    .clone()
+                    .unwrap_or_else(|| button.to_string());
+                event_queue.push_event(Event {
+                    name: "gamepadreleased".to_string(),
+                    args: vec![
+                        EventArg::Num(id),
+                        EventArg::Str(name),
+                        EventArg::Num(button),
+                    ],
+                });
+            }
+            Action::GamepadAxis => {
+                let id = step.gamepad_id.unwrap_or(0) as f64;
+                let axis = step.gamepad_axis.unwrap_or(0) as f64;
+                let name = step
+                    .gamepad_axis_name
+                    .clone()
+                    .unwrap_or_else(|| axis.to_string());
+                let value = step.value.unwrap_or(0.0) as f64;
+                event_queue.push_event(Event {
+                    name: "gamepadaxis".to_string(),
+                    args: vec![
+                        EventArg::Num(id),
+                        EventArg::Str(name),
+                        EventArg::Num(value),
+                        EventArg::Num(axis),
+                    ],
+                });
+            }
+            Action::TouchPress | Action::TouchMove | Action::TouchRelease => {
+                let event_name = match step.action {
+                    Action::TouchPress => "touchpressed",
+                    Action::TouchMove => "touchmoved",
+                    Action::TouchRelease => "touchreleased",
+                    _ => unreachable!(),
+                };
+                event_queue.push_event(Event {
+                    name: event_name.to_string(),
+                    args: vec![
+                        EventArg::Num(step.touch_id.unwrap_or(0) as f64),
+                        EventArg::Num(step.x.unwrap_or(0.0)),
+                        EventArg::Num(step.y.unwrap_or(0.0)),
+                        EventArg::Num(step.dx.unwrap_or(0.0)),
+                        EventArg::Num(step.dy.unwrap_or(0.0)),
+                        EventArg::Num(step.pressure.unwrap_or(1.0)),
+                    ],
+                });
+            }
             Action::Wait
             | Action::Repeat
             | Action::CallMacro
             | Action::Assert
             | Action::VisualAssert => {}
         }
+    }
+
+    /// Dispatch one combo binding as the same primitive event used by direct input actions.
+    fn dispatch_combo_binding<S: StepEventSink>(
+        binding: &str,
+        pressed: bool,
+        step: &Step,
+        event_queue: &mut S,
+    ) {
+        let lowered = binding.to_ascii_lowercase();
+        if let Some(rest) = lowered.strip_prefix("mouse") {
+            if let Ok(button) = rest.parse::<u32>() {
+                let action = if pressed {
+                    Action::MousePress
+                } else {
+                    Action::MouseRelease
+                };
+                let mut mouse_step = step.clone();
+                mouse_step.action = action;
+                mouse_step.button = Some(button);
+                Self::dispatch_step(&mouse_step, event_queue);
+            }
+            return;
+        }
+        if let Some(rest) = lowered.strip_prefix("gamepad:") {
+            let parts: Vec<&str> = rest.split(':').collect();
+            if parts.len() == 2 {
+                if let (Ok(gamepad_id), Ok(button)) =
+                    (parts[0].parse::<u32>(), parts[1].parse::<u32>())
+                {
+                    let mut gp_step = step.clone();
+                    gp_step.action = if pressed {
+                        Action::GamepadPress
+                    } else {
+                        Action::GamepadRelease
+                    };
+                    gp_step.gamepad_id = Some(gamepad_id);
+                    gp_step.gamepad_button = Some(button);
+                    gp_step.gamepad_button_name = Some(button.to_string());
+                    Self::dispatch_step(&gp_step, event_queue);
+                }
+            }
+            return;
+        }
+        let mut key_step = step.clone();
+        key_step.action = if pressed {
+            Action::KeyPress
+        } else {
+            Action::KeyRelease
+        };
+        key_step.key = Some(lowered.clone());
+        key_step.scancode = Some(lowered);
+        Self::dispatch_step(&key_step, event_queue);
     }
 }
 /// Convert step time (seconds) to microseconds for comparison with `elapsed_micros`.

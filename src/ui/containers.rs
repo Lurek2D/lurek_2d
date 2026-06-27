@@ -50,8 +50,8 @@ impl LayoutDirection {
     /// Parse a lowercase string to a variant; return `None` for unrecognised values.
     pub fn parse_str(s: &str) -> Option<Self> {
         match s {
-            "vertical" => Some(Self::Vertical),
-            "horizontal" => Some(Self::Horizontal),
+            "vertical" | "vbox" | "vboxcontainer" | "column" => Some(Self::Vertical),
+            "horizontal" | "hbox" | "hboxcontainer" | "row" => Some(Self::Horizontal),
             "grid" => Some(Self::Grid),
             _ => None,
         }
@@ -204,6 +204,74 @@ impl ScrollPanel {
 impl Default for ScrollPanel {
     fn default() -> Self {
         Self::new()
+    }
+}
+/// Layered child container that lays out every child in the same content rectangle but shows one active page.
+#[derive(Debug, Clone)]
+pub struct StackContainer {
+    /// Shared layout, style, and state fields.
+    pub base: WidgetBase,
+    /// Ordered child widgets hosted as pages.
+    pub children: Vec<usize>,
+    /// Zero-based active child slot. Lua APIs expose this as one-based.
+    pub active_index: usize,
+    /// Optional labels used when the stack is presented as a tab container.
+    pub tabs: Vec<String>,
+    /// Whether a tab strip is reserved above the active content page.
+    pub show_tabs: bool,
+    /// Height reserved for the tab strip when `show_tabs` is true.
+    pub tab_bar_height: f32,
+}
+impl StackContainer {
+    /// Create a stack or tab container. `show_tabs=true` reserves a tab strip above content.
+    pub fn new(show_tabs: bool) -> Self {
+        let widget_type = if show_tabs {
+            WidgetType::TabContainer
+        } else {
+            WidgetType::StackContainer
+        };
+        Self {
+            base: WidgetBase::new(widget_type),
+            children: Vec::new(),
+            active_index: 0,
+            tabs: Vec::new(),
+            show_tabs,
+            tab_bar_height: 32.0,
+        }
+    }
+    /// Set the zero-based active child slot; returns false when out of range.
+    pub fn set_active_index(&mut self, index: usize) -> bool {
+        if index < self.children.len().max(self.tabs.len()) {
+            self.active_index = index;
+            true
+        } else {
+            false
+        }
+    }
+    /// Append a tab label used by tab containers.
+    pub fn add_tab(&mut self, label: impl Into<String>) {
+        self.tabs.push(label.into());
+    }
+    /// Return the content rectangle inside `rect`, reserving tab strip height when needed.
+    pub fn content_rect(&self, rect: crate::math::Rect) -> crate::math::Rect {
+        let pad = self.base.padding;
+        let tab_h = if self.show_tabs {
+            self.tab_bar_height.max(0.0).min(rect.height)
+        } else {
+            0.0
+        };
+        crate::math::Rect::new(
+            rect.x + pad[3],
+            rect.y + tab_h + pad[0],
+            (rect.width - pad[1] - pad[3]).max(0.0),
+            (rect.height - tab_h - pad[0] - pad[2]).max(0.0),
+        )
+    }
+}
+/// Provide a default non-tabbed stack container.
+impl Default for StackContainer {
+    fn default() -> Self {
+        Self::new(false)
     }
 }
 /// Eight-tuple of `(src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h)` describing one 9-patch tile region.

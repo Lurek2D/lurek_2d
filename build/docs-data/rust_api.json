@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated": "2026-06-26T21:56:53.198199+00:00",
+    "generated": "2026-06-27T08:37:19.035084+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3098,
+      "rust_items": 3101,
       "rust_modules": 728,
       "rust_tests": 496,
       "lua_tests": 281
@@ -12,8 +12,8 @@
   },
   "rust_api": {
     "summary": {
-      "total_items": 3098,
-      "documented": 3095,
+      "total_items": 3101,
+      "documented": 3098,
       "modules": 728
     },
     "modules": {
@@ -2299,7 +2299,7 @@
         ]
       },
       "automation::step": {
-        "module_doc": "`src/automation/step.rs` owns the typed action enum and step record that describe timed automation inputs and checks. It defines `Action` and `Step`, keeping parseable action names and optional per-step payload fields under one owner. Keyboard, mouse, wheel, text, wait, macro, assert, and visual-assert step categories are all declared here. Read this file when action vocabulary, step fields, or scancode fallback behavior for automation content changes. This file is the schema boundary for automation scripts, while parsing and playback behavior stay in sibling modules.",
+        "module_doc": "`src/automation/step.rs` owns the typed action enum and step record that describe timed automation inputs and checks. It defines `Action` and `Step`, keeping parseable action names and optional per-step payload fields under one owner. Keyboard, mouse, wheel, text, touch, gamepad, combo, wait, macro, assert, and visual-assert categories are declared here. Read this file when action vocabulary, step fields, or scancode fallback behavior for automation content changes. This file is the schema boundary for automation scripts, while parsing and playback behavior stay in sibling modules.",
         "source_file": "src/automation/step.rs",
         "items": [
           {
@@ -2314,7 +2314,7 @@
             "kind": "struct",
             "description": "One timed input event in an automation `Script`; carries all optional field payloads.",
             "file": "src/automation/step.rs",
-            "line": 66
+            "line": 90
           }
         ]
       },
@@ -15679,25 +15679,39 @@
         "source_file": "src/pipeline/step.rs",
         "items": [
           {
+            "name": "MAX_OUTPUT_SLOTS",
+            "kind": "const",
+            "description": "Maximum number of named output slots exposed by one pipeline step.",
+            "file": "src/pipeline/step.rs",
+            "line": 10
+          },
+          {
             "name": "StepStatus",
             "kind": "enum",
             "description": "Execution lifecycle state of a single pipeline step.",
             "file": "src/pipeline/step.rs",
-            "line": 11
+            "line": 14
           },
           {
             "name": "ErrorPolicy",
             "kind": "enum",
             "description": "Per-step failure response, overriding the pipeline-level `ErrorMode`.",
             "file": "src/pipeline/step.rs",
-            "line": 45
+            "line": 48
+          },
+          {
+            "name": "PipelineOutputLink",
+            "kind": "struct",
+            "description": "Declarative connection from one step output slot to another step input slot.",
+            "file": "src/pipeline/step.rs",
+            "line": 59
           },
           {
             "name": "PipelineStep",
             "kind": "struct",
             "description": "Single named unit of work in a `Pipeline`, carrying dependency, timing, and retry configuration.",
             "file": "src/pipeline/step.rs",
-            "line": 56
+            "line": 87
           }
         ]
       },
@@ -24668,39 +24682,46 @@
             "line": 151
           },
           {
+            "name": "StackContainer",
+            "kind": "struct",
+            "description": "Layered child container that lays out every child in the same content rectangle but shows one active page.",
+            "file": "src/ui/containers.rs",
+            "line": 211
+          },
+          {
             "name": "NineSlice",
             "kind": "type",
             "description": "Eight-tuple of `(src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h)` describing one 9-patch tile region.",
             "file": "src/ui/containers.rs",
-            "line": 210
+            "line": 278
           },
           {
             "name": "NinePatch",
             "kind": "struct",
             "description": "9-patch scalable border widget; divides a source image into 9 regions for resolution-independent borders.",
             "file": "src/ui/containers.rs",
-            "line": 213
+            "line": 281
           },
           {
             "name": "GUIWindow",
             "kind": "struct",
             "description": "Floating window with an optional title bar, close button, drag, and resize support.",
             "file": "src/ui/containers.rs",
-            "line": 319
+            "line": 387
           },
           {
             "name": "SplitPanel",
             "kind": "struct",
             "description": "Two-pane container split by a draggable divider along a given orientation.",
             "file": "src/ui/containers.rs",
-            "line": 348
+            "line": 416
           },
           {
             "name": "DockPanel",
             "kind": "struct",
             "description": "Docking container that attaches children to named edges (`\"top\"`, `\"bottom\"`, `\"left\"`, `\"right\"`, `\"fill\"`).",
             "file": "src/ui/containers.rs",
-            "line": 377
+            "line": 445
           }
         ]
       },
@@ -24734,7 +24755,7 @@
             "kind": "struct",
             "description": "Retained-mode GUI context owning all widgets, focus state, animations, drag state, and event queue.",
             "file": "src/ui/context.rs",
-            "line": 283
+            "line": 291
           }
         ]
       },
@@ -25142,28 +25163,28 @@
             "kind": "struct",
             "description": "Top-level TOML layout definition containing an optional resolution hint and the root widget tree.",
             "file": "src/ui/layout_loader.rs",
-            "line": 153
+            "line": 159
           },
           {
             "name": "load_layout_def",
             "kind": "fn",
             "description": "Recursively instantiate `def` and all its `children` into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 160
+            "line": 166
           },
           {
             "name": "load_layout_toml",
             "kind": "fn",
             "description": "Parse `toml_src` into a `LayoutDef` and load it into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 311
+            "line": 380
           },
           {
             "name": "render_to_image",
             "kind": "fn",
             "description": "Run the engine UI rasteriser on `ctx` at the given resolution and save the PNG to `path`.",
             "file": "src/ui/layout_loader.rs",
-            "line": 317
+            "line": 386
           }
         ]
       },
@@ -25252,21 +25273,21 @@
             "kind": "struct",
             "description": "A single laid-out text run with absolute screen position and clip bounds.",
             "file": "src/ui/render.rs",
-            "line": 181
+            "line": 217
           },
           {
             "name": "push_scissor",
             "kind": "fn",
             "description": "Push a scissor rect onto the stack, intersecting with the current topmost scissor.",
             "file": "src/ui/render.rs",
-            "line": 1376
+            "line": 1451
           },
           {
             "name": "pop_scissor",
             "kind": "fn",
             "description": "Pop the topmost scissor rect and restore the previous one (or disable scissor if stack is empty).",
             "file": "src/ui/render.rs",
-            "line": 1397
+            "line": 1472
           }
         ]
       },
@@ -25334,28 +25355,28 @@
             "kind": "enum",
             "description": "Easing function for property animations.",
             "file": "src/ui/widget.rs",
-            "line": 421
+            "line": 437
           },
           {
             "name": "WidgetTransitionKind",
             "kind": "enum",
             "description": "Which property a `WidgetTransition` animates.",
             "file": "src/ui/widget.rs",
-            "line": 502
+            "line": 518
           },
           {
             "name": "WidgetTransition",
             "kind": "struct",
             "description": "Active animation on a `WidgetBase`; evaluated each frame by `GuiContext::update`.",
             "file": "src/ui/widget.rs",
-            "line": 549
+            "line": 565
           },
           {
             "name": "WidgetBase",
             "kind": "struct",
             "description": "Shared layout, identity, and state fields embedded in every concrete widget struct.",
             "file": "src/ui/widget.rs",
-            "line": 630
+            "line": 646
           }
         ]
       },

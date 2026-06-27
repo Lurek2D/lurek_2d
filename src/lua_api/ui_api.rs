@@ -3140,6 +3140,265 @@ fn add_layout_methods(
     )?;
     Ok(())
 }
+/// Adds stack-container-specific methods to stack and tab container widget tables.
+fn add_stack_container_methods(
+    lua: &Lua,
+    t: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+    include_tabs: bool,
+) -> LuaResult<()> {
+    let c = ctx.clone();
+    // -- setActiveIndex --
+    /// Sets the active child page by 1-based child index.
+    /// @param | self | LStackContainer | The widget instance.
+    /// @param | index | integer | The 1-based child index to show.
+    /// @return | boolean | True when the index exists and was set.
+    t.set(
+        "setActiveIndex",
+        lua.create_function(move |_, (_self, index): (LuaValue, usize)| {
+            if index == 0 {
+                return Ok(false);
+            }
+            let mut g = c.borrow_mut();
+            let changed = match g.widgets.get_mut(idx) {
+                Some(WidgetKind::StackContainer(stack)) | Some(WidgetKind::TabContainer(stack)) => {
+                    stack.set_active_index(index - 1)
+                }
+                _ => false,
+            };
+            if changed {
+                g.mark_widget_dirty(true, true, true, true);
+            }
+            Ok(changed)
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getActiveIndex --
+    /// Returns the active child page as a 1-based index.
+    /// @param | self | LStackContainer | The widget instance.
+    /// @return | integer | The active child index, or 0 when unavailable.
+    t.set(
+        "getActiveIndex",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::StackContainer(stack)) | Some(WidgetKind::TabContainer(stack)) => {
+                    if stack.children.is_empty() {
+                        0
+                    } else {
+                        stack.active_index + 1
+                    }
+                }
+                _ => 0,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getActiveChild --
+    /// Returns the widget index of the active child page.
+    /// @param | self | LStackContainer | The widget instance.
+    /// @return | integer|nil | The active child widget index, or nil when no child exists.
+    t.set(
+        "getActiveChild",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::StackContainer(stack)) | Some(WidgetKind::TabContainer(stack)) => {
+                    stack.children.get(stack.active_index).copied()
+                }
+                _ => None,
+            })
+        })?,
+    )?;
+    if include_tabs {
+        let c = ctx.clone();
+        // -- addTab --
+        /// Adds a tab/page label to this stack or tab container.
+        /// @param | self | LStackContainer | The widget instance.
+        /// @param | label | string | The visible tab label.
+        t.set(
+            "addTab",
+            lua.create_function(move |_, (_self, label): (LuaValue, String)| {
+                let mut g = c.borrow_mut();
+                let changed = match g.widgets.get_mut(idx) {
+                    Some(WidgetKind::StackContainer(stack))
+                    | Some(WidgetKind::TabContainer(stack)) => {
+                        stack.add_tab(label);
+                        true
+                    }
+                    _ => false,
+                };
+                if changed {
+                    g.mark_widget_dirty(true, true, true, true);
+                }
+                Ok(())
+            })?,
+        )?;
+        let c = ctx.clone();
+        // -- getTab --
+        /// Returns a tab/page label by 1-based index.
+        /// @param | self | LStackContainer | The widget instance.
+        /// @param | index | integer | The 1-based tab index.
+        /// @return | string|nil | The tab label, or nil when out of range.
+        t.set(
+            "getTab",
+            lua.create_function(move |_, (_self, index): (LuaValue, usize)| {
+                let g = c.borrow();
+                Ok(match g.widgets.get(idx) {
+                    Some(WidgetKind::StackContainer(stack)) if index >= 1 => {
+                        stack.tabs.get(index - 1).cloned()
+                    }
+                    Some(WidgetKind::TabContainer(stack)) if index >= 1 => {
+                        stack.tabs.get(index - 1).cloned()
+                    }
+                    _ => None,
+                })
+            })?,
+        )?;
+        let c = ctx.clone();
+        // -- getTabCount --
+        /// Returns the number of tab/page labels in this stack or tab container.
+        /// @param | self | LStackContainer | The widget instance.
+        /// @return | integer | The tab label count.
+        t.set(
+            "getTabCount",
+            lua.create_function(move |_, _self: LuaValue| {
+                let g = c.borrow();
+                Ok(match g.widgets.get(idx) {
+                    Some(WidgetKind::StackContainer(stack)) => stack.tabs.len(),
+                    Some(WidgetKind::TabContainer(stack)) => stack.tabs.len(),
+                    _ => 0,
+                })
+            })?,
+        )?;
+    }
+    Ok(())
+}
+/// Adds tab-container-specific methods to tab container widget tables.
+fn add_tab_container_methods(
+    lua: &Lua,
+    t: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+) -> LuaResult<()> {
+    let c = ctx.clone();
+    // -- setActiveIndex --
+    /// Sets the active tab page by 1-based child index.
+    /// @param | self | LTabContainer | The widget instance.
+    /// @param | index | integer | The 1-based child index to show.
+    /// @return | boolean | True when the index exists and was set.
+    t.set(
+        "setActiveIndex",
+        lua.create_function(move |_, (_self, index): (LuaValue, usize)| {
+            if index == 0 {
+                return Ok(false);
+            }
+            let mut g = c.borrow_mut();
+            let changed = match g.widgets.get_mut(idx) {
+                Some(WidgetKind::TabContainer(stack)) => stack.set_active_index(index - 1),
+                _ => false,
+            };
+            if changed {
+                g.mark_widget_dirty(true, true, true, true);
+            }
+            Ok(changed)
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getActiveIndex --
+    /// Returns the active tab page as a 1-based child index.
+    /// @param | self | LTabContainer | The widget instance.
+    /// @return | integer | The active child index, or 0 when unavailable.
+    t.set(
+        "getActiveIndex",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TabContainer(stack)) => {
+                    if stack.children.is_empty() {
+                        0
+                    } else {
+                        stack.active_index + 1
+                    }
+                }
+                _ => 0,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getActiveChild --
+    /// Returns the widget index of the active tab page.
+    /// @param | self | LTabContainer | The widget instance.
+    /// @return | integer|nil | The active child widget index, or nil when no child exists.
+    t.set(
+        "getActiveChild",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TabContainer(stack)) => {
+                    stack.children.get(stack.active_index).copied()
+                }
+                _ => None,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- addTab --
+    /// Adds a tab label to this tab container.
+    /// @param | self | LTabContainer | The widget instance.
+    /// @param | label | string | The visible tab label.
+    t.set(
+        "addTab",
+        lua.create_function(move |_, (_self, label): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            let changed = if let Some(WidgetKind::TabContainer(stack)) = g.widgets.get_mut(idx) {
+                stack.add_tab(label);
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, true, true, true);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getTab --
+    /// Returns a tab label by 1-based index.
+    /// @param | self | LTabContainer | The widget instance.
+    /// @param | index | integer | The 1-based tab index.
+    /// @return | string|nil | The tab label, or nil when out of range.
+    t.set(
+        "getTab",
+        lua.create_function(move |_, (_self, index): (LuaValue, usize)| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TabContainer(stack)) if index >= 1 => {
+                    stack.tabs.get(index - 1).cloned()
+                }
+                _ => None,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getTabCount --
+    /// Returns the number of tab labels in this tab container.
+    /// @param | self | LTabContainer | The widget instance.
+    /// @return | integer | The tab label count.
+    t.set(
+        "getTabCount",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TabContainer(stack)) => stack.tabs.len(),
+                _ => 0,
+            })
+        })?,
+    )?;
+    Ok(())
+}
 /// Adds scroll-panel-specific methods to a scroll panel widget table.
 fn add_scroll_panel_methods(
     lua: &Lua,
@@ -6689,6 +6948,8 @@ fn parse_widget_type(s: &str) -> Option<WidgetType> {
         "scrollbar" => Some(WidgetType::ScrollBar),
         "guiwindow" => Some(WidgetType::GUIWindow),
         "splitpanel" => Some(WidgetType::SplitPanel),
+        "stackcontainer" | "stack" => Some(WidgetType::StackContainer),
+        "tabcontainer" => Some(WidgetType::TabContainer),
         "dockpanel" => Some(WidgetType::DockPanel),
         "toolbar" => Some(WidgetType::Toolbar),
         "menubar" => Some(WidgetType::MenuBar),
@@ -7017,11 +7278,136 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
     let c = ctx.clone();
     let cbs = callbacks.clone();
+    // -- newVBoxContainer --
+    /// Creates a vertical box container that stacks children top-to-bottom.
+    /// @return | LLayout | The new vertical layout widget table.
+    tbl.set(
+        "newVBoxContainer",
+        lua.create_function(move |lua, ()| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_layout(LayoutDirection::Vertical);
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LLayout")?;
+            add_layout_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newHBoxContainer --
+    /// Creates a horizontal box container that stacks children left-to-right.
+    /// @return | LLayout | The new horizontal layout widget table.
+    tbl.set(
+        "newHBoxContainer",
+        lua.create_function(move |lua, ()| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_layout(LayoutDirection::Horizontal);
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LLayout")?;
+            add_layout_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newGridContainer --
+    /// Creates a grid container with an optional column count.
+    /// @param | columns | integer? | Number of columns; defaults to 1.
+    /// @return | LLayout | The new grid layout widget table.
+    tbl.set(
+        "newGridContainer",
+        lua.create_function(move |lua, columns: Option<usize>| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_layout(LayoutDirection::Grid);
+            if let Some(WidgetKind::Layout(layout)) = g.widgets.get_mut(idx) {
+                layout.columns = columns.unwrap_or(1).max(1);
+            }
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LLayout")?;
+            add_layout_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newMarginContainer --
+    /// Creates a padding container around one or more child widgets using CSS-style shorthand.
+    /// @param | top | number? | Top padding in pixels; defaults to 0.
+    /// @param | right | number? | Right padding; defaults to top.
+    /// @param | bottom | number? | Bottom padding; defaults to top.
+    /// @param | left | number? | Left padding; defaults to right.
+    /// @return | LLayout | The new margin container widget table.
+    tbl.set(
+        "newMarginContainer",
+        lua.create_function(
+            move |lua,
+                  (top, right, bottom, left): (
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
+                let top = top.unwrap_or(0.0).max(0.0);
+                let right = right.unwrap_or(top).max(0.0);
+                let bottom = bottom.unwrap_or(top).max(0.0);
+                let left = left.unwrap_or(right).max(0.0);
+                let mut g = c.borrow_mut();
+                let idx = g.add_layout(LayoutDirection::Vertical);
+                if let Some(WidgetKind::Layout(layout)) = g.widgets.get_mut(idx) {
+                    layout.base.padding = [top, right, bottom, left];
+                    layout.align = "stretch".to_string();
+                    layout.justify = "start".to_string();
+                }
+                drop(g);
+                let t = create_widget_table(lua, &c, idx, &cbs, "LLayout")?;
+                add_layout_methods(lua, &t, &c, idx)?;
+                Ok(t)
+            },
+        )?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newCenterContainer --
+    /// Creates a container that centers its child along both axes.
+    /// @return | LLayout | The new centered layout widget table.
+    tbl.set(
+        "newCenterContainer",
+        lua.create_function(move |lua, ()| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_layout(LayoutDirection::Vertical);
+            if let Some(WidgetKind::Layout(layout)) = g.widgets.get_mut(idx) {
+                layout.align = "center".to_string();
+                layout.justify = "center".to_string();
+            }
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LLayout")?;
+            add_layout_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
     // -- newScrollPanel --
     /// Creates a new scrollable panel widget.
     /// @return | LScrollPanel | The new scroll panel widget table.
     tbl.set(
         "newScrollPanel",
+        lua.create_function(move |lua, ()| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_scroll_panel();
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LScrollPanel")?;
+            add_scroll_panel_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newScrollContainer --
+    /// Creates a scroll container alias for `newScrollPanel`.
+    /// @return | LScrollPanel | The new scroll panel widget table.
+    tbl.set(
+        "newScrollContainer",
         lua.create_function(move |lua, ()| {
             let mut g = c.borrow_mut();
             let idx = g.add_scroll_panel();
@@ -7203,6 +7589,56 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             drop(g);
             let t = create_widget_table(lua, &c, idx, &cbs, "LSplitPanel")?;
             add_split_panel_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newSplitContainer --
+    /// Creates a split container alias for `newSplitPanel`.
+    /// @param | orientation | string? | "horizontal" or "vertical" (default "horizontal").
+    /// @return | LSplitPanel | The new split panel widget table.
+    tbl.set(
+        "newSplitContainer",
+        lua.create_function(move |lua, orientation: Option<String>| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_split_panel(orientation.unwrap_or_else(|| "horizontal".to_string()));
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LSplitPanel")?;
+            add_split_panel_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newStackContainer --
+    /// Creates a stack container that lays out all children in one rectangle and shows one active child.
+    /// @return | LStackContainer | The new stack container widget table.
+    tbl.set(
+        "newStackContainer",
+        lua.create_function(move |lua, ()| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_stack_container();
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LStackContainer")?;
+            add_stack_container_methods(lua, &t, &c, idx, true)?;
+            Ok(t)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    // -- newTabContainer --
+    /// Creates a tab container with tab labels and one active child page.
+    /// @return | LTabContainer | The new tab container widget table.
+    tbl.set(
+        "newTabContainer",
+        lua.create_function(move |lua, ()| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_tab_container();
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs, "LTabContainer")?;
+            add_stack_container_methods(lua, &t, &c, idx, false)?;
+            add_tab_container_methods(lua, &t, &c, idx)?;
             Ok(t)
         })?,
     )?;
@@ -8463,6 +8899,15 @@ fn apply_widget_container_fields(def: &mut crate::ui::WidgetDef, table: &mlua::T
     def.justify = table.get("justify").ok();
     def.columns = table.get("columns").ok();
     def.wrap = table.get("wrap").ok();
+    def.active_index = table
+        .get("active_index")
+        .or_else(|_| table.get("activeIndex"))
+        .ok();
+    def.tabs = table.get("tabs").ok();
+    def.tab_bar_height = table
+        .get("tab_bar_height")
+        .or_else(|_| table.get("tabBarHeight"))
+        .ok();
     def.orientation = table.get("orientation").ok();
     def.group = table.get("group").ok();
     def.slot = table.get("slot").ok();

@@ -578,6 +578,90 @@ do
     example_print_log("spacing = " .. col:getSpacing())
 end
 
+--@api: lurek.ui.newVBoxContainer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local menu = lurek.ui.newVBoxContainer()
+    menu:setSpacing(8)
+    menu:addChild(lurek.ui.newButton("Start"))
+    menu:addChild(lurek.ui.newButton("Options"))
+    example_print_log("vbox children = " .. menu:getChildCount())
+end
+
+--@api: lurek.ui.newHBoxContainer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local hud = lurek.ui.newHBoxContainer()
+    hud:setSpacing(6)
+    hud:addChild(lurek.ui.newLabel("HP"))
+    hud:addChild(lurek.ui.newProgressBar(0, 100))
+    example_print_log("hbox direction = " .. hud:getDirection())
+end
+
+--@api: lurek.ui.newGridContainer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local inventory = lurek.ui.newGridContainer(3)
+    inventory:setSpacing(4)
+    inventory:addChild(lurek.ui.newButton("Slot 1"))
+    inventory:addChild(lurek.ui.newButton("Slot 2"))
+    example_print_log("grid direction = " .. inventory:getDirection())
+end
+
+--@api: lurek.ui.newMarginContainer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local safe_hud = lurek.ui.newMarginContainer(12, 16)
+    local label = lurek.ui.newLabel("Quest updated")
+    safe_hud:addChild(label)
+    local top, right = safe_hud:getPadding()
+    example_print_log("margin padding = " .. top .. "," .. right)
+end
+
+--@api: lurek.ui.newCenterContainer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local modal_host = lurek.ui.newCenterContainer()
+    modal_host:addChild(lurek.ui.newPanel())
+    example_print_log("center align = " .. modal_host:getAlign())
+    example_print_log("center justify = " .. modal_host:getJustify())
+end
+
 --@api: LLayout:setDirection
 do
     local function example_print_log(...)
@@ -1150,6 +1234,24 @@ do
     example_print_log("min panel = " .. split:getMinPanelSize())
 end
 
+--@api: lurek.ui.newSplitContainer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local split = lurek.ui.newSplitContainer("vertical")
+    local top = lurek.ui.newPanel()
+    local bottom = lurek.ui.newPanel()
+    split:setFirstChild(top._idx)
+    split:setSecondChild(bottom._idx)
+    example_print_log("split container = " .. split:getOrientation())
+end
+
 --@api: lurek.ui.newScrollPanel
 do
     local function example_print_log(...)
@@ -1170,6 +1272,250 @@ do
     example_print_log("scroll pos = " .. sx .. ", " .. sy)
     local mx, my = scroll:getMaxScroll()
     example_print_log("max scroll = " .. mx .. ", " .. my)
+end
+
+--@api: lurek.ui.newScrollContainer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local scroll = lurek.ui.newScrollContainer()
+    scroll:setContentSize(640, 960)
+    scroll:setScrollPosition(0, 32)
+    local sx, sy = scroll:getScrollPosition()
+    example_print_log("scroll container pos = " .. sx .. ", " .. sy)
+end
+
+--@api: lurek.ui.newStackContainer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addChild(lurek.ui.newPanel())
+    stack:addChild(lurek.ui.newPanel())
+    stack:setActiveIndex(2)
+    example_print_log("stack active = " .. stack:getActiveIndex())
+end
+
+--@api: LStackContainer:setActiveIndex
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addChild(lurek.ui.newPanel())
+    stack:addChild(lurek.ui.newPanel())
+    local changed = stack:setActiveIndex(2)
+    example_print_log("active changed = " .. tostring(changed))
+end
+
+--@api: LStackContainer:getActiveIndex
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addChild(lurek.ui.newPanel())
+    stack:setActiveIndex(1)
+    example_print_log("active index = " .. stack:getActiveIndex())
+end
+
+--@api: LStackContainer:getActiveChild
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    local page = lurek.ui.newPanel()
+    stack:addChild(page)
+    example_print_log("active child = " .. tostring(stack:getActiveChild()))
+end
+
+--@api: LStackContainer:addTab
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addTab("Inventory")
+    stack:addTab("Map")
+    example_print_log("stack labels = " .. stack:getTabCount())
+end
+
+--@api: LStackContainer:getTab
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addTab("Journal")
+    local label = stack:getTab(1)
+    example_print_log("stack label = " .. tostring(label))
+end
+
+--@api: LStackContainer:getTabCount
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local stack = lurek.ui.newStackContainer()
+    stack:addTab("Stats")
+    stack:addTab("Equipment")
+    example_print_log("stack label count = " .. stack:getTabCount())
+end
+
+--@api: lurek.ui.newTabContainer
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addTab("Video")
+    tabs:addChild(lurek.ui.newPanel())
+    example_print_log("tab container count = " .. tabs:getTabCount())
+end
+
+--@api: LTabContainer:setActiveIndex
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addChild(lurek.ui.newPanel())
+    tabs:addChild(lurek.ui.newPanel())
+    local changed = tabs:setActiveIndex(2)
+    example_print_log("tab active changed = " .. tostring(changed))
+end
+
+--@api: LTabContainer:getActiveIndex
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addChild(lurek.ui.newPanel())
+    tabs:setActiveIndex(1)
+    example_print_log("tab active index = " .. tabs:getActiveIndex())
+end
+
+--@api: LTabContainer:getActiveChild
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    local page = lurek.ui.newPanel()
+    tabs:addChild(page)
+    example_print_log("tab active child = " .. tostring(tabs:getActiveChild()))
+end
+
+--@api: LTabContainer:addTab
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addTab("Audio")
+    tabs:addTab("Controls")
+    example_print_log("tab labels = " .. tabs:getTabCount())
+end
+
+--@api: LTabContainer:getTab
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addTab("Gameplay")
+    local label = tabs:getTab(1)
+    example_print_log("first tab = " .. tostring(label))
+end
+
+--@api: LTabContainer:getTabCount
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local tabs = lurek.ui.newTabContainer()
+    tabs:addTab("Video")
+    tabs:addTab("Audio")
+    example_print_log("tab count = " .. tabs:getTabCount())
 end
 
 --@api: LScrollPanel:setScrollSpeed

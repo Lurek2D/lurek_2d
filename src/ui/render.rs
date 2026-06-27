@@ -1221,11 +1221,20 @@ fn emit_text_at(
     });
 }
 
-fn emit_text_centered_vertically(
-    text: &str,
+struct TextVerticalBox {
     x: f32,
     y: f32,
     height: f32,
+}
+impl TextVerticalBox {
+    fn new(x: f32, y: f32, height: f32) -> Self {
+        Self { x, y, height }
+    }
+}
+
+fn emit_text_centered_vertically(
+    text: &str,
+    bounds: TextVerticalBox,
     font_key: FontKey,
     font: Option<&Font>,
     style: &WidgetStyle,
@@ -1233,8 +1242,8 @@ fn emit_text_centered_vertically(
 ) {
     emit_text_at(
         text,
-        x,
-        text_origin_y(text, y, height, style, font),
+        bounds.x,
+        text_origin_y(text, bounds.y, bounds.height, style, font),
         font_key,
         font,
         style,
@@ -1546,7 +1555,10 @@ fn render_widget(
 ) {
     let widget = &ctx.widgets[idx];
     let raw_base = widget.base();
-    if !raw_base.visible || matches!(widget, WidgetKind::Dialog(dialog) if !dialog.open) {
+    if !raw_base.visible
+        || !raw_base.is_visible
+        || matches!(widget, WidgetKind::Dialog(dialog) if !dialog.open)
+    {
         return;
     }
     // Use computed_rect for absolute screen coordinates; fall back to raw fields if layout has not run.
@@ -1585,9 +1597,7 @@ fn render_widget(
             emit_spin_box(base, style, cmds);
             emit_text_centered_vertically(
                 &format!("{}", w.value),
-                base.x + 8.0,
-                base.y,
-                base.height,
+                TextVerticalBox::new(base.x + 8.0, base.y, base.height),
                 font_key,
                 font,
                 style,
@@ -1600,9 +1610,7 @@ fn render_widget(
             let pct = (((w.value - w.min) / range).clamp(0.0, 1.0) * 100.0).round() as i32;
             emit_text_centered_vertically(
                 &format!("{pct}%"),
-                base.x + (base.width - 24.0) * 0.5,
-                base.y,
-                base.height,
+                TextVerticalBox::new(base.x + (base.width - 24.0) * 0.5, base.y, base.height),
                 font_key,
                 font,
                 style,
@@ -1616,9 +1624,7 @@ fn render_widget(
             if !w.text.is_empty() {
                 emit_text_centered_vertically(
                     &w.text,
-                    base.x + base.height + 6.0,
-                    base.y,
-                    base.height,
+                    TextVerticalBox::new(base.x + base.height + 6.0, base.y, base.height),
                     font_key,
                     font,
                     style,
@@ -1633,9 +1639,7 @@ fn render_widget(
             if !w.text.is_empty() {
                 emit_text_centered_vertically(
                     &w.text,
-                    base.x + base.height + 6.0,
-                    base.y,
-                    base.height,
+                    TextVerticalBox::new(base.x + base.height + 6.0, base.y, base.height),
                     font_key,
                     font,
                     style,
@@ -1685,9 +1689,7 @@ fn render_widget(
                 text_style.fg_color = [tr, tg, tb, ta];
                 emit_text_centered_vertically(
                     content,
-                    base.x + base.padding[3] + 4.0,
-                    base.y,
-                    base.height,
+                    TextVerticalBox::new(base.x + base.padding[3] + 4.0, base.y, base.height),
                     font_key,
                     font,
                     &text_style,
@@ -1719,9 +1721,7 @@ fn render_widget(
             if let Some(text) = w.selected_item() {
                 emit_text_centered_vertically(
                     text,
-                    base.x + 6.0,
-                    base.y,
-                    base.height,
+                    TextVerticalBox::new(base.x + 6.0, base.y, base.height),
                     font_key,
                     font,
                     style,
@@ -1758,9 +1758,7 @@ fn render_widget(
                         }
                         emit_text_centered_vertically(
                             item,
-                            drop_rect.x + 6.0,
-                            row_y,
-                            row_h,
+                            TextVerticalBox::new(drop_rect.x + 6.0, row_y, row_h),
                             font_key,
                             font,
                             style,
@@ -1799,9 +1797,7 @@ fn render_widget(
                 }
                 emit_text_centered_vertically(
                     item,
-                    base.x + 6.0,
-                    row_y,
-                    row_h,
+                    TextVerticalBox::new(base.x + 6.0, row_y, row_h),
                     font_key,
                     font,
                     style,
@@ -1853,9 +1849,11 @@ fn render_widget(
                     }
                     emit_text_centered_vertically(
                         tab,
-                        tab_x + (tab_w - measure_text(tab, style, font)) * 0.5,
-                        base.y,
-                        base.height,
+                        TextVerticalBox::new(
+                            tab_x + (tab_w - measure_text(tab, style, font)) * 0.5,
+                            base.y,
+                            base.height,
+                        ),
                         font_key,
                         font,
                         style,
@@ -2423,9 +2421,7 @@ fn render_widget(
                 let arrow = if group.collapsed { ">" } else { "v" };
                 emit_text_centered_vertically(
                     arrow,
-                    base.x + 8.0,
-                    y,
-                    header_h,
+                    TextVerticalBox::new(base.x + 8.0, y, header_h),
                     font_key,
                     font,
                     style,
@@ -2433,9 +2429,7 @@ fn render_widget(
                 );
                 emit_text_centered_vertically(
                     &group.title,
-                    base.x + 22.0,
-                    y,
-                    header_h,
+                    TextVerticalBox::new(base.x + 22.0, y, header_h),
                     font_key,
                     font,
                     style,
@@ -2467,9 +2461,7 @@ fn render_widget(
                     });
                     emit_text_centered_vertically(
                         &row.name,
-                        base.x + 8.0,
-                        y,
-                        row_h,
+                        TextVerticalBox::new(base.x + 8.0, y, row_h),
                         font_key,
                         font,
                         style,
@@ -2489,9 +2481,7 @@ fn render_widget(
                             if property_value_checked(&row.value) {
                                 emit_text_centered_vertically(
                                     "x",
-                                    value_x + 2.0,
-                                    y,
-                                    row_h,
+                                    TextVerticalBox::new(value_x + 2.0, y, row_h),
                                     font_key,
                                     font,
                                     style,
@@ -2517,9 +2507,7 @@ fn render_widget(
                             }
                             emit_text_centered_vertically(
                                 &row.value,
-                                value_x + 20.0,
-                                y,
-                                row_h,
+                                TextVerticalBox::new(value_x + 20.0, y, row_h),
                                 font_key,
                                 font,
                                 style,
@@ -2528,13 +2516,16 @@ fn render_widget(
                         }
                         crate::ui::PropertyValueKind::Select => {
                             emit_text_centered_vertically(
-                                &row.value, value_x, y, row_h, font_key, font, style, cmds,
+                                &row.value,
+                                TextVerticalBox::new(value_x, y, row_h),
+                                font_key,
+                                font,
+                                style,
+                                cmds,
                             );
                             emit_text_centered_vertically(
                                 "v",
-                                base.x + base.width - 16.0,
-                                y,
-                                row_h,
+                                TextVerticalBox::new(base.x + base.width - 16.0, y, row_h),
                                 font_key,
                                 font,
                                 style,
@@ -2543,7 +2534,12 @@ fn render_widget(
                         }
                         _ => {
                             emit_text_centered_vertically(
-                                &row.value, value_x, y, row_h, font_key, font, style, cmds,
+                                &row.value,
+                                TextVerticalBox::new(value_x, y, row_h),
+                                font_key,
+                                font,
+                                style,
+                                cmds,
                             );
                         }
                     }
@@ -2691,7 +2687,10 @@ impl GuiContext {
                 continue;
             };
             let base = widget.base();
-            if !base.visible || matches!(widget, WidgetKind::Dialog(dialog) if !dialog.open) {
+            if !base.visible
+                || !base.is_visible
+                || matches!(widget, WidgetKind::Dialog(dialog) if !dialog.open)
+            {
                 continue;
             }
             let rect = base.computed_rect;
@@ -3952,6 +3951,8 @@ impl GuiContext {
                 WidgetKind::Panel(_)
                 | WidgetKind::Layout(_)
                 | WidgetKind::ScrollPanel(_)
+                | WidgetKind::StackContainer(_)
+                | WidgetKind::TabContainer(_)
                 | WidgetKind::NinePatch(_)
                 | WidgetKind::DockPanel(_)
                 | WidgetKind::Button(_)

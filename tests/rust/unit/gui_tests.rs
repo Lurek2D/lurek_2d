@@ -1139,6 +1139,64 @@ fn scroll_panel_max_scroll_uses_computed_rect() {
 }
 
 #[test]
+fn split_panel_layout_assigns_two_child_rectangles() {
+    let mut ctx = GuiContext::new();
+    ctx.set_viewport(320.0, 200.0);
+    let split_idx = ctx.add_split_panel("horizontal");
+    let first_idx = ctx.add_panel();
+    let second_idx = ctx.add_panel();
+    {
+        let base = ctx.widgets[split_idx].base_mut();
+        base.width = 200.0;
+        base.height = 100.0;
+    }
+    if let WidgetKind::SplitPanel(split) = &mut ctx.widgets[split_idx] {
+        split.min_panel_size = 0.0;
+        split.split_position = 0.25;
+        split.first_child = Some(first_idx);
+        split.second_child = Some(second_idx);
+    }
+    assert!(ctx.add_child(0, split_idx));
+
+    ctx.run_layout_pass();
+
+    let first = ctx.widgets[first_idx].base().computed_rect;
+    let second = ctx.widgets[second_idx].base().computed_rect;
+    assert!((first.width - 50.0).abs() < 1e-5);
+    assert!((second.x - 50.0).abs() < 1e-5);
+    assert!((second.width - 150.0).abs() < 1e-5);
+}
+
+#[test]
+fn stack_container_layout_only_marks_active_child_visible() {
+    let mut ctx = GuiContext::new();
+    ctx.set_viewport(320.0, 200.0);
+    let stack_idx = ctx.add_stack_container();
+    let first_idx = ctx.add_panel();
+    let second_idx = ctx.add_panel();
+    {
+        let base = ctx.widgets[stack_idx].base_mut();
+        base.width = 180.0;
+        base.height = 90.0;
+    }
+    assert!(ctx.add_child(stack_idx, first_idx));
+    assert!(ctx.add_child(stack_idx, second_idx));
+    if let WidgetKind::StackContainer(stack) = &mut ctx.widgets[stack_idx] {
+        assert!(stack.set_active_index(1));
+    }
+    assert!(ctx.add_child(0, stack_idx));
+
+    ctx.run_layout_pass();
+
+    let first = ctx.widgets[first_idx].base();
+    let second = ctx.widgets[second_idx].base();
+    assert!(!first.is_visible);
+    assert!(second.is_visible);
+    assert!((second.computed_rect.width - 180.0).abs() < 1e-5);
+    assert!((second.computed_rect.height - 90.0).abs() < 1e-5);
+}
+
+#[test]
 fn ninepatch_invalid_insets_are_sanitized() {
     let mut ninepatch = NinePatch::new();
     ninepatch.image_width = 10;

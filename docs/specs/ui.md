@@ -6,6 +6,7 @@
 
 - Centralized retained-mode UI context with arena storage, automatic layouts, and resolution scaling.
 - Rich control catalog featuring standard inputs, numeric steppers, combo selections, and visual containers.
+- Layout-manager containers cover vertical boxes, horizontal boxes, grids, margin/padding wrappers, centering, scroll regions, split regions, stacks, and tabbed page containers.
 - Property inspector widget for grouped name/value rows with collapsible sections and predefined value editors.
 - Supports resizable window shells, modal dialog triggers, and nine-slice border-stretching layouts.
 - Declarative TOML layouts, semantic theme tokens, alpha-aware animations, and drag-and-drop event dispatching.
@@ -17,7 +18,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `97` functions, `40` types, `358` methods
+- Lua API surface: `106` functions, `42` types, `370` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -34,6 +35,10 @@
 - For inspector-style tools, TOML can define property widget groups and rows directly, so configuration panels can live as content while Lua remains responsible for runtime value updates and callbacks.
 - Styling is not a thin afterthought. Themes, classes, semantic colors, spacing, typography, borders, fills, corner treatment, widget states, and transition-friendly variants all live inside one coherent theme system so several screens can share a recognizable visual language.
 - Layout calculation is another central responsibility. The module resolves requested size, parent constraints, alignment, padding, spacing, scrolling, overflow, clipping, stacking order, and viewport-aware placement into concrete geometry so widgets can be reasoned about structurally instead of geometrically line by line.
+- Layout-manager constructors expose the common screen-structure vocabulary directly: `newVBoxContainer`, `newHBoxContainer`, `newGridContainer`, `newMarginContainer`, `newCenterContainer`, `newScrollContainer`, `newSplitContainer`, `newStackContainer`, and `newTabContainer`. These names mirror the way users think about menu columns, HUD rows, inventory grids, safe-area padding, centered dialogs, scrollable lists, resizable panes, layered views, and settings tabs.
+- `Layout` remains the underlying owner for box, grid, margin, and center behavior, so spacing, padding, alignment, justification, flex grow, and child margins stay on one code path instead of fragmenting into one-off containers.
+- `StackContainer` and `TabContainer` own page selection. They keep all child pages in the retained tree while the layout pass marks only the active child as effectively visible, which lets hidden pages preserve state without being drawn or hit-tested as active content.
+- `SplitPanel` owns two explicit child slots and divides its content rectangle in the layout pass with a clamped split fraction and minimum panel size, making dockable editor-style panes layout-managed rather than manually positioned.
 - Scroll regions, nested containers, resizable panels, and dock-like arrangements are important examples of why layout belongs here: they require persistent bookkeeping and cross-widget coordination that would become brittle if each feature implemented its own layout rules.
 - Input routing is part of the same authority. Mouse, keyboard, controller-like activation, focus traversal, drag, drop, text entry, pointer capture, and event bubbling all flow through the UI context so the entire screen obeys one interaction model.
 - Binding support turns UI from a decorative layer into a practical application surface. Widgets can synchronize with script-visible values, settings models, editor records, or runtime debug state without every screen inventing its own plumbing for reads, writes, and synchronization.
@@ -254,17 +259,21 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newAccordion() -> LAccordion`: Creates a new accordion widget with collapsible sections.
 - `lurek.ui.newBadge(count?) -> LBadge`: Creates a new badge widget for displaying counts.
 - `lurek.ui.newButton(text?) -> LButton`: Creates a new button widget with optional label text.
+- `lurek.ui.newCenterContainer() -> LLayout`: Creates a container that centers its child along both axes.
 - `lurek.ui.newCheckbox(text?) -> LCheckbox`: Creates a new checkbox widget with optional label.
 - `lurek.ui.newColorPicker() -> LColorPicker`: Creates a new color picker widget for color selection.
 - `lurek.ui.newComboBox() -> LComboBox`: Creates a new combo box (drop-down) widget.
 - `lurek.ui.newCustomWidget(config?) -> LUiWidget`: Creates a new custom widget with optional initial configuration.
 - `lurek.ui.newDialog(title?) -> LDialog`: Creates a new dialog widget with an optional title.
 - `lurek.ui.newDockPanel() -> LDockPanel`: Creates a new dock panel widget for docking child widgets to sides.
+- `lurek.ui.newGridContainer(columns?) -> LLayout`: Creates a grid container with an optional column count.
+- `lurek.ui.newHBoxContainer() -> LLayout`: Creates a horizontal box container that stacks children left-to-right.
 - `lurek.ui.newIcon(icon) -> LLabel|nil`: Creates a label-like widget that displays only a built-in UI icon.
 - `lurek.ui.newImageWidget() -> LImageWidget`: Creates a new image display widget.
 - `lurek.ui.newLabel(text?) -> LLabel`: Creates a new label widget for displaying text.
 - `lurek.ui.newLayout(direction?) -> LLayout`: Creates a new layout container widget.
 - `lurek.ui.newList() -> LListBox`: Creates a new list box widget for item selection.
+- `lurek.ui.newMarginContainer(top?, right?, bottom?, left?) -> LLayout`: Creates a padding container around one or more child widgets using CSS-style shorthand.
 - `lurek.ui.newMenuBar() -> LMenuBar`: Creates a new menu bar widget for top-level menus.
 - `lurek.ui.newMenuItem(text?) -> LMenuItem`: Creates a new menu item widget with optional text.
 - `lurek.ui.newNinePatch() -> LNinePatch`: Creates a new nine-patch widget for scalable bordered images.
@@ -273,15 +282,19 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newPropertyWidget() -> LPropertyWidget`: Creates a new property inspector widget with collapsible groups and typed value rows.
 - `lurek.ui.newRadioButton(text?, group?) -> LRadioButton`: Creates a new radio button widget in a named group.
 - `lurek.ui.newScrollBar(vertical?) -> LScrollBar`: Creates a new scroll bar widget for content scrolling.
+- `lurek.ui.newScrollContainer() -> LScrollPanel`: Creates a scroll container alias for `newScrollPanel`.
 - `lurek.ui.newScrollPanel() -> LScrollPanel`: Creates a new scrollable panel widget.
 - `lurek.ui.newSeparator(vertical?) -> LSeparator`: Creates a new separator widget for visual division.
 - `lurek.ui.newSlider(min?, max?) -> LSlider`: Creates a new slider widget with adjustable range.
 - `lurek.ui.newSpacer(w?, h?) -> LSpacer`: Creates a new spacer widget for spacing between other widgets.
 - `lurek.ui.newSpinBox(min?, max?) -> LSpinBox`: Creates a new spin box (numeric stepper) widget.
+- `lurek.ui.newSplitContainer(orientation?) -> LSplitPanel`: Creates a split container alias for `newSplitPanel`.
 - `lurek.ui.newSplitPanel(orientation?) -> LSplitPanel`: Creates a new split panel widget with two resizable sub-panels.
+- `lurek.ui.newStackContainer() -> LStackContainer`: Creates a stack container that lays out all children in one rectangle and shows one active child.
 - `lurek.ui.newStatusBar() -> LStatusBar`: Creates a new status bar widget for app-level info.
 - `lurek.ui.newSwitch(on?) -> LSwitch`: Creates a new toggle switch widget.
 - `lurek.ui.newTabBar() -> LTabBar`: Creates a new tab bar widget for tabbed navigation.
+- `lurek.ui.newTabContainer() -> LTabContainer`: Creates a tab container with tab labels and one active child page.
 - `lurek.ui.newTable() -> LGuiTable`: Creates a new table widget for tabular data display.
 - `lurek.ui.newTextInput() -> LTextInput`: Creates a new text input widget for user entry.
 - `lurek.ui.newTheme() -> LTheme`: Creates a new UI theme for styling widgets.
@@ -289,6 +302,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newToolbar(orientation?) -> LToolbar`: Creates a new toolbar widget for action buttons.
 - `lurek.ui.newTooltipPanel(text?) -> LTooltipPanel`: Creates a new tooltip panel widget.
 - `lurek.ui.newTreeView() -> LTreeView`: Creates a new tree view widget for hierarchical data.
+- `lurek.ui.newVBoxContainer() -> LLayout`: Creates a vertical box container that stacks children top-to-bottom.
 - `lurek.ui.newWindow(title?) -> LGuiWindow`: Creates a new GUI window widget with an optional title.
 - `lurek.ui.parseWidgetState(state) -> string`: Validates and normalizes a widget state string.
 - `lurek.ui.renderToImage(pathOrWidth, widthOrHeight, heightOrPath) -> nil`: Renders the entire UI to a PNG image file.
@@ -852,6 +866,23 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LSplitPanel:setSecondChild(child_idx) -> nil`: Sets the widget index for the second (right/bottom) panel.
 - `LSplitPanel:setSplitPosition(v) -> nil`: Sets the split position as a fraction (0.0 to 1.0).
 
+#### LStackContainer Type
+
+- Adds stack-container-specific methods to stack and tab container widget tables.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LStackContainer:addTab(label) -> nil`: Adds a tab/page label to this stack or tab container.
+- `LStackContainer:getActiveChild() -> integer|nil`: Returns the widget index of the active child page.
+- `LStackContainer:getActiveIndex() -> integer`: Returns the active child page as a 1-based index.
+- `LStackContainer:getTab(index) -> string|nil`: Returns a tab/page label by 1-based index.
+- `LStackContainer:getTabCount() -> integer`: Returns the number of tab/page labels in this stack or tab container.
+- `LStackContainer:setActiveIndex(index) -> boolean`: Sets the active child page by 1-based child index.
+
 #### LStatusBar Type
 
 - Adds status-bar-specific methods to a status bar widget table.
@@ -899,6 +930,23 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LTabBar:getTabCount() -> integer`: Returns the total number of tabs in this tab bar.
 - `LTabBar:removeTab(index) -> boolean`: Removes the tab at the given 1-based index.
 - `LTabBar:setActiveTab(index) -> nil`: Sets the active (selected) tab by 1-based index.
+
+#### LTabContainer Type
+
+- Adds tab-container-specific methods to tab container widget tables.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LTabContainer:addTab(label) -> nil`: Adds a tab label to this tab container.
+- `LTabContainer:getActiveChild() -> integer|nil`: Returns the widget index of the active tab page.
+- `LTabContainer:getActiveIndex() -> integer`: Returns the active tab page as a 1-based child index.
+- `LTabContainer:getTab(index) -> string|nil`: Returns a tab label by 1-based index.
+- `LTabContainer:getTabCount() -> integer`: Returns the number of tab labels in this tab container.
+- `LTabContainer:setActiveIndex(index) -> boolean`: Sets the active tab page by 1-based child index.
 
 #### LTextInput Type
 

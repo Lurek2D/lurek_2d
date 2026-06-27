@@ -2,4 +2,5 @@ tests/fixtures/ui_layouts/dashboard_fixture.toml|1200x720|tests/artifacts/curren
 tests/fixtures/ui_layouts/diplomacy_fixture.toml|1280x720|tests/artifacts/current/ui/layout_diplomacy_fixture.png
 tests/fixtures/ui_layouts/inventory_fixture.toml|880x624|tests/artifacts/current/ui/layout_inventory_fixture.png
 tests/fixtures/ui_layouts/main_menu_fixture.toml|1280x720|tests/artifacts/current/ui/layout_main_menu_fixture.png
+tests/fixtures/ui_layouts/property_widget_fixture.toml|420x360|tests/artifacts/current/ui/layout_property_widget_fixture.png
 tests/fixtures/ui_layouts/settings_fixture.toml|904x640|tests/artifacts/current/ui/layout_settings_fixture.png

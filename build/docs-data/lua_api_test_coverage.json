@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-26T21:57:37.586425+00:00",
+    "generated": "2026-06-27T08:38:07.172701+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 6331,
-    "marker_covered": 6306,
+    "total_api_functions": 6356,
+    "marker_covered": 6331,
     "describe_covered": 152,
     "describe_coverage_pct": 2.4,
     "heuristic_covered": 0,
-    "total_covered": 6331,
+    "total_covered": 6356,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -40393,14 +40393,14 @@
       ]
     },
     "pipeline": {
-      "total": 66,
-      "marker_covered": 66,
+      "total": 70,
+      "marker_covered": 70,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 66,
+      "covered": 70,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 1.5,
-      "describe_score": 0.015,
+      "describe_coverage_pct": 1.4,
+      "describe_score": 0.014,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_pipeline_unit.lua"
@@ -40590,6 +40590,24 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LPipelineStep:setState",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPipelineStep:getState",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LPipelineStep:setTag",
           "kind": "method",
           "marker_covered": true,
@@ -40609,6 +40627,24 @@
         },
         {
           "lua_name": "LPipelineStep:dependsOn",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPipelineStep:connectOutput",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPipelineStep:getOutputLinks",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -53539,11 +53575,11 @@
       ]
     },
     "ui": {
-      "total": 455,
-      "marker_covered": 455,
+      "total": 476,
+      "marker_covered": 476,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 455,
+      "covered": 476,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -53716,7 +53752,61 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "lurek.ui.newVBoxContainer",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newHBoxContainer",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newGridContainer",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newMarginContainer",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newCenterContainer",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "lurek.ui.newScrollPanel",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newScrollContainer",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -53807,6 +53897,33 @@
         },
         {
           "lua_name": "lurek.ui.newSplitPanel",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newSplitContainer",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newStackContainer",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.ui.newTabContainer",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -55895,6 +56012,114 @@
         },
         {
           "lua_name": "LLayout:getJustify",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStackContainer:setActiveIndex",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStackContainer:getActiveIndex",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStackContainer:getActiveChild",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStackContainer:addTab",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStackContainer:getTab",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStackContainer:getTabCount",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTabContainer:setActiveIndex",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTabContainer:getActiveIndex",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTabContainer:getActiveChild",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTabContainer:addTab",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTabContainer:getTab",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTabContainer:getTabCount",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

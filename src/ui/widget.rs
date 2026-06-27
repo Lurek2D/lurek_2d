@@ -177,6 +177,10 @@ pub enum WidgetType {
     GUIWindow,
     /// Two-pane adjustable divider container.
     SplitPanel,
+    /// Layered container that shows one child page at a time.
+    StackContainer,
+    /// Layered container with tab labels and one active child page.
+    TabContainer,
     /// Dock-zone container.
     DockPanel,
     /// Icon button strip.
@@ -235,6 +239,8 @@ impl WidgetType {
             Self::ScrollBar => "scrollbar",
             Self::GUIWindow => "guiwindow",
             Self::SplitPanel => "splitpanel",
+            Self::StackContainer => "stackcontainer",
+            Self::TabContainer => "tabcontainer",
             Self::DockPanel => "dockpanel",
             Self::Toolbar => "toolbar",
             Self::MenuBar => "menubar",
@@ -277,6 +283,8 @@ impl WidgetType {
             "scrollbar" => Some(Self::ScrollBar),
             "guiwindow" => Some(Self::GUIWindow),
             "splitpanel" => Some(Self::SplitPanel),
+            "stackcontainer" | "stack" => Some(Self::StackContainer),
+            "tabcontainer" => Some(Self::TabContainer),
             "dockpanel" => Some(Self::DockPanel),
             "toolbar" => Some(Self::Toolbar),
             "menubar" => Some(Self::MenuBar),
@@ -320,6 +328,8 @@ impl WidgetType {
             Self::ScrollBar => (16.0, 128.0),
             Self::GUIWindow => (320.0, 240.0),
             Self::SplitPanel => (320.0, 240.0),
+            Self::StackContainer => (320.0, 240.0),
+            Self::TabContainer => (320.0, 240.0),
             Self::DockPanel => (320.0, 240.0),
             Self::Toolbar => (256.0, 32.0),
             Self::MenuBar => (256.0, 32.0),
@@ -350,6 +360,7 @@ impl WidgetType {
                 | Self::ListBox
                 | Self::ScrollPanel
                 | Self::TabBar
+                | Self::TabContainer
                 | Self::TreeView
                 | Self::RadioButton
                 | Self::ScrollBar
@@ -371,6 +382,7 @@ impl WidgetType {
     pub fn default_mouse_filter(self) -> MouseFilter {
         match self {
             Self::Layout
+            | Self::StackContainer
             | Self::Panel
             | Self::Spacer
             | Self::Separator
@@ -391,9 +403,13 @@ impl WidgetType {
             Self::ProgressBar => "progressbar",
             Self::ComboBox => "combobox",
             Self::ListBox => "listbox",
-            Self::Panel | Self::Layout | Self::ScrollPanel | Self::DockPanel => "group",
+            Self::Panel
+            | Self::Layout
+            | Self::ScrollPanel
+            | Self::StackContainer
+            | Self::DockPanel => "group",
             Self::NinePatch | Self::ImageWidget => "image",
-            Self::TabBar => "tablist",
+            Self::TabBar | Self::TabContainer => "tablist",
             Self::Toast | Self::TooltipPanel | Self::StatusBar => "status",
             Self::Separator => "separator",
             Self::Spacer => "presentation",

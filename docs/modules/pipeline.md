@@ -52,9 +52,13 @@ end
 - That makes the module useful for asset processing, validation chains, analytics jobs, build-like tasks, scripted tool workflows, content transforms, and other domains where several operations must be coordinated explicitly.
 - Scheduler logic is important because a pipeline must decide when steps are eligible, blocked, complete, retried, or failed instead of merely storing a list of actions.
 - Result handling matters for the same reason. Multi-step workflows usually need explicit output capture, pass-through state, intermediate artifacts, and error-aware progression rather than simple immediate returns.
+- Each step is a process block, not a logistics node. A callback can receive arbitrary Lua input data, keep local Lua state, return up to five output slots, and let configured output links forward data to later blocks.
+- Signal routing and data routing are separate. A completed block can signal another block without meaningful payload data, forward payload data without being the only structural dependency, or gate either behavior with Lua conditions.
+- Output links make branching and fan-out explicit: one source can send slot 1 to one target, slot 2 to another target, and suppress a target entirely when a predicate rejects the payload.
 - Tool-facing workflows benefit when those stages stay inspectable instead of becoming a black box.
 - The module therefore gives users a stable vocabulary for reasoning about staged work, dependency flow, and execution state instead of accidental nested control structure.
 - Read `pipeline` as the engine feature for explicit staged workflows with clear execution semantics.
+- Do not read `pipeline` as the resource-network simulation owner. `flownet` owns graph logistics, capacities, queues, routing, and item movement; `pipeline` owns flexible process execution and block orchestration that may optionally be driven by data from a graph.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
@@ -1839,6 +1843,62 @@ end
 
 ### Type Methods
 
+#### `LPipelineStep:connectOutput`
+
+Connects one output slot (1..5) to a target step input slot (1..5), optionally gated by a Lua predicate.
+
+```lua
+LPipelineStep:connectOutput(outputSlot, target, inputSlot, condition, signal)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `outputSlot` | number | Source output slot, clamped to 1..5. |
+| `target` | string|[LPipelineStep](#lpipelinestep) | Target step name or step object. |
+| `inputSlot?` | number | Target input slot, defaults to the output slot. |
+| `condition?` | function | Predicate receiving (ctx, payload, sourceName, targetName); false blocks signal and data. |
+| `signal?` | boolean | Whether this link triggers target eligibility; defaults to true. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LPipelineStep](#lpipelinestep) | Returns self for method chaining. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local source = lurek.pipeline.newStep("score", function()
+        return { output1 = { value = 9 } }
+    end)
+    local target = lurek.pipeline.newStep("reward", function(ctx, input)
+        ctx.reward = input[1].value * 10
+    end)
+    source:connectOutput(1, target, 1, function(ctx, payload)
+        return payload.value > 5
+    end)
+
+    local pipe = lurek.pipeline.newPipeline("slot-routing")
+    pipe:addStep(source):addStep(target)
+    pipe:run({})
+    example_print_log("links = " .. #source:getOutputLinks())
+    example_print_log("target status = " .. target:getStatus())
+end
+```
+
+---
+
 #### `LPipelineStep:dependsOn`
 
 Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.
@@ -2218,6 +2278,42 @@ end
 
 ---
 
+#### `LPipelineStep:getOutputLinks`
+
+Returns configured output links for this step.
+
+```lua
+LPipelineStep:getOutputLinks()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of link tables with output, target, input, and signal fields. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local step = lurek.pipeline.newStep("source")
+    step:connectOutput(2, "target", 4, nil, false)
+    local links = step:getOutputLinks()
+    example_print_log("output = " .. tostring(links[1].output))
+    example_print_log("target = " .. tostring(links[1].target))
+end
+```
+
+---
+
 #### `LPipelineStep:getRetryCount`
 
 Returns the configured retry count for this step.
@@ -2259,6 +2355,41 @@ do
     pipe:run({})
 
     example_print_log("retry count = " .. step:getRetryCount())
+end
+```
+
+---
+
+#### `LPipelineStep:getState`
+
+Returns this step's local state table, creating an empty one when none exists.
+
+```lua
+LPipelineStep:getState()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Local step state table. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local step = lurek.pipeline.newStep("stateful")
+    local state = step:getState()
+    state.visits = (state.visits or 0) + 1
+    example_print_log("state visits = " .. tostring(step:getState().visits))
 end
 ```
 
@@ -2857,6 +2988,40 @@ do
 
     example_print_log("attempt = " .. step:getAttempt())
     example_print_log("retry count = " .. step:getRetryCount())
+end
+```
+
+---
+
+#### `LPipelineStep:setState`
+
+Stores a Lua table as local state for this step. The table is retained by registry reference.
+
+```lua
+LPipelineStep:setState(state)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state?` | table | Local step state table; pass nil to clear. |
+
+**Example**
+
+```lua
+do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local step = lurek.pipeline.newStep("stateful")
+    step:setState({ visits = 1 })
+    example_print_log("state visits = " .. tostring(step:getState().visits))
 end
 ```
 
